@@ -867,7 +867,11 @@ sk = sketch() {
         assert_eq!(count("SketchBlock"), 1);
         assert_eq!(count("SketchVar"), 1);
         // The sketch var's initial value.
-        assert_eq!(count("NumericLiteral"), 1);
+        assert!(
+            events
+                .windows(2)
+                .any(|pair| matches!(pair, [Event::Enter("SketchVar", _), Event::Enter("Literal", _)]))
+        );
         assert_eq!(count("PipeSubstitution"), 1);
         // Object property keys are visited as identifiers.
         assert_eq!(count("Identifier"), 2);

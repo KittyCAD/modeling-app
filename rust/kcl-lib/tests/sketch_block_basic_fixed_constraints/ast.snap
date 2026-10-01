@@ -113,9 +113,12 @@ description: Result of parsing sketch_block_basic_fixed_constraints.kcl
                         "moduleId": 0,
                         "raw": "0",
                         "start": 0,
-                        "suffix": "None",
-                        "type": "NumericLiteral",
-                        "value": 0.0
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       "moduleId": 0,
                       "start": 0,
@@ -150,14 +153,26 @@ description: Result of parsing sketch_block_basic_fixed_constraints.kcl
                       "commentStart": 0,
                       "end": 0,
                       "initial": {
+                        "argument": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "raw": "10",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 10.0,
+                            "suffix": "None"
+                          }
+                        },
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "+10",
+                        "operator": "+",
                         "start": 0,
-                        "suffix": "None",
-                        "type": "NumericLiteral",
-                        "value": 10.0
+                        "type": "UnaryExpression",
+                        "type": "UnaryExpression"
                       },
                       "moduleId": 0,
                       "start": 0,
@@ -391,9 +406,12 @@ description: Result of parsing sketch_block_basic_fixed_constraints.kcl
                         "moduleId": 0,
                         "raw": "1in",
                         "start": 0,
-                        "suffix": "Inch",
-                        "type": "NumericLiteral",
-                        "value": 1.0
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 1.0,
+                          "suffix": "Inch"
+                        }
                       },
                       "moduleId": 0,
                       "start": 0,

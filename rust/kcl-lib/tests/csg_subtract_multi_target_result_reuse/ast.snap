@@ -86,14 +86,26 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "5",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 5.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-5",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -5.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -104,14 +116,26 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -2.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -143,14 +167,26 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -161,14 +197,26 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -2.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -252,14 +300,26 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -270,14 +330,26 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -2.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -309,14 +381,26 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -332,9 +416,12 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                   "moduleId": 0,
                                   "raw": "2",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 2.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -418,14 +505,26 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -441,9 +540,12 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                   "moduleId": 0,
                                   "raw": "2",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 2.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -475,14 +577,26 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "5",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 5.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-5",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -5.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -498,9 +612,12 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                   "moduleId": 0,
                                   "raw": "2",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 2.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -584,14 +701,26 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "5",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 5.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-5",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -5.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -607,9 +736,12 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                   "moduleId": 0,
                                   "raw": "2",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 2.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -641,14 +773,26 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "5",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 5.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-5",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -5.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -659,14 +803,26 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -2.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1551,9 +1707,12 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                   "moduleId": 0,
                                   "raw": "1",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1564,14 +1723,26 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -2.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1608,9 +1779,12 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                   "moduleId": 0,
                                   "raw": "5",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 5.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1621,14 +1795,26 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -2.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1717,9 +1903,12 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                   "moduleId": 0,
                                   "raw": "5",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 5.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1730,14 +1919,26 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -2.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1774,9 +1975,12 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                   "moduleId": 0,
                                   "raw": "5",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 5.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1792,9 +1996,12 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                   "moduleId": 0,
                                   "raw": "2",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 2.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1883,9 +2090,12 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                   "moduleId": 0,
                                   "raw": "5",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 5.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1901,9 +2111,12 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                   "moduleId": 0,
                                   "raw": "2",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 2.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1940,9 +2153,12 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                   "moduleId": 0,
                                   "raw": "1",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1958,9 +2174,12 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                   "moduleId": 0,
                                   "raw": "2",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 2.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2049,9 +2268,12 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                   "moduleId": 0,
                                   "raw": "1",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2067,9 +2289,12 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                   "moduleId": 0,
                                   "raw": "2",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 2.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2106,9 +2331,12 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                   "moduleId": 0,
                                   "raw": "1",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2119,14 +2347,26 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -2.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3057,14 +3297,26 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -2.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3075,14 +3327,26 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3119,9 +3383,12 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                   "moduleId": 0,
                                   "raw": "2",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 2.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3132,14 +3399,26 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3228,9 +3507,12 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                   "moduleId": 0,
                                   "raw": "2",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 2.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3241,14 +3523,26 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3285,9 +3579,12 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                   "moduleId": 0,
                                   "raw": "2",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 2.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3303,9 +3600,12 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                   "moduleId": 0,
                                   "raw": "1",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3394,9 +3694,12 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                   "moduleId": 0,
                                   "raw": "2",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 2.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3412,9 +3715,12 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                   "moduleId": 0,
                                   "raw": "1",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3446,14 +3752,26 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -2.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3469,9 +3787,12 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                   "moduleId": 0,
                                   "raw": "1",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3555,14 +3876,26 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -2.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3578,9 +3911,12 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                   "moduleId": 0,
                                   "raw": "1",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3612,14 +3948,26 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -2.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3630,14 +3978,26 @@ description: Result of parsing csg_subtract_multi_target_result_reuse.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,

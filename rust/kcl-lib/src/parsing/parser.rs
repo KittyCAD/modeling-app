@@ -890,7 +890,11 @@ pub(crate) fn unsigned_number_literal(i: &mut TokenSlice) -> ModalResult<Node<Li
 
 fn sketch_var(i: &mut TokenSlice) -> ModalResult<Node<SketchVar>> {
     let var_token = keyword(i, "var")?;
-    let expr = opt(preceded(require_whitespace, expression)).parse_next(i)?;
+    let expr = opt(preceded(
+        whitespace.verify(|tokens: &Vec<Token>| !tokens.iter().any(|token| token.value.contains('\n'))),
+        expression,
+    ))
+    .parse_next(i)?;
     let end = expr.as_ref().map(Expr::end).unwrap_or(var_token.end);
     if !ParseContext::is_in_sketch_block() {
         ParseContext::experimental(
@@ -4834,6 +4838,15 @@ e
         let tokens = tokens.as_slice();
         let actual = in_sketch_ctx(|| sketch_var.parse(tokens)).unwrap();
         assert_eq!(actual.inner.initial, None);
+    }
+
+    #[test]
+    fn bare_sketch_var_does_not_consume_the_next_line() {
+        let program = crate::parsing::top_level_parse(
+            "@settings(experimentalFeatures = allow)\nsketch(on = XY) {\n  x = var\n  y = var 1mm\n}\n",
+        )
+        .unwrap();
+        assert_eq!(program.body.len(), 1);
     }
 
     #[test]

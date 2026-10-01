@@ -131,9 +131,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "23.19mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 23.19
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 23.19,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -149,9 +152,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "8.37mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 8.37
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 8.37,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -188,9 +194,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "22.9mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 22.9
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 22.9,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -206,9 +215,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -245,9 +257,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "142.9mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 142.9
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 142.9,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -263,9 +278,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -354,9 +372,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "23.19mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 23.19
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 23.19,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -372,9 +393,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "8.37mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 8.37
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 8.37,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -411,9 +435,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "23.63mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 23.63
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 23.63,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -429,9 +456,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "16.75mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 16.75
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 16.75,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -468,9 +498,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "20.69mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 20.69
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 20.69,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -486,9 +519,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "12.7mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 12.7
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 12.7,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -711,9 +747,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "23.92mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 23.92
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 23.92,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -729,9 +768,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "25.12mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 25.12
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 25.12,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -768,9 +810,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "23.63mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 23.63
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 23.63,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -786,9 +831,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "16.75mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 16.75
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 16.75,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -825,9 +873,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "143.63mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 143.63
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 143.63,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -843,9 +894,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "16.75mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 16.75
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 16.75,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1068,9 +1122,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "23.92mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 23.92
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 23.92,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1086,9 +1143,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "25.12mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 25.12
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 25.12,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1125,9 +1185,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "24.36mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 24.36
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 24.36,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1143,9 +1206,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "33.49mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 33.49
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 33.49,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1182,9 +1248,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "21.42mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 21.42
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 21.42,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1200,9 +1269,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "29.45mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 29.45
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 29.45,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1425,9 +1497,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "24.65mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 24.65
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 24.65,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1443,9 +1518,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "41.86mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 41.86
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 41.86,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1482,9 +1560,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "24.36mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 24.36
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 24.36,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1500,9 +1581,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "33.49mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 33.49
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 33.49,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1539,9 +1623,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "144.36mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 144.36
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 144.36,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1557,9 +1644,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "33.49mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 33.49
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 33.49,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1782,9 +1872,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "24.65mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 24.65
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 24.65,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1800,9 +1893,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "41.86mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 41.86
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 41.86,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1839,9 +1935,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "25.1mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 25.1
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 25.1,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1857,9 +1956,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "50.24mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 50.24
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 50.24,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1896,9 +1998,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "22.16mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 22.16
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 22.16,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1914,9 +2019,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "46.19mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 46.19
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 46.19,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2139,9 +2247,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "26.03mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 26.03
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 26.03,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2157,9 +2268,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "68.01mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 68.01
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 68.01,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2196,9 +2310,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "25.1mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 25.1
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 25.1,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2214,9 +2331,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "50.24mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 50.24
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 50.24,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2253,9 +2373,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "195.1mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 195.1
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 195.1,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2271,9 +2394,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "50.24mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 50.24
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 50.24,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2496,9 +2622,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "41.78mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 41.78
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 41.78,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2514,9 +2643,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "91.86mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 91.86
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 91.86,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2553,9 +2685,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "26.03mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 26.03
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 26.03,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2571,9 +2706,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "68.01mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 68.01
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 68.01,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2610,9 +2748,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "56.86mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 56.86
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 56.86,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2628,9 +2769,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "64.77mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 64.77
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 64.77,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2853,9 +2997,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "41.78mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 41.78
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 41.78,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2871,9 +3018,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "91.86mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 91.86
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 91.86,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2910,9 +3060,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "56.92mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 56.92
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 56.92,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2928,9 +3081,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "117.08mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 117.08
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 117.08,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2967,9 +3123,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "27.43mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 27.43
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 27.43,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2985,9 +3144,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "117.63mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 117.63
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 117.63,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3210,9 +3372,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "56.92mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 56.92
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 56.92,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3228,9 +3393,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "117.08mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 117.08
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 117.08,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3267,9 +3435,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "57.35mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 57.35
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 57.35,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3285,9 +3456,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "139.83mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 139.83
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 139.83,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3510,9 +3684,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "60.94mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 60.94
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 60.94,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3528,9 +3705,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "140.05mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 140.05
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 140.05,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3567,9 +3747,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "57.35mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 57.35
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 57.35,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3585,9 +3768,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "139.83mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 139.83
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 139.83,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3624,9 +3810,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "59.15mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 59.15
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 59.15,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3642,9 +3831,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "139.8mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 139.8
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 139.8,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3867,9 +4059,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "60.94mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 60.94
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 60.94,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3885,9 +4080,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "140.05mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 140.05
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 140.05,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3924,9 +4122,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "64.47mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 64.47
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 64.47,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3942,9 +4143,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "114.99mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 114.99
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 114.99,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4167,9 +4371,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "48.31mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 48.31
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 48.31,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4185,9 +4392,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "85.81mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 85.81
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 85.81,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4224,9 +4434,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "64.47mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 64.47
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 64.47,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4242,9 +4455,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "114.99mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 114.99
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 114.99,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4281,9 +4497,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "35.1mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 35.1
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 35.1,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4299,9 +4518,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "112.19mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 112.19
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 112.19,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4524,9 +4746,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "48.31mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 48.31
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 48.31,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4542,9 +4767,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "85.81mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 85.81
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 85.81,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4581,9 +4809,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "34.94mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 34.94
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 34.94,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4599,9 +4830,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "67.77mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 67.77
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 67.77,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4638,9 +4872,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "59.43mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 59.43
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 59.43,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4656,9 +4893,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "63.6mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 63.6
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 63.6,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4881,9 +5121,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "34.94mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 34.94
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 34.94,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4899,9 +5142,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "67.77mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 67.77
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 67.77,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4938,9 +5184,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "27.8mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 27.8
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 27.8,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4956,9 +5205,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "19.23mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 19.23
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 19.23,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5181,9 +5433,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "27.8mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 27.8
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 27.8,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5199,9 +5454,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "19.23mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 19.23
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 19.23,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5238,9 +5496,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "22.9mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 22.9
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 22.9,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5256,9 +5517,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6219,9 +6483,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6237,9 +6504,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6276,9 +6546,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6294,9 +6567,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "141.6mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 141.6
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 141.6,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6538,9 +6814,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6556,9 +6835,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "141.6mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 141.6
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 141.6,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6595,9 +6877,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "64.6mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 64.6
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 64.6,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6613,9 +6898,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "141.6mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 141.6
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 141.6,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7227,9 +7515,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "64.6mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 64.6
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 64.6,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7245,9 +7536,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "141.6mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 141.6
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 141.6,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7284,9 +7578,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "64.6mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 64.6
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 64.6,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7302,9 +7599,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7943,9 +8243,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7961,9 +8264,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8000,9 +8306,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "64.6mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 64.6
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 64.6,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8018,9 +8327,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9231,9 +9543,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9249,9 +9564,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9288,9 +9606,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9306,9 +9627,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "12.25mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 12.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 12.25,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9418,9 +9742,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9436,9 +9763,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "12.25mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 12.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 12.25,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9475,9 +9805,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "2.25mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 2.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.25,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9493,9 +9826,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "12.25mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 12.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 12.25,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9605,9 +9941,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "2.25mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 2.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.25,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9623,9 +9962,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "12.25mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 12.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 12.25,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9662,9 +10004,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9680,9 +10025,12 @@ description: Result of parsing bone-plate.kcl
                                   "moduleId": 0,
                                   "raw": "12.25mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 12.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 12.25,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,

@@ -1020,14 +1020,26 @@ description: Result of parsing linear-shelf-system.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.2m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.2,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.2m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.2
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1043,9 +1055,12 @@ description: Result of parsing linear-shelf-system.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1077,14 +1092,26 @@ description: Result of parsing linear-shelf-system.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.2m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.2,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.2m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.2
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1095,14 +1122,26 @@ description: Result of parsing linear-shelf-system.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.4m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.4,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.4m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.4
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1186,14 +1225,26 @@ description: Result of parsing linear-shelf-system.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.2m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.2,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.2m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.2
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1204,14 +1255,26 @@ description: Result of parsing linear-shelf-system.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.4m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.4,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.4m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.4
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1243,14 +1306,26 @@ description: Result of parsing linear-shelf-system.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.18m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.18,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.18m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.18
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1261,14 +1336,26 @@ description: Result of parsing linear-shelf-system.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.4m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.4,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.4m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.4
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1486,14 +1573,26 @@ description: Result of parsing linear-shelf-system.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.18m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.18,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.18m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.18
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1504,14 +1603,26 @@ description: Result of parsing linear-shelf-system.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.4m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.4,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.4m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.4
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1543,14 +1654,26 @@ description: Result of parsing linear-shelf-system.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.18m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.18,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.18m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.18
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1566,9 +1689,12 @@ description: Result of parsing linear-shelf-system.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1786,14 +1912,26 @@ description: Result of parsing linear-shelf-system.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.18m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.18,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.18m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.18
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1809,9 +1947,12 @@ description: Result of parsing linear-shelf-system.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1843,14 +1984,26 @@ description: Result of parsing linear-shelf-system.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.2m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.2,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.2m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.2
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1866,9 +2019,12 @@ description: Result of parsing linear-shelf-system.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2220,14 +2376,26 @@ description: Result of parsing linear-shelf-system.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.2m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.2,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.2m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.2
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2243,9 +2411,12 @@ description: Result of parsing linear-shelf-system.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2282,9 +2453,12 @@ description: Result of parsing linear-shelf-system.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2300,9 +2474,12 @@ description: Result of parsing linear-shelf-system.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4049,14 +4226,26 @@ description: Result of parsing linear-shelf-system.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.18m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.18,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.18m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.18
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4072,9 +4261,12 @@ description: Result of parsing linear-shelf-system.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4106,14 +4298,26 @@ description: Result of parsing linear-shelf-system.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.18m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.18,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.18m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.18
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4124,14 +4328,26 @@ description: Result of parsing linear-shelf-system.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.37m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.37,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.37m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.37
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4215,14 +4431,26 @@ description: Result of parsing linear-shelf-system.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.18m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.18,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.18m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.18
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4233,14 +4461,26 @@ description: Result of parsing linear-shelf-system.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.37m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.37,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.37m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.37
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4277,9 +4517,12 @@ description: Result of parsing linear-shelf-system.kcl
                                   "moduleId": 0,
                                   "raw": "0.18m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.18
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.18,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4290,14 +4533,26 @@ description: Result of parsing linear-shelf-system.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.37m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.37,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.37m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.37
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4520,9 +4775,12 @@ description: Result of parsing linear-shelf-system.kcl
                                   "moduleId": 0,
                                   "raw": "0.18m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.18
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.18,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4533,14 +4791,26 @@ description: Result of parsing linear-shelf-system.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.37m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.37,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.37m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.37
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4577,9 +4847,12 @@ description: Result of parsing linear-shelf-system.kcl
                                   "moduleId": 0,
                                   "raw": "0.18m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.18
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.18,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4595,9 +4868,12 @@ description: Result of parsing linear-shelf-system.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4820,9 +5096,12 @@ description: Result of parsing linear-shelf-system.kcl
                                   "moduleId": 0,
                                   "raw": "0.18m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.18
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.18,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4838,9 +5117,12 @@ description: Result of parsing linear-shelf-system.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4872,14 +5154,26 @@ description: Result of parsing linear-shelf-system.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.18m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.18,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.18m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.18
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4895,9 +5189,12 @@ description: Result of parsing linear-shelf-system.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5249,14 +5546,26 @@ description: Result of parsing linear-shelf-system.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.18m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.18,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.18m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.18
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5272,9 +5581,12 @@ description: Result of parsing linear-shelf-system.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5311,9 +5623,12 @@ description: Result of parsing linear-shelf-system.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5329,9 +5644,12 @@ description: Result of parsing linear-shelf-system.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6997,14 +7315,26 @@ description: Result of parsing linear-shelf-system.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.18m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.18,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.18m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.18
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7020,9 +7350,12 @@ description: Result of parsing linear-shelf-system.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7054,14 +7387,26 @@ description: Result of parsing linear-shelf-system.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.18m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.18,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.18m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.18
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7072,14 +7417,26 @@ description: Result of parsing linear-shelf-system.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.4m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.4,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.4m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.4
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7163,14 +7520,26 @@ description: Result of parsing linear-shelf-system.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.18m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.18,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.18m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.18
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7181,14 +7550,26 @@ description: Result of parsing linear-shelf-system.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.4m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.4,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.4m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.4
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7225,9 +7606,12 @@ description: Result of parsing linear-shelf-system.kcl
                                   "moduleId": 0,
                                   "raw": "0.18m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.18
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.18,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7238,14 +7622,26 @@ description: Result of parsing linear-shelf-system.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.4m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.4,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.4m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.4
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7468,9 +7864,12 @@ description: Result of parsing linear-shelf-system.kcl
                                   "moduleId": 0,
                                   "raw": "0.18m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.18
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.18,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7481,14 +7880,26 @@ description: Result of parsing linear-shelf-system.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.4m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.4,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.4m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.4
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7525,9 +7936,12 @@ description: Result of parsing linear-shelf-system.kcl
                                   "moduleId": 0,
                                   "raw": "0.18m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.18
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.18,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7543,9 +7957,12 @@ description: Result of parsing linear-shelf-system.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7768,9 +8185,12 @@ description: Result of parsing linear-shelf-system.kcl
                                   "moduleId": 0,
                                   "raw": "0.18m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.18
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.18,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7786,9 +8206,12 @@ description: Result of parsing linear-shelf-system.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7820,14 +8243,26 @@ description: Result of parsing linear-shelf-system.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.18m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.18,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.18m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.18
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7843,9 +8278,12 @@ description: Result of parsing linear-shelf-system.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8197,14 +8635,26 @@ description: Result of parsing linear-shelf-system.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.18m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.18,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.18m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.18
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8220,9 +8670,12 @@ description: Result of parsing linear-shelf-system.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8259,9 +8712,12 @@ description: Result of parsing linear-shelf-system.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8277,9 +8733,12 @@ description: Result of parsing linear-shelf-system.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,

@@ -91,9 +91,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "0",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -109,9 +112,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "0",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -148,9 +154,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "5",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 5.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -166,9 +175,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "0",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -257,9 +269,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "5",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 5.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -275,9 +290,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "0",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -314,9 +332,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "5",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 5.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -332,9 +353,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "5",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 5.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -423,9 +447,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "5",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 5.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -441,9 +468,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "5",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 5.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -480,9 +510,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "0",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -498,9 +531,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "5",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 5.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -589,9 +625,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "0",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -607,9 +646,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "5",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 5.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -646,9 +688,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "0",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -664,9 +709,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "0",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1697,9 +1745,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "0",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1715,9 +1766,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "30",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 30.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 30.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1754,9 +1808,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "10",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 10.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 10.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1772,9 +1829,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "30",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 30.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 30.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1863,9 +1923,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "10",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 10.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 10.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1881,9 +1944,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "30",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 30.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 30.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1920,9 +1986,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "10",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 10.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 10.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1938,9 +2007,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "40",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 40.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 40.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2029,9 +2101,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "10",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 10.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 10.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2047,9 +2122,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "40",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 40.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 40.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2086,9 +2164,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "0",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2104,9 +2185,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "40",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 40.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 40.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2195,9 +2279,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "0",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2213,9 +2300,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "40",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 40.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 40.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2252,9 +2342,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "0",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2270,9 +2363,12 @@ description: Result of parsing named_views_hide_pattern.kcl
                                   "moduleId": 0,
                                   "raw": "30",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 30.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 30.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,

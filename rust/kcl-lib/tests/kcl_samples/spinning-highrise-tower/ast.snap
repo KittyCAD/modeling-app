@@ -920,14 +920,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -938,14 +950,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -982,9 +1006,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -995,14 +1022,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1091,9 +1130,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1104,14 +1146,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1148,9 +1202,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1166,9 +1223,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1257,9 +1317,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1275,9 +1338,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1309,14 +1375,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1332,9 +1410,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1418,14 +1499,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1441,9 +1534,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1475,14 +1571,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1493,14 +1601,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3555,14 +3675,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3573,14 +3705,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3617,9 +3761,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3630,14 +3777,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3726,9 +3885,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3739,14 +3901,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3783,9 +3957,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3801,9 +3978,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3892,9 +4072,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3910,9 +4093,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3944,14 +4130,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3967,9 +4165,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4053,14 +4254,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4076,9 +4289,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4110,14 +4326,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4128,14 +4356,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6125,14 +6365,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6143,14 +6395,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6187,9 +6451,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6200,14 +6467,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6296,9 +6575,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6309,14 +6591,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6353,9 +6647,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6371,9 +6668,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6462,9 +6762,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6480,9 +6783,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6514,14 +6820,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6537,9 +6855,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6623,14 +6944,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6646,9 +6979,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6680,14 +7016,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6698,14 +7046,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8769,14 +9129,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8787,14 +9159,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8831,9 +9215,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8844,14 +9231,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8940,9 +9339,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8953,14 +9355,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8997,9 +9411,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9015,9 +9432,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9106,9 +9526,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9124,9 +9547,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9158,14 +9584,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9181,9 +9619,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9267,14 +9708,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9290,9 +9743,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9324,14 +9780,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9342,14 +9810,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11354,14 +11834,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11372,14 +11864,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11416,9 +11920,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11429,14 +11936,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11525,9 +12044,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11538,14 +12060,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11582,9 +12116,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11600,9 +12137,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11691,9 +12231,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11709,9 +12252,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11743,14 +12289,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11766,9 +12324,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11852,14 +12413,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11875,9 +12448,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11909,14 +12485,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11927,14 +12515,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -13924,14 +14524,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -13942,14 +14554,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -13986,9 +14610,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -13999,14 +14626,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14095,9 +14734,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14108,14 +14750,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14152,9 +14806,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14170,9 +14827,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14261,9 +14921,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14279,9 +14942,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14313,14 +14979,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14336,9 +15014,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14422,14 +15103,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14445,9 +15138,12 @@ description: Result of parsing spinning-highrise-tower.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14479,14 +15175,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14497,14 +15205,26 @@ description: Result of parsing spinning-highrise-tower.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,

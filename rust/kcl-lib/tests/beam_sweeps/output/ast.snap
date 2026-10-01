@@ -184,9 +184,12 @@ description: Result of parsing beam_sweeps.kcl
                                             "moduleId": 0,
                                             "raw": "1in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 1.0
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 1.0,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -202,9 +205,12 @@ description: Result of parsing beam_sweeps.kcl
                                             "moduleId": 0,
                                             "raw": "0in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.0
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -241,9 +247,12 @@ description: Result of parsing beam_sweeps.kcl
                                             "moduleId": 0,
                                             "raw": "0in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.0
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -259,9 +268,12 @@ description: Result of parsing beam_sweeps.kcl
                                             "moduleId": 0,
                                             "raw": "0in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.0
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -643,9 +655,12 @@ description: Result of parsing beam_sweeps.kcl
                                             "moduleId": 0,
                                             "raw": "1in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 1.0
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 1.0,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -661,9 +676,12 @@ description: Result of parsing beam_sweeps.kcl
                                             "moduleId": 0,
                                             "raw": "0in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.0
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -700,9 +718,12 @@ description: Result of parsing beam_sweeps.kcl
                                             "moduleId": 0,
                                             "raw": "0in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.0
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -718,9 +739,12 @@ description: Result of parsing beam_sweeps.kcl
                                             "moduleId": 0,
                                             "raw": "0in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.0
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -1743,9 +1767,12 @@ description: Result of parsing beam_sweeps.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1761,9 +1788,12 @@ description: Result of parsing beam_sweeps.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1800,9 +1830,12 @@ description: Result of parsing beam_sweeps.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1818,9 +1851,12 @@ description: Result of parsing beam_sweeps.kcl
                                   "moduleId": 0,
                                   "raw": "100in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 100.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 100.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2284,9 +2320,12 @@ description: Result of parsing beam_sweeps.kcl
                                   "moduleId": 0,
                                   "raw": "200in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 200.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 200.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2302,9 +2341,12 @@ description: Result of parsing beam_sweeps.kcl
                                   "moduleId": 0,
                                   "raw": "100in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 100.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 100.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2341,9 +2383,12 @@ description: Result of parsing beam_sweeps.kcl
                                   "moduleId": 0,
                                   "raw": "200in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 200.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 200.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2359,9 +2404,12 @@ description: Result of parsing beam_sweeps.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2824,9 +2872,12 @@ description: Result of parsing beam_sweeps.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2842,9 +2893,12 @@ description: Result of parsing beam_sweeps.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2881,9 +2935,12 @@ description: Result of parsing beam_sweeps.kcl
                                   "moduleId": 0,
                                   "raw": "200in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 200.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 200.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2899,9 +2956,12 @@ description: Result of parsing beam_sweeps.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3258,9 +3318,12 @@ description: Result of parsing beam_sweeps.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3276,9 +3339,12 @@ description: Result of parsing beam_sweeps.kcl
                                   "moduleId": 0,
                                   "raw": "100in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 100.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 100.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3315,9 +3381,12 @@ description: Result of parsing beam_sweeps.kcl
                                   "moduleId": 0,
                                   "raw": "200in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 200.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 200.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3333,9 +3402,12 @@ description: Result of parsing beam_sweeps.kcl
                                   "moduleId": 0,
                                   "raw": "100in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 100.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 100.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3692,9 +3764,12 @@ description: Result of parsing beam_sweeps.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3710,9 +3785,12 @@ description: Result of parsing beam_sweeps.kcl
                                   "moduleId": 0,
                                   "raw": "100in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 100.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 100.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3749,9 +3827,12 @@ description: Result of parsing beam_sweeps.kcl
                                   "moduleId": 0,
                                   "raw": "200in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 200.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 200.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3767,9 +3848,12 @@ description: Result of parsing beam_sweeps.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,

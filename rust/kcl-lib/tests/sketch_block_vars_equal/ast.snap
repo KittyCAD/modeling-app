@@ -76,9 +76,12 @@ description: Result of parsing sketch_block_vars_equal.kcl
                         "moduleId": 0,
                         "raw": "0",
                         "start": 0,
-                        "suffix": "None",
-                        "type": "NumericLiteral",
-                        "value": 0.0
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       "moduleId": 0,
                       "start": 0,
@@ -118,9 +121,12 @@ description: Result of parsing sketch_block_vars_equal.kcl
                         "moduleId": 0,
                         "raw": "0",
                         "start": 0,
-                        "suffix": "None",
-                        "type": "NumericLiteral",
-                        "value": 0.0
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       },
                       "moduleId": 0,
                       "start": 0,

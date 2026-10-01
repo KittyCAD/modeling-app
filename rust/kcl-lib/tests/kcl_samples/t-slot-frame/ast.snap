@@ -301,9 +301,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.5in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.5
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.5,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -319,9 +322,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.322in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.322
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.322,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -358,9 +364,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.42in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.42
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.42,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -376,9 +385,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.322in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.322
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.322,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -467,9 +479,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.42in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.42
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.42,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -485,9 +500,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.322in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.322
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.322,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -524,9 +542,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.3563603896932107in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.3563603896932107
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.3563603896932107,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -542,9 +563,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.2956396103067893in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.2956396103067893
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.2956396103067893,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -581,9 +605,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.42in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.42
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.42,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -599,9 +626,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.232in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.232
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.232,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -824,9 +854,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.3563603896932107in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.3563603896932107
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.3563603896932107,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -842,9 +875,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.2956396103067893in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.2956396103067893
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.2956396103067893,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -881,9 +917,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.17372077938642136in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.17372077938642136
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.17372077938642136,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -899,9 +938,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.113in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.113
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.113,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -1124,9 +1166,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.17372077938642136in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.17372077938642136
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.17372077938642136,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -1142,9 +1187,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.113in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.113
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.113,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -1181,9 +1229,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.18079184719828684in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.18079184719828684
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.18079184719828684,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -1199,9 +1250,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.09592893218813453in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.09592893218813453
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.09592893218813453,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -1238,9 +1292,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.18079184719828684in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.18079184719828684
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.18079184719828684,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -1256,9 +1313,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.10592893218813453in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.10592893218813453
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.10592893218813453,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -1481,9 +1541,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.18079184719828684in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.18079184719828684
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.18079184719828684,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -1499,9 +1562,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.09592893218813453in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.09592893218813453
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.09592893218813453,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -1538,9 +1604,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.33in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.33
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.33,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -1556,9 +1625,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.09592893218813453in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.09592893218813453
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.09592893218813453,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -1781,9 +1853,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.34in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.34
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.34,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -1799,9 +1874,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.08592893218813454in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.08592893218813454
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.08592893218813454,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -1838,9 +1916,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.33in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.33
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.33,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -1856,9 +1937,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.09592893218813453in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.09592893218813453
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.09592893218813453,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -1895,9 +1979,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.33in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.33
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.33,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -1913,9 +2000,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.08592893218813454in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.08592893218813454
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.08592893218813454,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -2138,9 +2228,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.34in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.34
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.34,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -2156,9 +2249,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.08592893218813454in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.08592893218813454
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.08592893218813454,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -2195,9 +2291,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.34in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.34
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.34,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -2213,9 +2312,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.01in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.01
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.01,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -2438,9 +2540,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.33in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.33
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.33,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -2456,9 +2561,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.0
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -2495,9 +2603,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.34in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.34
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.34,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -2513,9 +2624,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.01in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.01
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.01,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -2552,9 +2666,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.33in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.33
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.33,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -2570,9 +2687,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.01in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.01
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.01,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -2795,9 +2915,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.33in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.33
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.33,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -2813,9 +2936,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.0
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -2852,9 +2978,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.3in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.3
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.3,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -2870,9 +2999,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.0
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -3095,9 +3227,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.3in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.3
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.3,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -3113,9 +3248,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.0
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -3152,9 +3290,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.264in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.264
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.264,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -3170,9 +3311,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.0
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -3209,9 +3353,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.282in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.282
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.282,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -3227,9 +3374,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.0
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -3452,9 +3602,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.264in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.264
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.264,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -3470,9 +3623,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.0
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -3509,9 +3665,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.164in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.164
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.164,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -3527,9 +3686,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.0
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -3752,9 +3914,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.164in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.164
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.164,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -3770,9 +3935,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.0
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -3809,9 +3977,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.128in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.128
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.128,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -3827,9 +3998,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.0
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -3866,9 +4040,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.146in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.146
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.146,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -3884,9 +4061,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.0
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -4109,9 +4289,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.128in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.128
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.128,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -4127,9 +4310,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.0
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -4166,9 +4352,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.098in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.098
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.098,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -4184,9 +4373,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.0
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -4409,9 +4601,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.0275in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.0275
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.0275,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -4427,9 +4622,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.0275in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.0275
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.0275,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -4466,9 +4664,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.098in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.098
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.098,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -4484,9 +4685,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.0
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.0,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -4523,9 +4727,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.098in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.098
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.098,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -4541,9 +4748,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.10411818181818162in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.10411818181818162
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.10411818181818162,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -5735,9 +5945,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.88in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.88
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.88,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -5753,9 +5966,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.75in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.75
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.75,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -5792,9 +6008,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.75in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.75
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.75,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
@@ -5810,9 +6029,12 @@ description: Result of parsing t-slot-frame.kcl
                                             "moduleId": 0,
                                             "raw": "0.75in",
                                             "start": 0,
-                                            "suffix": "Inch",
-                                            "type": "NumericLiteral",
-                                            "value": 0.75
+                                            "type": "Literal",
+                                            "type": "Literal",
+                                            "value": {
+                                              "value": 0.75,
+                                              "suffix": "Inch"
+                                            }
                                           },
                                           "moduleId": 0,
                                           "start": 0,
