@@ -36,11 +36,7 @@ import {
   createMemberExpression,
   nonCodeMetaEmpty,
 } from '@src/lang/create'
-import {
-  createEdgeRefObjectExpression,
-  entityReferenceToEdgeRefPayload,
-  programTextEqual,
-} from '@src/lang/modifyAst/edges'
+import { programTextEqual } from '@src/lang/programTextEqual'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import {
   findAllChildrenAndOrderByPlaceInCode,
@@ -521,7 +517,9 @@ type SelectionExpressionValidationContext =
   }
 
 type SelectionExpressionApproach = {
-  create: (context: SelectionExpressionBuilderContext) => Expr | null
+  create: (
+    context: SelectionExpressionBuilderContext
+  ) => Expr | null | Promise<Expr | null>
   validate: (context: SelectionExpressionValidationContext) => Promise<boolean>
 }
 
@@ -531,16 +529,21 @@ type SelectionExpressionApproach = {
  * file. When a face would need a new tag, or an end face would be dropped,
  * this returns null and the primitive index fallback (`edgeId`) is used instead.
  */
-function createFaceApiReferenceExpr({
+async function createFaceApiReferenceExpr({
   primitiveSelection,
   artifactGraph,
   kclManager,
   wasmInstance,
-}: SelectionExpressionBuilderContext): Expr | null {
+}: SelectionExpressionBuilderContext): Promise<Expr | null> {
   const entityRef = primitiveSelection.graphSelection?.entityRef
   if (entityRef?.type !== 'edge' || entityRef.side_faces.length === 0) {
     return null
   }
+
+  // Loaded on demand so unit tests that import this module do not pull in
+  // edges.ts, which depends on generated KCL command bindings.
+  const { createEdgeRefObjectExpression, entityReferenceToEdgeRefPayload } =
+    await import('@src/lang/modifyAst/edges')
 
   let result: ReturnType<typeof createEdgeRefObjectExpression>
   try {
@@ -1010,7 +1013,7 @@ async function createPrimitiveReferenceCode(
   context: SelectionExpressionBuilderContext
 ): Promise<string | null> {
   for (const approach of selectionExpressionApproaches) {
-    const expr = approach.create(context)
+    const expr = await approach.create(context)
     if (!expr) {
       continue
     }

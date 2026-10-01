@@ -38,6 +38,7 @@ import {
   traverse,
   valueOrVariable,
 } from '@src/lang/queryAst'
+import { programTextEqual } from '@src/lang/programTextEqual'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
   getArtifactFromRange,
@@ -74,7 +75,7 @@ import {
   getBodySelectionFromPrimitiveParentEntityId,
   getEngineTopologyFallbackNormalized,
 } from '@src/lib/primitiveBodySelection'
-import { err, isErr } from '@src/lib/trap'
+import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
@@ -1037,19 +1038,6 @@ export function createEdgeRefObjectExpression(
     expr: createObjectExpression(properties),
     modifiedAst: currentAst,
   }
-}
-
-export function programTextEqual(
-  before: Node<Program>,
-  after: Node<Program>,
-  wasmInstance: ModuleType
-): boolean {
-  // Same reference is not proof the program is unchanged: some tag helpers
-  // edit the AST they are given and return it.
-  const beforeCode = recast(before, wasmInstance)
-  const afterCode = recast(after, wasmInstance)
-  if (isErr(beforeCode) || isErr(afterCode)) return false
-  return beforeCode === afterCode
 }
 
 const DEPRECATED_EDGE_STDLIB: readonly string[] = [
