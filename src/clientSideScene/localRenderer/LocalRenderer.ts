@@ -44,7 +44,10 @@ import {
   Vector2,
   Vector3,
 } from 'three'
-import { GLTFLoader, GLTFReference } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import {
+  GLTFLoader,
+  GLTFReference,
+} from 'three/examples/jsm/loaders/GLTFLoader.js'
 import type DenoiseNode from 'three/examples/jsm/tsl/display/DenoiseNode.js'
 import { denoise } from 'three/examples/jsm/tsl/display/DenoiseNode.js'
 import type GTAONode from 'three/examples/jsm/tsl/display/GTAONode.js'

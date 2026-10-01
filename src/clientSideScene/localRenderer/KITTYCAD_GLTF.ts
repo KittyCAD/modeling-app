@@ -1,4 +1,3 @@
-
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 
 export type KITTYCAD_GLTF = GLTF & {
