@@ -1,5 +1,5 @@
-import type { Page } from '@playwright/test'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import type { Page } from '@playwright/test'
 import { LEGACY_SKETCH_MODE_FEATURE_FLAG } from '@src/lib/constants'
 
 const waitForSettingsIdle = (page: Page) =>
