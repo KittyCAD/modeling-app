@@ -7,6 +7,7 @@ test.describe('Local Drive picker', { tag: '@web' }, () => {
     homePage,
     toolbar,
     cmdBar,
+    fs,
   }) => {
     await homePage.createAndGoToProject('local-drive')
     await toolbar.openPane(DefaultLayoutPaneID.Code)
@@ -31,17 +32,10 @@ test.describe('Local Drive picker', { tag: '@web' }, () => {
     await expect(
       page.getByRole('treeitem', { name: fileName, exact: true })
     ).toBeVisible()
-    await expect
-      .poll(() =>
-        page.evaluate(async (name) => {
-          const project = window.app.project
-          if (!project) throw new Error('No project is open')
-          const path = window.fsZds.join(project.path, name)
-          const content = await window.app.fileOperations.readFile(path)
-          return new TextDecoder().decode(content)
-        }, fileName)
-      )
-      .toBe(content)
+    const projectPath = await page.evaluate(() => window.app.project?.path)
+    if (!projectPath) throw new Error('No project is open')
+    const filePath = await fs.join(projectPath, fileName)
+    await expect.poll(() => fs.readFile(filePath, 'utf8')).toBe(content)
   })
 
   test('opens a local KCL file in the editor', async ({

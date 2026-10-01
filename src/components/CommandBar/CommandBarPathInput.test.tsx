@@ -20,14 +20,8 @@ vi.mock('@src/lib/openWindow', () => ({
 
 import CommandBarPathInput from '@src/components/CommandBar/CommandBarPathInput'
 
-const originalElectron = Object.getOwnPropertyDescriptor(window, 'electron')
-
 afterEach(() => {
-  if (originalElectron) {
-    Object.defineProperty(window, 'electron', originalElectron)
-  } else {
-    Reflect.deleteProperty(window, 'electron')
-  }
+  vi.unstubAllGlobals()
   vi.restoreAllMocks()
   mocks.open.mockReset()
 })
@@ -47,7 +41,7 @@ async function renderInput(onSubmit = vi.fn()) {
 
 describe('CommandBarPathInput', () => {
   it('opens the browser picker on mount and keeps the selection after cancel', async () => {
-    Reflect.deleteProperty(window, 'electron')
+    vi.stubGlobal('electron', undefined)
     const click = vi.spyOn(HTMLInputElement.prototype, 'click')
     const onSubmit = await renderInput()
     const picker = screen.getByLabelText('Choose a file')
@@ -71,9 +65,9 @@ describe('CommandBarPathInput', () => {
   })
 
   it('keeps native desktop paths and does not submit when opening the dialog', async () => {
-    Object.defineProperty(window, 'electron', {
-      configurable: true,
-      value: { process: { env: { NODE_ENV: 'test' } }, open: mocks.open },
+    vi.stubGlobal('electron', {
+      process: { env: { NODE_ENV: 'test' } },
+      open: mocks.open,
     })
     mocks.open.mockResolvedValue({
       canceled: false,
