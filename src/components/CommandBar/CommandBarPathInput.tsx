@@ -115,7 +115,7 @@ function CommandBarPathInput({
           ref={inputRef}
           required
           className="flex-grow px-2 py-1 !bg-transparent focus:outline-none"
-          placeholder={window.electron ? 'Enter a path' : 'Choose a file'}
+          placeholder="Choose a file"
           readOnly={!window.electron}
           defaultValue={window.electron ? defaultValue : undefined}
           value={window.electron ? undefined : selectedFile?.name || ''}
