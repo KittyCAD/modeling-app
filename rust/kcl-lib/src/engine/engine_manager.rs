@@ -5,6 +5,7 @@ use std::sync::atomic::Ordering::Relaxed;
 use anyhow::Result;
 pub use engine_transport::EngineTransport;
 use indexmap::IndexMap;
+use kcmc::KclVersion;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kcmc::shared::Color;
@@ -222,18 +223,29 @@ impl EngineManager {
         batch_context: &EngineBatchContext,
         id_generator: &mut IdGenerator,
         source_range: SourceRange,
+        kcl_version: Option<KclVersion>,
         geometry_only: bool,
     ) -> Result<(), crate::errors::KclError> {
         // Clear any batched commands leftover from previous scenes.
         self.clear_queues(batch_context).await;
 
-        self.batch_modeling_cmd(
-            batch_context,
-            id_generator.next_uuid(),
-            source_range,
-            &ModelingCmd::SceneClearAll(mcmd::SceneClearAll::default()),
-        )
-        .await?;
+        if let Some(kcl_version) = kcl_version {
+            self.batch_modeling_cmd(
+                batch_context,
+                id_generator.next_uuid(),
+                source_range,
+                &ModelingCmd::SetKclVersion(mcmd::SetKclVersion::builder().kcl_version(kcl_version).build()),
+            )
+            .await?;
+        } else {
+            self.batch_modeling_cmd(
+                batch_context,
+                id_generator.next_uuid(),
+                source_range,
+                &ModelingCmd::SceneClearAll(mcmd::SceneClearAll::default()),
+            )
+            .await?;
+        }
 
         // Flush the batch queue, so clear is run right away.
         // Otherwise the hooks below won't work.

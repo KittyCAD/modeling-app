@@ -411,3 +411,11 @@ fn no_modeling_in_sketch_block_error(range: SourceRange) -> KclError {
         vec![range],
     ))
 }
+
+pub(crate) fn kcl_version_to_modeling_cmd(kcl_version: kcl_api::KclVersion) -> kcmc::KclVersion {
+    match kcl_version {
+        kcl_api::KclVersion::V1 => kcmc::KclVersion::V1,
+        kcl_api::KclVersion::V2 => kcmc::KclVersion::V2,
+        kcl_api::KclVersion::V3Preview => kcmc::KclVersion::V3Preview,
+    }
+}

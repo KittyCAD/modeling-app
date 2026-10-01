@@ -2985,6 +2985,7 @@ dependencies = [
  "getrandom 0.3.4",
  "gloo-utils",
  "js-sys",
+ "kcl-api 0.2.187",
  "kcl-language-server",
  "kcl-lib",
  "kittycad",
