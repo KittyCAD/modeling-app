@@ -510,21 +510,13 @@ fn kcl_version_expr(kcl_version: KclVersion) -> Result<Expr, KclError> {
             LiteralValue::String(kcl_version.as_str().to_owned()),
             format!("\"{}\"", kcl_version.as_str()),
         ),
-        crate::KclVersion::V3 => { 
-            let value = kcl_version.parse::<f64>().map_err(|_| {
-                KclError::new_semantic(crate::errors::KclErrorDetails::new(
-                    format!("Unexpected numeric KCL version value: `{kcl_version}`"),
-                    vec![],
-                ))
-            })?;
-            (
-                LiteralValue::Number {
-                    value,
-                    suffix: NumericSuffix::None,
-                },
-                kcl_version.to_owned(),
-            )
-        },
+        crate::KclVersion::V3 => (
+            LiteralValue::Number {
+                value: 3.0,
+                suffix: NumericSuffix::None,
+            },
+            "3.0".to_owned(),
+        ),
     };
 
     Ok(Expr::Literal(BoxNode::new(Node::no_src(Literal {

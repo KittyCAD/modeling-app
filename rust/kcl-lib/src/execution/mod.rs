@@ -1242,6 +1242,7 @@ impl ExecutorContext {
                     KclVersion::V1 => kittycad::types::KclVersion::One0,
                     KclVersion::V2 => kittycad::types::KclVersion::Two0,
                     KclVersion::V3Preview => kittycad::types::KclVersion::Three0Preview,
+                    KclVersion::V3 => kittycad::types::KclVersion::Three0,
                 }),
             })
             .await?;
