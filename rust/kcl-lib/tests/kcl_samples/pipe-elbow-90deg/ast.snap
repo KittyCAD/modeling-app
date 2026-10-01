@@ -638,9 +638,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "107.34mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 107.34
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 107.34,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -651,14 +654,26 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "15.97mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 15.97,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-15.97mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -15.97
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -695,9 +710,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "63mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 63.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 63.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -713,9 +731,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -804,9 +825,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -822,9 +846,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -861,9 +888,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "63mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 63.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 63.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -879,9 +909,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1445,9 +1478,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "93.57mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 93.57
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 93.57,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1463,9 +1499,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "17.89mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 17.89
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 17.89,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1502,9 +1541,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "62.79mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 62.79
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 62.79,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1520,9 +1562,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "0.22mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.22
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.22,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2302,9 +2347,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "66.34mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 66.34
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 66.34,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2320,9 +2368,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "51.18mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 51.18
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 51.18,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2359,9 +2410,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2377,9 +2431,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "63mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 63.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 63.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2468,9 +2525,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2486,9 +2546,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2525,9 +2588,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2543,9 +2609,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "63mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 63.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 63.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3109,9 +3178,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "37.73mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 37.73
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 37.73,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3127,9 +3199,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "77.31mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 77.31
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 77.31,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3166,9 +3241,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3184,9 +3262,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "63mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 63.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 63.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3908,9 +3989,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "58.5mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 58.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 58.5,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3926,9 +4010,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "63mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 63.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 63.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3965,9 +4052,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "53.5mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 53.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 53.5,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3983,9 +4073,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "63mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 63.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 63.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4074,9 +4167,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4092,9 +4188,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "63mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 63.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 63.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4131,9 +4230,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "53.5mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 53.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 53.5,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4149,9 +4251,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "63mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 63.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 63.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4261,9 +4366,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4279,9 +4387,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4318,9 +4429,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4336,9 +4450,12 @@ description: Result of parsing pipe-elbow-90deg.kcl
                                   "moduleId": 0,
                                   "raw": "63mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 63.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 63.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,

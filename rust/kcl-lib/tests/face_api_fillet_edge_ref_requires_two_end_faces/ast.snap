@@ -100,9 +100,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "5.65mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 5.65
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.65,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -118,9 +121,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "5.03mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 5.03
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.03,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -157,9 +163,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "3.75mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 3.75
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.75,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -175,9 +184,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "3.53mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 3.53
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.53,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -617,9 +629,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "0.53mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.53
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.53,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -630,14 +645,26 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.43mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.43,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.43mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -1.43
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -674,9 +701,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "2.31mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 2.31
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.31,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -692,9 +722,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "3.36mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 3.36
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.36,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -783,9 +816,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "2.31mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 2.31
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.31,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -801,9 +837,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "3.36mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 3.36
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.36,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -840,9 +879,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "5.04mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 5.04
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.04,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -853,14 +895,26 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.99mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.99,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.99mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -2.99
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1083,9 +1137,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "5.04mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 5.04
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.04,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1096,14 +1153,26 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.99mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.99,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.99mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -2.99
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1140,9 +1209,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "0.53mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.53
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.53,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1153,14 +1225,26 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.43mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.43,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.43mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -1.43
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2056,9 +2140,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "1.32mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 1.32
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.32,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2074,9 +2161,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "3.62mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 3.62
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.62,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2113,9 +2203,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "3.47mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 3.47
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.47,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2131,9 +2224,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "3.7mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 3.7
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.7,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2222,9 +2318,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "3.85mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 3.85
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.85,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2240,9 +2339,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "3.56mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 3.56
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.56,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2279,9 +2381,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "5.7mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 5.7
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.7,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2297,9 +2402,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "3.53mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 3.53
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.53,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2388,9 +2496,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "4.04mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 4.04
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 4.04,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2406,9 +2517,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "3.56mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 3.56
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.56,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2445,9 +2559,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "5.39mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 5.39
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.39,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2463,9 +2580,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "3.54mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 3.54
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.54,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2502,9 +2622,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "4.72mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 4.72
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 4.72,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2520,9 +2643,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "3.82mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 3.82
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.82,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2825,9 +2951,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "1.67mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 1.67
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.67,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2843,9 +2972,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "3.63mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 3.63
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.63,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2882,9 +3014,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "3.18mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 3.18
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.18,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2900,9 +3035,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "3.69mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 3.69
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.69,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2939,9 +3077,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "2.42mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 2.42
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.42,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2957,9 +3098,12 @@ description: Result of parsing face_api_fillet_edge_ref_requires_two_end_faces.k
                                   "moduleId": 0,
                                   "raw": "3.83mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 3.83
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.83,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,

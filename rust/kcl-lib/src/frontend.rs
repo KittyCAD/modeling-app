@@ -4728,15 +4728,22 @@ impl FrontendState {
         let mut settled_ast = self.program.ast.clone();
         let mut committed_solver_value = false;
         for (var_range, node_path, value) in &outcome.var_solutions {
-            let Some(lookup) = numeric_literal_at_node_path(&settled_ast, node_path.as_ref(), *var_range) else {
+            let Some(lookup) = expr_at_node_path(&settled_ast, node_path.as_ref(), *var_range) else {
                 return Err(commit_failure());
             };
             let new_value = match &lookup {
-                Some(current_literal) => {
-                    if !var_solution_needs_commit(current_literal, *value, default_length_unit) {
-                        continue;
+                Some(current_expr) => {
+                    if let Some(current_literal) = numeric_literal_in_expr(current_expr) {
+                        if !var_solution_needs_commit(&current_literal, *value, default_length_unit) {
+                            continue;
+                        }
+                        preserve_var_solution_literal_style(&current_literal, *value, default_length_unit)
+                    } else {
+                        Number {
+                            value: number_value_in_default_length_units(*value, default_length_unit),
+                            units: default_length_unit.into(),
+                        }
                     }
-                    preserve_var_solution_literal_style(current_literal, *value, default_length_unit)
                 }
                 None => {
                     // Bare `var` with no initial literal to compare against;
@@ -6552,7 +6559,7 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                         *value
                     ))));
                 };
-                sketch_var.initial = Some(BoxNode::new(ast::Node::no_src(literal)));
+                sketch_var.initial = Some(ast::Expr::Literal(BoxNode::new(ast::Node::no_src(literal.into()))));
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
@@ -6750,24 +6757,24 @@ fn source_from_ast(ast: &ast::Node<ast::Program>) -> String {
     ast.recast_top(&Default::default(), 0)
 }
 
-struct FindNumericLiteral {
+struct FindSketchVarInitialBySourceRange {
     target: SourceRange,
-    found: Cell<Option<ast::NumericLiteral>>,
+    found: Cell<Option<Option<ast::Expr>>>,
 }
 
-impl<'a> crate::walk::Visitor<'a> for &FindNumericLiteral {
+impl<'a> crate::walk::Visitor<'a> for &FindSketchVarInitialBySourceRange {
     type Error = crate::front::Error;
 
     fn visit_node(&self, node: crate::walk::Node<'a>) -> anyhow::Result<bool, Self::Error> {
-        let Ok(node_range) = SourceRange::try_from(&node) else {
-            return Ok(true);
-        };
-
-        if node_range == self.target
-            && let crate::walk::Node::NumericLiteral(literal) = node
-        {
-            self.found.set(Some(literal.inner.clone()));
-            return Ok(false);
+        if let crate::walk::Node::SketchVar(sketch_var) = node {
+            let initial = sketch_var.initial.as_ref();
+            let range = initial
+                .map(SourceRange::from)
+                .unwrap_or_else(|| SourceRange::from(sketch_var));
+            if range == self.target {
+                self.found.set(Some(initial.cloned()));
+                return Ok(false);
+            }
         }
 
         for child in node.children().iter() {
@@ -6780,8 +6787,8 @@ impl<'a> crate::walk::Visitor<'a> for &FindNumericLiteral {
     }
 }
 
-fn numeric_literal_at_source_range(ast: &ast::Node<ast::Program>, target: SourceRange) -> Option<ast::NumericLiteral> {
-    let find = FindNumericLiteral {
+fn sketch_var_initial_at_source_range(ast: &ast::Node<ast::Program>, target: SourceRange) -> Option<Option<ast::Expr>> {
+    let find = FindSketchVarInitialBySourceRange {
         target,
         found: Cell::new(None),
     };
@@ -6793,7 +6800,7 @@ fn numeric_literal_at_source_range(ast: &ast::Node<ast::Program>, target: Source
 struct FindSketchVarInitialByNodePath<'a> {
     target: &'a ast::NodePath,
     sketch_var_found: Cell<bool>,
-    initial_literal: Cell<Option<ast::NumericLiteral>>,
+    initial_expr: Cell<Option<ast::Expr>>,
 }
 
 impl<'a, 'b> crate::walk::Visitor<'b> for &FindSketchVarInitialByNodePath<'a> {
@@ -6805,7 +6812,7 @@ impl<'a, 'b> crate::walk::Visitor<'b> for &FindSketchVarInitialByNodePath<'a> {
         {
             self.sketch_var_found.set(true);
             if let Some(initial) = &sketch_var.initial {
-                self.initial_literal.set(Some(initial.inner.clone()));
+                self.initial_expr.set(Some(initial.clone()));
             }
             return Ok(false);
         }
@@ -6823,36 +6830,36 @@ impl<'a, 'b> crate::walk::Visitor<'b> for &FindSketchVarInitialByNodePath<'a> {
 /// Locate the source `var` declaration corresponding to a sketch-var solution.
 ///
 /// The outer [`Option`] distinguishes "no matching target" (commit must fail)
-/// from "target found." The inner [`Option`] is the initial numeric literal of
+/// from "target found." The inner [`Option`] is the initial expression of
 /// the [`SketchVar`], if any; bare `var` declarations return `Some(None)`.
 ///
 /// When `node_path` is `None` (e.g. for older outcomes that predate the
 /// node-path propagation), this falls back to source-range matching, which
 /// can break under whitespace shifts elsewhere in the file.
-fn numeric_literal_at_node_path(
+fn expr_at_node_path(
     ast: &ast::Node<ast::Program>,
     node_path: Option<&ast::NodePath>,
     source_range: SourceRange,
-) -> Option<Option<ast::NumericLiteral>> {
+) -> Option<Option<ast::Expr>> {
     let Some(node_path) = node_path else {
-        let message = "numeric_literal_at_node_path: missing node_path on var solution; falling back to source-range lookup, which can fail under whitespace shifts";
+        let message = "expr_at_node_path: missing node_path on var solution; falling back to source-range lookup, which can fail under whitespace shifts";
         #[cfg(target_arch = "wasm32")]
         web_sys::console::warn_1(&message.into());
         #[cfg(not(target_arch = "wasm32"))]
         eprintln!("WARNING: {message}");
-        return numeric_literal_at_source_range(ast, source_range).map(Some);
+        return sketch_var_initial_at_source_range(ast, source_range);
     };
     let find = FindSketchVarInitialByNodePath {
         target: node_path,
         sketch_var_found: Cell::new(false),
-        initial_literal: Cell::new(None),
+        initial_expr: Cell::new(None),
     };
     let node = crate::walk::Node::from(ast);
     node.visit(&find).ok()?;
     if !find.sketch_var_found.get() {
         return None;
     }
-    Some(find.initial_literal.into_inner())
+    Some(find.initial_expr.into_inner())
 }
 
 fn suffix_length_unit(suffix: NumericSuffix) -> Option<UnitLength> {
@@ -6879,6 +6886,33 @@ fn literal_value_in_default_length_units(literal: &ast::NumericLiteral, default_
         Some(unit) => adjust_length(unit, literal.value, default_length_unit).0,
         None => literal.value,
     }
+}
+
+fn numeric_literal_in_expr(expr: &ast::Expr) -> Option<ast::NumericLiteral> {
+    let (literal, sign) = match expr {
+        ast::Expr::Literal(literal) => (literal, 1.0),
+        ast::Expr::UnaryExpression(unary) => {
+            let ast::BinaryPart::Literal(literal) = &unary.argument else {
+                return None;
+            };
+            let sign = match unary.operator {
+                ast::UnaryOperator::Neg => -1.0,
+                ast::UnaryOperator::Plus => 1.0,
+                ast::UnaryOperator::Not => return None,
+            };
+            (literal, sign)
+        }
+        _ => return None,
+    };
+    let ast::LiteralValue::Number { value, suffix } = literal.value else {
+        return None;
+    };
+    Some(ast::NumericLiteral {
+        value: sign * value,
+        suffix,
+        raw: literal.raw.clone(),
+        digest: None,
+    })
 }
 
 fn var_solution_needs_commit(
@@ -6973,16 +7007,9 @@ fn to_source_expr(expr: &Expr) -> anyhow::Result<ast::Expr> {
         }))),
         Expr::Var(number) => Ok(ast::Expr::SketchVar(BoxNode::new(ast::Node {
             inner: ast::SketchVar {
-                initial: Some(BoxNode::new(ast::Node {
-                    inner: to_source_number(*number)?,
-                    start: Default::default(),
-                    end: Default::default(),
-                    module_id: Default::default(),
-                    node_path: None,
-                    outer_attrs: Default::default(),
-                    pre_comments: Default::default(),
-                    comment_start: Default::default(),
-                })),
+                initial: Some(ast::Expr::Literal(BoxNode::new(ast::Node::no_src(
+                    to_source_number(*number)?.into(),
+                )))),
                 digest: None,
             },
             start: Default::default(),
@@ -9370,11 +9397,13 @@ sketch(on = XY) {
             fn visit_node(&self, node: crate::walk::Node<'a>) -> anyhow::Result<bool, Self::Error> {
                 if let crate::walk::Node::SketchVar(sketch_var) = node
                     && let (Some(initial), Some(node_path)) = (&sketch_var.initial, &sketch_var.node_path)
-                    && (initial.value - self.target).abs() < 1e-9
+                    && let ast::Expr::Literal(literal) = initial
+                    && let ast::LiteralValue::Number { value, .. } = literal.value
+                    && (value - self.target).abs() < 1e-9
                 {
                     self.out
                         .borrow_mut()
-                        .push((SourceRange::from(initial.as_ref()), node_path.clone()));
+                        .push((SourceRange::from(initial), node_path.clone()));
                 }
                 for child in node.children().iter() {
                     if !child.visit(*self)? {

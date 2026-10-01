@@ -86,14 +86,26 @@ description: Result of parsing sketch_on_face_of_region_extrude_one_to_one.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.05mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.05,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.05mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -0.05
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -104,14 +116,26 @@ description: Result of parsing sketch_on_face_of_region_extrude_one_to_one.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.01mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.01,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.01mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -0.01
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -148,9 +172,12 @@ description: Result of parsing sketch_on_face_of_region_extrude_one_to_one.kcl
                                   "moduleId": 0,
                                   "raw": "3.88mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 3.88
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.88,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -166,9 +193,12 @@ description: Result of parsing sketch_on_face_of_region_extrude_one_to_one.kcl
                                   "moduleId": 0,
                                   "raw": "0.81mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.81
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.81,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -257,9 +287,12 @@ description: Result of parsing sketch_on_face_of_region_extrude_one_to_one.kcl
                                   "moduleId": 0,
                                   "raw": "3.88mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 3.88
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.88,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -275,9 +308,12 @@ description: Result of parsing sketch_on_face_of_region_extrude_one_to_one.kcl
                                   "moduleId": 0,
                                   "raw": "0.81mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.81
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.81,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -314,9 +350,12 @@ description: Result of parsing sketch_on_face_of_region_extrude_one_to_one.kcl
                                   "moduleId": 0,
                                   "raw": "0.92mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.92
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.92,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -332,9 +371,12 @@ description: Result of parsing sketch_on_face_of_region_extrude_one_to_one.kcl
                                   "moduleId": 0,
                                   "raw": "4.67mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 4.67
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 4.67,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -557,9 +599,12 @@ description: Result of parsing sketch_on_face_of_region_extrude_one_to_one.kcl
                                   "moduleId": 0,
                                   "raw": "0.92mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.92
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.92,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -575,9 +620,12 @@ description: Result of parsing sketch_on_face_of_region_extrude_one_to_one.kcl
                                   "moduleId": 0,
                                   "raw": "4.67mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 4.67
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 4.67,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -609,14 +657,26 @@ description: Result of parsing sketch_on_face_of_region_extrude_one_to_one.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.03mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.03,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.03mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -0.03
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -627,14 +687,26 @@ description: Result of parsing sketch_on_face_of_region_extrude_one_to_one.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.04mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.04,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.04mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -0.04
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1568,9 +1640,12 @@ description: Result of parsing sketch_on_face_of_region_extrude_one_to_one.kcl
                                   "moduleId": 0,
                                   "raw": "0.08mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.08
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.08,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1586,9 +1661,12 @@ description: Result of parsing sketch_on_face_of_region_extrude_one_to_one.kcl
                                   "moduleId": 0,
                                   "raw": "0.01mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.01
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.01,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1625,9 +1703,12 @@ description: Result of parsing sketch_on_face_of_region_extrude_one_to_one.kcl
                                   "moduleId": 0,
                                   "raw": "0.67mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.67
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.67,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1643,9 +1724,12 @@ description: Result of parsing sketch_on_face_of_region_extrude_one_to_one.kcl
                                   "moduleId": 0,
                                   "raw": "0.01mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.01
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.01,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1734,9 +1818,12 @@ description: Result of parsing sketch_on_face_of_region_extrude_one_to_one.kcl
                                   "moduleId": 0,
                                   "raw": "0.67mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.67
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.67,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1752,9 +1839,12 @@ description: Result of parsing sketch_on_face_of_region_extrude_one_to_one.kcl
                                   "moduleId": 0,
                                   "raw": "0.01mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.01
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.01,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1791,9 +1881,12 @@ description: Result of parsing sketch_on_face_of_region_extrude_one_to_one.kcl
                                   "moduleId": 0,
                                   "raw": "0.67mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.67
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.67,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1809,9 +1902,12 @@ description: Result of parsing sketch_on_face_of_region_extrude_one_to_one.kcl
                                   "moduleId": 0,
                                   "raw": "0.63mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.63
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.63,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1900,9 +1996,12 @@ description: Result of parsing sketch_on_face_of_region_extrude_one_to_one.kcl
                                   "moduleId": 0,
                                   "raw": "0.67mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.67
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.67,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1918,9 +2017,12 @@ description: Result of parsing sketch_on_face_of_region_extrude_one_to_one.kcl
                                   "moduleId": 0,
                                   "raw": "0.63mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.63
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.63,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1957,9 +2059,12 @@ description: Result of parsing sketch_on_face_of_region_extrude_one_to_one.kcl
                                   "moduleId": 0,
                                   "raw": "0.08mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.08
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.08,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1975,9 +2080,12 @@ description: Result of parsing sketch_on_face_of_region_extrude_one_to_one.kcl
                                   "moduleId": 0,
                                   "raw": "0.63mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.63
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.63,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2066,9 +2174,12 @@ description: Result of parsing sketch_on_face_of_region_extrude_one_to_one.kcl
                                   "moduleId": 0,
                                   "raw": "0.08mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.08
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.08,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2084,9 +2195,12 @@ description: Result of parsing sketch_on_face_of_region_extrude_one_to_one.kcl
                                   "moduleId": 0,
                                   "raw": "0.63mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.63
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.63,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2123,9 +2237,12 @@ description: Result of parsing sketch_on_face_of_region_extrude_one_to_one.kcl
                                   "moduleId": 0,
                                   "raw": "0.08mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.08
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.08,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2141,9 +2258,12 @@ description: Result of parsing sketch_on_face_of_region_extrude_one_to_one.kcl
                                   "moduleId": 0,
                                   "raw": "0.01mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.01
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.01,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,

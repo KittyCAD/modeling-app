@@ -347,9 +347,12 @@ description: Result of parsing bench-for-kids.kcl
                                   "moduleId": 0,
                                   "raw": "20cm",
                                   "start": 0,
-                                  "suffix": "Cm",
-                                  "type": "NumericLiteral",
-                                  "value": 20.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 20.0,
+                                    "suffix": "Cm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -365,9 +368,12 @@ description: Result of parsing bench-for-kids.kcl
                                   "moduleId": 0,
                                   "raw": "15cm",
                                   "start": 0,
-                                  "suffix": "Cm",
-                                  "type": "NumericLiteral",
-                                  "value": 15.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 15.0,
+                                    "suffix": "Cm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -399,14 +405,26 @@ description: Result of parsing bench-for-kids.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "20cm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 20.0,
+                                      "suffix": "Cm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-20cm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Cm",
-                                  "type": "NumericLiteral",
-                                  "value": -20.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -422,9 +440,12 @@ description: Result of parsing bench-for-kids.kcl
                                   "moduleId": 0,
                                   "raw": "15cm",
                                   "start": 0,
-                                  "suffix": "Cm",
-                                  "type": "NumericLiteral",
-                                  "value": 15.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 15.0,
+                                    "suffix": "Cm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -461,9 +482,12 @@ description: Result of parsing bench-for-kids.kcl
                                   "moduleId": 0,
                                   "raw": "0cm",
                                   "start": 0,
-                                  "suffix": "Cm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Cm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -479,9 +503,12 @@ description: Result of parsing bench-for-kids.kcl
                                   "moduleId": 0,
                                   "raw": "15cm",
                                   "start": 0,
-                                  "suffix": "Cm",
-                                  "type": "NumericLiteral",
-                                  "value": 15.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 15.0,
+                                    "suffix": "Cm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -570,9 +597,12 @@ description: Result of parsing bench-for-kids.kcl
                                   "moduleId": 0,
                                   "raw": "20cm",
                                   "start": 0,
-                                  "suffix": "Cm",
-                                  "type": "NumericLiteral",
-                                  "value": 20.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 20.0,
+                                    "suffix": "Cm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -588,9 +618,12 @@ description: Result of parsing bench-for-kids.kcl
                                   "moduleId": 0,
                                   "raw": "15cm",
                                   "start": 0,
-                                  "suffix": "Cm",
-                                  "type": "NumericLiteral",
-                                  "value": 15.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 15.0,
+                                    "suffix": "Cm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -622,14 +655,26 @@ description: Result of parsing bench-for-kids.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "20cm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 20.0,
+                                      "suffix": "Cm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-20cm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Cm",
-                                  "type": "NumericLiteral",
-                                  "value": -20.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -645,9 +690,12 @@ description: Result of parsing bench-for-kids.kcl
                                   "moduleId": 0,
                                   "raw": "15cm",
                                   "start": 0,
-                                  "suffix": "Cm",
-                                  "type": "NumericLiteral",
-                                  "value": 15.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 15.0,
+                                    "suffix": "Cm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1056,9 +1104,12 @@ description: Result of parsing bench-for-kids.kcl
                                   "moduleId": 0,
                                   "raw": "0cm",
                                   "start": 0,
-                                  "suffix": "Cm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Cm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1074,9 +1125,12 @@ description: Result of parsing bench-for-kids.kcl
                                   "moduleId": 0,
                                   "raw": "15cm",
                                   "start": 0,
-                                  "suffix": "Cm",
-                                  "type": "NumericLiteral",
-                                  "value": 15.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 15.0,
+                                    "suffix": "Cm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1113,9 +1167,12 @@ description: Result of parsing bench-for-kids.kcl
                                   "moduleId": 0,
                                   "raw": "0cm",
                                   "start": 0,
-                                  "suffix": "Cm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Cm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1131,9 +1188,12 @@ description: Result of parsing bench-for-kids.kcl
                                   "moduleId": 0,
                                   "raw": "0cm",
                                   "start": 0,
-                                  "suffix": "Cm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Cm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2441,9 +2501,12 @@ description: Result of parsing bench-for-kids.kcl
                                   "moduleId": 0,
                                   "raw": "4.82cm",
                                   "start": 0,
-                                  "suffix": "Cm",
-                                  "type": "NumericLiteral",
-                                  "value": 4.82
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 4.82,
+                                    "suffix": "Cm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2459,9 +2522,12 @@ description: Result of parsing bench-for-kids.kcl
                                   "moduleId": 0,
                                   "raw": "0cm",
                                   "start": 0,
-                                  "suffix": "Cm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Cm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2498,9 +2564,12 @@ description: Result of parsing bench-for-kids.kcl
                                   "moduleId": 0,
                                   "raw": "7.62cm",
                                   "start": 0,
-                                  "suffix": "Cm",
-                                  "type": "NumericLiteral",
-                                  "value": 7.62
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 7.62,
+                                    "suffix": "Cm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2516,9 +2585,12 @@ description: Result of parsing bench-for-kids.kcl
                                   "moduleId": 0,
                                   "raw": "1.54cm",
                                   "start": 0,
-                                  "suffix": "Cm",
-                                  "type": "NumericLiteral",
-                                  "value": 1.54
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.54,
+                                    "suffix": "Cm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2607,9 +2679,12 @@ description: Result of parsing bench-for-kids.kcl
                                   "moduleId": 0,
                                   "raw": "7.83cm",
                                   "start": 0,
-                                  "suffix": "Cm",
-                                  "type": "NumericLiteral",
-                                  "value": 7.83
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 7.83,
+                                    "suffix": "Cm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2625,9 +2700,12 @@ description: Result of parsing bench-for-kids.kcl
                                   "moduleId": 0,
                                   "raw": "0.28cm",
                                   "start": 0,
-                                  "suffix": "Cm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.28
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.28,
+                                    "suffix": "Cm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2664,9 +2742,12 @@ description: Result of parsing bench-for-kids.kcl
                                   "moduleId": 0,
                                   "raw": "0cm",
                                   "start": 0,
-                                  "suffix": "Cm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Cm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2682,9 +2763,12 @@ description: Result of parsing bench-for-kids.kcl
                                   "moduleId": 0,
                                   "raw": "0cm",
                                   "start": 0,
-                                  "suffix": "Cm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Cm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5300,9 +5384,12 @@ description: Result of parsing bench-for-kids.kcl
                                   "moduleId": 0,
                                   "raw": "4.32cm",
                                   "start": 0,
-                                  "suffix": "Cm",
-                                  "type": "NumericLiteral",
-                                  "value": 4.32
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 4.32,
+                                    "suffix": "Cm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5318,9 +5405,12 @@ description: Result of parsing bench-for-kids.kcl
                                   "moduleId": 0,
                                   "raw": "0cm",
                                   "start": 0,
-                                  "suffix": "Cm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Cm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5357,9 +5447,12 @@ description: Result of parsing bench-for-kids.kcl
                                   "moduleId": 0,
                                   "raw": "0cm",
                                   "start": 0,
-                                  "suffix": "Cm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Cm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5375,9 +5468,12 @@ description: Result of parsing bench-for-kids.kcl
                                   "moduleId": 0,
                                   "raw": "0cm",
                                   "start": 0,
-                                  "suffix": "Cm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Cm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6976,9 +7072,12 @@ description: Result of parsing bench-for-kids.kcl
                                   "moduleId": 0,
                                   "raw": "3.89cm",
                                   "start": 0,
-                                  "suffix": "Cm",
-                                  "type": "NumericLiteral",
-                                  "value": 3.89
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.89,
+                                    "suffix": "Cm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6994,9 +7093,12 @@ description: Result of parsing bench-for-kids.kcl
                                   "moduleId": 0,
                                   "raw": "0cm",
                                   "start": 0,
-                                  "suffix": "Cm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Cm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7033,9 +7135,12 @@ description: Result of parsing bench-for-kids.kcl
                                   "moduleId": 0,
                                   "raw": "0cm",
                                   "start": 0,
-                                  "suffix": "Cm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Cm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7051,9 +7156,12 @@ description: Result of parsing bench-for-kids.kcl
                                   "moduleId": 0,
                                   "raw": "0cm",
                                   "start": 0,
-                                  "suffix": "Cm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Cm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,

@@ -91,9 +91,12 @@ description: Result of parsing christmas_tree_mirror3d_union.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -109,9 +112,12 @@ description: Result of parsing christmas_tree_mirror3d_union.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -148,9 +154,12 @@ description: Result of parsing christmas_tree_mirror3d_union.kcl
                                   "moduleId": 0,
                                   "raw": "5mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 5.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -166,9 +175,12 @@ description: Result of parsing christmas_tree_mirror3d_union.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -471,9 +483,12 @@ description: Result of parsing christmas_tree_mirror3d_union.kcl
                                   "moduleId": 0,
                                   "raw": "5mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 5.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -489,9 +504,12 @@ description: Result of parsing christmas_tree_mirror3d_union.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -528,9 +546,12 @@ description: Result of parsing christmas_tree_mirror3d_union.kcl
                                   "moduleId": 0,
                                   "raw": "2mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 2.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -546,9 +567,12 @@ description: Result of parsing christmas_tree_mirror3d_union.kcl
                                   "moduleId": 0,
                                   "raw": "2.73mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 2.73
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.73,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -771,9 +795,12 @@ description: Result of parsing christmas_tree_mirror3d_union.kcl
                                   "moduleId": 0,
                                   "raw": "2mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 2.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -789,9 +816,12 @@ description: Result of parsing christmas_tree_mirror3d_union.kcl
                                   "moduleId": 0,
                                   "raw": "2.73mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 2.73
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.73,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -828,9 +858,12 @@ description: Result of parsing christmas_tree_mirror3d_union.kcl
                                   "moduleId": 0,
                                   "raw": "5mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 5.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -846,9 +879,12 @@ description: Result of parsing christmas_tree_mirror3d_union.kcl
                                   "moduleId": 0,
                                   "raw": "2.73mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 2.73
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.73,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1071,9 +1107,12 @@ description: Result of parsing christmas_tree_mirror3d_union.kcl
                                   "moduleId": 0,
                                   "raw": "5mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 5.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1089,9 +1128,12 @@ description: Result of parsing christmas_tree_mirror3d_union.kcl
                                   "moduleId": 0,
                                   "raw": "2.73mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 2.73
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.73,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1128,9 +1170,12 @@ description: Result of parsing christmas_tree_mirror3d_union.kcl
                                   "moduleId": 0,
                                   "raw": "2mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 2.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1146,9 +1191,12 @@ description: Result of parsing christmas_tree_mirror3d_union.kcl
                                   "moduleId": 0,
                                   "raw": "5.46mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 5.46
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.46,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1371,9 +1419,12 @@ description: Result of parsing christmas_tree_mirror3d_union.kcl
                                   "moduleId": 0,
                                   "raw": "2mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 2.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1389,9 +1440,12 @@ description: Result of parsing christmas_tree_mirror3d_union.kcl
                                   "moduleId": 0,
                                   "raw": "5.46mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 5.46
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.46,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1428,9 +1482,12 @@ description: Result of parsing christmas_tree_mirror3d_union.kcl
                                   "moduleId": 0,
                                   "raw": "5mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 5.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1446,9 +1503,12 @@ description: Result of parsing christmas_tree_mirror3d_union.kcl
                                   "moduleId": 0,
                                   "raw": "5.46mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 5.46
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.46,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1671,9 +1731,12 @@ description: Result of parsing christmas_tree_mirror3d_union.kcl
                                   "moduleId": 0,
                                   "raw": "5mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 5.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1689,9 +1752,12 @@ description: Result of parsing christmas_tree_mirror3d_union.kcl
                                   "moduleId": 0,
                                   "raw": "5.46mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 5.46
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.46,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1728,9 +1794,12 @@ description: Result of parsing christmas_tree_mirror3d_union.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1746,9 +1815,12 @@ description: Result of parsing christmas_tree_mirror3d_union.kcl
                                   "moduleId": 0,
                                   "raw": "10mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 10.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 10.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2078,9 +2150,12 @@ description: Result of parsing christmas_tree_mirror3d_union.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2096,9 +2171,12 @@ description: Result of parsing christmas_tree_mirror3d_union.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2135,9 +2213,12 @@ description: Result of parsing christmas_tree_mirror3d_union.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2153,9 +2234,12 @@ description: Result of parsing christmas_tree_mirror3d_union.kcl
                                   "moduleId": 0,
                                   "raw": "10mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 10.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 10.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,

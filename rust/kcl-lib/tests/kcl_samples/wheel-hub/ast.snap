@@ -1361,9 +1361,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "2.49in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.49
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.49,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1374,14 +1377,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.56in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.56,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.56in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.56
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1418,9 +1433,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "2.49in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.49
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.49,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1436,9 +1454,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0.56in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.56
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.56,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1475,9 +1496,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "2.17in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.17
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.17,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1493,9 +1517,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1584,9 +1611,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "2.49in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.49
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.49,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1602,9 +1632,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0.56in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.56
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.56,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1636,14 +1669,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.8in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.8,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.8in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.8
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1659,9 +1704,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "2.46in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.46
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.46,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1745,14 +1793,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.8in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.8,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.8in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.8
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1768,9 +1828,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "2.46in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.46
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.46,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1802,14 +1865,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.76in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.76,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.76in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -1.76
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1825,9 +1900,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "1.9in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 1.9
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.9,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1859,14 +1937,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.12in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.12,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.12in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -1.12
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1882,9 +1972,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "1.9in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 1.9
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.9,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1968,14 +2061,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.76in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.76,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.76in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -1.76
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1991,9 +2096,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "1.9in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 1.9
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.9,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2025,14 +2133,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.76in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.76,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.76in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -1.76
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2043,14 +2163,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.9in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.9,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.9in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -1.9
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2134,14 +2266,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.76in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.76,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.76in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -1.76
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2152,14 +2296,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.9in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.9,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.9in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -1.9
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2191,14 +2347,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.8in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.8,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.8in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.8
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2209,14 +2377,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.46in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.46,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.46in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.46
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2248,14 +2428,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.12in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.12,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.12in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -1.12
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2266,14 +2458,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.9in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.9,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.9in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -1.9
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2357,14 +2561,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.8in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.8,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.8in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.8
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2375,14 +2591,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.46in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.46,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.46in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.46
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2419,9 +2647,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "2.49in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.49
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.49,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2432,14 +2663,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.56in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.56,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.56in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.56
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6624,9 +6867,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6642,9 +6888,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6681,9 +6930,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "1.25in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 1.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.25,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6699,9 +6951,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6811,9 +7066,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "1.25in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 1.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.25,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6829,9 +7087,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6868,9 +7129,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6886,9 +7150,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8101,9 +8368,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8119,9 +8389,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8158,9 +8431,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "2.25in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.25,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8176,9 +8452,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8288,9 +8567,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "2.25in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.25,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8306,9 +8588,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8345,9 +8630,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "2.52in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.52
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.52,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8363,9 +8651,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8475,9 +8766,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "2.52in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.52
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.52,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8493,9 +8787,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8532,9 +8829,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "2.25in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.25,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8550,9 +8850,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10430,9 +10733,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10448,9 +10754,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10487,9 +10796,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10500,14 +10812,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.75in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.75,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.75in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.75
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10617,9 +10941,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10630,14 +10957,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.75in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.75,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.75in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.75
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10674,9 +11013,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "1.5in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 1.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.5,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10687,14 +11029,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.75in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.75,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.75in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.75
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10804,9 +11158,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "1.5in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 1.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.5,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10817,14 +11174,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.75in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.75,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.75in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.75
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10861,9 +11230,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "2.98in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.98
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.98,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10874,14 +11246,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.49in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.49,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.49in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.49
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10970,9 +11354,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "2.98in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.98
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.98,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10983,14 +11370,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.49in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.49,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.49in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.49
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11027,9 +11426,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "2.98in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.98
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.98,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11040,14 +11442,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "4.99in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 4.99,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-4.99in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -4.99
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11136,9 +11550,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "2.98in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.98
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.98,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11149,14 +11566,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "4.99in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 4.99,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-4.99in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -4.99
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11193,9 +11622,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "1.5in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 1.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.5,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11206,14 +11638,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "4.99in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 4.99,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-4.99in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -4.99
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11302,9 +11746,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "1.5in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 1.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.5,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11315,14 +11762,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "4.99in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 4.99,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-4.99in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -4.99
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11359,9 +11818,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "1.5in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 1.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.5,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11372,14 +11834,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.75in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.75,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.75in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.75
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14416,9 +14890,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14434,9 +14911,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14473,9 +14953,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "3in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 3.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14491,9 +14974,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14603,9 +15089,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14621,9 +15110,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14660,9 +15152,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "1.5in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 1.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.5,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14678,9 +15173,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14790,9 +15288,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "3in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 3.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14808,9 +15309,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14847,9 +15351,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14865,9 +15372,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14956,9 +15466,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "1.5in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 1.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.5,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14974,9 +15487,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15013,9 +15529,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15031,9 +15550,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -16902,9 +17424,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -16920,9 +17445,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -16959,9 +17487,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "2.25in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.25,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -16977,9 +17508,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17089,9 +17623,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "2.25in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.25,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17107,9 +17644,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17146,9 +17686,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "2.52in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.52
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.52,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17164,9 +17707,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17276,9 +17822,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "2.52in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.52
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.52,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17294,9 +17843,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17333,9 +17885,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "2.25in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.25,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17351,9 +17906,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -19817,9 +20375,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -19835,9 +20396,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -19869,14 +20433,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.25in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.25,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.25in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.25
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -19892,9 +20468,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -19999,14 +20578,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.82in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.82,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.82in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -1.82
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -20022,9 +20613,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -20056,14 +20650,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.25in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.25,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.25in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.25
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -20079,9 +20685,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -20186,14 +20795,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.68in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.68,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.68in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.68
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -20209,9 +20830,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -20243,14 +20867,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.47in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.47,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.47in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.47
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -20266,9 +20902,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0.37in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.37
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.37,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -20352,14 +20991,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.47in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.47,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.47in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.47
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -20375,9 +21026,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0.37in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.37
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.37,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -20409,14 +21063,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.03in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.03,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.03in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.03
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -20432,9 +21098,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0.37in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.37
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.37,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -20652,14 +21321,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.03in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.03,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.03in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.03
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -20675,9 +21356,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0.37in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.37
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.37,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -20709,14 +21393,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.82in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.82,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.82in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -1.82
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -20732,9 +21428,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -20952,14 +21651,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.82in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.82,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.82in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -1.82
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -20975,9 +21686,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -21009,14 +21723,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.03in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.03,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.03in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.03
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -21027,14 +21753,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.37in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.37,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.37in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.37
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -21252,14 +21990,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.03in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.03,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.03in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.03
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -21270,14 +22020,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.37in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.37,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.37in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.37
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -21309,14 +22071,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.47in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.47,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.47in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.47
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -21327,14 +22101,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.37in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.37,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.37in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.37
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -21552,14 +22338,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.47in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.47,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.47in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.47
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -21570,14 +22368,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.37in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.37,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.37in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.37
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -21609,14 +22419,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.68in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.68,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.68in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.68
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -21632,9 +22454,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -23177,14 +24002,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.25in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.25,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.25in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.25
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -23200,9 +24037,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -23234,14 +24074,26 @@ description: Result of parsing wheel-hub.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.82in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.82,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.82in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -1.82
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -23257,9 +24109,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -24889,9 +25744,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -24907,9 +25765,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -24946,9 +25807,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "2.25in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.25,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -24964,9 +25828,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -25076,9 +25943,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "2.25in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.25,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -25094,9 +25964,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -25133,9 +26006,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "2.52in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.52
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.52,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -25151,9 +26027,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -25263,9 +26142,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "2.52in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.52
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.52,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -25281,9 +26163,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -25320,9 +26205,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "2.25in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.25,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -25338,9 +26226,12 @@ description: Result of parsing wheel-hub.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,

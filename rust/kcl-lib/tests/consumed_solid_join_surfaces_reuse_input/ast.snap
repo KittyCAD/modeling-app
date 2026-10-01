@@ -86,14 +86,26 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "10",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 10.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-10",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -10.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -104,14 +116,26 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "10",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 10.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-10",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -10.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -148,9 +172,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "10",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 10.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 10.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -161,14 +188,26 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "10",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 10.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-10",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -10.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -257,9 +296,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "10",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 10.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 10.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -270,14 +312,26 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "10",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 10.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-10",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -10.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -314,9 +368,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "10",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 10.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 10.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -332,9 +389,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "10",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 10.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 10.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -423,9 +483,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "10",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 10.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 10.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -441,9 +504,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "10",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 10.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 10.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -475,14 +541,26 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "10",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 10.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-10",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -10.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -498,9 +576,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "10",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 10.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 10.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -584,14 +665,26 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "10",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 10.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-10",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -10.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -607,9 +700,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "10",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 10.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 10.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -641,14 +737,26 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "10",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 10.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-10",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -10.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -659,14 +767,26 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "10",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 10.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-10",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -10.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1777,14 +1897,26 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1795,14 +1927,26 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "12",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 12.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-12",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -12.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1839,9 +1983,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "1",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1852,14 +1999,26 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "12",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 12.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-12",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -12.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1948,9 +2107,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "1",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1961,14 +2123,26 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "12",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 12.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-12",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -12.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2005,9 +2179,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "1",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2023,9 +2200,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "12",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 12.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 12.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2114,9 +2294,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "1",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2132,9 +2315,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "12",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 12.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 12.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2166,14 +2352,26 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2189,9 +2387,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "12",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 12.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 12.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2275,14 +2476,26 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2298,9 +2511,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "12",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 12.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 12.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2332,14 +2548,26 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2350,14 +2578,26 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "12",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 12.0,
+                                      "suffix": "None"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-12",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": -12.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3680,9 +3920,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "12",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 12.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 12.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3698,9 +3941,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "12",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 12.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 12.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3737,9 +3983,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "14",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 14.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 14.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3755,9 +4004,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "12",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 12.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 12.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3846,9 +4098,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "14",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 14.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 14.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3864,9 +4119,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "12",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 12.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 12.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3903,9 +4161,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "14",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 14.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 14.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3921,9 +4182,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "14",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 14.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 14.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4012,9 +4276,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "14",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 14.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 14.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4030,9 +4297,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "14",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 14.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 14.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4069,9 +4339,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "12",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 12.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 12.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4087,9 +4360,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "14",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 14.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 14.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4178,9 +4454,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "12",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 12.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 12.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4196,9 +4475,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "14",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 14.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 14.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4235,9 +4517,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "12",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 12.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 12.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4253,9 +4538,12 @@ description: Result of parsing consumed_solid_join_surfaces_reuse_input.kcl
                                   "moduleId": 0,
                                   "raw": "12",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 12.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 12.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,

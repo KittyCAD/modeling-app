@@ -145,9 +145,12 @@ description: Result of parsing named_views_hide_imported.kcl
                                   "moduleId": 0,
                                   "raw": "1500",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 1500.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1500.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -163,9 +166,12 @@ description: Result of parsing named_views_hide_imported.kcl
                                   "moduleId": 0,
                                   "raw": "0",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -202,9 +208,12 @@ description: Result of parsing named_views_hide_imported.kcl
                                   "moduleId": 0,
                                   "raw": "2000",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 2000.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2000.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -220,9 +229,12 @@ description: Result of parsing named_views_hide_imported.kcl
                                   "moduleId": 0,
                                   "raw": "0",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -311,9 +323,12 @@ description: Result of parsing named_views_hide_imported.kcl
                                   "moduleId": 0,
                                   "raw": "2000",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 2000.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2000.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -329,9 +344,12 @@ description: Result of parsing named_views_hide_imported.kcl
                                   "moduleId": 0,
                                   "raw": "0",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -368,9 +386,12 @@ description: Result of parsing named_views_hide_imported.kcl
                                   "moduleId": 0,
                                   "raw": "2000",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 2000.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2000.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -386,9 +407,12 @@ description: Result of parsing named_views_hide_imported.kcl
                                   "moduleId": 0,
                                   "raw": "500",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 500.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 500.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -477,9 +501,12 @@ description: Result of parsing named_views_hide_imported.kcl
                                   "moduleId": 0,
                                   "raw": "2000",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 2000.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2000.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -495,9 +522,12 @@ description: Result of parsing named_views_hide_imported.kcl
                                   "moduleId": 0,
                                   "raw": "500",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 500.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 500.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -534,9 +564,12 @@ description: Result of parsing named_views_hide_imported.kcl
                                   "moduleId": 0,
                                   "raw": "1500",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 1500.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1500.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -552,9 +585,12 @@ description: Result of parsing named_views_hide_imported.kcl
                                   "moduleId": 0,
                                   "raw": "500",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 500.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 500.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -643,9 +679,12 @@ description: Result of parsing named_views_hide_imported.kcl
                                   "moduleId": 0,
                                   "raw": "1500",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 1500.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1500.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -661,9 +700,12 @@ description: Result of parsing named_views_hide_imported.kcl
                                   "moduleId": 0,
                                   "raw": "500",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 500.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 500.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -700,9 +742,12 @@ description: Result of parsing named_views_hide_imported.kcl
                                   "moduleId": 0,
                                   "raw": "1500",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 1500.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1500.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -718,9 +763,12 @@ description: Result of parsing named_views_hide_imported.kcl
                                   "moduleId": 0,
                                   "raw": "0",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,

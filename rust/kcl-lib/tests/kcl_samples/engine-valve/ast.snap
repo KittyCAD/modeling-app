@@ -567,9 +567,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -585,9 +588,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "30mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 30.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 30.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -619,14 +625,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "3mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 3.0,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-3mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -3.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -642,9 +660,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "30mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 30.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 30.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -749,14 +770,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "3mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 3.0,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-3mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -3.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -772,9 +805,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "30mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 30.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 30.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -806,14 +842,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "3mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 3.0,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-3mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -3.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -829,9 +877,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "15mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 15.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 15.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -915,14 +966,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "12mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 12.0,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-12mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -12.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -938,9 +1001,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "3mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 3.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -972,14 +1038,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "3mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 3.0,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-3mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -3.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -995,9 +1073,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "15mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 15.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 15.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1029,14 +1110,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "15.49mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 15.49,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-15.49mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -15.49
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1052,9 +1145,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "14.99mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 14.99
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 14.99,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1138,14 +1234,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "12mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 12.0,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-12mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -12.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1161,9 +1269,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "3mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 3.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1195,14 +1306,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "15mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 15.0,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-15mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -15.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1218,9 +1341,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1252,14 +1378,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "10.78mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 10.78,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-10.78mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -10.78
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1270,14 +1408,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.22mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.22,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.22mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -1.22
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1361,14 +1511,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "15mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 15.0,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-15mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -15.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1384,9 +1546,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1418,14 +1583,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "10.5mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 10.5,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-10.5mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -10.5
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1441,9 +1618,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1527,14 +1707,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "10.5mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 10.5,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-10.5mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -10.5
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1550,9 +1742,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1589,9 +1784,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1607,9 +1805,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1719,9 +1920,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1737,9 +1941,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1776,9 +1983,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1794,9 +2004,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "1.66mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 1.66
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.66,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1906,9 +2119,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1924,9 +2140,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "1.66mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 1.66
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.66,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1958,14 +2177,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "10.5mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 10.5,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-10.5mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -10.5
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1981,9 +2212,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2020,9 +2254,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "1.16mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 1.16
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.16,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2033,14 +2270,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "39.7mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 39.7,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-39.7mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -39.7
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2129,9 +2378,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2147,9 +2399,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "1.66mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 1.66
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.66,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2186,9 +2441,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2204,9 +2462,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "30mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 30.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 30.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2295,9 +2556,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2313,9 +2577,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "30mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 30.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 30.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2352,9 +2619,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "3.42mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 3.42
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.42,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2370,9 +2640,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "81.04mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 81.04
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 81.04,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2461,9 +2734,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2479,9 +2755,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "80mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 80.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 80.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2513,14 +2792,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.61mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.61,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.61mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -2.61
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2536,9 +2827,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "80.06mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 80.06
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 80.06,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2622,14 +2916,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.61mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.61,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.61mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -2.61
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2645,9 +2951,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "80.06mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 80.06
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 80.06,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2679,14 +2988,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.61mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.61,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.61mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -2.61
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2702,9 +3023,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "78.22mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 78.22
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 78.22,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2788,14 +3112,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.61mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.61,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.61mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -2.61
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2811,9 +3147,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "78.22mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 78.22
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 78.22,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2845,14 +3184,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.17mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.17,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.17mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -2.17
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2868,9 +3219,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "78.22mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 78.22
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 78.22,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2954,14 +3308,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.17mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.17,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.17mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -2.17
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2977,9 +3343,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "78.22mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 78.22
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 78.22,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3011,14 +3380,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.09mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.09,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.09mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -2.09
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3034,9 +3415,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "77.54mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 77.54
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 77.54,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3120,14 +3504,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.09mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.09,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.09mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -2.09
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3143,9 +3539,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "77.54mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 77.54
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 77.54,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3177,14 +3576,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.61mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.61,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.61mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -2.61
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3200,9 +3611,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "77.54mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 77.54
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 77.54,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3286,14 +3700,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.61mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.61,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.61mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -2.61
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3309,9 +3735,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "77.54mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 77.54
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 77.54,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3343,14 +3772,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.59mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.59,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.59mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -2.59
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3366,9 +3807,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "76.6mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 76.6
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 76.6,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3452,14 +3896,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.59mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.59,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.59mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -2.59
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3475,9 +3931,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "76.6mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 76.6
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 76.6,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3509,14 +3968,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.01mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.01,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.01mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -2.01
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3532,9 +4003,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "76.57mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 76.57
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 76.57,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3618,14 +4092,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.01mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.01,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.01mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -2.01
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3641,9 +4127,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "76.57mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 76.57
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 76.57,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3675,14 +4164,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.01mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.01,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.01mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -2.01
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3698,9 +4199,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "75.7mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 75.7
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 75.7,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3784,14 +4288,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.01mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.01,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.01mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -2.01
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3807,9 +4323,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "75.7mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 75.7
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 75.7,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3841,14 +4360,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.56mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.56,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.56mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -2.56
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3864,9 +4395,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "75.73mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 75.73
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 75.73,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3950,14 +4484,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.56mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.56,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.56mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -2.56
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3973,9 +4519,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "75.73mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 75.73
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 75.73,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4007,14 +4556,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.48mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.48,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.48mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -2.48
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4030,9 +4591,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "74.6mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 74.6
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 74.6,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4116,14 +4680,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.48mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.48,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.48mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -2.48
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4139,9 +4715,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "74.6mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 74.6
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 74.6,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4173,14 +4752,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.82mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.82,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.82mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -1.82
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4196,9 +4787,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "74.63mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 74.63
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 74.63,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4282,14 +4876,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.82mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.82,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.82mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -1.82
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4305,9 +4911,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "74.63mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 74.63
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 74.63,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4339,14 +4948,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.99mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.99,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.99mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -1.99
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4362,9 +4983,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "73.77mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 73.77
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 73.77,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4448,14 +5072,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.82mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.82,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.82mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -1.82
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4471,9 +5107,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "73.71mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 73.71
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 73.71,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4505,14 +5144,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.38mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.38,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.38mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -2.38
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4528,9 +5179,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "73.92mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 73.92
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 73.92,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4614,14 +5268,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.38mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.38,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.38mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -2.38
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4637,9 +5303,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "73.92mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 73.92
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 73.92,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4671,14 +5340,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.51mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.51,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.51mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -2.51
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4694,9 +5375,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "71mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 71.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 71.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4780,14 +5464,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.77mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.77,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.77mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -1.77
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4803,9 +5499,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "71.22mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 71.22
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 71.22,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4837,14 +5536,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "3.32mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 3.32,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-3.32mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -3.32
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4860,9 +5571,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "71.95mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 71.95
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 71.95,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4946,14 +5660,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "3.32mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 3.32,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-3.32mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -3.32
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4969,9 +5695,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "71.95mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 71.95
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 71.95,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5003,14 +5732,26 @@ description: Result of parsing engine-valve.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "3mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 3.0,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-3mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -3.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5026,9 +5767,12 @@ description: Result of parsing engine-valve.kcl
                                   "moduleId": 0,
                                   "raw": "30mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 30.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 30.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,

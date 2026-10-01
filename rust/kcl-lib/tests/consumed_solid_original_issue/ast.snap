@@ -886,9 +886,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -904,9 +907,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -943,9 +949,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "15mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 15.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 15.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -961,9 +970,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1114,9 +1126,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "15mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 15.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 15.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1132,9 +1147,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1522,9 +1540,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1540,9 +1561,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1579,9 +1603,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "10.61mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 10.61
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 10.61,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1597,9 +1624,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "10.61mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 10.61
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 10.61,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2170,9 +2200,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "10.61mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 10.61
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 10.61,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2188,9 +2221,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "10.61mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 10.61
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 10.61,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2227,9 +2263,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "13.86mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 13.86
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 13.86,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2245,9 +2284,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "5.74mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 5.74
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.74,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3023,9 +3065,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "2.5mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 2.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.5,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3041,9 +3086,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3080,9 +3128,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3098,9 +3149,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3810,9 +3864,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3828,9 +3885,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3867,9 +3927,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "17.45mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 17.45
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 17.45,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3885,9 +3948,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4190,9 +4256,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "17.45mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 17.45
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 17.45,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4208,9 +4277,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4247,9 +4319,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "17.2mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 17.2
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 17.2,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4265,9 +4340,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "35.76mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 35.76
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 35.76,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4490,9 +4568,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "16.92mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 16.92
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 16.92,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4508,9 +4589,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "34.74mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 34.74
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 34.74,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4547,9 +4631,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4565,9 +4652,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "49.66mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 49.66
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 49.66,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4604,9 +4694,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "1.9mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 1.9
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.9,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4622,9 +4715,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "33.94mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 33.94
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 33.94,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5138,9 +5234,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5156,9 +5255,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "50.01mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 50.01
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 50.01,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5195,9 +5297,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5213,9 +5318,12 @@ description: Result of parsing consumed_solid_original_issue.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,

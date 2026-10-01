@@ -572,9 +572,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "7.8mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 7.8
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 7.8,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -590,9 +593,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -629,9 +635,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "9.8mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 9.8
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 9.8,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -647,9 +656,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -738,9 +750,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "9.8mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 9.8
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 9.8,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -756,9 +771,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -795,9 +813,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "9.8mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 9.8
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 9.8,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -808,14 +829,26 @@ description: Result of parsing bike-hub-washer.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.0,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -2.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1038,9 +1071,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "9.8mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 9.8
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 9.8,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1051,14 +1087,26 @@ description: Result of parsing bike-hub-washer.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.0,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -2.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1095,9 +1143,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "11.8mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 11.8
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 11.8,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1108,14 +1159,26 @@ description: Result of parsing bike-hub-washer.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.0,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -2.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1338,9 +1401,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "11.8mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 11.8
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 11.8,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1351,14 +1417,26 @@ description: Result of parsing bike-hub-washer.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2mm",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.0,
+                                      "suffix": "Mm"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2mm",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": -2.0
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1395,9 +1473,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "11.8mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 11.8
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 11.8,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1413,9 +1494,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1638,9 +1722,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "11.8mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 11.8
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 11.8,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1656,9 +1743,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1695,9 +1785,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "14.5mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 14.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 14.5,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1713,9 +1806,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1938,9 +2034,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "14.5mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 14.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 14.5,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1956,9 +2055,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1995,9 +2097,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "14.5mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 14.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 14.5,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2013,9 +2118,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "1mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2238,9 +2346,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "11mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 11.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 11.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2256,9 +2367,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "7.5mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 7.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 7.5,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2295,9 +2409,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "14.5mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 14.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 14.5,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2313,9 +2430,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "1mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2352,9 +2472,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "30.3mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 30.3
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 30.3,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2370,9 +2493,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "13.7mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 13.7
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 13.7,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2595,9 +2721,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "11mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 11.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 11.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2613,9 +2742,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "7.5mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 7.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 7.5,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2652,9 +2784,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "9.8mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 9.8
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 9.8,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2670,9 +2805,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "7.5mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 7.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 7.5,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2895,9 +3033,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "9.8mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 9.8
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 9.8,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2913,9 +3054,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "7.5mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 7.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 7.5,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2952,9 +3096,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "9.8mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 9.8
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 9.8,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2970,9 +3117,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "4.5mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 4.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 4.5,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3195,9 +3345,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "9.8mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 9.8
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 9.8,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3213,9 +3366,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "4.5mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 4.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 4.5,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3252,9 +3408,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "7.8mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 7.8
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 7.8,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3270,9 +3429,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "4.5mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 4.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 4.5,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3495,9 +3657,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "7.8mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 7.8
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 7.8,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3513,9 +3678,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "4.5mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 4.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 4.5,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3552,9 +3720,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "7.8mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 7.8
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 7.8,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3570,9 +3741,12 @@ description: Result of parsing bike-hub-washer.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,

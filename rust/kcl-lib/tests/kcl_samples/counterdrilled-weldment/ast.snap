@@ -759,9 +759,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -777,9 +780,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -816,9 +822,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "3.25in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 3.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.25,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -834,9 +843,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -946,9 +958,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -964,9 +979,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1003,9 +1021,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1021,9 +1042,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "2.25in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.25,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1128,14 +1152,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "3.25in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 3.25,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-3.25in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -3.25
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1146,14 +1182,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.25in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.25,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.25in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.25
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1190,9 +1238,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "3.25in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 3.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.25,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1203,14 +1254,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.25in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.25,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.25in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.25
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1299,9 +1362,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "3.25in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 3.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.25,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1312,14 +1378,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.25in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.25,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.25in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.25
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1356,9 +1434,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "3.25in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 3.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.25,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1374,9 +1455,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "2.25in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.25,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1465,9 +1549,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "3.25in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 3.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.25,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1483,9 +1570,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "2.25in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.25,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1517,14 +1607,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "3.25in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 3.25,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-3.25in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -3.25
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1540,9 +1642,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "2.25in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.25,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1626,14 +1731,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "3.25in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 3.25,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-3.25in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -3.25
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1649,9 +1766,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "2.25in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.25,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1683,14 +1803,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "3.25in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 3.25,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-3.25in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -3.25
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1701,14 +1833,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.25in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.25,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.25in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.25
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3761,9 +3905,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3779,9 +3926,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3818,9 +3968,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.63in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.63
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.63,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3836,9 +3989,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3948,9 +4104,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.63in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.63
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.63,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3966,9 +4125,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4005,9 +4167,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4023,9 +4188,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6055,9 +6223,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6073,9 +6244,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6107,14 +6281,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.5in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.5,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.5in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.5
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6130,9 +6316,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6237,14 +6426,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.5in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.5,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.5in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.5
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6260,9 +6461,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6294,14 +6498,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.5in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.5,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.5in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.5
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6312,14 +6528,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.5in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.5,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.5in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -1.5
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6424,14 +6652,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.5in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.5,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.5in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.5
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6442,14 +6682,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.5in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.5,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.5in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -1.5
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6481,14 +6733,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.375in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.375,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.375in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.375
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6499,14 +6763,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.5in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.5,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.5in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -1.5
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6611,14 +6887,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.375in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.375,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.375in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.375
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6629,14 +6917,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.5in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.5,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.5in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -1.5
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6668,14 +6968,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.5in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.5,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.5in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.5
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6686,14 +6998,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.5in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.5,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.5in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -1.5
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9052,9 +9376,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9070,9 +9397,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9104,14 +9434,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.5in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.5,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.5in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.5
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9127,9 +9469,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9234,14 +9579,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.5in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.5,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.5in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.5
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9257,9 +9614,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9291,14 +9651,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.5in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.5,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.5in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.5
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9309,14 +9681,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.5in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.5,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.5in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -1.5
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9421,14 +9805,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.5in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.5,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.5in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.5
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9439,14 +9835,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.5in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.5,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.5in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -1.5
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9478,14 +9886,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.28125in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.28125,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.28125in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.28125
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9496,14 +9916,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.5in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.5,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.5in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -1.5
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9608,14 +10040,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.28125in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.28125,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.28125in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.28125
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9626,14 +10070,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.5in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.5,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.5in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -1.5
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9665,14 +10121,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "2.5in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.5,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-2.5in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -2.5
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9683,14 +10151,26 @@ description: Result of parsing counterdrilled-weldment.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.5in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.5,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.5in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -1.5
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12765,9 +13245,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12783,9 +13266,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12822,9 +13308,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12840,9 +13329,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "2.2in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.2
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.2,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12952,9 +13444,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12970,9 +13465,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "2.2in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.2
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.2,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -13009,9 +13507,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.125in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.125
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.125,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -13027,9 +13528,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "2.2in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.2
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.2,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -13139,9 +13643,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.125in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.125
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.125,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -13157,9 +13664,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "2.2in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.2
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.2,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -13196,9 +13706,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -13214,9 +13727,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "2.2in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.2
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.2,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14792,9 +15308,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14810,9 +15329,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14849,9 +15371,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.74in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.74
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.74,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14867,9 +15392,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14979,9 +15507,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14997,9 +15528,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15036,9 +15570,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.625in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.625
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.625,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15054,9 +15591,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15166,9 +15706,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.74in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.74
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.74,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15184,9 +15727,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15223,9 +15769,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15241,9 +15790,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15332,9 +15884,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.625in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.625
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.625,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15350,9 +15905,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15389,9 +15947,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15407,9 +15968,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17615,9 +18179,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17633,9 +18200,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17672,9 +18242,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.74in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.74
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.74,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17690,9 +18263,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.5in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.5,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17802,9 +18378,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.74in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.74
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.74,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17820,9 +18399,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.5in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.5,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17859,9 +18441,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.74in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.74
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.74,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17877,9 +18462,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "2.1in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.1
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.1,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17968,9 +18556,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.89in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.89
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.89,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17986,9 +18577,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "2.1in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.1
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.1,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -18025,9 +18619,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.74in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.74
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.74,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -18043,9 +18640,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "2.1in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.1
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.1,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -18134,9 +18734,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "2.48in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.48
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.48,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -18152,9 +18755,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.65in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.65
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.65,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -18191,9 +18797,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.89in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.89
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.89,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -18209,9 +18818,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "2.1in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.1
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.1,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -18300,9 +18912,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "2.48in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.48
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.48,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -18318,9 +18933,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.5in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.5,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -18357,9 +18975,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "2.48in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.48
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.48,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -18375,9 +18996,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.65in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.65
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.65,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -18466,9 +19090,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.74in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.74
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.74,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -18484,9 +19111,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.5in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.5,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -18523,9 +19153,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "2.48in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.48
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.48,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -18541,9 +19174,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.5in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.5,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -21780,9 +22416,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -21798,9 +22437,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -21837,9 +22479,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.74in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.74
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.74,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -21855,9 +22500,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.5in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.5,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -21967,9 +22615,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.74in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.74
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.74,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -21985,9 +22636,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.5in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.5,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22024,9 +22678,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.74in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.74
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.74,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22042,9 +22699,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "2.1in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.1
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.1,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22133,9 +22793,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.89in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.89
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.89,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22151,9 +22814,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "2.1in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.1
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.1,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22190,9 +22856,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.74in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.74
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.74,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22208,9 +22877,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "2.1in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.1
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.1,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22299,9 +22971,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "2.48in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.48
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.48,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22317,9 +22992,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.65in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.65
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.65,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22356,9 +23034,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.89in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.89
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.89,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22374,9 +23055,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "2.1in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.1
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.1,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22465,9 +23149,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "2.48in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.48
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.48,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22483,9 +23170,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.5in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.5,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22522,9 +23212,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "2.48in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.48
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.48,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22540,9 +23233,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.65in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.65
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.65,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22631,9 +23327,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.74in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.74
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.74,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22649,9 +23348,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.5in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.5,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22688,9 +23390,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "2.48in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 2.48
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.48,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22706,9 +23411,12 @@ description: Result of parsing counterdrilled-weldment.kcl
                                   "moduleId": 0,
                                   "raw": "0.5in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.5,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,

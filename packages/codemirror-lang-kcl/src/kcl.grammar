@@ -46,7 +46,7 @@ ImportItem { identifier (ImportItemAs identifier)? }
 expression[@isGroup=Expression] {
   String |
   Number |
-  SketchVar { kw<"var"> AddOp? Number } |
+  SketchVar { kw<"var"> expression } |
   VariableName |
   TagDeclarator |
   kw<"true"> | kw<"false"> | kw<"nil"> |

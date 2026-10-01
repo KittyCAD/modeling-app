@@ -205,9 +205,12 @@ description: Result of parsing washer.kcl
                                   "moduleId": 0,
                                   "raw": "0.22in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.22
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.22,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -223,9 +226,12 @@ description: Result of parsing washer.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -262,9 +268,12 @@ description: Result of parsing washer.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -280,9 +289,12 @@ description: Result of parsing washer.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -661,9 +673,12 @@ description: Result of parsing washer.kcl
                                   "moduleId": 0,
                                   "raw": "0.1in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.1
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.1,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -679,9 +694,12 @@ description: Result of parsing washer.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -718,9 +736,12 @@ description: Result of parsing washer.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -736,9 +757,12 @@ description: Result of parsing washer.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,

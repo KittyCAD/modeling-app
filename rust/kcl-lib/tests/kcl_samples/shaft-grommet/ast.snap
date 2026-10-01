@@ -517,9 +517,12 @@ description: Result of parsing shaft-grommet.kcl
                                   "moduleId": 0,
                                   "raw": "0.06in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.06
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.06,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -535,9 +538,12 @@ description: Result of parsing shaft-grommet.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -574,9 +580,12 @@ description: Result of parsing shaft-grommet.kcl
                                   "moduleId": 0,
                                   "raw": "0.06in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.06
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.06,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -592,9 +601,12 @@ description: Result of parsing shaft-grommet.kcl
                                   "moduleId": 0,
                                   "raw": "0.16in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.16
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.16,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -683,9 +695,12 @@ description: Result of parsing shaft-grommet.kcl
                                   "moduleId": 0,
                                   "raw": "0.06in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.06
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.06,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -701,9 +716,12 @@ description: Result of parsing shaft-grommet.kcl
                                   "moduleId": 0,
                                   "raw": "0.16in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.16
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.16,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -740,9 +758,12 @@ description: Result of parsing shaft-grommet.kcl
                                   "moduleId": 0,
                                   "raw": "0.13in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.13
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.13,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -758,9 +779,12 @@ description: Result of parsing shaft-grommet.kcl
                                   "moduleId": 0,
                                   "raw": "0.16in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.16
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.16,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -983,9 +1007,12 @@ description: Result of parsing shaft-grommet.kcl
                                   "moduleId": 0,
                                   "raw": "0.13in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.13
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.13,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1001,9 +1028,12 @@ description: Result of parsing shaft-grommet.kcl
                                   "moduleId": 0,
                                   "raw": "0.16in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.16
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.16,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1040,9 +1070,12 @@ description: Result of parsing shaft-grommet.kcl
                                   "moduleId": 0,
                                   "raw": "0.13in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.13
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.13,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1058,9 +1091,12 @@ description: Result of parsing shaft-grommet.kcl
                                   "moduleId": 0,
                                   "raw": "0.13in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.13
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.13,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1283,9 +1319,12 @@ description: Result of parsing shaft-grommet.kcl
                                   "moduleId": 0,
                                   "raw": "0.13in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.13
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.13,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1301,9 +1340,12 @@ description: Result of parsing shaft-grommet.kcl
                                   "moduleId": 0,
                                   "raw": "0.13in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.13
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.13,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1340,9 +1382,12 @@ description: Result of parsing shaft-grommet.kcl
                                   "moduleId": 0,
                                   "raw": "0.09in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.09
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.09,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1358,9 +1403,12 @@ description: Result of parsing shaft-grommet.kcl
                                   "moduleId": 0,
                                   "raw": "0.13in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.13
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.13,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1583,9 +1631,12 @@ description: Result of parsing shaft-grommet.kcl
                                   "moduleId": 0,
                                   "raw": "0.09in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.09
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.09,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1601,9 +1652,12 @@ description: Result of parsing shaft-grommet.kcl
                                   "moduleId": 0,
                                   "raw": "0.13in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.13
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.13,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1640,9 +1694,12 @@ description: Result of parsing shaft-grommet.kcl
                                   "moduleId": 0,
                                   "raw": "0.09in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.09
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.09,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1658,9 +1715,12 @@ description: Result of parsing shaft-grommet.kcl
                                   "moduleId": 0,
                                   "raw": "0.03in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.03
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.03,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1883,9 +1943,12 @@ description: Result of parsing shaft-grommet.kcl
                                   "moduleId": 0,
                                   "raw": "0.09in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.09
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.09,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1901,9 +1964,12 @@ description: Result of parsing shaft-grommet.kcl
                                   "moduleId": 0,
                                   "raw": "0.03in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.03
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.03,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1940,9 +2006,12 @@ description: Result of parsing shaft-grommet.kcl
                                   "moduleId": 0,
                                   "raw": "0.09in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.09
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.09,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1958,9 +2027,12 @@ description: Result of parsing shaft-grommet.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2183,9 +2255,12 @@ description: Result of parsing shaft-grommet.kcl
                                   "moduleId": 0,
                                   "raw": "0.09in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.09
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.09,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2201,9 +2276,12 @@ description: Result of parsing shaft-grommet.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2240,9 +2318,12 @@ description: Result of parsing shaft-grommet.kcl
                                   "moduleId": 0,
                                   "raw": "0.06in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.06
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.06,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2258,9 +2339,12 @@ description: Result of parsing shaft-grommet.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,

@@ -588,9 +588,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -606,9 +609,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -645,9 +651,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0.3in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.3
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.3,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -663,9 +672,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -775,9 +787,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0.465in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.465
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.465,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -788,14 +803,26 @@ description: Result of parsing cycloidal-gear.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.801in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.801,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.801in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.801
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -832,9 +859,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0.465in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.465
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.465,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -850,9 +880,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -962,9 +995,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0.465in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.465
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.465,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -980,9 +1016,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1019,9 +1058,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0.465in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.465
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.465,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1037,9 +1079,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0.801in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.801
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.801,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1149,9 +1194,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0.465in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.465
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.465,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1162,14 +1210,26 @@ description: Result of parsing cycloidal-gear.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.801in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.801,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.801in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.801
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1201,14 +1261,26 @@ description: Result of parsing cycloidal-gear.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.229in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.229,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.229in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.229
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1219,14 +1291,26 @@ description: Result of parsing cycloidal-gear.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.401in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.401,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.401in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.401
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1331,14 +1415,26 @@ description: Result of parsing cycloidal-gear.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.229in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.229,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.229in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.229
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1349,14 +1445,26 @@ description: Result of parsing cycloidal-gear.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.401in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.401,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.401in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.401
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1388,14 +1496,26 @@ description: Result of parsing cycloidal-gear.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.922in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.922,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.922in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.922
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1411,9 +1531,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1518,14 +1641,26 @@ description: Result of parsing cycloidal-gear.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.922in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.922,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.922in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.922
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1541,9 +1676,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1575,14 +1713,26 @@ description: Result of parsing cycloidal-gear.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.229in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.229,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.229in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.229
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1598,9 +1748,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0.401in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.401
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.401,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1705,14 +1858,26 @@ description: Result of parsing cycloidal-gear.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.229in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.229,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.229in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.229
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1728,9 +1893,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0.401in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.401
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.401,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1767,9 +1935,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0.465in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.465
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.465,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1785,9 +1956,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0.801in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.801
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.801,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4260,9 +4434,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0.465in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.465
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.465,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4273,14 +4450,26 @@ description: Result of parsing cycloidal-gear.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.3in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.3,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.3in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.3
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4317,9 +4506,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0.465in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.465
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.465,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4335,9 +4527,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0.3in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.3
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.3,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4374,9 +4569,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0.465in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.465
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.465,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4392,9 +4590,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4483,9 +4684,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0.465in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.465
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.465,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4496,14 +4700,26 @@ description: Result of parsing cycloidal-gear.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.3in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.3,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.3in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.3
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4540,9 +4756,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0.031in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.031
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.031,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4553,14 +4772,26 @@ description: Result of parsing cycloidal-gear.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.551in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.551,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.551in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.551
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4597,9 +4828,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0.465in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.465
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.465,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4610,14 +4844,26 @@ description: Result of parsing cycloidal-gear.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.801in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.801,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.801in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.801
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4701,14 +4947,26 @@ description: Result of parsing cycloidal-gear.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.488in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.488,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.488in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.488
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4719,14 +4977,26 @@ description: Result of parsing cycloidal-gear.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.251in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.251,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.251in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.251
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4763,9 +5033,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0.031in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.031
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.031,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4776,14 +5049,26 @@ description: Result of parsing cycloidal-gear.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.551in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.551,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.551in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.551
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4815,14 +5100,26 @@ description: Result of parsing cycloidal-gear.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.229in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.229,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.229in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.229
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4833,14 +5130,26 @@ description: Result of parsing cycloidal-gear.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.401in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.401,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.401in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.401
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4924,14 +5233,26 @@ description: Result of parsing cycloidal-gear.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.488in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.488,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.488in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.488
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4942,14 +5263,26 @@ description: Result of parsing cycloidal-gear.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.251in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.251,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.251in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.251
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4981,14 +5314,26 @@ description: Result of parsing cycloidal-gear.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.488in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.488,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.488in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.488
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5004,9 +5349,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0.251in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.251
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.251,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5038,14 +5386,26 @@ description: Result of parsing cycloidal-gear.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.922in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.922,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.922in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.922
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5061,9 +5421,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5152,9 +5515,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0.031in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.031
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.031,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5170,9 +5536,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0.551in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.551
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.551,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5204,14 +5573,26 @@ description: Result of parsing cycloidal-gear.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.488in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.488,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.488in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.488
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5227,9 +5608,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0.251in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.251
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.251,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5261,14 +5645,26 @@ description: Result of parsing cycloidal-gear.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.229in",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.229,
+                                      "suffix": "Inch"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.229in",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": -0.229
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5284,9 +5680,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0.401in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.401
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.401,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5375,9 +5774,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0.031in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.031
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.031,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5393,9 +5795,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0.551in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.551
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.551,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5432,9 +5837,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0.465in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.465
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.465,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5450,9 +5858,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0.3in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.3
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.3,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5489,9 +5900,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0.465in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.465
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.465,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5507,9 +5921,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0.801in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.801
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.801,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8519,9 +8936,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0.149in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.149
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.149,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8537,9 +8957,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8576,9 +8999,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8594,9 +9020,12 @@ description: Result of parsing cycloidal-gear.kcl
                                   "moduleId": 0,
                                   "raw": "0in",
                                   "start": 0,
-                                  "suffix": "Inch",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Inch"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,

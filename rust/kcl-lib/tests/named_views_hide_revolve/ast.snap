@@ -91,9 +91,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "20",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 20.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 20.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -109,9 +112,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "0",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -148,9 +154,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "23",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 23.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 23.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -166,9 +175,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "0",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -257,9 +269,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "23",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 23.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 23.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -275,9 +290,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "0",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -314,9 +332,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "23",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 23.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 23.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -332,9 +353,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "3",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 3.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -423,9 +447,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "23",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 23.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 23.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -441,9 +468,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "3",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 3.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -480,9 +510,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "20",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 20.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 20.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -498,9 +531,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "3",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 3.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -589,9 +625,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "20",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 20.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 20.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -607,9 +646,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "3",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 3.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -646,9 +688,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "20",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 20.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 20.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -664,9 +709,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "0",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1555,9 +1603,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "5",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 5.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1573,9 +1624,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "0",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1612,9 +1666,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "8",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 8.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 8.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1630,9 +1687,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "0",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1721,9 +1781,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "8",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 8.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 8.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1739,9 +1802,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "0",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1778,9 +1844,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "8",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 8.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 8.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1796,9 +1865,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "3",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 3.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1887,9 +1959,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "8",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 8.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 8.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1905,9 +1980,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "3",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 3.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1944,9 +2022,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "5",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 5.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1962,9 +2043,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "3",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 3.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2053,9 +2137,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "5",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 5.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2071,9 +2158,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "3",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 3.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2110,9 +2200,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "5",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 5.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 5.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2128,9 +2221,12 @@ description: Result of parsing named_views_hide_revolve.kcl
                                   "moduleId": 0,
                                   "raw": "0",
                                   "start": 0,
-                                  "suffix": "None",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,

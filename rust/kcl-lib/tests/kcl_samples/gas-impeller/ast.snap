@@ -316,9 +316,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "4.4mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 4.4
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 4.4,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -334,9 +337,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -373,9 +379,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "4.4mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 4.4
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 4.4,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -391,9 +400,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "60mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 60.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 60.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -485,9 +497,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "4.4mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 4.4
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 4.4,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -503,9 +518,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "60mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 60.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 60.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -542,9 +560,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "7.33mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 7.33
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 7.33,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -560,9 +581,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "60mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 60.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 60.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -785,9 +809,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "8.31mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 8.31
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 8.31,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -803,9 +830,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "59.22mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 59.22
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 59.22,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -842,9 +872,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "7.33mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 7.33
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 7.33,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -860,9 +893,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "60mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 60.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 60.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -899,9 +935,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "7.33mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 7.33
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 7.33,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -917,9 +956,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "59mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 59.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 59.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1142,9 +1184,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "80mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 80.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 80.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1160,9 +1205,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "2mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 2.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1199,9 +1247,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "80mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 80.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 80.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1217,9 +1268,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1308,9 +1362,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "80mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 80.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 80.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1326,9 +1383,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1365,9 +1425,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "4.4mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 4.4
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 4.4,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1383,9 +1446,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2030,9 +2096,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2048,9 +2117,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2087,9 +2159,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "4.4mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 4.4
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 4.4,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2105,9 +2180,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3040,9 +3118,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "8.31mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 8.31
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 8.31,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3058,9 +3139,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "59.22mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 59.22
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 59.22,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3097,9 +3181,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "80mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 80.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 80.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3115,9 +3202,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "2mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 2.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3154,9 +3244,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "80mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 80.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 80.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3172,9 +3265,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "75.52mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 75.52
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 75.52,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3534,9 +3630,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "8.31mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 8.31
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 8.31,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3552,9 +3651,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "59.22mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 59.22
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 59.22,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3591,9 +3693,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "80mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 80.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 80.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3609,9 +3714,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "2mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 2.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3989,9 +4097,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "8.31mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 8.31
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 8.31,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4007,9 +4118,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "59.22mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 59.22
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 59.22,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4046,9 +4160,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "80mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 80.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 80.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4064,9 +4181,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "75.52mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 75.52
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 75.52,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4310,9 +4430,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "80mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 80.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 80.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4328,9 +4451,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "75.52mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 75.52
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 75.52,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4367,9 +4493,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "80mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 80.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 80.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4385,9 +4514,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "2mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 2.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4765,9 +4897,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "80mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 80.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 80.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4783,9 +4918,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "75.52mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 75.52
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 75.52,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4822,9 +4960,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "44.15mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 44.15
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 44.15,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4840,9 +4981,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "30.61mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 30.61
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 30.61,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5722,9 +5866,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "7.33mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 7.33
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 7.33,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5740,9 +5887,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "60mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 60.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 60.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5779,9 +5929,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "68mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 68.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 68.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5797,9 +5950,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "60mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 60.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 60.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6025,9 +6181,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "80mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 80.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 80.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6043,9 +6202,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "2mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 2.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6082,9 +6244,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "80mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 80.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 80.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6100,9 +6265,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "48mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 48.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 48.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6325,9 +6493,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "80mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 80.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 80.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6343,9 +6514,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "48mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 48.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 48.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6382,9 +6556,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "68mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 68.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 68.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6400,9 +6577,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "60mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 60.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 60.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6439,9 +6619,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "68mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 68.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 68.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6457,9 +6640,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "48mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 48.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 48.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7021,9 +7207,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "80mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 80.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 80.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7039,9 +7228,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "48mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 48.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 48.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7078,9 +7270,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "68mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 68.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 68.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7096,9 +7291,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "48mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 48.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 48.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7476,9 +7674,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "68mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 68.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 68.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7494,9 +7695,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "60mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 60.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 60.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7533,9 +7737,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "68mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 68.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 68.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7551,9 +7758,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "48mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 48.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 48.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8218,9 +8428,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "7.33mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 7.33
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 7.33,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8236,9 +8449,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "59mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 59.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 59.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8275,9 +8491,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "7.33mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 7.33
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 7.33,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8293,9 +8512,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "60mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 60.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 60.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9651,9 +9873,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "4.4mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 4.4
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 4.4,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9669,9 +9894,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9708,9 +9936,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "84.4mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 84.4
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 84.4,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9726,9 +9957,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9817,9 +10051,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "84.4mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 84.4
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 84.4,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9835,9 +10072,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9874,9 +10114,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "84.4mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 84.4
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 84.4,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9892,9 +10135,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "2mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 2.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10117,9 +10363,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "84.4mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 84.4
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 84.4,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10135,9 +10384,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "2mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 2.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10174,9 +10426,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "4.4mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 4.4
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 4.4,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10192,9 +10447,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "2mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 2.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10417,9 +10675,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "4.4mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 4.4
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 4.4,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10435,9 +10696,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "2mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 2.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10474,9 +10738,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "4.4mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 4.4
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 4.4,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10492,9 +10759,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10851,9 +11121,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10869,9 +11142,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10908,9 +11184,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "4.4mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 4.4
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 4.4,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10926,9 +11205,12 @@ description: Result of parsing gas-impeller.kcl
                                   "moduleId": 0,
                                   "raw": "0mm",
                                   "start": 0,
-                                  "suffix": "Mm",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "Mm"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,

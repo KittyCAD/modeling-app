@@ -312,11 +312,10 @@ fn dfs_mut_expr<V: Visitor>(expr: &mut ast::Expr, visitor: &mut V) -> TraversalR
         }
         ast::Expr::SketchVar(node) => {
             if let Some(initial) = &mut node.initial {
-                ret = visitor.visit(NodeMut::from(&mut **initial));
+                ret = dfs_mut_expr(initial, visitor);
                 if ret.is_break() {
                     return ret;
                 }
-                visitor.finish(NodeMut::from(&mut **initial));
             }
         }
     }
@@ -868,7 +867,11 @@ sk = sketch() {
         assert_eq!(count("SketchBlock"), 1);
         assert_eq!(count("SketchVar"), 1);
         // The sketch var's initial value.
-        assert_eq!(count("NumericLiteral"), 1);
+        assert!(
+            events
+                .windows(2)
+                .any(|pair| matches!(pair, [Event::Enter("SketchVar", _), Event::Enter("Literal", _)]))
+        );
         assert_eq!(count("PipeSubstitution"), 1);
         // Object property keys are visited as identifiers.
         assert_eq!(count("Identifier"), 2);

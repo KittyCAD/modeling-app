@@ -2050,7 +2050,7 @@ impl Block {
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct SketchVar {
-    pub initial: Option<BoxNode<NumericLiteral>>,
+    pub initial: Option<Expr>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]

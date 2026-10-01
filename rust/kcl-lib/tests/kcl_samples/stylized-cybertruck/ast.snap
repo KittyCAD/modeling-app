@@ -1679,9 +1679,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1697,9 +1700,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1736,9 +1742,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1754,9 +1763,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1845,9 +1857,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1863,9 +1878,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1902,9 +1920,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1920,9 +1941,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2011,9 +2035,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2029,9 +2056,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2068,9 +2098,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2086,9 +2119,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2177,9 +2213,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2195,9 +2234,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2234,9 +2276,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2252,9 +2297,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4230,9 +4278,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0.5m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.5,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4248,9 +4299,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0.35m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.35
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.35,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4287,9 +4341,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4305,9 +4362,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0.35m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.35
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.35,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4412,14 +4472,26 @@ description: Result of parsing stylized-cybertruck.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.5m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.5,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.5m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.5
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4435,9 +4507,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0.35m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.35
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.35,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4469,14 +4544,26 @@ description: Result of parsing stylized-cybertruck.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.25m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.25,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.25m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.25
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4492,9 +4579,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0.8m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.8
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.8,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4578,14 +4668,26 @@ description: Result of parsing stylized-cybertruck.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.25m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.25,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.25m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.25
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4601,9 +4703,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0.8m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.8
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.8,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4640,9 +4745,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0.25m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.25,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4658,9 +4766,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0.8m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.8
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.8,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4883,9 +4994,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0.25m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.25,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4901,9 +5015,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0.8m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.8
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.8,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4940,9 +5057,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0.5m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.5,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4958,9 +5078,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0.35m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.35
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.35,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5317,9 +5440,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0.5m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.5,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5335,9 +5461,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0.35m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.35
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.35,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5374,9 +5503,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0.25m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.25,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5387,14 +5519,26 @@ description: Result of parsing stylized-cybertruck.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.1,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.1
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5617,9 +5761,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0.25m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.25
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.25,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5630,14 +5777,26 @@ description: Result of parsing stylized-cybertruck.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.1,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.1
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5669,14 +5828,26 @@ description: Result of parsing stylized-cybertruck.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.25m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.25,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.25m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.25
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5687,14 +5858,26 @@ description: Result of parsing stylized-cybertruck.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.1,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.1
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5912,14 +6095,26 @@ description: Result of parsing stylized-cybertruck.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.25m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.25,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.25m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.25
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5930,14 +6125,26 @@ description: Result of parsing stylized-cybertruck.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.1m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.1,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.1m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.1
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5969,14 +6176,26 @@ description: Result of parsing stylized-cybertruck.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.5m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.5,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.5m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.5
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5992,9 +6211,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0.35m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.35
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.35,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7038,9 +7260,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7056,9 +7281,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0.35m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.35
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.35,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7095,9 +7323,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0.5m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.5,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7113,9 +7344,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0.35m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.35
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.35,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9763,9 +9997,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9781,9 +10018,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9820,9 +10060,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9838,9 +10081,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9929,9 +10175,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9947,9 +10196,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9986,9 +10238,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10004,9 +10259,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10095,9 +10353,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10113,9 +10374,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10152,9 +10416,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10170,9 +10437,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10261,9 +10531,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10279,9 +10552,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10318,9 +10594,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10336,9 +10615,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12260,14 +12542,26 @@ description: Result of parsing stylized-cybertruck.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.75m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.75,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.75m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.75
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12283,9 +12577,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1.15m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.15
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.15,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12317,14 +12614,26 @@ description: Result of parsing stylized-cybertruck.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.35m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.35,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.35m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.35
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12340,9 +12649,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1.95m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.95
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.95,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12426,14 +12738,26 @@ description: Result of parsing stylized-cybertruck.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.35m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.35,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.35m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.35
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12449,9 +12773,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1.95m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.95
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.95,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12488,9 +12815,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1.75m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.75
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.75,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12506,9 +12836,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1.15m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.15
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.15,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12597,9 +12930,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1.75m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.75
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.75,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12615,9 +12951,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1.15m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.15
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.15,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12649,14 +12988,26 @@ description: Result of parsing stylized-cybertruck.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.75m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.75,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.75m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.75
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12672,9 +13023,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1.15m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.15
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.15,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14640,14 +14994,26 @@ description: Result of parsing stylized-cybertruck.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.9m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.9,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.9m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.9
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14663,9 +15029,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1.15m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.15
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.15,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14697,14 +15066,26 @@ description: Result of parsing stylized-cybertruck.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.54m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.54,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.54m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.54
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14720,9 +15101,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1.95m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.95
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.95,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14806,14 +15190,26 @@ description: Result of parsing stylized-cybertruck.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.54m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.54,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.54m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.54
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14829,9 +15225,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1.95m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.95
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.95,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14868,9 +15267,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0.54m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.54
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.54,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14886,9 +15288,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1.95m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.95
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.95,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14977,9 +15382,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0.54m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.54
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.54,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14995,9 +15403,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1.95m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.95
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.95,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15034,9 +15445,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0.9m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.9
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.9,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15052,9 +15466,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1.15m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.15
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.15,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15143,9 +15560,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0.9m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.9
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.9,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15161,9 +15581,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1.15m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.15
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.15,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15195,14 +15618,26 @@ description: Result of parsing stylized-cybertruck.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.9m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.9,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.9m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.9
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15218,9 +15653,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1.15m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.15
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.15,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17667,9 +18105,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0.32m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.32
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.32,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17685,9 +18126,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0.21m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.21
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.21,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17719,14 +18163,26 @@ description: Result of parsing stylized-cybertruck.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.01m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.01,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.01m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.01
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17742,9 +18198,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0.35m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.35
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.35,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17833,9 +18292,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0.18m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.18
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.18,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17851,9 +18313,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0.45m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.45
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.45,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17885,14 +18350,26 @@ description: Result of parsing stylized-cybertruck.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.01m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.01,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.01m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.01
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -17908,9 +18385,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0.35m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.35
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.35,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -18133,9 +18613,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -18151,9 +18634,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -18185,14 +18671,26 @@ description: Result of parsing stylized-cybertruck.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.01m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.01,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.01m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.01
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -18208,9 +18706,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0.35m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.35
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.35,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22022,9 +22523,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22040,9 +22544,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22079,9 +22586,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22097,9 +22607,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22188,9 +22701,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22206,9 +22722,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22245,9 +22764,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22263,9 +22785,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22354,9 +22879,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22372,9 +22900,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22411,9 +22942,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22429,9 +22963,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22520,9 +23057,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22538,9 +23078,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22577,9 +23120,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -22595,9 +23141,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -24649,9 +25198,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -24667,9 +25219,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -24706,9 +25261,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -24724,9 +25282,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -24815,9 +25376,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -24833,9 +25397,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -24872,9 +25439,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -24890,9 +25460,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -24981,9 +25554,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -24999,9 +25575,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -25038,9 +25617,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -25056,9 +25638,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -25147,9 +25732,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -25165,9 +25753,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "1m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -25204,9 +25795,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -25222,9 +25816,12 @@ description: Result of parsing stylized-cybertruck.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,

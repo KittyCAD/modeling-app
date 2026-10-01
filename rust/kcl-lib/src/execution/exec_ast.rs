@@ -3375,7 +3375,7 @@ impl SketchBlock {
 }
 
 impl Node<SketchVar> {
-    pub async fn get_result(&self, exec_state: &mut ExecState, _ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         let Some(sketch_block_state) = &exec_state.mod_local.sketch_block else {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "Cannot use a sketch variable outside of a sketch block".to_owned(),
@@ -3384,7 +3384,33 @@ impl Node<SketchVar> {
         };
         let id = sketch_block_state.next_sketch_var_id();
         let sketch_var = if let Some(initial) = &self.initial {
-            KclValue::from_sketch_var_literal(initial, id, self.node_path.clone(), exec_state)
+            let kvcf = ctx
+                .execute_expr(
+                    initial,
+                    exec_state,
+                    &Metadata {
+                        source_range: initial.into(),
+                    },
+                    &[],
+                    StatementKind::Expression,
+                )
+                .await?;
+            if let KclValue::Number { value, ty, meta } = *kvcf.value {
+                KclValue::SketchVar {
+                    value: Box::new(super::SketchVar {
+                        id,
+                        initial_value: value,
+                        ty,
+                        node_path: self.node_path.clone(),
+                        meta,
+                    }),
+                }
+            } else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "expression must evaluate to a number".to_owned(),
+                    vec![SourceRange::from(self)],
+                )));
+            }
         } else {
             let metadata = Metadata {
                 source_range: SourceRange::from(self),

@@ -202,9 +202,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.75m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.75
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.75,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -220,9 +223,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -259,9 +265,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -277,9 +286,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -368,9 +380,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.55m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.55
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.55,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -386,9 +401,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -425,9 +443,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -443,9 +464,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -778,9 +802,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.7m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.7
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.7,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -796,9 +823,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -835,9 +865,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.65m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.65
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.65,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -853,9 +886,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1520,9 +1556,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1538,9 +1577,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.7m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.7
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.7,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1577,9 +1619,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1595,9 +1640,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.725m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.725
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.725,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1686,9 +1734,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1704,9 +1755,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.725m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.725
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.725,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1738,14 +1792,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.005m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.005,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.005m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.005
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1761,9 +1827,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.725m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.725
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.725,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -1981,14 +2050,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.005m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.005,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.005m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.005
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2004,9 +2085,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.725m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.725
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.725,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2038,14 +2122,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.005m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.005,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.005m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.005
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2061,9 +2157,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.695m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.695
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.695,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2281,14 +2380,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.005m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.005,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.005m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.005
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2304,9 +2415,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.695m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.695
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.695,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2343,9 +2457,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.595m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.595
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.595,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2361,9 +2478,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.695m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.695
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.695,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2586,9 +2706,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.595m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.595
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.595,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2604,9 +2727,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.695m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.695
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.695,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2643,9 +2769,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.595m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.595
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.595,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2661,9 +2790,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.7m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.7
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.7,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2886,9 +3018,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.595m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.595
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.595,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2904,9 +3039,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.7m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.7
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.7,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2943,9 +3081,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -2961,9 +3102,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.7m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.7
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.7,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3953,9 +4097,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -3971,9 +4118,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.695m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.695
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.695,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4010,9 +4160,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.09m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.09
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.09,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4028,9 +4181,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.695m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.695
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.695,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4119,9 +4275,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.5m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.5,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4137,9 +4296,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.655m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.655
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.655,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4176,9 +4338,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.09m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.09
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.09,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4194,9 +4359,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.695m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.695
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.695,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4233,9 +4401,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.09m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.09
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.09,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4246,14 +4417,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.42625m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.42625,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.42625m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.42625
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4476,9 +4659,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.5m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.5,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4494,9 +4680,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.655m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.655
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.655,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4533,9 +4722,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.5m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.5,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4551,9 +4743,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.6505m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.6505
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.6505,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4776,9 +4971,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.5m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.5
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.5,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4794,9 +4992,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.6505m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.6505
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.6505,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4828,14 +5029,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.23m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.23,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.23m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.23
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -4851,9 +5064,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.6505m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.6505
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.6505,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5071,14 +5287,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.23m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.23,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.23m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.23
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5094,9 +5322,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.6505m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.6505
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.6505,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5128,14 +5359,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.23m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.23,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.23m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.23
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5151,9 +5394,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.6685m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.6685
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.6685,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5371,14 +5617,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.23m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.23,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.23m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.23
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5394,9 +5652,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.6685m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.6685
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.6685,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5428,14 +5689,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.03m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.03,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.03m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.03
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5451,9 +5724,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.6685m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.6685
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.6685,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5671,14 +5947,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.03m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.03,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.03m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.03
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5694,9 +5982,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.6685m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.6685
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.6685,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5733,9 +6024,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -5751,9 +6045,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.695m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.695
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.695,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6745,9 +7042,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.75m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.75
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.75,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6763,9 +7063,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6802,9 +7105,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -6820,9 +7126,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7038,9 +7347,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.55m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.55
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.55,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7056,9 +7368,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7095,9 +7410,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7113,9 +7431,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7590,9 +7911,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "1.175m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.175
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.175,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7608,9 +7932,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "2.0351597m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 2.0351597
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0351597,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7647,9 +7974,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.94452276m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.94452276
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.94452276,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7660,14 +7990,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.10186633m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.10186633,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.10186633m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.10186633
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7751,14 +8093,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.32491914m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.32491914,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.32491914m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.32491914
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7774,9 +8128,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.89270799m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.89270799
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.89270799,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7813,9 +8170,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.94452276m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.94452276
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.94452276,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7826,14 +8186,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.10186633m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.10186633,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.10186633m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.10186633
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7870,9 +8242,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -7888,9 +8263,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8108,14 +8486,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.32491914m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.32491914,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.32491914m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.32491914
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8131,9 +8521,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.89270799m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.89270799
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.89270799,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8170,9 +8563,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "1.175m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.175
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.175,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8188,9 +8584,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "2.0351597m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 2.0351597
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0351597,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8222,14 +8621,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.40944659m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.40944659,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.40944659m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.40944659
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8245,9 +8656,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "3.87242268m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 3.87242268
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.87242268,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8754,9 +9168,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "1.075m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.075
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.075,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8772,9 +9189,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "1.86195462m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.86195462
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.86195462,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8811,9 +9231,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.73953238m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.73953238
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.73953238,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8824,14 +9247,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.12486734m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.12486734,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.12486734m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.12486734
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8915,14 +9350,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.25651511m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.25651511,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.25651511m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.25651511
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8938,9 +9385,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.70476947m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.70476947
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.70476947,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8977,9 +9427,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.73953238m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.73953238
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.73953238,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -8990,14 +9443,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.12486734m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.12486734,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.12486734m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.12486734
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9034,9 +9499,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9052,9 +9520,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9272,14 +9743,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.25651511m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.25651511,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.25651511m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.25651511
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9295,9 +9778,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.70476947m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.70476947
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.70476947,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9334,9 +9820,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "1.075m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.075
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.075,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9352,9 +9841,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "1.86195462m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.86195462
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.86195462,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9386,14 +9878,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "1.0985889m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 1.0985889,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-1.0985889m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -1.0985889
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -9409,9 +9913,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "3.0183482m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 3.0183482
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 3.0183482,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10334,9 +10841,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.46172719m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.46172719
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.46172719,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10352,9 +10862,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "1.26858504m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.26858504
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.26858504,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10391,9 +10904,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.86291008m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.86291008
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.86291008,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10409,9 +10925,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.39734897m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.39734897
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.39734897,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10495,14 +11014,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.475m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.475,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.475m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.475
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10518,9 +11049,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.82272413m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.82272413
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.82272413,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10557,9 +11091,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.86291008m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.86291008
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.86291008,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10575,9 +11112,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.39734897m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.39734897
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.39734897,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10614,9 +11154,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10632,9 +11175,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10857,9 +11403,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.46172719m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.46172719
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.46172719,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10875,9 +11424,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "1.26858504m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.26858504
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.26858504,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10909,14 +11461,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.475m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.475,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.475m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.475
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10932,9 +11496,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.82272413m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.82272413
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.82272413,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10971,9 +11538,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "2.79680392m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 2.79680392
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.79680392,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -10984,14 +11554,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "4.84420648m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 4.84420648,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-4.84420648m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -4.84420648
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11498,9 +12080,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.39332316m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.39332316
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.39332316,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11516,9 +12101,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "1.08064651m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.08064651
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.08064651,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11555,9 +12143,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.70155661m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.70155661
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.70155661,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11573,9 +12164,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.26517601m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.26517601
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.26517601,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11659,14 +12253,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.375m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.375,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.375m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.375
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11682,9 +12288,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.64951905m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.64951905
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.64951905,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11721,9 +12330,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.70155661m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.70155661
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.70155661,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11739,9 +12351,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.26517601m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.26517601
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.26517601,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11778,9 +12393,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -11796,9 +12414,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12021,9 +12642,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.39332316m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.39332316
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.39332316,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12039,9 +12663,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "1.08064651m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.08064651
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.08064651,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12073,14 +12700,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.375m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.375,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.375m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.375
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12096,9 +12735,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.64951905m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.64951905
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.64951905,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12135,9 +12777,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "17.60196587m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 17.60196587
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 17.60196587,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -12148,14 +12793,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "30.48749919m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 30.48749919,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-30.48749919m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -30.48749919
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -13484,9 +14141,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.46172719m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.46172719
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.46172719,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -13502,9 +14162,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "1.26858504m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.26858504
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.26858504,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -13541,9 +14204,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.86291008m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.86291008
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.86291008,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -13559,9 +14225,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.39734897m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.39734897
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.39734897,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -13645,14 +14314,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.475m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.475,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.475m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.475
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -13668,9 +14349,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.82272413m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.82272413
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.82272413,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -13707,9 +14391,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.86291008m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.86291008
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.86291008,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -13725,9 +14412,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.39734897m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.39734897
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.39734897,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -13764,9 +14454,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -13782,9 +14475,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14007,9 +14703,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.46172719m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.46172719
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.46172719,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14025,9 +14724,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "1.26858504m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 1.26858504
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.26858504,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14059,14 +14761,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.475m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.475,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.475m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.475
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14082,9 +14796,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.82272413m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.82272413
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.82272413,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14121,9 +14838,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "2.79680392m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 2.79680392
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.79680392,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14134,14 +14854,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "4.84420648m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 4.84420648,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-4.84420648m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -4.84420648
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14834,9 +15566,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.12825755m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.12825755
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.12825755,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14852,9 +15587,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.35238473m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.35238473
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.35238473,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14891,9 +15629,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.2446628m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.2446628
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.2446628,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14909,9 +15650,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.12555921m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.12555921
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.12555921,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -14995,14 +15739,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.1375m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.1375,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.1375m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.1375
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15018,9 +15774,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.23815699m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.23815699
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.23815699,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15057,9 +15816,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.2446628m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.2446628
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.2446628,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15075,9 +15837,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.12555921m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.12555921
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.12555921,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15114,9 +15879,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15132,9 +15900,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.0
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15357,9 +16128,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.12825755m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.12825755
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.12825755,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15375,9 +16149,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.35238473m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.35238473
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.35238473,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15409,14 +16186,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.1375m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.1375,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.1375m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.1375
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15432,9 +16221,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.23815699m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.23815699
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.23815699,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15471,9 +16263,12 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                   "moduleId": 0,
                                   "raw": "0.47857957m",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": 0.47857957
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.47857957,
+                                    "suffix": "M"
+                                  }
                                 },
                                 "moduleId": 0,
                                 "start": 0,
@@ -15484,14 +16279,26 @@ description: Result of parsing wind-turbine-blade-root-inserts.kcl
                                 "commentStart": 0,
                                 "end": 0,
                                 "initial": {
+                                  "argument": {
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "raw": "0.82892413m",
+                                    "start": 0,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.82892413,
+                                      "suffix": "M"
+                                    }
+                                  },
                                   "commentStart": 0,
                                   "end": 0,
                                   "moduleId": 0,
-                                  "raw": "-0.82892413m",
+                                  "operator": "-",
                                   "start": 0,
-                                  "suffix": "M",
-                                  "type": "NumericLiteral",
-                                  "value": -0.82892413
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
                                 },
                                 "moduleId": 0,
                                 "start": 0,
