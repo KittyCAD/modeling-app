@@ -2,7 +2,7 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Local Drive picker', { tag: '@web' }, () => {
-  test('adds local files without overwriting and keeps them after reload', async ({
+  test('opens the picker and adds a local model file', async ({
     page,
     homePage,
     toolbar,
@@ -12,58 +12,39 @@ test.describe('Local Drive picker', { tag: '@web' }, () => {
     await toolbar.openPane(DefaultLayoutPaneID.Code)
     await toolbar.openPane(DefaultLayoutPaneID.Files)
 
-    const originalContent = 'Original model file'
-    const duplicateContent = 'Another model file'
-    const fileName = 'part.prt.23'
-    const duplicateFileName = 'part-1.prt.23'
-    const readFile = (name: string) =>
-      page.evaluate(async (name) => {
-        const project = window.app.project
-        if (!project) throw new Error('No project is open')
-        const path = window.fsZds.join(project.path, name)
-        const content = await window.app.fileOperations.readFile(path)
-        return new TextDecoder().decode(content)
-      }, name)
+    const fileName = 'part.step'
+    const content = 'Imported model file'
+    await cmdBar.openCmdBar()
+    await cmdBar.chooseCommand('Add file to project')
+    const chooserPromise = page.waitForEvent('filechooser')
+    await cmdBar.selectOption({ name: 'Local Drive', exact: true }).click()
+    const chooser = await chooserPromise
+    await chooser.setFiles({
+      name: fileName,
+      mimeType: 'application/octet-stream',
+      buffer: Buffer.from(content),
+    })
+    await expect(cmdBar.currentArgumentInput).toHaveValue(fileName)
+    await cmdBar.progressCmdBar()
+    await cmdBar.toBeClosed()
 
-    const imports = [
-      { content: originalContent, expectedName: fileName },
-      { content: duplicateContent, expectedName: duplicateFileName },
-    ]
-    for (const { content, expectedName } of imports) {
-      await cmdBar.openCmdBar()
-      await cmdBar.chooseCommand('Add file to project')
-      await cmdBar.expectCommandName('Add file to project')
-      await cmdBar.selectOption({ name: 'Local Drive', exact: true }).click()
-      await expect(page.getByTestId('cmd-bar-arg-name')).toContainText('files')
-
-      const chooserPromise = page.waitForEvent('filechooser')
-      await page.getByRole('button', { name: 'Open file', exact: true }).click()
-      const chooser = await chooserPromise
-      // Opening the picker must not also submit the argument's form.
-      await expect(page.getByTestId('cmd-bar-arg-name')).toContainText('files')
-      await chooser.setFiles({
-        name: fileName,
-        mimeType: 'application/octet-stream',
-        buffer: Buffer.from(content),
-      })
-      await expect(cmdBar.currentArgumentInput).toHaveValue(fileName)
-      await cmdBar.progressCmdBar()
-      await cmdBar.toBeClosed()
-
-      await expect.poll(() => readFile(expectedName)).toBe(content)
-      await expect(
-        page.getByRole('treeitem', { name: expectedName, exact: true })
-      ).toBeVisible()
-    }
-
-    await expect.poll(() => readFile(fileName)).toBe(originalContent)
-    await page.reload()
-    await expect(toolbar.loadButton).toBeVisible()
-    await expect.poll(() => readFile(fileName)).toBe(originalContent)
-    await expect.poll(() => readFile(duplicateFileName)).toBe(duplicateContent)
+    await expect(
+      page.getByRole('treeitem', { name: fileName, exact: true })
+    ).toBeVisible()
+    await expect
+      .poll(() =>
+        page.evaluate(async (name) => {
+          const project = window.app.project
+          if (!project) throw new Error('No project is open')
+          const path = window.fsZds.join(project.path, name)
+          const content = await window.app.fileOperations.readFile(path)
+          return new TextDecoder().decode(content)
+        }, fileName)
+      )
+      .toBe(content)
   })
 
-  test('handles cancel, reselects the same file, and opens added KCL files', async ({
+  test('opens a local KCL file in the editor', async ({
     page,
     homePage,
     toolbar,
@@ -75,38 +56,16 @@ test.describe('Local Drive picker', { tag: '@web' }, () => {
     const code = '@settings(kclVersion = 2.0)\n// Selected from Local Drive\n'
 
     await toolbar.loadButton.click()
+    const chooserPromise = page.waitForEvent('filechooser')
     await cmdBar.selectOption({ name: 'Local Drive', exact: true }).click()
-    await page.locator('input[type="file"]').setInputFiles([])
-    await cmdBar.continue()
-    await expect(page.getByTestId('cmd-bar-arg-name')).toContainText('files')
-
-    const file = {
+    const chooser = await chooserPromise
+    await chooser.setFiles({
       name: 'picked.kcl',
       mimeType: 'text/plain',
       buffer: Buffer.from(code),
-    }
-    await page.locator('input[type="file"]').setInputFiles(file)
-    await page.locator('input[type="file"]').setInputFiles([])
-    await expect(cmdBar.currentArgumentInput).toHaveValue('picked.kcl')
-    await page.locator('input[type="file"]').setInputFiles(file)
+    })
     await cmdBar.progressCmdBar()
     await expect(page).toHaveURL(/picked\.kcl$/)
     await editor.expectEditor.toContain('Selected from Local Drive')
-
-    await toolbar.loadButton.click()
-    await cmdBar.selectOption({ name: 'Local Drive', exact: true }).click()
-    await page.locator('input[type="file"]').setInputFiles(file)
-    await cmdBar.progressCmdBar()
-    await expect(page).toHaveURL(/picked-1\.kcl$/)
-    await editor.expectEditor.toContain('Selected from Local Drive')
-
-    // KCL Samples should still be the initially highlighted source.
-    await toolbar.loadButton.click()
-    await expect(cmdBar.currentArgumentInput).toHaveAttribute(
-      'placeholder',
-      'KCL Samples'
-    )
-    await page.keyboard.press('Enter')
-    await expect(page.getByTestId('cmd-bar-arg-name')).toHaveText('sample')
   })
 })

@@ -46,14 +46,16 @@ async function renderInput(onSubmit = vi.fn()) {
 }
 
 describe('CommandBarPathInput', () => {
-  it('opens the browser picker without submitting and ignores an empty selection', async () => {
+  it('opens the browser picker on mount and keeps the selection after cancel', async () => {
     Reflect.deleteProperty(window, 'electron')
+    const click = vi.spyOn(HTMLInputElement.prototype, 'click')
     const onSubmit = await renderInput()
     const picker = screen.getByLabelText('Choose a file')
-    const click = vi.spyOn(picker, 'click')
+    expect(click).toHaveBeenCalledOnce()
+    expect(onSubmit).not.toHaveBeenCalled()
 
     fireEvent.click(screen.getByRole('button', { name: 'Open file' }))
-    expect(click).toHaveBeenCalledOnce()
+    expect(click).toHaveBeenCalledTimes(2)
     expect(onSubmit).not.toHaveBeenCalled()
 
     fireEvent.change(picker, { target: { files: [] } })

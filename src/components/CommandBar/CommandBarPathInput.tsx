@@ -88,9 +88,9 @@ function CommandBarPathInput({
     }
   }
 
-  // Fire on component mount, if outside of e2e test context
+  // Open the picker when entering this argument; desktop tests use seeded paths.
   useEffect(() => {
-    if (window.electron && window.electron.process.env.NODE_ENV !== 'test') {
+    if (window.electron?.process.env.NODE_ENV !== 'test') {
       toSync(pickFile, reportRejection)()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
