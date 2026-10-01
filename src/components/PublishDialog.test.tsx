@@ -215,6 +215,7 @@ describe('PublishDialog', () => {
       method: 'GET',
       headers: {},
       cache: 'no-cache',
+      credentials: 'include',
       signal: expect.any(AbortSignal),
     })
   })

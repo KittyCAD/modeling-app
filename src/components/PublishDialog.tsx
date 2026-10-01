@@ -1,6 +1,6 @@
 import { Popover, Transition } from '@headlessui/react'
 import type { ProjectCategoryResponse } from '@kittycad/lib'
-import { Client, projects } from '@kittycad/lib'
+import { ApiError, projects } from '@kittycad/lib'
 import {
   MarkdownEditor,
   type MarkdownEditorActions,
@@ -10,13 +10,12 @@ import { ActionButton } from '@src/components/ActionButton'
 import { AquariumStatusDetails } from '@src/components/AquariumStatusBadge'
 import type { ProjectStatus } from '@src/hooks/useProjectStatus'
 import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
+import { createKCClient } from '@src/lib/kcClient'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { fetchWithSessionExpiration } from '@src/lib/sessionExpired'
 import type {
   CurrentProjectPublicationDetails,
   ProjectPublishSubmission,
 } from '@src/lib/share'
-import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
 
 type PublishDialogMarkdownEditorKeymap = {
@@ -110,22 +109,7 @@ export function PublishDialog({
     setCategoriesError(null)
 
     try {
-      const client = new Client({
-        token: '',
-        baseUrl: withAPIBaseURL(''),
-        fetch: async (input, init) => {
-          const response = await fetchWithSessionExpiration(input, {
-            ...init,
-            cache: 'no-cache',
-          })
-          if (!response.ok) {
-            return Promise.reject(
-              new Error(await getResponseErrorMessage(response))
-            )
-          }
-          return response
-        },
-      })
+      const client = createKCClient('', undefined, { cache: 'no-cache' })
       const nextCategories = await projects.list_project_categories({
         client,
         signal,
@@ -140,11 +124,13 @@ export function PublishDialog({
       }
 
       setCategories([])
-      setCategoriesError(
-        error instanceof Error
-          ? error.message
-          : 'Failed to load Aquarium categories.'
-      )
+      const message =
+        error instanceof ApiError
+          ? error.body?.message
+          : error instanceof Error
+            ? error.message
+            : undefined
+      setCategoriesError(message || 'Failed to load Aquarium categories.')
     } finally {
       if (!signal?.aborted) {
         setIsLoadingCategories(false)
@@ -567,24 +553,6 @@ function formatDate(value: string) {
     day: 'numeric',
     year: 'numeric',
   }).format(date)
-}
-
-async function getResponseErrorMessage(response: Response) {
-  try {
-    const body = (await response.json()) as { message?: string }
-    if (body.message) {
-      return body.message
-    }
-  } catch {}
-
-  try {
-    const text = await response.text()
-    if (text) {
-      return text
-    }
-  } catch {}
-
-  return 'Failed to load Aquarium categories.'
 }
 
 function CheckIcon() {
