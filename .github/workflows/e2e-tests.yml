@@ -222,16 +222,12 @@ jobs:
             playwright_cache_path: ~/.cache/ms-playwright
           - os: namespace-profile-macos-8-cores
             label: macos
-            test_script: test:e2e:web
+            test_script: test:e2e:web:webkit
             playwright_cache_path: ~/Library/Caches/ms-playwright
           - os: namespace-profile-windows-8-cores
             label: windows
             test_script: test:e2e:web
             playwright_cache_path: ~/AppData/Local/ms-playwright
-          - os: namespace-profile-macos-8-cores
-            label: macos, webkit
-            test_script: test:e2e:web:webkit
-            playwright_cache_path: ~/Library/Caches/ms-playwright
     runs-on: ${{ matrix.config.os }}
     name: e2e:web (${{ matrix.config.label }}, shard ${{ matrix.shardIndex }})
     env:
