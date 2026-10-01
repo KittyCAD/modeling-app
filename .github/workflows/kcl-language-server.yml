@@ -59,7 +59,7 @@ jobs:
         shell: bash
         run: cp rust/rust-toolchain.toml rust-toolchain.toml
       - name: Install Rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
+        uses: actions-rust-lang/setup-rust-toolchain@v2.0.0
         with:
           cache-workspaces: rust
           rustflags: ""
@@ -126,7 +126,7 @@ jobs:
         run: |
           rm rust/rust-toolchain.toml
       - name: Install rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
+        uses: actions-rust-lang/setup-rust-toolchain@v2.0.0
         with:
           cache: false
           components: rust-src
@@ -259,7 +259,7 @@ jobs:
         run: |
           rm rust/rust-toolchain.toml
       - name: Install rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
+        uses: actions-rust-lang/setup-rust-toolchain@v2.0.0
         with:
           # The Namespace volume below handles caching. This cache cannot:
           # it runs `tar --posix`, which Alpine's BusyBox tar rejects.
