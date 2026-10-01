@@ -198,8 +198,6 @@ import type {
 import { sendToActorIfActive } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { EditorView } from 'codemirror'
-import { addChamfer, addFillet } from '@src/lang/modifyAst/edges'
-import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 
 function sourceRangesEqual(
   a: [number, number, number],
@@ -4279,128 +4277,10 @@ export const modelingMachine = setup({
       createModelingCodemodActor(modelingCommandCodemods.Hole)
     ),
     filletAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Fillet'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-              engineCommandManager: ConnectionManager
-              wasmInstance: ModuleType
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        // Remove once experimental version doesn't need to be supported anymore on KCL 2.0
-        let astWithNewSetting: Node<Program> | undefined
-        if (
-          input.kclManager.fileSettings.experimentalFeatures?.type !==
-            'Allow' &&
-          input.data.version !== undefined
-        ) {
-          const ast = setExperimentalFeatures(
-            input.kclManager.code,
-            {
-              type: 'Allow',
-            },
-            await input.kclManager.wasmInstancePromise
-          )
-          if (err(ast)) {
-            return Promise.reject(ast)
-          }
-
-          astWithNewSetting = ast
-        }
-
-        const { artifactGraph } = input.kclManager
-        const astResult = addFillet({
-          ...input.data,
-          ast: astWithNewSetting ?? input.kclManager.ast,
-          artifactGraph,
-          wasmInstance: input.wasmInstance,
-        })
-        if (err(astResult)) {
-          return Promise.reject(astResult)
-        }
-
-        const { modifiedAst, pathToNode } = astResult
-
-        await updateModelingState(
-          modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: pathToNode,
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods.Fillet)
     ),
     chamferAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Chamfer'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-              engineCommandManager: ConnectionManager
-              wasmInstance: ModuleType
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        // Remove once version doesn't need to be supported anymore on KCL 2.0
-        let astWithNewSetting: Node<Program> | undefined
-        if (
-          input.kclManager.fileSettings.experimentalFeatures?.type !==
-            'Allow' &&
-          input.data.version !== undefined
-        ) {
-          const ast = setExperimentalFeatures(
-            input.kclManager.code,
-            {
-              type: 'Allow',
-            },
-            await input.kclManager.wasmInstancePromise
-          )
-          if (err(ast)) {
-            return Promise.reject(ast)
-          }
-
-          astWithNewSetting = ast
-        }
-
-        const { artifactGraph } = input.kclManager
-        const astResult = addChamfer({
-          ...input.data,
-          ast: astWithNewSetting ?? input.kclManager.ast,
-          artifactGraph,
-          wasmInstance: input.wasmInstance,
-        })
-        if (err(astResult)) {
-          return Promise.reject(astResult)
-        }
-
-        const { modifiedAst, pathToNode } = astResult
-
-        await updateModelingState(
-          modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: pathToNode,
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods.Chamfer)
     ),
     blendAstMod: fromPromise(
       createModelingCodemodActor(modelingCommandCodemods.Blend)
@@ -6881,7 +6761,6 @@ export const modelingMachine = setup({
           return {
             data: event.data,
             kclManager: context.kclManager,
-            engineCommandManager: context.engineCommandManager,
             rustContext: context.rustContext,
             wasmInstance: context.wasmInstance,
           }
@@ -6903,7 +6782,6 @@ export const modelingMachine = setup({
           return {
             data: event.data,
             kclManager: context.kclManager,
-            engineCommandManager: context.engineCommandManager,
             rustContext: context.rustContext,
             wasmInstance: context.wasmInstance,
           }
