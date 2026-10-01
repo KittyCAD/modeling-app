@@ -603,7 +603,7 @@ untagged = extrude(region(segments = [firstProfile.bottom]), length = 5mm, symme
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn subtract_inherits_face_tags_from_all_targets_and_tools() {
+    async fn subtract_inherits_face_tags_from_target_and_tools() {
         let tag_names = ["first", "second", "third"];
         let mut code = FACE_TAG_INPUTS.to_owned();
         for name in tag_names {
