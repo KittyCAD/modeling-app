@@ -266,30 +266,31 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
     })
   })
 
-  test('Right-click opens context menu when not dragged', async ({
-    homePage,
-    page,
-  }) => {
-    const u = await getUtils(page)
+  test(
+    'Right-click opens context menu when not dragged',
+    { tag: '@web' },
+    async ({ homePage, page }) => {
+      const u = await getUtils(page)
 
-    await homePage.goToModelingScene()
-    await u.waitForPageLoad()
+      await homePage.goToModelingScene()
+      await u.waitForPageLoad()
 
-    await test.step(`The menu should not show if we drag the mouse`, async () => {
-      await page.mouse.move(900, 200)
-      await page.mouse.down({ button: 'right' })
-      await page.mouse.move(900, 300)
-      await page.mouse.up({ button: 'right' })
+      await test.step(`The menu should not show if we drag the mouse`, async () => {
+        await page.mouse.move(900, 200)
+        await page.mouse.down({ button: 'right' })
+        await page.mouse.move(900, 300)
+        await page.mouse.up({ button: 'right' })
 
-      await expect(page.getByTestId('view-controls-menu')).not.toBeVisible()
-    })
+        await expect(page.getByTestId('view-controls-menu')).not.toBeVisible()
+      })
 
-    await test.step(`The menu should show if we don't drag the mouse`, async () => {
-      await page.mouse.move(900, 200)
-      await page.mouse.down({ button: 'right' })
-      await page.mouse.up({ button: 'right' })
+      await test.step(`The menu should show if we don't drag the mouse`, async () => {
+        await page.mouse.move(900, 200)
+        await page.mouse.down({ button: 'right' })
+        await page.mouse.up({ button: 'right' })
 
-      await expect(page.getByTestId('view-controls-menu')).toBeVisible()
-    })
-  })
+        await expect(page.getByTestId('view-controls-menu')).toBeVisible()
+      })
+    }
+  )
 })
