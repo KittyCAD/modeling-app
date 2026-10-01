@@ -722,35 +722,37 @@ shell(firstSketch, faces = [END], thickness = 0.25)"#;
     // Changing only the KCL version must invalidate the cache and re-execute the whole program.
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_changed_program_same_code_but_different_kcl_version_using_annotation() {
-        let old_code = r#"@settings(kclVersion = 2.0)
-x = 1
-y = x + 1
-"#;
-        let new_code = r#"@settings(kclVersion = "3.0-preview")
-x = 1
-y = x + 1
-"#;
+        for (old_version, new_version) in [
+            ("2.0", "\"3.0-preview\""),
+            ("2.0", "3.0"),
+            ("3.0", "2.0"),
+            ("\"3.0-preview\"", "3.0"),
+            ("3.0", "\"3.0-preview\""),
+        ] {
+            let old_code = format!("@settings(kclVersion = {old_version})\nx = 1\ny = x + 1\n");
+            let new_code = format!("@settings(kclVersion = {new_version})\nx = 1\ny = x + 1\n");
+            let mut program = crate::Program::parse_no_errs(&old_code).unwrap();
+            program.compute_digest();
+            let mut new_program = crate::Program::parse_no_errs(&new_code).unwrap();
+            new_program.compute_digest();
+            let settings = ExecutorSettings::default();
 
-        let mut program = crate::Program::parse_no_errs(old_code).unwrap();
-        program.compute_digest();
-        let mut new_program = crate::Program::parse_no_errs(new_code).unwrap();
-        new_program.compute_digest();
-        let settings = ExecutorSettings::default();
+            let result = get_changed_program(
+                CacheInformation::new(&program.ast, &settings),
+                CacheInformation::new(&new_program.ast, &settings),
+            )
+            .await;
 
-        let result = get_changed_program(
-            CacheInformation::new(&program.ast, &settings),
-            CacheInformation::new(&new_program.ast, &settings),
-        )
-        .await;
-
-        assert_eq!(
-            result,
-            CacheResult::ReExecute {
-                clear_scene: true,
-                reapply_settings: true,
-                program: new_program.ast,
-            }
-        );
+            assert_eq!(
+                result,
+                CacheResult::ReExecute {
+                    clear_scene: true,
+                    reapply_settings: true,
+                    program: new_program.ast,
+                },
+                "{old_version} -> {new_version}"
+            );
+        }
     }
 
     // Changing the units settings using an annotation with the exact same file

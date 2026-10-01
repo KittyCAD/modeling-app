@@ -533,6 +533,8 @@ mod test {
             "@settings(defaultLengthUnit = mm)\nx = 1\n",
             "@settings(kclVersion = 1.0)\nx = 1\n",
             "@settings(kclVersion = 2.0)\nx = 1\n",
+            "@settings(kclVersion = 3.0)\nx = 1\n",
+            "@settings(kclVersion = \"3.0\")\nx = 1\n",
             "@settings(kclVersion = \"3.0-preview\")\nx = 1\n",
             "@settings(kclVersion = \"3-preview\")\nx = 1\n",
             "@settings(kclVersion = 2.0)\n@settings(kclVersion = \"3.0-preview\")\nx = 1\n",
@@ -564,6 +566,16 @@ mod test {
                 KclVersion::V2,
                 KclVersion::V3Preview,
             ),
+            (
+                "@settings(kclVersion = 3.0)\nx = 1\n",
+                KclVersion::V3Preview,
+                KclVersion::V3,
+            ),
+            (
+                "@settings(kclVersion = \"3.0-preview\")\nx = 1\n",
+                KclVersion::V3,
+                KclVersion::V3Preview,
+            ),
         ] {
             let mut program = Program::parse_no_errs(code).unwrap();
             program.kcl_version = supplied_version;
@@ -583,6 +595,8 @@ mod test {
             ("", KclVersion::V1),
             ("@settings(defaultLengthUnit = mm)", KclVersion::V1),
             ("@settings(kclVersion = 2.0)", KclVersion::V2),
+            ("@settings(kclVersion = 3.0)", KclVersion::V3),
+            ("@settings(kclVersion = \"3.0\")", KclVersion::V3),
             ("@settings(kclVersion = \"3.0-preview\")", KclVersion::V3Preview),
         ] {
             assert_eq!(

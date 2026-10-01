@@ -2790,6 +2790,8 @@ mod tests {
             ("@settings(defaultLengthUnit = mm)", "1.0"),
             ("@settings(kclVersion = 2.0)", "2.0"),
             ("@settings(kclVersion = \"3.0-preview\")", "3.0-preview"),
+            ("@settings(kclVersion = 3.0)", "3.0"),
+            ("@settings(kclVersion = \"3.0\")", "3.0"),
         ] {
             let program = crate::Program::parse_no_errs(source).unwrap();
             let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
@@ -2831,6 +2833,113 @@ mod tests {
                 .map(|(_, value)| value.into_owned())
                 .collect();
             assert_eq!(versions, vec![expected]);
+        }
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    #[tokio::test]
+    async fn scene_reset_sends_entrypoint_kcl_version() {
+        use std::collections::HashMap;
+
+        use kcmc::websocket::WebSocketRequest;
+        use kcmc::websocket::WebSocketResponse;
+        use tokio::sync::RwLock;
+        use uuid::Uuid;
+
+        use crate::engine::engine_manager::EngineTransport;
+        use crate::engine::engine_manager::TransportCloseError;
+
+        struct RecordingTransport {
+            inner: Arc<Box<dyn EngineTransport>>,
+            requests: Arc<RwLock<Vec<WebSocketRequest>>>,
+        }
+
+        #[async_trait::async_trait]
+        impl EngineTransport for RecordingTransport {
+            async fn inner_fire_modeling_cmd(
+                &self,
+                cmd_id: Uuid,
+                source_range: SourceRange,
+                cmd: WebSocketRequest,
+                id_to_source_range: HashMap<Uuid, SourceRange>,
+            ) -> Result<(), KclError> {
+                self.requests.write().await.push(cmd.clone());
+                self.inner
+                    .inner_fire_modeling_cmd(cmd_id, source_range, cmd, id_to_source_range)
+                    .await
+            }
+
+            async fn inner_send_modeling_cmd(
+                &self,
+                cmd_id: Uuid,
+                source_range: SourceRange,
+                cmd: WebSocketRequest,
+                id_to_source_range: HashMap<Uuid, SourceRange>,
+            ) -> Result<WebSocketResponse, KclError> {
+                self.requests.write().await.push(cmd.clone());
+                self.inner
+                    .inner_send_modeling_cmd(cmd_id, source_range, cmd, id_to_source_range)
+                    .await
+            }
+
+            async fn close(&self) -> Result<(), TransportCloseError> {
+                self.inner.close().await
+            }
+        }
+
+        for (source, expected) in [
+            ("", "1.0"),
+            ("@settings(kclVersion = 2.0)", "2.0"),
+            ("@settings(kclVersion = \"3.0-preview\")", "3.0-preview"),
+            ("@settings(kclVersion = 3.0)", "3.0"),
+        ] {
+            let requests = Arc::new(RwLock::new(Vec::new()));
+            let mut engine = EngineManager::new_mock();
+            engine.transport = Arc::new(Box::new(RecordingTransport {
+                inner: engine.transport.clone(),
+                requests: requests.clone(),
+            }));
+            let ctx = ExecutorContext::new_with_engine(
+                Arc::new(engine),
+                ExecutorSettings {
+                    geometry_only: true,
+                    ..Default::default()
+                },
+            );
+            let program = crate::Program::parse_no_errs(source).unwrap();
+            let mut exec_state = ExecState::new(&ctx);
+
+            ctx.send_clear_scene(
+                Some(program.language_version().unwrap()),
+                &mut exec_state,
+                Default::default(),
+            )
+            .await
+            .unwrap();
+
+            let version_commands: Vec<_> = {
+                let requests = requests.read().await;
+                requests
+                    .iter()
+                    .flat_map(|request| match request {
+                        WebSocketRequest::ModelingCmdReq(request) => vec![&request.cmd],
+                        WebSocketRequest::ModelingCmdBatchReq(batch) => {
+                            batch.requests.iter().map(|request| &request.cmd).collect()
+                        }
+                        _ => vec![],
+                    })
+                    .filter_map(|cmd| match cmd {
+                        kcmc::ModelingCmd::SetKclVersion(_) => Some(serde_json::to_value(cmd).unwrap()),
+                        _ => None,
+                    })
+                    .collect()
+            };
+            assert_eq!(
+                version_commands,
+                vec![serde_json::json!({"type": "set_kcl_version", "kcl_version": expected})],
+                "{source}"
+            );
+            ctx.close().await;
         }
     }
 
@@ -5923,6 +6032,8 @@ face = disc()
 
     const V3_MAIN_IMPORTING_DEP: &str =
         "@settings(kclVersion = \"3.0-preview\")\nimport width from \"dep.kcl\"\nx = width\n";
+    const V3_STABLE_MAIN_IMPORTING_DEP: &str =
+        "@settings(kclVersion = 3.0)\nimport width from \"dep.kcl\"\nx = width\n";
 
     fn dep_declaring(version: &str) -> String {
         format!("@settings(kclVersion = {version})\nexport width = 10\n")
@@ -5947,7 +6058,7 @@ face = disc()
     /// site in the entry point as its outer frame.
     #[tokio::test(flavor = "multi_thread")]
     async fn imported_module_kcl_version_must_match_v3_entry_point() {
-        for dep_version in ["2.0", "1.0"] {
+        for dep_version in ["2.0", "1.0", "3.0"] {
             let dep = dep_declaring(dep_version);
             let error = run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", &dep)])
                 .await
@@ -5981,13 +6092,15 @@ face = disc()
     /// under the entry point's version, as before.
     #[tokio::test(flavor = "multi_thread")]
     async fn imported_module_without_kcl_version_is_allowed_under_v3_entry_point() {
-        for dep in [
-            "export width = 10\n",
-            "@settings(defaultLengthUnit = in)\nexport width = 10\n",
-        ] {
-            run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", dep)])
-                .await
-                .unwrap_or_else(|err| panic!("dep={dep:?}: {err:#?}"));
+        for main in [V3_MAIN_IMPORTING_DEP, V3_STABLE_MAIN_IMPORTING_DEP] {
+            for dep in [
+                "export width = 10\n",
+                "@settings(defaultLengthUnit = in)\nexport width = 10\n",
+            ] {
+                run_versioned_modules(main, &[("dep.kcl", dep)])
+                    .await
+                    .unwrap_or_else(|err| panic!("main={main:?}, dep={dep:?}: {err:#?}"));
+            }
         }
     }
 
@@ -5995,11 +6108,37 @@ face = disc()
     /// a match.
     #[tokio::test(flavor = "multi_thread")]
     async fn imported_module_matching_v3_kcl_version_is_allowed() {
-        for dep_version in ["\"3.0-preview\"", "\"3-preview\"", "\"3.0.0-preview\""] {
+        for (main, dep_versions) in [
+            (
+                V3_MAIN_IMPORTING_DEP,
+                ["\"3.0-preview\"", "\"3-preview\"", "\"3.0.0-preview\""],
+            ),
+            (V3_STABLE_MAIN_IMPORTING_DEP, ["3.0", "3", "\"3.0.0\""]),
+        ] {
+            for dep_version in dep_versions {
+                let dep = dep_declaring(dep_version);
+                run_versioned_modules(main, &[("dep.kcl", &dep)])
+                    .await
+                    .unwrap_or_else(|err| panic!("main={main:?}, dep={dep_version}: {err:#?}"));
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn stable_v3_entry_point_rejects_other_import_versions() {
+        for dep_version in ["1.0", "2.0", "\"3.0-preview\""] {
             let dep = dep_declaring(dep_version);
-            run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", &dep)])
+            let error = run_versioned_modules(V3_STABLE_MAIN_IMPORTING_DEP, &[("dep.kcl", &dep)])
                 .await
-                .unwrap_or_else(|err| panic!("dep={dep_version}: {err:#?}"));
+                .expect_err("mismatched kclVersion should be rejected");
+            assert!(matches!(error, KclError::Semantic { .. }), "{error:#?}");
+            let expected_dep_version = dep_version.trim_matches('"');
+            assert_eq!(
+                error.message(),
+                format!(
+                    "Mixing KCL versions in a single program is not allowed. The entry point `/zma-kcl-version-mismatch/main.kcl` declares kclVersion 3.0, but the imported file `/zma-kcl-version-mismatch/dep.kcl` declares kclVersion {expected_dep_version}. Update the kclVersion setting in one of these files to match the other."
+                )
+            );
         }
     }
 
@@ -6250,21 +6389,23 @@ face = disc()
         let dep_v2 = format!("@settings(kclVersion = 2.0)\n{dep}");
         run_versioned_modules(main_v1, &[("dep.kcl", &dep_v2)]).await.unwrap();
 
-        for dep in [
-            dep.to_owned(),
-            format!("@settings(kclVersion = \"3.0-preview\")\n{dep}"),
+        for (main, version) in [
+            (V3_MAIN_IMPORTING_DEP, "\"3.0-preview\""),
+            (V3_STABLE_MAIN_IMPORTING_DEP, "3.0"),
         ] {
-            let error = run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", &dep)])
-                .await
-                .expect_err("V3 imports must reject a use identifier");
-            assert!(matches!(error, KclError::Syntax { .. }), "{error:#?}");
-            assert_eq!(error.message(), crate::parsing::RESERVED_USE_MESSAGE);
-            let ranges = error.source_ranges();
-            assert_eq!(ranges.len(), 2, "{ranges:#?}");
-            let start = dep.find("use =").unwrap();
-            assert_eq!((ranges[0].start(), ranges[0].end()), (start, start + 3));
-            assert!(!ranges[0].module_id().is_top_level());
-            assert!(ranges[1].module_id().is_top_level());
+            for dep in [dep.to_owned(), format!("@settings(kclVersion = {version})\n{dep}")] {
+                let error = run_versioned_modules(main, &[("dep.kcl", &dep)])
+                    .await
+                    .expect_err("V3 imports must reject a use identifier");
+                assert!(matches!(error, KclError::Syntax { .. }), "{error:#?}");
+                assert_eq!(error.message(), crate::parsing::RESERVED_USE_MESSAGE);
+                let ranges = error.source_ranges();
+                assert_eq!(ranges.len(), 2, "{ranges:#?}");
+                let start = dep.find("use =").unwrap();
+                assert_eq!((ranges[0].start(), ranges[0].end()), (start, start + 3));
+                assert!(!ranges[0].module_id().is_top_level());
+                assert!(ranges[1].module_id().is_top_level());
+            }
         }
     }
 
@@ -9567,6 +9708,7 @@ f = newFn
             ("2.0", "1.0"),
             ("2.0", "2.0"),
             ("\"3.0-preview\"", "3.0"),
+            ("3.0", "3.0"),
         ] {
             let body = format!("@(added_in = \"{added_in}\")\nfn newFn() {{ return 1 }}\nx = newFn()\n");
             assert_eq!(

@@ -101,8 +101,15 @@ mod tests {
         assert_eq!(KclVersion::from_str("2"), Ok(KclVersion::V2));
         assert_eq!(KclVersion::from_str("2.0.0"), Ok(KclVersion::V2));
         assert_eq!(KclVersion::from_str("3.0-preview"), Ok(KclVersion::V3Preview));
+        assert_eq!(KclVersion::from_str("3"), Ok(KclVersion::V3));
         assert_eq!(KclVersion::from_str("3.0"), Ok(KclVersion::V3));
+        assert_eq!(KclVersion::from_str("3.0.0"), Ok(KclVersion::V3));
         // No such version.
         KclVersion::from_str("99.123").unwrap_err();
+    }
+
+    #[test]
+    fn stable_v3_follows_preview() {
+        assert!(KclVersion::V3Preview < KclVersion::V3);
     }
 }
