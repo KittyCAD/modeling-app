@@ -2136,10 +2136,20 @@ gdt::flatness(
                 .dimension
                 .as_ref()
                 .expect("expected new_annotation command to have a dimension");
-            assert!(dimension.from_entity_id.is_some());
-            assert_eq!(dimension.from_entity_id, dimension.to_entity_id);
-            assert!(dimension.from_edge_reference.is_none());
-            assert!(dimension.to_edge_reference.is_none());
+            // The fixture measures a face-API edge specifier, which is stored as
+            // an edge reference rather than a resolved engine entity id.
+            assert!(dimension.from_entity_id.is_none());
+            assert!(dimension.to_entity_id.is_none());
+            assert_eq!(dimension.from_edge_reference, dimension.to_edge_reference);
+            assert_eq!(
+                dimension
+                    .from_edge_reference
+                    .as_ref()
+                    .expect("expected from_edge_reference")
+                    .side_faces
+                    .len(),
+                2
+            );
             // Edge length uses endpoints; the same centroid twice would give zero distance.
             assert_eq!(
                 dimension.from_entity_leader_pos,
