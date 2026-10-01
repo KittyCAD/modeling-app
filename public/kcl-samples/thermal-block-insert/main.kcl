@@ -126,9 +126,9 @@ tongueShape = sketch(on = XY) {
   equalLength([fall1, fall2, fall3, fall4, fall5])
 
   horizontalDistance([
-  leftCenterGuide.start,
-  leftCenterGuide.end
-]) == insertLength / 2
+    leftCenterGuide.start,
+    leftCenterGuide.end
+  ]) == insertLength / 2
   verticalDistance([leftWall.start, leftWall.end]) == blockHalfThickness
   horizontalDistance([flat1.start, flat1.end]) == tongueLength
   horizontalDistance([rise1.end, rise1.start]) == tongueSetback
@@ -241,9 +241,9 @@ grooveShape = sketch(on = XY) {
   equalLength([fall1, fall2, fall3, fall4, fall5])
 
   horizontalDistance([
-  leftCenterGuide.start,
-  leftCenterGuide.end
-]) == insertLength / 2
+    leftCenterGuide.start,
+    leftCenterGuide.end
+  ]) == insertLength / 2
   verticalDistance([leftWall.start, leftWall.end]) == -grooveDepth
   horizontalDistance([flat1.start, flat1.end]) == tongueLength
   horizontalDistance([rise1.end, rise1.start]) == tongueSetback

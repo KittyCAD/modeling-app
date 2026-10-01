@@ -1,5 +1,5 @@
 import type { JsonValue } from '@rust/kcl-lib/bindings/serde_json/JsonValue'
-import { Setting } from '@src/lib/settings/initialSettings'
+import { Setting } from '@src/lib/settings/Setting'
 import type { SettingProps } from '@src/lib/settings/settingsTypes'
 
 export type ExtensionSettingTomlBinding = {

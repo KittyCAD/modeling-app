@@ -133,9 +133,9 @@ tabHoleSketch = sketch(on = tabHolePlane) {
   ])
   horizontal(countersinkGuide)
   horizontalDistance([
-  countersinkGuide.start,
-  countersinkGuide.end
-]) == countersinkOuterDiameter / 2
+    countersinkGuide.start,
+    countersinkGuide.end
+  ]) == countersinkOuterDiameter / 2
 
   coincident([
     fastenerCircle.center,
@@ -246,9 +246,9 @@ slotProfile = sketch(on = XY) {
   vertical(rightBottomGuide)
 
   horizontalDistance([
-  slotCenterline.start,
-  slotCenterline.end
-]) == slotOverallLength
+    slotCenterline.start,
+    slotCenterline.end
+  ]) == slotOverallLength
   radius(arc2) == slotWidth / 2
   radius(arc4) == slotWidth / 2
   coincident([
