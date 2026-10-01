@@ -14,21 +14,37 @@ export function useProjectSearch<T extends SearchableProject>(
   projects: T[] | undefined
 ) {
   const [query, setQuery] = useState('')
+  const currentProjects = projects ?? []
+  const searchableProjects = currentProjects.map(({ name, title }) => ({
+    name,
+    title,
+  }))
+  const searchKey = JSON.stringify(searchableProjects)
+  // biome-ignore lint/correctness/useExhaustiveDependencies: searchKey contains the ordered fields Fuse indexes, excluding metadata-only changes.
   const fuse = useMemo(
     () =>
-      new Fuse(projects ?? [], {
+      new Fuse(searchableProjects, {
         keys: [
           { name: 'title', weight: 0.8 },
           { name: 'name', weight: 0.2 },
         ],
         includeScore: true,
       }),
-    [projects]
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- searchKey contains the ordered fields Fuse indexes.
+    [searchKey]
   )
-  const searchResults = useMemo(() => {
-    const results = fuse.search(query).map((result) => result.item)
-    return query.length > 0 ? results : (projects ?? [])
-  }, [fuse, projects, query])
+  const matchingIndices = useMemo(
+    () =>
+      query.length === 0
+        ? []
+        : fuse.search(query).map((result) => result.refIndex),
+    [fuse, query]
+  )
+  // Matching depends on text; cards and sorting need the current metadata.
+  const searchResults =
+    query.length === 0
+      ? currentProjects
+      : matchingIndices.map((index) => currentProjects[index])
 
   return {
     searchResults,

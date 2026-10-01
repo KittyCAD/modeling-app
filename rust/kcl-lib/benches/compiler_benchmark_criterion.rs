@@ -8,7 +8,6 @@ use criterion::criterion_main;
 
 pub fn bench_parse(c: &mut Criterion) {
     for (name, file) in [
-        ("pipes_on_pipes", PIPES_PROGRAM),
         ("big_kitt", KITT_PROGRAM),
         ("cube", CUBE_PROGRAM),
         ("math", MATH_PROGRAM),
@@ -151,12 +150,11 @@ criterion_group!(
 criterion_main!(benches);
 
 const KITT_PROGRAM: &str = include_str!("../e2e/executor/inputs/kittycad_svg.kcl");
-const PIPES_PROGRAM: &str = include_str!("../e2e/executor/inputs/pipes_on_pipes.kcl");
 const CUBE_PROGRAM: &str = include_str!("../e2e/executor/inputs/cube.kcl");
 const MATH_PROGRAM: &str = include_str!("../e2e/executor/inputs/math.kcl");
 const MEDIUM_SKETCH: &str = include_str!("../e2e/executor/inputs/medium_sketch.kcl");
 const MIKE_STRESS_TEST_PROGRAM: &str = include_str!("../tests/mike_stress_test/input.kcl");
-const LSYSTEM_KOCH_SNOWFLAKE_PROGRAM: &str = include_str!("../e2e/executor/inputs/lsystem.kcl");
+const LSYSTEM_KOCH_SNOWFLAKE_PROGRAM: &str = include_str!("../tests/lsystem/input.kcl");
 // Previously had O(c^n) behaviour due to excessive backtracking in the parser, https://github.com/KittyCAD/modeling-app/issues/7866
 const NESTED_FN_CALLS: &str = "extrude(
  close(

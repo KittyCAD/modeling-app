@@ -83,10 +83,16 @@ async fn inner_rectangle(
 
     // Find the corner in the negative quadrant
     let (ty, corner) = match (center, corner) {
-        (Some(center), None) => (
-            center[0].ty,
-            [center[0].n - width.n / 2.0, center[1].n - height.n / 2.0],
-        ),
+        (Some(center), None) => {
+            let units = center[0].ty.as_length().unwrap_or(UnitLength::Millimeters);
+            (
+                center[0].ty,
+                [
+                    center[0].n - width.to_length_units(units) / 2.0,
+                    center[1].n - height.to_length_units(units) / 2.0,
+                ],
+            )
+        }
         (None, Some(corner)) => (corner[0].ty, [corner[0].n, corner[1].n]),
         (None, None) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -103,6 +109,10 @@ async fn inner_rectangle(
     };
     let units = ty.as_length().unwrap_or(UnitLength::Millimeters);
     let corner_t = [TyF64::new(corner[0], ty), TyF64::new(corner[1], ty)];
+    // The rectangle is drawn in the units of `center` or `corner`, which can
+    // differ from the units of `width` and `height`.
+    let width = width.to_length_units(units);
+    let height = height.to_length_units(units);
 
     // Start the sketch then draw the 4 lines.
     let sketch = crate::std::sketch::inner_start_profile(
@@ -115,7 +125,7 @@ async fn inner_rectangle(
     )
     .await?;
     let sketch_id = sketch.id;
-    let deltas = [[width.n, 0.0], [0.0, height.n], [-width.n, 0.0], [0.0, -height.n]];
+    let deltas = [[width, 0.0], [0.0, height], [-width, 0.0], [0.0, -height]];
     let ids = [
         exec_state.next_uuid(),
         exec_state.next_uuid(),
@@ -725,5 +735,102 @@ pub(crate) fn get_radius_labelled(
             format!("You cannot specify both `{label_diameter}` and `{label_radius}`, please remove one"),
             vec![source_range],
         ))),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use kittycad_modeling_cmds::ModelingCmd;
+    use kittycad_modeling_cmds::shared::PathSegment;
+
+    use crate::execution::KclValue;
+    use crate::execution::parse_execute;
+
+    /// Runs `code`, which draws one rectangle called `r`, and returns where the
+    /// engine was told to start the profile, the relative line segments it was
+    /// sent, and the corners recorded in the sketch, all in mm.
+    async fn rectangle_in_mm(code: &str) -> ([f64; 2], Vec<[f64; 2]>, Vec<[f64; 2]>) {
+        let result = parse_execute(code).await.unwrap();
+
+        let mut start = None;
+        let mut segments = Vec::new();
+        for command in result.root_module_artifact_commands() {
+            match &command.command {
+                ModelingCmd::MovePathPen(move_pen) => start = Some([move_pen.to.x.0, move_pen.to.y.0]),
+                ModelingCmd::ExtendPath(extend) => match &extend.segment {
+                    PathSegment::Line { end, relative: true } => segments.push([end.x.0, end.y.0]),
+                    other => panic!("expected a relative line, got {other:?}"),
+                },
+                _ => {}
+            }
+        }
+
+        let KclValue::Sketch { value: sketch } = result.variable("r") else {
+            panic!("expected `r` to be a sketch");
+        };
+        let corners = sketch
+            .paths
+            .iter()
+            .map(|path| {
+                let [x, y] = path.get_to();
+                [x.to_mm(), y.to_mm()]
+            })
+            .collect();
+
+        (
+            start.expect("expected the profile to start somewhere"),
+            segments,
+            corners,
+        )
+    }
+
+    fn assert_close(actual: &[[f64; 2]], expected: &[[f64; 2]], code: &str) {
+        assert_eq!(actual.len(), expected.len(), "{code}");
+        for (a, e) in actual.iter().zip(expected) {
+            assert!(
+                (a[0] - e[0]).abs() < 1e-9 && (a[1] - e[1]).abs() < 1e-9,
+                "expected {expected:?}, got {actual:?} for:\n{code}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn rectangle_converts_width_and_height_to_the_units_of_the_center_or_corner() {
+        // https://github.com/KittyCAD/modeling-app/issues/14207
+        // Every case describes the same 1in x 2in rectangle, so the engine must
+        // get the same numbers in mm whichever units the arguments use.
+        let centered = [
+            "@settings(kclVersion = 2.0, defaultLengthUnit = mm)\nr = startSketchOn(XY) |> rectangle(center = [0, 0], width = 1in, height = 2in)",
+            "@settings(kclVersion = 2.0, defaultLengthUnit = mm)\nr = startSketchOn(XY) |> rectangle(center = [0, 0], width = 25.4, height = 50.8)",
+            "@settings(kclVersion = 2.0, defaultLengthUnit = mm)\nr = startSketchOn(XY) |> rectangle(center = [0in, 0in], width = 1in, height = 2in)",
+            "@settings(kclVersion = 2.0, defaultLengthUnit = in)\nr = startSketchOn(XY) |> rectangle(center = [0, 0], width = 25.4mm, height = 50.8mm)",
+            "@settings(kclVersion = 2.0, defaultLengthUnit = in)\nr = startSketchOn(XY) |> rectangle(center = [0, 0], width = 1, height = 2)",
+        ];
+        let cornered = [
+            "@settings(kclVersion = 2.0, defaultLengthUnit = mm)\nr = startSketchOn(XY) |> rectangle(corner = [0, 0], width = 1in, height = 2in)",
+            "@settings(kclVersion = 2.0, defaultLengthUnit = mm)\nr = startSketchOn(XY) |> rectangle(corner = [0, 0], width = 25.4, height = 50.8)",
+            "@settings(kclVersion = 2.0, defaultLengthUnit = in)\nr = startSketchOn(XY) |> rectangle(corner = [0, 0], width = 25.4mm, height = 50.8mm)",
+        ];
+        let segments = [[25.4, 0.0], [0.0, 50.8], [-25.4, 0.0], [0.0, -50.8]];
+
+        for (codes, start, corners) in [
+            (
+                &centered[..],
+                [-12.7, -25.4],
+                [[12.7, -25.4], [12.7, 25.4], [-12.7, 25.4], [-12.7, -25.4]],
+            ),
+            (
+                &cornered[..],
+                [0.0, 0.0],
+                [[25.4, 0.0], [25.4, 50.8], [0.0, 50.8], [0.0, 0.0]],
+            ),
+        ] {
+            for code in codes {
+                let (actual_start, actual_segments, actual_corners) = rectangle_in_mm(code).await;
+                assert_close(&[actual_start], &[start], code);
+                assert_close(&actual_segments, &segments, code);
+                assert_close(&actual_corners, &corners, code);
+            }
+        }
     }
 }

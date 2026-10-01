@@ -92,9 +92,9 @@ stampedProfile = sketch(on = XY) {
   distance([flangeEnd.start, flangeEnd.end]) == thickness
   distance([innerFlange.start, innerFlange.end]) == flangeLength - bendStartX
   distance([
-  controlledSurface.start,
-  controlledSurface.end
-]) == legLength
+    controlledSurface.start,
+    controlledSurface.end
+  ]) == legLength
   distance([tabEnd.start, tabEnd.end]) == thickness
   distance([outerSurface.start, outerSurface.end]) == legLength
   parallel([controlledSurface, outerSurface])
@@ -173,9 +173,9 @@ stampedProfile = sketch(on = XY) {
   distance([flangeEnd.start, flangeEnd.end]) == thickness
   distance([innerFlange.start, innerFlange.end]) == flangeLength - bendStartX
   distance([
-  controlledSurface.start,
-  controlledSurface.end
-]) == legLength
+    controlledSurface.start,
+    controlledSurface.end
+  ]) == legLength
   distance([tabEnd.start, tabEnd.end]) == thickness
   distance([outerSurface.start, outerSurface.end]) == legLength
   parallel([controlledSurface, outerSurface])

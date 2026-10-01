@@ -7,6 +7,7 @@ use kittycad_modeling_cmds::shared::AnnotationFeatureTag;
 use kittycad_modeling_cmds::shared::AnnotationLineEnd;
 use kittycad_modeling_cmds::shared::AnnotationMbdBasicDimension;
 use kittycad_modeling_cmds::shared::AnnotationMbdControlFrame;
+use kittycad_modeling_cmds::shared::AnnotationMbdLeaderPosition;
 use kittycad_modeling_cmds::shared::AnnotationOptions;
 use kittycad_modeling_cmds::shared::AnnotationType;
 use kittycad_modeling_cmds::shared::MbdSymbol;
@@ -119,7 +120,7 @@ enum GdtEdgeReference {
 struct DistanceEndpoint {
     entity_id: Option<uuid::Uuid>,
     edge_reference: Option<kcmc::shared::EdgeSpecifier>,
-    entity_pos: KPoint2d<f64>,
+    entity_pos: AnnotationMbdLeaderPosition,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -224,22 +225,22 @@ impl DistanceEntity {
             DistanceEntity::Face(face) => Ok(DistanceEndpoint {
                 entity_id: Some(face.id),
                 edge_reference: None,
-                entity_pos: KPoint2d { x: 0.5, y: 0.5 },
+                entity_pos: AnnotationMbdLeaderPosition::Centroid {},
             }),
             DistanceEntity::TaggedFace(face) => Ok(DistanceEndpoint {
                 entity_id: Some(args.get_adjacent_face_to_tag(exec_state, face, false).await?),
                 edge_reference: None,
-                entity_pos: KPoint2d { x: 0.5, y: 0.5 },
+                entity_pos: AnnotationMbdLeaderPosition::Centroid {},
             }),
             DistanceEntity::Edge(edge) => Ok(DistanceEndpoint {
                 entity_id: Some(edge.get_engine_id(exec_state, args)?),
                 edge_reference: None,
-                entity_pos: KPoint2d { x: 0.5, y: 0.0 },
+                entity_pos: AnnotationMbdLeaderPosition::Centroid {},
             }),
             DistanceEntity::Specifier(edge_reference) => Ok(DistanceEndpoint {
                 entity_id: None,
                 edge_reference: Some(edge_reference.clone()),
-                entity_pos: KPoint2d { x: 0.5, y: 0.0 },
+                entity_pos: AnnotationMbdLeaderPosition::Centroid {},
             }),
         }
     }
@@ -1054,12 +1055,16 @@ async fn inner_distance(
             DistanceEndpoint {
                 entity_id,
                 edge_reference: edge_reference.clone(),
-                entity_pos: KPoint2d { x: 0.0, y: 0.0 },
+                entity_pos: AnnotationMbdLeaderPosition::NormalizedPos {
+                    pos: KPoint2d { x: 0.0, y: 0.0 },
+                },
             },
             DistanceEndpoint {
                 entity_id,
                 edge_reference,
-                entity_pos: KPoint2d { x: 1.0, y: 0.0 },
+                entity_pos: AnnotationMbdLeaderPosition::NormalizedPos {
+                    pos: KPoint2d { x: 1.0, y: 0.0 },
+                },
             },
             &tolerance,
             precision,
@@ -1096,10 +1101,10 @@ async fn create_basic_distance_annotation(
     let dimension = AnnotationBasicDimension::builder()
         .maybe_from_entity_id(from.entity_id)
         .maybe_from_edge_reference(from.edge_reference)
-        .from_entity_pos(from.entity_pos)
+        .from_entity_leader_pos(from.entity_pos)
         .maybe_to_entity_id(to.entity_id)
         .maybe_to_edge_reference(to.edge_reference)
-        .to_entity_pos(to.entity_pos)
+        .to_entity_leader_pos(to.entity_pos)
         .dimension(
             AnnotationMbdBasicDimension::builder()
                 .tolerance(
@@ -2129,6 +2134,23 @@ gdt::flatness(
                 .dimension
                 .as_ref()
                 .expect("expected new_annotation command to have a dimension");
+            assert!(dimension.from_entity_id.is_some());
+            assert_eq!(dimension.from_entity_id, dimension.to_entity_id);
+            assert!(dimension.from_edge_reference.is_none());
+            assert!(dimension.to_edge_reference.is_none());
+            // Edge length uses endpoints; the same centroid twice would give zero distance.
+            assert_eq!(
+                dimension.from_entity_leader_pos,
+                Some(AnnotationMbdLeaderPosition::NormalizedPos {
+                    pos: KPoint2d { x: 0.0, y: 0.0 },
+                })
+            );
+            assert_eq!(
+                dimension.to_entity_leader_pos,
+                Some(AnnotationMbdLeaderPosition::NormalizedPos {
+                    pos: KPoint2d { x: 1.0, y: 0.0 },
+                })
+            );
             assert_close(dimension.dimension.tolerance.unwrap(), expected_tolerance);
             assert_close(dimension.offset.x, expected_x);
             assert_close(dimension.offset.y, expected_y);
@@ -2245,6 +2267,20 @@ __GDT_CALL__
             .expect("expected new_annotation command to have a dimension");
         assert!(dimension.from_entity_id.is_none());
         assert!(dimension.to_entity_id.is_none());
+        assert_eq!(dimension.from_edge_reference, dimension.to_edge_reference);
+        // Edge length uses endpoints; the same centroid twice would give zero distance.
+        assert_eq!(
+            dimension.from_entity_leader_pos,
+            Some(AnnotationMbdLeaderPosition::NormalizedPos {
+                pos: KPoint2d { x: 0.0, y: 0.0 },
+            })
+        );
+        assert_eq!(
+            dimension.to_entity_leader_pos,
+            Some(AnnotationMbdLeaderPosition::NormalizedPos {
+                pos: KPoint2d { x: 1.0, y: 0.0 },
+            })
+        );
         assert_eq!(
             dimension
                 .from_edge_reference
@@ -2290,6 +2326,15 @@ __GDT_CALL__
             .expect("expected new_annotation command to have a dimension");
         assert!(dimension.from_entity_id.is_none());
         assert!(dimension.to_entity_id.is_none());
+        // `from`/`to` measures between entity centers, so both positions use centroids.
+        assert_eq!(
+            dimension.from_entity_leader_pos,
+            Some(AnnotationMbdLeaderPosition::Centroid {})
+        );
+        assert_eq!(
+            dimension.to_entity_leader_pos,
+            Some(AnnotationMbdLeaderPosition::Centroid {})
+        );
         assert_eq!(
             dimension
                 .from_edge_reference

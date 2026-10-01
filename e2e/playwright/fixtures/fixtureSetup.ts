@@ -142,6 +142,11 @@ export interface Fixtures {
   ) => Promise<{ dir: string }>
 }
 
+export interface ElectronZooLaunchOptions {
+  appDirectory?: string
+  executablePath?: string
+}
+
 export class ElectronZoo {
   private disposed = false
   private disposal: Promise<void> | undefined
@@ -157,7 +162,7 @@ export class ElectronZoo {
   public context!: BrowserContext
   private tracingEnabled = false
 
-  constructor() {}
+  constructor(private readonly launchOptions: ElectronZooLaunchOptions = {}) {}
 
   async dispose(testInfo: TestInfo) {
     this.disposed = true
@@ -250,19 +255,23 @@ export class ElectronZoo {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const that = this
 
+    const appDirectory = this.launchOptions.appDirectory
+      ? path.resolve(this.launchOptions.appDirectory)
+      : undefined
+    const executablePath =
+      this.launchOptions.executablePath ??
+      (process.env.ELECTRON_OVERRIDE_DIST_PATH
+        ? process.env.ELECTRON_OVERRIDE_DIST_PATH + 'electron'
+        : undefined)
     const options = {
-      args: ['.', '--no-sandbox'],
+      args: [appDirectory ?? '.', '--no-sandbox'],
+      ...(appDirectory ? { cwd: appDirectory } : {}),
       timeout: setupTimeout,
       env: {
         ...process.env,
         NODE_ENV: 'test',
       },
-      ...(process.env.ELECTRON_OVERRIDE_DIST_PATH
-        ? {
-            executablePath:
-              process.env.ELECTRON_OVERRIDE_DIST_PATH + 'electron',
-          }
-        : {}),
+      ...(executablePath !== undefined ? { executablePath } : {}),
       ...(process.env.PLAYWRIGHT_RECORD_VIDEO
         ? {
             recordVideo: {

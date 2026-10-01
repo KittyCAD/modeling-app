@@ -24,9 +24,8 @@ import {
   autoUpdateReadySignal,
 } from '@src/lib/autoUpdate'
 import { BillingTransition } from '@src/lib/billing'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { useApp } from '@src/lib/boot'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { removeDragPreviewElement, setDragPreview } from '@src/lib/dragPreview'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -290,9 +289,8 @@ function useProjectLibraryDrag({
 const Home = () => {
   useSignals()
   const app = useApp()
-  const { auth, billing, commands, settings, registry, userFeatures } = app
+  const { auth, billing, commands, settings, registry } = app
   const keymap = registry.optional(keymapService)
-  const { kclManager } = useSingletons()
   const settingsActor = settings.actor
   useQueryParamEffects()
 
@@ -342,10 +340,6 @@ const Home = () => {
     .join('|')
   const homeProjectActions = registry.get(homeProjectActionsService)
   const session = registry.get(projectSession)
-  const hasCloudSyncFeature = userFeatures.useHas(
-    OPFS_CLOUD_FEATURE_FLAG,
-    false
-  )
   const { libraryId } = useParams()
   const routeSelectedProjectLibrary = libraryId
     ? projectLibraries.find((library) => library.id === libraryId)
@@ -562,11 +556,9 @@ const Home = () => {
   }
   useMenuListener(cb)
 
-  // Cancel all KCL executions while on the home page
   useEffect(() => {
     markOnce('code/didLoadHome')
-    kclManager.cancelAllExecutions()
-  }, [kclManager])
+  }, [])
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()
@@ -774,7 +766,7 @@ const Home = () => {
             projectStatuses={projectStatuses}
             projectActions={homeProjectActions}
             fileOperations={app.fileOperations}
-            showCloudSyncUi={hasCloudSyncFeature}
+            showCloudSyncUi
             showSourceStatusBadges={false}
             onMoveToLibrary={moveProjectToLibrary}
             projectLibraryEmptyTestId="project-library-empty"
@@ -791,7 +783,7 @@ const Home = () => {
             projectStatuses={projectStatuses}
             projectActions={homeProjectActions}
             fileOperations={app.fileOperations}
-            showCloudSyncUi={hasCloudSyncFeature}
+            showCloudSyncUi
             onMoveToLibrary={moveProjectToLibrary}
             projectLibraryDrag={projectLibraryDrag}
             projectLibraryTypes={projectLibraryTypes}

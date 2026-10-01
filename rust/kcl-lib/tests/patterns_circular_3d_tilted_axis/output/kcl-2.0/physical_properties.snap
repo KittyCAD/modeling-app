@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties patterns_circular_3d_tilted_axis.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 5.554557785385059,
+      "y": -4.554557785385063,
+      "z": 9.9046127393966
+    },
+    "dimensions": {
+      "x": 18.127404746777582,
+      "y": 18.12740474677759,
+      "z": 25.04469347601684
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 65.99998897627302
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.01099983759633716
+  }
+}

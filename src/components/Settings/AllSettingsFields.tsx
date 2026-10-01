@@ -12,7 +12,7 @@ import {
   canRevealInFileExplorer,
   revealInFileExplorer,
 } from '@src/lib/revealInFileExplorer'
-import type { Setting } from '@src/lib/settings/initialSettings'
+import type { Setting } from '@src/lib/settings/Setting'
 import type {
   SetEventTypes,
   SettingsLevel,

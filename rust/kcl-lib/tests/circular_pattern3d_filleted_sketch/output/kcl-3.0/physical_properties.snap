@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties circular_pattern3d_filleted_sketch.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -22.05093104351173,
+      "y": -22.050931035070978,
+      "z": 10.000000019555266
+    },
+    "dimensions": {
+      "x": 103.7062726900332,
+      "y": 99.70627273737271,
+      "z": 20.00000003911053
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 11355.72083551173
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 37.8508292628125
+  }
+}

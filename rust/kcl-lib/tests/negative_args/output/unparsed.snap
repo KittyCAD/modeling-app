@@ -1,0 +1,23 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing negative_args.kcl
+---
+width = 5
+height = 10
+length = 12
+
+fn box(sk1, sk2, scale) {
+  boxSketch = startSketchOn(XY)
+    |> startProfile(at = [sk1, sk2])
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
+    |> close()
+    |> extrude(length = scale)
+  return boxSketch
+}
+
+box(sk1 = 0, sk2 = 0, scale = 5)
+box(sk1 = 10, sk2 = 23, scale = 8)
+thing = box(sk1 = -12, sk2 = -15, scale = 10)
+box(sk1 = -20, sk2 = -5, scale = 10)

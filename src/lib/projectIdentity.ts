@@ -79,6 +79,4 @@ export async function separateProjectsSharingProjectId({
       fileOperations.writeFile(projectTomlPath, nextContents)
     )
   )
-
-  return { sharedProjectId }
 }

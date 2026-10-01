@@ -8,6 +8,7 @@ import {
   encode as msgpackEncode,
 } from '@msgpack/msgpack'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
+import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { EngineCommand, ResponseMap } from '@src/lang/std/artifactGraph'
 import type { CommandLog } from '@src/lang/std/commandLog'
@@ -189,6 +190,7 @@ export class ConnectionManager extends EventTarget {
     unitTestWebrtc,
     unitTestPool,
     rustContext,
+    kclVersion,
   }: {
     width: number
     height: number
@@ -198,6 +200,7 @@ export class ConnectionManager extends EventTarget {
     unitTestWebrtc?: boolean
     unitTestPool?: 'cpu'
     rustContext?: RustContext
+    kclVersion?: KclVersion
   }) {
     EngineDebugger.addLog({
       label: 'connectionManager',
@@ -235,7 +238,7 @@ export class ConnectionManager extends EventTarget {
 
     const handleMessage = this.createMessageHandler(rustContext)
 
-    const url = this.generateWebsocketURL()
+    const url = this.generateWebsocketURL(kclVersion)
     this.connection = new Connection({
       url,
       token,
@@ -383,29 +386,33 @@ export class ConnectionManager extends EventTarget {
   handleOnDataChannelMessage(event: MessageEvent<any>) {
     const result: UnreliableResponses = JSON.parse(event.data)
     Object.values(this.unreliableSubscriptions[result.type] || {}).forEach(
-      // TODO: There is only one response that uses the unreliable channel atm,
-      // highlight_set_entity, if there are more it's likely they will all have the same
-      // sequence logic, but I'm not sure if we use a single global sequence or a sequence
-      // per unreliable subscription.
+      // Hover/highlight responses may arrive out of order on the unreliable
+      // channel. Only apply the newest sequenced result we have seen.
       (callback) => {
+        const sequence = (result.data as { sequence?: number } | undefined)
+          ?.sequence
         if (
           result.type === 'highlight_set_entity' &&
-          result?.data?.sequence &&
-          result?.data.sequence > this.inSequence
+          typeof sequence === 'number'
         ) {
-          this.inSequence = result.data.sequence
-          callback(result)
-        } else if (result.type !== 'highlight_set_entity') {
+          if (sequence > this.inSequence) {
+            this.inSequence = sequence
+            callback(result)
+          }
+        } else {
           callback(result)
         }
       }
     )
   }
 
-  generateWebsocketURL() {
+  generateWebsocketURL(kclVersion: KclVersion | undefined) {
     let additionalSettings = this.settings.enableSSAO ? '&post_effect=ssao' : ''
     additionalSettings +=
       '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
+    if (kclVersion !== undefined) {
+      additionalSettings += `&kcl_version=${encodeURIComponent(kclVersion)}`
+    }
     const url = withKittycadWebSocketURL(
       `?video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}${additionalSettings}`
     )
@@ -1002,9 +1009,6 @@ export class ConnectionManager extends EventTarget {
       height: 256,
       setStreamIsReady: () => {
         console.warn('This is a NO OP. Should not be called in web.')
-      },
-      callbackOnUnitTestingConnection: () => {
-        console.log('what is happening, why is rust doing this!')
       },
     })
   }

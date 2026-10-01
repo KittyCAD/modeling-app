@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties pattern_vase.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": 500.0
+    },
+    "dimensions": {
+      "x": 715.4684014671819,
+      "y": 715.4684014671819,
+      "z": 1000.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 24195722.99418781
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 115163.23934065616
+  }
+}
