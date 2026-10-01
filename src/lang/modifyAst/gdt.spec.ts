@@ -27,6 +27,7 @@ import {
   recast,
 } from '@src/lang/wasm'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type RustContext from '@src/lib/rustContext'
 import {
@@ -1471,6 +1472,46 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
   })
 
   describe('Testing addDistanceGdt', () => {
+    it.each(['edge length', 'between faces'])(
+      'generates a centered, font-relative default for %s through the command flow',
+      async (measurement) => {
+        const { artifactGraph, ast } = await executeCode(
+          box,
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
+        const targets = [...artifactGraph.values()]
+          .filter(
+            (artifact) =>
+              artifact.type ===
+              (measurement === 'edge length' ? 'sweepEdge' : 'wall')
+          )
+          .slice(0, measurement === 'edge length' ? 1 : 2)
+        expect(targets).toHaveLength(measurement === 'edge length' ? 1 : 2)
+        const fontSize = await getKclCommandValue(
+          '2mm',
+          instanceInThisFile,
+          rustContextInThisFile
+        )
+        const result = await modelingCommandCodemods['GDT Distance'].run({
+          args: {
+            objects: createSelectionFromArtifacts(targets, artifactGraph),
+            fontSize,
+            framePlane: 'XY',
+          },
+          ast,
+          kclManager: kclManagerInThisFile,
+          wasmInstance: instanceInThisFile,
+        })
+        if (err(result)) throw result
+        const code = recast(result.modifiedAst, instanceInThisFile)
+        if (err(code)) throw code
+        expect(code).toContain('framePosition = [0mm, 2 * 2mm]')
+        expect(code).toContain('fontSize = 2mm')
+        await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+      }
+    )
+
     it('should omit an unspecified tolerance', async () => {
       const { artifactGraph, ast } = await executeCode(
         box,

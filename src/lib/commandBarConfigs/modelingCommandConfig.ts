@@ -2020,6 +2020,19 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           },
           tolerance: gdtToleranceProps,
           ...gdtFrameArgOverrides,
+          framePosition: {
+            defaultValue: (commandBarContext) => {
+              const { fontSize } = commandBarContext.argumentsToSubmit
+              const fontText =
+                fontSize &&
+                typeof fontSize === 'object' &&
+                'valueText' in fontSize &&
+                typeof fontSize.valueText === 'string'
+                  ? fontSize.valueText
+                  : KCL_DEFAULT_FONT_SIZE
+              return `[0mm, 2 * (${fontText})]`
+            },
+          },
         },
       }
     ),

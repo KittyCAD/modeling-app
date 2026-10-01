@@ -211,6 +211,7 @@ const withGdtDefaults = <CommandName extends ModelingCodemodCommandName>(
         sourceCode: kclManager.code,
         outputUnit: kclManager.fileSettings.defaultLengthUnit,
         wasmInstance,
+        distance: commandName === 'GDT Distance',
       })
 
       return add(
