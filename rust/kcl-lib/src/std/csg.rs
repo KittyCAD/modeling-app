@@ -610,14 +610,23 @@ untagged = extrude(region(segments = [firstProfile.bottom]), length = 5mm, symme
             code.push_str(&format!("{name}Original = {name}.faces.{name}End\n"));
         }
         code.push_str("bodies = subtract([first, second], tools = [third, untagged])\n");
-        for index in 0..2 {
-            for name in tag_names {
+        let output_tag_names = [["first", "third"], ["second", "third"]];
+        for (index, names) in output_tag_names.iter().enumerate() {
+            for name in names {
                 code.push_str(&format!("{name}FromBody{index} = bodies[{index}].faces.{name}End\n"));
             }
         }
         let result = parse_execute(&code).await.unwrap();
-        for index in 0..2 {
-            for name in tag_names {
+        let KclValue::HomArray { value: bodies, .. } = result.variable("bodies") else {
+            panic!("Expected subtract to return an array of solids");
+        };
+        assert_eq!(bodies.len(), output_tag_names.len());
+        for (index, names) in output_tag_names.iter().enumerate() {
+            let KclValue::Solid { value: body } = &bodies[index] else {
+                panic!("Expected subtract output {index} to be a solid");
+            };
+            assert_eq!(body.faces.len(), names.len(), "subtract: output {index}");
+            for name in names {
                 assert_eq!(
                     result.variable(&format!("{name}FromBody{index}")),
                     result.variable(&format!("{name}Original")),
