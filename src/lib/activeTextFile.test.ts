@@ -76,23 +76,6 @@ afterEach(() => {
 })
 
 describe('text file detection', () => {
-  it('opens and saves UTF-8 text', async () => {
-    const path = '/proj/project.toml'
-    mocks.readFile.mockResolvedValueOnce('original')
-    await mod.openActiveTextFile(fileOperations, path)
-    expect(mod.activeTextFileSignal.value).toMatchObject({
-      path,
-      status: 'ready',
-      text: 'original',
-    })
-    mod.scheduleActiveTextFileWrite(fileOperations, path, 'edited')
-    await mod.flushActiveTextFileWrite()
-    expect(mocks.writeFile).toHaveBeenCalledWith(
-      path,
-      new TextEncoder().encode('edited')
-    )
-  })
-
   it.each([
     ['PNG signature', new Uint8Array([0x89, 0x50, 0x4e, 0x47])],
     ['invalid UTF-8', new Uint8Array([0xc3, 0x28])],

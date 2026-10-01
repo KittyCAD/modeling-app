@@ -45,7 +45,7 @@ vi.mock('@src/components/layout/Panel/HeaderMenu', () => ({
   HeaderMenu: vi.fn(),
 }))
 
-import { KclEditorPaneContents } from '@src/components/layout/areas/KclEditorPane'
+import { EditorPaneContents } from '@src/components/layout/areas/EditorPane'
 import { activeTextFileSignal } from '@src/lib/activeTextFile'
 
 describe('plain text editor', () => {
@@ -61,7 +61,7 @@ describe('plain text editor', () => {
         status: 'ready',
         text: original,
       }
-      const { unmount } = render(<KclEditorPaneContents />)
+      const { unmount } = render(<EditorPaneContents />)
       const view = EditorView.findFromDOM(screen.getByRole('textbox'))
       expect(view).not.toBeNull()
       act(() =>
@@ -85,7 +85,7 @@ describe('plain text editor', () => {
       text: '',
       error: 'This file is binary or is not UTF-8 text.',
     }
-    render(<KclEditorPaneContents />)
+    render(<EditorPaneContents />)
     expect(screen.getByText(/This file is binary/)).toBeInTheDocument()
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
     expect(mocks.scheduleWrite).not.toHaveBeenCalled()

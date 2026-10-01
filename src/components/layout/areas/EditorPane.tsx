@@ -56,7 +56,7 @@ export const editorShortcutMeta = {
   },
 }
 
-export const KclEditorPane = (props: AreaTypeComponentProps) => {
+export const EditorPane = (props: AreaTypeComponentProps) => {
   return (
     <LayoutPanel
       title={props.layout.label}
@@ -70,12 +70,12 @@ export const KclEditorPane = (props: AreaTypeComponentProps) => {
         Menu={KclEditorMenu}
         onClose={props.onClose}
       />
-      <KclEditorPaneContents />
+      <EditorPaneContents />
     </LayoutPanel>
   )
 }
 
-export const KclEditorPaneContents = () => {
+export const EditorPaneContents = () => {
   useSignals()
   const { kclManager } = useSingletons()
   const activeTextFile = activeTextFileSignal.value

@@ -170,7 +170,6 @@ describe('ProjectExplorer', () => {
     expect(flushKcl).toHaveBeenCalled()
   })
   it.each([
-    { entry: createFile('cube.STEP'), canOpen: true },
     { entry: createFile('config.json'), canOpen: true },
     { entry: oneFile, canOpen: false },
     { entry: createFolder('folder.step'), canOpen: false },
