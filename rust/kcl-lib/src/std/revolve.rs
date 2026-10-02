@@ -66,7 +66,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let tag_end = args.get_kw_arg_opt("tagEnd", &RuntimeType::tag_decl(), exec_state)?;
     let symmetric = args.get_kw_arg_opt("symmetric", &RuntimeType::bool(), exec_state)?;
     let bidirectional_angle: Option<TyF64> =
-        args.get_kw_arg_opt("bidirectionalAngle", &RuntimeType::degrees(), exec_state)?;
+        args.get_kw_arg_opt("bidirectionalAngle", &RuntimeType::angle(), exec_state)?;
     let body_type: BodyType = args
         .get_kw_arg_opt("bodyType", &RuntimeType::string(), exec_state)?
         .unwrap_or_default();
@@ -89,7 +89,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         tag_start,
         tag_end,
         symmetric,
-        bidirectional_angle.map(|t| t.n),
+        bidirectional_angle,
         body_type,
         exec_state,
         args,
@@ -107,7 +107,7 @@ async fn inner_revolve(
     tag_start: Option<TagNode>,
     tag_end: Option<TagNode>,
     symmetric: Option<bool>,
-    bidirectional_angle: Option<f64>,
+    bidirectional_angle: Option<TyF64>,
     body_type: BodyType,
     exec_state: &mut ExecState,
     args: Args,
@@ -134,6 +134,7 @@ async fn inner_revolve(
         }
     }
 
+    let bidirectional_angle = bidirectional_angle.map(|n| n.to_degrees(exec_state, args.source_range));
     if let Some(bidirectional_angle) = bidirectional_angle {
         // Return an error if the angle is zero.
         // We don't use validate() here because we want to return a specific error message that is
