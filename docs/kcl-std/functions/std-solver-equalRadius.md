@@ -23,7 +23,7 @@ solver::equalRadius(@input: [Segment; 2+])
 ### Examples
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 sketch1 = sketch(on = XY) {
   circle1 = circle(start = [var -2mm, var 0mm], center = [var -6mm, var 0mm])

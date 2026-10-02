@@ -25,12 +25,18 @@ and partly under KCL 3.0, so migrate a project as a unit.
 
 ## Migration steps
 
-1. Change `kclVersion` to `3.0` in the file you execute and in every file it
-   imports that declares a version. See [All files must declare the same
+1. Make sure you're starting from `@settings(kclVersion = 2.0)` in the file you
+   execute. If your file uses `1.0` or doesn't have a version specified, first
+   add `@settings(kclVersion = 2.0)` and make sure it renders geometry as
+   expected.
+2. Fix all warnings. In particular, deprecated functionality may be removed in
+   the next version, so you'll want to address these.
+3. Change to `@settings(kclVersion = 3.0)` in the file you execute and in every
+   file it imports. See [All files must declare the same
    version](#all-files-must-declare-the-same-version).
-2. Run the program and fix each error using the sections below. Most changes
+4. Run the program and fix each error using the sections below. Most changes
    produce an error that points at the code to update.
-3. Check the resulting geometry. Some changes alter a model without an error:
+5. Check the resulting geometry. Some changes alter a model without an error:
    `fillet` and `chamfer` run in order with other operations and follow tangent
    chains by default, and `sweep` no longer moves the profile to the path by
    default.
@@ -39,6 +45,8 @@ and partly under KCL 3.0, so migrate a project as a unit.
 
 | Change | In KCL 3.0 | What to do |
 | --- | --- | --- |
+| `use` and `enum` are reserved | Using either as a variable name is an error | Rename the identifier and every reference to it |
+| `template`, `lazy`, and `component` are reserved after `import` | Using one as the first imported item is an error, even with an alias | Rename the export, move it later in the import list, or import the whole module |
 | `return` exits the function immediately | Statements after an executed `return` do not run | Move statements you need before the `return` |
 | `if` branches have their own scope | A variable declared in a branch is undefined after the `if` | Use the value of the `if` expression, or declare the variable before the `if` expression |
 | The object is evaluated before the index | In `a[b]`, `a` is evaluated before `b` | Usually nothing; check the order of operations if both sides create geometry |
@@ -49,6 +57,69 @@ and partly under KCL 3.0, so migrate a project as a unit.
 | `patternLinear2d` requires a region | Passing a sketch block's sketch is an error | Pass a `region(...)` instead |
 | `defaultAngleUnit` is removed | The setting is an error | Write units on angles, like `90deg` or `0.5rad` |
 | All files must declare the same version | An imported file declaring a different version is an error | Declare `3.0` in every file |
+
+## `use` and `enum` are reserved
+
+In KCL 2.0, `use` and `enum` were ordinary identifiers. In KCL 3.0, they
+are reserved for future language features. Using either as a variable,
+parameter, tag, or imported name is an error. Rename the identifier and
+update every reference to it, including exports and imports.
+
+The exception is a function named `use`: `fn use()` and `use()` still work
+if `(` immediately follows `use`, without whitespace. A function named
+`enum` is an error.
+
+KCL 2.0:
+
+```kcl
+@settings(kclVersion = 2.0)
+
+use = 5mm
+enum = 3
+totalLength = use * enum
+```
+
+KCL 3.0:
+
+```kcl
+@settings(kclVersion = 3.0)
+
+segmentLength = 5mm
+segmentCount = 3
+totalLength = segmentLength * segmentCount
+```
+
+## `template`, `lazy`, and `component` are reserved after `import`
+
+KCL 3.0 reserves `template`, `lazy`, and `component` for future import
+modifiers. In KCL 2.0, any of these names could be the first imported item.
+In KCL 3.0, using one as the first item after `import` is an error, even if
+you give it an alias with `as`.
+
+Rename the export in the module it comes from and update its imports, or
+import the whole module and access the name through it. If you import
+several names, you can also move the reserved name later in the import
+list, for example `import other, component from "parts.kcl"`.
+
+KCL 2.0:
+
+```kcl,norun
+@settings(kclVersion = 2.0)
+
+import component from "parts.kcl"
+
+part = component
+```
+
+KCL 3.0:
+
+```kcl,norun
+@settings(kclVersion = 3.0)
+
+import "parts.kcl" as parts
+
+part = parts::component
+```
 
 ## `return` exits the function immediately
 

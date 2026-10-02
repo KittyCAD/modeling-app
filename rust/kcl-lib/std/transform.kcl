@@ -112,7 +112,7 @@ export fn mirror2d(
 /// across some specified mirror axis.
 /// ```
 /// // Simple mirror3d example, showing mirroring across named axes.
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// sketch001 = sketch(on = XY) {
 ///   line3 = line(start = [var -4.59mm, var -5.11mm], end = [var -5mm, var 3.51mm])
@@ -130,7 +130,7 @@ export fn mirror2d(
 /// ```
 /// ```
 /// // Similar mirror example, but showing mirroring across an arbitrary plane.
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// sketch001 = sketch(on = XY) {
 ///   line3 = line(start = [var -4.59mm, var -5.11mm], end = [var -5mm, var 3.51mm])
@@ -153,7 +153,7 @@ export fn mirror2d(
 /// ```
 /// ```
 /// // Example of mirroring across segments.
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// sketch001 = sketch(on = XY) {
 ///   line3 = line(start = [var -4.59mm, var -5.11mm], end = [var -5mm, var 3.51mm])
@@ -171,7 +171,7 @@ export fn mirror2d(
 /// ```
 /// ```
 /// // Mirror geometry across the edge of some other geometry.
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// // Sketch the solid to mirror.
 /// sketch001 = sketch(on = XY) {
@@ -228,7 +228,7 @@ export fn mirror3d(
 /// and then rotate it using the `rotate` function to create a loft.
 ///
 /// ```kcl,sketchSolve
-/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
+/// @settings(defaultLengthUnit = mm, kclVersion = 3.0)
 ///
 /// sweepPath = sketch(on = XZ) {
 ///   line1 = line(start = [var 0.05mm, var 0.05mm], end = [var 0.05mm, var 7.05mm])
@@ -424,7 +424,7 @@ export fn translate(
 /// rotation.
 ///
 /// ```kcl,sketchSolve
-/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
+/// @settings(defaultLengthUnit = mm, kclVersion = 3.0)
 ///
 /// sweepPath = sketch(on = XZ) {
 ///   line1 = line(start = [var 0.05mm, var 0.05mm], end = [var 0.05mm, var 7.05mm])
@@ -447,7 +447,7 @@ export fn translate(
 /// ```
 ///
 /// ```kcl,sketchSolve
-/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
+/// @settings(defaultLengthUnit = mm, kclVersion = 3.0)
 ///
 /// sweepPath = sketch(on = XZ) {
 ///   line1 = line(start = [var 0.05mm, var 0.05mm], end = [var 0.05mm, var 7.05mm])
@@ -470,7 +470,7 @@ export fn translate(
 /// ```
 ///
 /// ```kcl,sketchSolve
-/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
+/// @settings(defaultLengthUnit = mm, kclVersion = 3.0)
 ///
 /// sweepPath = sketch(on = XZ) {
 ///   line1 = line(start = [var 0.05mm, var 0.05mm], end = [var 0.05mm, var 7.05mm])
@@ -505,7 +505,7 @@ export fn translate(
 /// ```
 ///
 /// ```kcl,sketchSolve
-/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
+/// @settings(defaultLengthUnit = mm, kclVersion = 3.0)
 ///
 /// sweepPath = sketch(on = XZ) {
 ///   line1 = line(start = [var 0.05mm, var 0.05mm], end = [var 0.05mm, var 7.05mm])
@@ -624,7 +624,7 @@ export fn rotate(
 /// way (i.e. scaled differently along each axis).
 ///
 /// ```kcl,sketchSolve
-/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
+/// @settings(defaultLengthUnit = mm, kclVersion = 3.0)
 ///
 /// sweepPath = sketch(on = XZ) {
 ///   line1 = line(start = [var 0.05mm, var 0.05mm], end = [var 0.05mm, var 7.05mm])
@@ -704,7 +704,7 @@ export fn rotate(
 /// ```
 /// ```kcl,sketchSolve
 /// // Resize a 1 mm seed cube to exact physical dimensions.
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// seedSize = 1mm
 /// targetWidth = 40mm
@@ -822,7 +822,7 @@ export fn hide(
 /// This means deleting something twice is an error, as is hiding something after you delete it.
 /// ```kcl,sketchSolve,no3d
 /// // Basic example, showing deleting something.
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// // Make a cylinder
 /// sketch001 = sketch(on = XY) {
@@ -834,7 +834,7 @@ export fn hide(
 /// ```
 /// ```kcl,legacySketch
 /// // Example showing how to delete bodies after splitting them.
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// // Make a cylinder.
 /// sketch001 = startSketchOn(XY)

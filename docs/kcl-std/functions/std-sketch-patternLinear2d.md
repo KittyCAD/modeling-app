@@ -44,7 +44,7 @@ function, which creates new regions in a pattern. You should _not_ pass a sketch
 ```kcl
 // Example of pattern using a named axis.
 
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 exampleSketch = sketch(on = XZ) {
   circle1 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
@@ -77,7 +77,7 @@ hide(exampleSketch)
 ```kcl
 // Example of pattern using a raw axis.
 
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 exampleSketch = sketch(on = XZ) {
   circle1 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])

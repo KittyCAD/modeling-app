@@ -53,7 +53,7 @@ omitting both is an error.
 ### Examples
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 basicAngle = 30deg
 thickness = 3.5mm
@@ -134,7 +134,7 @@ gdt::angularity(
 ![Rendered example of gdt::angularity 0](/kcl-test-outputs/serial_test_example_fn_std-gdt-angularity0.png)
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 basicAngle = 30deg
 thickness = 3.5mm
