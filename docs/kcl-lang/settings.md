@@ -46,11 +46,8 @@ Valid properties are:
   - Accepted values: `allow` (experimental features can be used freely), `warn` (experimental features
   cause a warning), `deny` (the default, experimental features cause an error).
 - `kclVersion`: the version of the KCL language and standard libary to execute with.
-  - Accepted values: `1.0`, `2.0`, `"3.0-preview"` (experimental).
-  - See [Beta Testing KCL 3.0](/docs/kcl-lang/migrating-to-kcl-3) for how to
+  - Accepted values: `1.0`, `2.0`, `3.0`.
+  - See [Migrating to KCL 3.0](/docs/kcl-lang/migrating-to-kcl-3) for how to
     update a program to the newest version.
-  - When the file being executed declares `"3.0-preview"`, that version governs
-    the whole execution, including any files it imports. From 3.0 going forward,
-    mixing versions in one program is an error.
 
 These settings override any project-wide settings (configured in project.toml or via the UI).
