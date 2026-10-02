@@ -59,7 +59,7 @@ test.describe(
   'Sponsored KCL project migration',
   { tag: ['@web', '@desktop', '@zookeeper'] },
   () => {
-    test('captures unsaved and supporting files, reviews, applies and undoes a project', async ({
+    test('captures unsaved and supporting files, cancels, automatically applies and undoes a project', async ({
       page,
       context,
       homePage,
@@ -78,9 +78,29 @@ test.describe(
       let release: () => void = () => {
         throw new Error('Migration has not started')
       }
-      await page.routeWebSocket('**/ws/ml/kcl-migration', (socket) => {
+      await page.routeWebSocket('**/ws/ml/kcl-migration**', (socket) => {
         socket.onMessage((data) => {
           const message: MigrationClientMessage = JSON.parse(data.toString())
+          if (message.type === 'cancel' && received?.type === 'start') {
+            socket.send(
+              JSON.stringify({
+                type: 'operation',
+                operation: {
+                  id: received.request.request_id,
+                  project_snapshot: received.request.project_snapshot,
+                  target: received.request.target,
+                  deadline: new Date(Date.now() + 20 * 60_000).toISOString(),
+                  status: 'cancelled',
+                  result: {
+                    status: 'cancelled',
+                    detail: 'Migration cancelled.',
+                    files: {},
+                  },
+                },
+              })
+            )
+            return
+          }
           if (message.type !== 'start') return
           received = message
           const request = message.request
@@ -92,6 +112,18 @@ test.describe(
             status: 'running',
           }
           socket.send(JSON.stringify({ type: 'operation', operation }))
+          socket.send(
+            JSON.stringify({
+              type: 'progress',
+              operation_id: request.request_id,
+              message: {
+                reasoning: {
+                  type: 'text',
+                  content: 'Checking matching views.',
+                },
+              },
+            })
+          )
           release = () =>
             socket.send(
               JSON.stringify({
@@ -217,6 +249,25 @@ test.describe(
       await expect(
         page.getByRole('status').filter({ hasText: 'Converting' })
       ).toBeVisible()
+      await expect(
+        page.getByText('See reasoning', { exact: true })
+      ).toBeVisible()
+      await expect(
+        page.getByRole('button', { name: 'Cancel Migration' })
+      ).toHaveCount(0)
+      const cancel = page.getByTestId('ml-ephant-conversation-cancel-button')
+      await expect(cancel).toBeVisible()
+      await cancel.click()
+      await expect(
+        page.getByRole('status').filter({ hasText: 'Migration cancelled.' })
+      ).toBeVisible()
+      await expect(cancel).toBeHidden()
+      await migrate.click()
+      await page.getByRole('checkbox', { name: /I agree to migrate/ }).check()
+      await start.click()
+      await expect(
+        page.getByRole('status').filter({ hasText: 'Converting' })
+      ).toBeVisible()
       expect(received?.type).toBe('start')
       if (received?.type !== 'start') throw new Error('No migration snapshot')
       expect(received.request.current_files['parts/support.bin']).toEqual([
@@ -230,24 +281,30 @@ test.describe(
           )
         )
       ).toContain('11mm')
-      release()
-      await expect(
-        page.getByRole('heading', { name: 'Review Changes' })
-      ).toBeVisible()
-      await expect(
-        page.getByRole('button', { name: /^Download (Original|Candidate)$/ })
-      ).toHaveCount(0)
-      await page.screenshot({
-        path: testInfo.outputPath('migration-review.png'),
-      })
       const editorCode = () =>
         page.evaluate(() => window.app.project?.executingEditor.value?.code)
       expect(await editorCode()).toContain('kclVersion = 2.0')
-      await page.getByRole('button', { name: 'Apply Migration' }).click()
+      // Completion applies through the session controller even with the pane closed.
+      await toolbar.closePane(DefaultLayoutPaneID.Zookeeper)
+      release()
+      await expect.poll(editorCode).toBe(candidate)
+      await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
       await expect(
-        page.getByRole('button', { name: 'Undo Migration' })
+        page
+          .getByRole('status')
+          .filter({ hasText: 'Migrated to KCL 3 preview' })
       ).toBeVisible()
       expect(await editorCode()).toBe(candidate)
+      await expect(
+        page.getByRole('heading', { name: 'Review Changes' })
+      ).toHaveCount(0)
+      await expect(
+        page.getByRole('button', { name: 'Apply Migration' })
+      ).toHaveCount(0)
+      await expect(cancel).toBeHidden()
+      await page.screenshot({
+        path: testInfo.outputPath('migration-applied.png'),
+      })
       // Successful execution refreshes this generated preview after Apply.
       await page.evaluate(async () => {
         const project = window.app.project
@@ -260,15 +317,21 @@ test.describe(
       await toolbar.closePane(DefaultLayoutPaneID.Zookeeper)
       await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
       await expect(
-        page.getByRole('button', { name: 'Undo Migration' })
-      ).toBeVisible()
-      await page.getByRole('button', { name: 'Undo Migration' }).click()
-      await expect(
         page
           .getByRole('status')
-          .filter({ hasText: 'original project was restored' })
+          .filter({ hasText: 'Migrated to KCL 3 preview' })
       ).toBeVisible()
-      expect(await editorCode()).toBe(source.replace('10mm', '11mm'))
+      await expect(
+        page.getByRole('button', { name: 'Undo Migration' })
+      ).toHaveCount(0)
+      await page
+        .getByRole('button', { name: 'arrow turn left', exact: true })
+        .click()
+      await expect.poll(editorCode).toBe(source.replace('10mm', '11mm'))
+      await page
+        .getByRole('button', { name: 'arrow turn right', exact: true })
+        .click()
+      await expect.poll(editorCode).toBe(candidate)
       expect(
         await page.evaluate(async () => {
           const project = window.app.project

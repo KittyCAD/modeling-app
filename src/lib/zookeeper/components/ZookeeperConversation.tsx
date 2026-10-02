@@ -30,7 +30,7 @@ import {
   deactivateZoodleRuntimeExtension,
 } from '@src/registry/extensions/engineScene/zoodleRuntimeExtension'
 import type { ChangeEvent, ReactNode } from 'react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
 
 const noop = () => {}
 
@@ -45,6 +45,7 @@ export interface ZookeeperConversationProps {
   // authored source later without changing the conversation layout below.
   welcomeMessage?: ReactNode
   afterMessages?: ReactNode
+  localExchanges?: { id: string; afterExchange: number; content: ReactNode }[]
   onProcess: (
     request: string,
     mode: MlCopilotModeId | undefined,
@@ -674,7 +675,8 @@ export const ZookeeperConversationInput = (
 export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
   const refScroll = useRef<HTMLDivElement>(null)
   const exchangesLength = props.conversation?.exchanges.length ?? 0
-  const hasMessages = exchangesLength > 0
+  const totalExchanges = exchangesLength + (props.localExchanges?.length ?? 0)
+  const hasMessages = totalExchanges > 0
   const lastExchange = exchangesLength
     ? props.conversation?.exchanges[exchangesLength - 1]
     : undefined
@@ -683,12 +685,12 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
 
   // Autoscroll: right after sending a prompt when the new exchange is added
   useEffect(() => {
-    if (exchangesLength === 0 || !refScroll.current) return
+    if (totalExchanges === 0 || !refScroll.current) return
     refScroll.current.scrollTo({
       top: refScroll.current.scrollHeight,
       behavior: 'smooth',
     })
-  }, [exchangesLength])
+  }, [totalExchanges])
 
   // Autoscroll: right after Zookeeper completes its turn in the exchange.
   useEffect(() => {
@@ -699,22 +701,37 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
     })
   }, [isEndOfStream])
 
-  const exchangeCards = props.conversation?.exchanges.flatMap(
-    (exchange: Exchange, exchangeIndex: number, list) => {
-      const isLastResponse = exchangeIndex === list.length - 1
-      return (
-        <ExchangeCard
-          key={`exchange-${exchangeIndex}`}
-          {...exchange}
-          userAvatar={props.userAvatarSrc}
-          isLastResponse={isLastResponse}
-          onClickClearChat={isLastResponse ? props.onClickClearChat : noop}
-          attachmentFetches={props.attachmentFetches}
-          onFetchAttachment={props.onFetchAttachment}
-        />
+  const localExchangesAt = (index: number) =>
+    props.localExchanges
+      ?.filter(
+        (exchange) =>
+          Math.min(exchange.afterExchange, exchangesLength) === index
       )
-    }
-  )
+      .map((exchange) => (
+        <Fragment key={exchange.id}>{exchange.content}</Fragment>
+      )) ?? []
+  const exchangeCards = [
+    ...localExchangesAt(0),
+    ...(props.conversation?.exchanges.flatMap(
+      (exchange: Exchange, exchangeIndex: number, list) => {
+        const isLastResponse =
+          exchangeIndex === list.length - 1 &&
+          localExchangesAt(list.length).length === 0
+        return [
+          <ExchangeCard
+            key={`exchange-${exchangeIndex}`}
+            {...exchange}
+            userAvatar={props.userAvatarSrc}
+            isLastResponse={isLastResponse}
+            onClickClearChat={isLastResponse ? props.onClickClearChat : noop}
+            attachmentFetches={props.attachmentFetches}
+            onFetchAttachment={props.onFetchAttachment}
+          />,
+          ...localExchangesAt(exchangeIndex + 1),
+        ]
+      }
+    ) ?? []),
+  ]
   const shouldShowWelcomeMessage = isNonNullable(props.welcomeMessage)
 
   return (
@@ -817,6 +834,12 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
                   </Loading>
                 </div>
               )}
+              {(props.isLoading ||
+                props.showManualConnect ||
+                (props.needsReconnect && props.connectionFailed)) &&
+                props.localExchanges?.map((exchange) => (
+                  <Fragment key={exchange.id}>{exchange.content}</Fragment>
+                ))}
               {props.afterMessages}
             </div>
           </div>

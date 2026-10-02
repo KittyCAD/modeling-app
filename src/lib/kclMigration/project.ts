@@ -5,11 +5,13 @@ import type { App } from '@src/lib/app'
 import { cloudSyncService } from '@src/lib/cloudSync/registry/contract'
 import fsZds from '@src/lib/fs-zds'
 import { replaceMigrationFiles } from '@src/lib/kclMigration/apply'
+import { zookeeperEditPatchHistoryEvent } from '@src/lib/zookeeper/editorPlugin'
 import { isErr, reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { MigrationProject } from '@src/lib/kclMigration/controller'
 import {
   equalFiles,
+  equalBytes,
   readProjectFiles,
   withEditorBuffers,
   type ProjectFiles,
@@ -122,10 +124,30 @@ export function migrationProject(
       ) {
         return Promise.reject(
           new Error(
-            'The project changed. Review a new migration before applying.'
+            'The project changed during migration. Start a new migration to include those changes.'
           )
         )
       }
+      const historyEditor = project.executingEditor.value
+      if (!historyEditor)
+        return Promise.reject(
+          new Error('Open a KCL file before applying the migration.')
+        )
+      const historyPath = historyEditor.path
+      const decoder = new TextDecoder('utf-8', { fatal: true })
+      const snapshotFiles = [...expected].flatMap(([relativePath, before]) => {
+        const after = replacement.get(relativePath)
+        return after && !equalBytes(before, after)
+          ? [
+              {
+                relativePath,
+                absolutePath: fsZds.join(root, relativePath),
+                previousContent: decoder.decode(before),
+                nextContent: decoder.decode(after),
+              },
+            ]
+          : []
+      })
       const editors = [...project.editors.values()]
       const locks = editors.map((editor) => {
         const compartment = new Compartment()
@@ -136,6 +158,8 @@ export function migrationProject(
         })
         return { editor, compartment }
       })
+      const historyState = historyEditor.captureEditorHistoryState()
+      historyEditor.zookeeperHistoryRecordingInProgress = true
       let refreshFailed = false
       try {
         for (const editor of editors) {
@@ -150,7 +174,10 @@ export function migrationProject(
         await cloud.withLocalProjectMutation(() =>
           app.fileOperations.withDirectoryLock(root, async (files) => {
             const stillCurrent = () =>
-              isCurrent() && currentBuffersMatch(expected)
+              isCurrent() &&
+              historyEditor.path === historyPath &&
+              project.executingEditor.value === historyEditor &&
+              currentBuffersMatch(expected)
             await replaceMigrationFiles({
               files,
               paths,
@@ -176,6 +203,31 @@ export function migrationProject(
                 }
               }
             }
+            if (snapshotFiles.length > 0) {
+              const event = zookeeperEditPatchHistoryEvent({
+                projectPath: root,
+                activeFilePath: historyEditor.path,
+                patch: {
+                  run_id: crypto.randomUUID(),
+                  changed_files: snapshotFiles.map((file) => ({
+                    path: file.relativePath,
+                    status: 'modified',
+                  })),
+                },
+                snapshotFiles,
+              })
+              const activeFile = snapshotFiles.find(
+                (file) => file.absolutePath === historyEditor.path
+              )
+              if (activeFile) {
+                historyEditor.restoreEditorHistoryState(historyState)
+                historyEditor.addGlobalHistoryEventWithCodeChange(
+                  event,
+                  activeFile.nextContent,
+                  activeFile.previousContent
+                )
+              } else historyEditor.addGlobalHistoryEvent(event)
+            }
           })
         )
         try {
@@ -195,8 +247,9 @@ export function migrationProject(
           refreshFailed = true
         }
         if (refreshFailed)
-          return 'Project files were updated, but the view could not refresh. Re-run the project. Undo Migration is still available.'
+          return 'Project files were updated, but the view could not refresh. Re-run the project. Undo is available.'
       } finally {
+        historyEditor.zookeeperHistoryRecordingInProgress = false
         for (const { editor, compartment } of locks) {
           if (isCurrent())
             editor.editorView.dispatch({ effects: compartment.reconfigure([]) })

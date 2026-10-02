@@ -6,7 +6,6 @@ import {
 } from '@src/lib/kclMigration/client'
 import {
   MIGRATION_TARGET,
-  type MigrationOperation,
   type MigrationProgress,
   type MigrationRequest,
 } from '@src/lib/kclMigration/protocol'
@@ -38,23 +37,19 @@ export type MigrationPhase =
   | 'running'
   | 'cancelling'
   | 'disconnected'
-  | 'review'
   | 'applying'
   | 'applied'
-  | 'undoing'
   | 'recovery_required'
   | 'failed'
   | 'cancelled'
 
-/** Owns one project's attempt and its review/undo snapshots outside React. */
+/** Owns one project's attempt and automatically applies its validated result. */
 export class MigrationController {
   readonly phase = signal<MigrationPhase>('idle')
   readonly detail = signal('')
   readonly progress = signal<MigrationProgress[]>([])
   readonly progressText = signal('')
-  readonly operation = signal<MigrationOperation | undefined>(undefined)
-  readonly candidate = signal<ProjectFiles | undefined>(undefined)
-  readonly original = signal<MigrationSnapshot | undefined>(undefined)
+  private original: MigrationSnapshot | undefined
   private request: MigrationRequest | undefined
   private abort = new AbortController()
   private connection: MigrationConnection | undefined
@@ -69,8 +64,11 @@ export class MigrationController {
       'cancelling',
       'disconnected',
       'applying',
-      'undoing',
     ].includes(this.phase.value)
+  }
+
+  get canCancel(): boolean {
+    return ['capturing', 'connecting', 'running'].includes(this.phase.value)
   }
 
   constructor(
@@ -90,11 +88,9 @@ export class MigrationController {
     this.abort.abort()
     this.abort = new AbortController()
     const owner = this.abort
-    this.original.value = undefined
+    this.original = undefined
     this.request = undefined
     this.cancelled = false
-    this.candidate.value = undefined
-    this.operation.value = undefined
     this.detail.value = ''
     this.progress.value = []
     this.progressText.value = ''
@@ -103,7 +99,7 @@ export class MigrationController {
       const original = await this.project.capture()
       if (!this.current() || owner !== this.abort || owner.signal.aborted)
         return
-      this.original.value = original
+      this.original = original
       this.request = {
         request_id: crypto.randomUUID(),
         project_snapshot: {
@@ -148,7 +144,6 @@ export class MigrationController {
         onOperation: (operation) => {
           if (!this.current() || owner !== this.abort || owner.signal.aborted)
             return
-          this.operation.value = operation
           if (operation.status === 'running') {
             this.phase.value = this.cancelled ? 'cancelling' : 'running'
             return
@@ -160,15 +155,13 @@ export class MigrationController {
           }
           if (this.cancelled || operation.status === 'cancelled') {
             this.phase.value = 'cancelled'
-            this.candidate.value = undefined
-          } else if (operation.status === 'succeeded' && this.original.value) {
+          } else if (operation.status === 'succeeded' && this.original) {
             const candidate = candidateFiles(
-              this.original.value.files,
+              this.original.files,
               operation.result?.files ?? {}
             )
             if (isErr(candidate)) return this.fail(candidate)
-            this.candidate.value = candidate
-            this.phase.value = 'review'
+            void this.apply(this.original.files, candidate)
           } else {
             this.phase.value = 'failed'
           }
@@ -202,8 +195,8 @@ export class MigrationController {
   }
 
   cancel(): void {
+    if (!this.canCancel) return
     this.cancelled = true
-    this.candidate.value = undefined
     if (this.phase.value === 'capturing' || this.phase.value === 'connecting') {
       this.abort.abort()
       this.phase.value = 'cancelled'
@@ -213,11 +206,11 @@ export class MigrationController {
     }
   }
 
-  async apply(): Promise<void> {
-    const before = this.original.value?.files
-    const after = this.candidate.value
-    if (!this.current() || !before || !after || this.phase.value !== 'review')
-      return
+  private async apply(
+    before: ProjectFiles,
+    after: ProjectFiles
+  ): Promise<void> {
+    if (!this.current() || this.cancelled) return
     this.phase.value = 'applying'
     try {
       const warning = await this.project.apply(before, after)
@@ -225,36 +218,12 @@ export class MigrationController {
         this.phase.value = 'applied'
         this.detail.value =
           warning ||
-          'Migration applied. Keep this project open to use Undo Migration.'
+          'Migrated to KCL 3 preview. Use Undo to restore the previous project.'
+        this.original = undefined
+        this.request = undefined
       }
     } catch (error: unknown) {
       this.fail(error)
-    }
-  }
-
-  async undo(): Promise<void> {
-    const before = this.original.value?.files
-    const after = this.candidate.value
-    if (!this.current() || !before || !after || this.phase.value !== 'applied')
-      return
-    this.phase.value = 'undoing'
-    try {
-      const warning = await this.project.apply(after, before)
-      if (this.current()) {
-        this.phase.value = 'idle'
-        this.candidate.value = undefined
-        this.detail.value = warning || 'The original project was restored.'
-      }
-    } catch (error: unknown) {
-      if (this.current()) {
-        this.phase.value =
-          error instanceof MigrationRecoveryError
-            ? 'recovery_required'
-            : 'applied'
-        this.detail.value = isErr(error)
-          ? error.message
-          : 'Undo could not complete.'
-      }
     }
   }
 
