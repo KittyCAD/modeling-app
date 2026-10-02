@@ -7,7 +7,7 @@ layout: manual
 
 Named views: cameras and visibility sets defined in KCL. 
 
-This module requires KCL 3.0-preview or later.
+This module requires KCL 3.0 or later.
 
 A named view pairs a camera with a set of visible objects, so consumers
 such as the modeling app and STEP export can reproduce it. Build a camera by

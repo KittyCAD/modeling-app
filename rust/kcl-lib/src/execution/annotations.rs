@@ -570,6 +570,7 @@ mod tests {
         assert!(version_ge("1.0", &vc("1.0")));
         assert!(version_ge("2.0", &vc("1.0")));
         assert!(version_ge("2.0", &vc("2.0")));
+        assert!(version_ge("3.0", &vc("3.0")));
         assert!(version_ge("10.0", &vc("2.0")));
         assert!(version_ge("2.1", &vc("2.0")));
         assert!(!version_ge("1.0", &vc("2.0")));
@@ -582,6 +583,7 @@ mod tests {
     #[test]
     fn version_ge_supports_prerelease_versions() {
         assert!(version_ge("3.0-preview", &vc("2.0")));
+        assert!(version_ge("3.0-preview", &vc("3.0")));
         assert!(!version_ge("3.0-preview", &vc("4.0")));
     }
 

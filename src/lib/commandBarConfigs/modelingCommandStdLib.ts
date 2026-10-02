@@ -265,7 +265,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'fillet',
     editFlow: true,
     flowArgOrder: ['selection', 'radius'],
-    omittedStdLibArgs: ['solid', 'edges', 'legacyMethod', 'tangentChain'],
+    omittedStdLibArgs: ['solid', 'edges', 'legacyMethod'],
     argAliases: {
       tags: 'selection',
     },
@@ -274,7 +274,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'chamfer',
     editFlow: true,
     flowArgOrder: ['selection', 'length'],
-    omittedStdLibArgs: ['solid', 'edges', 'legacyMethod', 'tangentChain'],
+    omittedStdLibArgs: ['solid', 'edges', 'legacyMethod'],
     argAliases: {
       tags: 'selection',
     },

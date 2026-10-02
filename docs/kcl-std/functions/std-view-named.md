@@ -106,7 +106,7 @@ original `planeOf()` result remains unsupported.
 ### Examples
 
 ```kcl
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 // Two bodies to look at: a plate, and a boss standing on it. Declaring a
 // view never changes what a program builds, so this part is ordinary KCL.

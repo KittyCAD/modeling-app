@@ -41,6 +41,7 @@ const IS_AT_LEAST_KCL_V3: Record<KclVersion, boolean> = {
   '1.0': false,
   '2.0': false,
   '3.0-preview': true,
+  '3.0': true,
 }
 
 export function isAtLeastKclV3(
