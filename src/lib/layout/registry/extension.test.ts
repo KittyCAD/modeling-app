@@ -17,6 +17,7 @@ import { AreaType, LayoutType } from '@src/lib/layout/types'
 import {
   createLayoutWithMetadata,
   findLayoutChildNode,
+  togglePaneLayoutNode,
 } from '@src/lib/layout/utils'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import {
@@ -185,6 +186,52 @@ describe('layout extension', () => {
   afterEach(() => {
     registry?.[Symbol.dispose]()
     registry = undefined
+  })
+
+  it('toggles panes through the service and restores defaults on reset', () => {
+    const settings = createSettings()
+
+    const savedLayout = togglePaneLayoutNode({
+      rootLayout: structuredClone(playwrightLayoutConfig),
+      targetNodeId: 'variables',
+      shouldExpand: true,
+    })
+    settings.layout.configs.user = {
+      default: createLayoutWithMetadata(savedLayout),
+    }
+
+    registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test-dependencies',
+        providesServices: [
+          provideService(runtimeService, createRuntimeService()),
+          provideService(settingsService, createSettingsService({ settings })),
+          provideService(userFeaturesService, createUserFeaturesService()),
+        ],
+      }),
+      layoutRegistryItem,
+    ])
+    const layout = registry.get(layoutService)
+    const toolbar = () =>
+      findLayoutChildNode({
+        rootLayout: layout.get(),
+        targetNodeId: DefaultLayoutToolbarID.Left,
+      })
+
+    expect(toolbar()).toMatchObject({ activeIndices: [1, 3], sizes: [50, 50] })
+    layout.togglePane('variables')
+    expect(toolbar()).toMatchObject({ activeIndices: [1], sizes: [100] })
+    layout.togglePane('feature-tree')
+    expect(toolbar()).toMatchObject({ activeIndices: [0, 1], sizes: [50, 50] })
+    layout.togglePane('feature-tree')
+    expect(toolbar()).toMatchObject({ activeIndices: [1], sizes: [100] })
+    layout.togglePane('code')
+    expect(toolbar()).toMatchObject({ activeIndices: [], sizes: [] })
+    layout.togglePane('variables')
+    expect(toolbar()).toMatchObject({ activeIndices: [3], sizes: [100] })
+    layout.reset()
+    expect(toolbar()).toMatchObject({ activeIndices: [1], sizes: [100] })
   })
 
   it('provides the app layout service from runtime, settings, and feature services', () => {

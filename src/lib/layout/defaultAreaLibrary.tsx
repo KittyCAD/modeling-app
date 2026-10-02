@@ -15,7 +15,6 @@ import { useApp, useSingletons } from '@src/lib/boot'
 import { NAMED_VIEWS_UI_FEATURE_FLAG } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import type { AreaLibrary, AreaTypeDefinition } from '@src/lib/layout/types'
-import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import {
   EngineSceneViewExtensionOverlay,
   engineSceneStreamClassNamesValueSpec,
@@ -82,14 +81,7 @@ export const useDefaultAreaLibrary = () => {
   const onCodeNotificationClick: MouseEventHandler = useCallback(
     (e) => {
       e.preventDefault()
-      const rootLayout = structuredClone(layout.signal.value)
-      layout.set(
-        togglePaneLayoutNode({
-          rootLayout,
-          targetNodeId: DefaultLayoutPaneID.Code,
-          shouldExpand: true,
-        })
-      )
+      layout.togglePane(DefaultLayoutPaneID.Code)
       kclManager.scrollToFirstErrorDiagnosticIfExists()
     },
     [kclManager, layout]
