@@ -117,7 +117,7 @@ async fn execute_export_and_render_locally(
             contents: vec![],
         })
         .into();
-    let image = glb_render::render(&glb.bytes)
+    let image = glb_render::cpu_render(&glb.bytes, glb_render::ImageSize::default())
         .map_err(|e| ExecErrorWithState::new(ExecError::BadExport(e), exec_state.clone(), None))?;
 
     let snap_3d = Snapshot3d { image, glb };
