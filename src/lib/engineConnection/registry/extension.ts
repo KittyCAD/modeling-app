@@ -1,7 +1,6 @@
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
   provideService,
 } from '@kittycad/registry'
 import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
@@ -28,22 +27,20 @@ export const engineConnectionExtension = defineRegistryItemFactory((ctx) => {
   }
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'engine-connection-extension',
-      providesServices: [
-        provideService(engineConnectionService, {
-          get manager() {
-            return ensureService().manager
-          },
-        }),
-      ],
-      dispose: () => {
-        service?.manager.tearDown({
-          route: 'service-disposed',
-          initiatedBy: 'client',
-        })
-      },
-    }),
+    id: 'engine-connection-extension',
+    providesServices: [
+      provideService(engineConnectionService, {
+        get manager() {
+          return ensureService().manager
+        },
+      }),
+    ],
+    dispose: () => {
+      service?.manager.tearDown({
+        route: 'service-disposed',
+        initiatedBy: 'client',
+      })
+    },
   }
 }, 'engine-connection-extension')
 

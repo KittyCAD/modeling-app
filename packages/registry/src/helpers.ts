@@ -15,7 +15,6 @@ import type {
   RegistryItemFactory,
   RegistryItemKey,
   RegistryDisposer,
-  RuntimeRegistryItemDefinition,
   Service,
   ServiceContribution,
   ValueSpec,
@@ -179,11 +178,11 @@ export function sanitizeServiceImplementation<T extends object>(
 }
 
 /** Helpers for authoring registry items. */
-export function defineRegistryItemFactory<TModel = unknown>(
-  factory: RegistryItemFactory<TModel>,
+export function defineRegistryItemFactory(
+  factory: RegistryItemFactory,
   itemKey?: RegistryItemKey,
   dependencies: readonly RegistryItem[] = []
-): RegistryItemFactory<TModel> {
+): RegistryItemFactory {
   Object.defineProperty(factory, 'itemKey', {
     value: itemKey ?? factory,
     enumerable: false,
@@ -202,12 +201,6 @@ export function defineRegistryItemFactory<TModel = unknown>(
 export function defineRegistryItem<T extends RegistryItemDefinition>(
   spec: T
 ): T {
-  return spec
-}
-
-export function defineRuntimeRegistryItem<
-  T extends RuntimeRegistryItemDefinition,
->(spec: T): T {
   return spec
 }
 
@@ -319,9 +312,7 @@ function createToggleableRegistryItem({
         slot,
       })
       return {
-        item: defineRuntimeRegistryItem({
-          providesServices: [provideService(service, impl)],
-        }),
+        providesServices: [provideService(service, impl)],
       }
     }, `${name}-toggle-item`),
   }

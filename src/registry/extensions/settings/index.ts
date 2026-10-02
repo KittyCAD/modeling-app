@@ -1,7 +1,6 @@
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
   provide,
   provideService,
 } from '@kittycad/registry'
@@ -98,14 +97,12 @@ export const settingsExtension = defineRegistryItemFactory((ctx) => {
   }
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'settings-extension',
-      providesServices: [provideService(settingsService, serviceImpl)],
-      dispose: () => {
-        settingsSubscription?.unsubscribe()
-        settingsActor?.stop()
-      },
-    }),
+    id: 'settings-extension',
+    providesServices: [provideService(settingsService, serviceImpl)],
+    dispose: () => {
+      settingsSubscription?.unsubscribe()
+      settingsActor?.stop()
+    },
   }
 }, 'settings-extension')
 

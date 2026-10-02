@@ -1,6 +1,5 @@
 import {
   defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
   pluginsValueSpec,
   provideService,
 } from '@kittycad/registry'
@@ -293,16 +292,14 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
   }
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'cloud-sync-extension',
-      providesServices: [provideService(cloudSyncService, serviceImpl)],
-      dispose: () => {
-        disposed = true
-        runtimePolicyVersion += 1
-        stopPolicySync?.()
-        stopSettingsActorSubscription?.()
-        configureCloudSync({ enabled: false })
-      },
-    }),
+    id: 'cloud-sync-extension',
+    providesServices: [provideService(cloudSyncService, serviceImpl)],
+    dispose: () => {
+      disposed = true
+      runtimePolicyVersion += 1
+      stopPolicySync?.()
+      stopSettingsActorSubscription?.()
+      configureCloudSync({ enabled: false })
+    },
   }
 }, 'cloud-sync-extension')

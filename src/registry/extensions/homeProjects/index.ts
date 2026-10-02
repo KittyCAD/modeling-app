@@ -1,7 +1,6 @@
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
   provide,
   provideService,
 } from '@kittycad/registry'
@@ -748,12 +747,8 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
   }
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'home-projects.actions',
-      providesServices: [
-        provideService(homeProjectActionsService, serviceImpl),
-      ],
-    }),
+    id: 'home-projects.actions',
+    providesServices: [provideService(homeProjectActionsService, serviceImpl)],
   }
 }, 'home-projects.actions')
 
@@ -786,14 +781,12 @@ const homeProjectEntryViewModels = defineRegistryItemFactory((ctx) => {
   )
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'home-projects.view-models',
-      provides: [
-        provide(homeProjectEntriesValueSpec, entries, {
-          key: 'home-projects.view-models',
-        }),
-      ],
-    }),
+    id: 'home-projects.view-models',
+    provides: [
+      provide(homeProjectEntriesValueSpec, entries, {
+        key: 'home-projects.view-models',
+      }),
+    ],
   }
 }, 'home-projects.view-models')
 
@@ -812,45 +805,43 @@ const moveProjectToLibraryProjectMenuItem = defineRegistryItemFactory((ctx) => {
     )
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'home-projects.move-to-library-project-menu-item',
-      provides: [
-        provide(
-          projectExplorerProjectMenuItemsValueSpec,
-          {
-            id: 'home-projects.move-to-library-project-menu-item',
-            order: 10,
-            label: 'Move project',
-            dataTestId: 'project-sidebar-move-to-library',
-            isVisible: ({ projectPath }) => {
-              const project = findProject(projectPath)
-              const actions = ctx.services.optional(homeProjectActionsService)
+    id: 'home-projects.move-to-library-project-menu-item',
+    provides: [
+      provide(
+        projectExplorerProjectMenuItemsValueSpec,
+        {
+          id: 'home-projects.move-to-library-project-menu-item',
+          order: 10,
+          label: 'Move project',
+          dataTestId: 'project-sidebar-move-to-library',
+          isVisible: ({ projectPath }) => {
+            const project = findProject(projectPath)
+            const actions = ctx.services.optional(homeProjectActionsService)
 
-              return Boolean(project && actions?.canMoveToLibrary(project))
-            },
-            onSelect: ({ projectPath }) => {
-              const project = findProject(projectPath)
-              const commandSystem = ctx.services.optional(commandSystemService)
-              if (!project || !commandSystem) {
-                return
-              }
-
-              commandSystem.send({
-                type: 'Find and select command',
-                data: {
-                  groupId: 'projects',
-                  name: 'Move project',
-                  argDefaultValues: {
-                    project: project.id,
-                  },
-                },
-              })
-            },
+            return Boolean(project && actions?.canMoveToLibrary(project))
           },
-          { key: 'home-projects.move-to-library-project-menu-item' }
-        ),
-      ],
-    }),
+          onSelect: ({ projectPath }) => {
+            const project = findProject(projectPath)
+            const commandSystem = ctx.services.optional(commandSystemService)
+            if (!project || !commandSystem) {
+              return
+            }
+
+            commandSystem.send({
+              type: 'Find and select command',
+              data: {
+                groupId: 'projects',
+                name: 'Move project',
+                argDefaultValues: {
+                  project: project.id,
+                },
+              },
+            })
+          },
+        },
+        { key: 'home-projects.move-to-library-project-menu-item' }
+      ),
+    ],
   }
 }, 'home-projects.move-to-library-project-menu-item')
 
