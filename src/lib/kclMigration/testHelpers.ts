@@ -73,9 +73,11 @@ export async function migrationFixture() {
   const frames: MigrationClientMessage[] = []
   let socket: WebSocket | undefined
   let request: MigrationRequest | undefined
+  let connectionPath: string | undefined
   let current = true
-  server.on('connection', (connected) => {
+  server.on('connection', (connected, upgrade) => {
     socket = connected
+    connectionPath = upgrade.url
     connected.on('message', (data) => {
       const frame: MigrationClientMessage = JSON.parse(data.toString())
       frames.push(frame)
@@ -121,6 +123,9 @@ export async function migrationFixture() {
     runtime,
     controller,
     frames,
+    get connectionPath() {
+      return connectionPath
+    },
     project,
     leaveProject: () => {
       current = false
