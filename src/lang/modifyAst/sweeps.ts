@@ -604,7 +604,12 @@ export function addSweep({
   const versionExpr = version
     ? [createLabeledArg('version', valueOrVariable(version))]
     : isEditing ||
-        !stdLibCommandArgAvailable('sweep', 'version', languageVersion)
+        !stdLibCommandArgAvailable(
+          'sweep',
+          'version',
+          languageVersion,
+          wasmInstance
+        )
       ? []
       : [createLabeledArg('version', createLiteral(2, wasmInstance))]
 
