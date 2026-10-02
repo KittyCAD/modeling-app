@@ -1201,8 +1201,12 @@ export const valueOrVariable = (variable: KclCommandValue) => {
     : variable.valueAst
 }
 
-/** Get artifact id from EntityReference for lookup in artifact graph */
-function entityRefToArtifactId(entityRef: EntityReference): string | undefined {
+/**
+ * Single id carried by an entity reference, when it has one.
+ * Edges and vertices are not a single artifact: an edge id here is only the
+ * first side face, which is enough to find related face artifacts.
+ */
+export function getEntityRefId(entityRef: EntityReference): string | undefined {
   switch (entityRef.type) {
     case 'plane':
       return entityRef.plane_id
@@ -1227,6 +1231,41 @@ function entityRefToArtifactId(entityRef: EntityReference): string | undefined {
   }
 }
 
+function sortedIds(ids: readonly string[] | undefined): string {
+  return ids?.toSorted().join(',') || ''
+}
+
+/**
+ * Stable identity for an entity reference. Face order does not matter for
+ * edges and vertices: the engine may return the same topology in either order.
+ */
+export function entityReferenceKey(entityRef: EntityReference): string | null {
+  switch (entityRef.type) {
+    case 'plane':
+      return `plane:${entityRef.plane_id}`
+    case 'face':
+      return `face:${entityRef.face_id}`
+    case 'solid2d':
+      return `solid2d:${entityRef.solid2d_id}`
+    case 'solid3d':
+      return `solid3d:${entityRef.solid3d_id}`
+    case 'helix':
+      return `helix:${entityRef.helix_id}`
+    case 'solid2d_edge':
+      return `solid2d_edge:${entityRef.edge_id}`
+    case 'segment':
+      return `segment:${entityRef.path_id}:${entityRef.segment_id}`
+    case 'region':
+      return `region:${entityRef.region_id}`
+    case 'edge':
+      return `edge:${sortedIds(entityRef.side_faces)}:${sortedIds(entityRef.end_faces)}:${entityRef.index ?? ''}`
+    case 'vertex':
+      return `vertex:${sortedIds(entityRef.side_faces)}:${entityRef.index ?? ''}`
+    default:
+      return null
+  }
+}
+
 /**
  * Compare two EntityReferences (e.g. for shift+multi-select).
  * We want to verify if the engine has sent the same entity reference payload, i.e. the user
@@ -1234,46 +1273,10 @@ function entityRefToArtifactId(entityRef: EntityReference): string | undefined {
  */
 function entityRefEquals(a: EntityReference, b: EntityReference): boolean {
   if (a.type !== b.type) return false
-  switch (a.type) {
-    case 'plane':
-      return b.type === 'plane' && a.plane_id === b.plane_id
-    case 'face':
-      return b.type === 'face' && a.face_id === b.face_id
-    case 'solid2d':
-      return b.type === 'solid2d' && a.solid2d_id === b.solid2d_id
-    case 'solid3d':
-      return b.type === 'solid3d' && a.solid3d_id === b.solid3d_id
-    case 'helix':
-      return b.type === 'helix' && a.helix_id === b.helix_id
-    case 'solid2d_edge':
-      return b.type === 'solid2d_edge' && a.edge_id === b.edge_id
-    case 'edge':
-      if (b.type !== 'edge') return false
-      return (
-        JSON.stringify([...(a.side_faces || [])].sort()) ===
-          JSON.stringify([...(b.side_faces || [])].sort()) &&
-        JSON.stringify([...(a.end_faces || [])].sort()) ===
-          JSON.stringify([...(b.end_faces || [])].sort()) &&
-        a.index === b.index
-      )
-    case 'vertex':
-      if (b.type !== 'vertex') return false
-      return (
-        JSON.stringify([...(a.side_faces || [])].sort()) ===
-          JSON.stringify([...(b.side_faces || [])].sort()) &&
-        a.index === b.index
-      )
-    case 'segment':
-      return (
-        b.type === 'segment' &&
-        a.path_id === b.path_id &&
-        a.segment_id === b.segment_id
-      )
-    case 'region':
-      return b.type === 'region' && a.region_id === b.region_id
-    default:
-      return false
-  }
+  const keyA = entityReferenceKey(a)
+  const keyB = entityReferenceKey(b)
+  if (keyA === null || keyB === null) return false
+  return keyA === keyB
 }
 
 /** Compare two entityReferences (for shift+multi-select). Uses entityRef when present, else codeRef.range. */
@@ -1295,7 +1298,7 @@ export function resolveToCodeRef(
     s.codeRef ??
     (s.entityRef && artifactGraph
       ? getCodeRefsByArtifactId(
-          entityRefToArtifactId(s.entityRef) ?? '',
+          getEntityRefId(s.entityRef) ?? '',
           artifactGraph
         )?.[0]
       : undefined)
@@ -1303,7 +1306,7 @@ export function resolveToCodeRef(
   const artifact = s.artifact
     ? s.artifact
     : s.entityRef && artifactGraph
-      ? artifactGraph.get(entityRefToArtifactId(s.entityRef) ?? '')
+      ? artifactGraph.get(getEntityRefId(s.entityRef) ?? '')
       : codeRef.range && artifactGraph
         ? (getArtifactFromRange(codeRef.range, artifactGraph) ?? undefined)
         : undefined
@@ -1478,7 +1481,7 @@ export function getVariableExprsFromSelection(
 
     const directArtifact =
       preferDirectSegment && s.entityRef != null
-        ? artifactGraph.get(entityRefToArtifactId(s.entityRef) ?? '')
+        ? artifactGraph.get(getEntityRefId(s.entityRef) ?? '')
         : undefined
     const segmentArtifact =
       directArtifact?.type === 'segment'

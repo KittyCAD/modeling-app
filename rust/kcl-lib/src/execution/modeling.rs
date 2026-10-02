@@ -417,5 +417,6 @@ pub(crate) fn kcl_version_to_modeling_cmd(kcl_version: kcl_api::KclVersion) -> k
         kcl_api::KclVersion::V1 => kcmc::KclVersion::V1,
         kcl_api::KclVersion::V2 => kcmc::KclVersion::V2,
         kcl_api::KclVersion::V3Preview => kcmc::KclVersion::V3Preview,
+        kcl_api::KclVersion::V3 => kcmc::KclVersion::V3,
     }
 }
