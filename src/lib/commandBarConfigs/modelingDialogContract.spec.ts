@@ -22,6 +22,7 @@ beforeAll(async () => {
 })
 
 type DialogCommandName =
+  | 'Named View'
   | 'Extrude'
   | 'Sweep'
   | 'Loft'
@@ -155,6 +156,17 @@ describe('Loft dialog contract', () => {
 
 describe('composite dialog defaults', () => {
   it.each([
+    {
+      command: 'Named View',
+      authored: {},
+      expected: {
+        orientation: 'Isometric',
+        projection: 'Orthographic',
+        baseline: 'Show',
+        target: undefined,
+        distance: '',
+      },
+    },
     {
       command: 'Appearance',
       authored: {},

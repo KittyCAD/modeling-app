@@ -47,6 +47,10 @@ import {
   revolveArgs,
 } from '@src/lib/commandBarConfigs/modelingCommands/revolve'
 import {
+  namedViewLayout,
+  namedViewArgs,
+} from '@src/lib/commandBarConfigs/modelingCommands/namedView'
+import {
   sweepLayout,
   sweepArgs,
 } from '@src/lib/commandBarConfigs/modelingCommands/sweep'
@@ -551,6 +555,21 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         },
       },
     },
+  },
+  'Named View': {
+    icon: 'namedView',
+    status: modelingStdLibCommandStatus('Named View'),
+    needsReview: true,
+    dialogLayout: namedViewLayout,
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['Named View']
+    ),
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Named View']>(
+      'Named View',
+      {
+        overrides: namedViewArgs,
+      }
+    ),
   },
   Extrude: {
     icon: 'extrude',
