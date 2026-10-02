@@ -149,9 +149,8 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       // Assert code contains revolve
       await editor.expectEditor.toContain(`revolve`)
       await editor.expectEditor.toContain(`sideFaces = [seg01]`)
-      // TODO: Investigate why face order can vary between runs
       await editor.expectEditor.toContain(
-        /endFaces = \[(seg02, rectangleSegmentA002|rectangleSegmentA002, seg02)\]/
+        `endFaces = [rectangleSegmentA002, seg02]`
       )
       await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
     })
