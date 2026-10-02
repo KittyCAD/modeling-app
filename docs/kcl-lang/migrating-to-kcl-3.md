@@ -118,7 +118,7 @@ KCL 3.0:
 
 import "parts.kcl" as parts
 
-part = parts.component
+part = parts::component
 ```
 
 ## `return` exits the function immediately
