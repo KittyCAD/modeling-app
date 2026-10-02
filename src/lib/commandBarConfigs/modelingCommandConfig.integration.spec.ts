@@ -13,7 +13,6 @@ import {
   modelingCommandStdLibDriftConfig,
   modelingStdLibCommandArgs,
   modelingStdLibCommandStatus,
-  modelingStdLibCommandSummary,
   modelingStdLibCommandUsesExperimentalFeatures,
   type StdLibCommandDriftConfig,
   stdLibCommandArgDefaultSource,
@@ -573,7 +572,7 @@ function pointAndClickStdLibArgs(config: StdLibCommandDriftConfig) {
 }
 
 describe('stdlib command arg derivation', () => {
-  it('routes every stdlib-backed command through its summary adapter', () => {
+  it('defaults stdlib-backed descriptions except the combined GDT Profile flow', () => {
     const commandNames = Object.keys(modelingCommandStdLibDriftConfig) as Array<
       keyof typeof modelingCommandStdLibDriftConfig
     >
@@ -588,7 +587,9 @@ describe('stdlib command arg derivation', () => {
         modelingCommandStdLibDriftConfig[commandName].stdLibName
       expect(stdLibCommandSummary(stdLibName)).toBeTruthy()
       expect(commandConfig.description).toBe(
-        modelingStdLibCommandSummary(commandName)
+        commandName === 'GDT Profile'
+          ? 'Add profile geometric dimensioning & tolerancing annotation to faces or edges.'
+          : stdLibCommandSummary(stdLibName)
       )
     }
   })

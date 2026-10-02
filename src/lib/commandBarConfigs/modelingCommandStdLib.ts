@@ -9,6 +9,7 @@ import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import { isKclVersionAvailable } from '@src/lib/kclVersionRange'
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { isArray } from '@src/lib/utils'
 
 export type StdLibCommandDriftConfig = {
   stdLibName: StdLibCommandName
@@ -623,15 +624,22 @@ export const modelingCommandStdLibDriftConfig = {
 export type ModelingStdLibCommandName =
   keyof typeof modelingCommandStdLibDriftConfig
 
-/** Only override KCL summaries for UI-specific semantics or presentation. */
-const modelingCommandSummaryOverrides: Partial<
-  Record<ModelingStdLibCommandName, string>
-> = {
-  // This command dispatches to both profileLine and profileSurface.
-  'GDT Profile':
-    'Add profile geometric dimensioning & tolerancing annotation to faces or edges.',
-  // Command descriptions are plain text; the KCL summary contains a Markdown link.
-  Blend: 'Blend two selected surface edges into a new surface.',
+/** Default omitted descriptions to KCL summaries; explicit strings (even '') win. */
+export function applyModelingCommandDescriptions(
+  commands: Record<
+    string,
+    { description?: string } | { description?: string }[] | undefined
+  >
+) {
+  for (const [name, { stdLibName }] of Object.entries(
+    modelingCommandStdLibDriftConfig
+  )) {
+    const configs = commands[name]
+    if (!configs) continue
+    for (const config of isArray(configs) ? configs : [configs]) {
+      config.description ??= stdLibCommandSummary(stdLibName)
+    }
+  }
 }
 
 export function modelingStdLibCommandName<
@@ -650,16 +658,6 @@ export function modelingStdLibCall(
   const name = parts.pop() ?? stdLibName
 
   return { name, path: parts }
-}
-
-/** Uses the concise KCL summary unless the command has product-specific copy. */
-export function modelingStdLibCommandSummary(
-  commandName: ModelingStdLibCommandName
-) {
-  return (
-    modelingCommandSummaryOverrides[commandName] ??
-    stdLibCommandSummary(modelingStdLibCommandName(commandName))
-  )
 }
 
 export function modelingStdLibCommandArgs<CommandArgs extends object>(

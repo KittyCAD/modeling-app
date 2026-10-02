@@ -11,6 +11,7 @@ import {
 import { useLocation } from 'react-router-dom'
 
 import { CustomIcon } from '@src/components/CustomIcon'
+import { MarkdownText } from '@src/components/MarkdownText'
 import {
   type KeybindingRow,
   createRowUserBinding,
@@ -592,9 +593,11 @@ function SearchableTextField({
                   {option.id}
                 </span>
                 {option.description && (
-                  <span className="line-clamp-2 text-[11px] text-chalkboard-60 dark:text-chalkboard-50">
-                    {option.description}
-                  </span>
+                  <MarkdownText
+                    text={option.description}
+                    links={false}
+                    className="line-clamp-2 text-[11px] text-chalkboard-60 dark:text-chalkboard-50 [&_p]:my-0"
+                  />
                 )}
               </Combobox.Option>
             ))}

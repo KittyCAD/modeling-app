@@ -1,6 +1,6 @@
 import {
+  applyModelingCommandDescriptions,
   modelingStdLibCommandArgs,
-  modelingStdLibCommandSummary,
   stdLibCommandArgDefaultSource,
   stdLibCommandSummary,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
@@ -17,22 +17,26 @@ describe('stdlib command metadata', () => {
     )
   })
 
-  it('uses canonical KCL summaries for modeling commands', () => {
-    expect(modelingStdLibCommandSummary('Sweep')).toBe(
-      stdLibCommandSummary('sweep')
-    )
-    expect(modelingStdLibCommandSummary('Extrude')).toBe(
-      stdLibCommandSummary('extrude')
-    )
-  })
+  it('defaults only omitted stdlib descriptions, including multiple command configs', () => {
+    const commands = {
+      Extrude: { description: undefined },
+      Sweep: [
+        { description: undefined },
+        { description: 'Custom description' },
+        { description: '' },
+      ],
+      'Enter sketch': { description: undefined },
+    }
 
-  it('keeps summaries for combined UI flows and plain-text prompts', () => {
-    expect(modelingStdLibCommandSummary('GDT Profile')).toBe(
-      'Add profile geometric dimensioning & tolerancing annotation to faces or edges.'
-    )
-    expect(modelingStdLibCommandSummary('Blend')).toBe(
-      'Blend two selected surface edges into a new surface.'
-    )
+    applyModelingCommandDescriptions(commands)
+
+    expect(commands.Extrude.description).toBe(stdLibCommandSummary('extrude'))
+    expect(commands.Sweep.map((config) => config.description)).toEqual([
+      stdLibCommandSummary('sweep'),
+      'Custom description',
+      '',
+    ])
+    expect(commands['Enter sketch'].description).toBeUndefined()
   })
 
   it('keeps command argument descriptions and defaults explicit', () => {

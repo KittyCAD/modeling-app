@@ -1,5 +1,16 @@
-import { render } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { fireEvent, render, screen } from '@testing-library/react'
+import { StrictMode } from 'react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+const mocks = vi.hoisted(() => ({ openExternal: vi.fn() }))
+
+vi.mock('@src/lib/openWindow', () => ({
+  openExternalBrowserIfDesktop:
+    (url: string) => (e: { preventDefault(): void }) => {
+      e.preventDefault()
+      mocks.openExternal(url)
+    },
+}))
 
 import { MarkdownText } from '@src/components/MarkdownText'
 
@@ -26,6 +37,49 @@ const expectedItems = [
 ]
 
 describe('MarkdownText', () => {
+  beforeEach(() => {
+    mocks.openExternal.mockClear()
+  })
+
+  it('opens relative KCL docs links externally once, including in StrictMode', () => {
+    render(
+      <StrictMode>
+        <MarkdownText text="Use [**bounded edges**](/docs/kcl-std/types/std-types-BoundedEdge)." />
+      </StrictMode>
+    )
+
+    const url = 'https://zoo.dev/docs/kcl-std/types/std-types-BoundedEdge'
+    const link = screen.getByRole('link', { name: 'bounded edges' })
+    expect(link).toHaveAttribute('href', url)
+    fireEvent.click(link)
+    expect(mocks.openExternal).toHaveBeenCalledExactlyOnceWith(url)
+  })
+
+  it('can render link labels without interactive links', () => {
+    const { container } = render(
+      <MarkdownText
+        text="Use [**bounded edges**](/docs/kcl-std/types/std-types-BoundedEdge) with `blend`."
+        links={false}
+      />
+    )
+
+    expect(screen.queryByRole('link')).not.toBeInTheDocument()
+    expect(container.querySelector('strong')).toHaveTextContent('bounded edges')
+    expect(container.querySelector('code')).toHaveTextContent('blend')
+  })
+
+  it('keeps raw HTML and unsafe links inert', () => {
+    const { container } = render(
+      <MarkdownText
+        text={'<img src="x" onerror="alert(1)"> [unsafe](javascript:alert)'}
+      />
+    )
+
+    expect(container.querySelector('img')).toBeNull()
+    expect(screen.queryByRole('link')).not.toBeInTheDocument()
+    expect(screen.getByText(/unsafe/)).toBeInTheDocument()
+  })
+
   it('renders contiguous unordered and ordered items as separate lists', () => {
     const { container } = render(<MarkdownText text={mixedListResponse} />)
 
