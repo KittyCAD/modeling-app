@@ -121,6 +121,76 @@ describe('ZookeeperConversation', () => {
     window.localStorage.removeItem(MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY)
   })
 
+  test('keeps a local migration turn between the preceding and following chat turns', () => {
+    const conversation: Conversation = {
+      exchanges: [
+        {
+          request: { type: 'user', content: 'Before migration' },
+          responses: [
+            { end_of_stream: { whole_response: 'Original project ready.' } },
+          ],
+          deltasAggregated: 'Original project ready.',
+        },
+      ],
+    }
+    const props = {
+      isLoading: false,
+      conversation,
+      contexts: [],
+      onProcess: () => {},
+      onCancel: () => {},
+      onClickClearChat: () => {},
+      onReconnect: () => {},
+      needsReconnect: false,
+      hasPromptCompleted: true,
+      isProcessing: false,
+      queue: [],
+      onRemoveFromQueue: () => {},
+      onSteer: () => {},
+      localExchanges: [
+        {
+          id: 'migration-turn',
+          afterExchange: 1,
+          content: <p>Migration completed</p>,
+        },
+      ],
+    }
+    const { rerender } = render(<ZookeeperConversation {...props} />)
+    const migration = screen.getByText('Migration completed')
+    expect(
+      screen.getByText('Before migration').compareDocumentPosition(migration) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+    rerender(
+      <ZookeeperConversation
+        {...props}
+        conversation={{
+          exchanges: [
+            ...conversation.exchanges,
+            {
+              request: { type: 'user', content: 'After migration' },
+              responses: [],
+              deltasAggregated: '',
+            },
+          ],
+        }}
+      />
+    )
+    expect(screen.getByText('Migration completed')).toBe(migration)
+    expect(
+      migration.compareDocumentPosition(screen.getByText('After migration')) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy()
+    rerender(
+      <ZookeeperConversation
+        {...props}
+        conversation={{ exchanges: [] }}
+        localExchanges={[]}
+      />
+    )
+    expect(screen.queryByText('Migration completed')).toBeNull()
+  })
+
   test('shows recovery actions after conversation loading gives up', () => {
     const onReconnect = vi.fn()
     const onClickClearChat = vi.fn()

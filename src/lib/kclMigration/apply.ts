@@ -46,7 +46,7 @@ export async function replaceMigrationFiles({
     })
     return Promise.reject(
       new Error(
-        `The project changed${changed.length ? ` (${changed.slice(0, 3).join(', ')})` : ''}. Capture and review a new migration before applying.`
+        `The project changed${changed.length ? ` (${changed.slice(0, 3).join(', ')})` : ''}. Start a new migration to include those changes.`
       )
     )
   }

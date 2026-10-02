@@ -1,5 +1,5 @@
 import { useSignals } from '@preact/signals-react/runtime'
-import { KclMigrationPanel } from '@src/components/KclMigrationPanel'
+import { KclMigrationStart } from '@src/components/KclMigrationPanel'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
 import type { ZDSProject } from '@src/lang/KclManager'
 import type { App } from '@src/lib/app'
@@ -15,9 +15,11 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 export function KclMigration({
   app,
   chatBusy,
+  afterExchange,
 }: {
   app: App
   chatBusy: boolean
+  afterExchange: number
 }) {
   useSignals()
   const project = app.projectSignal.value
@@ -33,6 +35,7 @@ export function KclMigration({
       project={project}
       enabled={enabled}
       chatBusy={chatBusy}
+      afterExchange={afterExchange}
     />
   )
 }
@@ -42,11 +45,13 @@ function ProjectMigration({
   project,
   enabled,
   chatBusy,
+  afterExchange,
 }: {
   app: App
   project: ZDSProject
   enabled: boolean
   chatBusy: boolean
+  afterExchange: number
 }) {
   useSignals()
   const token = app.auth.token.value
@@ -92,14 +97,29 @@ function ProjectMigration({
       project,
       () => new MigrationController(migrationProject(app, project), () => token)
     )
-  }, [app, migration, project, token])
-  if (!controller) return null
+  }, [app, migration, project, token, controller])
+  if (
+    !controller ||
+    !enabled ||
+    !sourceIsKcl2 ||
+    controller.busy ||
+    controller.phase.value === 'recovery_required'
+  )
+    return null
   return (
-    <KclMigrationPanel
-      controller={controller}
-      enabled={enabled}
-      sourceIsKcl2={sourceIsKcl2}
-      chatBusy={chatBusy}
+    <KclMigrationStart
+      disabled={chatBusy}
+      onStart={() =>
+        migration.start(
+          project,
+          () =>
+            new MigrationController(
+              migrationProject(app, project),
+              () => token
+            ),
+          afterExchange
+        )
+      }
     />
   )
 }

@@ -32,11 +32,9 @@ afterEach(async () => {
   await fixture.dispose()
 })
 
-async function review() {
+async function startRunning() {
   await fixture.controller.start(true)
   await vi.waitFor(() => expect(fixture.controller.phase.value).toBe('running'))
-  fixture.send(successfulOperation(fixture.request))
-  await vi.waitFor(() => expect(fixture.controller.phase.value).toBe('review'))
 }
 
 describe('project migration', () => {
@@ -88,10 +86,10 @@ describe('project migration', () => {
     expect(await fixture.readMain()).toBe(sourceCode)
     fixture.send(successfulOperation(fixture.request))
     await vi.waitFor(() =>
-      expect(fixture.controller.phase.value).toBe('review')
+      expect(fixture.controller.phase.value).toBe('applied')
     )
     expect(fixture.controller.progress.value).toHaveLength(1)
-    expect(await fixture.readMain()).toBe(sourceCode)
+    expect(await fixture.readMain()).toBe(targetCode)
   })
 
   it('clears previous progress when starting a new attempt', async () => {
@@ -203,31 +201,26 @@ describe('project migration', () => {
     await expect(fixture.project.capture()).rejects.toThrow('symbolic links')
   })
 
-  it('requires consent, authenticates, stages without writing, applies and restores all original bytes', async () => {
+  it('requires consent, authenticates and applies only after a validated result', async () => {
     await fixture.controller.start(false)
     expect(fixture.frames).toEqual([])
-    await review()
+    await startRunning()
     expect(fixture.frames[0]).toEqual({
       type: 'headers',
       headers: { Authorization: 'Bearer test-token' },
     })
     expect(await fixture.readMain()).toBe(sourceCode)
-    const original = fixture.controller.original.value?.files
-    await fixture.controller.apply()
-    expect(fixture.controller.phase.value).toBe('applied')
+    fixture.send(successfulOperation(fixture.request))
+    await vi.waitFor(() =>
+      expect(fixture.controller.phase.value).toBe('applied')
+    )
     expect(await fixture.readMain()).toBe(targetCode)
-    await fixture.controller.undo()
-    expect(fixture.controller.phase.value).toBe('idle')
-    expect(await fixture.readMain()).toBe(sourceCode)
-    expect(
-      await readProjectFiles(fixture.runtime.operations, path, fixture.root)
-    ).toEqual(original)
   })
 
   it.each(['edit', 'add', 'delete'])(
     'rejects a stale candidate after a project %s',
     async (change) => {
-      await review()
+      await startRunning()
       if (change === 'edit')
         await writeFile(
           path.join(fixture.root, 'main.kcl'),
@@ -244,27 +237,16 @@ describe('project migration', () => {
         path,
         fixture.root
       )
-      await fixture.controller.apply()
-      expect(fixture.controller.phase.value).toBe('failed')
+      fixture.send(successfulOperation(fixture.request))
+      await vi.waitFor(() =>
+        expect(fixture.controller.phase.value).toBe('failed')
+      )
       expect(fixture.controller.detail.value).toContain('changed')
       expect(
         await readProjectFiles(fixture.runtime.operations, path, fixture.root)
       ).toEqual(before)
     }
   )
-
-  it('guards Undo against subsequent user edits', async () => {
-    await review()
-    await fixture.controller.apply()
-    await writeFile(
-      path.join(fixture.root, 'main.kcl'),
-      `${targetCode}newValue = 42\n`
-    )
-    await fixture.controller.undo()
-    expect(fixture.controller.phase.value).toBe('applied')
-    expect(fixture.controller.detail.value).toContain('changed')
-    expect(await fixture.readMain()).toContain('newValue = 42')
-  })
 
   it('cancels and discards a success that races cancellation', async () => {
     await fixture.controller.start(true)
@@ -279,7 +261,6 @@ describe('project migration', () => {
     await vi.waitFor(() =>
       expect(fixture.controller.phase.value).toBe('cancelled')
     )
-    expect(fixture.controller.candidate.value).toBeUndefined()
     expect(await fixture.readMain()).toBe(sourceCode)
   })
 
@@ -298,7 +279,7 @@ describe('project migration', () => {
     )
     fixture.send(successfulOperation(fixture.request))
     await vi.waitFor(() =>
-      expect(fixture.controller.phase.value).toBe('review')
+      expect(fixture.controller.phase.value).toBe('applied')
     )
     expect(fixture.frames.filter((f) => f.type === 'start')).toHaveLength(1)
   })
@@ -349,9 +330,10 @@ describe('project migration', () => {
     expect(fixture.controller.detail.value).toContain(
       'different project or attempt'
     )
-    await review()
+    await startRunning()
     fixture.leaveProject()
-    await fixture.controller.apply()
+    fixture.controller.dispose()
+    fixture.send(successfulOperation(fixture.request))
     expect(await fixture.readMain()).toBe(sourceCode)
   })
 
@@ -383,7 +365,6 @@ describe('project migration', () => {
           status === 'cancelled' ? 'cancelled' : 'failed'
         )
       )
-      expect(fixture.controller.candidate.value).toBeUndefined()
       expect(await fixture.readMain()).toBe(sourceCode)
     }
   )
@@ -400,6 +381,11 @@ describe('project migration', () => {
     expect(
       parseMigrationMessage({ type: 'operation', operation })
     ).toBeInstanceOf(Error)
+    fixture.send(operation)
+    await vi.waitFor(() =>
+      expect(fixture.controller.phase.value).toBe('failed')
+    )
+    expect(await fixture.readMain()).toBe(sourceCode)
     const original = (await fixture.project.capture()).files
     expect(candidateFiles(original, {})).toBeInstanceOf(Error)
     expect(

@@ -10,6 +10,7 @@ import type { MigrationController } from '@src/lib/kclMigration/controller'
 import { authService } from '@src/registry/contracts/auth'
 import {
   type KclMigrationService,
+  type MigrationTurn,
   kclMigrationService,
 } from '@src/registry/contracts/kclMigration'
 import { projectSession } from '@src/registry/contracts/projectSession'
@@ -18,10 +19,13 @@ const migrationSession = defineRegistryItemFactory((ctx) => {
   const auth = ctx.services.signal(authService)
   const projects = ctx.services.signal(projectSession)
   const controller = signal<MigrationController | undefined>(undefined)
+  const turns = signal<readonly MigrationTurn[]>([])
   let owner: ZDSProject | undefined
   let token: string | undefined
   const clear = () => {
     controller.peek()?.dispose()
+    for (const turn of turns.peek()) turn.controller.dispose()
+    turns.value = []
     controller.value = undefined
     owner = undefined
     token = undefined
@@ -29,6 +33,21 @@ const migrationSession = defineRegistryItemFactory((ctx) => {
   let stop: (() => void) | undefined
   const service: KclMigrationService = {
     controller,
+    turns,
+    clearConversation: clear,
+    start(project, create, afterExchange) {
+      if (project !== projects.peek()?.project.peek()) return
+      const previous = service.getOrCreate(project, create)
+      if (previous?.busy || previous?.phase.peek() === 'recovery_required')
+        return
+      const attempt = previous?.phase.peek() === 'idle' ? previous : create()
+      controller.value = attempt
+      turns.value = [
+        ...turns.peek(),
+        { id: crypto.randomUUID(), afterExchange, controller: attempt },
+      ]
+      void attempt.start(true)
+    },
     getOrCreate(project, create) {
       if (project !== projects.peek()?.project.peek()) return undefined
       if (!controller.peek()) {
