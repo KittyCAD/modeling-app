@@ -1,4 +1,5 @@
 import { INTERNAL_OPFS_META_FILE } from '@src/lib/cloudSync/paths'
+import { PROJECT_IMAGE_NAME } from '@src/lib/constants'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import { MAX_BYTES, MAX_FILES } from '@src/lib/kclMigration/protocol'
 import { webSafePathSplit } from '@src/lib/pathUtils'
@@ -62,6 +63,8 @@ export async function readProjectFiles(
   async function visit(directory: string): Promise<void> {
     for (const name of (await io.readDirectory(directory)).toSorted()) {
       if (name === '.git' || name === INTERNAL_OPFS_META_FILE) continue
+      // Execution refreshes the generated project preview, including after Apply.
+      if (directory === root && name === PROJECT_IMAGE_NAME) continue
       const absolute = paths.join(directory, name)
       const relative = paths.relative(root, absolute).replaceAll('\\', '/')
       if (!validProjectPath(relative) || names.has(relative.toLowerCase())) {

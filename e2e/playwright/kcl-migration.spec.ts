@@ -150,6 +150,10 @@ test.describe(
           window.fsZds.join(project.path, 'parts', 'support.bin'),
           new Uint8Array([0, 255, 128])
         )
+        await window.app.fileOperations.writeFile(
+          window.fsZds.join(project.path, 'thumbnail.png'),
+          new Uint8Array([1, 2, 3])
+        )
         editor.updateCodeEditor(code.replace('10mm', '11mm'), {
           shouldExecute: false,
           shouldWriteToDisk: false,
@@ -218,6 +222,7 @@ test.describe(
       expect(received.request.current_files['parts/support.bin']).toEqual([
         0, 255, 128,
       ])
+      expect(received.request.current_files['thumbnail.png']).toBeUndefined()
       expect(
         new TextDecoder().decode(
           new Uint8Array(
@@ -229,6 +234,9 @@ test.describe(
       await expect(
         page.getByRole('heading', { name: 'Review Changes' })
       ).toBeVisible()
+      await expect(
+        page.getByRole('button', { name: /^Download (Original|Candidate)$/ })
+      ).toHaveCount(0)
       await page.screenshot({
         path: testInfo.outputPath('migration-review.png'),
       })
@@ -240,6 +248,15 @@ test.describe(
         page.getByRole('button', { name: 'Undo Migration' })
       ).toBeVisible()
       expect(await editorCode()).toBe(candidate)
+      // Successful execution refreshes this generated preview after Apply.
+      await page.evaluate(async () => {
+        const project = window.app.project
+        if (!project) throw new Error('No project')
+        await window.app.fileOperations.writeFile(
+          window.fsZds.join(project.path, 'thumbnail.png'),
+          new Uint8Array([4, 5, 6])
+        )
+      })
       await toolbar.closePane(DefaultLayoutPaneID.Zookeeper)
       await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
       await expect(
@@ -252,6 +269,17 @@ test.describe(
           .filter({ hasText: 'original project was restored' })
       ).toBeVisible()
       expect(await editorCode()).toBe(source.replace('10mm', '11mm'))
+      expect(
+        await page.evaluate(async () => {
+          const project = window.app.project
+          if (!project) throw new Error('No project')
+          return Array.from(
+            await window.app.fileOperations.readFile(
+              window.fsZds.join(project.path, 'thumbnail.png')
+            )
+          )
+        })
+      ).toEqual([4, 5, 6])
       expect(
         await page.evaluate(async () => {
           const project = window.app.project

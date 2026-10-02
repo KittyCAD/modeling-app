@@ -13,7 +13,7 @@ export class MigrationRecoveryError extends Error {
     cause: unknown
   ) {
     super(
-      `Migration could not restore these files: ${failures.join(', ')}. Keep this dialog open and download the original project.`,
+      `Migration could not restore these files: ${failures.join(', ')}. Review these files before continuing.`,
       { cause }
     )
   }
