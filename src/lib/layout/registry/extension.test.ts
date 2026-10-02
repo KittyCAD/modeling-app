@@ -49,52 +49,28 @@ const webRuntime: RuntimeInfo = {
   isPlaywright: false,
 }
 
-type TestSettingsSnapshot = {
-  value: string
-  context: ReturnType<typeof createSettings>
-}
-
-type TestSettingsRegistryService = SettingsRegistryService & {
-  resolve: () => void
-}
-
-function createSettingsService({
-  settings = createSettings(),
-  initialValue = 'idle',
-}: {
-  settings?: ReturnType<typeof createSettings>
-  initialValue?: string
-} = {}): TestSettingsRegistryService {
-  let snapshot: TestSettingsSnapshot = {
-    value: initialValue,
-    context: settings,
-  }
-  const subscribers = new Set<(snapshot: TestSettingsSnapshot) => void>()
-  const actor = {
-    getSnapshot: () => snapshot,
-    subscribe: vi.fn((subscriber: (snapshot: TestSettingsSnapshot) => void) => {
-      subscribers.add(subscriber)
-      return { unsubscribe: vi.fn(() => subscribers.delete(subscriber)) }
-    }),
+/**
+ * Create a test settings object that you can alter for layout tests,
+ * as well as a mock of the service that the layout system relies on.
+ */
+function createTestSettings() {
+  const initialSettings = createSettings()
+  const settings = signal(initialSettings)
+  const service: SettingsRegistryService = {
+    actor: {
+      send: vi.fn(),
+      getSnapshot: vi.fn().mockReturnValue({ value: 'idle' }),
+    } as unknown as SettingsRegistryService['actor'],
+    current: settings,
+    get: () => settings.value,
     send: vi.fn(),
+    useSettings: vi.fn(),
+    userFilePath: vi.fn(),
   }
-
   return {
-    actor,
-    current: signal(settings),
-    get: () => settings,
-    send: actor.send,
-    useSettings: () => settings,
-    resolve: () => {
-      snapshot = {
-        value: 'idle',
-        context: settings,
-      }
-      for (const subscriber of subscribers) {
-        subscriber(snapshot)
-      }
-    },
-  } as unknown as TestSettingsRegistryService
+    settings,
+    service,
+  }
 }
 
 function createRuntimeService(runtimeInfo = playwrightRuntime) {
@@ -189,14 +165,14 @@ describe('layout extension', () => {
   })
 
   it('toggles panes through the service and restores defaults on reset', () => {
-    const settings = createSettings()
+    const { settings, service } = createTestSettings()
 
     const savedLayout = togglePaneLayoutNode({
       rootLayout: structuredClone(playwrightLayoutConfig),
       targetNodeId: 'variables',
       shouldExpand: true,
     })
-    settings.layout.configs.user = {
+    settings.value.layout.configs.user = {
       default: createLayoutWithMetadata(savedLayout),
     }
 
@@ -206,7 +182,7 @@ describe('layout extension', () => {
         id: 'test-dependencies',
         providesServices: [
           provideService(runtimeService, createRuntimeService()),
-          provideService(settingsService, createSettingsService({ settings })),
+          provideService(settingsService, service),
           provideService(userFeaturesService, createUserFeaturesService()),
         ],
       }),
@@ -246,7 +222,7 @@ describe('layout extension', () => {
       defineRegistryItem({
         id: 'test-settings',
         providesServices: [
-          provideService(settingsService, createSettingsService()),
+          provideService(settingsService, createTestSettings().service),
         ],
       }),
       defineRegistryItem({
@@ -268,14 +244,10 @@ describe('layout extension', () => {
   })
 
   it('applies contributed user-feature transformations after settings hydrate', () => {
-    const settings = createSettings()
-    settings.layout.configs.user = {
+    const { settings, service } = createTestSettings()
+    settings.value.layout.configs.user = {
       default: createLayoutWithMetadata(structuredClone(defaultLayoutConfig)),
     }
-    const testSettingsService = createSettingsService({
-      settings,
-      initialValue: 'loadingUser',
-    })
     const testUserFeaturesService = createUserFeaturesService()
 
     registry = new Registry()
@@ -288,9 +260,7 @@ describe('layout extension', () => {
       }),
       defineRegistryItem({
         id: 'test-settings',
-        providesServices: [
-          provideService(settingsService, testSettingsService),
-        ],
+        providesServices: [provideService(settingsService, service)],
       }),
       defineRegistryItem({
         id: 'test-user-features',
@@ -312,7 +282,6 @@ describe('layout extension', () => {
     ])
 
     const layout = registry.get(layoutService)
-    testSettingsService.resolve()
     expect(hasFeatureControlledPane(layout.get())).toBe(false)
 
     testUserFeaturesService.setFeatureIds([EXPERIMENTAL_POINT_AND_CLICK_FLAG])
