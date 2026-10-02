@@ -14,7 +14,6 @@ import type { MachineManager } from '@src/lib/MachineManager'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type { Project } from '@src/lib/project'
 import type RustContext from '@src/lib/rustContext'
-import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { Setting } from '@src/lib/settings/Setting'
 import type { BaseUnit } from '@src/lib/settings/settingsTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -285,8 +284,6 @@ export type ModelingMachineInput = {
   store?: Store
 }
 export type ModelingMachineInternalContext = {
-  /** Effective source language version, not the installed kcl-lib version. */
-  kclLanguageVersion: KclVersion | null
   currentTool: SketchTool
   // This is duplicated state from sketch-solve for now,
   // long term plan is to have sketchSolve machine a sibling of modelingMachine
