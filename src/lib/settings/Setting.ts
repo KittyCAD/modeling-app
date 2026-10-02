@@ -1,9 +1,9 @@
+import { computed, type Signal, signal } from '@preact/signals-core'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type {
   SettingProps,
   SettingsLevel,
 } from '@src/lib/settings/settingsTypes'
-import { computed, signal, type Signal } from '@preact/signals-core'
 
 /**
  * A setting that can be set at the user or project level
@@ -27,7 +27,13 @@ export class Setting<T = unknown> {
   private _user: Signal<T | undefined> = signal(undefined)
   private _project: Signal<T | undefined> = signal(undefined)
   public currentSignal = computed(() => {
-    return this._project?.value || this._user?.value || this._default.value
+    // Only undefined means unset; false, 0, and empty strings are overrides.
+    const project = this.project
+    if (project !== undefined) {
+      return project
+    }
+    const user = this.user
+    return user !== undefined ? user : this.default
   })
   get current(): T {
     return this.currentSignal.value
@@ -95,9 +101,10 @@ export class Setting<T = unknown> {
     level: SettingsLevel | 'default',
     valueToMatch: T
   ): boolean {
-    return this[`_${level}`] === undefined
+    const value = this[level]
+    return value === undefined
       ? this.getFallback(level) === valueToMatch
-      : this[`_${level}`] === valueToMatch
+      : value === valueToMatch
   }
   public getParentLevel(level: SettingsLevel): SettingsLevel | 'default' {
     return level === 'project' ? 'user' : 'default'
