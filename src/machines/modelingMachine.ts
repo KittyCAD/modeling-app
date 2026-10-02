@@ -467,6 +467,7 @@ export type ModelingMachineEvent =
       data: ModelingCommandSchema['Pattern Linear 3D']
     }
   | { type: 'Make'; data: ModelingCommandSchema['Make'] }
+  | { type: 'Named View'; data: ModelingCommandSchema['Named View'] }
   | { type: 'Extrude'; data?: ModelingCommandSchema['Extrude'] }
   | { type: 'Sweep'; data?: ModelingCommandSchema['Sweep'] }
   | { type: 'Loft'; data?: ModelingCommandSchema['Loft'] }
@@ -4237,6 +4238,9 @@ export const modelingMachine = setup({
 
     /* Below are recent modeling codemods that are using updateModelinState,
      * trigger toastError on Error, and have the 'no kcl errors' guard yet */
+    namedViewAstMod: fromPromise(
+      createModelingCodemodActor(modelingCommandCodemods['Named View'])
+    ),
     extrudeAstMod: fromPromise(
       createModelingCodemodActor(modelingCommandCodemods.Extrude)
     ),
@@ -4792,6 +4796,10 @@ export const modelingMachine = setup({
         ],
 
         // Modeling codemods
+
+        'Named View': {
+          target: 'Applying named view',
+        },
 
         Extrude: {
           target: 'Applying extrude',
@@ -6490,6 +6498,26 @@ export const modelingMachine = setup({
         },
       },
       description: `Actor defined in separate file`,
+    },
+
+    'Applying named view': {
+      invoke: {
+        src: 'namedViewAstMod',
+        id: 'namedViewAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Named View') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
     },
 
     'Applying extrude': {

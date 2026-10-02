@@ -706,8 +706,6 @@ type OpValueProps = {
   type?: Operation['type']
   variableName?: string
   valueDetail?: { calculated: OpKclValue; display: string }
-  /** A named view is described by the name it declares, not by its variable. */
-  isNamedView?: boolean
 }
 
 /**
@@ -723,7 +721,6 @@ export const OperationItemWrapper = memo(
     variableName,
     visibilityToggle,
     valueDetail,
-    isNamedView,
     menuItems,
     errors,
     customSuffix,
@@ -782,32 +779,12 @@ export const OperationItemWrapper = memo(
   }
 )
 
-export function namedViewTooltipText({
-  name,
-  valueDetail,
-  variableName,
-}: {
-  name: string
-  valueDetail: { calculated: OpKclValue; display: string }
-  variableName?: string
-}): string {
-  const viewName = getOperationCalculatedDisplay(valueDetail.calculated)
-  const declaration = variableName ? `, declared as ${variableName}` : ''
-
-  return `${name} "${viewName}"${declaration}`
-}
-
 export function VariableTooltipContents({
   variableName,
   valueDetail,
   name,
   type,
-  isNamedView,
 }: OpValueProps) {
-  if (isNamedView && valueDetail) {
-    return <>{namedViewTooltipText({ name, valueDetail, variableName })}</>
-  }
-
   return variableName && valueDetail ? (
     <div className="flex flex-col gap-2">
       <p>
@@ -1007,8 +984,6 @@ const OperationItem = ({
   const valueDetail = useMemo(() => {
     return getFeatureTreeValueDetail(item, code)
   }, [item, code])
-
-  const isNamedView = item.type === 'StdLibCall' && item.name === 'view::named'
 
   const variableName = useMemo(() => {
     // Module-owned ModuleInstance operations have a nodePath relative to their
@@ -1487,7 +1462,6 @@ const OperationItem = ({
       type={item.type}
       variableName={variableName}
       valueDetail={valueDetail}
-      isNamedView={isNamedView}
       customSuffix={
         item.type === 'ModuleInstance' && item.glob ? (
           <span className="text-chalkboard-60 dark:text-chalkboard-50 text-xs">
@@ -1508,7 +1482,6 @@ const OperationItem = ({
               valueDetail={valueDetail}
               name={name}
               type={item.type}
-              isNamedView={isNamedView}
             />
           </Tooltip>
         )
@@ -1741,7 +1714,7 @@ const DefaultPlanes = ({
 
 /**
  * Helper function to get value detail for operations (variable declarations,
- * datums, and named views)
+ * and datums)
  * @param operation - The operation to extract value detail from
  * @param code - The source code string to extract values from
  * @returns Value detail object with display string and calculated value, or undefined if no value
@@ -1776,19 +1749,6 @@ export function getFeatureTreeValueDetail(
           display: datumName,
           calculated: stringValue,
         }
-      }
-    }
-  }
-
-  // Show the view name from the unlabeled first argument
-  if (operation.type === 'StdLibCall' && operation.name === 'view::named') {
-    const nameArg = operation.unlabeledArg
-    if (nameArg?.value.type === 'String') {
-      return {
-        display: code.slice(
-          ...nameArg.sourceRange.map((r) => toUtf16(r, code))
-        ),
-        calculated: nameArg.value,
       }
     }
   }

@@ -15,6 +15,10 @@ import {
   modelingStdLibCommandArgs,
   modelingStdLibCommandStatus,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
+import {
+  namedViewLayout,
+  namedViewArgs,
+} from '@src/lib/commandBarConfigs/modelingCommands/namedView'
 import type {
   CommandArgumentConfig,
   KclCommandValue,
@@ -621,6 +625,21 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         },
       },
     },
+  },
+  'Named View': {
+    icon: 'namedView',
+    status: modelingStdLibCommandStatus('Named View'),
+    needsReview: true,
+    dialogLayout: namedViewLayout,
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['Named View']
+    ),
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Named View']>(
+      'Named View',
+      {
+        overrides: namedViewArgs,
+      }
+    ),
   },
   Extrude: {
     icon: 'extrude',
