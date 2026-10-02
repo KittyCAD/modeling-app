@@ -623,41 +623,15 @@ export const modelingCommandStdLibDriftConfig = {
 export type ModelingStdLibCommandName =
   keyof typeof modelingCommandStdLibDriftConfig
 
-/**
- * Command-palette copy that intentionally differs from the canonical KCL
- * summary. Keep these exceptions here rather than changing public KCL docs to
- * fit the command UI.
- */
+/** Only override KCL summaries for UI-specific semantics or presentation. */
 const modelingCommandSummaryOverrides: Partial<
   Record<ModelingStdLibCommandName, string>
 > = {
-  Extrude: 'Pull a sketch into 3D along its normal or perpendicular.',
-  Revolve: 'Create a 3D surface or solid by rotating a sketch around an axis.',
-  Shell: 'Hollow out a 3D solid.',
-  Hole: 'Cut a standard hole into a solid at a 2D position on one of its faces.',
-  Fillet: 'Fillet edge',
-  Chamfer: 'Create a straight bevel along one or more edges.',
-  Helix: 'Create a helix or spiral in 3D about an axis.',
-  'Helical Gear': 'Create a helical gear.',
-  'Herringbone Gear': 'Create a herringbone gear.',
-  'Spur Gear': 'Create a spur gear.',
-  'Ring Gear': 'Create a ring gear.',
-  Appearance:
-    'Set the appearance of a solid. This only works on solids, not sketches or individual paths.',
-  Delete: 'Delete selected bodies from the scene.',
-  'Mirror 3D': 'Mirror solids across a plane or edge.',
-  'Pattern Circular 3D':
-    'Create a circular pattern of 3D solids around an axis.',
-  'Pattern Linear 3D': 'Create a linear pattern of 3D solids along an axis.',
-  'GDT Datum':
-    'Add datum geometric dimensioning & tolerancing annotation to a face.',
+  // This command dispatches to both profileLine and profileSurface.
   'GDT Profile':
     'Add profile geometric dimensioning & tolerancing annotation to faces or edges.',
-  'Boolean Split':
-    "Split a target body into two parts: the part that overlaps with the tool, and the part that doesn't.",
-  'Delete Face': 'Delete a face from a body, leaving an open surface.',
+  // Command descriptions are plain text; the KCL summary contains a Markdown link.
   Blend: 'Blend two selected surface edges into a new surface.',
-  'Join Surfaces': 'Join selected surfaces into one polysurface.',
 }
 
 export function modelingStdLibCommandName<
