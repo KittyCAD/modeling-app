@@ -127,7 +127,10 @@ const stdLibArgBaseConfig = (
   required: arg.required,
   ...((arg.addedIn || arg.removedIn) && {
     available: (context: ModelingMachineContext) =>
-      isKclVersionAvailable(context.kclLanguageVersion, arg),
+      isKclVersionAvailable(
+        context.kclManager.kclProgramVersionSignal.peek(),
+        arg
+      ),
   }),
   ...(arg.experimental
     ? ({ status: 'experimental' } as const)

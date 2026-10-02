@@ -65,10 +65,21 @@ describe('getKclLanguageVersion', () => {
     ['@settings(kclVersion = 3.0)\nx = 1', '3.0'],
     ['@settings(kclVersion = "3.0")\nx = 1', '3.0'],
   ])('resolves %j to %s using Wasm', (code, expected) => {
+    const result = parse(code, getInstance())
+    if (err(result)) throw result
+    expect(result.kclVersion).toBe(expected)
     expect(getKclLanguageVersion(code, getInstance())).toBe(expected)
     expect(getKclLanguageVersion(parseProgram(code), getInstance())).toBe(
       expected
     )
+  })
+
+  it('returns parse diagnostics and no version when there is no root program', () => {
+    const result = parse('@settings(kclVersion = 3.0)\nx =', getInstance())
+    if (err(result)) throw result
+    expect(result.program).toBeNull()
+    expect(result.kclVersion).toBeNull()
+    expect(result.errors.length).toBeGreaterThan(0)
   })
 
   it.each([

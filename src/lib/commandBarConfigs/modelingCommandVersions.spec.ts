@@ -25,7 +25,7 @@ describe('modeling command KCL versions', () => {
 
   beforeEach(async () => {
     world = await buildTheWorldAndNoEngineConnection()
-    world.kclManager.codeSignal.value = '@settings(kclVersion = 2.0)'
+    await parseCode('@settings(kclVersion = 2.0)')
     actor = createActor(modelingMachine, {
       input: { ...world, wasmInstance: world.instance },
     }).start()
@@ -36,6 +36,15 @@ describe('modeling command KCL versions', () => {
     world.commandBarActor.stop()
     world.settingsActor.stop()
   })
+
+  async function parseCode(code: string) {
+    world.kclManager.updateCodeEditor(code, {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+      shouldResetCamera: false,
+    })
+    return world.kclManager.safeParse(code)
+  }
 
   function command(name: 'Fillet' | 'Chamfer' | 'Sweep') {
     const result = createMachineCommand<
@@ -57,13 +66,13 @@ describe('modeling command KCL versions', () => {
 
   it.each<'Fillet' | 'Chamfer'>(['Fillet', 'Chamfer'])(
     'filters %s fields without changing the static drift contract',
-    (name) => {
+    async (name) => {
       const v2 = command(name)
       expect(v2?.args).toHaveProperty('version')
       expect(v2?.args).not.toHaveProperty('tangentChain')
 
       for (const version of ['3.0-preview', '3.0']) {
-        world.kclManager.codeSignal.value = `@settings(kclVersion = "${version}")`
+        await parseCode(`@settings(kclVersion = "${version}")`)
         const v3 = command(name)
         expect(v3?.args).not.toHaveProperty('version')
         expect(v3?.args).toHaveProperty('tangentChain')
@@ -77,8 +86,8 @@ describe('modeling command KCL versions', () => {
     }
   )
 
-  it('hides unavailable fields without removing authored edit arguments', () => {
-    world.kclManager.codeSignal.value = '@settings(kclVersion = "3.0-preview")'
+  it('hides unavailable fields without removing authored edit arguments', async () => {
+    await parseCode('@settings(kclVersion = "3.0-preview")')
     const sweep = command('Sweep')
     if (!sweep) throw new Error('Expected Sweep')
     expect(sweep.args).not.toHaveProperty('relativeTo')
@@ -102,8 +111,9 @@ describe('modeling command KCL versions', () => {
     expect(sweep.onSubmit({ version: '1' })).toBeUndefined()
   })
 
-  it('tracks the source version without closing commands, and unsubscribes on stop', () => {
-    expect(actor.getSnapshot().context.kclLanguageVersion).toBe('2.0')
+  it('uses the last parsed version without closing commands', async () => {
+    const version = world.kclManager.kclProgramVersionSignal
+    expect(version.value).toBe('2.0')
     const fillet = command('Fillet')
     if (!fillet) throw new Error('Expected Fillet')
     world.commandBarActor.send({ type: 'Open' })
@@ -112,20 +122,29 @@ describe('modeling command KCL versions', () => {
       data: { command: fillet },
     })
 
-    world.kclManager.codeSignal.value = '@settings(kclVersion = "3.0-preview")'
-    expect(actor.getSnapshot().context.kclLanguageVersion).toBe('3.0-preview')
+    world.kclManager.updateCodeEditor('@settings(kclVersion = "3.0-preview")', {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+      shouldResetCamera: false,
+    })
+    expect(version.value).toBe('2.0')
+    expect(command('Fillet')?.args).not.toHaveProperty('tangentChain')
+    await world.kclManager.safeParse(world.kclManager.code)
+    expect(version.value).toBe('3.0-preview')
+    expect(command('Fillet')?.args).toHaveProperty('tangentChain')
     expect(world.commandBarActor.getSnapshot().context.selectedCommand).toBe(
       fillet
     )
-    world.kclManager.codeSignal.value = '@settings(kclVersion = 2.0)\nx ='
-    expect(actor.getSnapshot().context.kclLanguageVersion).toBeNull()
+    expect(await parseCode('@settings(kclVersion = 2.0)\nx =')).toBeNull()
+    expect(version.value).toBeNull()
     expect(command('Fillet')).not.toBeNull()
     expect(command('Fillet')?.args).not.toHaveProperty('tangentChain')
-    world.kclManager.codeSignal.value = 'x = 1'
-    expect(actor.getSnapshot().context.kclLanguageVersion).toBe('1.0')
-    actor.stop()
-    world.kclManager.codeSignal.value = '@settings(kclVersion = 2.0)'
-    expect(actor.getSnapshot().context.kclLanguageVersion).toBe('1.0')
+    await parseCode('x = 1')
+    expect(version.value).toBe('1.0')
+    world.kclManager.clearAst()
+    expect(version.value).toBeNull()
+    await parseCode('@settings(kclVersion = 3.0)')
+    expect(version.value).toBe('3.0')
   })
 
   it.each(['2.0', '"3.0-preview"', '3.0'])(
