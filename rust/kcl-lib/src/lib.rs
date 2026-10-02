@@ -197,6 +197,7 @@ pub use execution::SketchConstraintReport;
 pub use execution::SketchConstraintStatus;
 pub use execution::bust_cache;
 pub use execution::clear_mem_cache;
+pub use execution::kcl_value::is_kcl_version_available;
 pub use execution::typed_path::TypedPath;
 pub use fs::FileSystem;
 pub use fs::FileSystemHandle;

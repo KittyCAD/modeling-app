@@ -8,6 +8,7 @@ import type { CommandArgumentConfig } from '@src/lib/commandTypes'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import { isKclVersionAvailable } from '@src/lib/kclVersionRange'
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export type StdLibCommandDriftConfig = {
   stdLibName: StdLibCommandName
@@ -104,12 +105,13 @@ const stdLibArgDeprecatedMessage = (arg: StdLibCommandArg) => {
 export function stdLibCommandArgAvailable<Name extends StdLibCommandName>(
   stdLibName: Name,
   argName: (typeof STD_LIB_COMMANDS)[Name]['args'][number]['name'],
-  version: KclVersion
+  version: KclVersion,
+  instance: ModuleType
 ) {
   const arg = STD_LIB_COMMANDS[stdLibName].args.find(
     (arg) => arg.name === argName
   )
-  return arg !== undefined && isKclVersionAvailable(version, arg)
+  return arg !== undefined && isKclVersionAvailable(version, arg, instance)
 }
 
 const hasExistingEditFlowArgument = (
@@ -129,7 +131,8 @@ const stdLibArgBaseConfig = (
     available: (context: ModelingMachineContext) =>
       isKclVersionAvailable(
         context.kclManager.kclProgramVersionSignal.peek(),
-        arg
+        arg,
+        context.wasmInstance
       ),
   }),
   ...(arg.experimental
