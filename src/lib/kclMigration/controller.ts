@@ -7,6 +7,7 @@ import {
 import {
   MIGRATION_TARGET,
   type MigrationOperation,
+  type MigrationProgress,
   type MigrationRequest,
 } from '@src/lib/kclMigration/protocol'
 import {
@@ -49,6 +50,8 @@ export type MigrationPhase =
 export class MigrationController {
   readonly phase = signal<MigrationPhase>('idle')
   readonly detail = signal('')
+  readonly progress = signal<MigrationProgress[]>([])
+  readonly progressText = signal('')
   readonly operation = signal<MigrationOperation | undefined>(undefined)
   readonly candidate = signal<ProjectFiles | undefined>(undefined)
   readonly original = signal<MigrationSnapshot | undefined>(undefined)
@@ -93,6 +96,8 @@ export class MigrationController {
     this.candidate.value = undefined
     this.operation.value = undefined
     this.detail.value = ''
+    this.progress.value = []
+    this.progressText.value = ''
     this.phase.value = 'capturing'
     try {
       const original = await this.project.capture()
@@ -128,6 +133,18 @@ export class MigrationController {
         token: this.token(),
         signal: owner.signal,
         statusOnly,
+        onProgress: (message) => {
+          if (!this.current() || owner !== this.abort || owner.signal.aborted)
+            return
+          if ('delta' in message) this.progressText.value += message.delta.delta
+          else
+            this.progress.value = [
+              ...this.progress.value,
+              'info' in message
+                ? { reasoning: { type: 'text', content: message.info.text } }
+                : message,
+            ]
+        },
         onOperation: (operation) => {
           if (!this.current() || owner !== this.abort || owner.signal.aborted)
             return

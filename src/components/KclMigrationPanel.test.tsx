@@ -151,3 +151,37 @@ it('waits for ordinary chat before starting or applying a migration', async () =
   expect(screen.getByRole('button', { name: 'Apply Migration' })).toBeDisabled()
   expect(await fixture.readMain()).toBe(sourceCode)
 })
+
+it('shows live Zookeeper reasoning before migration finishes', async () => {
+  await fixture.controller.start(true)
+  await waitFor(() => expect(fixture.controller.phase.value).toBe('running'))
+  render(
+    <KclMigrationPanel
+      controller={fixture.controller}
+      enabled
+      sourceIsKcl2
+      chatBusy={false}
+    />
+  )
+  await act(async () => {
+    fixture.sendMessage({
+      type: 'progress',
+      operation_id: fixture.request.request_id,
+      message: {
+        reasoning: {
+          type: 'markdown',
+          content: 'Comparing **matching camera views**.',
+        },
+      },
+    })
+    await waitFor(() =>
+      expect(fixture.controller.progress.value).toHaveLength(1)
+    )
+  })
+  expect(screen.getByText('matching camera views')).toBeInTheDocument()
+  expect(
+    screen.getByRole('button', { name: 'Cancel Migration' })
+  ).toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: 'Apply Migration' })).toBeNull()
+  expect(await fixture.readMain()).toBe(sourceCode)
+})

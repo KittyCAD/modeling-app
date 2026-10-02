@@ -4,6 +4,7 @@ import {
   parseMigrationMessage,
   type MigrationClientMessage,
   type MigrationOperation,
+  type MigrationProgress,
   type MigrationRequest,
 } from '@src/lib/kclMigration/protocol'
 import { isErr } from '@src/lib/trap'
@@ -22,6 +23,7 @@ export async function connectMigration({
   signal,
   statusOnly = false,
   onOperation,
+  onProgress,
   onError,
   onDisconnect,
 }: {
@@ -30,6 +32,7 @@ export async function connectMigration({
   signal: AbortSignal
   statusOnly?: boolean
   onOperation: (operation: MigrationOperation) => void
+  onProgress: (message: MigrationProgress) => void
   onError: (error: Error) => void
   onDisconnect: () => void
 }): Promise<MigrationConnection> {
@@ -75,6 +78,12 @@ export async function connectMigration({
       const message = parseMigrationMessage(raw)
       if (isErr(message)) return fail(message)
       if (message.type === 'error') return fail(new Error(message.detail))
+      if (message.type === 'progress') {
+        if (message.operation_id === request.request_id && !statusOnly) {
+          onProgress(message.message)
+        }
+        return
+      }
       if (message.type !== 'operation') return
       if (!belongsToRequest(message.operation, request)) {
         return fail(
@@ -142,7 +151,7 @@ export async function connectMigration({
     send(
       statusOnly
         ? { type: 'status', operation_id: request.request_id }
-        : { type: 'start', request }
+        : { type: 'start', request, stream_progress: true }
     )
   }
   return {

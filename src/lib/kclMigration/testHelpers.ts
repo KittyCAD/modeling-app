@@ -11,6 +11,7 @@ import type {
   MigrationClientMessage,
   MigrationOperation,
   MigrationRequest,
+  MigrationServerMessage,
 } from '@src/lib/kclMigration/protocol'
 import { readProjectFiles } from '@src/lib/kclMigration/snapshot'
 import { WebSocketServer, type WebSocket } from 'ws'
@@ -133,6 +134,8 @@ export async function migrationFixture() {
     readMain: () => readFile(path.join(root, 'main.kcl'), 'utf8'),
     send: (operation: MigrationOperation) =>
       socket?.send(JSON.stringify({ type: 'operation', operation })),
+    sendMessage: (message: MigrationServerMessage) =>
+      socket?.send(JSON.stringify(message)),
     get request() {
       assert(request, 'No start received')
       return request

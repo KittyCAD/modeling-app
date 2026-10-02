@@ -40,6 +40,91 @@ async function review() {
 }
 
 describe('project migration', () => {
+  it('streams progress only for this attempt without applying candidate edits', async () => {
+    await fixture.controller.start(true)
+    await vi.waitFor(() =>
+      expect(fixture.controller.phase.value).toBe('running')
+    )
+    expect(fixture.frames).toContainEqual({
+      type: 'start',
+      request: fixture.request,
+      stream_progress: true,
+    })
+    fixture.sendMessage({
+      type: 'progress',
+      operation_id: 'another-attempt',
+      message: { info: { text: 'Unrelated' } },
+    })
+    fixture.sendMessage({
+      type: 'progress',
+      operation_id: fixture.request.request_id,
+      message: {
+        reasoning: {
+          type: 'markdown',
+          content: 'Comparing the original views.',
+        },
+      },
+    })
+    fixture.sendMessage({
+      type: 'progress',
+      operation_id: fixture.request.request_id,
+      message: { delta: { delta: 'Checking ' } },
+    })
+    fixture.sendMessage({
+      type: 'progress',
+      operation_id: fixture.request.request_id,
+      message: { delta: { delta: 'geometry.' } },
+    })
+    await vi.waitFor(() =>
+      expect(fixture.controller.progressText.value).toBe('Checking geometry.')
+    )
+    expect(fixture.controller.progress.value).toEqual([
+      {
+        reasoning: {
+          type: 'markdown',
+          content: 'Comparing the original views.',
+        },
+      },
+    ])
+    expect(await fixture.readMain()).toBe(sourceCode)
+    fixture.send(successfulOperation(fixture.request))
+    await vi.waitFor(() =>
+      expect(fixture.controller.phase.value).toBe('review')
+    )
+    expect(fixture.controller.progress.value).toHaveLength(1)
+    expect(await fixture.readMain()).toBe(sourceCode)
+  })
+
+  it('clears previous progress when starting a new attempt', async () => {
+    await fixture.controller.start(true)
+    await vi.waitFor(() =>
+      expect(fixture.controller.phase.value).toBe('running')
+    )
+    fixture.sendMessage({
+      type: 'progress',
+      operation_id: fixture.request.request_id,
+      message: { info: { text: 'Checking the source.' } },
+    })
+    await vi.waitFor(() =>
+      expect(fixture.controller.progress.value).toHaveLength(1)
+    )
+    const operation = successfulOperation(fixture.request)
+    fixture.send({
+      ...operation,
+      status: 'cancelled',
+      result: { status: 'cancelled', detail: 'Cancelled', files: {} },
+    })
+    await vi.waitFor(() =>
+      expect(fixture.controller.phase.value).toBe('cancelled')
+    )
+    await fixture.controller.start(true)
+    await vi.waitFor(() =>
+      expect(fixture.controller.phase.value).toBe('running')
+    )
+    expect(fixture.controller.progress.value).toEqual([])
+    expect(fixture.controller.progressText.value).toBe('')
+  })
+
   it.each([
     ['', '/ws/ml/kcl-migration'],
     ['?pr=4378&replay=true', '/ws/ml/kcl-migration?pr=4378'],
