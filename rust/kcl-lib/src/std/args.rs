@@ -165,6 +165,11 @@ impl TyF64 {
     }
 }
 
+/// Are all numbers in this slice compatible with being lengths?
+fn is_lengths(nums: &[TyF64]) -> bool {
+    nums.iter().all(|num| num.is_length_compatible())
+}
+
 impl Args {
     pub(crate) fn get_kw_arg_opt<T>(
         &self,
@@ -1174,17 +1179,11 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis2dOrEdgeReference {
             let_field_of!(obj, direction);
             let_field_of!(obj, origin);
             let origin: [TyF64; 2] = origin;
-            if !origin[0].is_length_compatible() {
-                return None;
-            }
-            if !origin[1].is_length_compatible() {
+            if !is_lengths(&origin) {
                 return None;
             }
             let direction: [TyF64; 2] = direction;
-            if !direction[0].is_length_compatible() {
-                return None;
-            }
-            if !direction[1].is_length_compatible() {
+            if !is_lengths(&direction) {
                 return None;
             }
             Some(Self::Axis { direction, origin })
@@ -1677,9 +1676,4 @@ impl From<Args> for Vec<Metadata> {
             source_range: value.source_range,
         }]
     }
-}
-
-/// Are all numbers in this slice compatible with being lengths?
-fn is_lengths(nums: &[TyF64]) -> bool {
-    nums.iter().all(|num| num.is_length_compatible())
 }
