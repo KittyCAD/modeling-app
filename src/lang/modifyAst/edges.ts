@@ -105,6 +105,7 @@ export function addFillet({
   tolerance,
   tag,
   version,
+  tangentChain,
   nodeToEdit,
   wasmInstance,
 }: {
@@ -115,6 +116,7 @@ export function addFillet({
   tolerance?: KclCommandValue
   tag?: string
   version?: KclCommandValue
+  tangentChain?: boolean
   nodeToEdit?: PathToNode
   wasmInstance: ModuleType
 }):
@@ -130,6 +132,14 @@ export function addFillet({
 
   const nonSelectionArgs = [
     createLabeledArg('radius', valueOrVariable(radius)),
+    ...(tangentChain !== undefined
+      ? [
+          createLabeledArg(
+            'tangentChain',
+            createLiteral(tangentChain, wasmInstance)
+          ),
+        ]
+      : []),
     ...(tolerance
       ? [createLabeledArg('tolerance', valueOrVariable(tolerance))]
       : []),
@@ -253,6 +263,7 @@ export function addChamfer({
   angle,
   tag,
   version,
+  tangentChain,
   nodeToEdit,
   wasmInstance,
 }: {
@@ -264,6 +275,7 @@ export function addChamfer({
   angle?: KclCommandValue
   tag?: string
   version?: KclCommandValue
+  tangentChain?: boolean
   nodeToEdit?: PathToNode
   wasmInstance: ModuleType
 }):
@@ -279,6 +291,14 @@ export function addChamfer({
 
   const nonSelectionArgs = [
     createLabeledArg('length', valueOrVariable(length)),
+    ...(tangentChain !== undefined
+      ? [
+          createLabeledArg(
+            'tangentChain',
+            createLiteral(tangentChain, wasmInstance)
+          ),
+        ]
+      : []),
     ...(secondLength
       ? [createLabeledArg('secondLength', valueOrVariable(secondLength))]
       : []),
