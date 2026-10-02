@@ -2574,9 +2574,6 @@ const prepareToEditGdtDistance: PrepareToEditCallback = async ({
     'tolerance',
     rustContext
   )
-  if ('error' in tolerance) {
-    return { reason: tolerance.error }
-  }
 
   const optionalArgs = await Promise.all([
     extractKclArgument(code, operation, 'precision', rustContext),
@@ -2589,11 +2586,12 @@ const prepareToEditGdtDistance: PrepareToEditCallback = async ({
     (arg) => ('error' in arg ? undefined : arg)
   )
 
-  const framePlane = extractStringArgument(code, operation, 'framePlane')
+  const framePlane =
+    extractStringArgument(code, operation, 'framePlane') ?? 'Automatic'
 
   const argDefaultValues: ModelingCommandSchema['GDT Distance'] = {
     objects,
-    tolerance,
+    tolerance: 'error' in tolerance ? undefined : tolerance,
     precision,
     framePosition,
     framePlane,
