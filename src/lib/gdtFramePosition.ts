@@ -212,7 +212,15 @@ export function getEngineEntityIdsForGdtSelections(
     ]
   })
 
-  return deduplicateArtifactIds(entityIds)
+  const primitiveIds = selections.otherSelections.flatMap((selection) =>
+    typeof selection === 'object' &&
+    'type' in selection &&
+    selection.type === 'enginePrimitive' &&
+    (selection.primitiveType === 'edge' || selection.primitiveType === 'face')
+      ? [selection.entityId]
+      : []
+  )
+  return deduplicateArtifactIds([...entityIds, ...primitiveIds])
 }
 
 export function getPlanarFaceEntityIdsForGdtSelections(
@@ -427,6 +435,40 @@ function createFontSizeCommandValue(
   }
 }
 
+function createDistanceFramePositionCommandValue(
+  setback: number | undefined,
+  outputUnit: UnitLength,
+  wasmInstance: ModuleType
+): KclCommandValue {
+  const offset = createLiteral(
+    setback ?? 20,
+    wasmInstance,
+    setback === undefined ? 'Mm' : baseUnitToNumericSuffix(outputUnit),
+    4
+  )
+  const valueText = `[0mm, ${offset.raw}]`
+  return {
+    valueAst: createArrayExpression([
+      createLiteral(0, wasmInstance, 'Mm'),
+      offset,
+    ]),
+    valueText,
+    valueCalculated: valueText,
+  }
+}
+
+function distanceSetback(bounds: BoundingBox | undefined): number | undefined {
+  if (!bounds) return undefined
+  const diagonal = Math.hypot(
+    ...[bounds.dimensions.x, bounds.dimensions.y, bounds.dimensions.z].filter(
+      (value) => Number.isFinite(value) && value > 0
+    )
+  )
+  // The dimension line is at 80% of the setback. A full bounding-box
+  // diagonal plus 20% clearance keeps it outside even for interior features.
+  return diagonal > 0 ? roundOff(diagonal * 1.5, 4) : undefined
+}
+
 function getNormalFromPlanarFace(face: FaceIsPlanar): Point3d | undefined {
   const normal = face.z_axis
   if (
@@ -543,6 +585,7 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   sourceCode,
   outputUnit = DEFAULT_DEFAULT_LENGTH_UNIT,
   wasmInstance,
+  distance = false,
 }: {
   data: T
   engineCommandManager: ConnectionManager
@@ -550,6 +593,7 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   sourceCode?: string
   outputUnit?: UnitLength
   wasmInstance: ModuleType
+  distance?: boolean
 }): Promise<T> {
   const selections = getSelectionsFromGdtData(data)
   const entityIds = getEngineEntityIdsForGdtSelections(selections)
@@ -563,10 +607,35 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
           ...data,
           fontSize: existingFontSize,
         }
-  let hasResolvedFramePlane = Boolean(nextData.framePlane)
+  // Face-pair distances choose their plane in KCL from the actual surface normals.
+  // Do not bake an axis-aligned plane into the generated annotation.
+  const automaticDistancePlane =
+    distance &&
+    selections !== undefined &&
+    (!nextData.framePlane || nextData.framePlane === 'Automatic') &&
+    selections.graphSelections.length + selections.otherSelections.length ===
+      2 &&
+    selections.otherSelections.every(
+      (selection) =>
+        typeof selection === 'object' &&
+        'type' in selection &&
+        selection.type === 'enginePrimitive' &&
+        selection.primitiveType === 'face'
+    ) &&
+    selections.graphSelections.every(
+      (selection) =>
+        ['cap', 'wall', 'edgeCut', 'primitiveFace'].includes(
+          selection.artifact?.type ?? ''
+        ) || selection.entityRef?.type === 'face'
+    )
+  if (distance && nextData.framePlane === 'Automatic') {
+    nextData = { ...nextData, framePlane: undefined }
+  }
+  let hasResolvedFramePlane =
+    automaticDistancePlane || Boolean(nextData.framePlane)
   let framePositionSigns: GdtFramePositionSigns | undefined
   const shouldQueryNormalDefaults =
-    !nextData.framePlane || !nextData.framePosition
+    !automaticDistancePlane && (!nextData.framePlane || !nextData.framePosition)
 
   if (shouldQueryNormalDefaults) {
     const defaultsFromNormal =
@@ -625,7 +694,7 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
       ? getAverageBoundingBoxDimension(selectionBoundingBox.dimensions)
       : undefined
 
-  if (!nextData.framePosition && averageDimension !== undefined) {
+  if (!distance && !nextData.framePosition && averageDimension !== undefined) {
     const [xSign, ySign] = framePositionSigns ?? [1, 1]
 
     nextData = {
@@ -638,7 +707,8 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
     }
   }
 
-  if (!nextData.fontSize) {
+  let setback = distanceSetback(selectionBoundingBox)
+  if (!nextData.fontSize || (distance && !nextData.framePosition)) {
     const modelBoundingBox = await getBoundingBoxForGdtEntities({
       engineCommandManager,
       entityIds: [],
@@ -649,14 +719,27 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
       ? getAverageBoundingBoxDimension(modelBoundingBox.dimensions)
       : undefined
 
-    if (modelAverageDimension === undefined) {
-      return nextData
+    const modelSetback = distanceSetback(modelBoundingBox)
+    if (modelSetback !== undefined) {
+      setback = Math.max(setback ?? 0, modelSetback)
     }
+    if (!nextData.fontSize && modelAverageDimension !== undefined) {
+      nextData = {
+        ...nextData,
+        fontSize: createFontSizeCommandValue(
+          modelAverageDimension,
+          outputUnit,
+          wasmInstance
+        ),
+      }
+    }
+  }
 
+  if (distance && !nextData.framePosition) {
     nextData = {
       ...nextData,
-      fontSize: createFontSizeCommandValue(
-        modelAverageDimension,
+      framePosition: createDistanceFramePositionCommandValue(
+        setback,
         outputUnit,
         wasmInstance
       ),

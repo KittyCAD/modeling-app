@@ -1,6 +1,7 @@
 use kcl_error::SourceRange;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
+use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
 use kittycad_modeling_cmds::shared::AnnotationBasicDimension;
 use kittycad_modeling_cmds::shared::AnnotationFeatureControl;
 use kittycad_modeling_cmds::shared::AnnotationFeatureTag;
@@ -12,6 +13,8 @@ use kittycad_modeling_cmds::shared::AnnotationOptions;
 use kittycad_modeling_cmds::shared::AnnotationType;
 use kittycad_modeling_cmds::shared::MbdSymbol;
 use kittycad_modeling_cmds::shared::Point2d as KPoint2d;
+use kittycad_modeling_cmds::units::UnitLength;
+use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::{self as kcmc};
 
 use crate::ExecState;
@@ -27,6 +30,9 @@ use crate::execution::GdtAnnotationArtifact;
 use crate::execution::Metadata;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::Plane;
+use crate::execution::PlaneInfo;
+use crate::execution::PlaneKind;
+use crate::execution::Point3d;
 use crate::execution::TagIdentifier;
 use crate::execution::types::ArrayLen;
 use crate::execution::types::RuntimeType;
@@ -989,19 +995,6 @@ async fn inner_distance(
     args: &Args,
 ) -> Result<Vec<GdtAnnotation>, KclError> {
     let precision = resolve_precision(precision, args)?;
-    let mut frame_plane = if let Some(plane) = frame_plane {
-        plane
-    } else {
-        xy_plane(exec_state, args).await?
-    };
-    ensure_sketch_plane_in_engine(
-        &mut frame_plane,
-        exec_state,
-        &args.ctx,
-        args.source_range,
-        args.node_path.clone(),
-    )
-    .await?;
 
     if from.is_some() || to.is_some() {
         if !edges.is_empty() {
@@ -1018,8 +1011,11 @@ async fn inner_distance(
             )));
         };
 
+        let planar_face_pair = matches!(from, DistanceEntity::Face(_) | DistanceEntity::TaggedFace(_))
+            && matches!(to, DistanceEntity::Face(_) | DistanceEntity::TaggedFace(_));
         let from = from.to_endpoint(exec_state, args).await?;
         let to = to.to_endpoint(exec_state, args).await?;
+        let frame_plane = distance_frame_plane(frame_plane, planar_face_pair, &from, &to, exec_state, args).await?;
         let mut annotations = Vec::with_capacity(1);
         create_basic_distance_annotation(
             from,
@@ -1044,6 +1040,20 @@ async fn inner_distance(
             vec![args.source_range],
         )));
     }
+
+    let mut frame_plane = if let Some(plane) = frame_plane {
+        plane
+    } else {
+        xy_plane(exec_state, args).await?
+    };
+    ensure_sketch_plane_in_engine(
+        &mut frame_plane,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+        args.node_path.clone(),
+    )
+    .await?;
 
     let mut annotations = Vec::with_capacity(edges.len());
     for edge in &edges {
@@ -1081,6 +1091,178 @@ async fn inner_distance(
     Ok(annotations)
 }
 
+// Keep this angular tolerance in sync with the engine's parallelPlaneDimensionPositions.
+const DISTANCE_PARALLEL_TOLERANCE: f64 = 1e-9;
+
+fn parallel_face_frame(
+    from: &kcmc::ok_response::output::FaceIsPlanar,
+    to: &kcmc::ok_response::output::FaceIsPlanar,
+) -> Option<PlaneInfo> {
+    let (a, b, normal, other_normal) = (from.origin?, to.origin?, from.z_axis?, to.z_axis?);
+    let mut normal = nalgebra_glm::vec3(normal.x, normal.y, normal.z).try_normalize(0.0)?;
+    let other_normal = nalgebra_glm::vec3(other_normal.x, other_normal.y, other_normal.z).try_normalize(0.0)?;
+    if !normal.iter().chain(other_normal.iter()).all(|value| value.is_finite())
+        || normal.cross(&other_normal).norm() > DISTANCE_PARALLEL_TOLERANCE
+    {
+        return None;
+    }
+    // A canonical sign keeps the display orientation independent of face selection order.
+    let axis = (0..3).max_by(|&a, &b| normal[a].abs().total_cmp(&normal[b].abs()))?;
+    if normal[axis] < 0.0 {
+        normal = -normal;
+    }
+    let axis = (0..3).min_by(|&a, &b| normal[a].abs().total_cmp(&normal[b].abs()))?;
+    let mut tangent = nalgebra_glm::DVec3::zeros();
+    tangent[axis] = 1.0;
+    let tangent = (tangent - normal * tangent.dot(&normal)).try_normalize(0.0)?;
+    let z_axis = normal.cross(&tangent);
+    let direction = |v: nalgebra_glm::DVec3| Point3d {
+        x: v.x,
+        y: v.y,
+        z: v.z,
+        units: None,
+    };
+    Some(PlaneInfo {
+        origin: Point3d {
+            x: (a.x.0 + b.x.0) / 2.0,
+            y: (a.y.0 + b.y.0) / 2.0,
+            z: (a.z.0 + b.z.0) / 2.0,
+            units: Some(kcl_api::UnitLength::Millimeters),
+        },
+        x_axis: direction(normal),
+        y_axis: direction(tangent),
+        z_axis: direction(z_axis),
+    })
+}
+
+async fn planar_face(
+    face_id: uuid::Uuid,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<kcmc::ok_response::output::FaceIsPlanar, KclError> {
+    let id = exec_state.next_uuid();
+    let response = exec_state
+        .send_modeling_cmd(
+            ModelingCmdMeta::from_args_id(exec_state, args, id),
+            mcmd::FaceIsPlanar::builder().object_id(face_id).build().into(),
+        )
+        .await?;
+    match response {
+        OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::FaceIsPlanar(face),
+        } => Ok(face),
+        _ => Err(KclError::new_engine(KclErrorDetails::new(
+            "Expected FaceIsPlanar response for distance annotation.".to_owned(),
+            vec![args.source_range],
+        ))),
+    }
+}
+
+async fn distance_frame_plane(
+    explicit: Option<Plane>,
+    planar_face_pair: bool,
+    from: &DistanceEndpoint,
+    to: &DistanceEndpoint,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Plane, KclError> {
+    let automatic = if planar_face_pair && !args.ctx.no_engine_commands().await {
+        if let (Some(a), Some(b)) = (from.entity_id, to.entity_id) {
+            let a = planar_face(a, exec_state, args).await?;
+            let b = planar_face(b, exec_state, args).await?;
+            parallel_face_frame(&a, &b)
+        } else {
+            None
+        }
+    } else {
+        None
+    };
+    let mut plane = match (explicit, automatic) {
+        (Some(plane), Some(info)) => {
+            if !distance_plane_contains_direction(&plane.info, &info.x_axis) {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "framePlane must contain the direction perpendicular to the measured faces. Omit framePlane to choose it automatically.".to_owned(),
+                    vec![args.source_range],
+                )));
+            }
+            plane
+        }
+        (Some(plane), None) => plane,
+        (None, Some(info)) => {
+            let id = exec_state.next_uuid();
+            Plane {
+                id,
+                artifact_id: id.into(),
+                object_id: None,
+                kind: PlaneKind::Custom,
+                info,
+                meta: vec![Metadata::from(args.source_range)],
+            }
+        }
+        (None, None) => xy_plane(exec_state, args).await?,
+    };
+    ensure_sketch_plane_in_engine(
+        &mut plane,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+        args.node_path.clone(),
+    )
+    .await?;
+    Ok(plane)
+}
+
+fn distance_plane_contains_direction(plane: &PlaneInfo, direction: &Point3d) -> bool {
+    let normal = plane.x_axis.axes_cross_product(&plane.y_axis);
+    let dot = normal.axes_dot_product(direction);
+    let length = normal.axes_dot_product(&normal).sqrt();
+    dot.is_finite() && length > 0.0 && dot.abs() / length <= DISTANCE_PARALLEL_TOLERANCE
+}
+
+fn distance_setback(dimensions: [f64; 3]) -> Option<f64> {
+    dimensions
+        .into_iter()
+        .filter(|value| value.is_finite() && *value > 0.0)
+        .reduce(f64::hypot)
+        .map(|diagonal| diagonal * 1.5)
+}
+
+async fn default_distance_setback(
+    from: Option<uuid::Uuid>,
+    to: Option<uuid::Uuid>,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> f64 {
+    let mut entity_ids: Vec<_> = from.into_iter().chain(to).collect();
+    entity_ids.dedup();
+    let mut setback: Option<f64> = None;
+    loop {
+        let id = exec_state.next_uuid();
+        let response = exec_state
+            .send_modeling_cmd(
+                ModelingCmdMeta::from_args_id(exec_state, args, id),
+                mcmd::BoundingBox::builder()
+                    .entity_ids(entity_ids.clone())
+                    .output_unit(UnitLength::Millimeters)
+                    .build()
+                    .into(),
+            )
+            .await;
+        if let Ok(OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::BoundingBox(bounds),
+        }) = response
+            && let Some(bound_setback) =
+                distance_setback([bounds.dimensions.x, bounds.dimensions.y, bounds.dimensions.z])
+        {
+            setback = Some(setback.unwrap_or(0.0).max(bound_setback));
+        }
+        if entity_ids.is_empty() {
+            return setback.unwrap_or(20.0);
+        }
+        entity_ids.clear();
+    }
+}
+
 #[allow(clippy::too_many_arguments)]
 async fn create_basic_distance_annotation(
     from: DistanceEndpoint,
@@ -1098,6 +1280,17 @@ async fn create_basic_distance_annotation(
     let meta = vec![Metadata::from(args.source_range)];
     let annotation_id = exec_state.next_uuid();
     let display_units = exec_state.length_unit();
+    let offset = if let Some(offset) = frame_position {
+        KPoint2d {
+            x: offset[0].to_mm(),
+            y: offset[1].to_mm(),
+        }
+    } else {
+        KPoint2d {
+            x: 0.0,
+            y: default_distance_setback(from.entity_id, to.entity_id, exec_state, args).await,
+        }
+    };
     let dimension = AnnotationBasicDimension::builder()
         .maybe_from_entity_id(from.entity_id)
         .maybe_from_edge_reference(from.edge_reference)
@@ -1116,14 +1309,7 @@ async fn create_basic_distance_annotation(
                 .build(),
         )
         .plane_id(frame_plane_id)
-        .offset(if let Some(offset) = frame_position {
-            KPoint2d {
-                x: offset[0].to_mm(),
-                y: offset[1].to_mm(),
-            }
-        } else {
-            KPoint2d { x: 100.0, y: 100.0 }
-        })
+        .offset(offset)
         .precision(precision)
         .font_scale(gdt_font_scale(font_size, args)?)
         .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
@@ -1784,6 +1970,57 @@ mod tests {
     use crate::execution::MockConfig;
     use crate::execution::parse_execute;
 
+    fn planar_response(origin: [f64; 3], normal: [f64; 3]) -> kcmc::ok_response::output::FaceIsPlanar {
+        serde_json::from_value(serde_json::json!({
+            "origin": { "x": origin[0], "y": origin[1], "z": origin[2] },
+            "z_axis": { "x": normal[0], "y": normal[1], "z": normal[2] }
+        }))
+        .unwrap()
+    }
+
+    #[test]
+    fn parallel_face_distance_frame_contains_measurement_direction() {
+        for normal in [[0.0, 0.0, 1.0], [1.0, 2.0, 3.0], [0.0, 1.0, 0.0]] {
+            let a = planar_response([0.0, 0.0, 0.0], normal);
+            let b = planar_response([12.0, 0.0, 5.0], normal.map(|value| -value));
+            let plane = parallel_face_frame(&a, &b).unwrap();
+            let reversed = parallel_face_frame(&b, &a).unwrap();
+            assert_eq!(plane, reversed);
+            assert!((plane.x_axis.axes_dot_product(&plane.x_axis) - 1.0).abs() < 1e-12);
+            assert!(plane.x_axis.axes_dot_product(&plane.z_axis).abs() < 1e-12);
+            assert!(plane.y_axis.axes_dot_product(&plane.x_axis).abs() < 1e-12);
+            assert_eq!(
+                plane.origin,
+                Point3d::new(6.0, 0.0, 2.5, Some(kcl_api::UnitLength::Millimeters))
+            );
+        }
+    }
+
+    #[test]
+    fn distance_frame_preserves_nonparallel_and_nonplanar_behavior() {
+        let a = planar_response([0.0; 3], [0.0, 0.0, 1.0]);
+        let b = planar_response([0.0; 3], [1.0, 0.0, 0.0]);
+        assert!(parallel_face_frame(&a, &b).is_none());
+        let nonplanar = serde_json::from_value(serde_json::json!({})).unwrap();
+        assert!(parallel_face_frame(&a, &nonplanar).is_none());
+        let invalid = planar_response([0.0; 3], [0.0; 3]);
+        assert!(parallel_face_frame(&a, &invalid).is_none());
+    }
+
+    #[test]
+    fn explicit_distance_plane_must_contain_face_normal() {
+        let a = planar_response([0.0; 3], [0.0, 0.0, 1.0]);
+        let b = planar_response([12.0, 0.0, 5.0], [0.0, 0.0, -1.0]);
+        let mut plane = parallel_face_frame(&a, &b).unwrap();
+        let direction = plane.x_axis.clone();
+        assert!(distance_plane_contains_direction(&plane, &direction));
+        plane.origin = Point3d::new(100.0, 200.0, 300.0, Some(kcl_api::UnitLength::Millimeters));
+        assert!(distance_plane_contains_direction(&plane, &direction));
+        plane.x_axis = Point3d::new(1.0, 0.0, 0.0, None);
+        plane.y_axis = Point3d::new(0.0, 1.0, 0.0, None);
+        assert!(!distance_plane_contains_direction(&plane, &direction));
+    }
+
     const GDT_DISTANCE_KCL_TEMPLATE: &str = r#"
 @settings(defaultLengthUnit = __UNIT__, kclVersion = 2)
 
@@ -2159,6 +2396,55 @@ gdt::flatness(
                 gdt_font_scale_for_height_mm(50.8).into(),
             );
         }
+        Ok(())
+    }
+
+    #[test]
+    fn distance_setback_clears_the_bounding_box_diagonal() {
+        assert_eq!(distance_setback([30.0, 40.0, 0.0]), Some(75.0));
+        assert_eq!(distance_setback([0.0, 0.0, 40.0]), Some(60.0));
+        assert_eq!(distance_setback([f64::NAN, -1.0, 10.0]), Some(15.0));
+        assert_eq!(distance_setback([0.0, f64::INFINITY, -1.0]), None);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_distance_default_position_has_a_physical_fallback_without_bounds() -> Result<(), KclError> {
+        for (unit, font_size, expected_setback) in [
+            ("mm", "", 20.0),
+            ("in", "", 20.0),
+            ("mm", "fontSize = 2mm,", 20.0),
+            ("cm", "fontSize = 0.2,", 20.0),
+            ("in", "fontSize = 0.1in,", 20.0),
+        ] {
+            for between_faces in [false, true] {
+                let mut code = gdt_distance_kcl(unit, "0mm", "[0, 0]")
+                    .replace("  framePosition = [0, 0],\n", "")
+                    .replace("fontSize = 2in,", font_size);
+                if between_faces {
+                    code = code.replace(
+                        "edges = [\n    getCommonEdge(faces = [\n      region001.tags.line4,\n      region001.tags.line1\n    ])\n  ]",
+                        "from = region001.tags.line4, to = region001.tags.line2",
+                    );
+                }
+                let commands = gdt_commands(&code).await;
+                let index = new_annotation_command_index(&commands)?;
+                let dimension = annotation_options(&commands[index])?.dimension.as_ref().unwrap();
+                assert_close(dimension.offset.x, 0.0);
+                assert_close(dimension.offset.y, expected_setback);
+                assert_eq!(dimension.from_entity_id != dimension.to_entity_id, between_faces);
+            }
+        }
+        Ok(())
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn gdt_distance_preserves_explicit_zero_position() -> Result<(), KclError> {
+        let code = gdt_distance_kcl("in", "0mm", "[0, 0]");
+        let commands = gdt_commands(&code).await;
+        let index = new_annotation_command_index(&commands)?;
+        let dimension = annotation_options(&commands[index])?.dimension.as_ref().unwrap();
+        assert_close(dimension.offset.x, 0.0);
+        assert_close(dimension.offset.y, 0.0);
         Ok(())
     }
 

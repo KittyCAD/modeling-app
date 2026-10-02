@@ -17,8 +17,14 @@ import {
 import {
   createEdgeRefObjectExpression,
   entityReferenceToEdgeRefPayload,
+  getPrimitiveEdgeSelections,
+  insertPrimitiveEdgeVariablesAndOffsetPathToNode,
 } from '@src/lang/modifyAst/edges'
-import { isFaceArtifact } from '@src/lang/modifyAst/faces'
+import {
+  getPrimitiveFaceSelectionsFromSelection,
+  insertFacePrimitiveVariablesAndOffsetPathToNode,
+  isFaceArtifact,
+} from '@src/lang/modifyAst/faces'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import { resolveToCodeRef, traverse, valueOrVariable } from '@src/lang/queryAst'
 import {
@@ -1310,7 +1316,24 @@ export function addDistanceGdt({
               resolveToCodeRef(selection, artifactGraph)?.artifact
           )
       )
-  if (!mNodeToEdit && targetSelections.length === 0) {
+  const primitiveEdges = mNodeToEdit
+    ? []
+    : getPrimitiveEdgeSelections(selections)
+  const primitiveFaces = mNodeToEdit
+    ? []
+    : getPrimitiveFaceSelectionsFromSelection({
+        graphSelections: selections.graphSelections.filter(
+          (selection) =>
+            !targetSelections.includes(selection) &&
+            selection.entityRef?.type !== 'edge'
+        ),
+        otherSelections: selections.otherSelections,
+      })
+  if (
+    !mNodeToEdit &&
+    targetSelections.length + primitiveEdges.length + primitiveFaces.length ===
+      0
+  ) {
     return new Error(
       'No valid selections found. Select one edge, or exactly two faces or edges.'
     )
@@ -1344,6 +1367,38 @@ export function addDistanceGdt({
     })
   }
 
+  for (const selection of primitiveEdges) {
+    const result = insertPrimitiveEdgeVariablesAndOffsetPathToNode({
+      primitiveEdgeSelections: [selection],
+      bodies: new Map(),
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(result)) return result
+    const body = [...result.bodies.values()][0]
+    const expr =
+      body?.tagsExpr.type === 'ArrayExpression'
+        ? body.tagsExpr.elements[0]
+        : body?.tagsExpr
+    if (!expr)
+      return new Error('Could not resolve the selected distance edge in code.')
+    targets.push({ kind: 'edge', expr })
+  }
+  for (const selection of primitiveFaces) {
+    const result = insertFacePrimitiveVariablesAndOffsetPathToNode({
+      enginePrimitives: [selection],
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+      useLatestBody: true,
+    })
+    if (err(result)) return result
+    const expr = result.faceExprs[0]
+    if (!expr)
+      return new Error('Could not resolve the selected distance face in code.')
+    targets.push({ kind: 'face', expr })
+  }
   if (targets.length === 0) {
     return new Error('No valid distance targets could be generated')
   }

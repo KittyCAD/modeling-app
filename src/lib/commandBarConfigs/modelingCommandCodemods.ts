@@ -246,6 +246,7 @@ const withGdtDefaults = <
         sourceCode: kclManager.code,
         outputUnit: kclManager.fileSettings.defaultLengthUnit,
         wasmInstance,
+        distance: commandName === 'GDT Distance',
       })
 
       return add(
