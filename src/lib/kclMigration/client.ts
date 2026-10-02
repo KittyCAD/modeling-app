@@ -6,6 +6,7 @@ import {
   type MigrationOperation,
   type MigrationProgress,
   type MigrationRequest,
+  type MigrationServerMessage,
 } from '@src/lib/kclMigration/protocol'
 import { isErr } from '@src/lib/trap'
 import { Socket } from '@src/lib/socket'
@@ -14,6 +15,87 @@ import { withAPIBaseURL } from '@src/lib/withBaseURL'
 export interface MigrationConnection {
   cancel: () => void
   close: () => void
+}
+
+/** History and acknowledgements use their own socket, independent of an active run. */
+export async function migrationConversationCommand(
+  command: Extract<MigrationClientMessage, { type: 'history' | 'application' }>,
+  token: string,
+  signal: AbortSignal
+): Promise<
+  Extract<MigrationServerMessage, { type: 'history' | 'application' }>
+> {
+  const url = new URL(withAPIBaseURL('/ws/ml/kcl-migration'))
+  url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:'
+  const deadline = AbortSignal.any([signal, AbortSignal.timeout(15_000)])
+  const ws = await Socket(WebSocket, url.href, token, deadline)
+  ws.binaryType = 'arraybuffer'
+  return new Promise((resolve, reject) => {
+    let settled = false
+    const finish = (
+      result:
+        | Extract<MigrationServerMessage, { type: 'history' | 'application' }>
+        | Error
+    ) => {
+      if (settled) return
+      settled = true
+      deadline.removeEventListener('abort', abort)
+      ws.close()
+      if (isErr(result)) reject(result)
+      else resolve(result)
+    }
+    const abort = () =>
+      finish(new Error('Migration history request was cancelled or timed out.'))
+    deadline.addEventListener('abort', abort, { once: true })
+    ws.addEventListener('close', () =>
+      finish(
+        new Error('Migration history connection closed before confirmation.')
+      )
+    )
+    ws.addEventListener('error', () =>
+      finish(new Error('Migration history connection failed.'))
+    )
+    ws.addEventListener('message', (event: MessageEvent<unknown>) => {
+      try {
+        const raw: unknown =
+          typeof event.data === 'string'
+            ? JSON.parse(event.data)
+            : event.data instanceof ArrayBuffer
+              ? decode(new Uint8Array(event.data))
+              : null
+        const response = parseMigrationMessage(raw)
+        if (isErr(response)) return finish(response)
+        if (response.type === 'pong') return
+        if (response.type === 'error') return finish(new Error(response.detail))
+        if (
+          command.type === 'history' &&
+          response.type === 'history' &&
+          response.conversation_id === command.conversation_id &&
+          response.entries.every(
+            (entry) => entry.conversation_id === command.conversation_id
+          )
+        )
+          return finish(response)
+        if (
+          command.type === 'application' &&
+          response.type === 'application' &&
+          response.operation_id === command.operation_id &&
+          response.application.status === command.status &&
+          response.application.revision === command.expected_revision + 1
+        )
+          return finish(response)
+        finish(
+          new Error(
+            'The migration history response belongs to a different request.'
+          )
+        )
+      } catch {
+        finish(new Error('The migration history response could not be read.'))
+      }
+    })
+    if (deadline.aborted) abort()
+    else ws.send(JSON.stringify(command))
+  })
 }
 
 /** One operation per connection; reconnects query status without resubmitting work. */

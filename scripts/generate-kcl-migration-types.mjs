@@ -41,6 +41,6 @@ const ast = await openapiTS(
 )
 await writeFile(
   'src/lib/kclMigration/api.generated.ts',
-  '// Generated from KittyCAD/api#4805. Do not edit by hand.\n' +
+  '// Generated from KittyCAD/api#4812 (stacked on #4805). Do not edit by hand.\n' +
     astToString(ast)
 )

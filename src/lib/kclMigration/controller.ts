@@ -1,5 +1,6 @@
 import { signal } from '@preact/signals-core'
 import { MigrationRecoveryError } from '@src/lib/kclMigration/apply'
+import type { MigrationConversationLink } from '@src/lib/kclMigration/conversation'
 import {
   connectMigration,
   type MigrationConnection,
@@ -25,7 +26,8 @@ export interface MigrationProject {
   capture: () => Promise<MigrationSnapshot>
   apply: (
     expected: ProjectFiles,
-    replacement: ProjectFiles
+    replacement: ProjectFiles,
+    onReplay?: (direction: 'undo' | 'redo') => void
   ) => Promise<string | undefined>
   isCurrent: () => boolean
 }
@@ -49,12 +51,14 @@ export class MigrationController {
   readonly detail = signal('')
   readonly progress = signal<MigrationProgress[]>([])
   readonly progressText = signal('')
+  readonly operationId = signal<string | undefined>(undefined)
   private original: MigrationSnapshot | undefined
   private request: MigrationRequest | undefined
   private abort = new AbortController()
   private connection: MigrationConnection | undefined
   private disposed = false
   private cancelled = false
+  private conversation: MigrationConversationLink | undefined
 
   get busy(): boolean {
     return [
@@ -78,7 +82,10 @@ export class MigrationController {
 
   private current = () => !this.disposed && this.project.isCurrent()
 
-  async start(allowPreview: boolean): Promise<void> {
+  async start(
+    allowPreview: boolean,
+    conversation?: MigrationConversationLink
+  ): Promise<void> {
     if (
       !allowPreview ||
       !this.current() ||
@@ -90,6 +97,8 @@ export class MigrationController {
     const owner = this.abort
     this.original = undefined
     this.request = undefined
+    this.conversation = conversation
+    this.operationId.value = undefined
     this.cancelled = false
     this.detail.value = ''
     this.progress.value = []
@@ -112,7 +121,9 @@ export class MigrationController {
         ),
         target: MIGRATION_TARGET,
         allow_preview: true,
+        conversation_id: conversation?.id,
       }
+      this.operationId.value = this.request.request_id
       await this.connect(false)
     } catch (error: unknown) {
       if (owner === this.abort) this.fail(error)
@@ -213,7 +224,19 @@ export class MigrationController {
     if (!this.current() || this.cancelled) return
     this.phase.value = 'applying'
     try {
-      const warning = await this.project.apply(before, after)
+      const operationId = this.operationId.value
+      const conversation = this.conversation
+      const warning = await this.project.apply(before, after, (direction) => {
+        if (operationId)
+          conversation?.reportApplication(
+            operationId,
+            direction === 'undo' ? 'undone' : 'applied'
+          )
+        if (this.current())
+          this.detail.value =
+            direction === 'undo' ? 'Migration undone.' : 'Migration reapplied.'
+      })
+      if (operationId) conversation?.reportApplication(operationId, 'applied')
       if (this.current()) {
         this.phase.value = 'applied'
         this.detail.value =

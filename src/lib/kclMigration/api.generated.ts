@@ -1,4 +1,4 @@
-// Generated from KittyCAD/api#4805. Do not edit by hand.
+// Generated from KittyCAD/api#4812 (stacked on #4805). Do not edit by hand.
 import type { MlCopilotServerMessage } from '@kittycad/lib'
 export type paths = Record<string, never>
 export type webhooks = Record<string, never>
@@ -29,6 +29,24 @@ export interface components {
           type: 'cancel'
         }
       | {
+          /** @description Continue before the last entry in the preceding page. */
+          before?: components['schemas']['Uuid'] | null
+          conversation_id: components['schemas']['Uuid']
+          /** @enum {string} */
+          type: 'history'
+        }
+      | {
+          /**
+           * Format: uint32
+           * @description The revision read before making the local change. Retrying is idempotent.
+           */
+          expected_revision: number
+          operation_id: components['schemas']['Uuid']
+          status: components['schemas']['KclMigrationApplicationStatus']
+          /** @enum {string} */
+          type: 'application'
+        }
+      | {
           /** @enum {string} */
           type: 'ping'
         }
@@ -39,6 +57,8 @@ export interface components {
        * @default false
        */
       allow_preview?: boolean
+      /** @description Existing customer conversation to link and use as background context. API verifies ownership; migration keeps its own sponsored execution record. */
+      conversation_id?: components['schemas']['Uuid'] | null
       /** @description Complete project, including unsaved edits, imports, and settings. */
       current_files: {
         [key: string]: number[]
@@ -52,6 +72,11 @@ export interface components {
       /** @description Requested target. The worker inspects the actual source version. */
       target: components['schemas']['KclMigrationTarget']
     }
+    /**
+     * Format: uuid
+     * @description A UUID usually v4 or v7
+     */
+    Uuid: string
     /** @description Revision metadata for the complete `current_files` map in a client message. */
     MlCopilotProjectSnapshotMetadata: {
       /** @description Canonical revision and writer fence on which `current_files` is based. Its `project_id` must match the outer `project_id`. Omit this only when establishing the first canonical revision; omission must not replace an existing revision. */
@@ -70,13 +95,10 @@ export interface components {
       /** @description Opaque API-issued token that must accompany subsequent writes to this revision. */
       writer_fence: string
     }
-    /**
-     * Format: uuid
-     * @description A UUID usually v4 or v7
-     */
-    Uuid: string
     /** @description A supported migration target. Preview use always requires explicit consent. */
     KclMigrationTarget: '3.0-preview' | '3.0'
+    /** @description Client-reported application state, separate from conversion success. */
+    KclMigrationApplicationStatus: 'not_applied' | 'applied' | 'undone'
     /** @description Public responses never contain ordinary auto-applying tool results. */
     KclMigrationServerMessage:
       | {
@@ -91,6 +113,19 @@ export interface components {
           operation_id: components['schemas']['Uuid']
           /** @enum {string} */
           type: 'progress'
+        }
+      | {
+          conversation_id: components['schemas']['Uuid']
+          entries: components['schemas']['KclMigrationHistoryEntry'][]
+          next_before?: components['schemas']['Uuid'] | null
+          /** @enum {string} */
+          type: 'history'
+        }
+      | {
+          application: components['schemas']['KclMigrationApplication']
+          operation_id: components['schemas']['Uuid']
+          /** @enum {string} */
+          type: 'application'
         }
       | {
           detail: string
@@ -171,6 +206,40 @@ export interface components {
       target_executed: boolean
     }
     MlCopilotServerMessage: MlCopilotServerMessage
+    /** @description Read-only conversation entry. It contains no files, edits or provider checkpoints. */
+    KclMigrationHistoryEntry: {
+      /** @description Place this entry after this ordinary prompt when replaying the conversation. */
+      after_prompt_id?: components['schemas']['Uuid'] | null
+      /** @description Most recent client acknowledgement. */
+      application: components['schemas']['KclMigrationApplication']
+      /** @description Customer conversation, not the worker's sponsored conversation. */
+      conversation_id: components['schemas']['Uuid']
+      /**
+       * Format: date-time
+       * @description Admission time, used for chronological display.
+       */
+      created_at: string
+      /** @description Bounded outcome summary for display and subsequent model context. */
+      detail: string
+      /** @description Migration request ID. Use the status command to retrieve a candidate explicitly. */
+      operation_id: components['schemas']['Uuid']
+      /** @description Source project identity. */
+      project_id: string
+      /** @description Conversion outcome. Success alone does not mean files were applied. */
+      status: components['schemas']['KclMigrationStatus']
+      /** @description Accepted migration target. */
+      target: components['schemas']['KclMigrationTarget']
+    }
+    /** @description A revision-fenced acknowledgement from the client that owns the project files. */
+    KclMigrationApplication: {
+      /**
+       * Format: uint32
+       * @description Starts at zero. Each accepted state change increments it once.
+       */
+      revision: number
+      /** @description Last reported state; not independent verification of local files. */
+      status: components['schemas']['KclMigrationApplicationStatus']
+    }
   }
   responses: never
   parameters: never
