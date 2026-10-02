@@ -16,7 +16,7 @@ import {
   modelingStdLibCommandSummary,
   modelingStdLibCommandUsesExperimentalFeatures,
   type StdLibCommandDriftConfig,
-  stdLibCommandArgMetadata,
+  stdLibCommandArgDefaultSource,
   stdLibCommandSummary,
   stdLibCommandStatus,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
@@ -689,9 +689,7 @@ describe('stdlib command arg derivation', () => {
       throw new Error('Sweep should have a single command config')
     }
 
-    expect(
-      stdLibCommandArgMetadata('sweep', 'version')?.defaultValue
-    ).toBeUndefined()
+    expect(stdLibCommandArgDefaultSource('sweep', 'version')).toBeUndefined()
     expect(sweepCommand.args?.version).toMatchObject({ defaultValue: '2' })
   })
 })

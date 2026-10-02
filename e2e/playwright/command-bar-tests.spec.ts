@@ -441,7 +441,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     ).toBeVisible()
     await expect(
       page.getByRole('option', {
-        name: 'Pull a sketch into 3D',
+        name: 'Extrude',
         exact: false,
       })
     ).toHaveCount(0)

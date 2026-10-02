@@ -17,12 +17,21 @@ describe('stdlib command metadata', () => {
     )
   })
 
-  it('offers a modeling command shorthand with centralized product copy', () => {
+  it('uses canonical KCL summaries for modeling commands', () => {
     expect(modelingStdLibCommandSummary('Sweep')).toBe(
-      'Create a 3D surface or solid by sweeping a sketch along a path.'
+      stdLibCommandSummary('sweep')
     )
     expect(modelingStdLibCommandSummary('Extrude')).toBe(
-      'Pull a sketch into 3D along its normal or perpendicular.'
+      stdLibCommandSummary('extrude')
+    )
+  })
+
+  it('keeps summaries for combined UI flows and plain-text prompts', () => {
+    expect(modelingStdLibCommandSummary('GDT Profile')).toBe(
+      'Add profile geometric dimensioning & tolerancing annotation to faces or edges.'
+    )
+    expect(modelingStdLibCommandSummary('Blend')).toBe(
+      'Blend two selected surface edges into a new surface.'
     )
   })
 
