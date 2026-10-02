@@ -1,15 +1,30 @@
 import type { App, BrowserWindow } from 'electron'
 import { autoUpdater } from 'electron'
 
+function isEventListener(
+  listener: unknown
+): listener is (...args: unknown[]) => void {
+  return typeof listener === 'function'
+}
+
 // Based on https://github.com/electron-userland/electron-builder/issues/8997#issuecomment-2846114257
 export function prepareMacUpdateInstall(
   app: App,
   browserWindows: BrowserWindow[],
   saveWindowBounds: (browserWindow: BrowserWindow) => void
-) {
-  const beforeQuitListeners = app.listeners('before-quit')
+): () => void {
+  // Keep once wrappers so a failed install can restore their original behavior.
+  const beforeQuitListeners = app
+    .rawListeners('before-quit')
+    .filter(isEventListener)
+  const windowCloseListeners = browserWindows
+    .filter((browserWindow) => !browserWindow.isDestroyed())
+    .map((browserWindow) => ({
+      browserWindow,
+      listeners: browserWindow.rawListeners('close').filter(isEventListener),
+    }))
   app.removeAllListeners('before-quit')
-  for (const browserWindow of browserWindows) {
+  for (const { browserWindow } of windowCloseListeners) {
     try {
       // app.exit() bypasses window close events, so persist bounds first.
       saveWindowBounds(browserWindow)
@@ -20,7 +35,7 @@ export function prepareMacUpdateInstall(
     browserWindow.removeAllListeners('close')
   }
 
-  autoUpdater.once('before-quit-for-update', () => {
+  const beforeQuitForUpdate = () => {
     // Do any before-quit cleanup here
     for (const listener of beforeQuitListeners) {
       try {
@@ -39,5 +54,22 @@ export function prepareMacUpdateInstall(
 
     // Force app to exit
     app.exit()
-  })
+  }
+  autoUpdater.once('before-quit-for-update', beforeQuitForUpdate)
+
+  let restored = false
+  return () => {
+    if (restored) return
+    restored = true
+    autoUpdater.removeListener('before-quit-for-update', beforeQuitForUpdate)
+    for (const listener of beforeQuitListeners) {
+      app.on('before-quit', listener)
+    }
+    for (const { browserWindow, listeners } of windowCloseListeners) {
+      if (browserWindow.isDestroyed()) continue
+      for (const listener of listeners) {
+        browserWindow.on('close', listener)
+      }
+    }
+  }
 }
