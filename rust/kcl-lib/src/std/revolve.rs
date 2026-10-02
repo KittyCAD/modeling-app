@@ -51,6 +51,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             edge::resolve_edge_specifier_with_adjacent_faces_or_tag_ids(&spec, exec_state, &args).await?;
         Axis2dOrEdgeReference::EdgeSpecifier(edge_reference)
     } else if let Some(axis_val) = Axis2dOrEdgeReference::from_kcl_val(&axis_value) {
+        dbg!(&axis_val);
         axis_val
     } else {
         return Err(KclError::new_type(KclErrorDetails {
@@ -557,5 +558,22 @@ body = revolve(profile, axis = Y, angle = 90deg, bidirectionalAngle = 7rad)
                 .contains("Expected bidirectional angle to be between -360 and 360"),
             "{err:?}"
         );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn revolve_panic_with_axis_unknown_units() {
+        // Regression test for https://github.com/KittyCAD/modeling-app/issues/14328
+        let code = r#"@settings(kclVersion = 2.0)
+profile = sketch(on = XY) {
+  circle1 = circle(center = [10mm, 0mm], start = [11mm, 0mm])
+}
+body = revolve(region(segments = [profile.circle1]),
+axis = { direction = [0, 1], origin = [1mm + 1deg, 0mm] })
+"#;
+
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = ExecutorContext::new_mock(None).await;
+        let _outcome = ctx.run_mock(&program, &crate::MockConfig::default()).await;
+        ctx.close().await;
     }
 }

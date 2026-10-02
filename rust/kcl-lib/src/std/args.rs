@@ -1160,6 +1160,7 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis2dOrEdgeReference {
             let obj = arg.as_object()?;
             let_field_of!(obj, direction);
             let_field_of!(obj, origin);
+            // TODO: Validate that origin[0] and origin[1] can be coerced to lengths.
             Some(Self::Axis { direction, origin })
         };
         let case2 = super::fillet::EdgeReference::from_kcl_val;
