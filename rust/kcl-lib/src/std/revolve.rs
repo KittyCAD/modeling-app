@@ -51,7 +51,6 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
             edge::resolve_edge_specifier_with_adjacent_faces_or_tag_ids(&spec, exec_state, &args).await?;
         Axis2dOrEdgeReference::EdgeSpecifier(edge_reference)
     } else if let Some(axis_val) = Axis2dOrEdgeReference::from_kcl_val(&axis_value) {
-        dbg!(&axis_val);
         axis_val
     } else {
         return Err(KclError::new_type(KclErrorDetails {

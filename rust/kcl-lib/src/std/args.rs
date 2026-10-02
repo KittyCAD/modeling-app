@@ -79,7 +79,12 @@ impl TyF64 {
         self.to_length_units(UnitLength::Millimeters)
     }
 
+    /// Returns true if this can be used as a length unit (e.g. mm, inches, etc)
     pub fn is_length_compatible(&self) -> bool {
+        #[expect(
+            clippy::match_like_matches_macro,
+            reason = "Want to mirror the structure of `to_length_units` below"
+        )]
         match self.ty {
             NumericType::Default { .. } => true,
             NumericType::Known(UnitType::Length(_)) => true,
