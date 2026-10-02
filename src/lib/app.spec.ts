@@ -3,6 +3,7 @@ import { pluginsValueSpec } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import { File, type KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
+import { cloudSyncStatus } from '@src/lib/cloudSync'
 import {
   IS_PLAYWRIGHT_KEY,
   KCL_CEK_EXECUTOR_FEATURE_FLAG,
@@ -257,6 +258,66 @@ function hasDefaultDirectoryLibrarySetting(app: App) {
 }
 
 describe('project system', () => {
+  it.each([false, true])(
+    'refreshes the current web editor after cloud sync with unsaved edits=%s',
+    async (hasUnsavedEdits) => {
+      const previousStatus = cloudSyncStatus.value
+      const app = createAppForTest()
+      const projectPath = `/some-dir/cloud-editor-${hasUnsavedEdits}`
+      const filePath = `${projectPath}/main.kcl`
+      let diskCode = 'saved = 1\n'
+      const read = vi
+        .spyOn(File.ioImplementations, 'read')
+        .mockImplementation(async () => diskCode)
+      try {
+        await waitForSettingsIdle(app)
+        await waitForAuthSettled(app)
+        const project = await app.openProject({
+          ...mockProject,
+          path: projectPath,
+          children: [{ name: 'main.kcl', path: filePath, children: null }],
+        })
+        const editor = await project.openEditor(filePath)
+        if (!editor) throw new Error('Missing test editor')
+        if (hasUnsavedEdits) {
+          editor.updateCodeEditor('unsaved = 3\n', {
+            shouldExecute: false,
+            shouldWriteToDisk: false,
+          })
+        }
+        read.mockClear()
+        diskCode = 'cloud = 2\n'
+        cloudSyncStatus.value = {
+          enabled: true,
+          state: 'idle',
+          pendingCount: 0,
+          scopedProjectPath: '/other-project',
+          lastSyncedAt: '2026-10-02T12:00:00Z',
+        }
+        expect(read).not.toHaveBeenCalled()
+        cloudSyncStatus.value = {
+          ...cloudSyncStatus.value,
+          scopedProjectPath: projectPath,
+        }
+        await vi.waitFor(() => {
+          expect(read).toHaveBeenCalledExactlyOnceWith(editor.path)
+          expect(editor.code).toBe(hasUnsavedEdits ? 'unsaved = 3\n' : diskCode)
+        })
+        read.mockClear()
+        app.closeProject()
+        cloudSyncStatus.value = {
+          ...cloudSyncStatus.value,
+          lastSyncedAt: '2026-10-02T12:00:01Z',
+        }
+        expect(read).not.toHaveBeenCalled()
+      } finally {
+        app.dispose()
+        read.mockRestore()
+        cloudSyncStatus.value = previousStatus
+      }
+    }
+  )
+
   it('always closes a the last project before opening a new one', async () => {
     const app = createAppForTest()
     vi.fn(window.electron?.watchFileOn).mockImplementation(() => {})
@@ -498,6 +559,8 @@ describe('project system', () => {
         name: 'zoo-modeling-app',
       },
       getAppTestProperty: vi.fn().mockResolvedValue(undefined),
+      watchFileOn: vi.fn(),
+      watchFileOff: vi.fn(),
       pluginIpc: {
         invoke: vi.fn(),
         syncActivePlugins,
@@ -661,6 +724,8 @@ describe('project system', () => {
         invoke: vi.fn(),
         syncActivePlugins: vi.fn().mockResolvedValue(undefined),
       },
+      watchFileOn: vi.fn(),
+      watchFileOff: vi.fn(),
     } as unknown as typeof window.electron
     const userFeatures = createUserFeaturesForTest(new Set())
     const app = createAppForTest({ userFeatures })
