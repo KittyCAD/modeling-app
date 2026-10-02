@@ -17,6 +17,12 @@ once fixed in engine, will just start working here with no language changes.
 
 - **CSG Booleans**: Coplanar (bodies that share a plane) unions, subtractions, and intersections are not currently supported.
 
+## KCL Version 2.0
+
+The following are known issues with KCL 2.0. To opt-in to the fixes and new features, use the latest version of KCL with `@settings(kclVersion = 3.0)`.
+
+- **Chamfers on non-90° edges have incorrect lengths**: Chamfers on edges with a dihedral angle other than 90° between their faces (or with variable dihedral angle) didn't respect the provided length, instead cutting back further than the requested length. This is fixed in KCL 3.0.
+
 ## KCL Version 1.0
 
 The following are known issues with KCL 1.0. To opt-in to the fixes and new
