@@ -3,6 +3,8 @@ import { File, KclManager, type ZDSProject } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
+import { migrationProject } from '@src/lib/kclMigration/project'
+import { readProjectFiles } from '@src/lib/kclMigration/snapshot'
 import {
   buildZookeeperHistoryExtension as buildZookeeperHistoryExtensionWithFileOperations,
   mergeZookeeperEditPatches,
@@ -47,6 +49,56 @@ afterEach(async () => {
 })
 
 describe('Zookeeper project history integration', () => {
+  it('records a migration as one multi-file edit between ordinary manual edits', async () => {
+    const before = '@settings(kclVersion = 2.0)\nwidth = 10mm\n'
+    const source = before.replace('10mm', '20mm')
+    const after = source.replace('2.0', '"3.0-preview"')
+    const siblingBefore = '@settings(kclVersion = 2.0)\nheight = 5mm\n'
+    const siblingAfter = siblingBefore.replace('2.0', '"3.0-preview"')
+    const harness = await createProjectHarness({
+      'main.kcl': before,
+      'parts/shared.kcl': siblingBefore,
+    })
+    const { app, kclManager, projectPath, project } = harness
+    addManualEdit(kclManager, source)
+    expect(await kclManager.flushWriteToFile()).toBe(true)
+    const expected = await readProjectFiles(
+      app.fileOperations,
+      fsZds,
+      projectPath
+    )
+    const candidate = new Map(expected)
+    candidate.set('main.kcl', new TextEncoder().encode(after))
+    candidate.set('parts/shared.kcl', new TextEncoder().encode(siblingAfter))
+    await migrationProject(app, project).apply(expected, candidate)
+    expect(kclManager.code).toBe(after)
+    addManualEdit(kclManager, after.replace('20mm', '30mm'))
+    kclManager.undo()
+    await waitForHistoryIdle(kclManager)
+    expect(kclManager.code).toBe(after)
+    expect(
+      await fsZds.readFile(fsZds.join(projectPath, 'parts/shared.kcl'), 'utf8')
+    ).toBe(siblingAfter)
+    kclManager.undo()
+    await waitForHistoryIdle(kclManager)
+    expect(kclManager.code).toBe(source)
+    expect(
+      await fsZds.readFile(fsZds.join(projectPath, 'parts/shared.kcl'), 'utf8')
+    ).toBe(siblingBefore)
+    kclManager.undo()
+    await waitForHistoryIdle(kclManager)
+    expect(kclManager.code).toBe(before)
+    kclManager.redo()
+    await waitForHistoryIdle(kclManager)
+    expect(kclManager.code).toBe(source)
+    kclManager.redo()
+    await waitForHistoryIdle(kclManager)
+    expect(kclManager.code).toBe(after)
+    expect(
+      await fsZds.readFile(fsZds.join(projectPath, 'parts/shared.kcl'), 'utf8')
+    ).toBe(siblingAfter)
+  })
+
   it('cycles multiple manual edits without changing sibling files', async () => {
     const harness = await createProjectHarness({
       'main.kcl': 'value = 0\n',
@@ -1419,7 +1471,7 @@ async function createProjectHarness(files: Record<string, string>) {
     })
   )
   await Promise.resolve()
-  return { app, projectPath, kclManager }
+  return { app, projectPath, kclManager, project: openedProject }
 }
 
 async function applyRecordedZookeeperAction(

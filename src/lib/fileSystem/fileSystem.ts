@@ -2,6 +2,7 @@ import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import type {
   IStat as BackingFileStat,
   IZooDesignStudioFS,
+  StatOptions,
 } from '@src/lib/fs-zds/interface'
 import * as Context from 'effect/Context'
 import * as Data from 'effect/Data'
@@ -25,6 +26,7 @@ export function ownFileContents(contents: Uint8Array): OwnedFileContents {
 }
 
 export interface FileStat {
+  readonly symbolicLink?: boolean
   readonly kind: FileKind
   readonly device: number
   readonly inode: number
@@ -95,7 +97,10 @@ export type FileSystemError =
  * service built above this capability.
  */
 export interface FileSystemService {
-  readonly stat: (path: string) => Effect.Effect<FileStat, FileSystemError>
+  readonly stat: (
+    path: string,
+    options?: StatOptions
+  ) => Effect.Effect<FileStat, FileSystemError>
   readonly canReadWrite: (
     path: string
   ) => Effect.Effect<boolean, FileSystemError>
@@ -216,6 +221,7 @@ function tryBacking<A>(
 
 function toFileStat(stat: BackingFileStat): FileStat {
   return {
+    ...((stat.mode & 0xf000) === 0xa000 ? { symbolicLink: true } : {}),
     kind: stat.mode & fsZdsConstants.S_IFDIR ? 'directory' : ('file' as const),
     device: stat.dev,
     inode: stat.ino,
@@ -235,10 +241,10 @@ function toFileStat(stat: BackingFileStat): FileStat {
  * responsible for selecting the platform backing.
  */
 export function makeFileSystem(backing: IZooDesignStudioFS): FileSystemService {
-  const stat = (path: string) =>
-    tryBacking('stat', path, () => backing.stat(path)).pipe(
-      Effect.map(toFileStat)
-    )
+  const stat = (path: string, options?: StatOptions) =>
+    tryBacking('stat', path, () =>
+      options ? backing.stat(path, options) : backing.stat(path)
+    ).pipe(Effect.map(toFileStat))
 
   const exists = (path: string) =>
     stat(path).pipe(
@@ -312,8 +318,10 @@ export function makeFileSystem(backing: IZooDesignStudioFS): FileSystemService {
 export const fileSystemLayer = (backing: IZooDesignStudioFS) =>
   Layer.succeed(FileSystem, makeFileSystem(backing))
 
-export const stat = (path: string) =>
-  FileSystem.pipe(Effect.flatMap((fileSystem) => fileSystem.stat(path)))
+export const stat = (path: string, options?: StatOptions) =>
+  FileSystem.pipe(
+    Effect.flatMap((fileSystem) => fileSystem.stat(path, options))
+  )
 
 export const canReadWrite = (path: string) =>
   FileSystem.pipe(Effect.flatMap((fileSystem) => fileSystem.canReadWrite(path)))
