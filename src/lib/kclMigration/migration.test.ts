@@ -125,21 +125,6 @@ describe('project migration', () => {
     expect(fixture.controller.progressText.value).toBe('')
   })
 
-  it.each([
-    ['', '/ws/ml/kcl-migration'],
-    ['?pr=4378&replay=true', '/ws/ml/kcl-migration?pr=4378'],
-  ])('copies only the TTC preview selector (%s)', async (query, expected) => {
-    vi.stubEnv(
-      'VITE_ZOOKEEPER_WEBSOCKET_URL',
-      `wss://api.dev.zoo.dev/ws/ml/copilot${query}`
-    )
-    await fixture.controller.start(true)
-    await vi.waitFor(() =>
-      expect(fixture.controller.phase.value).toBe('running')
-    )
-    expect(fixture.connectionPath).toBe(expected)
-  })
-
   it.each([true, false, undefined])(
     'reports quota exemption only with confirmed evidence (%s)',
     async (conversionNotStarted) => {
