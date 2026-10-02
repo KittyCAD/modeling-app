@@ -79,6 +79,14 @@ impl TyF64 {
         self.to_length_units(UnitLength::Millimeters)
     }
 
+    pub fn is_length_compatible(&self) -> bool {
+        match self.ty {
+            NumericType::Default { .. } => true,
+            NumericType::Known(UnitType::Length(_)) => true,
+            _ => false,
+        }
+    }
+
     pub fn to_length_units(&self, units: UnitLength) -> f64 {
         let len = match &self.ty {
             NumericType::Default { len, .. } => *len,
@@ -1160,7 +1168,13 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis2dOrEdgeReference {
             let obj = arg.as_object()?;
             let_field_of!(obj, direction);
             let_field_of!(obj, origin);
-            // TODO: Validate that origin[0] and origin[1] can be coerced to lengths.
+            let origin: [TyF64; 2] = origin;
+            if !origin[0].is_length_compatible() {
+                return None;
+            }
+            if !origin[1].is_length_compatible() {
+                return None;
+            }
             Some(Self::Axis { direction, origin })
         };
         let case2 = super::fillet::EdgeReference::from_kcl_val;

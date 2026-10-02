@@ -573,7 +573,16 @@ axis = { direction = [0, 1], origin = [1mm + 1deg, 0mm] })
 
         let program = crate::Program::parse_no_errs(code).unwrap();
         let ctx = ExecutorContext::new_mock(None).await;
-        let _outcome = ctx.run_mock(&program, &crate::MockConfig::default()).await;
+        let outcome = ctx.run_mock(&program, &crate::MockConfig::default()).await;
         ctx.close().await;
+        let err = outcome.expect_err("This should not have passed").error;
+        let KclError::Type { details } = err else {
+            panic!("Expected Type error, got {err}");
+        };
+        // Error message should be something like
+        // axis must be an Edge, Axis2d, Segment, or an object with 'sideFaces' (edge reference)
+        assert!(details.message.contains("Edge"));
+        assert!(details.message.contains("Axis2d"));
+        assert!(details.message.contains("Segment"));
     }
 }
