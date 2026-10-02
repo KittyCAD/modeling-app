@@ -1,6 +1,6 @@
 ---
-title: "Beta Testing KCL 3.0"
-excerpt: "How to beta test KCL 3.0 and update a KCL program written in KCL 2.0 so that it runs under KCL 3.0."
+title: "Migrating to KCL 3.0"
+excerpt: "How to update a KCL program written in KCL 2.0 so that it runs under KCL 3.0."
 layout: manual
 ---
 
@@ -12,17 +12,11 @@ simplifies some standard library parameters. This page lists every change and
 shows how to update a program written in KCL 2.0. Each section has a "before"
 example that runs under KCL 2.0 and an "after" example that runs under KCL 3.0.
 
-KCL 3.0 is available as a preview for testing. Behavior will change without
-notice before the final 3.0 release, including breaking changes that can make a
-model invalid or silently different. We do not recommend building real models
-with 3.0-preview. It's only intended to get a glimpse of new functionality.
-
-To use it, declare the version as the string `"3.0-preview"`, with the quotes,
-in the [settings attribute](/docs/kcl-lang/settings) at the top of the file you
-execute:
+To use it, declare the version as the string `3.0` in the [settings
+attribute](/docs/kcl-lang/settings) at the top of the file you execute:
 
 ```kcl
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 ```
 
 The version declared by the file you execute governs the whole program,
@@ -31,15 +25,15 @@ and partly under KCL 3.0, so migrate a project as a unit.
 
 ## Migration steps
 
-1. Change `kclVersion` to `"3.0-preview"` in the file you execute and in
-   every file it imports that declares a version. See
-   [All files must declare the same version](#all-files-must-declare-the-same-version).
+1. Change `kclVersion` to `3.0` in the file you execute and in every file it
+   imports that declares a version. See [All files must declare the same
+   version](#all-files-must-declare-the-same-version).
 2. Run the program and fix each error using the sections below. Most changes
    produce an error that points at the code to update.
 3. Check the resulting geometry. Some changes alter a model without an error:
-   `fillet` and `chamfer` run in order with other operations and follow
-   tangent chains by default, and `sweep` no longer moves the profile to the
-   path by default.
+   `fillet` and `chamfer` run in order with other operations and follow tangent
+   chains by default, and `sweep` no longer moves the profile to the path by
+   default.
 
 ## Summary of changes
 
@@ -54,7 +48,7 @@ and partly under KCL 3.0, so migrate a project as a unit.
 | `legacyMethod` is removed | Passing it to `fillet`, `chamfer`, `union`, `intersect`, `subtract`, or `split` is an error | Remove the argument |
 | `patternLinear2d` requires a region | Passing a sketch block's sketch is an error | Pass a `region(...)` instead |
 | `defaultAngleUnit` is removed | The setting is an error | Write units on angles, like `90deg` or `0.5rad` |
-| All files must declare the same version | An imported file declaring a different version is an error | Declare `"3.0-preview"` in every file |
+| All files must declare the same version | An imported file declaring a different version is an error | Declare `3.0` in every file |
 
 ## `return` exits the function immediately
 
@@ -84,7 +78,7 @@ holeDiameter = clearanceHole(6mm)
 KCL 3.0:
 
 ```kcl
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 fn clearanceHole(@boltDiameter) {
   // Everything the function must do goes before the `return`.
@@ -127,7 +121,7 @@ holeDepth = thickness / 2
 KCL 3.0:
 
 ```kcl
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 useMetric = true
 plateThickness = if useMetric {
@@ -178,7 +172,7 @@ picked = plates()[pickIndex()]
 KCL 3.0:
 
 ```kcl
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 fn plates() {
   plateSketch = sketch(on = XY) {
@@ -238,7 +232,7 @@ body = extrude(block, length = 5mm)
 KCL 3.0:
 
 ```kcl
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 profile = sketch(on = XY) {
   bottom = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -293,7 +287,7 @@ rounded = fillet(body, radius = 1mm, tags = [getCommonEdge(faces = [slotRegion.t
 KCL 3.0:
 
 ```kcl
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 slot = sketch(on = XY) {
   top = line(start = [var -10mm, var 5mm], end = [var 10mm, var 5mm])
@@ -359,7 +353,7 @@ tube = sweep(region(segments = [profileSketch.ring]), path = [pathSketch.path])
 KCL 3.0:
 
 ```kcl
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 profileSketch = sketch(on = XY) {
   ring = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
@@ -412,7 +406,7 @@ joined = union([partA, partB], legacyMethod = false)
 KCL 3.0:
 
 ```kcl
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 sketchA = sketch(on = XY) {
   bottom = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -454,7 +448,7 @@ holes = patternLinear2d(profile, instances = 3, distance = 10mm, axis = X)
 KCL 3.0:
 
 ```kcl
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 profile = sketch(on = XY) {
   hole = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
@@ -483,7 +477,7 @@ ring = revolve(region(segments = [profile.disk]), axis = X, angle = 90)
 KCL 3.0:
 
 ```kcl
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 profile = sketch(on = XY) {
   disk = circle(start = [var 2mm, var 5mm], center = [var 0mm, var 5mm])
@@ -501,9 +495,9 @@ declares no version uses the executed file's version. Declaring the version
 in every file is recommended, so that opening an imported file on its own
 does not run it under the default of `1.0`.
 
-The check works in both directions. A file that declares `"3.0-preview"` can
-only be imported by a file that declares `"3.0-preview"`, so migrating only
-some files of a project is an error either way.
+The check works in both directions. A file that declares `3.0` can only be
+imported by a file that declares `3.0`, so migrating only some files of a
+project is an error either way.
 
 KCL 2.0:
 
@@ -527,7 +521,7 @@ KCL 3.0:
 
 ```kcl,norun
 // main.kcl
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 import width from "dimensions.kcl"
 
@@ -536,7 +530,7 @@ x = width
 
 ```kcl,norun
 // dimensions.kcl
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 export width = 10mm
 ```
@@ -579,7 +573,7 @@ bracket = startSketchOn(XY)
 KCL 3.0:
 
 ```kcl
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 bracketProfile = sketch(on = XY) {
   bottom = line(start = [var 0mm, var 0mm], end = [var 30mm, var 0mm])
