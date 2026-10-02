@@ -1,21 +1,8 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import type { MigrationController } from '@src/lib/kclMigration/controller'
-import { equalBytes, type ProjectFiles } from '@src/lib/kclMigration/snapshot'
-import { reportRejection } from '@src/lib/trap'
+import { equalBytes } from '@src/lib/kclMigration/snapshot'
 import { createTwoFilesPatch } from 'diff'
-import JSZip from 'jszip'
 import { useMemo, useState } from 'react'
-
-async function downloadProject(files: ProjectFiles, name: string) {
-  const zip = new JSZip()
-  for (const [path, bytes] of files) zip.file(path, bytes)
-  const url = URL.createObjectURL(await zip.generateAsync({ type: 'blob' }))
-  const link = document.createElement('a')
-  link.href = url
-  link.download = name
-  link.click()
-  setTimeout(() => URL.revokeObjectURL(url), 1000)
-}
 
 export function KclMigrationPanel({
   controller,
@@ -55,8 +42,7 @@ export function KclMigrationPanel({
                   undefined,
                   undefined,
                   { timeout: 100, maxEditLength: 10_000 }
-                ) ??
-                'This diff is too large to display. Download the original and candidate to review the complete files.',
+                ) ?? 'This diff is too large to display.',
             },
           ]
         : []
@@ -139,10 +125,7 @@ export function KclMigrationPanel({
                     {diff.slice(0, 100_000)}
                   </pre>
                   {diff.length > 100_000 && (
-                    <p className="text-sm">
-                      Diff shortened. Download the candidate to inspect the
-                      complete file.
-                    </p>
+                    <p className="text-sm">Diff shortened.</p>
                   )}
                 </details>
               ))}
@@ -195,30 +178,6 @@ export function KclMigrationPanel({
                 }}
               >
                 Undo Migration
-              </button>
-            )}
-            {original && !busy && (
-              <button
-                type="button"
-                onClick={() => {
-                  downloadProject(original, 'original-project.zip').catch(
-                    reportRejection
-                  )
-                }}
-              >
-                Download Original
-              </button>
-            )}
-            {candidate && !busy && (
-              <button
-                type="button"
-                onClick={() => {
-                  downloadProject(candidate, 'migrated-project.zip').catch(
-                    reportRejection
-                  )
-                }}
-              >
-                Download Candidate
               </button>
             )}
           </div>

@@ -69,11 +69,20 @@ describe('project migration', () => {
 
   it('keeps nested and binary files, overlays unsaved text and validates paths', async () => {
     await writeFile(path.join(fixture.root, '._meta'), '{"mtimeMs":1}')
+    await writeFile(
+      path.join(fixture.root, 'thumbnail.png'),
+      'generated preview'
+    )
+    await writeFile(
+      path.join(fixture.root, 'parts', 'thumbnail.png'),
+      'project asset'
+    )
     const captured = await fixture.project.capture()
     expect([...captured.files.keys()]).toEqual([
       'asset.bin',
       'main.kcl',
       'parts/part.kcl',
+      'parts/thumbnail.png',
     ])
     const overlaid = withEditorBuffers(
       captured.files,
