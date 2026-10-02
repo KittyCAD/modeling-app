@@ -164,13 +164,14 @@ describe('layout extension', () => {
     registry = undefined
   })
 
-  it('toggles panes through the service and restores defaults on reset', () => {
+  it('applies the tab preference to loading, opening, contributions, and resets', () => {
     const { settings, service } = createTestSettings()
 
     const savedLayout = togglePaneLayoutNode({
       rootLayout: structuredClone(playwrightLayoutConfig),
       targetNodeId: 'variables',
       shouldExpand: true,
+      paneOpenBehavior: settings.value.layout.paneOpenBehavior.current,
     })
     settings.value.layout.configs.user = {
       default: createLayoutWithMetadata(savedLayout),
@@ -195,17 +196,51 @@ describe('layout extension', () => {
         targetNodeId: DefaultLayoutToolbarID.Left,
       })
 
+    // TODO: We do not test that changing the setting changes the layout here,
+    // because for now all effects that fire when a setting is changed must live
+    // separate from the setting's definition: in this case, the effect is in
+    // `App.onSettingsUpdate`, and this unit test doesn't mock or import `App`.
     expect(toolbar()).toMatchObject({ activeIndices: [1, 3], sizes: [50, 50] })
+
+    // Exercise opening tabs both before and after the current tab's index.
     layout.togglePane('variables')
     expect(toolbar()).toMatchObject({ activeIndices: [1], sizes: [100] })
+    settings.value.layout.paneOpenBehavior.user = 'single'
     layout.togglePane('feature-tree')
-    expect(toolbar()).toMatchObject({ activeIndices: [0, 1], sizes: [50, 50] })
+    expect(toolbar()).toMatchObject({ activeIndices: [0], sizes: [100] })
     layout.togglePane('feature-tree')
-    expect(toolbar()).toMatchObject({ activeIndices: [1], sizes: [100] })
-    layout.togglePane('code')
     expect(toolbar()).toMatchObject({ activeIndices: [], sizes: [] })
+    layout.togglePane('code')
+    expect(toolbar()).toMatchObject({ activeIndices: [1], sizes: [100] })
+
+    settings.value.layout.paneOpenBehavior.user = 'multiple'
     layout.togglePane('variables')
-    expect(toolbar()).toMatchObject({ activeIndices: [3], sizes: [100] })
+    expect(toolbar()).toMatchObject({ activeIndices: [1, 3], sizes: [50, 50] })
+    settings.value.layout.paneOpenBehavior.user = 'single'
+
+    // We cannot test this "auto-pruning" behavior in a unit test until the subscriber in `App`
+    // is isolated to a service, see TODO above.
+    // expect(toolbar()).toMatchObject({ activeIndices: [1], sizes: [100] })
+
+    layout.applyContributions([
+      {
+        id: 'extra-tab',
+        kind: 'area',
+        initiallyOpen: true,
+        pane: {
+          id: 'extra-tab',
+          label: 'Extra',
+          icon: 'code',
+          type: LayoutType.Simple,
+          areaType: AreaType.Code,
+        },
+        placement: {
+          targetPaneId: DefaultLayoutToolbarID.Left,
+          position: 'start',
+        },
+      },
+    ])
+    expect(toolbar()).toMatchObject({ activeIndices: [0], sizes: [100] })
     layout.reset()
     expect(toolbar()).toMatchObject({ activeIndices: [1], sizes: [100] })
   })
