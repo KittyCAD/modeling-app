@@ -14,7 +14,7 @@ import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingComm
 import {
   modelingStdLibCommandArgs,
   modelingStdLibCommandStatus,
-  modelingStdLibCommandSummary,
+  applyModelingCommandDescriptions,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type {
   CommandArgumentConfig,
@@ -635,7 +635,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   Extrude: {
-    description: modelingStdLibCommandSummary('Extrude'),
     icon: 'extrude',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -711,7 +710,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   Sweep: {
-    description: modelingStdLibCommandSummary('Sweep'),
     icon: 'sweep',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -771,7 +769,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Loft: {
-    description: modelingStdLibCommandSummary('Loft'),
     icon: 'loft',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -795,7 +792,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Revolve: {
-    description: modelingStdLibCommandSummary('Revolve'),
     icon: 'revolve',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -863,7 +859,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   Shell: {
-    description: modelingStdLibCommandSummary('Shell'),
     icon: 'shell',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -884,7 +879,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Hole: {
-    description: modelingStdLibCommandSummary('Hole'),
     icon: 'hole',
     needsReview: true,
     reviewMessage:
@@ -1008,7 +1002,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   'Boolean Subtract': {
-    description: modelingStdLibCommandSummary('Boolean Subtract'),
     icon: 'booleanSubtract',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1036,7 +1029,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Boolean Union': {
-    description: modelingStdLibCommandSummary('Boolean Union'),
     icon: 'booleanUnion',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1058,7 +1050,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Boolean Intersect': {
-    description: modelingStdLibCommandSummary('Boolean Intersect'),
     icon: 'booleanIntersect',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1080,7 +1071,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Boolean Split': {
-    description: modelingStdLibCommandSummary('Boolean Split'),
     icon: 'split',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1108,7 +1098,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Offset plane': {
-    description: modelingStdLibCommandSummary('Offset plane'),
     icon: 'plane',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1140,7 +1129,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   Helix: {
-    description: modelingStdLibCommandSummary('Helix'),
     icon: 'helix',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1221,7 +1209,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   'Helical Gear': {
-    description: modelingStdLibCommandSummary('Helical Gear'),
     icon: 'gear',
     needsReview: true,
     status: modelingStdLibCommandStatus('Helical Gear'),
@@ -1252,7 +1239,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Herringbone Gear': {
-    description: modelingStdLibCommandSummary('Herringbone Gear'),
     icon: 'gear',
     needsReview: true,
     status: modelingStdLibCommandStatus('Herringbone Gear'),
@@ -1283,7 +1269,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Spur Gear': {
-    description: modelingStdLibCommandSummary('Spur Gear'),
     icon: 'gear',
     needsReview: true,
     status: modelingStdLibCommandStatus('Spur Gear'),
@@ -1311,7 +1296,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Ring Gear': {
-    description: modelingStdLibCommandSummary('Ring Gear'),
     icon: 'gear',
     needsReview: true,
     status: modelingStdLibCommandStatus('Ring Gear'),
@@ -1342,7 +1326,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   Fillet: {
-    description: modelingStdLibCommandSummary('Fillet'),
     icon: 'fillet3d',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1375,7 +1358,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Chamfer: {
-    description: modelingStdLibCommandSummary('Chamfer'),
     icon: 'chamfer3d',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1504,7 +1486,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   Appearance: {
-    description: modelingStdLibCommandSummary('Appearance'),
     icon: 'extrude',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1530,7 +1511,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   Delete: {
-    description: modelingStdLibCommandSummary('Delete'),
     icon: 'trash',
     needsReview: true,
     status: modelingStdLibCommandStatus('Delete'),
@@ -1548,7 +1528,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Translate: {
-    description: modelingStdLibCommandSummary('Translate'),
     icon: 'move',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1584,7 +1563,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   Rotate: {
-    description: modelingStdLibCommandSummary('Rotate'),
     icon: 'rotate',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1626,7 +1604,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Scale: {
-    description: modelingStdLibCommandSummary('Scale'),
     icon: 'scale',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1658,7 +1635,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Clone: {
-    description: modelingStdLibCommandSummary('Clone'),
     icon: 'clone',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1707,7 +1683,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   'Mirror 3D': {
-    description: modelingStdLibCommandSummary('Mirror 3D'),
     icon: 'mirror3d',
     displayName: 'Mirror',
     needsReview: true,
@@ -1743,7 +1718,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Pattern Circular 3D': {
-    description: modelingStdLibCommandSummary('Pattern Circular 3D'),
     icon: 'patternCircular3d',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1782,7 +1756,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   'Pattern Linear 3D': {
-    description: modelingStdLibCommandSummary('Pattern Linear 3D'),
     icon: 'patternLinear3d',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1818,7 +1791,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Flatness': {
-    description: modelingStdLibCommandSummary('GDT Flatness'),
     icon: 'gdtFlatness',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1841,7 +1813,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Straightness': {
-    description: modelingStdLibCommandSummary('GDT Straightness'),
     icon: 'gdtStraightness',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1865,7 +1836,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Circularity': {
-    description: modelingStdLibCommandSummary('GDT Circularity'),
     icon: 'gdtCircularity',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1889,7 +1859,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Cylindricity': {
-    description: modelingStdLibCommandSummary('GDT Cylindricity'),
     icon: 'gdtCylindricity',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1913,7 +1882,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Datum': {
-    description: modelingStdLibCommandSummary('GDT Datum'),
     icon: 'gdtDatum',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1941,7 +1909,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Position': {
-    description: modelingStdLibCommandSummary('GDT Position'),
     icon: 'gdtPosition',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1966,7 +1933,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Profile': {
-    description: modelingStdLibCommandSummary('GDT Profile'),
+    // This command dispatches to both profileLine and profileSurface.
+    description:
+      'Add profile geometric dimensioning & tolerancing annotation to faces or edges.',
     icon: 'gdtProfile',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1991,7 +1960,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Distance': {
-    description: modelingStdLibCommandSummary('GDT Distance'),
     icon: 'dimension',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2015,7 +1983,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Perpendicularity': {
-    description: modelingStdLibCommandSummary('GDT Perpendicularity'),
     icon: 'perpendicular',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2039,7 +2006,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   'GDT Angularity': {
-    description: modelingStdLibCommandSummary('GDT Angularity'),
     icon: 'angle',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2064,7 +2030,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Concentricity': {
-    description: modelingStdLibCommandSummary('GDT Concentricity'),
     icon: 'gdtConcentricity',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2092,7 +2057,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Symmetry': {
-    description: modelingStdLibCommandSummary('GDT Symmetry'),
     icon: 'gdtSymmetry',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2120,7 +2084,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Runout': {
-    description: modelingStdLibCommandSummary('GDT Runout'),
     icon: 'gdtRunout',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2148,7 +2111,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Parallelism': {
-    description: modelingStdLibCommandSummary('GDT Parallelism'),
     icon: 'parallel',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2173,7 +2135,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Annotation': {
-    description: modelingStdLibCommandSummary('GDT Annotation'),
     icon: 'text',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2200,7 +2161,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Note': {
-    description: modelingStdLibCommandSummary('GDT Note'),
     icon: 'note',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2222,7 +2182,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Flip Surface': {
-    description: modelingStdLibCommandSummary('Flip Surface'),
     icon: 'flipSurface',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2242,7 +2201,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Join Surfaces': {
-    description: modelingStdLibCommandSummary('Join Surfaces'),
     icon: 'joinSurfaces',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2262,7 +2220,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Delete Face': {
-    description: modelingStdLibCommandSummary('Delete Face'),
     icon: 'deleteFace',
     needsReview: true,
     status: 'experimental',
@@ -2290,7 +2247,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   Blend: {
-    description: modelingStdLibCommandSummary('Blend'),
     icon: 'blend',
     needsReview: true,
     status: 'experimental',
@@ -2314,5 +2270,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
 }
+
+applyModelingCommandDescriptions(modelingMachineCommandConfig)
 
 // TODO: update modelingMachineCommandConfig with satisfies?

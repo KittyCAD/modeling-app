@@ -17,11 +17,16 @@ export const MARKED_OPTIONS: MarkedOptions = {
  * this is specially important for the desktop app.
  */
 export class SafeRenderer extends Renderer {
-  constructor(options: MarkedOptions) {
+  constructor(
+    options: MarkedOptions,
+    private readonly links = true
+  ) {
     super(options)
   }
 
   link(href: string, title: string, text: string): string {
+    if (!this.links) return text
+
     if (this.options.sanitize) {
       let prot: string
 
@@ -40,6 +45,11 @@ export class SafeRenderer extends Renderer {
       ) {
         return text
       }
+    }
+
+    // KCL docs use site-relative links, not routes within the modeling app.
+    if (/^\/docs(?:[/?#]|$)/.test(href)) {
+      href = `https://zoo.dev${href}`
     }
 
     let out =
@@ -63,7 +73,7 @@ export class SafeRenderer extends Renderer {
  * and properly fire openExternalBrowserIfDesktop
  */
 export function attachSafeLinkHandler(root: HTMLElement) {
-  root.addEventListener('click', (e) => {
+  const onClick = (e: MouseEvent) => {
     const target = e.target as HTMLElement | null
     if (!target) {
       return
@@ -77,5 +87,7 @@ export function attachSafeLinkHandler(root: HTMLElement) {
     openExternalBrowserIfDesktop(anchor.href)(
       e as unknown as React.MouseEvent<HTMLAnchorElement>
     )
-  })
+  }
+  root.addEventListener('click', onClick)
+  return () => root.removeEventListener('click', onClick)
 }
