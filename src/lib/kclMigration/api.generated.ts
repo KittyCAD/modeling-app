@@ -1,4 +1,5 @@
-// Generated from KittyCAD/api#4696. Do not edit by hand.
+// Generated from KittyCAD/api#4805. Do not edit by hand.
+import type { MlCopilotServerMessage } from '@kittycad/lib'
 export type paths = Record<string, never>
 export type webhooks = Record<string, never>
 export interface components {
@@ -14,6 +15,8 @@ export interface components {
         }
       | {
           request: components['schemas']['KclMigrationRequest']
+          /** @description Receive live, display-only Copilot progress on this execution connection. Defaults off for older clients. Progress is not persisted or replayed. */
+          stream_progress?: boolean
           /** @enum {string} */
           type: 'start'
         }
@@ -82,6 +85,14 @@ export interface components {
           operation: components['schemas']['KclMigrationOperation']
           /** @enum {string} */
           type: 'operation'
+        }
+      | {
+          /** @description Existing Copilot display message. Never dispatch it as a project edit. */
+          message: components['schemas']['MlCopilotServerMessage']
+          /** @description The initiating request ID, used to keep progress with its migration. */
+          operation_id: components['schemas']['Uuid']
+          /** @enum {string} */
+          type: 'progress'
         }
       | {
           detail: string
@@ -161,6 +172,7 @@ export interface components {
       /** @description The candidate executed successfully under target semantics. */
       target_executed: boolean
     }
+    MlCopilotServerMessage: MlCopilotServerMessage
   }
   responses: never
   parameters: never

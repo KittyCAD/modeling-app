@@ -9,6 +9,11 @@ export type MigrationClientMessage =
 export type MigrationServerMessage =
   components['schemas']['KclMigrationServerMessage']
 
+export type MigrationProgress = Extract<
+  MigrationServerMessage,
+  { type: 'progress' }
+>['message']
+
 export const MIGRATION_FEATURE = 'zookeeper_kcl_migration'
 export const MIGRATION_TARGET = '3.0-preview'
 export const MAX_FILES = 256
@@ -93,10 +98,48 @@ function isOperation(value: unknown): value is MigrationOperation {
   )
 }
 
+function isProgress(value: unknown): value is MigrationProgress {
+  if (!isRecord(value)) return false
+  if (isRecord(value.delta)) return typeof value.delta.delta === 'string'
+  if (isRecord(value.info)) return typeof value.info.text === 'string'
+  if (!isRecord(value.reasoning)) return false
+  const reasoning = value.reasoning
+  switch (reasoning.type) {
+    case 'text':
+    case 'markdown':
+      return typeof reasoning.content === 'string'
+    case 'kcl_code_error':
+      return typeof reasoning.error === 'string'
+    case 'design_plan':
+      return (
+        isArray(reasoning.steps) &&
+        reasoning.steps.every(
+          (step) =>
+            isRecord(step) &&
+            typeof step.filepath_to_edit === 'string' &&
+            typeof step.edit_instructions === 'string'
+        )
+      )
+    default:
+      return false
+  }
+}
+
 export function parseMigrationMessage(
   value: unknown
 ): MigrationServerMessage | Error {
   if (isRecord(value)) {
+    if (
+      value.type === 'progress' &&
+      typeof value.operation_id === 'string' &&
+      isProgress(value.message)
+    ) {
+      return {
+        type: 'progress',
+        operation_id: value.operation_id,
+        message: value.message,
+      }
+    }
     if (value.type === 'pong') return { type: 'pong' }
     if (value.type === 'error' && typeof value.detail === 'string') {
       return { type: 'error', detail: value.detail }

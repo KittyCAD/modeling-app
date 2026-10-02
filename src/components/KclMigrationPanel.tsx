@@ -1,4 +1,6 @@
 import { useSignals } from '@preact/signals-react/runtime'
+import { Thinking } from '@src/components/Thinking'
+import { MarkdownText } from '@src/components/MarkdownText'
 import type { MigrationController } from '@src/lib/kclMigration/controller'
 import { equalBytes } from '@src/lib/kclMigration/snapshot'
 import { createTwoFilesPatch } from 'diff'
@@ -104,6 +106,21 @@ export function KclMigrationPanel({
               Execution deadline:{' '}
               {new Date(operation.deadline).toLocaleTimeString()}
             </p>
+          )}
+          {(controller.progress.value.length > 0 ||
+            controller.progressText.value) && (
+            <div aria-label="Migration progress" className="my-4 text-sm">
+              <Thinking
+                thoughts={controller.progress.value}
+                isDone={
+                  !['connecting', 'running', 'cancelling'].includes(phase)
+                }
+                onlyShowImmediateThought={false}
+              />
+              {controller.progressText.value && (
+                <MarkdownText text={controller.progressText.value} />
+              )}
+            </div>
           )}
           {phase === 'review' && (
             <>
