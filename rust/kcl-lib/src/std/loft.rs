@@ -205,32 +205,29 @@ async fn inner_loft(
         )
         .await?;
 
-    // Using the first sketch as the base curve, idk we might want to change this later.
+    // Keep the source region identity for tag updates. The loft owns its
+    // topology independently of the first section.
     let mut sketch = sketches[0].clone();
-    // A loft creates a new engine body rather than reusing its first section.
-    // Keep both ID fields on the new body so follow-up operations query the
-    // loft instead of the first section's path object.
     sketch.id = id;
-    sketch.original_id = id;
-    Ok(Box::new(
-        do_post_extrude(
-            &sketch,
-            id.into(),
-            false,
-            &super::extrude::NamedCapTags {
-                start: tag_start.as_ref(),
-                end: tag_end.as_ref(),
-            },
-            kittycad_modeling_cmds::shared::ExtrudeMethod::New,
-            exec_state,
-            &args,
-            None,
-            None,
-            body_type,
-            crate::std::extrude::BeingExtruded::Sketch,
-        )
-        .await?,
-    ))
+    let mut solid = do_post_extrude(
+        &sketch,
+        id.into(),
+        false,
+        &super::extrude::NamedCapTags {
+            start: tag_start.as_ref(),
+            end: tag_end.as_ref(),
+        },
+        kittycad_modeling_cmds::shared::ExtrudeMethod::New,
+        exec_state,
+        &args,
+        None,
+        None,
+        body_type,
+        crate::std::extrude::BeingExtruded::Sketch,
+    )
+    .await?;
+    solid.become_new_body(id, id.into());
+    Ok(Box::new(solid))
 }
 
 #[cfg(test)]
@@ -353,33 +350,49 @@ mod tests {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn loft_uses_its_body_id_for_topology_queries() {
+    async fn loft_retains_region_face_tags_and_body_topology() {
         let result = parse_execute(
-            r#"@settings(kclVersion = 2.0)
+            r#"@settings(kclVersion = 3.0)
 
 firstSketch = sketch(on = XY) {
-  circle1 = circle(start = [var 10, var 0], center = [var 0, var 0])
+  front = line(start = [-10mm, 0mm], end = [10mm, 0mm])
+  right = line(start = [10mm, 0mm], end = [0mm, 10mm])
+  left = line(start = [0mm, 10mm], end = [-10mm, 0mm])
 }
-secondSketch = sketch(on = offsetPlane(XY, offset = 10)) {
-  circle1 = circle(start = [var 5, var 0], center = [var 0, var 0])
+secondSketch = sketch(on = offsetPlane(XY, offset = 5mm)) {
+  front = line(start = [-6mm, 0mm], end = [6mm, 0mm])
+  right = line(start = [6mm, 0mm], end = [0mm, 6mm])
+  left = line(start = [0mm, 6mm], end = [-6mm, 0mm])
 }
-
-lofted = loft([
-  region(segments = [firstSketch.circle1]),
-  region(segments = [secondSketch.circle1]),
-])
+firstRegion = region(point = [0mm, 2mm], sketch = firstSketch)
+secondRegion = region(point = [0mm, 2mm], sketch = secondSketch)
+lofted = loft([firstRegion, secondRegion])
+frontFace = faceOf(lofted, face = firstRegion.tags.front)
 "#,
         )
         .await
-        .expect("loft executes");
+        .expect("loft source-region tags resolve to faces");
 
         let KclValue::Solid { value: solid } = result.variable("lofted") else {
             panic!("`lofted` is not a solid");
         };
+        let KclValue::Sketch { value: region } = result.variable("firstRegion") else {
+            panic!("`firstRegion` is not a region");
+        };
+        let KclValue::Face { value: face } = result.variable("frontFace") else {
+            panic!("`frontFace` is not a face");
+        };
         assert_eq!(solid.id, solid.topology_id());
+        assert_ne!(solid.id, region.id);
         assert_eq!(
             solid.sketch().expect("loft retains its base sketch").original_id,
-            solid.id
+            region.original_id
         );
+        let front = solid
+            .value
+            .iter()
+            .find(|surface| surface.get_tag().is_some_and(|tag| tag.name == "front"))
+            .expect("loft retains the tagged front surface");
+        assert_eq!(face.id, front.face_id());
     }
 }
