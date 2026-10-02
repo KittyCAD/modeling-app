@@ -1202,7 +1202,15 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis3dOrEdgeReference {
         let case1 = |arg: &KclValue| {
             let obj = arg.as_object()?;
             let_field_of!(obj, direction);
+            let direction: [TyF64; 3] = direction;
+            if !is_lengths(&direction) {
+                return None;
+            }
             let_field_of!(obj, origin);
+            let origin: [TyF64; 3] = origin;
+            if !is_lengths(&origin) {
+                return None;
+            }
             Some(Self::Axis { direction, origin })
         };
         let case2 = super::fillet::EdgeReference::from_kcl_val;
@@ -1231,7 +1239,15 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::MirrorAcross3d {
         let case2 = |arg: &KclValue| {
             let obj = arg.as_object()?;
             let_field_of!(obj, direction);
+            let direction: [TyF64; 3] = direction;
+            if !is_lengths(&direction) {
+                return None;
+            }
             let_field_of!(obj, origin);
+            let origin: [TyF64; 3] = origin;
+            if !is_lengths(&origin) {
+                return None;
+            }
             Some(Self::Axis {
                 direction: Box::new(direction),
                 origin: Box::new(origin),
@@ -1278,10 +1294,24 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Point3dAxis3dOrGeometryR
         let case1 = |arg: &KclValue| {
             let obj = arg.as_object()?;
             let_field_of!(obj, direction);
+            let direction: [TyF64; 3] = direction;
+            if !is_lengths(&direction) {
+                return None;
+            }
             let_field_of!(obj, origin);
+            let origin: [TyF64; 3] = origin;
+            if !is_lengths(&origin) {
+                return None;
+            }
             Some(Self::Axis { direction, origin })
         };
-        let case2 = <[TyF64; 3]>::from_kcl_val;
+        let case2 = |arg: &KclValue| {
+            let point: [TyF64; 3] = FromKclValue::from_kcl_val(arg)?;
+            if !is_lengths(&point) {
+                return None;
+            }
+            Some(point)
+        };
         let case3 = super::fillet::EdgeReference::from_kcl_val;
         let case4 = FaceTag::from_kcl_val;
         let case5 = Box::<Solid>::from_kcl_val;
@@ -1647,4 +1677,9 @@ impl From<Args> for Vec<Metadata> {
             source_range: value.source_range,
         }]
     }
+}
+
+/// Are all numbers in this slice compatible with being lengths?
+fn is_lengths(nums: &[TyF64]) -> bool {
+    nums.iter().all(|num| num.is_length_compatible())
 }
