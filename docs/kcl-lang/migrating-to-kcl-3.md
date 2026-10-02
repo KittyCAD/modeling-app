@@ -25,12 +25,18 @@ and partly under KCL 3.0, so migrate a project as a unit.
 
 ## Migration steps
 
-1. Change `kclVersion` to `3.0` in the file you execute and in every file it
-   imports that declares a version. See [All files must declare the same
+1. Make sure you're starting from `@settings(kclVersion = 2.0)` in the file you
+   execute. If your file uses `1.0` or doesn't have a version specified, first
+   add `@settings(kclVersion = 2.0)` and make sure it renders geometry as
+   expected.
+2. Fix all warnings. In particular, deprecated functionality may be removed in
+   the next version, so you'll want to address these.
+3. Change to `@settings(kclVersion = 3.0)` in the file you execute and in every
+   file it imports. See [All files must declare the same
    version](#all-files-must-declare-the-same-version).
-2. Run the program and fix each error using the sections below. Most changes
+4. Run the program and fix each error using the sections below. Most changes
    produce an error that points at the code to update.
-3. Check the resulting geometry. Some changes alter a model without an error:
+5. Check the resulting geometry. Some changes alter a model without an error:
    `fillet` and `chamfer` run in order with other operations and follow tangent
    chains by default, and `sweep` no longer moves the profile to the path by
    default.
