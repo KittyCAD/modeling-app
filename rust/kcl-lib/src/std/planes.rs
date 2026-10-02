@@ -154,7 +154,7 @@ fn finite(v: [f64; 3]) -> Result<[f64; 3], String> {
 
 fn unit(v: [f64; 3]) -> Result<[f64; 3], String> {
     let v = finite(v)?;
-    let scale = v.iter().map(|n| n.abs()).fold(0.0, f64::max);
+    let scale = v.iter().map(|n| n.abs()).fold(0.0, libm::fmax);
     if scale == 0.0 {
         return Err("Plane directions must be nonzero; points must be distinct".to_owned());
     }
@@ -219,7 +219,7 @@ fn plane_frame(definition: PlaneDefinition) -> Result<PlaneInfo, String> {
             if !d.is_finite() {
                 return Err("Plane inputs must be finite".to_owned());
             }
-            let scale = normal.iter().map(|v| v.abs()).fold(0.0, f64::max);
+            let scale = normal.iter().map(|v| v.abs()).fold(0.0, libm::fmax);
             let scaled = normal.map(|v| v / scale);
             let distance = -(d / scale) / dot(scaled, scaled).sqrt();
             let (x, y) = normal_axes(n, x)?;
@@ -597,7 +597,7 @@ mod tests {
                 x: [1.0, 0.0, 0.0],
             },
         ] {
-            assert!(plane_frame(definition).is_err());
+            plane_frame(definition).unwrap_err();
         }
     }
 
