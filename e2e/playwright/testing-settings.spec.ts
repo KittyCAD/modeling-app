@@ -33,7 +33,6 @@ const settingsSwitchTab = (page: Page) => async (tab: 'user' | 'proj') => {
   const projectSettingsTab = page.getByRole('radio', { name: 'Project' })
   const userSettingsTab = page.getByRole('radio', { name: 'User' })
   const settingTheme = page.getByTestId('theme') // user tab only
-  const projectIdInput = page.getByTestId('project-id') // project tab only
   switch (tab) {
     case 'user':
       await userSettingsTab.click()
@@ -41,7 +40,8 @@ const settingsSwitchTab = (page: Page) => async (tab: 'user' | 'proj') => {
       break
     case 'proj':
       await projectSettingsTab.click()
-      await expect(projectIdInput).toBeVisible()
+      await expect(projectSettingsTab).toBeChecked()
+      await expect(settingTheme).toHaveCount(0)
       break
     default:
       const _: never = tab
