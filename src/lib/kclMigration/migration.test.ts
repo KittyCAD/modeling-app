@@ -48,7 +48,6 @@ describe('project migration', () => {
     expect(fixture.frames).toContainEqual({
       type: 'start',
       request: fixture.request,
-      stream_progress: true,
     })
     fixture.sendMessage({
       type: 'progress',
