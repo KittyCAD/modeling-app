@@ -16,10 +16,12 @@ export function KclMigration({
   app,
   chatBusy,
   afterExchange,
+  conversationId,
 }: {
   app: App
   chatBusy: boolean
   afterExchange: number
+  conversationId?: string
 }) {
   useSignals()
   const project = app.projectSignal.value
@@ -34,6 +36,7 @@ export function KclMigration({
       enabled={enabled}
       chatBusy={chatBusy}
       afterExchange={afterExchange}
+      conversationId={conversationId}
     />
   )
 }
@@ -44,12 +47,14 @@ function ProjectMigration({
   enabled,
   chatBusy,
   afterExchange,
+  conversationId,
 }: {
   app: App
   project: ZDSProject
   enabled: boolean
   chatBusy: boolean
   afterExchange: number
+  conversationId?: string
 }) {
   useSignals()
   const token = app.auth.token.value
@@ -106,7 +111,7 @@ function ProjectMigration({
     return null
   return (
     <KclMigrationStart
-      disabled={chatBusy}
+      disabled={chatBusy || !conversationId}
       onStart={() =>
         migration.start(
           project,
@@ -115,7 +120,8 @@ function ProjectMigration({
               migrationProject(app, project),
               () => token
             ),
-          afterExchange
+          afterExchange,
+          conversationId ? migration.history.link(conversationId) : undefined
         )
       }
     />

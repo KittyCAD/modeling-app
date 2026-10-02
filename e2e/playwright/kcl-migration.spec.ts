@@ -2,8 +2,10 @@ import { test as base, expect } from '@e2e/playwright/zoo-test'
 import type {
   MigrationClientMessage,
   MigrationOperation,
+  MigrationHistoryEntry,
 } from '@src/lib/kclMigration/protocol'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
+const conversationId = '12945000-0000-4000-8000-000000000002'
 
 // Exercise app/editor/storage integration without invoking a paid engine or converter.
 const test = base.extend({
@@ -45,9 +47,18 @@ const test = base.extend({
     await context.routeWebSocket('**/ws/modeling/commands**', (socket) =>
       socket.close()
     )
-    await context.routeWebSocket('**/ws/ml/copilot**', (socket) =>
-      socket.close()
-    )
+    await context.routeWebSocket('**/ws/ml/copilot**', (socket) => {
+      socket.onMessage((data) => {
+        const message: { type: string } = JSON.parse(data.toString())
+        if (message.type === 'list_modes')
+          socket.send(
+            JSON.stringify({
+              conversation_id: { conversation_id: conversationId },
+            })
+          )
+        if (message.type === 'ping') socket.send(JSON.stringify({ pong: {} }))
+      })
+    })
     await provide(context)
   },
 })
@@ -75,13 +86,45 @@ test.describe(
         })
       )
       let received: MigrationClientMessage | undefined
+      const history = new Map<string, MigrationHistoryEntry>()
+      const applicationStates: string[] = []
       let release: () => void = () => {
         throw new Error('Migration has not started')
       }
       await page.routeWebSocket('**/ws/ml/kcl-migration**', (socket) => {
         socket.onMessage((data) => {
           const message: MigrationClientMessage = JSON.parse(data.toString())
+          if (message.type === 'history') {
+            socket.send(
+              JSON.stringify({
+                type: 'history',
+                conversation_id: message.conversation_id,
+                entries: [...history.values()].reverse(),
+              })
+            )
+            return
+          }
+          if (message.type === 'application') {
+            const entry = history.get(message.operation_id)
+            if (!entry) throw new Error('Missing migration history')
+            expect(message.expected_revision).toBe(entry.application.revision)
+            entry.application = {
+              status: message.status,
+              revision: message.expected_revision + 1,
+            }
+            applicationStates.push(message.status)
+            socket.send(
+              JSON.stringify({
+                type: 'application',
+                operation_id: message.operation_id,
+                application: entry.application,
+              })
+            )
+            return
+          }
           if (message.type === 'cancel' && received?.type === 'start') {
+            const entry = history.get(received.request.request_id)
+            if (entry) entry.status = 'cancelled'
             socket.send(
               JSON.stringify({
                 type: 'operation',
@@ -104,6 +147,18 @@ test.describe(
           if (message.type !== 'start') return
           received = message
           const request = message.request
+          expect(request.conversation_id).toBe(conversationId)
+          const entry: MigrationHistoryEntry = {
+            operation_id: request.request_id,
+            conversation_id: conversationId,
+            project_id: request.project_snapshot.project_id,
+            target: request.target,
+            status: 'running',
+            created_at: new Date().toISOString(),
+            detail: '',
+            application: { status: 'not_applied', revision: 0 },
+          }
+          history.set(entry.operation_id, entry)
           const operation: MigrationOperation = {
             id: request.request_id,
             project_snapshot: request.project_snapshot,
@@ -124,7 +179,8 @@ test.describe(
               },
             })
           )
-          release = () =>
+          release = () => {
+            entry.status = 'succeeded'
             socket.send(
               JSON.stringify({
                 type: 'operation',
@@ -156,6 +212,7 @@ test.describe(
                 },
               })
             )
+          }
         })
       })
       await page.reload()
@@ -286,6 +343,7 @@ test.describe(
       await toolbar.closePane(DefaultLayoutPaneID.Zookeeper)
       release()
       await expect.poll(editorCode).toBe(candidate)
+      await expect.poll(() => applicationStates).toEqual(['applied'])
       await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
       await expect(
         page.getByRole('status').filter({ hasText: 'Migrated to KCL 3' })
@@ -329,6 +387,9 @@ test.describe(
         .getByRole('button', { name: 'arrow turn right', exact: true })
         .click()
       await expect.poll(editorCode).toBe(candidate)
+      await expect
+        .poll(() => applicationStates)
+        .toEqual(['applied', 'undone', 'applied'])
       expect(
         await page.evaluate(async () => {
           const project = window.app.project
@@ -351,6 +412,24 @@ test.describe(
           )
         })
       ).toEqual([0, 255, 128])
+      // Reload restores summaries, never the candidate or a stale file edit.
+      const laterCode = candidate.replace('11mm', '12mm')
+      await page.evaluate(async (code) => {
+        const editor = window.app.project?.executingEditor.value
+        if (!editor) throw new Error('No editor')
+        editor.updateCodeEditor(code, { shouldExecute: false })
+        await editor.flushWriteToFile()
+      }, laterCode)
+      await page.reload()
+      await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
+      await expect(
+        page.getByRole('region', { name: 'Past KCL migration' })
+      ).toHaveCount(2)
+      await expect(
+        page.getByText('Last reported: migration applied.')
+      ).toBeVisible()
+      await expect.poll(editorCode).toBe(laterCode)
+      expect(applicationStates).toEqual(['applied', 'undone', 'applied'])
     })
   }
 )

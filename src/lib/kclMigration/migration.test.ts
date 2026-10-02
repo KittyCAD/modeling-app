@@ -38,6 +38,28 @@ async function startRunning() {
 }
 
 describe('project migration', () => {
+  it('links the attempt to its conversation and reports application only after the write', async () => {
+    const states: string[] = []
+    await fixture.controller.start(true, {
+      id: 'existing-conversation',
+      reportApplication: (id, status) => {
+        expect(id).toBe(fixture.request.request_id)
+        expect(fixture.controller.phase.value).toBe('applying')
+        states.push(status)
+      },
+    })
+    await vi.waitFor(() =>
+      expect(fixture.controller.phase.value).toBe('running')
+    )
+    expect(fixture.request.conversation_id).toBe('existing-conversation')
+    expect(states).toEqual([])
+    fixture.send(successfulOperation(fixture.request))
+    await vi.waitFor(() =>
+      expect(fixture.controller.phase.value).toBe('applied')
+    )
+    expect(await fixture.readMain()).toBe(targetCode)
+    expect(states).toEqual(['applied'])
+  })
   it('streams progress only for this attempt without applying candidate edits', async () => {
     await startRunning()
     expect(fixture.frames).toContainEqual({
