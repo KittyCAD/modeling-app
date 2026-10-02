@@ -21,5 +21,5 @@ export class CombineMutationError extends RegistryError {}
 /** Thrown when registry graph reconfiguration happens at an invalid time. */
 export class ReconfigurationError extends RegistryError {}
 
-/** Thrown when factory construction requires itself through a dependency chain. */
+/** Thrown for dependency cycles or an item that does not contribute its promised token. */
 export class RegistryDependencyError extends RegistryError {}
