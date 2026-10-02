@@ -3106,7 +3106,7 @@ export default {
       {
         "name": "framePosition",
         "ty": "Point2d",
-        "docs": "The distance label's local offset `[along, setback]`, in length units. `along` moves the label from the measurement midpoint, positive toward `from` and negative toward `to`; `0` centers it when the text fits. `setback` sets the perpendicular leader extent in `framePlane`; the dimension line lies at 80% of this extent. Its sign chooses the side. When omitted, the label is centered with a setback of 150% of the bounding-box diagonal, using the larger of the measured entities and the whole model. The dimension line lies at 80% of this setback, leaving 20% clearance beyond the diagonal for interior features. If no usable bounds are available, use `[0mm, 20mm]` as a fallback. Point-and-click writes the calculated position as literal lengths. Explicit positions are preserved, including `[0, 0]`.",
+        "docs": "The distance label's local offset `[along, setback]`, in length units. `along` moves the label from the measurement midpoint, positive toward `from` and negative toward `to`; `0` centers it when the text fits. `setback` sets the perpendicular leader extent in `framePlane`; the dimension line lies at 80% of this extent. Its sign chooses the side. When omitted, the label is centered with a setback equal to the average of the positive dimensions of the measured entities' bounding box, matching the scale used by other GD&T annotations. If the selected bounds are unavailable, the model bounds are used, then `[0mm, 20mm]` as a fallback. Point-and-click writes the calculated position as literal lengths. Explicit positions are preserved, including `[0, 0]`.",
         "required": false,
         "special": false,
         "experimental": false,

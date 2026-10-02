@@ -146,15 +146,26 @@ describe('GD&T frame defaults', () => {
         })
         expect(result.fontSize?.valueText).toBe(`5.25${outputUnit}`)
         expect(result.framePosition?.valueText).toBe(
-          `[0mm, 167.7051${outputUnit}]`
+          `[0${outputUnit}, 75${outputUnit}]`
         )
         expect(result.framePosition?.valueAst).toMatchObject({
           type: 'ArrayExpression',
           elements: [
-            { type: 'Literal', value: { value: 0, suffix: 'Mm' } },
             {
               type: 'Literal',
-              value: { value: 167.7051 },
+              value: {
+                value: 0,
+                suffix:
+                  outputUnit === 'in'
+                    ? 'Inch'
+                    : outputUnit === 'cm'
+                      ? 'Cm'
+                      : 'Mm',
+              },
+            },
+            {
+              type: 'Literal',
+              value: { value: 75 },
             },
           ],
         })
@@ -195,7 +206,7 @@ describe('GD&T frame defaults', () => {
           outputUnit: 'in',
           wasmInstance,
         })
-        expect(result.framePosition?.valueText).toBe('[0mm, 20mm]')
+        expect(result.framePosition?.valueText).toBe('[0in, 20mm]')
         expect(result.fontSize).toBeUndefined()
       }
     )
@@ -243,11 +254,11 @@ describe('GD&T frame defaults', () => {
         } as unknown as ConnectionManager,
         wasmInstance,
       })
-      expect(result.framePosition?.valueText).toBe('[0mm, 61.8466mm]')
+      expect(result.framePosition?.valueText).toBe('[0mm, 25mm]')
       expect(result.framePosition?.valueAst).toMatchObject({
         elements: [
           { value: { value: 0 } },
-          { type: 'Literal', value: { value: 61.8466, suffix: 'Mm' } },
+          { type: 'Literal', value: { value: 25, suffix: 'Mm' } },
         ],
       })
       expect(result.fontSize).toBe(fontSize)
@@ -279,7 +290,7 @@ describe('GD&T frame defaults', () => {
     )
 
     it.each([0, 4])(
-      'uses surrounding model bounds even when selected edge bounds span %s mm',
+      'uses selected edge bounds of %s mm, falling back to the model only for empty bounds',
       async (edgeSize) => {
         const sendSceneCommand = vi
           .fn()
@@ -333,7 +344,9 @@ describe('GD&T frame defaults', () => {
           } as unknown as ConnectionManager,
           wasmInstance,
         })
-        expect(result.framePosition?.valueText).toBe('[0mm, 72.3274mm]')
+        expect(result.framePosition?.valueText).toBe(
+          edgeSize === 0 ? '[0mm, 25mm]' : '[0mm, 4mm]'
+        )
         expect(sendSceneCommand).toHaveBeenNthCalledWith(
           1,
           expect.objectContaining({
@@ -343,15 +356,19 @@ describe('GD&T frame defaults', () => {
             }),
           })
         )
-        expect(sendSceneCommand).toHaveBeenNthCalledWith(
-          2,
-          expect.objectContaining({
-            cmd: expect.objectContaining({
-              type: 'bounding_box',
-              entity_ids: [],
-            }),
-          })
-        )
+        if (edgeSize === 0) {
+          expect(sendSceneCommand).toHaveBeenNthCalledWith(
+            2,
+            expect.objectContaining({
+              cmd: expect.objectContaining({
+                type: 'bounding_box',
+                entity_ids: [],
+              }),
+            })
+          )
+        } else {
+          expect(sendSceneCommand).toHaveBeenCalledOnce()
+        }
       }
     )
   })

@@ -446,12 +446,15 @@ function createDistanceFramePositionCommandValue(
     setback === undefined ? 'Mm' : baseUnitToNumericSuffix(outputUnit),
     4
   )
-  const valueText = `[0mm, ${offset.raw}]`
+  const zero = createLiteral(
+    0,
+    wasmInstance,
+    baseUnitToNumericSuffix(outputUnit),
+    4
+  )
+  const valueText = `[${zero.raw}, ${offset.raw}]`
   return {
-    valueAst: createArrayExpression([
-      createLiteral(0, wasmInstance, 'Mm'),
-      offset,
-    ]),
+    valueAst: createArrayExpression([zero, offset]),
     valueText,
     valueCalculated: valueText,
   }
@@ -459,14 +462,7 @@ function createDistanceFramePositionCommandValue(
 
 function distanceSetback(bounds: BoundingBox | undefined): number | undefined {
   if (!bounds) return undefined
-  const diagonal = Math.hypot(
-    ...[bounds.dimensions.x, bounds.dimensions.y, bounds.dimensions.z].filter(
-      (value) => Number.isFinite(value) && value > 0
-    )
-  )
-  // The dimension line is at 80% of the setback. A full bounding-box
-  // diagonal plus 20% clearance keeps it outside even for interior features.
-  return diagonal > 0 ? roundOff(diagonal * 1.5, 4) : undefined
+  return getAverageBoundingBoxDimension(bounds.dimensions)
 }
 
 function getNormalFromPlanarFace(face: FaceIsPlanar): Point3d | undefined {
@@ -683,7 +679,10 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   }
 
   let setback = distanceSetback(selectionBoundingBox)
-  if (!nextData.fontSize || (distance && !nextData.framePosition)) {
+  if (
+    !nextData.fontSize ||
+    (distance && !nextData.framePosition && setback === undefined)
+  ) {
     const modelBoundingBox = await getBoundingBoxForGdtEntities({
       engineCommandManager,
       entityIds: [],
@@ -694,10 +693,7 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
       ? getAverageBoundingBoxDimension(modelBoundingBox.dimensions)
       : undefined
 
-    const modelSetback = distanceSetback(modelBoundingBox)
-    if (modelSetback !== undefined) {
-      setback = Math.max(setback ?? 0, modelSetback)
-    }
+    setback ??= distanceSetback(modelBoundingBox)
     if (!nextData.fontSize && modelAverageDimension !== undefined) {
       nextData = {
         ...nextData,

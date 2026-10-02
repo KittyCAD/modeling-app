@@ -1085,11 +1085,15 @@ async fn inner_distance(
 }
 
 fn distance_setback(dimensions: [f64; 3]) -> Option<f64> {
-    dimensions
+    let valid: Vec<_> = dimensions
         .into_iter()
         .filter(|value| value.is_finite() && *value > 0.0)
-        .reduce(f64::hypot)
-        .map(|diagonal| diagonal * 1.5)
+        .collect();
+    if valid.is_empty() {
+        None
+    } else {
+        Some(valid.iter().sum::<f64>() / valid.len() as f64)
+    }
 }
 
 async fn default_distance_setback(
@@ -1100,7 +1104,6 @@ async fn default_distance_setback(
 ) -> f64 {
     let mut entity_ids: Vec<_> = from.into_iter().chain(to).collect();
     entity_ids.dedup();
-    let mut setback: Option<f64> = None;
     loop {
         let id = exec_state.next_uuid();
         let response = exec_state
@@ -1119,10 +1122,10 @@ async fn default_distance_setback(
             && let Some(bound_setback) =
                 distance_setback([bounds.dimensions.x, bounds.dimensions.y, bounds.dimensions.z])
         {
-            setback = Some(setback.unwrap_or(0.0).max(bound_setback));
+            return bound_setback;
         }
         if entity_ids.is_empty() {
-            return setback.unwrap_or(20.0);
+            return 20.0;
         }
         entity_ids.clear();
     }
@@ -2214,10 +2217,10 @@ gdt::flatness(
     }
 
     #[test]
-    fn distance_setback_clears_the_bounding_box_diagonal() {
-        assert_eq!(distance_setback([30.0, 40.0, 0.0]), Some(75.0));
-        assert_eq!(distance_setback([0.0, 0.0, 40.0]), Some(60.0));
-        assert_eq!(distance_setback([f64::NAN, -1.0, 10.0]), Some(15.0));
+    fn distance_setback_averages_valid_nonzero_dimensions() {
+        assert_eq!(distance_setback([30.0, 40.0, 0.0]), Some(35.0));
+        assert_eq!(distance_setback([0.0, 0.0, 40.0]), Some(40.0));
+        assert_eq!(distance_setback([f64::NAN, -1.0, 10.0]), Some(10.0));
         assert_eq!(distance_setback([0.0, f64::INFINITY, -1.0]), None);
     }
 
