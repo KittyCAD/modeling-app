@@ -9,7 +9,7 @@ import {
 } from '@src/lib/kclMigration/protocol'
 import { isErr } from '@src/lib/trap'
 import { Socket } from '@src/lib/socket'
-import { withAPIBaseURL, withZookeeperWebSocketURL } from '@src/lib/withBaseURL'
+import { withAPIBaseURL } from '@src/lib/withBaseURL'
 
 export interface MigrationConnection {
   cancel: () => void
@@ -38,9 +38,6 @@ export async function connectMigration({
 }): Promise<MigrationConnection> {
   const url = new URL(withAPIBaseURL('/ws/ml/kcl-migration'))
   url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:'
-  const zookeeperUrl = withZookeeperWebSocketURL('')
-  const pr = zookeeperUrl ? new URL(zookeeperUrl).searchParams.get('pr') : null
-  if (pr) url.searchParams.set('pr', pr)
   const connecting = AbortSignal.any([signal, AbortSignal.timeout(15_000)])
   const ws = await Socket(WebSocket, url.href, token, connecting)
   ws.binaryType = 'arraybuffer'
