@@ -2,6 +2,9 @@ import type { BillingContext } from '@src/lib/billing/machine'
 
 const MILLISECONDS_PER_SECOND = 1000
 const SECONDS_PER_MINUTE = 60
+// Stop extrapolating usage if the reported balance has not refreshed recently.
+export const BILLING_ESTIMATE_DURATION_MS =
+  20 * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND
 
 function getUsageElapsedMs(billingContext: BillingContext, now: number) {
   const activeUsageElapsedMs =
@@ -27,6 +30,8 @@ export function getEstimatedBillingBalance(
   now = Date.now()
 ) {
   if (
+    (billingContext.usageEstimateExpiresAt !== undefined &&
+      now >= billingContext.usageEstimateExpiresAt.getTime()) ||
     typeof billingContext.balance !== 'number' ||
     billingContext.balance === Number.POSITIVE_INFINITY ||
     billingContext.payAsYouGoApiCreditPrice === undefined ||

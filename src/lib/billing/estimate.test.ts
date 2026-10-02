@@ -16,6 +16,7 @@ const BILLING_CONTEXT_DEFAULTS: BillingContext = {
   lastFetch: undefined,
   usageStartedAt: undefined,
   usageAccumulatedMs: 0,
+  usageEstimateExpiresAt: undefined,
   updateApiToken: undefined,
   pendingUpdateApiToken: undefined,
 }
