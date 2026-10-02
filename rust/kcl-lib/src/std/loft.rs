@@ -352,7 +352,7 @@ mod tests {
     #[tokio::test(flavor = "multi_thread")]
     async fn loft_retains_region_face_tags_and_body_topology() {
         let result = parse_execute(
-            r#"@settings(kclVersion = 3.0)
+            r#"@settings(kclVersion = 2.0)
 
 firstSketch = sketch(on = XY) {
   front = line(start = [-10mm, 0mm], end = [10mm, 0mm])
