@@ -3665,7 +3665,6 @@ export function getOperationLabel(op: Operation): string {
     case 'GroupEnd':
       return 'Group end'
     default:
-      const _exhaustiveCheck: never = op
       return '' // unreachable
   }
 }
@@ -3687,6 +3686,8 @@ export function getOpTypeLabel(opType: Operation['type']): string {
       return 'Parameter'
     case 'ModuleInstance':
       return 'Module'
+    case 'GroupBegin':
+    case 'GroupEnd':
     default:
       return 'Function'
   }
@@ -3711,7 +3712,6 @@ export function getOperationIcon(op: Operation): CustomIconName {
     case 'GroupEnd':
       return 'questionMark'
     default:
-      const _exhaustiveCheck: never = op
       return 'questionMark' // unreachable
   }
 }
@@ -3741,6 +3741,21 @@ export function getOperationCalculatedDisplay(op: OpKclValue): string {
       return String(op.value)
     case 'Number':
       return isNonNullable(op.value) ? op.value.toPrecision(5) : ''
+    case 'Helix':
+    case 'Sketch':
+    case 'Solid':
+    case 'Face':
+    case 'Plane':
+    case 'GdtAnnotation':
+    case 'BoundedEdge':
+    case 'Segment':
+    case 'CameraView':
+    case 'KclNone':
+    case 'Uuid':
+    case 'ImportedGeometry':
+    case 'Function':
+    case 'Module':
+    case 'Type':
     default:
       return op.type
   }
@@ -4258,7 +4273,7 @@ export type HideOperation = Operation & { type: 'StdLibCall'; name: 'hide' }
  * itself. Reading only the nested shape made hidden planes, GD&T annotations and
  * imported geometry invisible to every caller below.
  *
- * Every variant is listed so that adding one to `OpKclValue` fails to compile
+ * Every variant is listed so that adding one to `OpKclValue` fails lint
  * here rather than silently dropping its id.
  */
 function artifactIdsInOpValue(value: OpKclValue): string[] {
@@ -4303,11 +4318,6 @@ function artifactIdsInOpValue(value: OpKclValue): string[] {
     case 'KclNone':
     case 'BoundedEdge':
       return []
-
-    default: {
-      const _exhaustiveCheck: never = value
-      return _exhaustiveCheck
-    }
   }
 }
 

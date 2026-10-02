@@ -1226,6 +1226,7 @@ export function getEntityRefId(entityRef: EntityReference): string | undefined {
       return entityRef.region_id
     case 'edge':
       return entityRef.side_faces?.[0]
+    case 'vertex':
     default:
       return undefined
   }
