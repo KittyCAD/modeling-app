@@ -6,6 +6,8 @@ import {
 
 import type { CommandArgumentConfig } from '@src/lib/commandTypes'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
+import { isKclVersionAvailable } from '@src/lib/kclVersionRange'
+import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 
 export type StdLibCommandDriftConfig = {
   stdLibName: StdLibCommandName
@@ -99,6 +101,17 @@ const stdLibArgDeprecatedMessage = (arg: StdLibCommandArg) => {
     .join(' ')
 }
 
+export function stdLibCommandArgAvailable<Name extends StdLibCommandName>(
+  stdLibName: Name,
+  argName: (typeof STD_LIB_COMMANDS)[Name]['args'][number]['name'],
+  version: KclVersion
+) {
+  const arg = STD_LIB_COMMANDS[stdLibName].args.find(
+    (arg) => arg.name === argName
+  )
+  return arg !== undefined && isKclVersionAvailable(version, arg)
+}
+
 const hasExistingEditFlowArgument = (
   context: { argumentsToSubmit: Record<string, unknown> },
   argName: string
@@ -112,6 +125,10 @@ const stdLibArgBaseConfig = (
 ) => ({
   inputType: stdLibArgInputType(arg.ty),
   required: arg.required,
+  ...((arg.addedIn || arg.removedIn) && {
+    available: (context: ModelingMachineContext) =>
+      isKclVersionAvailable(context.kclLanguageVersion, arg),
+  }),
   ...(arg.experimental
     ? ({ status: 'experimental' } as const)
     : isDeprecatedStdLibArg(arg)
