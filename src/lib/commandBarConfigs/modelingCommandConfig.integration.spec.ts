@@ -13,8 +13,11 @@ import {
   modelingCommandStdLibDriftConfig,
   modelingStdLibCommandArgs,
   modelingStdLibCommandStatus,
+  modelingStdLibCommandSummary,
   modelingStdLibCommandUsesExperimentalFeatures,
   type StdLibCommandDriftConfig,
+  stdLibCommandArgMetadata,
+  stdLibCommandSummary,
   stdLibCommandStatus,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import { STD_LIB_COMMANDS } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
@@ -163,12 +166,102 @@ describe('GDT tolerance defaults', () => {
   })
 })
 
+describe('modeling dialog label isolation', () => {
+  it('preserves every legacy argument display label for adapted commands', () => {
+    const expectedLabels = {
+      Extrude: { sketches: 'Profiles' },
+      Revolve: { sketches: 'Profiles', axis: 'Sketch Axis' },
+      Sweep: { sketches: 'Profiles' },
+      Loft: { sketches: 'Profiles' },
+      Hole: {},
+      Chamfer: {},
+    }
+
+    for (const commandName of [
+      'Extrude',
+      'Revolve',
+      'Sweep',
+      'Loft',
+      'Hole',
+      'Chamfer',
+    ] as const) {
+      const config = modelingMachineCommandConfig[commandName]
+      if (!config || isArray(config)) {
+        throw new Error(`${commandName} should have a single command config`)
+      }
+      const labels = Object.fromEntries(
+        Object.entries(config.args ?? {})
+          .filter(([, arg]) => arg.displayName !== undefined)
+          .map(([name, arg]) => [name, arg.displayName])
+      )
+      expect(labels, `${commandName} palette labels changed`).toEqual(
+        expectedLabels[commandName]
+      )
+    }
+  })
+})
+
 describe('Extrude surface arguments', () => {
-  it('allows extrude profiles to include body edge selections', () => {
+  function extrudeConfig() {
     const commandConfig = modelingMachineCommandConfig.Extrude
     if (!commandConfig || isArray(commandConfig)) {
       throw new Error('Extrude should have a single command config')
     }
+    return commandConfig
+  }
+
+  function evaluateHidden(
+    argName: keyof ModelingCommandSchema['Extrude'],
+    argumentsToSubmit: Record<string, unknown>
+  ) {
+    const hidden = extrudeConfig().args?.[argName]?.hidden
+    return typeof hidden === 'function'
+      ? hidden({
+          argumentsToSubmit,
+          selectedCommand: { useModelingDialog: true },
+        } as never)
+      : Boolean(hidden)
+  }
+
+  function evaluateRequired(
+    argName: keyof ModelingCommandSchema['Extrude'],
+    argumentsToSubmit: Record<string, unknown>
+  ) {
+    const required = extrudeConfig().args?.[argName]?.required
+    return typeof required === 'function'
+      ? required({
+          argumentsToSubmit,
+          selectedCommand: { useModelingDialog: true },
+        } as never)
+      : Boolean(required)
+  }
+
+  it('preserves the legacy Extrude operation default when dialogs are off', () => {
+    const method = extrudeConfig().args?.method
+    if (
+      method?.inputType !== 'options' ||
+      typeof method.options !== 'function'
+    ) {
+      throw new Error(
+        'Extrude operation options should depend on the UI surface'
+      )
+    }
+
+    const legacyOptions = method.options({
+      argumentsToSubmit: {},
+      selectedCommand: { useModelingDialog: false },
+    } as never)
+    const dialogOptions = method.options({
+      argumentsToSubmit: {},
+      selectedCommand: { useModelingDialog: true },
+    } as never)
+
+    expect(legacyOptions[0]).toMatchObject({ name: 'New', value: 'NEW' })
+    expect(dialogOptions[0]).toMatchObject({ name: 'Merge', value: 'MERGE' })
+  })
+
+  it('allows extrude profiles to include body edge selections', () => {
+    const commandConfig = extrudeConfig()
 
     expect(commandConfig.args?.sketches).toMatchObject({
       inputType: 'selection',
@@ -179,6 +272,48 @@ describe('Extrude surface arguments', () => {
         'enginePrimitiveEdge',
       ]),
     })
+  })
+
+  it('requires a distance only when no terminating face is selected', () => {
+    expect(evaluateRequired('length', {})).toBe(true)
+    expect(evaluateRequired('length', { to: selectionsForArtifact() })).toBe(
+      false
+    )
+    for (const argName of ['to', 'symmetric', 'bidirectionalLength'] as const) {
+      expect(evaluateHidden(argName, {})).toBe(false)
+      expect(evaluateRequired(argName, {})).toBe(false)
+    }
+  })
+
+  it('keeps surface output available for open profiles without a distance value', () => {
+    for (const to of [undefined, selectionsForArtifact()]) {
+      const argumentsToSubmit = {
+        to,
+        sketches: selectionsForArtifact({ type: 'segment' } as Artifact),
+      }
+      expect(evaluateHidden('bodyType', argumentsToSubmit)).toBe(false)
+      expect(evaluateRequired('bodyType', argumentsToSubmit)).toBe(true)
+    }
+  })
+
+  it('shows body-edge operation before a distance value is parsed', () => {
+    const argumentsToSubmit = {
+      sketches: selectionsForArtifact({ type: 'sweepEdge' } as Artifact),
+      length: '5',
+    }
+    expect(evaluateHidden('method', argumentsToSubmit)).toBe(false)
+    expect(evaluateRequired('method', argumentsToSubmit)).toBe(true)
+  })
+
+  it('keeps native twist controls accessible as optional arguments', () => {
+    for (const argName of [
+      'twistAngle',
+      'twistAngleStep',
+      'twistCenter',
+    ] as const) {
+      expect(evaluateHidden(argName, {})).toBe(false)
+      expect(evaluateRequired(argName, {})).toBe(false)
+    }
   })
 
   it('requires bodyType when extruding sketch segments after length is confirmed', () => {
@@ -388,6 +523,231 @@ describe('Extrude surface arguments', () => {
   })
 })
 
+describe('Revolve dialog arguments', () => {
+  function revolveConfig() {
+    const commandConfig = modelingMachineCommandConfig.Revolve
+    if (!commandConfig || isArray(commandConfig)) {
+      throw new Error('Revolve should have a single command config')
+    }
+    return commandConfig
+  }
+
+  function evaluateHidden(
+    argName: keyof ModelingCommandSchema['Revolve'],
+    argumentsToSubmit: Record<string, unknown>,
+    useModelingDialog = true
+  ) {
+    const hidden = revolveConfig().args?.[argName]?.hidden
+    return typeof hidden === 'function'
+      ? hidden({
+          argumentsToSubmit,
+          selectedCommand: { useModelingDialog },
+        } as never)
+      : Boolean(hidden)
+  }
+
+  function evaluateRequired(
+    argName: keyof ModelingCommandSchema['Revolve'],
+    argumentsToSubmit: Record<string, unknown>,
+    useModelingDialog = true
+  ) {
+    const required = revolveConfig().args?.[argName]?.required
+    return typeof required === 'function'
+      ? required({
+          argumentsToSubmit,
+          selectedCommand: { useModelingDialog },
+        } as never)
+      : Boolean(required)
+  }
+
+  it('keeps the existing axis selector and exposes native angle controls', () => {
+    expect(evaluateHidden('axis', { axisOrEdge: 'Axis' })).toBe(false)
+    expect(evaluateRequired('axis', { axisOrEdge: 'Axis' })).toBe(true)
+    expect(evaluateHidden('edge', { axisOrEdge: 'Axis' })).toBe(true)
+    expect(evaluateHidden('axis', { axisOrEdge: 'Edge' })).toBe(true)
+    expect(evaluateHidden('edge', { axisOrEdge: 'Edge' })).toBe(false)
+    expect(evaluateRequired('edge', { axisOrEdge: 'Edge' })).toBe(true)
+
+    for (const argName of [
+      'angle',
+      'symmetric',
+      'bidirectionalAngle',
+    ] as const) {
+      expect(evaluateHidden(argName, {})).toBe(false)
+      expect(evaluateRequired(argName, {})).toBe(false)
+    }
+    expect(evaluateRequired('angle', {}, false)).toBe(true)
+  })
+
+  it('waits for the legacy reference step before requiring an axis or edge', () => {
+    for (const argumentsToSubmit of [
+      {},
+      { axis: 'X' },
+      { edge: selectionsForArtifact() },
+    ]) {
+      expect(evaluateRequired('axis', argumentsToSubmit, false)).toBe(false)
+      expect(evaluateRequired('edge', argumentsToSubmit, false)).toBe(false)
+      expect(evaluateHidden('edge', argumentsToSubmit, false)).toBe(true)
+    }
+
+    expect(evaluateRequired('axis', { axisOrEdge: 'Axis' }, false)).toBe(true)
+    expect(evaluateRequired('edge', { axisOrEdge: 'Axis' }, false)).toBe(false)
+    expect(evaluateRequired('axis', { axisOrEdge: 'Edge' }, false)).toBe(false)
+    expect(evaluateRequired('edge', { axisOrEdge: 'Edge' }, false)).toBe(true)
+    expect(evaluateHidden('edge', { axisOrEdge: 'Edge' }, false)).toBe(false)
+
+    expect(evaluateRequired('axis', {})).toBe(true)
+    expect(evaluateRequired('edge', { edge: selectionsForArtifact() })).toBe(
+      true
+    )
+  })
+
+  it('preserves legacy reference options and angle defaults', () => {
+    const { axisOrEdge, axis, angle } = revolveConfig().args ?? {}
+    if (
+      axisOrEdge?.inputType !== 'options' ||
+      axis?.inputType !== 'options' ||
+      angle?.inputType !== 'kcl' ||
+      typeof axisOrEdge.options !== 'function' ||
+      typeof axis.options !== 'function' ||
+      typeof axisOrEdge.defaultValue !== 'function' ||
+      typeof axis.defaultValue !== 'function' ||
+      typeof angle.defaultValue !== 'function'
+    ) {
+      throw new Error('Revolve reference controls should depend on the surface')
+    }
+
+    for (const useModelingDialog of [undefined, false]) {
+      const context = {
+        argumentsToSubmit: { edge: selectionsForArtifact() },
+        selectedCommand: { useModelingDialog },
+      }
+      expect(axisOrEdge.defaultValue(context as never)).toBe('Axis')
+      expect(axis.defaultValue(context as never)).toBeUndefined()
+      expect(angle.defaultValue(context as never)).toBe('360deg')
+      expect(axisOrEdge.options(context)).toEqual([
+        { name: 'Sketch Axis', isCurrent: true, value: 'Axis' },
+        { name: 'Edge', isCurrent: false, value: 'Edge' },
+      ])
+      expect(axis.options(context)).toEqual([
+        { name: 'X Axis', isCurrent: true, value: 'X' },
+        { name: 'Y Axis', isCurrent: false, value: 'Y' },
+      ])
+    }
+
+    const dialogContext = {
+      argumentsToSubmit: {},
+      selectedCommand: { useModelingDialog: true },
+    }
+    expect(axis.defaultValue(dialogContext as never)).toBe('X')
+    expect(angle.defaultValue(dialogContext as never)).toBe('')
+    expect(
+      axisOrEdge.options(dialogContext).map((option) => option.name)
+    ).toEqual(['Sketch axis', 'Selected edge'])
+  })
+})
+
+describe('Hole dialog arguments', () => {
+  function holeConfig() {
+    const commandConfig = modelingMachineCommandConfig.Hole
+    if (!commandConfig || isArray(commandConfig)) {
+      throw new Error('Hole should have a single command config')
+    }
+    return commandConfig
+  }
+
+  function evaluateHidden(
+    argName: keyof ModelingCommandSchema['Hole'],
+    argumentsToSubmit: Record<string, unknown>
+  ) {
+    const hidden = holeConfig().args?.[argName]?.hidden
+    return typeof hidden === 'function'
+      ? hidden({
+          argumentsToSubmit,
+          selectedCommand: { useModelingDialog: true },
+        } as never)
+      : Boolean(hidden)
+  }
+
+  function evaluateRequired(
+    argName: keyof ModelingCommandSchema['Hole'],
+    argumentsToSubmit: Record<string, unknown>
+  ) {
+    const required = holeConfig().args?.[argName]?.required
+    return typeof required === 'function'
+      ? required({
+          argumentsToSubmit,
+          selectedCommand: { useModelingDialog: true },
+        } as never)
+      : Boolean(required)
+  }
+
+  it('defaults hidden implementation choices to a simple flat blind hole', () => {
+    expect(holeConfig().args?.holeBody).toMatchObject({
+      required: true,
+      defaultValue: 'blind',
+    })
+    expect(evaluateHidden('holeBody', {})).toBe(true)
+    expect(holeConfig().args?.holeType).toMatchObject({
+      required: true,
+      defaultValue: 'simple',
+    })
+    expect(holeConfig().args?.holeBottom).toMatchObject({
+      required: true,
+      defaultValue: 'flat',
+    })
+  })
+
+  it('prepopulates dimensions only on the dialog surface', () => {
+    for (const name of [
+      'counterboreDepth',
+      'counterboreDiameter',
+      'countersinkAngle',
+      'countersinkDiameter',
+      'drillPointAngle',
+    ] as const) {
+      expect(holeConfig().args?.[name]?.prepopulate).not.toBe(true)
+      expect(holeConfig().args?.[name]?.dialog?.prepopulate).toBe(true)
+    }
+  })
+
+  it('shows only dimensions associated with the selected head type', () => {
+    const simple = { holeType: 'simple', holeBottom: 'flat' }
+    expect(evaluateHidden('counterboreDepth', simple)).toBe(true)
+    expect(evaluateHidden('counterboreDiameter', simple)).toBe(true)
+    expect(evaluateHidden('countersinkAngle', simple)).toBe(true)
+    expect(evaluateHidden('countersinkDiameter', simple)).toBe(true)
+
+    const counterbore = { ...simple, holeType: 'counterbore' }
+    expect(evaluateHidden('counterboreDepth', counterbore)).toBe(false)
+    expect(evaluateRequired('counterboreDepth', counterbore)).toBe(true)
+    expect(evaluateHidden('counterboreDiameter', counterbore)).toBe(false)
+    expect(evaluateRequired('counterboreDiameter', counterbore)).toBe(true)
+    expect(evaluateHidden('countersinkAngle', counterbore)).toBe(true)
+
+    const countersink = { ...simple, holeType: 'countersink' }
+    expect(evaluateHidden('countersinkAngle', countersink)).toBe(false)
+    expect(evaluateRequired('countersinkAngle', countersink)).toBe(true)
+    expect(evaluateHidden('countersinkDiameter', countersink)).toBe(false)
+    expect(evaluateRequired('countersinkDiameter', countersink)).toBe(true)
+    expect(evaluateHidden('countersinkHeadClearance', countersink)).toBe(false)
+    expect(holeConfig().args?.countersinkHeadClearance).toMatchObject({
+      defaultValue: '0',
+    })
+    expect(evaluateHidden('counterboreDepth', countersink)).toBe(true)
+  })
+
+  it('shows point angle only for a drill-point bottom', () => {
+    expect(evaluateHidden('drillPointAngle', { holeBottom: 'flat' })).toBe(true)
+    expect(evaluateHidden('drillPointAngle', { holeBottom: 'drill' })).toBe(
+      false
+    )
+    expect(evaluateRequired('drillPointAngle', { holeBottom: 'drill' })).toBe(
+      true
+    )
+  })
+})
+
 describe('Helix cylinder selection', () => {
   it('accepts a region-backed cylinder', () => {
     const commandConfig = modelingMachineCommandConfig.Helix
@@ -415,6 +775,75 @@ describe('Helix cylinder selection', () => {
 })
 
 describe('Sweep-like bodyType argument', () => {
+  it.each(['Extrude', 'Sweep', 'Loft', 'Revolve'] as const)(
+    '%s keeps Surface available for closed profiles without requiring a body type',
+    (commandName) => {
+      const commandConfig = modelingMachineCommandConfig[commandName]
+      if (!commandConfig || isArray(commandConfig)) {
+        throw new Error(`${commandName} should have a single command config`)
+      }
+      const bodyType = commandConfig.args?.bodyType
+      if (bodyType?.inputType !== 'options') {
+        throw new Error(`${commandName} should expose bodyType options`)
+      }
+
+      for (const useModelingDialog of [undefined, false, true]) {
+        for (const artifact of [
+          { type: 'solid2d' },
+          { type: 'path', subType: 'region' },
+        ] as Artifact[]) {
+          const context = {
+            argumentsToSubmit: {
+              sketches: selectionsForArtifact(artifact),
+              length: parsedLength(),
+            },
+            selectedCommand: { useModelingDialog },
+          }
+          const hidden =
+            typeof bodyType.hidden === 'function'
+              ? bodyType.hidden(context)
+              : Boolean(bodyType.hidden)
+          const required =
+            typeof bodyType.required === 'function'
+              ? bodyType.required(context)
+              : bodyType.required
+          const options =
+            typeof bodyType.options === 'function'
+              ? bodyType.options(context)
+              : bodyType.options
+
+          expect(hidden).toBe(false)
+          expect(required).toBe(false)
+          expect(options).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({ value: 'SURFACE' }),
+              expect.objectContaining({ value: 'SOLID' }),
+            ])
+          )
+        }
+      }
+    }
+  )
+
+  it('allows sweep profiles to be selected from sketches, segments, regions, and faces', () => {
+    const commandConfig = modelingMachineCommandConfig.Sweep
+    if (!commandConfig || isArray(commandConfig)) {
+      throw new Error('Sweep should have a single command config')
+    }
+
+    expect(commandConfig.args?.sketches).toMatchObject({
+      inputType: 'selection',
+      selectionTypes: [
+        'solid2d',
+        'segment',
+        'cap',
+        'wall',
+        'pathRegion',
+        'engineRegion',
+      ],
+    })
+  })
+
   it('marks the legacy relativeTo argument as deprecated', () => {
     const commandConfig = modelingMachineCommandConfig.Sweep
     if (!commandConfig || isArray(commandConfig)) {
@@ -469,6 +898,112 @@ describe('Sweep-like bodyType argument', () => {
           },
         })
       ).toBe(false)
+    }
+  })
+})
+
+describe('Sweep dialog arguments', () => {
+  function sweepConfig() {
+    const commandConfig = modelingMachineCommandConfig.Sweep
+    if (!commandConfig || isArray(commandConfig)) {
+      throw new Error('Sweep should have a single command config')
+    }
+    return commandConfig
+  }
+
+  function evaluateHidden(
+    argName: keyof ModelingCommandSchema['Sweep'],
+    argumentsToSubmit: Record<string, unknown>,
+    useModelingDialog = true
+  ) {
+    const hidden = sweepConfig().args?.[argName]?.hidden
+    return typeof hidden === 'function'
+      ? hidden({
+          argumentsToSubmit,
+          selectedCommand: { useModelingDialog },
+        } as never)
+      : Boolean(hidden)
+  }
+
+  it('shows legacy alignment by itself when editing an old sweep', () => {
+    const legacy = { nodeToEdit: [], relativeTo: 'TRAJECTORY' }
+    expect(evaluateHidden('relativeTo', legacy)).toBe(false)
+    expect(evaluateHidden('translateProfileToPath', legacy)).toBe(true)
+    expect(evaluateHidden('orientProfilePerpendicular', legacy)).toBe(true)
+
+    expect(evaluateHidden('relativeTo', {})).toBe(true)
+    expect(evaluateHidden('translateProfileToPath', {})).toBe(false)
+    expect(evaluateHidden('orientProfilePerpendicular', {})).toBe(false)
+    expect(evaluateHidden('translateProfileToPath', legacy, false)).toBe(false)
+  })
+})
+
+describe('Chamfer dialog arguments', () => {
+  function chamferConfig() {
+    const commandConfig = modelingMachineCommandConfig.Chamfer
+    if (!commandConfig || isArray(commandConfig)) {
+      throw new Error('Chamfer should have a single command config')
+    }
+    return commandConfig
+  }
+
+  function evaluateHidden(
+    argName: keyof ModelingCommandSchema['Chamfer'],
+    argumentsToSubmit: Record<string, unknown>,
+    useModelingDialog = true
+  ) {
+    const hidden = chamferConfig().args?.[argName]?.hidden
+    return typeof hidden === 'function'
+      ? hidden({
+          argumentsToSubmit,
+          selectedCommand: { useModelingDialog },
+        } as never)
+      : Boolean(hidden)
+  }
+
+  function evaluateRequired(
+    argName: keyof ModelingCommandSchema['Chamfer'],
+    argumentsToSubmit: Record<string, unknown>,
+    useModelingDialog = true
+  ) {
+    const required = chamferConfig().args?.[argName]?.required
+    return typeof required === 'function'
+      ? required({
+          argumentsToSubmit,
+          selectedCommand: { useModelingDialog },
+        } as never)
+      : Boolean(required)
+  }
+
+  it('leaves optional native dimensions visible without prepopulating them', () => {
+    for (const argName of ['secondLength', 'angle'] as const) {
+      expect(evaluateHidden(argName, {})).toBe(false)
+      expect(evaluateRequired(argName, {})).toBe(false)
+      expect(chamferConfig().args?.[argName]?.dialog?.prepopulate).not.toBe(
+        true
+      )
+    }
+  })
+
+  it('preserves the legacy Chamfer dimension and algorithm defaults with dialogs off', () => {
+    const secondLength = chamferConfig().args?.secondLength
+    const angle = chamferConfig().args?.angle
+    const version = chamferConfig().args?.version
+    if (
+      secondLength?.inputType !== 'kcl' ||
+      typeof secondLength.defaultValue !== 'function' ||
+      angle?.inputType !== 'kcl' ||
+      typeof angle.defaultValue !== 'function' ||
+      version?.inputType !== 'kcl' ||
+      typeof version.defaultValue !== 'function'
+    ) {
+      throw new Error('Chamfer defaults should depend on the UI surface')
+    }
+    for (const selectedCommand of [undefined, { useModelingDialog: false }]) {
+      const context = { argumentsToSubmit: {}, selectedCommand } as never
+      expect(secondLength.defaultValue(context)).toBe('5')
+      expect(angle.defaultValue(context)).toBe('360deg')
+      expect(version.defaultValue(context)).toBe('1')
     }
   })
 })
@@ -570,6 +1105,26 @@ function pointAndClickStdLibArgs(config: StdLibCommandDriftConfig) {
 }
 
 describe('stdlib command arg derivation', () => {
+  it('routes every stdlib-backed command through its summary adapter', () => {
+    const commandNames = Object.keys(modelingCommandStdLibDriftConfig) as Array<
+      keyof typeof modelingCommandStdLibDriftConfig
+    >
+
+    for (const commandName of commandNames) {
+      const commandConfig = modelingMachineCommandConfig[commandName]
+      if (!commandConfig || isArray(commandConfig)) {
+        throw new Error(`${commandName} should have a single command config`)
+      }
+
+      const stdLibName =
+        modelingCommandStdLibDriftConfig[commandName].stdLibName
+      expect(stdLibCommandSummary(stdLibName)).toBeTruthy()
+      expect(commandConfig.description).toBe(
+        modelingStdLibCommandSummary(commandName)
+      )
+    }
+  })
+
   it('derives base command-bar arg config from KCL stdlib metadata', () => {
     const args = modelingStdLibCommandArgs<ModelingCommandSchema['Extrude']>(
       'Extrude',
@@ -659,6 +1214,18 @@ describe('stdlib command arg derivation', () => {
         version: parsedLength('2'),
       })
     ).toBe(false)
+  })
+
+  it('keeps the product-selected Sweep algorithm when KCL has no literal default', () => {
+    const sweepCommand = modelingMachineCommandConfig.Sweep
+    if (!sweepCommand || isArray(sweepCommand)) {
+      throw new Error('Sweep should have a single command config')
+    }
+
+    expect(
+      stdLibCommandArgMetadata('sweep', 'version')?.defaultValue
+    ).toBeUndefined()
+    expect(sweepCommand.args?.version).toMatchObject({ defaultValue: '2' })
   })
 })
 
