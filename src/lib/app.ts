@@ -6,7 +6,13 @@ import {
   type RegistryItem,
   Slot,
 } from '@kittycad/registry'
-import { effect, type Signal, signal } from '@preact/signals-core'
+import {
+  computed,
+  effect,
+  type Signal,
+  signal,
+  untracked,
+} from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import { File, KclManager, ZDSProject } from '@src/lang/KclManager'
 import { lspService } from '@src/lang/lsp/registry/contract'
@@ -412,11 +418,35 @@ export class App implements AppSubsystems {
     assertCurrent()
 
     this.disposeProjectHistoryExtensions?.()
+    this.disposeCloudSyncEditorRefresh?.()
     // We only ever allow one project to be open at a time in the app,
     // so we gotta clean up after ourselves and close any open project.
     this.project?.close()
     this.project = nextProject
     this.setCloudSyncOpenedProject(ownedProject)
+
+    if (!window.electron) {
+      const cloudSync = this.registry.get(cloudSyncService)
+      const lastSyncedAt = computed(() => {
+        const status = cloudSync.status.value
+        return status.enabled && status.scopedProjectPath === ownedProject.path
+          ? status.lastSyncedAt
+          : undefined
+      })
+      this.disposeCloudSyncEditorRefresh = effect(() => {
+        const syncedAt = lastSyncedAt.value
+        const editor = nextProject.executingEditor.value
+        if (!syncedAt || !editor) return
+
+        // OPFS has no native watcher. Reuse the editor's guarded disk reload
+        // after sync completes, including during its own-save watcher cooldown.
+        untracked(() => {
+          for (const listener of editor.onWatchEvent) {
+            listener('change', editor.path)
+          }
+        })
+      })
+    }
 
     // These extensions make global project operations un/redoable.
     this.disposeProjectHistoryExtensions = effect(() => {
@@ -505,6 +535,7 @@ export class App implements AppSubsystems {
   }
   private unsubscribeFromSettings: Subscription | undefined = undefined
   private disposeProjectHistoryExtensions: (() => void) | undefined = undefined
+  private disposeCloudSyncEditorRefresh: (() => void) | undefined = undefined
   private hasStoppedSubsystems = false
 
   private stopSubsystems() {
@@ -533,6 +564,8 @@ export class App implements AppSubsystems {
   }
 
   closeProject() {
+    this.disposeCloudSyncEditorRefresh?.()
+    this.disposeCloudSyncEditorRefresh = undefined
     this.disposeProjectHistoryExtensions?.()
     this.disposeProjectHistoryExtensions = undefined
     this.unsubscribeFromSettings?.unsubscribe()

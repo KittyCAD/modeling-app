@@ -4268,8 +4268,14 @@ function attachVisibilityChangeListener() {
   }
 
   document.addEventListener('visibilitychange', handleVisibilityChange)
+  const handleOnline = () => {
+    resetSyncRetryBackoff()
+    scheduleRemoteIndexSync()
+  }
+  window.addEventListener('online', handleOnline)
   detachVisibilityChangeListener = () => {
     document.removeEventListener('visibilitychange', handleVisibilityChange)
+    window.removeEventListener('online', handleOnline)
     detachVisibilityChangeListener = undefined
   }
 }
