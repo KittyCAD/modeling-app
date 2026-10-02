@@ -54,6 +54,55 @@ export default {
       }
     ]
   },
+  "airfoil": {
+    "name": "airfoil",
+    "preferredName": "airfoil",
+    "qualName": "std::airfoil",
+    "moduleName": "std",
+    "returnType": "Sketch",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": true,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "sketchPlane",
+        "ty": "Plane",
+        "docs": "Plane on which to create the profile. The leading edge starts at the plane origin and the chord follows its positive X axis.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "chordLength",
+        "ty": "number(Length)",
+        "docs": "Distance from the leading edge to the trailing edge.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "naca4Code",
+        "ty": "number(_)",
+        "docs": "Numeric four-digit NACA designation. Leading zeroes may be omitted.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      }
+    ]
+  },
   "angledLine": {
     "name": "angledLine",
     "preferredName": "angledLine",
@@ -7741,6 +7790,43 @@ export default {
       }
     ]
   },
+  "rail::tSlot": {
+    "name": "tSlot",
+    "preferredName": "rail::tSlot",
+    "qualName": "std::rail::tSlot",
+    "moduleName": "rail",
+    "returnType": "Solid",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": false,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "railHeight",
+        "ty": "number(Length)",
+        "docs": "Overall width and height of the square rail profile.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "length",
+        "ty": "number(Length)",
+        "docs": "Extrusion length of the rail.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      }
+    ]
+  },
   "rectangle": {
     "name": "rectangle",
     "preferredName": "rectangle",
@@ -9552,6 +9638,79 @@ export default {
         "deprecated": false,
         "deprecatedSince": "2.0",
         "removedIn": "3.0"
+      }
+    ]
+  },
+  "sprocket::rollerChain": {
+    "name": "rollerChain",
+    "preferredName": "sprocket::rollerChain",
+    "qualName": "std::sprocket::rollerChain",
+    "moduleName": "sprocket",
+    "returnType": "Solid",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": false,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "nTeeth",
+        "ty": "number(_)",
+        "docs": "Number of teeth. Must be a whole number of at least five.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "chainPitch",
+        "ty": "number(Length)",
+        "docs": "Distance between adjacent chain-pin centers.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "rollerWidth",
+        "ty": "number(Length)",
+        "docs": "Internal width of the roller chain. The sprocket is 90 percent of this width.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "rollerDiameter",
+        "ty": "number(Length)",
+        "docs": "Diameter of the chain roller.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "bore",
+        "ty": "number(Length)",
+        "docs": "Diameter of the central shaft bore.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
       }
     ]
   },
