@@ -1175,6 +1175,13 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis2dOrEdgeReference {
             if !origin[1].is_length_compatible() {
                 return None;
             }
+            let direction: [TyF64; 2] = direction;
+            if !direction[0].is_length_compatible() {
+                return None;
+            }
+            if !direction[1].is_length_compatible() {
+                return None;
+            }
             Some(Self::Axis { direction, origin })
         };
         let case2 = super::fillet::EdgeReference::from_kcl_val;
