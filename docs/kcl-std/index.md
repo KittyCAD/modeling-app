@@ -17,6 +17,7 @@ layout: manual
   * [`fail`](/docs/kcl-std/functions/std-fail)
   * [`helix`](/docs/kcl-std/functions/std-helix)
   * [`offsetPlane`](/docs/kcl-std/functions/std-offsetPlane)
+  * [`plane`](/docs/kcl-std/functions/std-plane)
 * [**std::appearance**](/docs/kcl-std/modules/std-appearance)
   * [`appearance::hexString`](/docs/kcl-std/functions/std-appearance-hexString)
 * [**std::array**](/docs/kcl-std/modules/std-array)

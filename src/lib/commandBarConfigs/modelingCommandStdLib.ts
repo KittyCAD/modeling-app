@@ -284,6 +284,23 @@ export const modelingCommandStdLibDriftConfig = {
     editFlow: true,
     flowArgOrder: ['plane', 'offset'],
   },
+  'Construction plane': {
+    stdLibName: 'plane',
+    editFlow: true,
+    uiOnlyArgs: ['method'],
+    flowArgOrder: [
+      'method',
+      'origin',
+      'normal',
+      'xAxis',
+      'yAxis',
+      'points',
+      'a',
+      'b',
+      'c',
+      'd',
+    ],
+  },
   Helix: {
     stdLibName: 'helix',
     editFlow: true,

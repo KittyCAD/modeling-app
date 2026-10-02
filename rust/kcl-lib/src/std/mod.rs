@@ -439,6 +439,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::planes::offset_plane(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::offsetPlane"),
         ),
+        ("prelude", "plane") => (
+            |e, a| Box::pin(crate::std::planes::plane(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::plane"),
+        ),
         ("prelude", "assert") => (
             |e, a| Box::pin(crate::std::assert::assert(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::assert"),

@@ -1052,11 +1052,17 @@ export function buildToolbarConfig(
             },
             {
               id: 'plane-points',
+              command: 'modeling:Construction plane',
               onClick: () =>
-                console.error('Plane through points not yet implemented'),
-              status: 'unavailable',
-              title: '3-Point Plane',
-              description: 'Create a plane from three points.',
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'Construction plane', groupId: 'modeling' },
+                }),
+              icon: 'plane',
+              status: 'available',
+              title: 'Construction Plane',
+              description:
+                'Create a plane from axes, a normal, three points, or an equation.',
               links: [],
             },
           ],

@@ -21,10 +21,220 @@ use crate::execution::ModelingCmdMeta;
 use crate::execution::Plane;
 use crate::execution::PlaneInfo;
 use crate::execution::PlaneKind;
+use crate::execution::Point3d;
+use crate::execution::types::ArrayLen;
 use crate::execution::types::RuntimeType;
 use crate::front::SourceRef;
 use crate::std::Args;
+use crate::std::args::FromKclValue;
 use crate::std::faces::FaceSpecifier;
+
+/// Construct a typed plane using the existing custom-plane engine lifecycle.
+pub async fn plane(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let direction_ty = RuntimeType::Array(Box::new(RuntimeType::count()), ArrayLen::Known(3));
+    let origin: Option<[TyF64; 3]> = args.get_kw_arg_opt("origin", &RuntimeType::point3d(), exec_state)?;
+    let x: Option<[TyF64; 3]> = args.get_kw_arg_opt("xAxis", &direction_ty, exec_state)?;
+    let y: Option<[TyF64; 3]> = args.get_kw_arg_opt("yAxis", &direction_ty, exec_state)?;
+    let normal: Option<[TyF64; 3]> = args.get_kw_arg_opt("normal", &direction_ty, exec_state)?;
+    let points: Option<Vec<KclValue>> = args.get_kw_arg_opt(
+        "points",
+        &RuntimeType::Array(Box::new(RuntimeType::point3d()), ArrayLen::Known(3)),
+        exec_state,
+    )?;
+    let a: Option<TyF64> = args.get_kw_arg_opt("a", &RuntimeType::count(), exec_state)?;
+    let b: Option<TyF64> = args.get_kw_arg_opt("b", &RuntimeType::count(), exec_state)?;
+    let c: Option<TyF64> = args.get_kw_arg_opt("c", &RuntimeType::count(), exec_state)?;
+    let d: Option<TyF64> = args.get_kw_arg_opt("d", &RuntimeType::length(), exec_state)?;
+    let diagnostic = |message: String| KclError::new_semantic(KclErrorDetails::new(message, vec![args.source_range]));
+    let fields = [
+        origin.is_some(),
+        x.is_some(),
+        y.is_some(),
+        normal.is_some(),
+        points.is_some(),
+        a.is_some(),
+        b.is_some(),
+        c.is_some(),
+        d.is_some(),
+    ];
+    let definition = match (fields, origin, x, y, normal, points, a, b, c, d) {
+        ([true, true, true, false, false, false, false, false, false], Some(o), Some(x), Some(y), ..) => {
+            PlaneDefinition::Axes {
+                origin: o.map(|n| n.to_mm()),
+                x: x.map(|n| n.n),
+                y: y.map(|n| n.n),
+            }
+        }
+        ([true, true, false, true, false, false, false, false, false], Some(o), Some(x), _, Some(n), ..) => {
+            PlaneDefinition::Normal {
+                origin: o.map(|n| n.to_mm()),
+                x: x.map(|n| n.n),
+                normal: n.map(|n| n.n),
+            }
+        }
+        ([false, false, false, false, true, false, false, false, false], _, _, _, _, Some(points), ..) => {
+            let points = points
+                .iter()
+                .map(|p| <[TyF64; 3]>::from_kcl_val(p).map(|p| p.map(|n| n.to_mm())))
+                .collect::<Option<Vec<_>>>()
+                .ok_or_else(|| diagnostic("Expected three 3D points".to_owned()))?;
+            let points: [[f64; 3]; 3] = points
+                .try_into()
+                .map_err(|_| diagnostic("Expected exactly three points".to_owned()))?;
+            PlaneDefinition::Points(points)
+        }
+        (
+            [false, true, false, false, false, true, true, true, true],
+            _,
+            Some(x),
+            _,
+            _,
+            _,
+            Some(a),
+            Some(b),
+            Some(c),
+            Some(d),
+        ) => PlaneDefinition::Equation {
+            normal: [a.n, b.n, c.n],
+            d: d.to_mm(),
+            x: x.map(|n| n.n),
+        },
+        _ => {
+            return Err(diagnostic(
+                "Choose one plane definition: origin/xAxis/yAxis, origin/normal/xAxis, points, or a/b/c/d/xAxis"
+                    .to_owned(),
+            ));
+        }
+    };
+    let info = plane_frame(definition).map_err(diagnostic)?;
+    let id = exec_state.next_uuid();
+    let mut plane = Plane {
+        id,
+        artifact_id: id.into(),
+        object_id: None,
+        kind: PlaneKind::Custom,
+        info,
+        meta: vec![Metadata {
+            source_range: args.source_range,
+        }],
+    };
+    make_offset_plane_in_engine(&mut plane, exec_state, &args).await?;
+    Ok(KclValue::Plane { value: Box::new(plane) })
+}
+
+enum PlaneDefinition {
+    Axes {
+        origin: [f64; 3],
+        x: [f64; 3],
+        y: [f64; 3],
+    },
+    Normal {
+        origin: [f64; 3],
+        x: [f64; 3],
+        normal: [f64; 3],
+    },
+    Points([[f64; 3]; 3]),
+    Equation {
+        normal: [f64; 3],
+        d: f64,
+        x: [f64; 3],
+    },
+}
+
+// Angular tolerance on unit directions, independent of the input length unit.
+const PLANE_ANGLE_TOLERANCE: f64 = 1e-9;
+
+fn finite(v: [f64; 3]) -> Result<[f64; 3], String> {
+    if v.iter().all(|n| n.is_finite()) {
+        Ok(v)
+    } else {
+        Err("Plane inputs must be finite".to_owned())
+    }
+}
+
+fn unit(v: [f64; 3]) -> Result<[f64; 3], String> {
+    let v = finite(v)?;
+    let scale = v.iter().map(|n| n.abs()).fold(0.0, f64::max);
+    if scale == 0.0 {
+        return Err("Plane directions must be nonzero; points must be distinct".to_owned());
+    }
+    let v = v.map(|n| n / scale);
+    let length = dot(v, v).sqrt();
+    Ok(v.map(|n| n / length))
+}
+
+fn dot(a: [f64; 3], b: [f64; 3]) -> f64 {
+    a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
+}
+fn cross(a: [f64; 3], b: [f64; 3]) -> [f64; 3] {
+    [
+        a[1] * b[2] - a[2] * b[1],
+        a[2] * b[0] - a[0] * b[2],
+        a[0] * b[1] - a[1] * b[0],
+    ]
+}
+fn sub(a: [f64; 3], b: [f64; 3]) -> [f64; 3] {
+    [a[0] - b[0], a[1] - b[1], a[2] - b[2]]
+}
+
+fn normal_axes(normal: [f64; 3], x: [f64; 3]) -> Result<([f64; 3], [f64; 3]), String> {
+    let n = unit(normal)?;
+    let hint = unit(x)?;
+    let projection = sub(hint, n.map(|v| v * dot(hint, n)));
+    if dot(projection, projection).sqrt() <= PLANE_ANGLE_TOLERANCE {
+        return Err("The X direction is parallel to the normal".to_owned());
+    }
+    let x = unit(projection)?;
+    Ok((x, unit(cross(n, x))?))
+}
+
+fn plane_frame(definition: PlaneDefinition) -> Result<PlaneInfo, String> {
+    let (origin, x, y) = match definition {
+        PlaneDefinition::Axes { origin, x, y } => {
+            let x = unit(x)?;
+            let y = unit(y)?;
+            if dot(x, y).abs() > PLANE_ANGLE_TOLERANCE {
+                return Err("The X and Y axes must be perpendicular".to_owned());
+            }
+            (origin, x, unit(sub(y, x.map(|v| v * dot(x, y))))?)
+        }
+        PlaneDefinition::Normal { origin, x, normal } => {
+            let (x, y) = normal_axes(normal, x)?;
+            (origin, x, y)
+        }
+        PlaneDefinition::Points(points) => {
+            for p in points {
+                finite(p)?;
+            }
+            let x = unit(sub(points[1], points[0]))?;
+            let to_third = unit(sub(points[2], points[0]))?;
+            let normal = cross(x, to_third);
+            if dot(normal, normal).sqrt() <= PLANE_ANGLE_TOLERANCE {
+                return Err("The three points must not be collinear".to_owned());
+            }
+            (points[0], x, unit(cross(unit(normal)?, x))?)
+        }
+        PlaneDefinition::Equation { normal, d, x } => {
+            let n = unit(normal)?;
+            if !d.is_finite() {
+                return Err("Plane inputs must be finite".to_owned());
+            }
+            let scale = normal.iter().map(|v| v.abs()).fold(0.0, f64::max);
+            let scaled = normal.map(|v| v / scale);
+            let distance = -(d / scale) / dot(scaled, scaled).sqrt();
+            let (x, y) = normal_axes(n, x)?;
+            (n.map(|v| v * distance), x, y)
+        }
+    };
+    let origin = finite(origin)?;
+    let axis = |v: [f64; 3]| Point3d::new(v[0], v[1], v[2], None);
+    Ok(PlaneInfo {
+        origin: Point3d::new(origin[0], origin[1], origin[2], Some(UnitLength::Millimeters)),
+        x_axis: axis(x),
+        y_axis: axis(y),
+        z_axis: axis(unit(cross(x, y))?),
+    })
+}
 
 /// Find the plane of a given face.
 pub async fn plane_of(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -288,6 +498,108 @@ mod tests {
     use super::*;
     use crate::execution::PlaneInfo;
     use crate::execution::Point3d;
+
+    fn assert_vector(actual: Point3d, expected: [f64; 3]) {
+        for (a, b) in [actual.x, actual.y, actual.z].into_iter().zip(expected) {
+            assert!((a - b).abs() < 1e-9, "{actual:?} != {expected:?}");
+        }
+    }
+
+    #[test]
+    fn constructor_forms_produce_the_same_frame() {
+        let definitions = [
+            PlaneDefinition::Axes {
+                origin: [0.0, 0.0, 20.0],
+                x: [3.0, 0.0, 0.0],
+                y: [0.0, 4.0, 0.0],
+            },
+            PlaneDefinition::Normal {
+                origin: [0.0, 0.0, 20.0],
+                x: [1.0, 0.0, 8.0],
+                normal: [0.0, 0.0, 2.0],
+            },
+            PlaneDefinition::Points([[0.0, 0.0, 20.0], [10.0, 0.0, 20.0], [3.0, 10.0, 20.0]]),
+            PlaneDefinition::Equation {
+                normal: [0.0, 0.0, 2.0],
+                d: -40.0,
+                x: [1.0, 0.0, 0.0],
+            },
+        ];
+        for definition in definitions {
+            let p = plane_frame(definition).unwrap();
+            assert_vector(p.origin, [0.0, 0.0, 20.0]);
+            assert_vector(p.x_axis, [1.0, 0.0, 0.0]);
+            assert_vector(p.y_axis, [0.0, 1.0, 0.0]);
+            assert_vector(p.z_axis, [0.0, 0.0, 1.0]);
+            assert!(p.is_right_handed());
+        }
+    }
+
+    #[test]
+    fn equation_sign_controls_orientation_and_large_vectors_are_stable() {
+        let p = plane_frame(PlaneDefinition::Equation {
+            normal: [0.0, 0.0, -1e200],
+            d: 20e200,
+            x: [1e200, 0.0, 0.0],
+        })
+        .unwrap();
+        assert_vector(p.origin, [0.0, 0.0, 20.0]);
+        assert_vector(p.y_axis, [0.0, -1.0, 0.0]);
+        assert_vector(p.z_axis, [0.0, 0.0, -1.0]);
+    }
+
+    #[test]
+    fn ordered_points_determine_origin_and_normal() {
+        let p = plane_frame(PlaneDefinition::Points([
+            [4.0, 5.0, 6.0],
+            [4.0, 7.0, 6.0],
+            [7.0, 5.0, 6.0],
+        ]))
+        .unwrap();
+        assert_vector(p.origin, [4.0, 5.0, 6.0]);
+        assert_vector(p.x_axis, [0.0, 1.0, 0.0]);
+        assert_vector(p.z_axis, [0.0, 0.0, -1.0]);
+    }
+
+    #[test]
+    fn rejects_degenerate_frames() {
+        for definition in [
+            PlaneDefinition::Axes {
+                origin: [0.0; 3],
+                x: [0.0; 3],
+                y: [0.0, 1.0, 0.0],
+            },
+            PlaneDefinition::Axes {
+                origin: [0.0; 3],
+                x: [1.0, 0.0, 0.0],
+                y: [1.0, 1.0, 0.0],
+            },
+            PlaneDefinition::Normal {
+                origin: [0.0; 3],
+                x: [0.0, 0.0, 1.0],
+                normal: [0.0, 0.0, 1.0],
+            },
+            PlaneDefinition::Normal {
+                origin: [f64::NAN, 0.0, 0.0],
+                x: [1.0, 0.0, 0.0],
+                normal: [0.0, 0.0, 1.0],
+            },
+            PlaneDefinition::Points([[1.0, 2.0, 3.0], [2.0, 3.0, 4.0], [4.0, 5.0, 6.0]]),
+            PlaneDefinition::Points([[0.0; 3]; 3]),
+            PlaneDefinition::Equation {
+                normal: [0.0; 3],
+                d: 1.0,
+                x: [1.0, 0.0, 0.0],
+            },
+            PlaneDefinition::Equation {
+                normal: [0.0, 0.0, 1.0],
+                d: f64::INFINITY,
+                x: [1.0, 0.0, 0.0],
+            },
+        ] {
+            assert!(plane_frame(definition).is_err());
+        }
+    }
 
     #[test]
     fn fixes_left_handed_plane() {
