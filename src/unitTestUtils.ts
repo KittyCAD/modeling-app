@@ -11,7 +11,6 @@ import {
 } from '@src/lang/constants'
 import { createArrayExpression } from '@src/lang/create'
 import { KclManager } from '@src/lang/KclManager'
-import { getKclLanguageVersion } from '@src/lang/kclLanguageVersion'
 import { findKwArg, findKwArgAny } from '@src/lang/util'
 import type { CallExpressionKw, Expr } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
@@ -20,7 +19,7 @@ import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import { MachineManager } from '@src/lib/MachineManager'
 import RustContext from '@src/lib/rustContext'
 import { createSettings } from '@src/lib/settings/initialSettings'
-import { isErr, reportRejection } from '@src/lib/trap'
+import { reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { settingsMachine } from '@src/machines/settingsMachine'
@@ -85,20 +84,12 @@ export function createSettledUserFeaturesForTest(): UserFeaturesSettleService {
 export async function buildTheWorldAndConnectToEngine({
   webrtc = true,
   pool,
-  code,
 }: {
   webrtc?: boolean
   pool?: 'cpu'
-  /** Sets the connection's initial version; changing versions needs a new connection. */
-  code?: string
 } = {}) {
   const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
   const instancePromise = loadAndInitialiseWasmInstance(WASM_PATH)
-  const kclVersion =
-    code === undefined
-      ? undefined
-      : getKclLanguageVersion(code, await instancePromise)
-  if (isErr(kclVersion)) return Promise.reject(kclVersion)
   const machineManager = new MachineManager()
   const commandBarActor = createActor(commandBarMachine, {
     input: {
@@ -160,7 +151,6 @@ export async function buildTheWorldAndConnectToEngine({
         unitTestWebrtc: webrtc,
         unitTestPool: pool,
         geometryOnly: pool === 'cpu',
-        kclVersion,
         rustContext: kclManager.rustContext,
       })
       .catch(reportRejection)

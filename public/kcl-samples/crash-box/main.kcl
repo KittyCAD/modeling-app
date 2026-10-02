@@ -55,13 +55,13 @@ crashBoxProfile = sketch(on = XY) {
   horizontalDistance([bottomEdge.start, bottomEdge.end]) == crashBoxOuterWidth
   verticalDistance([leftEdge.end, leftEdge.start]) == crashBoxOuterWidth
   verticalDistance([
-  verticalCenterGuide.end,
-  verticalCenterGuide.start
-]) == crashBoxOuterWidth / 2
+    verticalCenterGuide.end,
+    verticalCenterGuide.start
+  ]) == crashBoxOuterWidth / 2
   horizontalDistance([
-  horizontalCenterGuide.start,
-  horizontalCenterGuide.end
-]) == crashBoxOuterWidth / 2
+    horizontalCenterGuide.start,
+    horizontalCenterGuide.end
+  ]) == crashBoxOuterWidth / 2
 }
 
 crashBoxRegion = region(segments = [

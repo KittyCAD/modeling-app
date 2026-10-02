@@ -723,51 +723,51 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     })
   })
 
-  test('if you write kcl with lint errors you get lints', async ({
-    page,
-    homePage,
-    scene,
-  }) => {
-    const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+  test(
+    'if you write kcl with lint errors you get lints',
+    { tag: '@web' },
+    async ({ page, homePage, scene }) => {
+      const u = await getUtils(page)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
 
-    await homePage.goToModelingScene()
+      await homePage.goToModelingScene()
 
-    // check no error to begin with
-    await expect(page.locator('.cm-lint-marker-info')).not.toBeVisible()
+      // check no error to begin with
+      await expect(page.locator('.cm-lint-marker-info')).not.toBeVisible()
 
-    await u.codeLocator.click()
-    await page.keyboard.type('my_snake_case_var = 5')
-    await page.keyboard.press('Enter')
-    await page.keyboard.type('myCamelCaseVar = 5')
-    await page.keyboard.press('Enter')
+      await u.codeLocator.click()
+      await page.keyboard.type('my_snake_case_var = 5')
+      await page.keyboard.press('Enter')
+      await page.keyboard.type('myCamelCaseVar = 5')
+      await page.keyboard.press('Enter')
 
-    // press arrows to clear autocomplete
-    await page.keyboard.press('ArrowLeft')
-    await page.keyboard.press('ArrowRight')
+      // press arrows to clear autocomplete
+      await page.keyboard.press('ArrowLeft')
+      await page.keyboard.press('ArrowRight')
 
-    await scene.connectionEstablished()
+      await scene.connectionEstablished()
 
-    // error in guter
-    await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
+      // error in guter
+      await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
 
-    // error text on hover
-    await page.hover('.cm-lint-marker-info')
-    await expect(
-      page.getByText('Identifiers should be lowerCamelCase').first()
-    ).toBeVisible()
+      // error text on hover
+      await page.hover('.cm-lint-marker-info')
+      await expect(
+        page.getByText('Identifiers should be lowerCamelCase').first()
+      ).toBeVisible()
 
-    // select the line that's causing the error and delete it
-    await page.getByText('my_snake_case_var = 5').click()
-    await page.keyboard.press('End')
-    await page.keyboard.down('Shift')
-    await page.keyboard.press('Home')
-    await page.keyboard.up('Shift')
-    await page.keyboard.press('Backspace')
+      // select the line that's causing the error and delete it
+      await page.getByText('my_snake_case_var = 5').click()
+      await page.keyboard.press('End')
+      await page.keyboard.down('Shift')
+      await page.keyboard.press('Home')
+      await page.keyboard.up('Shift')
+      await page.keyboard.press('Backspace')
 
-    // wait for .cm-lint-marker-info not to be visible
-    await expect(page.locator('.cm-lint-marker-info')).not.toBeVisible()
-  })
+      // wait for .cm-lint-marker-info not to be visible
+      await expect(page.locator('.cm-lint-marker-info')).not.toBeVisible()
+    }
+  )
 
   test('if you fixup kcl errors you clear lints', async ({
     page,
@@ -810,83 +810,84 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     ).not.toBeVisible()
   })
 
-  test('if you write invalid kcl you get inlined errors', async ({
-    page,
-    homePage,
-  }) => {
-    const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1200, height: 500 })
+  test(
+    'if you write invalid kcl you get inlined errors',
+    { tag: '@web' },
+    async ({ page, homePage }) => {
+      const u = await getUtils(page)
+      await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    await homePage.goToModelingScene()
+      await homePage.goToModelingScene()
 
-    // check no error to begin with
-    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+      // check no error to begin with
+      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-    /* add the following code to the editor (~ error is not a valid line)
+      /* add the following code to the editor (~ error is not a valid line)
       * the old check here used $ but this is for tags so it changed meaning.
       * hopefully ~ doesn't change meaning
     ~ error
     const topAng = 30
     const bottomAng = 25
    */
-    await u.codeLocator.click()
-    await page.keyboard.type('~ error')
+      await u.codeLocator.click()
+      await page.keyboard.type('~ error')
 
-    // press arrows to clear autocomplete
-    await page.keyboard.press('ArrowLeft')
-    await page.keyboard.press('ArrowRight')
+      // press arrows to clear autocomplete
+      await page.keyboard.press('ArrowLeft')
+      await page.keyboard.press('ArrowRight')
 
-    await page.keyboard.press('Enter')
-    await page.keyboard.type('topAng = 30')
-    await page.keyboard.press('Enter')
-    await page.keyboard.type('bottomAng = 25')
-    await page.keyboard.press('Enter')
+      await page.keyboard.press('Enter')
+      await page.keyboard.type('topAng = 30')
+      await page.keyboard.press('Enter')
+      await page.keyboard.type('bottomAng = 25')
+      await page.keyboard.press('Enter')
 
-    // error in guter
-    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+      // error in guter
+      await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
 
-    // error text on hover
-    await page.hover('.cm-lint-marker-error')
-    await expect(
-      page.getByText("found unknown token '~'").first()
-    ).toBeVisible()
+      // error text on hover
+      await page.hover('.cm-lint-marker-error')
+      await expect(
+        page.getByText("found unknown token '~'").first()
+      ).toBeVisible()
 
-    // select the line that's causing the error and delete it
-    await page.getByText('~ error').click()
-    await page.keyboard.press('End')
-    await page.keyboard.down('Shift')
-    await page.keyboard.press('Home')
-    await page.keyboard.up('Shift')
-    await page.keyboard.press('Backspace')
+      // select the line that's causing the error and delete it
+      await page.getByText('~ error').click()
+      await page.keyboard.press('End')
+      await page.keyboard.down('Shift')
+      await page.keyboard.press('Home')
+      await page.keyboard.up('Shift')
+      await page.keyboard.press('Backspace')
 
-    // wait for .cm-lint-marker-error not to be visible
-    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+      // wait for .cm-lint-marker-error not to be visible
+      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-    // let's check we get an error when defining the same variable twice
-    await page.getByText('bottomAng = 25').click()
-    await page.keyboard.press('Enter')
-    await page.keyboard.type("// Let's define the same thing twice")
-    await page.keyboard.press('Enter')
-    await page.keyboard.type('topAng = 42')
-    await page.keyboard.press('ArrowLeft')
+      // let's check we get an error when defining the same variable twice
+      await page.getByText('bottomAng = 25').click()
+      await page.keyboard.press('Enter')
+      await page.keyboard.type("// Let's define the same thing twice")
+      await page.keyboard.press('Enter')
+      await page.keyboard.type('topAng = 42')
+      await page.keyboard.press('ArrowLeft')
 
-    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
-    await expect(
-      page.locator('.cm-lint-marker.cm-lint-marker-error')
-    ).toBeVisible()
+      await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
+      await expect(
+        page.locator('.cm-lint-marker.cm-lint-marker-error')
+      ).toBeVisible()
 
-    await page.locator('.cm-lint-marker.cm-lint-marker-error').hover()
-    await expect(page.locator('.cm-diagnosticText').first()).toBeVisible()
-    await expect(
-      page.getByText('Cannot redefine `topAng`').first()
-    ).toBeVisible()
+      await page.locator('.cm-lint-marker.cm-lint-marker-error').hover()
+      await expect(page.locator('.cm-diagnosticText').first()).toBeVisible()
+      await expect(
+        page.getByText('Cannot redefine `topAng`').first()
+      ).toBeVisible()
 
-    const secondTopAng = page.getByText('topAng').first()
-    await secondTopAng?.dblclick()
-    await page.keyboard.type('otherAng')
+      const secondTopAng = page.getByText('topAng').first()
+      await secondTopAng?.dblclick()
+      await page.keyboard.type('otherAng')
 
-    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
-  })
+      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+    }
+  )
 
   test('if your kcl gets an error from the engine it is inlined', async ({
     context,
@@ -1438,121 +1439,115 @@ profile001 = startProfile(sketch001, at = [0, 0])
     })
   })
 
-  test('syntax errors still show when reopening KCL pane', async ({
-    page,
-    homePage,
-    scene,
-    cmdBar,
-  }) => {
+  test(
+    'syntax errors still show when reopening KCL pane',
+    { tag: '@web' },
+    async ({ page, homePage, scene, cmdBar }) => {
+      const u = await getUtils(page)
+      await page.setBodyDimensions({ width: 1200, height: 500 })
+
+      await homePage.goToModelingScene()
+
+      // Wait for connection, this is especially important for this test, because safeParse is invoked when
+      // connection is established which would interfere with the test if it happened during later steps.
+      await scene.connectionEstablished()
+      await scene.settled()
+
+      // Code with no error
+      await u.codeLocator.fill(`x = 7`)
+      await page.waitForTimeout(200) // allow some time for the error to show potentially
+      await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
+
+      // Code with error
+      await u.codeLocator.fill(`x 7`)
+      await expect(page.locator('.cm-lint-marker-error')).toHaveCount(1)
+
+      // Close and reopen KCL code panel
+      await u.closeKclCodePanel()
+      await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0) // error disappears on close
+      await u.openKclCodePanel()
+
+      // Verify error is still visible
+      await expect(page.locator('.cm-lint-marker-error')).toHaveCount(1)
+    }
+  )
+})
+
+test(
+  'Undo/redo recovers deleted files interleaved with code edits',
+  { tag: '@web' },
+  async ({ page, homePage, toolbar, editor, folderSetupFn, fs, scene }) => {
+    await folderSetupFn(async (dir) => {
+      const projectDir = await fs.join(dir, 'History Project')
+      await fs.mkdir(projectDir, { recursive: true })
+      await fs.writeFile(
+        await fs.join(projectDir, 'main.kcl'),
+        await fsp.readFile(executorInputPath('cylinder.kcl'))
+      )
+      await fs.writeFile(
+        await fs.join(projectDir, 'fileToDelete.kcl'),
+        await fsp.readFile(executorInputPath('basic_fillet_cube_end.kcl'))
+      )
+    })
+
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
+    await homePage.projectsLoaded()
 
-    await homePage.goToModelingScene()
+    const fileToDelete = u.locatorFile('fileToDelete.kcl')
+    const deleteMenuItem = page.getByRole('button', { name: 'Delete' })
+    const deleteConfirmation = page.getByTestId('delete-confirmation')
+    const archivedToast = page.getByText('archived successfully')
+    const undoButton = page.getByRole('button', { name: 'arrow turn left' })
+    const redoButton = page.getByRole('button', { name: 'arrow turn right' })
 
-    // Wait for connection, this is especially important for this test, because safeParse is invoked when
-    // connection is established which would interfere with the test if it happened during later steps.
-    await scene.connectionEstablished()
-    await scene.settled()
+    await test.step('Open project and edit main.kcl', async () => {
+      await homePage.openProject('History Project')
+      await scene.settled()
+      await editor.openPane()
+      await editor.expectEditor.toContain('extrude')
+      await editor.codeContent.focus()
+      await page.keyboard.type('\ninterleaveA = 1')
+    })
 
-    // Code with no error
-    await u.codeLocator.fill(`x = 7`)
-    await page.waitForTimeout(200) // allow some time for the error to show potentially
-    await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
+    await test.step('Delete another file without navigating away', async () => {
+      await toolbar.openPane(DefaultLayoutPaneID.Files)
+      await expect(fileToDelete).toBeVisible()
+      await fileToDelete.click({ button: 'right' })
+      await deleteMenuItem.click()
+      await deleteConfirmation.click()
+      await expect(fileToDelete).not.toBeAttached()
+      await expect(archivedToast).toBeVisible()
+    })
 
-    // Code with error
-    await u.codeLocator.fill(`x 7`)
-    await expect(page.locator('.cm-lint-marker-error')).toHaveCount(1)
+    await test.step('Edit code again, then undo back through the delete', async () => {
+      await editor.codeContent.focus()
+      await page.keyboard.type('\ninterleaveB = 2')
 
-    // Close and reopen KCL code panel
-    await u.closeKclCodePanel()
-    await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0) // error disappears on close
-    await u.openKclCodePanel()
-
-    // Verify error is still visible
-    await expect(page.locator('.cm-lint-marker-error')).toHaveCount(1)
-  })
-})
-
-test('Undo/redo recovers deleted files interleaved with code edits', async ({
-  page,
-  homePage,
-  toolbar,
-  editor,
-  folderSetupFn,
-}) => {
-  await folderSetupFn(async (dir) => {
-    const projectDir = join(dir, 'History Project')
-    await fsp.mkdir(projectDir, { recursive: true })
-    await fsp.copyFile(
-      executorInputPath('cylinder.kcl'),
-      join(projectDir, 'main.kcl')
-    )
-    await fsp.copyFile(
-      executorInputPath('basic_fillet_cube_end.kcl'),
-      join(projectDir, 'fileToDelete.kcl')
-    )
-  })
-
-  const u = await getUtils(page)
-  const fileToDelete = u.locatorFile('fileToDelete.kcl')
-  const deleteMenuItem = page.getByRole('button', { name: 'Delete' })
-  const deleteConfirmation = page.getByTestId('delete-confirmation')
-  const archivedToast = page.getByText('archived successfully')
-  const restoredToast = page.getByText('restored successfully')
-  const undoButton = page.getByRole('button', { name: 'arrow turn left' })
-  const redoButton = page.getByRole('button', { name: 'arrow turn right' })
-
-  await test.step('Open project and edit main.kcl', async () => {
-    await homePage.openProject('History Project')
-    await editor.openPane()
-    await editor.expectEditor.toContain('extrude')
-    await editor.codeContent.focus()
-    await page.keyboard.type('\ninterleaveA = 1')
-  })
-
-  await test.step('Delete another file without navigating away', async () => {
-    await toolbar.openPane(DefaultLayoutPaneID.Files)
-    await expect(fileToDelete).toBeVisible()
-    await fileToDelete.click({ button: 'right' })
-    await deleteMenuItem.click()
-    await deleteConfirmation.click()
-    await expect(fileToDelete).not.toBeAttached()
-    await expect(archivedToast).toBeVisible()
-  })
-
-  await test.step('Edit code again, then undo back through the delete', async () => {
-    await editor.codeContent.focus()
-    await page.keyboard.type('\ninterleaveB = 2')
-
-    await undoButton.click()
-    await expect(u.codeLocator).not.toContainText('interleaveB = 2')
-    await expect(u.codeLocator).toContainText('interleaveA = 1')
-
-    do {
       await undoButton.click()
-      await page.waitForTimeout(100)
-    } while (
-      !(await fileToDelete.isVisible()) &&
-      !(await undoButton.isDisabled())
-    )
+      await expect(u.codeLocator).not.toContainText('interleaveB = 2')
+      await expect(u.codeLocator).toContainText('interleaveA = 1')
 
-    await expect(restoredToast).toBeVisible()
+      await undoButton.click()
+      await expect(fileToDelete).toBeVisible()
 
-    await undoButton.click()
-    await expect(u.codeLocator).not.toContainText('interleaveA = 1')
-  })
+      await expect(undoButton).toBeEnabled()
+      await undoButton.click()
+      await expect(u.codeLocator).not.toContainText('interleaveA = 1')
+    })
 
-  await test.step('Navigate to file and verify it is not empty', async () => {
-    await toolbar.openFile('fileToDelete.kcl')
-    await expect(editor.codeContent).toContainText('fillet')
-    await toolbar.openFile('main.kcl')
-    await expect(editor.codeContent).not.toContainText('fillet')
-  })
+    await test.step('Navigate to file and verify it is not empty', async () => {
+      await toolbar.openFile('fileToDelete.kcl')
+      await expect(editor.codeContent).toContainText('fillet')
+      await toolbar.openFile('main.kcl')
+      await expect(editor.codeContent).not.toContainText('fillet')
+    })
 
-  await test.step('Redo re-applies the delete', async () => {
-    await page.waitForTimeout(1_000)
-    await redoButton.click()
-
-    await expect(fileToDelete).not.toBeAttached()
-  })
-})
+    await test.step('Redo re-applies the delete', async () => {
+      await redoButton.click()
+      await expect(u.codeLocator).toContainText('interleaveA = 1')
+      await redoButton.click()
+      await expect(fileToDelete).not.toBeAttached()
+    })
+  }
+)
