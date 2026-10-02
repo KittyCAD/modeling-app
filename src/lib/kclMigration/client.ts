@@ -148,7 +148,7 @@ export async function connectMigration({
     send(
       statusOnly
         ? { type: 'status', operation_id: request.request_id }
-        : { type: 'start', request, stream_progress: true }
+        : { type: 'start', request }
     )
   }
   return {

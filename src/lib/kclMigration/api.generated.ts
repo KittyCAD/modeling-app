@@ -15,8 +15,6 @@ export interface components {
         }
       | {
           request: components['schemas']['KclMigrationRequest']
-          /** @description Receive live, display-only Copilot progress on this execution connection. Defaults off for older clients. Progress is not persisted or replayed. */
-          stream_progress?: boolean
           /** @enum {string} */
           type: 'start'
         }
