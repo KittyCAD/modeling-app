@@ -304,8 +304,8 @@ chamfer001 = chamfer(
 </model-viewer>
 
 ```kcl
-// An example of chamfers with KCL 2.0 syntax.
-@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+// An example of chamfers with KCL 3.0 syntax.
+@settings(defaultLengthUnit = mm, kclVersion = 3.0)
 
 // Chamfer the top circular edge of an extruded 8 mm shaft.
 // These two shafts show two equivalent edge-selection approaches:
