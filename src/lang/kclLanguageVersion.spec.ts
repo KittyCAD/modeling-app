@@ -43,6 +43,7 @@ describe('isAtLeastKclV3', () => {
     ['1.0', false],
     ['2.0', false],
     ['3.0-preview', true],
+    ['3.0', true],
   ])('returns %s -> %s', (version, expected) => {
     expect(isAtLeastKclV3(version)).toBe(expected)
   })
@@ -61,6 +62,8 @@ describe('getKclLanguageVersion', () => {
     ['@settings(kclVersion = 1.0)\nx = 1', '1.0'],
     ['@settings(kclVersion = 2.0)\nx = 1', '2.0'],
     ['@settings(kclVersion = "3.0-preview")\nx = 1', '3.0-preview'],
+    ['@settings(kclVersion = 3.0)\nx = 1', '3.0'],
+    ['@settings(kclVersion = "3.0")\nx = 1', '3.0'],
   ])('resolves %j to %s using Wasm', (code, expected) => {
     expect(getKclLanguageVersion(code, getInstance())).toBe(expected)
     expect(getKclLanguageVersion(parseProgram(code), getInstance())).toBe(
@@ -77,6 +80,12 @@ describe('getKclLanguageVersion', () => {
 })
 
 describe('programUsesKclV3', () => {
+  it('returns true for a stable 3.0 program', () => {
+    const program = parseProgram(`@settings(kclVersion = 3.0)
+x = 1`)
+    expect(programUsesKclV3(program, getInstance())).toBe(true)
+  })
+
   it('returns true for a 3.0-preview program', () => {
     const program = parseProgram(`@settings(kclVersion = "3.0-preview")
 x = 1`)

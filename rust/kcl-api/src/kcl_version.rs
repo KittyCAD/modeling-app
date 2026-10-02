@@ -22,6 +22,9 @@ pub enum KclVersion {
     /// KCL v3 is currently in development.
     #[serde(rename = "3.0-preview")]
     V3Preview,
+    /// KCL v3 released 2026
+    #[serde(rename = "3.0")]
+    V3,
     // When you add a new version, please add it to the error string in KclVersionError's
     // Display and FromStr impls.
 }
@@ -33,6 +36,7 @@ impl KclVersion {
             Self::V1 => "1.0",
             Self::V2 => "2.0",
             Self::V3Preview => "3.0-preview",
+            Self::V3 => "3.0",
         }
     }
 }
@@ -46,7 +50,7 @@ impl std::fmt::Display for KclVersionError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            "Unrecognized version. Valid versions are 1.0, 2.0 and (experimentally) 3.0-preview"
+            "Unrecognized version. Valid versions are 1.0, 2.0, 3.0 and (experimentally) 3.0-preview"
         )
     }
 }
@@ -59,6 +63,7 @@ impl FromStr for KclVersion {
             "1" | "1.0" | "1.0.0" => Ok(Self::V1),
             "2" | "2.0" | "2.0.0" => Ok(Self::V2),
             "3-preview" | "3.0-preview" | "3.0.0-preview" => Ok(Self::V3Preview),
+            "3" | "3.0" | "3.0.0" => Ok(Self::V3),
             _other => Err(KclVersionError),
         }
     }
@@ -82,7 +87,7 @@ mod tests {
 
     #[test]
     fn roundtrip_str() {
-        for input in [KclVersion::V1, KclVersion::V2, KclVersion::V3Preview] {
+        for input in [KclVersion::V1, KclVersion::V2, KclVersion::V3Preview, KclVersion::V3] {
             let serialized = input.as_str();
             let deserialized: KclVersion = serialized.parse().unwrap();
             assert_eq!(input, deserialized);
@@ -96,7 +101,15 @@ mod tests {
         assert_eq!(KclVersion::from_str("2"), Ok(KclVersion::V2));
         assert_eq!(KclVersion::from_str("2.0.0"), Ok(KclVersion::V2));
         assert_eq!(KclVersion::from_str("3.0-preview"), Ok(KclVersion::V3Preview));
+        assert_eq!(KclVersion::from_str("3"), Ok(KclVersion::V3));
+        assert_eq!(KclVersion::from_str("3.0"), Ok(KclVersion::V3));
+        assert_eq!(KclVersion::from_str("3.0.0"), Ok(KclVersion::V3));
         // No such version.
         KclVersion::from_str("99.123").unwrap_err();
+    }
+
+    #[test]
+    fn stable_v3_follows_preview() {
+        assert!(KclVersion::V3Preview < KclVersion::V3);
     }
 }
