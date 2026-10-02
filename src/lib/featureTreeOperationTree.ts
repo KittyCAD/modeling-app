@@ -1,6 +1,6 @@
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 
-import { type OperationsByModule, getOperationsForModule } from '@src/lang/wasm'
+import type { OperationsByModule } from '@src/lang/wasm'
 import {
   filterOperations,
   groupNestedOperations,
@@ -13,15 +13,21 @@ type StdLibCallOperation = Extract<Operation, { type: 'StdLibCall' }>
 
 export type OperationTreeBranch = {
   parent: ModuleInstanceOperation
-  children: OperationTreeNode[]
 }
 
 export type OperationTreeNode = Operation | Operation[] | OperationTreeBranch
 
+export type OperationTree = {
+  nodes: OperationTreeNode[]
+  getChildren: (branch: OperationTreeBranch) => OperationTreeNode[]
+  /** Canonical ancestors including the target module, excluding the root. */
+  getModuleAncestors: (moduleId: number) => number[]
+}
+
 export function isOperationTreeBranch(
   node: OperationTreeNode
 ): node is OperationTreeBranch {
-  return !isArray(node) && 'parent' in node && 'children' in node
+  return !isArray(node) && 'parent' in node
 }
 
 export function getOperationTreeNodeKey(node: OperationTreeNode): string {
@@ -133,128 +139,191 @@ function isSameSourceOperation(left: Operation, right: Operation): boolean {
   )
 }
 
+// Live updates replace only the changed module's array. Weak keys let unchanged
+// modules reuse their grouping without retaining operations from old executions.
+const moduleOperationLists = new WeakMap<
+  Operation[],
+  (Operation | Operation[])[]
+>()
+const emptyOperations: Operation[] = []
+
 function buildModuleOperationList(operations: Operation[]) {
-  return groupNestedOperations(
+  const cached = moduleOperationLists.get(operations)
+  if (cached) {
+    return cached
+  }
+
+  const list = groupNestedOperations(
     groupOperationTypeStreaks(filterOperations(operations), [
       'VariableDeclaration',
     ]),
     operations,
     (groupBegin) => groupBegin.group.type === 'SketchBlock'
   )
+  moduleOperationLists.set(operations, list)
+  return list
 }
 
+type ModuleReferences = {
+  all: ModuleInstanceOperation[]
+  direct: ModuleInstanceOperation[]
+  displayedKeys: string[]
+}
+
+const moduleReferences = new WeakMap<Operation[], ModuleReferences>()
+
+/** Read only the import topology; grouping may serialize large argument values. */
+function getModuleReferences(operations: Operation[]): ModuleReferences {
+  const cached = moduleReferences.get(operations)
+  if (cached) {
+    return cached
+  }
+
+  const references: ModuleReferences = {
+    all: [],
+    direct: [],
+    displayedKeys: [],
+  }
+  let depth = 0
+  let sketchReferences: string[] | undefined
+  for (const operation of operations) {
+    if (operation.type === 'GroupBegin') {
+      if (depth === 0 && operation.group.type === 'SketchBlock') {
+        sketchReferences = []
+      }
+      depth++
+    } else if (operation.type === 'GroupEnd') {
+      depth = Math.max(0, depth - 1)
+      if (depth === 0 && sketchReferences) {
+        // Completed sketch groups display these imports inside their grouped
+        // rows. Incomplete live groups still need the fallback import rows.
+        for (const key of sketchReferences) {
+          references.displayedKeys.push(key)
+        }
+        sketchReferences = undefined
+      }
+    } else if (operation.type === 'ModuleInstance') {
+      references.all.push(operation)
+      const key = getModuleInstanceKey(operation)
+      if (depth === 0) {
+        references.direct.push(operation)
+        references.displayedKeys.push(key)
+      } else {
+        sketchReferences?.push(key)
+      }
+    }
+  }
+  moduleReferences.set(operations, references)
+  return references
+}
+
+/**
+ * Choose each module's canonical row from the import topology, independently of
+ * expansion order. Only the root's operation rows are built until getChildren
+ * is called for an expanded module.
+ */
 export function buildOperationTree(
   operationsByModule: OperationsByModule,
-  moduleId: number
-): OperationTreeNode[] {
-  const expandedModules = new Set<number>()
-  const nodes = buildModuleOperationTree(
-    operationsByModule,
-    moduleId,
-    new Set(),
-    expandedModules
-  )
+  rootModuleId: number
+): OperationTree {
+  const operationsFor = (moduleId: number) =>
+    operationsByModule.map[moduleId] ?? emptyOperations
+  const canonicalImports = new Map<number, ModuleInstanceOperation>()
+  const parentModules = new Map<number, number>()
+  const visitedModules = new Set([rootModuleId])
   const displayedModuleInstances = new Set<string>()
-  collectModuleInstanceKeys(nodes, displayedModuleInstances)
 
+  const referencesFor = (moduleId: number) => {
+    const references = getModuleReferences(operationsFor(moduleId))
+    for (const key of references.displayedKeys) {
+      displayedModuleInstances.add(key)
+    }
+    return references.direct
+  }
+
+  const visitModule = (moduleId: number) => {
+    // Iterative depth-first traversal also handles deeply nested import graphs.
+    const stack = [{ moduleId, references: referencesFor(moduleId), index: 0 }]
+    while (stack.length > 0) {
+      const current = stack[stack.length - 1]
+      const operation = current.references[current.index++]
+      if (!operation) {
+        stack.pop()
+        continue
+      }
+      if (visitedModules.has(operation.moduleId)) {
+        continue
+      }
+      visitedModules.add(operation.moduleId)
+      canonicalImports.set(operation.moduleId, operation)
+      parentModules.set(operation.moduleId, current.moduleId)
+      stack.push({
+        moduleId: operation.moduleId,
+        references: referencesFor(operation.moduleId),
+        index: 0,
+      })
+    }
+  }
+  visitModule(rootModuleId)
+
+  const fallbackBranches: OperationTreeBranch[] = []
   for (const operations of Object.values(operationsByModule.map)) {
-    for (const operation of operations ?? []) {
-      if (operation.type !== 'ModuleInstance') {
+    for (const operation of getModuleReferences(operations ?? emptyOperations)
+      .all) {
+      if (
+        displayedModuleInstances.has(getModuleInstanceKey(operation)) ||
+        visitedModules.has(operation.moduleId)
+      ) {
         continue
       }
-
-      const key = getModuleInstanceKey(operation)
-      if (displayedModuleInstances.has(key)) {
-        continue
-      }
-
-      // Skip if this module was already expanded elsewhere in the tree.
-      if (expandedModules.has(operation.moduleId)) {
-        continue
-      }
-
-      const node = {
-        parent: operation,
-        children: buildModuleOperationTree(
-          operationsByModule,
-          operation.moduleId,
-          new Set([operation.sourceRange[2]]),
-          expandedModules
-        ),
-      }
-      nodes.push(node)
-      collectModuleInstanceKeys([node], displayedModuleInstances)
+      // Imports hidden inside function groups still need an accessible row.
+      visitedModules.add(operation.moduleId)
+      canonicalImports.set(operation.moduleId, operation)
+      parentModules.set(operation.moduleId, rootModuleId)
+      fallbackBranches.push({ parent: operation })
+      visitModule(operation.moduleId)
     }
   }
 
-  return nodes
+  const nodesByModule = new Map<number, OperationTreeNode[]>()
+  const buildModuleNodes = (moduleId: number): OperationTreeNode[] => {
+    const cached = nodesByModule.get(moduleId)
+    if (cached) {
+      return cached
+    }
+    const nodes = buildModuleOperationList(operationsFor(moduleId)).map(
+      (item) => {
+        if (
+          isArray(item) ||
+          item.type !== 'ModuleInstance' ||
+          canonicalImports.get(item.moduleId) !== item
+        ) {
+          return item
+        }
+        return { parent: item }
+      }
+    )
+    nodesByModule.set(moduleId, nodes)
+    return nodes
+  }
+
+  return {
+    nodes: [...buildModuleNodes(rootModuleId), ...fallbackBranches],
+    getChildren: (branch) => buildModuleNodes(branch.parent.moduleId),
+    getModuleAncestors: (moduleId) => {
+      const ancestors: number[] = []
+      let current = moduleId
+      let parent = parentModules.get(current)
+      while (current !== rootModuleId && parent !== undefined) {
+        ancestors.push(current)
+        current = parent
+        parent = parentModules.get(current)
+      }
+      return ancestors.reverse()
+    },
+  }
 }
 
 function getModuleInstanceKey(operation: ModuleInstanceOperation): string {
   return `${operation.moduleId}-${operation.sourceRange.join('-')}`
-}
-
-function collectModuleInstanceKeys(
-  nodes: OperationTreeNode[],
-  keys: Set<string>
-) {
-  for (const node of nodes) {
-    if (isArray(node)) {
-      for (const operation of node) {
-        if (operation.type === 'ModuleInstance') {
-          keys.add(getModuleInstanceKey(operation))
-        }
-      }
-      continue
-    }
-
-    if (isOperationTreeBranch(node)) {
-      keys.add(getModuleInstanceKey(node.parent))
-      collectModuleInstanceKeys(node.children, keys)
-      continue
-    }
-
-    if (node.type === 'ModuleInstance') {
-      keys.add(getModuleInstanceKey(node))
-    }
-  }
-}
-
-function buildModuleOperationTree(
-  operationsByModule: OperationsByModule,
-  moduleId: number,
-  path: Set<number>,
-  expandedModules: Set<number>
-): OperationTreeNode[] {
-  if (path.has(moduleId)) {
-    return []
-  }
-
-  const nextPath = new Set(path)
-  nextPath.add(moduleId)
-
-  return buildModuleOperationList(
-    getOperationsForModule(operationsByModule, moduleId)
-  ).map((item) => {
-    if (isArray(item) || item.type !== 'ModuleInstance') {
-      return item
-    }
-
-    // Only expand a module's children the first time it appears in the tree.
-    // Subsequent references to the same module render as a leaf row.
-    if (expandedModules.has(item.moduleId)) {
-      return item
-    }
-    expandedModules.add(item.moduleId)
-
-    return {
-      parent: item,
-      children: buildModuleOperationTree(
-        operationsByModule,
-        item.moduleId,
-        nextPath,
-        expandedModules
-      ),
-    }
-  })
 }

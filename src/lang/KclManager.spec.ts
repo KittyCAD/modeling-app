@@ -611,6 +611,7 @@ describe('KclManager diagnostics', () => {
       executionId: 101,
     })
     await vi.waitFor(() => expect(rustExecuteSpy).toHaveBeenCalledTimes(1))
+    const firstExecutionGeneration = kclManager.operationExecutionGeneration
 
     kclManager.editorView.dispatch({
       changes: { from: 4, to: 5, insert: '2' },
@@ -625,11 +626,17 @@ describe('KclManager diagnostics', () => {
 
     activeRender.resolve(finalExecState)
     await vi.waitFor(() => expect(rustExecuteSpy).toHaveBeenCalledTimes(2))
+    expect(kclManager.operationExecutionGeneration).toBe(
+      firstExecutionGeneration + 1
+    )
     expect(flushCompleted).toBe(false)
 
     queuedRender.resolve(finalExecState)
     await Promise.all([render, flush])
     expect(flushCompleted).toBe(true)
+    expect(kclManager.operationExecutionGeneration).toBe(
+      firstExecutionGeneration + 1
+    )
   })
 
   it('flushes an edit scheduled while the execution queue is draining', async () => {
