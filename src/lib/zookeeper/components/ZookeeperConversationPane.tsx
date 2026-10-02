@@ -5,6 +5,14 @@ import {
   SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
 } from '@src/lib/constants'
 import type { MigrationController } from '@src/lib/kclMigration/controller'
+import {
+  KclMigrationHistoryEntry,
+  KclMigrationHistoryStatus,
+} from '@src/components/KclMigrationHistory'
+import {
+  migrationHistoryPosition,
+  type MigrationConversation,
+} from '@src/lib/kclMigration/conversation'
 import type { MigrationTurn } from '@src/registry/contracts/kclMigration'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { ZookeeperConversation } from '@src/lib/zookeeper/components/ZookeeperConversation'
@@ -28,6 +36,7 @@ export const ZookeeperConversationPane = (props: {
   migrationController?: MigrationController
   migrationContent?: (chatBusy: boolean, afterExchange: number) => ReactNode
   migrationTurns?: readonly MigrationTurn[]
+  migrationHistory?: MigrationConversation
   renderMigrationTurn?: (
     turn: MigrationTurn,
     onClickClearChat?: () => void
@@ -163,6 +172,19 @@ export const ZookeeperConversationPane = (props: {
     isClearingChat ||
     isResumingInterruptedTurn ||
     controller.queue.value.length > 0
+  const turns =
+    props.migrationTurns?.filter(
+      (turn) => !turn.conversationId || turn.conversationId === conversationId
+    ) ?? []
+  const activeIds = new Set(
+    turns.map((turn) => turn.controller.operationId.value)
+  )
+  const historyEntries =
+    props.migrationHistory?.entries.value.filter(
+      (entry) =>
+        entry.conversation_id === conversationId &&
+        !activeIds.has(entry.operation_id)
+    ) ?? []
 
   return (
     <>
@@ -202,17 +224,39 @@ export const ZookeeperConversationPane = (props: {
           })
         }}
         welcomeMessage={<ZookeeperConversationWelcome />}
-        localExchanges={props.migrationTurns?.map((turn) => ({
-          id: turn.id,
-          afterExchange: turn.afterExchange,
-          content: props.renderMigrationTurn?.(
-            turn,
-            turn === props.migrationTurns?.at(-1) &&
-              turn.afterExchange >= (conversation?.exchanges.length ?? 0)
-              ? () => setIsConfirmingClearChat(true)
-              : undefined
-          ),
-        }))}
+        localExchanges={[
+          ...historyEntries.map((entry) => ({
+            id: entry.operation_id,
+            afterExchange: migrationHistoryPosition(
+              entry,
+              conversation?.exchanges ?? []
+            ),
+            content: (
+              <KclMigrationHistoryEntry
+                entry={entry}
+                userAvatar={props.userAvatarSrc}
+              />
+            ),
+          })),
+          ...turns.map((turn) => ({
+            id: turn.id,
+            afterExchange: turn.afterExchange,
+            content: props.renderMigrationTurn?.(
+              turn,
+              turn === turns.at(-1) &&
+                turn.afterExchange >= (conversation?.exchanges.length ?? 0)
+                ? () => setIsConfirmingClearChat(true)
+                : undefined
+            ),
+          })),
+        ]}
+        afterMessages={
+          <>
+            {props.migrationHistory && (
+              <KclMigrationHistoryStatus history={props.migrationHistory} />
+            )}
+          </>
+        }
         toolbarActions={props.migrationContent?.(
           chatBusy,
           conversation?.exchanges.length ?? 0
