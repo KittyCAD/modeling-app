@@ -62,6 +62,22 @@ const createSettingsWithProjectLibraries = () =>
   createSettings(projectLibrariesExtensionSettings)
 
 describe('testing settings initialization', () => {
+  it.each(['multiple', 'single', 'invalid', undefined])(
+    'parses tab open behavior %s with a multiple default',
+    (value) => {
+      const settings = createSettings()
+      const payload = configurationToSettingsPayload({
+        settings: {
+          layout: value === undefined ? {} : { tab_open_behavior: value },
+        },
+      })
+      setSettingsAtLevel(settings, 'user', payload)
+      expect(settings.layout.paneOpenBehavior.current).toBe(
+        value === 'single' ? 'single' : 'multiple'
+      )
+    }
+  )
+
   it(`sets settings at the 'user' level`, () => {
     const settings = createSettings()
     const appConfiguration: DeepPartial<Configuration> = {
@@ -336,6 +352,7 @@ describe('project settings serialization regression', () => {
             blinkingCursor: false,
           },
           layout: {
+            paneOpenBehavior: 'single',
             configs: {
               default: createLayoutWithMetadata(defaultLayoutConfig),
             },
@@ -375,6 +392,7 @@ describe('project settings serialization regression', () => {
     expect(serializedToml).toContain('text_wrapping = false')
     expect(serializedToml).toContain('blinking_cursor = false')
     expect(serializedToml).toContain('[settings.layout.configs]')
+    expect(serializedToml).toContain('tab_open_behavior = "single"')
     expect(serializedToml).toContain('default = ')
     expect(serializedToml).not.toContain('[settings.zds')
 
@@ -417,6 +435,7 @@ describe('project settings serialization regression', () => {
     expect(parsedPayload.layout?.configs?.default.version).toBe(
       LATEST_LAYOUT_VERSION
     )
+    expect(parsedPayload.layout?.paneOpenBehavior).toBe('single')
     expect(parsedPayload.layout?.configs?.default.layout.id).toBe(
       defaultLayoutConfig.id
     )
