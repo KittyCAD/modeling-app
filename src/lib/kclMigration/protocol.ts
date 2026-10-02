@@ -8,6 +8,14 @@ export type MigrationClientMessage =
   components['schemas']['KclMigrationClientMessage']
 export type MigrationServerMessage =
   components['schemas']['KclMigrationServerMessage']
+export type MigrationHistoryEntry =
+  components['schemas']['KclMigrationHistoryEntry']
+export type MigrationApplication =
+  components['schemas']['KclMigrationApplication']
+export type MigrationApplicationStatus = Exclude<
+  MigrationApplication['status'],
+  'not_applied'
+>
 
 export type MigrationProgress = Extract<
   MigrationServerMessage,
@@ -125,10 +133,64 @@ function isProgress(value: unknown): value is MigrationProgress {
   }
 }
 
+function isApplication(value: unknown): value is MigrationApplication {
+  return (
+    isRecord(value) &&
+    ['not_applied', 'applied', 'undone'].includes(String(value.status)) &&
+    typeof value.revision === 'number' &&
+    Number.isInteger(value.revision) &&
+    value.revision >= 0 &&
+    value.revision <= 0xffffffff
+  )
+}
+
+function isHistoryEntry(value: unknown): value is MigrationHistoryEntry {
+  return (
+    isRecord(value) &&
+    typeof value.operation_id === 'string' &&
+    typeof value.conversation_id === 'string' &&
+    (value.after_prompt_id == null ||
+      typeof value.after_prompt_id === 'string') &&
+    typeof value.project_id === 'string' &&
+    value.target === MIGRATION_TARGET &&
+    typeof value.created_at === 'string' &&
+    Number.isFinite(Date.parse(value.created_at)) &&
+    typeof value.status === 'string' &&
+    statuses.has(value.status) &&
+    typeof value.detail === 'string' &&
+    isApplication(value.application)
+  )
+}
+
 export function parseMigrationMessage(
   value: unknown
 ): MigrationServerMessage | Error {
   if (isRecord(value)) {
+    if (
+      value.type === 'history' &&
+      typeof value.conversation_id === 'string' &&
+      isArray(value.entries) &&
+      value.entries.every(isHistoryEntry) &&
+      (value.next_before == null || typeof value.next_before === 'string')
+    ) {
+      return {
+        type: 'history',
+        conversation_id: value.conversation_id,
+        entries: [...value.entries],
+        next_before: value.next_before,
+      }
+    }
+    if (
+      value.type === 'application' &&
+      typeof value.operation_id === 'string' &&
+      isApplication(value.application)
+    ) {
+      return {
+        type: 'application',
+        operation_id: value.operation_id,
+        application: value.application,
+      }
+    }
     if (
       value.type === 'progress' &&
       typeof value.operation_id === 'string' &&

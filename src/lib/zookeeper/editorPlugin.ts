@@ -46,6 +46,7 @@ type ZookeeperPatchEffectProps = {
   direction: ZookeeperPatchReplayDirection
   activeFilePath?: string
   snapshotFiles?: readonly ZookeeperSnapshotFileReplay[]
+  onReplay?: (direction: ZookeeperPatchReplayDirection) => void
 }
 
 type ZookeeperPatchFileReplay = {
@@ -118,11 +119,13 @@ export function zookeeperEditPatchHistoryEvent({
   patch,
   activeFilePath,
   snapshotFiles,
+  onReplay,
 }: {
   projectPath: string
   patch: ZookeeperEditPatch
   activeFilePath?: string
   snapshotFiles?: readonly ZookeeperSnapshotFileReplay[]
+  onReplay?: (direction: ZookeeperPatchReplayDirection) => void
 }): TransactionSpecNoChanges {
   return {
     effects: zookeeperEditPatchEffect.of({
@@ -131,6 +134,7 @@ export function zookeeperEditPatchHistoryEvent({
       direction: 'redo',
       activeFilePath,
       snapshotFiles,
+      onReplay,
     }),
     annotations: [zookeeperPatchIgnoreAnnotationType.of(true)],
   }
@@ -304,6 +308,7 @@ async function replayZookeeperEditPatch({
 
   const deletesCurrentFile = currentFileReplay?.nextContent === null
   await writeZookeeperPatchReplay(fileOperations, preparedReplayFiles)
+  effectProps.onReplay?.(effectProps.direction)
   await effectProps.onProjectFilesReplay?.(preparedReplayFiles)
   if (effectProps.activeFilePath && activeFileReplay) {
     kclManager.synchronizeCachedEditorHistoryAfterDirectGlobalReplay({
