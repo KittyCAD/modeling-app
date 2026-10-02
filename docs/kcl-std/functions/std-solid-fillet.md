@@ -47,7 +47,7 @@ will smoothly blend the transition.
 ### Examples
 
 ```kcl
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 width = 20
 length = 10
@@ -114,7 +114,7 @@ cornerFillet = fillet(
 ```kcl
 // Same as the last example, but with an additional fillet that tangent
 // chains around the top face.
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 width = 20
 length = 10
@@ -189,7 +189,7 @@ topFillet = fillet(
 
 ```kcl
 // Same as the previous example, but with tangentChain = false on the final fillet
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 width = 20
 length = 10
@@ -266,7 +266,7 @@ topFillet = fillet(
 ```kcl
 // This example shows rolling ball fillets, a new type of fillet
 // available with KCL 3.
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 sketch001 = sketch(on = XY) {
   seg02 = line(start = [var -131.92mm, var 32.75mm], end = [var 195.16mm, var 32.75mm])
@@ -343,7 +343,7 @@ revolve001 = revolve(profile001, angle = 360deg, axis = X)
 ```kcl
 // Same as previous example, but with the fillet and revolve call
 // in separate commands, with an intermediate variable.
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 sketch001 = sketch(on = XY) {
   seg02 = line(start = [var -131.92mm, var 32.75mm], end = [var 195.16mm, var 32.75mm])

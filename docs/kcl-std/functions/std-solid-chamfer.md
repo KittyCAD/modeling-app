@@ -50,7 +50,7 @@ a sharp, straight transitional edge.
 
 ```kcl
 // Chamfer a mounting plate.
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 width = 20
 length = 10
@@ -116,7 +116,7 @@ cornerChamfer = chamfer(
 
 ```kcl
 // Specify a custom chamfer angle.
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 cubeSide = 20mm
 
@@ -172,7 +172,7 @@ chamferOnCube = chamfer(
 
 ```kcl
 // An example of tangent chaining chamfers
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 depth = 4
 width = 5
@@ -238,7 +238,7 @@ chamfer001 = chamfer(
 
 ```kcl
 // The same as the last example, except with tangent chaining disabled
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 depth = 4
 width = 5
