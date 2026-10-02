@@ -258,6 +258,78 @@ function hasDefaultDirectoryLibrarySetting(app: App) {
 }
 
 describe('project system', () => {
+  it.each(['file switch', 'project switch', 'close'])(
+    'discards a pending cloud refresh after a %s',
+    async (action) => {
+      const previousStatus = cloudSyncStatus.value
+      const app = createAppForTest()
+      const projectPath = `/some-dir/cloud-refresh-${crypto.randomUUID()}`
+      const mainPath = `${projectPath}/main.kcl`
+      const alternatePath = `${projectPath}/alternate.kcl`
+      const baseCode = '@settings(kclVersion = "2.0")\nvalue = 1\n'
+      let resolveRead: (code: string) => void = () => {}
+      const delayedRead = new Promise<string>((resolve) => {
+        resolveRead = resolve
+      })
+      const read = vi
+        .spyOn(File.ioImplementations, 'read')
+        .mockResolvedValue(baseCode)
+      try {
+        await waitForSettingsIdle(app)
+        await waitForAuthSettled(app)
+        const project = await app.openProject({
+          ...mockProject,
+          path: projectPath,
+          children: [
+            { name: 'main.kcl', path: mainPath, children: null },
+            { name: 'alternate.kcl', path: alternatePath, children: null },
+          ],
+        })
+        const editor = await project.openEditor(mainPath)
+        if (!editor) throw new Error('Missing test editor')
+        read.mockClear()
+        read.mockImplementationOnce(() => delayedRead)
+        cloudSyncStatus.value = {
+          enabled: true,
+          state: 'idle',
+          pendingCount: 0,
+          scopedProjectPath: projectPath,
+          lastSyncedAt: '2026-10-02T12:00:00Z',
+        }
+        expect(read).toHaveBeenCalledExactlyOnceWith(mainPath)
+
+        if (action === 'file switch') {
+          await project.openEditor(alternatePath, editor)
+          expect(editor.path).toBe(alternatePath)
+        } else if (action === 'project switch') {
+          const nextProjectPath = `${projectPath}-next`
+          const nextFilePath = `${nextProjectPath}/main.kcl`
+          const nextProject = await app.openProject({
+            ...mockProject,
+            path: nextProjectPath,
+            children: [
+              { name: 'main.kcl', path: nextFilePath, children: null },
+            ],
+          })
+          await nextProject.openEditor(nextFilePath, editor)
+          expect(editor.path).toBe(nextFilePath)
+        } else {
+          app.closeProject()
+        }
+        expect(editor.code).toBe(baseCode)
+
+        resolveRead(baseCode.replace('value = 1', 'value = 2'))
+        await delayedRead
+        expect(editor.code).toBe(baseCode)
+      } finally {
+        resolveRead(baseCode)
+        app.dispose()
+        read.mockRestore()
+        cloudSyncStatus.value = previousStatus
+      }
+    }
+  )
+
   it.each([false, true])(
     'refreshes the current web editor after cloud sync with unsaved edits=%s',
     async (hasUnsavedEdits) => {
