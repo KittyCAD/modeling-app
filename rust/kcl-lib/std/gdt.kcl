@@ -181,7 +181,7 @@ export fn flatness(
 /// a face normal may appear like an edge.
 ///
 /// ```kcl,no3d,sketchSolve
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// blockSketch = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -205,7 +205,7 @@ export fn flatness(
 /// ```
 ///
 /// ```kcl,no3d,sketchSolve
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// blockProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -227,7 +227,7 @@ export fn flatness(
 /// ```
 ///
 /// ```kcl,no3d,sketchSolve
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// blockProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -291,7 +291,7 @@ export fn straightness(
 /// Circularity is a form tolerance, so it does not reference datums.
 ///
 /// ```kcl,no3d,sketchSolve
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// cylinderSketch = sketch(on = XY) {
 ///   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
@@ -304,7 +304,7 @@ export fn straightness(
 /// ```
 ///
 /// ```kcl,no3d,sketchSolve
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// cylinderSketch = sketch(on = XY) {
 ///   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
@@ -315,7 +315,7 @@ export fn straightness(
 /// ```
 ///
 /// ```kcl,no3d,sketchSolve
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// cylinderSketch = sketch(on = XY) {
 ///   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
@@ -369,7 +369,7 @@ export fn circularity(
 /// Cylindricity is a form tolerance, so it does not reference datums.
 ///
 /// ```kcl,no3d,sketchSolve
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// cylinderSketch = sketch(on = XY) {
 ///   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
@@ -380,7 +380,7 @@ export fn circularity(
 /// ```
 ///
 /// ```kcl,no3d,sketchSolve
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// cylinderSketch = sketch(on = XY) {
 ///   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
@@ -393,7 +393,7 @@ export fn circularity(
 /// ```
 ///
 /// ```kcl,no3d,sketchSolve
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// cylinderSketch = sketch(on = XY) {
 ///   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
@@ -448,7 +448,7 @@ export fn cylindricity(
 /// where appropriate. ISO standards use the name coaxiality for this concept.
 ///
 /// ```kcl,no3d,sketchSolve
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// datumSketch = sketch(on = XY) {
 ///   diameter = line(start = [var -6mm, var 0mm], end = [var 6mm, var 0mm])
@@ -473,7 +473,7 @@ export fn cylindricity(
 /// ```
 ///
 /// ```kcl,no3d,sketchSolve
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// datumSketch = sketch(on = XY) {
 ///   perimeter = circle(start = [var 6mm, var 0mm], center = [var 0mm, var 0mm])
@@ -543,7 +543,7 @@ export fn concentricity(
 /// condition (MMC) or least material condition (LMC) modifiers.
 ///
 /// ```kcl,no3d,sketchSolve
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// latchProfile = sketch(on = XZ) {
 ///   bottom = line(start = [var -20mm, var -10mm], end = [var 20mm, var -10mm])
@@ -580,7 +580,7 @@ export fn concentricity(
 /// ```
 ///
 /// ```kcl,no3d,sketchSolve
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// latchProfile = sketch(on = XZ) {
 ///   bottom = line(start = [var -20mm, var -10mm], end = [var 20mm, var -10mm])
@@ -659,7 +659,7 @@ export fn symmetry(
 /// Runout is applied regardless of feature size and does not use MMC or LMC.
 ///
 /// ```kcl,no3d,sketchSolve
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// annotationPlane = offsetPlane(XZ, offset = 24mm)
 ///
@@ -755,7 +755,7 @@ export fn runout(
 /// omitting both is an error.
 ///
 /// ```kcl,no3d,sketchSolve
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// basicAngle = 30deg
 /// thickness = 3.5mm
@@ -805,7 +805,7 @@ export fn runout(
 /// ```
 ///
 /// ```kcl,no3d,sketchSolve
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// basicAngle = 30deg
 /// thickness = 3.5mm
@@ -1175,7 +1175,7 @@ export fn annotation(
 /// (a standard plane like `XZ`/`YZ`, or a user-defined plane) can be supplied via `framePlane`.
 ///
 /// ```kcl,no3d,sketchSolve
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// // A note on the default world (XY) plane.
 /// blockProfile = sketch(on = XY) {
@@ -1198,7 +1198,7 @@ export fn annotation(
 /// ```
 ///
 /// ```kcl,no3d,sketchSolve
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// // A note on a user-defined plane.
 /// blockProfile = sketch(on = XY) {
@@ -1243,7 +1243,7 @@ export fn note(
 /// This is part of model-based definition (MBD).
 ///
 /// ```kcl,no3d,legacySketch
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -1259,7 +1259,7 @@ export fn note(
 /// ```
 ///
 /// ```kcl,no3d,sketchSolve
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// blockProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -1281,7 +1281,7 @@ export fn note(
 /// gdt::distance(edges = [lengthEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
 /// ```kcl,no3d,sketchSolve
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// // Example of a distance annotation with no tolerance.
 ///
