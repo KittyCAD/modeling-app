@@ -1,8 +1,11 @@
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import fc from 'fast-check'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({
-  readFile: vi.fn<(path: string, options: unknown) => Promise<string>>(),
+  readFile:
+    vi.fn<(path: string, options: unknown) => Promise<string | Uint8Array>>(),
+  stat: vi.fn(),
   writeFile: vi.fn<(path: string, data: Uint8Array) => Promise<void>>(),
   basename: vi.fn((path: string) => path.slice(path.lastIndexOf('/') + 1)),
   reportSystemIOError: vi.fn(),
@@ -33,8 +36,13 @@ const importModule = () => import('@src/lib/activeTextFile')
 let mod: Awaited<ReturnType<typeof importModule>>
 
 const fileOperations = {
-  readFile: async (path: string) =>
-    new TextEncoder().encode(await mocks.readFile(path, undefined)),
+  stat: mocks.stat,
+  readFile: async (path: string) => {
+    const contents = await mocks.readFile(path, undefined)
+    return typeof contents === 'string'
+      ? new TextEncoder().encode(contents)
+      : contents
+  },
   writeFile: (path: string, contents: string | Uint8Array) =>
     mocks.writeFile(
       path,
@@ -58,6 +66,7 @@ beforeEach(async () => {
   vi.resetModules()
   vi.clearAllMocks()
   mocks.readFile.mockResolvedValue('')
+  mocks.stat.mockResolvedValue({ size: 0 })
   mocks.writeFile.mockResolvedValue(undefined)
   mod = await importModule()
 })
@@ -66,14 +75,94 @@ afterEach(() => {
   vi.useRealTimers()
 })
 
-describe('isEditableTextFile', () => {
-  it('matches .md/.txt case-insensitively and rejects other files', () => {
-    expect(mod.isEditableTextFile('/proj/readme.md')).toBe(true)
-    expect(mod.isEditableTextFile('/proj/README.MD')).toBe(true)
-    expect(mod.isEditableTextFile('/proj/notes.txt')).toBe(true)
-    expect(mod.isEditableTextFile('/proj/main.kcl')).toBe(false)
-    expect(mod.isEditableTextFile('/proj/model.stp')).toBe(false)
-    expect(mod.isEditableTextFile('/proj/some-folder')).toBe(false)
+describe('text file detection', () => {
+  it.each([
+    ['PNG signature', new Uint8Array([0x89, 0x50, 0x4e, 0x47])],
+    ['invalid UTF-8', new Uint8Array([0xc3, 0x28])],
+    ['UTF-16 BOM', new Uint8Array([0xff, 0xfe, 0x61, 0])],
+    ['NUL byte', new Uint8Array([0x61, 0, 0x62])],
+    ['escape control character', new Uint8Array([0x61, 0x1b, 0x62])],
+    [
+      'NUL after 16 KiB',
+      new TextEncoder().encode('text'.repeat(4096) + '\u0000'),
+    ],
+  ])('rejects %s even with a text extension', async (_name, bytes) => {
+    mocks.readFile.mockResolvedValueOnce(bytes)
+    await mod.openActiveTextFile(fileOperations, '/proj/readme.md')
+    expect(mod.activeTextFileSignal.value).toMatchObject({
+      status: 'error',
+      text: '',
+      error: 'This file is binary or is not UTF-8 text.',
+    })
+    mod.scheduleActiveTextFileWrite(fileOperations, '/proj/readme.md', '')
+    await mod.flushActiveTextFileWrite()
+    expect(mocks.writeFile).not.toHaveBeenCalled()
+  })
+
+  it('accepts empty files, Unicode, whitespace and a UTF-8 BOM', async () => {
+    await fc.assert(
+      fc.asyncProperty(
+        fc.array(
+          fc.oneof(
+            fc.integer({ min: 32, max: 126 }),
+            fc.integer({ min: 160, max: 0xd7ff }),
+            fc.integer({ min: 0xe000, max: 0x10ffff }),
+            fc.constantFrom(9, 10, 13)
+          ),
+          { maxLength: 100 }
+        ),
+        async (codePoints) => {
+          const text = String.fromCodePoint(...codePoints)
+          mocks.readFile.mockResolvedValueOnce(text)
+          await mod.openActiveTextFile(fileOperations, '/proj/README')
+          expect(mod.activeTextFileSignal.value).toMatchObject({
+            status: 'ready',
+            text,
+          })
+        }
+      )
+    )
+    const text = '\ufefftitle = "Example"\r\n'
+    mocks.readFile.mockResolvedValueOnce(text)
+    await mod.openActiveTextFile(fileOperations, '/proj/config.toml')
+    expect(mod.activeTextFileSignal.value).toMatchObject({
+      status: 'ready',
+      text,
+    })
+  })
+
+  it('rejects oversized files before reading them', async () => {
+    mocks.stat.mockResolvedValueOnce({
+      size: mod.MAX_EDITABLE_TEXT_FILE_BYTES + 1,
+    })
+    await mod.openActiveTextFile(fileOperations, '/proj/large.log')
+    expect(mocks.readFile).not.toHaveBeenCalled()
+    expect(mod.activeTextFileSignal.value).toMatchObject({
+      status: 'error',
+      error: 'Text files larger than 1 MiB cannot be edited.',
+    })
+  })
+
+  it('rejects files that grow past the limit between stat and read', async () => {
+    mocks.readFile.mockResolvedValueOnce(
+      new Uint8Array(mod.MAX_EDITABLE_TEXT_FILE_BYTES + 1).fill(97)
+    )
+    await mod.openActiveTextFile(fileOperations, '/proj/growing.log')
+    expect(mod.activeTextFileSignal.value).toMatchObject({
+      status: 'error',
+      error: 'Text files larger than 1 MiB cannot be edited.',
+    })
+  })
+
+  it('accepts a file exactly at the size limit', async () => {
+    const text = 'a'.repeat(mod.MAX_EDITABLE_TEXT_FILE_BYTES)
+    mocks.stat.mockResolvedValueOnce({ size: mod.MAX_EDITABLE_TEXT_FILE_BYTES })
+    mocks.readFile.mockResolvedValueOnce(text)
+    await mod.openActiveTextFile(fileOperations, '/proj/boundary.txt')
+    expect(mod.activeTextFileSignal.value).toMatchObject({
+      status: 'ready',
+      text,
+    })
   })
 })
 
@@ -261,6 +350,37 @@ describe('flushActiveTextFileWrite', () => {
 })
 
 describe('switching files', () => {
+  it('does not reopen a file after clearing during a pending save', async () => {
+    await mod.openActiveTextFile(fileOperations, '/proj/a.txt')
+    mod.scheduleActiveTextFileWrite(fileOperations, '/proj/a.txt', 'edited')
+    const save = Promise.withResolvers<undefined>()
+    mocks.writeFile.mockReturnValueOnce(save.promise)
+    const opening = mod.openActiveTextFile(fileOperations, '/proj/b.json')
+    await flushMicrotasks()
+
+    mod.clearActiveTextFile()
+    save.resolve(undefined)
+    await opening
+    expect(mod.activeTextFileSignal.value).toBeNull()
+    expect(mocks.readFile).not.toHaveBeenCalledWith('/proj/b.json', undefined)
+  })
+
+  it('discards a pending stat when another file opens', async () => {
+    const stat = Promise.withResolvers<{ size: number }>()
+    mocks.stat.mockReturnValueOnce(stat.promise)
+    const opening = mod.openActiveTextFile(fileOperations, '/proj/a.json')
+    await flushMicrotasks()
+    await mod.openActiveTextFile(fileOperations, '/proj/b.yaml')
+
+    stat.resolve({ size: 0 })
+    await opening
+    expect(mocks.readFile).not.toHaveBeenCalledWith('/proj/a.json', undefined)
+    expect(mod.activeTextFileSignal.value).toMatchObject({
+      path: '/proj/b.yaml',
+      status: 'ready',
+    })
+  })
+
   it('persists pending edits to the outgoing file before opening a new one', async () => {
     mocks.readFile.mockResolvedValueOnce('A')
     await mod.openActiveTextFile(fileOperations, '/proj/a.md')

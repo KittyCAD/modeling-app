@@ -4,9 +4,9 @@ import type { FileExplorerEntry } from '@src/components/Explorer/utils'
 import { getProjectExplorerProjectWithPlaceholders } from '@src/components/layout/areas/ProjectExplorerPane.utils'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import { importFileExtensions } from '@src/lang/wasmUtils'
 import {
   clearActiveTextFile,
-  isEditableTextFile,
   openActiveTextFile,
 } from '@src/lib/activeTextFile'
 import { useApp, useSingletons } from '@src/lib/boot'
@@ -17,7 +17,10 @@ import {
   getOpenPanes,
   togglePaneLayoutNode,
 } from '@src/lib/layout'
-import { parentPathRelativeToProject } from '@src/lib/paths'
+import {
+  isExtensionARelevantExtension,
+  parentPathRelativeToProject,
+} from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { reportRejection } from '@src/lib/trap'
 import {
@@ -96,18 +99,32 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     })
   }, [commands])
 
+  const isImportableFile = useCallback(
+    (path: string) =>
+      isExtensionARelevantExtension(path, importFileExtensions(wasmInstance)),
+    [wasmInstance]
+  )
+
+  const openTextFile = useCallback(
+    (path: string) => {
+      openCodeEditorPaneIfClosed()
+      openActiveTextFile(fileOperations, path).catch(reportRejection)
+    },
+    [fileOperations, openCodeEditorPaneIfClosed]
+  )
+
   const onRowDoubleClicked = useCallback(
     (entry: FileExplorerEntry) => {
       if (
         !projectRef.current?.value.name ||
         entry.children != null ||
-        (!entry.path.endsWith(FILE_EXT) && !isEditableTextFile(entry.path))
+        isImportableFile(entry.path)
       ) {
         return
       }
       openCodeEditorPaneIfClosed()
     },
-    [openCodeEditorPaneIfClosed]
+    [isImportableFile, openCodeEditorPaneIfClosed]
   )
 
   const onRowClicked = useCallback(
@@ -165,20 +182,19 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       } else if (
         projectRef.current?.value.name &&
         entry.children == null &&
-        isEditableTextFile(entry.path)
+        !isImportableFile(entry.path)
       ) {
-        // Open text/markdown files directly in the code editor pane.
-        openCodeEditorPaneIfClosed()
-        openActiveTextFile(fileOperations, entry.path).catch(reportRejection)
+        // Inspect file contents before allowing edits, regardless of extension.
+        openTextFile(entry.path)
       }
     },
     [
-      fileOperations,
+      isImportableFile,
       kclManager,
       modelingActor,
       modelingMachineState,
       modelingSend,
-      openCodeEditorPaneIfClosed,
+      openTextFile,
       projectDirectoryPath,
       systemIOActor,
     ]
@@ -229,6 +245,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
             onRowClicked={onRowClicked}
             onRowDoubleClicked={onRowDoubleClicked}
             onRowEnter={onRowClicked}
+            onOpenAsText={openTextFile}
             canNavigate={true}
             readOnly={false}
             overrideApplicationProjectDirectory={projectDirectoryPath}
