@@ -109,6 +109,7 @@ export default function useStateMachineCommands<
     shouldDisableEngineCommands,
     showExperimentalCommands,
     commandBarConfig,
+    state.context.kclLanguageVersion,
     scopes,
   ])
 }

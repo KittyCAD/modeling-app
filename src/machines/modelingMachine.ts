@@ -1,4 +1,8 @@
 import toast from 'react-hot-toast'
+import {
+  watchKclLanguageVersion,
+  type KclLanguageVersionChanged,
+} from '@src/machines/modelingKclVersion'
 import { Mesh, Vector2, Vector3 } from 'three'
 import {
   type AnyActorRef,
@@ -384,6 +388,7 @@ async function enterSketchSolveFromSketchBlockArtifact({
 }
 
 export type ModelingMachineEvent =
+  | KclLanguageVersionChanged
   | {
       type: 'Enter sketch'
       data?: {
@@ -2159,6 +2164,7 @@ export const modelingMachine = setup({
   },
   // end actions
   actors: {
+    watchKclLanguageVersion,
     sketchSolveMachine,
     sketchExit: fromPromise(
       async (args: { input: { context: ModelingMachineContext } }) => {
@@ -4750,6 +4756,14 @@ export const modelingMachine = setup({
       ...input.store,
     },
   }),
+
+  invoke: {
+    src: 'watchKclLanguageVersion',
+    input: ({ context }) => ({
+      code: context.kclManager.codeSignal,
+      wasmInstance: context.wasmInstance,
+    }),
+  },
 
   states: {
     idle: {
@@ -7712,6 +7726,9 @@ export const modelingMachine = setup({
   initial: 'idle',
 
   on: {
+    'KCL language version changed': {
+      actions: assign({ kclLanguageVersion: ({ event }) => event.version }),
+    },
     Cancel: {
       target: '.idle',
       // TODO what if we're existing extrude equipped, should these actions still be fired?

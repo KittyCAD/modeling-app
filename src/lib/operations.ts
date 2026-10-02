@@ -335,6 +335,11 @@ function retrieveFaceSelectionsForEdit(
   return isErr(result) ? emptySelections() : result.faces
 }
 
+function extractBooleanArgument(operation: StdLibCallOp, name: string) {
+  const value = operation.labeledArgs[name]?.value
+  return value?.type === 'Bool' ? value.value : undefined
+}
+
 function extractStringArgument(
   code: string,
   operation: StdLibCallOp,
@@ -880,6 +885,7 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
   const argDefaultValues: ModelingCommandSchema['Fillet'] = {
+    tangentChain: extractBooleanArgument(operation, 'tangentChain'),
     selection,
     radius,
     tolerance,
@@ -956,6 +962,7 @@ const prepareToEditChamfer: PrepareToEditCallback = async ({
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
   const argDefaultValues: ModelingCommandSchema['Chamfer'] = {
+    tangentChain: extractBooleanArgument(operation, 'tangentChain'),
     selection,
     length,
     secondLength,

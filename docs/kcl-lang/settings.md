@@ -49,5 +49,7 @@ Valid properties are:
   - Accepted values: `1.0`, `2.0`, `3.0`.
   - See [Migrating to KCL 3.0](/docs/kcl-lang/migrating-to-kcl-3) for how to
     update a program to the newest version.
+  - Point-and-click modeling commands only offer arguments supported by this
+    version. Arguments already present in the code are left alone.
 
 These settings override any project-wide settings (configured in project.toml or via the UI).
