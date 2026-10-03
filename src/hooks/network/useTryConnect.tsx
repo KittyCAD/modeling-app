@@ -173,6 +173,8 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
     label: 'onEngineConnectionReadyForRequests',
     message: 'kclManager.executeCode()',
   })
+  // Rebuild from current source instead of replaying a queued execution from previous connection.
+  kclManager.executeIsStale = null
   await kclManager.executeCode()
   // TODO: resolve the ~12 remaining dependent playwright tests on this functions isPlaywright() check
   // Once zoom to fit and view isometric work on empty scenes (only grid planes) we can improve the functions
