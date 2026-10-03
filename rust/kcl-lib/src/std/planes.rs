@@ -205,7 +205,13 @@ async fn inner_offset_plane(
 ) -> Result<Plane, KclError> {
     let mut info = PlaneInfo::try_from(plane)?;
 
-    let normal = info.x_axis.axes_cross_product(&info.y_axis);
+    // The axes are unit vectors, but their cross product only has unit length
+    // when they are perpendicular, so normalize it. Parallel axes give a zero
+    // vector, which is left as is rather than turned into NaN.
+    let mut normal = info.x_axis.axes_cross_product(&info.y_axis);
+    if !normal.is_zero() {
+        normal = normal.normalize();
+    }
     info.origin += normal * offset.to_length_units(info.origin.units.unwrap_or(UnitLength::Millimeters));
 
     let id = exec_state.next_uuid();
@@ -323,5 +329,81 @@ mod tests {
         // But we can make it right-handed:
         let fixed = plane_info.make_right_handed();
         assert!(fixed.is_right_handed());
+    }
+
+    /// Runs `offsetPlane(<plane>, offset = <offset>)` and returns the new
+    /// plane's origin in mm.
+    async fn offset_plane_origin(plane: &str, offset: &str) -> [f64; 3] {
+        let code = format!("@settings(kclVersion = 2.0)\nq = offsetPlane({plane}, offset = {offset})");
+        let result = crate::execution::parse_execute(&code).await.unwrap();
+        let KclValue::Plane { value: plane } = result.variable("q") else {
+            panic!("expected `q` to be a plane");
+        };
+        let origin = plane.info.origin;
+        let units = origin.units.unwrap_or(UnitLength::Millimeters);
+        [origin.x, origin.y, origin.z]
+            .map(|n| crate::execution::types::adjust_length(units, n, UnitLength::Millimeters).0)
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn offset_plane_moves_by_the_offset_when_axes_are_not_perpendicular() {
+        // xAxis and yAxis are unit vectors after coercion, but their cross
+        // product is only unit length when they are perpendicular.
+        let cases = [
+            // 45 degrees apart.
+            (
+                "{ origin = [0, 0, 0], xAxis = [1, 0, 0], yAxis = [1, 1, 0] }",
+                [0.0, 0.0, 10.0],
+            ),
+            // 30 degrees apart.
+            (
+                "{ origin = [0, 0, 0], xAxis = [1, 0, 0], yAxis = [cos(30deg), sin(30deg), 0] }",
+                [0.0, 0.0, 10.0],
+            ),
+            // 135 degrees apart, with a non-zero origin.
+            (
+                "{ origin = [1, 2, 3], xAxis = [1, 0, 0], yAxis = [-1, 1, 0] }",
+                [1.0, 2.0, 13.0],
+            ),
+        ];
+        for (plane, expected) in cases {
+            let actual = offset_plane_origin(plane, "10").await;
+            for (a, e) in actual.iter().zip(expected) {
+                assert!((a - e).abs() < 1e-9, "{plane}: expected {expected:?}, got {actual:?}");
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn offset_plane_with_perpendicular_axes_is_unchanged() {
+        let cases = [
+            ("XY", "10", [0.0, 0.0, 10.0]),
+            ("-XY", "10", [0.0, 0.0, -10.0]),
+            ("XZ", "10", [0.0, -10.0, 0.0]),
+            ("YZ", "1in", [25.4, 0.0, 0.0]),
+            (
+                "{ origin = [0, 0, 0], xAxis = [1, 0, 0], yAxis = [0, 1, 0] }",
+                "10",
+                [0.0, 0.0, 10.0],
+            ),
+            // Non-unit axes are normalized first.
+            (
+                "{ origin = [0, 0, 0], xAxis = [2, 0, 0], yAxis = [0, 3, 0] }",
+                "10",
+                [0.0, 0.0, 10.0],
+            ),
+            (
+                "{ origin = [5, 0, 0], xAxis = [0, 0, 4], yAxis = [0, 2, 0] }",
+                "-10",
+                [15.0, 0.0, 0.0],
+            ),
+        ];
+        for (plane, offset, expected) in cases {
+            assert_eq!(
+                offset_plane_origin(plane, offset).await,
+                expected,
+                "offsetPlane({plane}, offset = {offset})"
+            );
+        }
     }
 }
