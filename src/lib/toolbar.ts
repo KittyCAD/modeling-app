@@ -153,8 +153,18 @@ function filterExperimentalToolbarConfig(
 function filterExperimentalToolbarMode(toolbarMode: ToolbarMode): ToolbarMode {
   return {
     ...toolbarMode,
-    items: toolbarMode.items.flatMap(filterExperimentalToolbarItem),
+    items: filterExperimentalToolbarItems(toolbarMode.items, false),
   }
+}
+
+/** Apply the same experimental-action visibility to built-in and plugin modes. */
+export function filterExperimentalToolbarItems(
+  items: readonly (ToolbarItem | ToolbarDropdown | 'break')[],
+  showExperimentalFeatures: boolean
+): ToolbarMode['items'] {
+  return showExperimentalFeatures
+    ? [...items]
+    : items.flatMap(filterExperimentalToolbarItem)
 }
 
 function filterExperimentalToolbarItem(
