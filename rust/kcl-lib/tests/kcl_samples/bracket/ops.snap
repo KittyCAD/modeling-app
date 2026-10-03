@@ -2817,7 +2817,7 @@ description: Operations executed bracket.kcl
         "face": {
           "value": {
             "type": "TagIdentifier",
-            "value": "line5",
+            "value": "line4",
             "artifact_id": "[uuid]"
           },
           "sourceRange": []
@@ -3125,7 +3125,7 @@ description: Operations executed bracket.kcl
         "face": {
           "value": {
             "type": "TagIdentifier",
-            "value": "line6",
+            "value": "line5",
             "artifact_id": "[uuid]"
           },
           "sourceRange": []
