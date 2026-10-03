@@ -464,8 +464,9 @@ class SessionController implements ZookeeperSessionController {
     attachments: File[],
     isCurrent = () => true
   ): Promise<boolean> {
+    await this.fileRequestProcessor.waitForPendingWrites()
     const zdsProject = this.getReadyZdsProject()
-    if (!zdsProject) {
+    if (!this.active || !isCurrent() || !zdsProject) {
       return false
     }
     const project = zdsProject.projectIORefSignal.value
