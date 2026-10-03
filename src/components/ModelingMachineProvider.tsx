@@ -20,7 +20,6 @@ import { useFolders } from '@src/machines/systemIO/hooks'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
-import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import {
   modelingMachineStateToToolbarModeName,
   toolbarModeNameToKeymapScope,
@@ -139,28 +138,18 @@ export const ModelingMachineProvider = ({
 
   // Register file menu actions based off modeling send
   const cb = (data: WebContentSendPayload) => {
-    const rootLayout = structuredClone(layout.signal.value)
-    const toggle = (id: DefaultLayoutPaneID) =>
-      layout.set(
-        togglePaneLayoutNode({
-          rootLayout,
-          targetNodeId: id,
-          shouldExpand: true,
-        })
-      )
-
     if (data.menuLabel === 'View.Panes.Feature tree') {
-      toggle(DefaultLayoutPaneID.FeatureTree)
+      layout.togglePane(DefaultLayoutPaneID.FeatureTree)
     } else if (data.menuLabel === 'View.Panes.KCL code') {
-      toggle(DefaultLayoutPaneID.Code)
+      layout.togglePane(DefaultLayoutPaneID.Code)
     } else if (data.menuLabel === 'View.Panes.Project files') {
-      toggle(DefaultLayoutPaneID.Files)
+      layout.togglePane(DefaultLayoutPaneID.Files)
     } else if (data.menuLabel === 'View.Panes.Variables') {
-      toggle(DefaultLayoutPaneID.Variables)
+      layout.togglePane(DefaultLayoutPaneID.Variables)
     } else if (data.menuLabel === 'View.Panes.Logs') {
-      toggle(DefaultLayoutPaneID.Logs)
+      layout.togglePane(DefaultLayoutPaneID.Logs)
     } else if (data.menuLabel === 'View.Panes.Zookeeper') {
-      toggle(DefaultLayoutPaneID.Zookeeper)
+      layout.togglePane(DefaultLayoutPaneID.Zookeeper)
     } else if (data.menuLabel === 'Design.Start sketch') {
       modelingSend({
         type: 'Enter sketch',

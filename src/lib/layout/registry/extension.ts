@@ -14,18 +14,17 @@ import {
   loadLayout,
   saveLayout,
   setLayoutSaveHandler,
+  togglePaneLayoutNode,
 } from '@src/lib/layout/utils'
 import {
   layoutContributionsValueSpec,
   layoutService,
   layoutUserFeatureTransformationsValueSpec,
 } from '@src/lib/layout/registry/contract'
-import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
 import { runtimeService } from '@src/registry/contracts/runtime'
 import { settingsService } from '@src/registry/contracts/settings'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
-import type { SnapshotFrom } from 'xstate'
 
 const DEFAULT_LAYOUT_CONFIG_NAME = 'default'
 const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
@@ -42,7 +41,6 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
     const runtime = ctx.services.get(runtimeService)
     const settings = ctx.services.get(settingsService)
     const userFeatures = ctx.services.get(userFeaturesService)
-    const settingsActor = settings.actor
     const usePlaywrightLayout = runtime.get().isPlaywright
     const layoutConfigName = usePlaywrightLayout
       ? PLAYWRIGHT_LAYOUT_CONFIG_NAME
@@ -59,7 +57,10 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
     ) => {
       const rootLayout = structuredClone(layoutSignal.peek())
       const results = contributions.map((contribution) =>
-        applyLayoutContribution({ rootLayout, contribution })
+        applyLayoutContribution({
+          rootLayout,
+          contribution,
+        })
       )
 
       if (results.some((result) => result.applied)) {
@@ -68,18 +69,34 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
 
       return results
     }
+
+    const get = () => layoutSignal.value
+    const set = (nextLayout: Layout) => {
+      layoutSignal.value = structuredClone(nextLayout)
+      return layoutSignal.value
+    }
+
+    function togglePane(paneId: string) {
+      const rootLayout = structuredClone(get())
+      return set(
+        togglePaneLayoutNode({
+          rootLayout,
+          targetNodeId: paneId,
+        })
+      )
+    }
+
     const coreLayoutService: LayoutService = {
       signal: layoutSignal,
-      get: () => layoutSignal.value,
-      set: (nextLayout) => {
-        layoutSignal.value = structuredClone(nextLayout)
-      },
+      get,
+      set,
       reset: () => {
         layoutSignal.value = structuredClone(runtimeDefaultLayout)
         lastUserFeatureValues.clear()
         syncUserFeatureLayout()
       },
       applyContributions,
+      togglePane,
     }
     const applyRegistryLayoutContributions = () =>
       coreLayoutService.applyContributions(
@@ -124,35 +141,24 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
       layoutSignal.value = nextLayout
       lastUserFeatureValues = featureValues
     }
-    const hydrateLayoutFromSettings = (
-      snapshot: SnapshotFrom<typeof settingsActor>
-    ) => {
-      if (hasHydratedLayout || snapshot.value !== 'idle') {
+    const hydrateLayoutFromSettings = () => {
+      if (hasHydratedLayout || settings.actor.getSnapshot().value !== 'idle') {
         return
       }
 
       setLayoutSaveHandler(({ layout, layoutName }) => {
-        const currentLayouts = getOnlySettingsFromContext(
-          settingsActor.getSnapshot().context
-        ).layout.configs.current
+        const currentLayouts = settings.get().layout.configs.current
 
-        settingsActor.send({
-          type: 'set.layout.configs',
-          data: {
-            level: 'user',
-            value: {
-              ...currentLayouts,
-              [layoutName ?? DEFAULT_LAYOUT_CONFIG_NAME]:
-                createLayoutWithMetadata(layout),
-            },
-          },
-        })
+        settings.get().layout.configs.user = {
+          ...currentLayouts,
+          [layoutName ?? DEFAULT_LAYOUT_CONFIG_NAME]:
+            createLayoutWithMetadata(layout),
+        }
       })
 
-      const settingsSnapshot = getOnlySettingsFromContext(snapshot.context)
       const settingsLayout =
-        settingsSnapshot.layout.configs.current[layoutConfigName] ??
-        settingsSnapshot.layout.configs.current.default
+        settings.get().layout.configs.current[layoutConfigName] ??
+        settings.get().layout.configs.current.default
       if (settingsLayout) {
         layoutSignal.value = structuredClone(settingsLayout.layout)
       } else {
@@ -172,10 +178,7 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
       syncUserFeatureLayout()
     }
 
-    const settingsSubscription = settingsActor.subscribe(
-      hydrateLayoutFromSettings
-    )
-    hydrateLayoutFromSettings(settingsActor.getSnapshot())
+    hydrateLayoutFromSettings()
     const stopUserFeatureLayoutEffect = effect(() => {
       syncUserFeatureLayout()
     })
@@ -193,7 +196,6 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
 
     layout = coreLayoutService
     disposeLayout = () => {
-      settingsSubscription.unsubscribe()
       stopUserFeatureLayoutEffect()
       stopLayoutContributionsEffect()
       saveEffectUnsubscribeFn()
@@ -209,6 +211,7 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
     reset: () => ensureLayout().reset(),
     applyContributions: (contributions) =>
       ensureLayout().applyContributions(contributions),
+    togglePane: (layoutId) => ensureLayout().togglePane(layoutId),
   }
 
   return {
