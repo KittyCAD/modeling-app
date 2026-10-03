@@ -13,8 +13,8 @@ description: Lints bracket-with-slot.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      2371,
-      2527,
+      2389,
+      2545,
       0
     ],
     "overridden": false,
@@ -30,8 +30,8 @@ description: Lints bracket-with-slot.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      2549,
-      2727,
+      2567,
+      2745,
       0
     ],
     "overridden": false,
@@ -47,8 +47,8 @@ description: Lints bracket-with-slot.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      2752,
-      3078,
+      2770,
+      3096,
       0
     ],
     "overridden": false,
