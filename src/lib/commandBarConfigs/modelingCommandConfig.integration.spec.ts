@@ -15,6 +15,8 @@ import {
   modelingStdLibCommandStatus,
   modelingStdLibCommandUsesExperimentalFeatures,
   type StdLibCommandDriftConfig,
+  stdLibCommandArgDefaultSource,
+  stdLibCommandSummary,
   stdLibCommandStatus,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import { STD_LIB_COMMANDS } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
@@ -570,6 +572,28 @@ function pointAndClickStdLibArgs(config: StdLibCommandDriftConfig) {
 }
 
 describe('stdlib command arg derivation', () => {
+  it('defaults stdlib-backed descriptions except the combined GDT Profile flow', () => {
+    const commandNames = Object.keys(modelingCommandStdLibDriftConfig) as Array<
+      keyof typeof modelingCommandStdLibDriftConfig
+    >
+
+    for (const commandName of commandNames) {
+      const commandConfig = modelingMachineCommandConfig[commandName]
+      if (!commandConfig || isArray(commandConfig)) {
+        throw new Error(`${commandName} should have a single command config`)
+      }
+
+      const stdLibName =
+        modelingCommandStdLibDriftConfig[commandName].stdLibName
+      expect(stdLibCommandSummary(stdLibName)).toBeTruthy()
+      expect(commandConfig.description).toBe(
+        commandName === 'GDT Profile'
+          ? 'Add profile geometric dimensioning & tolerancing annotation to faces or edges.'
+          : stdLibCommandSummary(stdLibName)
+      )
+    }
+  })
+
   it('derives base command-bar arg config from KCL stdlib metadata', () => {
     const args = modelingStdLibCommandArgs<ModelingCommandSchema['Extrude']>(
       'Extrude',
@@ -659,6 +683,15 @@ describe('stdlib command arg derivation', () => {
         version: parsedLength('2'),
       })
     ).toBe(false)
+  })
+  it('keeps the product-selected Sweep algorithm when KCL has no literal default', () => {
+    const sweepCommand = modelingMachineCommandConfig.Sweep
+    if (!sweepCommand || isArray(sweepCommand)) {
+      throw new Error('Sweep should have a single command config')
+    }
+
+    expect(stdLibCommandArgDefaultSource('sweep', 'version')).toBeUndefined()
+    expect(sweepCommand.args?.version).toMatchObject({ defaultValue: '2' })
   })
 })
 

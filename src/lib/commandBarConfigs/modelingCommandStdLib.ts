@@ -9,6 +9,7 @@ import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import { isKclVersionAvailable } from '@src/lib/kclVersionRange'
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { isArray } from '@src/lib/utils'
 
 export type StdLibCommandDriftConfig = {
   stdLibName: StdLibCommandName
@@ -72,7 +73,7 @@ const stdLibArgInputType = (ty: StdLibCommandArg['ty']) => {
   if (ty === 'TagDecl') {
     return 'tagDeclarator'
   }
-  if (ty === 'Point2d') {
+  if (ty === 'Point2d' || ty === '[number(Length); 2]') {
     return 'vector2d'
   }
   if (ty === 'Point3d') {
@@ -112,6 +113,17 @@ export function stdLibCommandArgAvailable<Name extends StdLibCommandName>(
     (arg) => arg.name === argName
   )
   return arg !== undefined && isKclVersionAvailable(version, arg, instance)
+}
+
+/** Return a literal default as KCL source, without evaluating or decoding it. */
+export function stdLibCommandArgDefaultSource<Name extends StdLibCommandName>(
+  stdLibName: Name,
+  argName: (typeof STD_LIB_COMMANDS)[Name]['args'][number]['name']
+): string | undefined {
+  const arg = STD_LIB_COMMANDS[stdLibName].args.find(
+    (candidate) => candidate.name === argName
+  )
+  return arg && 'defaultValue' in arg ? arg.defaultValue.source : undefined
 }
 
 const hasExistingEditFlowArgument = (
@@ -217,6 +229,14 @@ export function stdLibCommandArgs<CommandArgs extends object>(
     args,
     options.flowArgOrder
   ) as CommandArgConfigs<CommandArgs>
+}
+
+export function stdLibCommandSummary(
+  stdLibName: StdLibCommandName
+): string | undefined {
+  const command = STD_LIB_COMMANDS[stdLibName]
+  const summary: unknown = 'summary' in command ? command.summary : undefined
+  return typeof summary === 'string' && summary.trim() ? summary : undefined
 }
 
 export const modelingCommandStdLibDriftConfig = {
@@ -603,6 +623,24 @@ export const modelingCommandStdLibDriftConfig = {
 
 export type ModelingStdLibCommandName =
   keyof typeof modelingCommandStdLibDriftConfig
+
+/** Default omitted descriptions to KCL summaries; explicit strings (even '') win. */
+export function applyModelingCommandDescriptions(
+  commands: Record<
+    string,
+    { description?: string } | { description?: string }[] | undefined
+  >
+) {
+  for (const [name, { stdLibName }] of Object.entries(
+    modelingCommandStdLibDriftConfig
+  )) {
+    const configs = commands[name]
+    if (!configs) continue
+    for (const config of isArray(configs) ? configs : [configs]) {
+      config.description ??= stdLibCommandSummary(stdLibName)
+    }
+  }
+}
 
 export function modelingStdLibCommandName<
   CommandName extends keyof typeof modelingCommandStdLibDriftConfig,
