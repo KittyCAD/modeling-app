@@ -7,15 +7,49 @@ import type {
 
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { findUniqueName } from '@src/lang/create'
+import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
 import { createModelingCodemodReviewValidation } from '@src/lang/modifyAst/modelingCodemod'
 import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
 import type { Artifact, PathToNode } from '@src/lang/wasm'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
+import { normalizeHoleArguments } from '@src/lib/commandBarConfigs/holeArguments'
+import { normalizeRevolveArguments } from '@src/lib/commandBarConfigs/revolveArguments'
 import {
   modelingStdLibCommandArgs,
   modelingStdLibCommandStatus,
   applyModelingCommandDescriptions,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
+import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
+import {
+  isEditingNode,
+  isEditingNodeSelection,
+  isUsingModelingDialog,
+  type ModelingCommandContext,
+} from '@src/lib/commandBarConfigs/modelingCommandUtils'
+import {
+  chamferLayout,
+  chamferArgs,
+} from '@src/lib/commandBarConfigs/modelingCommands/chamfer'
+import {
+  extrudeLayout,
+  extrudeArgs,
+} from '@src/lib/commandBarConfigs/modelingCommands/extrude'
+import {
+  holeLayout,
+  holeArgs,
+} from '@src/lib/commandBarConfigs/modelingCommands/hole'
+import {
+  loftLayout,
+  loftArgs,
+} from '@src/lib/commandBarConfigs/modelingCommands/loft'
+import {
+  revolveLayout,
+  revolveArgs,
+} from '@src/lib/commandBarConfigs/modelingCommands/revolve'
+import {
+  sweepLayout,
+  sweepArgs,
+} from '@src/lib/commandBarConfigs/modelingCommands/sweep'
 import type {
   CommandArgumentConfig,
   KclCommandValue,
@@ -45,26 +79,24 @@ import {
   KCL_PLANE_XY,
   KCL_PLANE_XZ,
   KCL_PLANE_YZ,
-  KCL_PRELUDE_BODY_TYPE_VALUES,
-  KCL_PRELUDE_EXTRUDE_METHOD_VALUES,
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
-import { isEnginePrimitiveSelection } from '@src/lib/selections'
 import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
 import type { modelingMachine } from '@src/machines/modelingMachine'
-import type { Selections } from '@src/machines/modelingSharedTypes'
 import type {
   ModelingMachineContext,
+  Selections,
   SketchTool,
 } from '@src/machines/modelingSharedTypes'
-
-import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
-import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
-import { capitaliseFC, isArray } from '@src/lib/utils'
 import { MODE_SKETCHING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 
 export type { HelixModes } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
+export { profileSelectionRequiresBodyType } from '@src/lib/commandBarConfigs/modelingCommandUtils'
+export {
+  extrudeSelectionRequiresBodyType,
+  extrudeSelectionRequiresMethod,
+} from '@src/lib/commandBarConfigs/modelingCommands/extrude'
 
 type OutputFormat = OutputFormat3d
 type OutputTypeKey = OutputFormat['type']
@@ -85,7 +117,9 @@ function isExportOptionalArgSupported(
   exportType: unknown,
   arg: ExportOptionalArg
 ): boolean {
-  if (typeof exportType !== 'string') return true
+  if (typeof exportType !== 'string') {
+    return true
+  }
   const supportByArg =
     exportOptionalArgSupportByType[exportType as OutputTypeKey]
   return supportByArg?.[arg] ?? true
@@ -115,109 +149,6 @@ const objectsTypesAndFilters: {
   selectionFilter: ['object'],
 }
 
-// For all surface modeling commands
-const kclBodyTypeOptions = KCL_PRELUDE_BODY_TYPE_VALUES.map((value) => ({
-  name: capitaliseFC(value.toLowerCase()),
-  value,
-}))
-
-function isSelections(value: unknown): value is Selections {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'graphSelections' in value &&
-    isArray(value.graphSelections) &&
-    'otherSelections' in value &&
-    isArray(value.otherSelections)
-  )
-}
-
-function isExtrudeRequirementKclCommandValue(
-  value: unknown
-): value is KclCommandValue {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'valueAst' in value &&
-    'valueText' in value &&
-    'valueCalculated' in value
-  )
-}
-
-export function profileSelectionRequiresBodyType({
-  argumentsToSubmit,
-}: {
-  argumentsToSubmit: Record<string, unknown>
-}): boolean {
-  const sketches = argumentsToSubmit.sketches
-  if (!isSelections(sketches)) return false
-
-  const hasOpenGraphSelection = sketches.graphSelections.some((selection) => {
-    // Face API selections may intentionally omit the legacy artifact. Use
-    // their entity reference so a closed region is not treated as an edge.
-    if (selection.entityRef) {
-      return (
-        selection.entityRef.type === 'segment' ||
-        selection.entityRef.type === 'solid2d_edge' ||
-        selection.entityRef.type === 'edge'
-      )
-    }
-
-    return (
-      !selection.artifact ||
-      selection.artifact.type === 'segment' ||
-      selection.artifact.type === 'sweepEdge' ||
-      selection.artifact.type === 'primitiveEdge'
-    )
-  })
-
-  return (
-    hasOpenGraphSelection ||
-    sketches.otherSelections.some(
-      (selection) =>
-        isEnginePrimitiveSelection(selection) &&
-        selection.primitiveType === 'edge'
-    )
-  )
-}
-
-export function extrudeSelectionRequiresBodyType(context: {
-  argumentsToSubmit: Record<string, unknown>
-}): boolean {
-  if (!isExtrudeRequirementKclCommandValue(context.argumentsToSubmit.length)) {
-    return false
-  }
-
-  return profileSelectionRequiresBodyType(context)
-}
-
-export function extrudeSelectionRequiresMethod({
-  argumentsToSubmit,
-}: {
-  argumentsToSubmit: Record<string, unknown>
-}): boolean {
-  if (!isExtrudeRequirementKclCommandValue(argumentsToSubmit.length)) {
-    return false
-  }
-
-  const sketches = argumentsToSubmit.sketches
-  if (!isSelections(sketches)) return false
-
-  return (
-    sketches.graphSelections.some(
-      (selection) =>
-        selection.entityRef?.type === 'edge' ||
-        selection.artifact?.type === 'sweepEdge' ||
-        selection.artifact?.type === 'primitiveEdge'
-    ) ||
-    sketches.otherSelections.some(
-      (selection) =>
-        isEnginePrimitiveSelection(selection) &&
-        selection.primitiveType === 'edge'
-    )
-  )
-}
-
 // Edit flows pass this as hidden command-bar metadata, not as a KCL stdlib arg.
 type CommandBarEditFlowArgs = {
   nodeToEdit?: PathToNode
@@ -226,16 +157,6 @@ type CommandBarEditFlowArgs = {
 type WithCommandBarEditFlowArgs<Schema> = {
   [CommandName in keyof Schema]: Schema[CommandName] & CommandBarEditFlowArgs
 }
-
-const isEditingNode = (context: {
-  argumentsToSubmit: Record<string, unknown>
-}) => Boolean(context.argumentsToSubmit.nodeToEdit)
-
-const isEditingNodeSelection = (context: {
-  argumentsToSubmit: Record<string, unknown>
-  selectedCommand?: { useModelingDialog?: boolean }
-}) =>
-  isEditingNode(context) && context.selectedCommand?.useModelingDialog !== true
 
 export type ModelingCommandSchema = {
   'Enter sketch': { forceNewSketch?: boolean }
@@ -613,13 +534,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
               machine.hardware_configuration.config.filaments[0]
                 ? ` - ${
                     machine.hardware_configuration.config.filaments[0].name
-                  } #${
-                    machine.hardware_configuration.config &&
-                    machine.hardware_configuration.config.filaments[0].color?.slice(
-                      0,
-                      6
-                    )
-                  }`
+                  } #${machine.hardware_configuration.config?.filaments[0].color?.slice(
+                    0,
+                    6
+                  )}`
                 : ''),
             isCurrent: false,
             disabled: machine.state.state !== 'idle',
@@ -637,224 +555,51 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   Extrude: {
     icon: 'extrude',
     needsReview: true,
+    dialogLayout: extrudeLayout,
     reviewValidation: createModelingCodemodReviewValidation(
       modelingCommandCodemods.Extrude
     ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Extrude']>(
       'Extrude',
       {
-        overrides: {
-          sketches: {
-            inputType: 'selection',
-            displayName: 'Profiles',
-            selectionTypes: [
-              'solid2d',
-              'segment',
-              'sweepEdge',
-              'primitiveEdge',
-              'enginePrimitiveEdge',
-              'cap',
-              'wall',
-              'pathRegion',
-              'engineRegion',
-            ],
-            multiple: true,
-            hidden: isEditingNodeSelection,
-          },
-          length: {
-            defaultValue: KCL_DEFAULT_LENGTH,
-            prepopulate: true,
-          },
-          to: {
-            inputType: 'selection',
-            // TODO: add edgeCut during https://github.com/KittyCAD/modeling-app/issues/8831
-            selectionTypes: ['cap', 'wall'],
-            clearSelectionFirst: true,
-            multiple: false,
-            description: 'Only parallel faces are supported for now.',
-            hidden: isEditingNodeSelection,
-          },
-          tagStart: {
-            // TODO: add validation like for Clone command
-          },
-          twistCenter: {
-            defaultValue: KCL_DEFAULT_ORIGIN_2D,
-          },
-          direction: {
-            inputType: 'selection',
-            selectionTypes: [
-              'segment',
-              'sweepEdge',
-              'primitiveEdge',
-              'enginePrimitiveEdge',
-            ],
-            multiple: false,
-            clearSelectionFirst: true,
-            hidden: isEditingNodeSelection,
-          },
-          method: {
-            inputType: 'options',
-            required: extrudeSelectionRequiresMethod,
-            options: KCL_PRELUDE_EXTRUDE_METHOD_VALUES.map((value) => ({
-              name: capitaliseFC(value.toLowerCase()),
-              value,
-            })),
-          },
-          bodyType: {
-            inputType: 'options',
-            required: extrudeSelectionRequiresBodyType,
-            options: kclBodyTypeOptions,
-          },
-        },
+        overrides: extrudeArgs,
       }
     ),
   },
   Sweep: {
     icon: 'sweep',
     needsReview: true,
+    dialogLayout: sweepLayout,
     reviewValidation: createModelingCodemodReviewValidation(
       modelingCommandCodemods.Sweep
     ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Sweep']>('Sweep', {
-      overrides: {
-        sketches: {
-          inputType: 'selection',
-          displayName: 'Profiles',
-          selectionTypes: [
-            'solid2d',
-            'segment',
-            'cap',
-            'wall',
-            'pathRegion',
-            'engineRegion',
-          ],
-          multiple: true,
-          hidden: isEditingNodeSelection,
-        },
-        path: {
-          inputType: 'selection',
-          selectionTypes: ['segment', 'path', 'helix'],
-          clearSelectionFirst: true,
-          multiple: true,
-          hidden: isEditingNodeSelection,
-        },
-        relativeTo: {
-          inputType: 'options',
-          options: [
-            { name: 'Sketch Plane', value: 'SKETCH_PLANE' },
-            { name: 'Trajectory Curve', value: 'TRAJECTORY' },
-          ],
-        },
-        translateProfileToPath: {
-          inputType: 'boolean',
-          required: false,
-        },
-        orientProfilePerpendicular: {
-          inputType: 'boolean',
-          required: false,
-        },
-        bodyType: {
-          inputType: 'options',
-          required: profileSelectionRequiresBodyType,
-          options: kclBodyTypeOptions,
-        },
-        version: {
-          inputType: 'kcl',
-          description:
-            'Sweep algorithm version. 0 lets the engine choose; 1 is original; 2 is newer.',
-          defaultValue: '2',
-          required: false,
-        },
-      },
+      overrides: sweepArgs,
     }),
   },
   Loft: {
     icon: 'loft',
     needsReview: true,
+    dialogLayout: loftLayout,
     reviewValidation: createModelingCodemodReviewValidation(
       modelingCommandCodemods.Loft
     ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Loft']>('Loft', {
-      overrides: {
-        sketches: {
-          inputType: 'selection',
-          displayName: 'Profiles',
-          selectionTypes: ['solid2d', 'segment', 'pathRegion', 'engineRegion'],
-          multiple: true,
-          hidden: isEditingNodeSelection,
-        },
-        bodyType: {
-          inputType: 'options',
-          required: profileSelectionRequiresBodyType,
-          options: kclBodyTypeOptions,
-        },
-      },
+      overrides: loftArgs,
     }),
   },
   Revolve: {
     icon: 'revolve',
     needsReview: true,
+    dialogLayout: revolveLayout,
+    normalizeArguments: normalizeRevolveArguments,
     reviewValidation: createModelingCodemodReviewValidation(
       modelingCommandCodemods.Revolve
     ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Revolve']>(
       'Revolve',
       {
-        overrides: {
-          sketches: {
-            inputType: 'selection',
-            displayName: 'Profiles',
-            selectionTypes: [
-              'solid2d',
-              'segment',
-              'pathRegion',
-              'engineRegion',
-            ],
-            multiple: true,
-            hidden: isEditingNodeSelection,
-          },
-          axisOrEdge: {
-            inputType: 'options',
-            required: true,
-            defaultValue: 'Axis',
-            options: [
-              { name: 'Sketch Axis', isCurrent: true, value: 'Axis' },
-              { name: 'Edge', isCurrent: false, value: 'Edge' },
-            ],
-            hidden: isEditingNodeSelection,
-          },
-          axis: {
-            required: (context) =>
-              ['Axis'].includes(context.argumentsToSubmit.axisOrEdge as string),
-            inputType: 'options',
-            displayName: 'Sketch Axis',
-            options: [
-              { name: 'X Axis', isCurrent: true, value: 'X' },
-              { name: 'Y Axis', isCurrent: false, value: 'Y' },
-            ],
-          },
-          edge: {
-            required: (context) =>
-              ['Edge'].includes(context.argumentsToSubmit.axisOrEdge as string),
-            inputType: 'selection',
-            selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
-            multiple: false,
-            hidden: (context) =>
-              isEditingNode(context) ||
-              !['Edge'].includes(
-                context.argumentsToSubmit.axisOrEdge as string
-              ),
-          },
-          angle: {
-            defaultValue: KCL_DEFAULT_DEGREE,
-            required: true,
-          },
-          bodyType: {
-            inputType: 'options',
-            required: profileSelectionRequiresBodyType,
-            options: kclBodyTypeOptions,
-          },
-        },
+        overrides: revolveArgs,
       }
     ),
   },
@@ -881,124 +626,15 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   Hole: {
     icon: 'hole',
     needsReview: true,
+    dialogLayout: holeLayout,
+    normalizeArguments: normalizeHoleArguments,
     reviewMessage:
       'The argument cutAt specifies where to place the hole given as absolute coordinates in the global scene. Point selection will be allowed in the future, and more hole bottoms and hole types are coming soon.',
     reviewValidation: createModelingCodemodReviewValidation(
       modelingCommandCodemods.Hole
     ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Hole']>('Hole', {
-      overrides: {
-        face: {
-          inputType: 'selection',
-          selectionTypes: ['cap', 'wall', 'edgeCut'],
-          multiple: false,
-          hidden: isEditingNodeSelection,
-        },
-        cutAt: {
-          inputType: 'vector2d', // TODO: see if we can make the KCL arg Point2d
-          defaultValue: KCL_DEFAULT_ORIGIN_2D,
-        },
-        holeBody: {
-          inputType: 'options',
-          options: [{ name: 'Blind', isCurrent: true, value: 'blind' }],
-        },
-        blindDepth: {
-          inputType: 'kcl',
-          required: (context) =>
-            ['blind'].includes(context.argumentsToSubmit.holeBody as string),
-          hidden: (context) =>
-            !['blind'].includes(context.argumentsToSubmit.holeBody as string),
-          defaultValue: '2',
-        },
-        blindDiameter: {
-          inputType: 'kcl',
-          required: (context) =>
-            ['blind'].includes(context.argumentsToSubmit.holeBody as string),
-          hidden: (context) =>
-            !['blind'].includes(context.argumentsToSubmit.holeBody as string),
-          defaultValue: '1',
-        },
-        holeType: {
-          inputType: 'options',
-          options: [
-            { name: 'Simple', isCurrent: true, value: 'simple' },
-            { name: 'Counterbore', isCurrent: true, value: 'counterbore' },
-            { name: 'Countersink', isCurrent: true, value: 'countersink' },
-          ],
-        },
-        counterboreDepth: {
-          inputType: 'kcl',
-          required: (context) =>
-            ['counterbore'].includes(
-              context.argumentsToSubmit.holeType as string
-            ),
-          hidden: (context) =>
-            !['counterbore'].includes(
-              context.argumentsToSubmit.holeType as string
-            ),
-          defaultValue: '1',
-        },
-        counterboreDiameter: {
-          inputType: 'kcl',
-          required: (context) =>
-            ['counterbore'].includes(
-              context.argumentsToSubmit.holeType as string
-            ),
-          hidden: (context) =>
-            !['counterbore'].includes(
-              context.argumentsToSubmit.holeType as string
-            ),
-          defaultValue: '2',
-        },
-        countersinkAngle: {
-          inputType: 'kcl',
-          required: (context) =>
-            ['countersink'].includes(
-              context.argumentsToSubmit.holeType as string
-            ),
-          hidden: (context) =>
-            !['countersink'].includes(
-              context.argumentsToSubmit.holeType as string
-            ),
-          defaultValue: '90deg',
-        },
-        countersinkDiameter: {
-          inputType: 'kcl',
-          required: (context) =>
-            ['countersink'].includes(
-              context.argumentsToSubmit.holeType as string
-            ),
-          hidden: (context) =>
-            !['countersink'].includes(
-              context.argumentsToSubmit.holeType as string
-            ),
-          defaultValue: '2',
-        },
-        countersinkHeadClearance: {
-          inputType: 'kcl',
-          required: false,
-          hidden: (context) =>
-            !['countersink'].includes(
-              context.argumentsToSubmit.holeType as string
-            ),
-          defaultValue: '0',
-        },
-        holeBottom: {
-          inputType: 'options',
-          options: [
-            { name: 'Flat', isCurrent: true, value: 'flat' },
-            { name: 'Drill', isCurrent: false, value: 'drill' },
-          ],
-        },
-        drillPointAngle: {
-          inputType: 'kcl',
-          required: (context) =>
-            ['drill'].includes(context.argumentsToSubmit.holeBottom as string),
-          hidden: (context) =>
-            !['drill'].includes(context.argumentsToSubmit.holeBottom as string),
-          defaultValue: '110deg',
-        },
-      },
+      overrides: holeArgs,
     }),
   },
   'Boolean Subtract': {
@@ -1360,41 +996,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   Chamfer: {
     icon: 'chamfer3d',
     needsReview: true,
+    dialogLayout: chamferLayout,
     reviewValidation: createModelingCodemodReviewValidation(
       modelingCommandCodemods.Chamfer
     ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Chamfer']>(
       'Chamfer',
       {
-        overrides: {
-          selection: {
-            inputType: 'selection',
-            selectionTypes: [
-              'segment',
-              'sweepEdge',
-              'primitiveEdge',
-              'enginePrimitiveEdge',
-            ],
-            multiple: true,
-            required: true,
-            skip: false,
-            hidden: isEditingNodeSelection,
-          },
-          length: {
-            defaultValue: KCL_DEFAULT_LENGTH,
-          },
-          secondLength: {
-            defaultValue: KCL_DEFAULT_LENGTH,
-          },
-          angle: {
-            defaultValue: KCL_DEFAULT_DEGREE,
-          },
-          version: {
-            description:
-              'Edge cut algorithm version. 0 lets the engine choose; 1 is original; 2 is newer.',
-            defaultValue: '1',
-          },
-        },
+        overrides: chamferArgs,
       }
     ),
   },
@@ -1416,14 +1025,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         createVariable: 'byDefault',
         defaultValue(_, machineContext, wasmInstance) {
           const selectionRanges = machineContext?.selectionRanges
-          if (!selectionRanges || !wasmInstance) return KCL_DEFAULT_LENGTH
+          if (!selectionRanges || !wasmInstance) {
+            return KCL_DEFAULT_LENGTH
+          }
           const angleLength = angleLengthInfo({
             selectionRanges,
             angleOrLength: 'setLength',
             kclManager: machineContext.kclManager,
             wasmInstance,
           })
-          if (err(angleLength) || !wasmInstance) return KCL_DEFAULT_LENGTH
+          if (err(angleLength) || !wasmInstance) {
+            return KCL_DEFAULT_LENGTH
+          }
           const { transforms } = angleLength
 
           // QUESTION: is it okay to reference kclManager here? will its state be up to date?
@@ -1435,7 +1048,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             referenceSegName: '',
             wasmInstance,
           })
-          if (err(sketched)) return KCL_DEFAULT_LENGTH
+          if (err(sketched)) {
+            return KCL_DEFAULT_LENGTH
+          }
           const { valueUsedInTransform } = sketched
           return valueUsedInTransform?.toString() || KCL_DEFAULT_LENGTH
         },
@@ -1505,6 +1120,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           },
           color: {
             inputType: 'color',
+            defaultValue: (context: ModelingCommandContext) =>
+              isUsingModelingDialog(context) ? '#ffffff' : '',
           },
         },
       }
@@ -1671,7 +1288,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             // Be conservative and error out if there is an item or module with the same name.
             const variableExists =
               modelingContext.kclManager.variables[data] ||
-              modelingContext.kclManager.variables['__mod_' + data]
+              modelingContext.kclManager.variables[`__mod_${data}`]
             if (variableExists) {
               return 'This variable name is already in use.'
             }

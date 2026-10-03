@@ -1,10 +1,20 @@
-// Some command argument payloads are objects with a value field that is a KCL expression.
-// That object also contains some metadata about what to do with the KCL expression,
-// such as whether we need to create a new variable for it.
-// This function extracts the value field from those arg payloads and returns
-import type { Command, KclCommandValue } from '@src/lib/commandTypes'
+import type {
+  Command,
+  CommandArgument,
+  KclCommandValue,
+} from '@src/lib/commandTypes'
+import type { CommandBarContext } from '@src/machines/commandBarMachine'
 
-// The arg object with all its field as natural values that the command to be executed will expect.
+export function shouldPrepopulateArgument(
+  arg: Pick<CommandArgument<unknown>, 'prepopulate' | 'machineActor'>,
+  context: CommandBarContext
+): boolean {
+  return typeof arg.prepopulate === 'function'
+    ? arg.prepopulate(context, arg.machineActor?.getSnapshot().context)
+    : !!arg.prepopulate
+}
+
+// Extract the KCL value from argument payloads that also carry UI metadata.
 export function getCommandArgumentKclValuesOnly(args: Record<string, unknown>) {
   return Object.fromEntries(
     Object.entries(args).map(([key, value]) => {
@@ -19,6 +29,12 @@ export function getCommandArgumentKclValuesOnly(args: Record<string, unknown>) {
 export interface CommandWithDisabledState {
   command: Command
   disabled: boolean
+}
+
+export function isModelingDialogCommand(
+  command: Pick<Command, 'groupId' | 'useModelingDialog'> | undefined
+): command is Command & { groupId: 'modeling'; useModelingDialog: true } {
+  return command?.groupId === 'modeling' && command.useModelingDialog === true
 }
 
 export const commandKey = (command: Command) =>

@@ -1,15 +1,5 @@
 import type { EntityType } from '@kittycad/lib'
-import type { ReactNode } from 'react'
-import type {
-  Actor,
-  ActorRefFrom,
-  AnyStateMachine,
-  ContextFrom,
-  EventFrom,
-} from 'xstate'
-
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-
 import type { CustomIconName } from '@src/components/CustomIcon'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import type { Expr, Name, VariableDeclaration } from '@src/lang/wasm'
@@ -19,6 +9,14 @@ import type {
   CommandBarContext,
   commandBarMachine,
 } from '@src/machines/commandBarMachine'
+import type { ReactNode } from 'react'
+import type {
+  Actor,
+  ActorRefFrom,
+  AnyStateMachine,
+  ContextFrom,
+  EventFrom,
+} from 'xstate'
 
 type Icon = CustomIconName
 const _TARGETS = ['both', 'web', 'desktop'] as const
@@ -57,7 +55,23 @@ type CommandArgumentStatus = Extract<
   CommandStatus,
   'experimental' | 'deprecated'
 >
-type CommandArgumentRequired<C> =
+export type CommandDialogGroup<ArgName extends string = string> = {
+  title: string
+  /** Presentation order only. Unlisted command arguments still render. */
+  args: readonly ArgName[]
+  description?: string
+  collapsible?: boolean
+}
+export type CommandDialogLayout<ArgName extends string = string> =
+  readonly CommandDialogGroup<ArgName>[]
+
+export type CommandArgumentDialogConfig = {
+  /** Display label used only by the modeling dialog, preserving palette labels. */
+  displayName?: string
+  controlStyle?: 'select' | 'segmented'
+  selectionEmptyLabel?: string
+}
+type CommandArgumentCondition<C> =
   | boolean
   | ((
       commandBarContext: { argumentsToSubmit: Record<string, unknown> }, // Should be the commandbarMachine's context, but it creates a circular dependency
@@ -70,7 +84,7 @@ type CommandArgumentStatusAndRequired<C> =
     }
   | {
       status?: Extract<CommandStatus, 'deprecated'> | undefined
-      required: CommandArgumentRequired<C>
+      required: CommandArgumentCondition<C>
     }
 export type CommandSelectionType =
   | Artifact['type']
@@ -149,6 +163,13 @@ export type Command<
   scopes: CommandScopes
   disabled?: boolean
   status?: CommandStatus
+  mlBranding?: boolean
+  useModelingDialog?: boolean
+  dialogLayout?: CommandDialogLayout
+  /** Resolve composite point-and-click inputs without mutating the draft. */
+  normalizeArguments?: (
+    argumentsToSubmit: Record<string, unknown>
+  ) => Record<string, unknown>
 }
 
 export type CommandConfig<
@@ -187,36 +208,32 @@ export type CommandArgumentConfig<
   description?: string
   status?: CommandArgumentStatus
   statusMessage?: string
-  required: CommandArgumentRequired<C>
+  required: CommandArgumentCondition<C>
   /** If `true`, arg is used as passed-through data, never for user input */
-  hidden?:
-    | boolean
-    | ((
-        commandBarContext: { argumentsToSubmit: Record<string, unknown> }, // Should be the commandbarMachine's context, but it creates a circular dependency
-        machineContext?: C
-      ) => boolean)
+  hidden?: CommandArgumentCondition<C>
   skip?: boolean
-  /** If `true`, this argument will be automatically prepopulated with default value, but may still be cleared */
-  prepopulate?: boolean
+  /** Seed the default value when true (or when the predicate returns true); it may still be cleared. */
+  prepopulate?: CommandArgumentCondition<C>
   /** For showing a summary display of the current value, such as in
    *  the command bar's header
    */
   valueSummary?: (value: OutputType) => string
+  dialog?: CommandArgumentDialogConfig
 } & (
   | {
       inputType: 'options'
       options:
-        | ReadonlyArray<CommandArgumentOption<OutputType>>
+        | readonly CommandArgumentOption<OutputType>[]
         | ((
             commandBarContext: {
               argumentsToSubmit: Record<string, unknown>
               machineManager?: MachineManager
             }, // Should be the commandbarMachine's context, but it creates a circular dependency
             machineContext?: C
-          ) => ReadonlyArray<CommandArgumentOption<OutputType>>)
+          ) => readonly CommandArgumentOption<OutputType>[])
       optionsFromContext?: (
         context: C
-      ) => ReadonlyArray<CommandArgumentOption<OutputType>>
+      ) => readonly CommandArgumentOption<OutputType>[]
       defaultValue?:
         | OutputType
         | ((
@@ -229,6 +246,8 @@ export type CommandArgumentConfig<
   | {
       inputType: 'selection'
       selectionTypes: CommandSelectionType[]
+      /** Selection order changes the resulting geometry (e.g. Loft profiles). */
+      ordered?: boolean
       clearSelectionFirst?: boolean
       selectionFilter?: EntityType[]
       multiple: boolean
@@ -241,6 +260,7 @@ export type CommandArgumentConfig<
   | {
       inputType: 'selectionMixed'
       selectionTypes: CommandSelectionType[]
+      ordered?: boolean
       selectionFilter?: EntityType[]
       multiple: boolean
       clearSelectionFirst?: boolean
@@ -376,38 +396,29 @@ export type CommandArgument<
   description?: string
   status?: CommandArgumentStatus
   statusMessage?: string
-  required:
-    | boolean
-    | ((
-        commandBarContext: { argumentsToSubmit: Record<string, unknown> }, // Should be the commandbarMachine's context, but it creates a circular dependency
-        machineContext?: ContextFrom<T>
-      ) => boolean)
+  required: CommandArgumentCondition<ContextFrom<T>>
   /** If `true`, arg is used as passed-through data, never for user input */
-  hidden?:
-    | boolean
-    | ((
-        commandBarContext: { argumentsToSubmit: Record<string, unknown> }, // Should be the commandbarMachine's context, but it creates a circular dependency
-        machineContext?: ContextFrom<T>
-      ) => boolean)
-  /** If `true`, this argument will be automatically prepopulated with default value, but may still be cleared */
-  prepopulate?: boolean
+  hidden?: CommandArgumentCondition<ContextFrom<T>>
+  /** Seed the default value when true (or when the predicate returns true); it may still be cleared. */
+  prepopulate?: CommandArgumentCondition<ContextFrom<T>>
   skip?: boolean
   machineActor?: Actor<T>
   /** For showing a summary display of the current value, such as in
    *  the command bar's header
    */
   valueSummary?: (value: OutputType, wasmInstance?: ModuleType) => string
+  dialog?: CommandArgumentDialogConfig
 } & (
   | {
       inputType: Extract<CommandInputType, 'options'>
       options:
-        | ReadonlyArray<CommandArgumentOption<OutputType>>
+        | readonly CommandArgumentOption<OutputType>[]
         | ((
             commandBarContext: {
               argumentsToSubmit: Record<string, unknown>
             }, // Should be the commandbarMachine's context, but it creates a circular dependency
             machineContext?: ContextFrom<T>
-          ) => ReadonlyArray<CommandArgumentOption<OutputType>>)
+          ) => readonly CommandArgumentOption<OutputType>[])
       defaultValue?:
         | OutputType
         | ((
@@ -424,6 +435,7 @@ export type CommandArgument<
   | {
       inputType: 'selection'
       selectionTypes: CommandSelectionType[]
+      ordered?: boolean
       clearSelectionFirst?: boolean
       selectionFilter?: EntityType[]
       multiple: boolean
@@ -436,6 +448,7 @@ export type CommandArgument<
   | {
       inputType: 'selectionMixed'
       selectionTypes: CommandSelectionType[]
+      ordered?: boolean
       selectionFilter?: EntityType[]
       multiple: boolean
       clearSelectionFirst?: boolean

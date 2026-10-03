@@ -45,10 +45,16 @@ export type StdLibCommandDriftConfig = {
   flowArgOrder?: readonly string[]
 }
 
-type StdLibCommandArgOverride = Partial<
+export type StdLibCommandArgOverride = Partial<
   CommandArgumentConfig<unknown, ModelingMachineContext>
 > &
   Record<string, unknown>
+
+export type ModelingCommandArgOverrides<CommandArgs extends object> = Partial<{
+  [ArgName in keyof CommandArgs]: Partial<
+    CommandArgumentConfig<CommandArgs[ArgName], ModelingMachineContext>
+  >
+}>
 
 type StdLibCommandArgsOptions = {
   omitted?: readonly string[]
