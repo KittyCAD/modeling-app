@@ -83,6 +83,8 @@ export type EngineTopologyFallback = {
 }
 
 export interface Selection {
+  /** Snapshot of a picked BRep vertex, in engine millimeters. */
+  vertexPosition?: [number, number, number]
   entityRef?: EntityReference
   artifact?: Artifact
   codeRef?: CodeRef
@@ -100,6 +102,8 @@ export type Selections = {
 export type SetSelections =
   | {
       selectionType: 'singleCodeCursor'
+      /** Preserve modifiers while resolving a point's coordinates asynchronously. */
+      isShiftDown?: boolean
       selection: Selection
       scrollIntoView?: boolean
     }

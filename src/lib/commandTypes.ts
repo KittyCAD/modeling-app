@@ -73,6 +73,7 @@ type CommandArgumentStatusAndRequired<C> =
       required: CommandArgumentRequired<C>
     }
 export type CommandSelectionType =
+  | 'vertex'
   | Artifact['type']
   | 'pathRegion'
   | 'primitiveFace'

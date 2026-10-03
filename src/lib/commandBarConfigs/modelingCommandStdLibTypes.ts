@@ -184,6 +184,8 @@ export type OffsetPlaneCommandArgs = PointAndClickCommandArgs<'Offset plane'>
 export type PlaneMethod = 'Axes' | 'Normal' | 'Points' | 'Equation'
 export type ConstructionPlaneCommandArgs = {
   method: PlaneMethod
+  pointSource?: 'Pick' | 'Coordinates'
+  pickedPoints?: Selections
   origin?: KclCommandValue
   normal?: KclCommandValue
   xAxis?: KclCommandValue

@@ -12,7 +12,9 @@ This draft implements `plane(...): Plane` in this repository's KCL stdlib and ad
 4. Create the plane. Click Start sketch and select its feature-tree entry or the plane in the viewport.
 5. Double-click its feature-tree entry to edit the inputs or change methods. Cancel leaves source unchanged; existing app history handles undo/redo.
 
-Point/vector inputs currently use numeric expressions and arrays. Associative viewport picking of model points and lines, object-form coordinates, and parallel/angled/midplane helpers remain follow-up work. Existing Offset plane and planar-face workflows remain available.
+The **3-Point Plane** toolbar tool selects corner vertices on a part. Click the first corner, then hold Shift to add two more and continue to review. The tool enables the Points selection filter automatically; this filter is also available in the status bar for ordinary point selection. Construction plane's Three points method offers either picking or entering coordinates. Picked coordinates are stored as explicit millimeter literals, preserving their world positions in projects using other units. Editing opens those coordinates; choose picking to replace them.
+
+These are coordinate snapshots, so subsequent edits to the source part do not update the plane. Picking uses existing engine topology and curve queries, rejects ambiguous/unresolvable corners, and requires three distinct non-collinear points. Arbitrary points within faces, associative point/line references, object-form coordinates, and parallel/angled/midplane helpers remain follow-up work. Existing Offset plane and planar-face workflows remain available.
 
 ## KCL forms
 

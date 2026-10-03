@@ -1426,6 +1426,7 @@ const prepareToEditConstructionPlane: PrepareToEditCallback = async ({
     nodeToEdit: PathToNode
   } = {
     method,
+    pointSource: 'Coordinates',
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   for (const name of planeMethodArgs[method]) {

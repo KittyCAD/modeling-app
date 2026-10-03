@@ -1051,7 +1051,7 @@ export function buildToolbarConfig(
               ],
             },
             {
-              id: 'plane-points',
+              id: 'plane-construction',
               command: 'modeling:Construction plane',
               onClick: () =>
                 commands.send({
@@ -1063,6 +1063,25 @@ export function buildToolbarConfig(
               title: 'Construction Plane',
               description:
                 'Create a plane from axes, a normal, three points, or an equation.',
+              links: [],
+            },
+            {
+              id: 'plane-points',
+              command: 'modeling:Construction plane',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: {
+                    name: 'Construction plane',
+                    groupId: 'modeling',
+                    argDefaultValues: { method: 'Points', pointSource: 'Pick' },
+                  },
+                }),
+              icon: 'plane',
+              status: 'available',
+              title: '3-Point Plane',
+              description:
+                'Create a plane through three corner points on a part.',
               links: [],
             },
           ],

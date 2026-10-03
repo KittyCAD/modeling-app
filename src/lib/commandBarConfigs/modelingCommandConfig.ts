@@ -9,6 +9,8 @@ import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { findUniqueName } from '@src/lang/create'
 import { createModelingCodemodReviewValidation } from '@src/lang/modifyAst/modelingCodemod'
 import { planeMethodArgs } from '@src/lang/modifyAst/planes'
+import { validatePlanePoints } from '@src/lib/vertexPicking'
+import type { PickedPoint } from '@src/lib/vertexPicking'
 import type { PlaneMethod } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
 import type { Artifact, PathToNode } from '@src/lang/wasm'
@@ -52,7 +54,7 @@ import {
 import type { components } from '@src/lib/machine-api'
 import { isEnginePrimitiveSelection } from '@src/lib/selections'
 import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
-import { err } from '@src/lib/trap'
+import { err, isErr } from '@src/lib/trap'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import type {
@@ -1165,6 +1167,44 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             { name: 'Equation', value: 'Equation' },
           ],
         },
+        pointSource: {
+          inputType: 'options',
+          defaultValue: 'Pick',
+          required: (context) => context.argumentsToSubmit.method === 'Points',
+          hidden: (context) => context.argumentsToSubmit.method !== 'Points',
+          options: [
+            { name: 'Pick points on part', value: 'Pick' },
+            { name: 'Enter coordinates', value: 'Coordinates' },
+          ],
+        },
+        pickedPoints: {
+          inputType: 'selection',
+          displayName: 'Three points',
+          description:
+            'Click the first corner on the part, then hold Shift to add two more. Selection order sets the plane normal. Points are saved at their current coordinates.',
+          selectionTypes: ['vertex'],
+          selectionFilter: ['vertex'],
+          multiple: true,
+          required: (context) =>
+            context.argumentsToSubmit.method === 'Points' &&
+            context.argumentsToSubmit.pointSource === 'Pick',
+          hidden: (context) =>
+            context.argumentsToSubmit.method !== 'Points' ||
+            context.argumentsToSubmit.pointSource !== 'Pick',
+          validation: async ({ data }: { data: Selections }) => {
+            if (
+              data.otherSelections.length ||
+              data.graphSelections.some(
+                (s) => s.entityRef?.type !== 'vertex' || !s.vertexPosition
+              )
+            )
+              return 'Select exactly three corner points on the part.'
+            const valid = validatePlanePoints(
+              data.graphSelections.map((s) => s.vertexPosition) as PickedPoint[]
+            )
+            return isErr(valid) ? valid.message : true
+          },
+        },
         ...Object.fromEntries(
           Object.entries({
             origin: '[0, 0, 20]',
@@ -1184,7 +1224,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
                 planeMethodArgs[
                   (context.argumentsToSubmit.method ?? 'Normal') as PlaneMethod
                 ] as readonly string[]
-              ).includes(name)
+              ).includes(name) &&
+              (name !== 'points' ||
+                context.argumentsToSubmit.pointSource !== 'Pick')
             return [
               name,
               {

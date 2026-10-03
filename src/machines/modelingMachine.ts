@@ -1706,10 +1706,12 @@ export const modelingMachine = setup({
           otherSelections: [],
         }
         if (setSelections.selectionType === 'singleCodeCursor') {
+          const isShiftDown =
+            setSelections.isShiftDown ?? kclManager.isShiftDown
           const sel = setSelections.selection
           const isEmpty =
             !sel || (typeof sel === 'object' && !sel.entityRef && !sel.codeRef)
-          if (isEmpty && kclManager.isShiftDown) {
+          if (isEmpty && isShiftDown) {
             // if the user is holding shift, but they didn't select anything
             // don't nuke their other selections (frustrating to have one bad click ruin your
             // whole selection)
@@ -1717,17 +1719,17 @@ export const modelingMachine = setup({
               graphSelections: selectionRanges.graphSelections || [],
               otherSelections: selectionRanges.otherSelections,
             }
-          } else if (isEmpty && !kclManager.isShiftDown) {
+          } else if (isEmpty && !isShiftDown) {
             selections = {
               graphSelections: [],
               otherSelections: [],
             }
-          } else if (!isEmpty && !kclManager.isShiftDown) {
+          } else if (!isEmpty && !isShiftDown) {
             selections = {
               graphSelections: [sel],
               otherSelections: [],
             }
-          } else if (!isEmpty && kclManager.isShiftDown) {
+          } else if (!isEmpty && isShiftDown) {
             // Handle Shift key – compare V2 to V2 via selectionV2Equals
             const newV2 = sel
             const current = selectionRanges.graphSelections || []

@@ -9,6 +9,7 @@ import {
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import { isErr } from '@src/lib/trap'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { beforeAll, describe, expect, it } from 'vitest'
 
@@ -18,6 +19,59 @@ beforeAll(async () => {
 })
 
 describe('construction planes', () => {
+  it('writes picked corners with explicit millimeters, independent of project units', async () => {
+    const ast = assertParse(
+      '@settings(kclVersion = 2.0, defaultLengthUnit = in)',
+      world.instance
+    )
+    const pickedPoints: Selections = {
+      otherSelections: [],
+      graphSelections: [
+        [25.4, 0, 20],
+        [35.4, 0, 20],
+        [25.4, 10, 30],
+      ].map((point, i) => ({
+        entityRef: { type: 'vertex', side_faces: [`face${i}`] },
+        vertexPosition: point as [number, number, number],
+      })),
+    }
+    const result = addConstructionPlane({
+      ast,
+      wasmInstance: world.instance,
+      method: 'Points',
+      pointSource: 'Pick',
+      pickedPoints,
+    })
+    if (isErr(result)) throw result
+    const code = recast(result.modifiedAst, world.instance)
+    if (isErr(code)) throw code
+    expect(code.replaceAll(/\s/g, '')).toContain(
+      '[[25.4mm,0mm,20mm],[35.4mm,0mm,20mm],[25.4mm,10mm,30mm]]'
+    )
+    const execution = await enginelessExecutor(
+      assertParse(`${code}\ns = sketch(on = plane001) {}`, world.instance),
+      world.rustContext
+    )
+    const sketch = [...execution.artifactGraph.values()].find(
+      (a) => a.type === 'sketchBlock'
+    )
+    if (sketch?.type !== 'sketchBlock') throw new Error('Missing sketch')
+    expect(sketch.planeInfo?.origin).toMatchObject({ x: 25.4, y: 0, z: 20 })
+    const invalid = {
+      ...pickedPoints,
+      graphSelections: pickedPoints.graphSelections.slice(0, 2),
+    }
+    expect(
+      addConstructionPlane({
+        ast,
+        wasmInstance: world.instance,
+        method: 'Points',
+        pointSource: 'Pick',
+        pickedPoints: invalid,
+      })
+    ).toBeInstanceOf(Error)
+    expect(recast(ast, world.instance)).not.toContain('plane001')
+  })
   it.each([
     'origin = [0mm, 0mm, 20mm], xAxis = [2, 0, 0], yAxis = [0, 3, 0]',
     'origin = [0mm, 0mm, 20mm], normal = [0, 0, 1], xAxis = [1, 0, 4]',
