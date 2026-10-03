@@ -208,6 +208,7 @@ describe('GD&T frame defaults', () => {
         })
         expect(result.framePosition?.valueText).toBe('[0in, 20mm]')
         expect(result.fontSize).toBeUndefined()
+        expect(result.framePlane).toBe('XY')
       }
     )
 
@@ -371,6 +372,185 @@ describe('GD&T frame defaults', () => {
         }
       }
     )
+  })
+
+  describe('distance frame plane', () => {
+    it.each([
+      ['circular rims along Z', 'edge', { x: 0, y: 0, z: 3 }, 'XZ'],
+      ['circular rims along X', 'edge', { x: 8, y: 0, z: 0 }, 'XY'],
+      ['cylindrical faces along Z', 'face', { x: 0, y: 0, z: 6 }, 'XZ'],
+      ['cylindrical faces along Y', 'face', { x: 0, y: 8, z: 0 }, 'XY'],
+      ['tilted separation in YZ', 'face', { x: 0, y: 4, z: 7 }, 'YZ'],
+    ] as const)(
+      'retains the measurement direction for %s',
+      async (_, primitiveType, direction, expectedPlane) => {
+        const sendSceneCommand = vi
+          .fn()
+          .mockImplementation(async ({ cmd }) => ({
+            success: true,
+            resp: {
+              type: 'modeling',
+              data: {
+                modeling_response:
+                  cmd.type === 'bounding_box'
+                    ? {
+                        type: 'bounding_box',
+                        data: {
+                          center:
+                            cmd.entity_ids[0] === 'to'
+                              ? {
+                                  x: 10 + direction.x,
+                                  y: -5 + direction.y,
+                                  z: 7 + direction.z,
+                                }
+                              : { x: 10, y: -5, z: 7 },
+                          dimensions: { x: 4, y: 4, z: 10 },
+                        },
+                      }
+                    : {
+                        type: 'face_is_planar',
+                        data: { z_axis: { x: 1, y: 0, z: 0 } },
+                      },
+              },
+            },
+          }))
+        const objects: Selections = {
+          graphSelections: [],
+          otherSelections: ['from', 'to'].map((entityId, primitiveIndex) => ({
+            type: 'enginePrimitive',
+            primitiveType,
+            entityId,
+            primitiveIndex,
+            parentEntityId: 'body',
+          })),
+        }
+        if (primitiveType === 'face') {
+          objects.otherSelections = []
+          objects.graphSelections = ['from', 'to'].map((id) => ({
+            artifact: testArtifact({ type: 'wall', id }),
+          }))
+        }
+        const result = await withDefaultGdtFrameDefaults<
+          ModelingCommandSchema['GDT Distance']
+        >({
+          data: { objects, fontSize: kclValue('1mm') },
+          distance: true,
+          engineCommandManager: {
+            sendSceneCommand,
+          } as unknown as ConnectionManager,
+          wasmInstance,
+        })
+        expect(result.framePlane).toBe(expectedPlane)
+        expect(sendSceneCommand).toHaveBeenCalledWith(
+          expect.objectContaining({
+            cmd: expect.objectContaining({
+              type: 'bounding_box',
+              entity_ids: ['from'],
+            }),
+          })
+        )
+        expect(sendSceneCommand).toHaveBeenCalledWith(
+          expect.objectContaining({
+            cmd: expect.objectContaining({
+              type: 'bounding_box',
+              entity_ids: ['to'],
+            }),
+          })
+        )
+      }
+    )
+
+    it.each([
+      ['vertical edge', 'edge', { x: 0, y: 0, z: 10 }, 'XZ'],
+      ['cylindrical face', 'face', { x: 4, y: 4, z: 10 }, 'XZ'],
+      ['horizontal circular rim', 'edge', { x: 4, y: 4, z: 0 }, 'XY'],
+    ] as const)(
+      'uses the bounds of a single %s when planar normals are unavailable',
+      async (_, primitiveType, dimensions, expectedPlane) => {
+        const sendSceneCommand = vi.fn().mockResolvedValue({
+          success: true,
+          resp: {
+            type: 'modeling',
+            data: {
+              modeling_response: {
+                type: 'bounding_box',
+                data: { dimensions },
+              },
+            },
+          },
+        })
+        const result = await withDefaultGdtFrameDefaults<
+          ModelingCommandSchema['GDT Distance']
+        >({
+          data: {
+            objects: {
+              graphSelections: [],
+              otherSelections: [
+                {
+                  type: 'enginePrimitive',
+                  primitiveType,
+                  entityId: 'entity',
+                  parentEntityId: 'body',
+                  primitiveIndex: 1,
+                },
+              ],
+            },
+            fontSize: kclValue('1mm'),
+          },
+          distance: true,
+          engineCommandManager: {
+            sendSceneCommand,
+          } as unknown as ConnectionManager,
+          wasmInstance,
+        })
+        expect(result.framePlane).toBe(expectedPlane)
+      }
+    )
+
+    it('uses adjacent planar faces for the cap-rim regression in #14251', async () => {
+      const sendSceneCommand = vi.fn().mockImplementation(async ({ cmd }) => ({
+        success: true,
+        resp: {
+          type: 'modeling',
+          data: {
+            modeling_response:
+              cmd.type === 'face_is_planar'
+                ? {
+                    type: 'face_is_planar',
+                    data: { z_axis: { x: 0, y: 0, z: 1 } },
+                  }
+                : {
+                    type: 'bounding_box',
+                    data: { dimensions: { x: 4, y: 4, z: 3 } },
+                  },
+          },
+        },
+      }))
+      const result = await withDefaultGdtFrameDefaults<
+        ModelingCommandSchema['GDT Distance']
+      >({
+        data: {
+          objects: {
+            graphSelections: ['capEnd', 'capStart'].map((cap) => ({
+              entityRef: { type: 'edge', side_faces: [cap, 'cylindricalWall'] },
+            })),
+            otherSelections: [],
+          },
+          fontSize: kclValue('1mm'),
+        },
+        distance: true,
+        engineCommandManager: {
+          sendSceneCommand,
+        } as unknown as ConnectionManager,
+        wasmInstance,
+      })
+      expect(result.framePlane).toBe('XZ')
+      expect(sendSceneCommand).toHaveBeenCalledWith(
+        expect.objectContaining({
+          cmd: { type: 'face_is_planar', object_id: 'capEnd' },
+        })
+      )
+    })
   })
 
   it('averages non-zero bounding box dimensions', () => {

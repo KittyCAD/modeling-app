@@ -1,15 +1,16 @@
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
-import { addDistanceGdt } from '@src/lang/modifyAst/gdt'
+import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import { type ArtifactGraph, assertParse, recast } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 describe('distance edge topology', () => {
   it.each(['primitive', 'graph', 'mixed'] as const)(
     'generates distinct endpoints for two hole rims arriving as %s selections',
     async (route) => {
-      const { instance } = await buildTheWorldAndNoEngineConnection()
+      const { instance, kclManager, engineCommandManager } =
+        await buildTheWorldAndNoEngineConnection()
       const ast = assertParse(
         `@settings(defaultLengthUnit = mm, kclVersion = 2)
 holeSketch = sketch(on = XY) {
@@ -65,12 +66,41 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
           })
         }
       }
-      const result = addDistanceGdt({
+      kclManager.artifactGraph = artifactGraph
+      const sceneCommand = vi
+        .spyOn(engineCommandManager, 'sendSceneCommand')
+        .mockImplementation(async (command) => ({
+          success: true,
+          request_id: 'test',
+          resp: {
+            type: 'modeling',
+            data: {
+              modeling_response: {
+                type: 'bounding_box',
+                data: {
+                  center: {
+                    x: 0,
+                    y: 0,
+                    z:
+                      command.type === 'modeling_cmd_req' &&
+                      command.cmd.type === 'bounding_box' &&
+                      command.cmd.entity_ids[0] === 'hole-rim-2'
+                        ? 3
+                        : 0,
+                  },
+                  dimensions: { x: 4, y: 4, z: 3 },
+                },
+              },
+            },
+          },
+        }))
+      const result = await modelingCommandCodemods['GDT Distance'].run({
         ast,
-        artifactGraph,
-        objects,
+        args: { objects },
+        kclManager,
         wasmInstance: instance,
       })
+      sceneCommand.mockRestore()
       if (result instanceof Error) throw result
       const code = recast(result.modifiedAst, instance)
       expect(code).toContain('edgeId(plate, index = 1)')
@@ -79,6 +109,7 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
       expect(code).toContain('to = edge002')
       expect(code).not.toContain('getCommonEdge')
       expect(code).not.toContain('tolerance =')
+      expect(code).toContain('framePlane = XZ')
     }
   )
 })

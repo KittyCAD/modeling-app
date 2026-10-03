@@ -216,7 +216,7 @@ export function getEngineEntityIdsForGdtSelections(
     typeof selection === 'object' &&
     'type' in selection &&
     selection.type === 'enginePrimitive' &&
-    selection.primitiveType === 'edge'
+    (selection.primitiveType === 'edge' || selection.primitiveType === 'face')
       ? [selection.entityId]
       : []
   )
@@ -232,6 +232,17 @@ export function getPlanarFaceEntityIdsForGdtSelections(
 
   const entityIds = selections.graphSelections.flatMap((selection) => {
     const artifact = selection.artifact
+
+    if (selection.entityRef?.type === 'edge') {
+      return [
+        ...selection.entityRef.side_faces,
+        ...(selection.entityRef.end_faces ?? []),
+      ]
+    }
+
+    if (artifact?.type === 'sweepEdge' || artifact?.type === 'segment') {
+      return artifact.commonSurfaceIds ?? []
+    }
 
     if (artifact?.type === 'pattern') {
       return artifact.copyFaceIds
@@ -254,7 +265,15 @@ export function getPlanarFaceEntityIdsForGdtSelections(
     return []
   })
 
-  return deduplicateArtifactIds(entityIds)
+  const primitiveFaceIds = selections.otherSelections.flatMap((selection) =>
+    typeof selection === 'object' &&
+    'type' in selection &&
+    selection.type === 'enginePrimitive' &&
+    selection.primitiveType === 'face'
+      ? [selection.entityId]
+      : []
+  )
+  return deduplicateArtifactIds([...entityIds, ...primitiveFaceIds])
 }
 
 function getDecisiveAxis(
@@ -375,6 +394,21 @@ export function getDefaultGdtFramePlaneFromBoundingBox(
   }
 
   return getFramePlaneForFeaturePlane(getFeaturePlaneForNormalAxis(axis))
+}
+
+function getDistanceFramePlaneFromDirection(
+  direction: Point3d
+): GdtFramePlane | undefined {
+  const values = [direction.x, direction.y, direction.z]
+  if (!values.every(Number.isFinite) || Math.hypot(...values) === 0) {
+    return undefined
+  }
+  // Choose the standard plane that retains the most of the measurement.
+  // Prefer XY for horizontal distances, then XZ when the distance is vertical.
+  const normalAxis = (['z', 'y', 'x'] as const).reduce((best, axis) =>
+    Math.abs(direction[axis]) < Math.abs(direction[best]) ? axis : best
+  )
+  return getFeaturePlaneForNormalAxis(normalAxis)
 }
 
 export function getAverageBoundingBoxDimension(
@@ -604,9 +638,32 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
           fontSize: existingFontSize,
         }
   let hasResolvedFramePlane = Boolean(nextData.framePlane)
+  if (distance && !nextData.framePlane && entityIds.length === 2) {
+    const bounds = await Promise.all(
+      entityIds.map((entityId) =>
+        getBoundingBoxForGdtEntities({
+          engineCommandManager,
+          entityIds: [entityId],
+          outputUnit,
+        })
+      )
+    )
+    const [from, to] = bounds
+    if (from?.center && to?.center) {
+      const framePlane = getDistanceFramePlaneFromDirection({
+        x: to.center.x - from.center.x,
+        y: to.center.y - from.center.y,
+        z: to.center.z - from.center.z,
+      })
+      if (framePlane) {
+        nextData = { ...nextData, framePlane }
+        hasResolvedFramePlane = true
+      }
+    }
+  }
   let framePositionSigns: GdtFramePositionSigns | undefined
   const shouldQueryNormalDefaults =
-    !nextData.framePlane || !nextData.framePosition
+    !nextData.framePlane || (!distance && !nextData.framePosition)
 
   if (shouldQueryNormalDefaults) {
     const defaultsFromNormal =
@@ -620,7 +677,7 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
       hasResolvedFramePlane = true
       if (
         !nextData.framePlane &&
-        defaultsFromNormal.framePlane !== KCL_PLANE_XY
+        (distance || defaultsFromNormal.framePlane !== KCL_PLANE_XY)
       ) {
         nextData = {
           ...nextData,
@@ -645,13 +702,13 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
     : undefined
 
   if (!hasResolvedFramePlane && selectionBoundingBox) {
-    const framePlaneFromBoundingBox = getDefaultGdtFramePlaneFromBoundingBox(
-      selectionBoundingBox.dimensions
-    )
+    const framePlaneFromBoundingBox = distance
+      ? getDistanceFramePlaneFromDirection(selectionBoundingBox.dimensions)
+      : getDefaultGdtFramePlaneFromBoundingBox(selectionBoundingBox.dimensions)
 
     if (framePlaneFromBoundingBox) {
       hasResolvedFramePlane = true
-      if (framePlaneFromBoundingBox !== KCL_PLANE_XY) {
+      if (distance || framePlaneFromBoundingBox !== KCL_PLANE_XY) {
         nextData = {
           ...nextData,
           framePlane: framePlaneFromBoundingBox,
@@ -715,6 +772,10 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
         wasmInstance
       ),
     }
+  }
+
+  if (distance && !nextData.framePlane) {
+    nextData = { ...nextData, framePlane: KCL_PLANE_XY }
   }
 
   return nextData

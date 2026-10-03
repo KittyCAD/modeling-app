@@ -3118,7 +3118,7 @@ export default {
       {
         "name": "framePlane",
         "ty": "Plane",
-        "docs": "The plane in which to display the distance. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The distance may be displayed in a plane parallel to the given plane.",
+        "docs": "The plane in which to display the distance. Handwritten KCL defaults to `XY` when omitted. Point-and-click chooses a standard plane from the measurement direction and selected geometry, and writes it explicitly. For measurements along Z, use `XZ` or `YZ` so the dimension is visible. The distance may be displayed in a plane parallel to the given plane.",
         "required": false,
         "special": false,
         "experimental": false,
