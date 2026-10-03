@@ -127,6 +127,7 @@ const codeEditorSettingsItem = defineRegistryItem({
     provide(settingsValueSpec, {
       textEditor: {
         automaticallyRender: defineBooleanExtensionSetting({
+          id: 'textEditor.automaticallyRender',
           defaultValue: true,
           description:
             'Whether the code editor should automatically render changes.',
