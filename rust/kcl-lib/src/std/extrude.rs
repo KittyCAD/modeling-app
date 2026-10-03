@@ -55,8 +55,10 @@ use crate::execution::TagEngineInfo;
 use crate::execution::TagIdentifier;
 use crate::execution::annotations;
 use crate::execution::types::ArrayLen;
+use crate::execution::types::NumericType;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
+use crate::execution::types::UnitType;
 use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
@@ -135,6 +137,14 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                     ))
                 })?
             };
+            if let Point3dOrEdgeReference::Point(point) = &inner
+                && !point.iter().all(is_length)
+            {
+                return Err(KclError::new_type(KclErrorDetails::new(
+                    "The components of `direction` must be lengths, e.g. `[0, 0, 1]` or `[1mm, 0mm, 1in]`".to_owned(),
+                    vec![args.source_range],
+                )));
+            }
             Some(inner)
         }
     };
@@ -619,13 +629,18 @@ async fn inner_extrude(
             ),
             (None, None, None, Some(length), None, Some(dir)) => {
                 let direction3d = match dir {
-                    Point3dOrEdgeReference::Point(p) => Some(DirectionType::Axis {
-                        direction: KPoint3d {
-                            x: p[0].n,
-                            y: p[1].n,
-                            z: p[2].n,
-                        },
-                    }),
+                    Point3dOrEdgeReference::Point(p) => {
+                        // Only the direction matters, so use the file's unit: a direction that
+                        // doesn't mix units is sent with the same numbers as it was written.
+                        let units = exec_state.length_unit();
+                        Some(DirectionType::Axis {
+                            direction: KPoint3d {
+                                x: p[0].to_length_units(units),
+                                y: p[1].to_length_units(units),
+                                z: p[2].to_length_units(units),
+                            },
+                        })
+                    }
                     Point3dOrEdgeReference::Edge(edge) => {
                         let edge_id = match edge {
                             crate::std::fillet::EdgeReference::Uuid(uuid) => *uuid,
@@ -1574,6 +1589,14 @@ fn fake_extrude_surface(exec_state: &mut ExecState, path: &Path) -> Option<Extru
     Some(extrude_surface)
 }
 
+/// Can `n` be converted with `TyF64::to_length_units`? True for lengths and for numbers that use the file's default units.
+fn is_length(n: &TyF64) -> bool {
+    matches!(
+        n.ty,
+        NumericType::Default { .. } | NumericType::Known(UnitType::Length(_))
+    )
+}
+
 #[cfg(test)]
 mod tests {
     use kcl_api::UnitLength;
@@ -1651,6 +1674,64 @@ extrude(profile001, length = 1, bidirectionalLength = -1)
             .expect("expected an extrude command");
 
         assert_eq!(extrude.opposite, Opposite::Other(LengthUnit(-1.0)));
+    }
+
+    fn extrude_direction_code(default_unit: &str, direction: &str) -> String {
+        format!(
+            r#"@settings(kclVersion = 2.0, defaultLengthUnit = {default_unit})
+profile = sketch(on = XY) {{
+  circle1 = circle(center = [10mm, 0mm], start = [11mm, 0mm])
+}}
+extrude(profile.circle1, length = 1, direction = {direction}, bodyType = SURFACE)"#
+        )
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn extrude_converts_direction_to_the_file_units() {
+        // https://github.com/KittyCAD/modeling-app/issues/14343
+        // Each component is converted to the file's unit before the direction is sent to the engine.
+        let cases = [
+            ("mm", "[-1, 0, 1ft]", [-1.0, 0.0, 304.8]),
+            ("mm", "[-1mm, 0mm, 304.8mm]", [-1.0, 0.0, 304.8]),
+            ("mm", "[-1, 0, 1]", [-1.0, 0.0, 1.0]),
+            ("in", "[-1mm, 0, 1ft]", [-1.0 / 25.4, 0.0, 12.0]),
+            ("in", "[-1, 0, 1]", [-1.0, 0.0, 1.0]),
+        ];
+
+        for (default_unit, direction, expected) in cases {
+            let code = extrude_direction_code(default_unit, direction);
+            let result = parse_execute(&code).await.unwrap();
+            let direction = result
+                .root_module_artifact_commands()
+                .iter()
+                .find_map(|artifact_command| match &artifact_command.command {
+                    ModelingCmd::Extrude(extrude) => extrude.direction,
+                    _ => None,
+                })
+                .expect("expected an extrude command with a direction");
+            let DirectionType::Axis { direction } = direction else {
+                panic!("expected an axis direction, got {direction:?} for:\n{code}");
+            };
+            let actual = [direction.x, direction.y, direction.z];
+            assert!(
+                actual.iter().zip(expected).all(|(a, e)| (a - e).abs() < 1e-9),
+                "expected {expected:?}, got {actual:?} for:\n{code}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn extrude_rejects_direction_that_is_not_lengths() {
+        for direction in ["[0, 0, 1deg]", "[0, 0, 1mm + 1deg]", "[0, 0, 1_]"] {
+            let code = extrude_direction_code("mm", direction);
+            let err = parse_execute(&code).await.unwrap_err();
+            assert!(matches!(&err, KclError::Type { .. }), "{err:?} for:\n{code}");
+            let message = err.message();
+            assert!(
+                message.contains("The components of `direction` must be lengths"),
+                "{message} for:\n{code}"
+            );
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]
