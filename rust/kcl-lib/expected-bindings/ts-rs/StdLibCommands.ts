@@ -7411,6 +7411,128 @@ export default {
       }
     ]
   },
+  "plane": {
+    "name": "plane",
+    "preferredName": "plane",
+    "qualName": "std::plane",
+    "moduleName": "std",
+    "returnType": "Plane",
+    "addedIn": null,
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": false,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "origin",
+        "ty": "Point3d",
+        "docs": "Sketch origin for axes and normal definitions.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "xAxis",
+        "ty": "[number(_); 3]",
+        "docs": "X axis, or orientation hint projected into the plane.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "yAxis",
+        "ty": "[number(_); 3]",
+        "docs": "Y axis; must be perpendicular to X.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "normal",
+        "ty": "[number(_); 3]",
+        "docs": "Plane normal, with direction specifying the positive side.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "points",
+        "ty": "[Point3d; 3]",
+        "docs": "Three noncollinear points, in origin/X/Y-side order.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "a",
+        "ty": "number(_)",
+        "docs": "X coefficient of the plane equation.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "b",
+        "ty": "number(_)",
+        "docs": "Y coefficient of the plane equation.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "c",
+        "ty": "number(_)",
+        "docs": "Z coefficient of the plane equation.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "d",
+        "ty": "number(Length)",
+        "docs": "Constant length in the plane equation.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      }
+    ]
+  },
   "planeOf": {
     "name": "planeOf",
     "preferredName": "planeOf",

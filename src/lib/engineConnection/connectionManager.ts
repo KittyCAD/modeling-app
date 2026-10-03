@@ -913,9 +913,22 @@ export class ConnectionManager extends EventTarget {
         })
 
         const modelingResponse = message.resp.data.modeling_response
+        // Keep the originating cursor location with the response so ambiguous
+        // vertex references can be resolved against the actual click.
+        const subscriptionResponse =
+          modelingResponse.type === 'query_entity_type_with_point' &&
+          pending.command.cmd.type === 'query_entity_type_with_point'
+            ? {
+                ...modelingResponse,
+                data: {
+                  ...modelingResponse.data,
+                  selectedAtWindow: pending.command.cmd.selected_at_window,
+                },
+              }
+            : modelingResponse
 
         Object.values(this.subscriptions[modelingResponse.type] || {}).forEach(
-          (callback) => callback(modelingResponse)
+          (callback) => callback(subscriptionResponse)
         )
 
         this.responseMap[message.request_id] = message.resp

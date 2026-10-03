@@ -181,6 +181,22 @@ export type ChamferCommandArgs = Override<
 
 export type OffsetPlaneCommandArgs = PointAndClickCommandArgs<'Offset plane'>
 
+export type PlaneMethod = 'Axes' | 'Normal' | 'Points' | 'Equation'
+export type ConstructionPlaneCommandArgs = {
+  method: PlaneMethod
+  pointSource?: 'Pick' | 'Coordinates'
+  pickedPoints?: Selections
+  origin?: KclCommandValue
+  normal?: KclCommandValue
+  xAxis?: KclCommandValue
+  yAxis?: KclCommandValue
+  points?: KclCommandValue
+  a?: KclCommandValue
+  b?: KclCommandValue
+  c?: KclCommandValue
+  d?: KclCommandValue
+}
+
 export type HelixCommandArgs = Override<
   Omit<PointAndClickCommandArgs<'Helix'>, 'axis'>,
   {
@@ -303,6 +319,7 @@ export type StdLibModelingCommandSchema = {
   Fillet: FilletCommandArgs
   Chamfer: ChamferCommandArgs
   'Offset plane': OffsetPlaneCommandArgs
+  'Construction plane': ConstructionPlaneCommandArgs
   Helix: HelixCommandArgs
   'Helical Gear': HelicalGearCommandArgs
   'Herringbone Gear': HerringboneGearCommandArgs
