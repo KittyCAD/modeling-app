@@ -1,10 +1,10 @@
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
+import type { StdLibCommandArgShape } from '@rust/kcl-lib/bindings/StdLibCommandTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
-export type KclVersionRange = {
-  addedIn?: string | null
-  removedIn?: string | null
-}
+export type KclVersionRange = Partial<
+  Pick<StdLibCommandArgShape, 'addedIn' | 'removedIn'>
+>
 
 export function isKclVersionAvailable(
   version: KclVersion | null,
