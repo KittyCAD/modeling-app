@@ -56,10 +56,14 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
       contributions
     ) => {
       const rootLayout = structuredClone(layoutSignal.peek())
+      const paneOpenBehavior = settings.get().layout.paneOpenBehavior.current
       const results = contributions.map((contribution) =>
         applyLayoutContribution({
           rootLayout,
           contribution,
+          config: {
+            paneOpenBehavior,
+          },
         })
       )
 
@@ -78,10 +82,12 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
 
     function togglePane(paneId: string) {
       const rootLayout = structuredClone(get())
+      const paneOpenBehavior = settings.get().layout.paneOpenBehavior.current
       return set(
         togglePaneLayoutNode({
           rootLayout,
           targetNodeId: paneId,
+          paneOpenBehavior,
         })
       )
     }
