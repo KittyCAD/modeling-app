@@ -1184,7 +1184,7 @@ pub(crate) enum GetTangentialInfoFromPathsResult {
         center: [f64; 2],
         ccw: bool,
         major_axis: [f64; 2],
-        _minor_radius: f64,
+        minor_radius: f64,
     },
 }
 
@@ -1200,12 +1200,20 @@ impl GetTangentialInfoFromPathsResult {
             GetTangentialInfoFromPathsResult::Circle {
                 center, radius, ccw, ..
             } => [center[0] + radius, center[1] + if *ccw { -1.0 } else { 1.0 }],
+            // The arc may end anywhere on the ellipse, so recover its end
+            // parameter from the end point and take the tangent there.
             GetTangentialInfoFromPathsResult::Ellipse {
                 center,
                 major_axis,
+                minor_radius,
                 ccw,
-                ..
-            } => [center[0] + major_axis[0], center[1] + if *ccw { -1.0 } else { 1.0 }],
+            } => crate::std::utils::get_tangent_point_from_previous_ellipse(
+                *center,
+                *major_axis,
+                *minor_radius,
+                *ccw,
+                last_arc_end,
+            ),
         }
     }
 }
@@ -2102,7 +2110,6 @@ impl Path {
                     radius: circle.radius,
                 }
             }
-            // TODO: (bc) fix me
             Path::Ellipse {
                 center,
                 major_axis,
@@ -2112,7 +2119,7 @@ impl Path {
             } => GetTangentialInfoFromPathsResult::Ellipse {
                 center: *center,
                 major_axis: *major_axis,
-                _minor_radius: *minor_radius,
+                minor_radius: *minor_radius,
                 ccw: *ccw,
             },
             Path::Conic { .. }
