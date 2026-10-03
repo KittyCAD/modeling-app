@@ -64,7 +64,7 @@ export function listNamedViews({
  * The artifact kinds a view can show or hide.
  *
  * Adding a kind here without an arm in `isIndependentlyHideable` and
- * `engineIdForArtifact` fails to compile. `kclNamedViews.test.ts` compares the
+ * `engineIdForArtifact` fails lint. `kclNamedViews.test.ts` compares the
  * list against the types `except` accepts.
  */
 export const VISIBILITY_KINDS = [
@@ -112,10 +112,6 @@ function isIndependentlyHideable(artifact: VisibilityArtifact): boolean {
       return true
     case 'plane':
       return artifact.pathIds.length === 0
-    default: {
-      const _exhaustiveCheck: never = artifact
-      return _exhaustiveCheck
-    }
   }
 }
 
@@ -227,10 +223,6 @@ function engineIdForSweep(
     case 'loft':
     case 'blend':
       return sweep.id
-    default: {
-      const _exhaustiveCheck: never = sweep.subType
-      return _exhaustiveCheck
-    }
   }
 }
 
@@ -265,10 +257,6 @@ export function engineIdForArtifact({
       return artifact.id
     case 'pattern':
       return id
-    default: {
-      const _exhaustiveCheck: never = artifact
-      return _exhaustiveCheck
-    }
   }
 }
 

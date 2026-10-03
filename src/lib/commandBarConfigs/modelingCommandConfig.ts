@@ -505,6 +505,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
                   value: 'binary_little_endian',
                 },
               ]
+            case undefined:
+            case 'step':
+            case 'obj':
+            case 'fbx':
             default:
               return []
           }
