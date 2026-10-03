@@ -209,6 +209,7 @@ fn unitless_direction([x, y, z]: [TyF64; 3]) -> Point3d {
 mod tests {
     use crate::execution::ArtifactId;
     use crate::execution::KclValue;
+    use crate::execution::Operation;
     use crate::execution::Visibility;
     use crate::execution::parse_execute;
 
@@ -260,6 +261,24 @@ boss = extrude(bossRegion, length = 8mm)
         assert_eq!(value.name(), "Overview");
         assert_eq!(value.baseline(), Visibility::Show);
         assert!(value.except_ids().is_empty());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn named_is_not_a_feature_tree_operation() {
+        let program = r#"@settings(kclVersion = "3.0-preview")
+view::named(
+  "Front",
+  camera = view::oriented(view::Orientation::Front),
+  baseline = view::Visibility::Show,
+)"#;
+        let result = parse_execute(program).await.expect("the program executes");
+
+        assert!(
+            !result
+                .root_module_operations()
+                .iter()
+                .any(|operation| matches!(operation, Operation::StdLibCall { name, .. } if name == "view::named"))
+        );
     }
 
     /// The `except` list accepts more than one kind of object in one call, and

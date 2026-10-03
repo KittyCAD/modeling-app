@@ -18,6 +18,7 @@ import { isPlaywright } from '@src/lib/isPlaywright'
 import { EngineDebugger } from '@src/lib/debugger'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
+import { resetNamedViewSession } from '@src/lib/kclNamedViewActivation'
 import { layoutService } from '@src/lib/layout/registry/contract'
 import type { LayoutService } from '@src/lib/layout/types'
 import type { MachineManager } from '@src/lib/MachineManager'
@@ -411,6 +412,7 @@ export class App implements AppSubsystems {
     const nextProject = await ZDSProject.open(projectIORefSignal, this)
     assertCurrent()
 
+    resetNamedViewSession()
     this.disposeProjectHistoryExtensions?.()
     // We only ever allow one project to be open at a time in the app,
     // so we gotta clean up after ourselves and close any open project.
@@ -533,6 +535,7 @@ export class App implements AppSubsystems {
   }
 
   closeProject() {
+    resetNamedViewSession()
     this.disposeProjectHistoryExtensions?.()
     this.disposeProjectHistoryExtensions = undefined
     this.unsubscribeFromSettings?.unsubscribe()
