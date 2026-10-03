@@ -17,12 +17,17 @@ import type {
 import { assertParse, recast } from '@src/lang/wasm'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import {
   canSubmitSelectionArg,
   codeToIdSelections,
   findLastRangeStartingBefore,
   getEventForQueryEntityTypeWithPoint,
   getCodeRefsFromEntityReference,
+  getPrimitiveSelectionForEntity,
+  getEnginePrimitiveSelectionFromSelection,
+  getEngineTopologyFallbackNormalized,
+  getSelectionCountByType,
   getSelectionReferences,
   getSelectionTypeDisplayText,
   getStableOffsetPlaneData,
@@ -110,6 +115,153 @@ test('includes region, source segment, and sweep ranges for a wall face', () => 
     { range: sweepRange },
   ])
 })
+
+test.each([true, false])(
+  'preserves imported body ancestry through SelectionV2 (pick id: %s)',
+  async (includePickId) => {
+    const importedGeometry = {
+      type: 'importedGeometry',
+      id: 'import-root',
+      consumed: false,
+      codeRef: {
+        range: [0, 1, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+    } as Artifact
+    const artifactGraph = new Map<string, Artifact>([
+      [importedGeometry.id, importedGeometry],
+    ])
+    const engineCommandManager = {
+      sendSceneCommand: vi.fn(
+        async ({ cmd }: { cmd: { type: string; entity_id: string } }) => {
+          if (cmd.type === 'entity_get_primitive_index') {
+            return {
+              success: true,
+              resp: {
+                type: 'modeling',
+                data: {
+                  modeling_response: {
+                    type: 'entity_get_primitive_index',
+                    data: { entity_type: 'face', primitive_index: 4 },
+                  },
+                },
+              },
+            }
+          }
+
+          if (cmd.type === 'entity_get_parent_id') {
+            const parentByEntity: Record<string, string> = {
+              'selected-face': 'imported-body',
+              'imported-body': 'assembly-node',
+              'assembly-node': importedGeometry.id,
+            }
+            return {
+              success: true,
+              resp: {
+                type: 'modeling',
+                data: {
+                  modeling_response: {
+                    type: 'entity_get_parent_id',
+                    data: { entity_id: parentByEntity[cmd.entity_id] },
+                  },
+                },
+              },
+            }
+          }
+
+          if (cmd.type === 'entity_get_index') {
+            const indexByEntity: Record<string, number> = {
+              'imported-body': 7,
+              'assembly-node': 3,
+            }
+            return {
+              success: true,
+              resp: {
+                type: 'modeling',
+                data: {
+                  modeling_response: {
+                    type: 'entity_get_index',
+                    data: { entity_index: indexByEntity[cmd.entity_id] },
+                  },
+                },
+              },
+            }
+          }
+
+          throw new Error(`Unexpected command ${cmd.type}`)
+        }
+      ),
+    } as unknown as ConnectionManager
+
+    await expect(
+      getPrimitiveSelectionForEntity(
+        'selected-face',
+        engineCommandManager,
+        artifactGraph
+      )
+    ).resolves.toEqual({
+      type: 'enginePrimitive',
+      entityId: 'selected-face',
+      parentEntityId: 'imported-body',
+      kclBodyId: 'import-root',
+      kclBodyArtifactType: 'importedGeometry',
+      bodyPath: [3, 7],
+      primitiveIndex: 4,
+      primitiveType: 'face',
+    })
+    const { instance } = await buildTheWorldAndNoEngineConnection()
+    const event = await getEventForQueryEntityTypeWithPoint(
+      {
+        reference: {
+          type: 'face',
+          face_id: 'selected-face',
+          topology_fallback: { parent_id: 'imported-body', primitive_index: 4 },
+        },
+        ...(includePickId ? { entity_id: 'selected-face' } : {}),
+      },
+      {
+        engineCommandManager,
+        kclManager: {
+          ast: assertParse('import "part.step" as part', instance),
+          artifactGraph,
+        } as KclManager,
+        rustContext: { defaultPlanes: null } as any,
+        wasmInstance: instance,
+        useSegmentsBasedRegions: false,
+      }
+    )
+    if (
+      event?.type !== 'Set selection' ||
+      event.data.selectionType !== 'singleCodeCursor'
+    ) {
+      throw new Error('Expected a SelectionV2 graph face')
+    }
+    const selection = { ...event.data.selection, selectionOrder: 2 }
+    expect(selection.entityRef).toEqual({
+      type: 'face',
+      face_id: 'selected-face',
+    })
+    expect(getEngineTopologyFallbackNormalized(selection)).toEqual({
+      parentId: 'imported-body',
+      primitiveIndex: 4,
+      kclBodyId: 'import-root',
+      kclBodyArtifactType: 'importedGeometry',
+      bodyPath: [3, 7],
+    })
+    expect(getEnginePrimitiveSelectionFromSelection(selection)).toEqual({
+      type: 'enginePrimitive',
+      entityId: 'selected-face',
+      parentEntityId: 'imported-body',
+      primitiveType: 'face',
+      primitiveIndex: 4,
+      kclBodyId: 'import-root',
+      kclBodyArtifactType: 'importedGeometry',
+      bodyPath: [3, 7],
+      selectionOrder: 2,
+    })
+  }
+)
 
 describe('testing source range to artifact conversion', () => {
   const MY_CODE = `sketch001 = startSketchOn(XZ)
@@ -1706,6 +1858,83 @@ cube = extrude(cubeRegion, length = 10)
       references.find((reference) => reference.label === 'Edge')?.code
     ).toBe('seg01')
   })
+
+  test.each(['primitive', 'entityRef'] as const)(
+    'creates faceId and edgeId references for imported BREP topology (%s)',
+    async (selectionKind) => {
+      const { instance } = await buildTheWorldAndNoEngineConnection()
+      const code = 'import "part.step" as importedPart\n'
+      const ast = assertParse(code, instance)
+      const range = [0, code.trimEnd().length, 0] as SourceRange
+      const codeRef = {
+        range,
+        pathToNode: getNodePathFromSourceRange(ast, range),
+      }
+      const importedGeometry = {
+        type: 'importedGeometry',
+        id: 'imported-body',
+        codeRef,
+      } as Artifact
+      const artifactGraph = new Map<string, Artifact>([
+        [importedGeometry.id, importedGeometry],
+      ])
+
+      const primitives: EnginePrimitiveSelection[] = [
+        {
+          type: 'enginePrimitive',
+          entityId: 'imported-face',
+          parentEntityId: 'imported-engine-body',
+          kclBodyId: importedGeometry.id,
+          bodyPath: [3, 7],
+          primitiveIndex: 4,
+          primitiveType: 'face',
+        },
+        {
+          type: 'enginePrimitive',
+          entityId: 'imported-edge',
+          parentEntityId: 'imported-engine-body',
+          kclBodyId: importedGeometry.id,
+          bodyPath: [3, 8],
+          primitiveIndex: 7,
+          primitiveType: 'edge',
+        },
+      ]
+      const graphSelections: Selection[] = primitives.map((primitive) => ({
+        entityRef:
+          primitive.primitiveType === 'face'
+            ? { type: 'face', face_id: primitive.entityId }
+            : { type: 'edge', side_faces: ['unmapped-side-face'], index: 0 },
+        engineEntityId: primitive.entityId,
+        engineTopologyFallback: {
+          parentId: primitive.parentEntityId!,
+          primitiveIndex: primitive.primitiveIndex,
+          kclBodyId: primitive.kclBodyId,
+          kclBodyArtifactType: 'importedGeometry',
+          bodyPath: primitive.bodyPath,
+        },
+      }))
+      const references = await getSelectionReferences({
+        graphSelections: selectionKind === 'entityRef' ? graphSelections : [],
+        defaultPlaneSelections: [],
+        enginePrimitives: selectionKind === 'primitive' ? primitives : [],
+        artifactGraph,
+        engineCommandManager: null as never,
+        kclManager: { ast } as KclManager,
+        wasmInstance: instance,
+      })
+
+      expect(references.map(({ label, code }) => ({ label, code }))).toEqual([
+        {
+          label: 'Face',
+          code: 'faceId(bodyOf(importedPart, path = [3, 7]), index = 4)',
+        },
+        {
+          label: 'Edge',
+          code: 'edgeId(bodyOf(importedPart, path = [3, 8]), index = 7)',
+        },
+      ])
+    }
+  )
 
   test('includes selected default planes and lets them be removed', async () => {
     const defaultPlaneSelection = {
@@ -3786,11 +4015,44 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
           type: 'enginePrimitive',
           entityId: 'surface-edge',
           parentEntityId: 'surface-sweep',
+          kclBodyArtifactType: 'sweep',
           primitiveIndex: 1,
           primitiveType: 'edge',
         },
       },
     })
+  })
+
+  test('classifies imported BREP faces as engine primitives', () => {
+    const selection = {
+      graphSelections: [],
+      otherSelections: [
+        {
+          type: 'enginePrimitive',
+          entityId: 'imported-face',
+          kclBodyArtifactType: 'importedGeometry',
+          primitiveIndex: 0,
+          primitiveType: 'face',
+        },
+        {
+          type: 'enginePrimitive',
+          entityId: 'imported-edge',
+          kclBodyArtifactType: 'importedGeometry',
+          primitiveIndex: 0,
+          primitiveType: 'edge',
+        },
+      ],
+    } as Selections
+
+    expect(getSelectionCountByType({} as any, selection)).toEqual(
+      new Map([
+        ['enginePrimitiveFace', 1],
+        ['enginePrimitiveEdge', 1],
+      ])
+    )
+    expect(getSelectionTypeDisplayText({} as any, selection)).toBe(
+      '1 face, 1 edge'
+    )
   })
 
   test('coalesces face-like selections under face', () => {

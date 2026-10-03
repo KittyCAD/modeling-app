@@ -447,7 +447,9 @@ cfdBoundingHollowCylinder = subtract(outerBody, tools = innerBody)
     })
 
     expect(modelingSelections.graphSelections).toStrictEqual([])
-    expect(modelingSelections.otherSelections).toStrictEqual([faceSelection])
+    expect(modelingSelections.otherSelections).toStrictEqual([
+      { ...faceSelection, selectionOrder: 0 },
+    ])
 
     const sentPayloads = await sendZookeeperMessage({
       code,
@@ -508,7 +510,9 @@ extrude001 = extrude(profile001, length = 10mm)
     })
 
     expect(modelingSelections.graphSelections).toStrictEqual([])
-    expect(modelingSelections.otherSelections).toStrictEqual([faceSelection])
+    expect(modelingSelections.otherSelections).toStrictEqual([
+      { ...faceSelection, selectionOrder: 0 },
+    ])
 
     const sentPayloads = await sendZookeeperMessage({
       code,

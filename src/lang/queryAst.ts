@@ -1413,6 +1413,23 @@ export function getVariableExprsFromSelection(
   const pushedNames = {} as Record<string, boolean>
   for (const s of selection.graphSelections) {
     const resolvedForSegment = resolveToCodeRef(s, artifactGraph)
+    const importAlias = findImportNodeAndAlias(
+      ast,
+      resolvedForSegment?.codeRef.pathToNode ?? [],
+      wasmInstance
+    )?.alias
+    const addImportAliasExpr = () => {
+      if (!importAlias) {
+        return false
+      }
+
+      if (!pushedNames[importAlias]) {
+        exprs.push(createLocalName(importAlias))
+        pushedNames[importAlias] = true
+      }
+      return true
+    }
+
     const patternExpr = getPatternExprFromSelection(s, ast, wasmInstance)
     if (patternExpr) {
       const key = splitOutputExprKey(patternExpr)
@@ -1597,6 +1614,7 @@ export function getVariableExprsFromSelection(
           nodeToEdit
         )
         if (!lastChildVariable) {
+          addImportAliasExpr()
           continue
         }
         variable = lastChildVariable.variableDeclaration
@@ -1611,6 +1629,7 @@ export function getVariableExprsFromSelection(
         'VariableDeclaration'
       )
       if (err(directLookup)) {
+        addImportAliasExpr()
         continue
       }
 
@@ -1652,14 +1671,7 @@ export function getVariableExprsFromSelection(
       continue
     }
 
-    // import case
-    const importNodeAndAlias = findImportNodeAndAlias(
-      ast,
-      pathToNodeForVariable,
-      wasmInstance
-    )
-    if (importNodeAndAlias) {
-      exprs.push(createLocalName(importNodeAndAlias.alias))
+    if (addImportAliasExpr()) {
       continue
     }
 
@@ -1699,9 +1711,13 @@ export function artifactToEntityRef(
   if (artifactType === 'startSketchOnFace')
     return { type: 'face', face_id: artifactId }
   // Wall and cap are faces from the engine's perspective; map to face entity ref.
-  if (artifactType === 'wall' || artifactType === 'cap')
+  if (
+    artifactType === 'wall' ||
+    artifactType === 'cap' ||
+    artifactType === 'primitiveFace'
+  )
     return { type: 'face', face_id: artifactId }
-  if (artifactType === 'edgeCut')
+  if (artifactType === 'edgeCut' || artifactType === 'primitiveEdge')
     return { type: 'solid2d_edge', edge_id: artifactId }
   return undefined
 }
@@ -2359,7 +2375,7 @@ export function getSelectedPlaneId(selectionRanges: Selections): string | null {
   return null
 }
 
-// Returns the plane/wall/cap/edgeCut within the current selection that can be used to start a sketch on.
+// Returns the plane or face within the current selection that can be used to start a sketch on.
 export function getSelectedSketchTarget(
   selectionRanges: Selections
 ): string | null {
@@ -2386,7 +2402,7 @@ export function getSelectedSketchTarget(
     return (
       entityType === 'plane' ||
       entityType === 'face' ||
-      ['plane', 'wall', 'cap'].includes(artifactType) ||
+      ['plane', 'wall', 'cap', 'primitiveFace'].includes(artifactType) ||
       (selection.artifact?.type === 'edgeCut' &&
         selection.artifact?.subType === 'chamfer')
     )
