@@ -5,6 +5,8 @@ excerpt: "Get the next adjacent edge to the edge given."
 layout: manual
 ---
 
+**WARNING:** This function is deprecated as of KCL 3.0.
+
 Get the next adjacent edge to the edge given.
 
 ```kcl

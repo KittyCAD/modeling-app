@@ -1314,7 +1314,7 @@ export fn patternTransform2d(
 ///     tags = [getOppositeEdge(referenceEdge)],
 ///   )
 /// ```
-@(impl = std_rust, feature_tree = false)
+@(impl = std_rust, feature_tree = false, deprecated_since = "3.0")
 export fn getOppositeEdge(
   /// The tag of the edge you want to find the opposite edge of.
   @edge: TaggedEdge,
@@ -1348,7 +1348,7 @@ export fn getOppositeEdge(
 ///     tags = [getNextAdjacentEdge(referenceEdge)],
 ///   )
 /// ```
-@(impl = std_rust, feature_tree = false)
+@(impl = std_rust, feature_tree = false, deprecated_since = "3.0")
 export fn getNextAdjacentEdge(
   /// The tag of the edge you want to find the next adjacent edge of.
   @edge: TaggedEdge,
@@ -1382,7 +1382,7 @@ export fn getNextAdjacentEdge(
 ///     tags = [getPreviousAdjacentEdge(referenceEdge)],
 ///   )
 /// ```
-@(impl = std_rust, feature_tree = false)
+@(impl = std_rust, feature_tree = false, deprecated_since = "3.0")
 export fn getPreviousAdjacentEdge(
   /// The tag of the edge you want to find the previous adjacent edge of.
   @edge: TaggedEdge,
@@ -1418,7 +1418,7 @@ export fn getPreviousAdjacentEdge(
 ///   part001.faces.end0,
 /// ])
 /// ```
-@(impl = std_rust, feature_tree = false)
+@(impl = std_rust, feature_tree = false, deprecated_since = "3.0")
 export fn getCommonEdge(
   /// The tags of the faces you want to find the common edge between.
   faces: [TaggedFace; 2],
