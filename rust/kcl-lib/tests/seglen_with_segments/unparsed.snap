@@ -1,0 +1,23 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing seglen_with_segments.kcl
+---
+// Make a triangle
+sketch001 = sketch(on = YZ) {
+  line1 = line(start = [var 5.29mm, var -4.11mm], end = [var -4.31mm, var -4.11mm])
+  line2 = line(start = [var -4.31mm, var -4.11mm], end = [var 0.49mm, var 5.14mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 0.49mm, var 5.14mm], end = [var 5.29mm, var -4.11mm])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line1.start])
+  equalLength([line2, line3])
+  horizontal(line1)
+}
+// Extrude it
+region001 = region(point = [0.49mm, -4.1075mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 1)
+
+// Measure its side lengths
+side1Len = segLen(sketch001.line1)
+side2Len = segLen(sketch001.line2)
+side3Len = segLen(sketch001.line3)
