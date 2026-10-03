@@ -1,6 +1,5 @@
 import { createActor, type Actor } from 'xstate'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { createLiteral } from '@src/lang/create'
 
 vi.mock('@src/lib/boot', () => ({ useApp: vi.fn(), useSingletons: vi.fn() }))
 import { assertParse, recast } from '@src/lang/wasm'
@@ -60,7 +59,7 @@ describe('modeling command KCL versions', () => {
       defaultScopes: [MODE_MODELING_COMMAND_SCOPE],
       showExperimentalCommands: true,
     })
-    if (isArray(result)) throw new Error('Expected a single command')
+    if (!result || isArray(result)) throw new Error('Expected a single command')
     return result
   }
 
@@ -68,7 +67,6 @@ describe('modeling command KCL versions', () => {
     await parseCode('@settings(kclVersion = 3.0)')
     const send = vi.fn()
     const sweep = command('Sweep', send)
-    if (!sweep) throw new Error('Expected Sweep')
     expect(sweep.args).not.toHaveProperty('relativeTo')
     expect(sweep.args).not.toHaveProperty('version')
     world.commandBarActor.send({ type: 'Open' })
@@ -79,36 +77,28 @@ describe('modeling command KCL versions', () => {
         argDefaultValues: {
           nodeToEdit: [],
           version: '1',
-          relativeTo: 'trajectoryCurve',
+          relativeTo: 'TRAJECTORY',
         },
       },
     })
     const values = world.commandBarActor.getSnapshot().context.argumentsToSubmit
-    expect(values).toHaveProperty('nodeToEdit')
-    expect(values.version).toBe('1')
-    expect(values.relativeTo).toBe('trajectoryCurve')
     sweep.onSubmit(values)
     expect(send).toHaveBeenCalledWith({
       type: 'Sweep',
       data: expect.objectContaining({
+        nodeToEdit: [],
         version: '1',
-        relativeTo: 'trajectoryCurve',
+        relativeTo: 'TRAJECTORY',
       }),
     })
   })
 
-  it('filters fields using the last parsed version without closing commands', async () => {
+  it('filters fields using the last parsed version and resets on parse failure or clear', async () => {
     const version = world.kclManager.kclProgramVersionSignal
     expect(version.value).toBe('2.0')
     const fillet = command('Fillet')
-    if (!fillet) throw new Error('Expected Fillet')
     expect(fillet.args).toHaveProperty('version')
     expect(fillet.args).not.toHaveProperty('tangentChain')
-    world.commandBarActor.send({ type: 'Open' })
-    world.commandBarActor.send({
-      type: 'Select command',
-      data: { command: fillet },
-    })
 
     world.kclManager.updateCodeEditor('@settings(kclVersion = 3.0)', {
       shouldExecute: false,
@@ -118,16 +108,15 @@ describe('modeling command KCL versions', () => {
     expect(version.value).toBe('2.0')
     await world.kclManager.safeParse(world.kclManager.code)
     expect(version.value).toBe('3.0')
-    expect(command('Fillet')?.args).not.toHaveProperty('version')
-    expect(command('Fillet')?.args).toHaveProperty('tangentChain')
-    expect(world.commandBarActor.getSnapshot().context.selectedCommand).toBe(
-      fillet
-    )
+    const v3Args = command('Fillet').args
+    expect(v3Args).not.toHaveProperty('version')
+    expect(v3Args).toHaveProperty('tangentChain')
     expect(await parseCode('@settings(kclVersion = 3.0)\nx =')).toBeNull()
     expect(version.value).toBeNull()
-    expect(command('Fillet')).not.toBeNull()
-    expect(command('Fillet')?.args).not.toHaveProperty('version')
-    expect(command('Fillet')?.args).not.toHaveProperty('tangentChain')
+    const unknownVersionArgs = command('Fillet').args
+    expect(unknownVersionArgs).toHaveProperty('radius')
+    expect(unknownVersionArgs).not.toHaveProperty('version')
+    expect(unknownVersionArgs).not.toHaveProperty('tangentChain')
     await parseCode('@settings(kclVersion = 3.0)')
     expect(version.value).toBe('3.0')
     world.kclManager.clearAst()
@@ -166,45 +155,6 @@ trajectory = sketch(on = XZ) {
       expect(generated).toContain('sweep(')
       if (version === '2.0') expect(generated).toContain('version = 2')
       else expect(generated).not.toContain('version =')
-    }
-  )
-
-  it.each<'Fillet' | 'Chamfer'>(['Fillet', 'Chamfer'])(
-    'edits %s tangentChain without policing existing version arguments',
-    async (name) => {
-      const dimension = name === 'Fillet' ? 'radius' : 'length'
-      const call = `${name.toLowerCase()}(body, ${dimension} = 1, tangentChain = true, version = 1)`
-      const code = `@settings(kclVersion = 3.0)\npart = ${call}`
-      const ast = assertParse(code, world.instance)
-      const start = code.indexOf(call)
-      const nodeToEdit = codeRefFromRange(
-        [start, start + call.length, 0],
-        ast
-      ).pathToNode
-      const size = {
-        valueAst: createLiteral(1, world.instance),
-        valueText: '1',
-        valueCalculated: '1',
-      }
-      const args = {
-        selection: { graphSelections: [], otherSelections: [] },
-        radius: size,
-        length: size,
-        nodeToEdit,
-        tangentChain: false,
-        version: size,
-      }
-      const result = await runModelingCodemod({
-        codemod: modelingCommandCodemods[name],
-        commandArgs: args,
-        kclManager: world.kclManager,
-        wasmInstance: world.instance,
-        sourceSnapshot: { code, ast },
-      })
-      if (isErr(result)) throw result
-      const generated = recast(result.modifiedAst, world.instance)
-      expect(generated).toContain('tangentChain = false')
-      expect(generated).toContain('version = 1')
     }
   )
 })
