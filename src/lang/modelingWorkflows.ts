@@ -22,9 +22,17 @@ import type { Selections } from '@src/machines/modelingSharedTypes'
 
 export async function mockExecAstAndReportErrors(
   ast: Node<Program>,
-  rustContext: RustContext
+  rustContext: RustContext,
+  path?: string
 ): Promise<undefined | Error> {
-  const { errors } = await executeAstMock({ ast, rustContext })
+  const { errors } = await executeAstMock({
+    ast,
+    rustContext,
+    path,
+    // Codemod validation executes a complete proposed AST. Reusing cached
+    // mock memory can deadlock when that program contains a foreign import.
+    usePrevMemory: false,
+  })
   if (errors.length > 0) {
     return new Error(errors.map((e) => e.message).join('\n'))
   }
@@ -71,7 +79,11 @@ export async function updateModelingState(
 
   // Step 0: Mock execute shit so we know it aint broke
   if (!options?.skipErrorsOnMockExecution) {
-    const res = await mockExecAstAndReportErrors(ast, kclManager.rustContext)
+    const res = await mockExecAstAndReportErrors(
+      ast,
+      kclManager.rustContext,
+      kclManager.path
+    )
     if (err(res)) {
       return Promise.reject(res)
     }
@@ -81,7 +93,12 @@ export async function updateModelingState(
   updatedAst = await kclManager.updateAst(
     ast,
     false, // Execution handled separately for error resilience
-    options
+    {
+      focusPath: options?.focusPath,
+      // Codemods provide a complete replacement AST. Reusing program memory
+      // can deadlock when the model imports foreign geometry.
+      usePrevMemory: false,
+    }
   )
 
   // Step 2: Update the code editor and save file

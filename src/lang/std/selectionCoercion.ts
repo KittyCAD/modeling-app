@@ -113,6 +113,14 @@ export function coerceSelectionsToBody(
       continue
     }
 
+    if (selection.artifact.type === 'importedGeometry') {
+      if (!seenBodyIds.has(selection.artifact.id)) {
+        seenBodyIds.add(selection.artifact.id)
+        passthroughSelections.push({ ...selV2, ...selection })
+      }
+      continue
+    }
+
     if (selection.artifact.type === 'helix') {
       passthroughSelections.push(selV2)
       continue
@@ -244,7 +252,8 @@ export function coerceSelectionsForBodyOnlySelectionTypes(
       type === 'sweep' ||
       type === 'compositeSolid' ||
       type === 'path' ||
-      type === 'helix'
+      type === 'helix' ||
+      type === 'importedGeometry'
   )
   if (!onlyAcceptsBodyLikeObjects) {
     return selections

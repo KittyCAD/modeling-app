@@ -7,7 +7,7 @@ import {
 } from '@src/lang/modelingWorkflows'
 import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 import { recast, type PathToNode, type Program } from '@src/lang/wasm'
-import type { CommandReviewValidationError } from '@src/lib/commandTypes'
+import type { CommandReviewValidationResult } from '@src/lib/commandTypes'
 import { EXECUTION_TYPE_REAL } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
 import { err, isErr } from '@src/lib/trap'
@@ -148,7 +148,7 @@ export function createModelingCodemodReviewValidation<CommandArgs>(
         }
       }
     }
-  ): Promise<undefined | CommandReviewValidationError> => {
+  ): Promise<undefined | CommandReviewValidationResult> => {
     if (!modelingActor) {
       return new Error('modelingMachine not found')
     }
@@ -176,24 +176,28 @@ export function createModelingCodemodReviewValidation<CommandArgs>(
       return codemodResult
     }
 
+    const proposedCode = recast(codemodResult.modifiedAst, wasmInstance)
+    if (isErr(proposedCode)) {
+      return proposedCode
+    }
+    const reviewDetails = {
+      type: 'codemod' as const,
+      currentCode: sourceSnapshot.code,
+      proposedCode,
+    }
+
     const execRes = await mockExecAstAndReportErrors(
       codemodResult.modifiedAst,
-      rustContext
+      rustContext,
+      kclManager.path
     )
     if (isErr(execRes)) {
-      const proposedCode = recast(codemodResult.modifiedAst, wasmInstance)
-      if (isErr(proposedCode)) {
-        return execRes
-      }
-
       return Object.assign(new Error(execRes.message, { cause: execRes }), {
-        reviewDetails: {
-          type: 'codemod' as const,
-          currentCode: sourceSnapshot.code,
-          proposedCode,
-        },
+        reviewDetails,
       })
     }
+
+    return { reviewDetails }
   }
 }
 

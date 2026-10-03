@@ -5,7 +5,7 @@ description: Operations executed import_transform.kcl
 {
   "rust/kcl-lib/tests/import_transform/input.kcl": [
     {
-      "type": "ModuleInstance",
+      "type": "ImportedGeometry",
       "name": "screw",
       "moduleId": 0,
       "nodePath": {
