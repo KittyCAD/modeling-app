@@ -6,9 +6,10 @@ test(
   async ({ page, homePage, scene, editor, toolbar, cmdBar }) => {
     await homePage.goToModelingScene()
     await editor.openPane()
-    await editor.replaceCode(
-      '',
-      `@settings(kclVersion = 2.0)
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode(
+        '',
+        `@settings(kclVersion = 2.0)
 outline = sketch(on = XY) {
   bottom = line(start = [0mm, 0mm], end = [40mm, 0mm])
   right = line(start = [40mm, 0mm], end = [40mm, 40mm])
@@ -17,12 +18,15 @@ outline = sketch(on = XY) {
 }
 face = region(point = [10mm, 10mm], sketch = outline)
 body = extrude(face, length = 20mm)`
+      )
     )
     await scene.settled()
     await scene.moveCameraTo(
       { x: 80, y: -100, z: 100 },
       { x: 20, y: 20, z: 10 }
     )
+    // Refresh the client camera after setting the engine camera directly.
+    await scene.getCameraInfo()
     const clickCorner = async (point: number[]) => {
       const projected = await page.evaluate((point) => {
         const camera =
@@ -43,6 +47,7 @@ body = extrude(face, length = 20mm)`
     await page.getByTestId('selection-filter-status').click()
     await page.getByRole('button', { name: 'Points', exact: true }).click()
     await clickCorner([0, 0, 20])
+    await expect(page.getByText('1 point', { exact: true })).toBeVisible()
     await expect
       .poll(() =>
         page.evaluate(
@@ -51,7 +56,9 @@ body = extrude(face, length = 20mm)`
       )
       .toEqual(['vertex'])
 
-    await page.getByTestId('plane-offset-dropdown').click()
+    await page
+      .getByRole('button', { name: 'planes: open menu', exact: true })
+      .click()
     await page.getByTestId('dropdown-plane-points').click()
     await expect
       .poll(async () => {
@@ -61,12 +68,30 @@ body = extrude(face, length = 20mm)`
       .toBe('pickedPoints')
     // First click replaces selection; Shift adds the remaining corners.
     await clickCorner([0, 0, 20])
-    await expect(page.getByText('1 point', { exact: true })).toBeVisible()
+    await expect
+      .poll(
+        async () =>
+          JSON.parse(await page.getByTestId('cmd-bar-arg-value').inputValue())
+            .graphSelections.length
+      )
+      .toBe(1)
     await page.keyboard.down('Shift')
     await clickCorner([40, 0, 20])
-    await expect(page.getByText('2 points', { exact: true })).toBeVisible()
+    await expect
+      .poll(
+        async () =>
+          JSON.parse(await page.getByTestId('cmd-bar-arg-value').inputValue())
+            .graphSelections.length
+      )
+      .toBe(2)
     await clickCorner([40, 40, 20])
-    await expect(page.getByText('3 points', { exact: true })).toBeVisible()
+    await expect
+      .poll(
+        async () =>
+          JSON.parse(await page.getByTestId('cmd-bar-arg-value').inputValue())
+            .graphSelections.length
+      )
+      .toBe(3)
     await page.keyboard.up('Shift')
     await cmdBar.progressCmdBar()
     await expect
