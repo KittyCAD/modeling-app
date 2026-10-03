@@ -52,10 +52,12 @@ use crate::parsing::ast::types::NodeRef;
 use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
+use crate::std::EQUAL_POINTS_DIST_EPSILON;
 use crate::std::args::TyF64;
 use crate::std::edge::UnresolvedEdgeSpecifier;
 use crate::std::sketch::FaceTag;
 use crate::std::sketch::PlaneData;
+use crate::std::utils::normalize_rad;
 use crate::util::MathExt;
 
 type Point3D = kcmc::shared::Point3d<f64>;
@@ -1998,43 +2000,20 @@ impl Path {
             Self::ToPoint { .. } | Self::Base { .. } | Self::Horizontal { .. } | Self::AngledLineTo { .. } => {
                 Some(linear_distance(&self.get_base().from, &self.get_base().to))
             }
-            Self::TangentialArc {
-                base: _,
-                center,
-                ccw: _,
-            }
-            | Self::TangentialArcTo {
-                base: _,
-                center,
-                ccw: _,
-            } => {
-                // The radius can be calculated as the linear distance between `to` and `center`,
-                // or between `from` and `center`. They should be the same.
-                let radius = linear_distance(&self.get_base().from, center);
-                debug_assert_eq!(radius, linear_distance(&self.get_base().to, center));
-                // TODO: Call engine utils to figure this out.
-                Some(linear_distance(&self.get_base().from, &self.get_base().to))
+            Self::TangentialArc { center, ccw, .. }
+            | Self::TangentialArcTo { center, ccw, .. }
+            | Self::Arc { center, ccw, .. } => {
+                Some(arc_length(&self.get_base().from, &self.get_base().to, center, *ccw))
             }
             Self::Circle { radius, .. } => Some(TAU * radius),
-            Self::CircleThreePoint { .. } => {
-                let circle_center = crate::std::utils::calculate_circle_from_3_points([
-                    self.get_base().from,
-                    self.get_base().to,
-                    self.get_base().to,
-                ]);
-                let radius = linear_distance(
-                    &[circle_center.center[0], circle_center.center[1]],
-                    &self.get_base().from,
-                );
-                Some(TAU * radius)
+            Self::CircleThreePoint { p1, p2, p3, .. } => {
+                let circle = crate::std::utils::calculate_circle_from_3_points([*p1, *p2, *p3]);
+                Some(TAU * circle.radius)
             }
-            Self::Arc { .. } => {
-                // TODO: Call engine utils to figure this out.
-                Some(linear_distance(&self.get_base().from, &self.get_base().to))
-            }
-            Self::ArcThreePoint { .. } => {
-                // TODO: Call engine utils to figure this out.
-                Some(linear_distance(&self.get_base().from, &self.get_base().to))
+            Self::ArcThreePoint { p1, p2, p3, .. } => {
+                let circle = crate::std::utils::calculate_circle_from_3_points([*p1, *p2, *p3]);
+                let ccw = crate::std::utils::is_points_ccw(&[*p1, *p2, *p3]) > 0;
+                Some(arc_length(p1, p3, &circle.center, ccw))
             }
             Self::Ellipse { .. } => {
                 // Not supported.
@@ -2142,6 +2121,23 @@ fn linear_distance(
     let y_sq = (y1 - y0).squared();
     let x_sq = (x1 - x0).squared();
     (y_sq + x_sq).sqrt()
+}
+
+/// Length of the circular arc from `from` to `to` around `center`, going
+/// counterclockwise if `ccw` is true and clockwise otherwise. Coincident
+/// endpoints mean a full circle, not an empty arc.
+fn arc_length(from: &[f64; 2], to: &[f64; 2], center: &[f64; 2], ccw: bool) -> f64 {
+    // Both endpoints lie on the circle, so either one gives the radius.
+    let radius = linear_distance(from, center);
+    let swept = if linear_distance(from, to) < EQUAL_POINTS_DIST_EPSILON {
+        TAU
+    } else {
+        let start = libm::atan2(from[1] - center[1], from[0] - center[0]);
+        let end = libm::atan2(to[1] - center[1], to[0] - center[0]);
+        // Measure the turn in the arc's own direction so it lands in [0, TAU).
+        normalize_rad(if ccw { end - start } else { start - end })
+    };
+    radius * swept
 }
 
 /// An extrude surface.

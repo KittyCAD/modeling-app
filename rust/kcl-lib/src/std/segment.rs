@@ -270,3 +270,213 @@ async fn inner_tangent_to_end(tag: &TagIdentifier, exec_state: &mut ExecState, a
 
     Ok(previous_end_tangent.to_degrees())
 }
+
+#[cfg(test)]
+mod tests {
+    use std::f64::consts::PI;
+
+    use kcl_api::UnitLength;
+
+    use crate::execution::parse_execute;
+    use crate::execution::types::NumericType;
+    use crate::execution::types::NumericTypeExt;
+    use crate::std::args::TyF64;
+
+    /// Runs `code` and returns the number called `len`.
+    async fn seg_len_of(code: &str) -> TyF64 {
+        let result = parse_execute(code).await.unwrap();
+        result.variable("len").as_ty_f64().expect("`len` should be a number")
+    }
+
+    /// Draws a line along +X to [10, 0] and then `segment` (which must tag
+    /// itself `$arc`), and checks `segLen(arc)` against `expected` for each
+    /// case. The line gives the tangential arcs their starting direction.
+    async fn assert_arc_lengths(cases: &[(&str, f64)]) {
+        for (segment, expected) in cases {
+            let code = format!(
+                "@settings(kclVersion = 2.0)
+s = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0])
+  |> {segment}
+len = segLen(arc)"
+            );
+            let len = seg_len_of(&code).await;
+            assert!(
+                (len.n - expected).abs() < 1e-9,
+                "expected segLen(arc) = {expected}, got {} for:\n{code}",
+                len.n
+            );
+            assert_eq!(len.ty, NumericType::length(UnitLength::Millimeters), "{code}");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn seg_len_of_tangential_arc_by_angle_is_the_arc_length() {
+        // Radius 10, so each arc is 10 * angle long.
+        assert_arc_lengths(&[
+            ("tangentialArc(angle = 90deg, radius = 10, tag = $arc)", 5.0 * PI),
+            ("tangentialArc(angle = 180deg, radius = 10, tag = $arc)", 10.0 * PI),
+            ("tangentialArc(angle = 225deg, radius = 10, tag = $arc)", 12.5 * PI),
+            ("tangentialArc(angle = 270deg, radius = 10, tag = $arc)", 15.0 * PI),
+            ("tangentialArc(angle = -90deg, radius = 10, tag = $arc)", 5.0 * PI),
+            ("tangentialArc(angle = -180deg, radius = 10, tag = $arc)", 10.0 * PI),
+            ("tangentialArc(angle = -225deg, radius = 10, tag = $arc)", 12.5 * PI),
+            ("tangentialArc(angle = -270deg, radius = 10, tag = $arc)", 15.0 * PI),
+        ])
+        .await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn seg_len_of_tangential_arc_to_point_is_the_arc_length() {
+        // Leaving [10, 0] along +X, these end points all sit on a circle of
+        // radius 10 centered at [10, 10] (turning left) or [10, -10] (turning
+        // right).
+        assert_arc_lengths(&[
+            ("tangentialArc(end = [10, 10], tag = $arc)", 5.0 * PI),
+            ("tangentialArc(end = [0, 20], tag = $arc)", 10.0 * PI),
+            (
+                "tangentialArc(end = [-7.0710678118654755, 17.071067811865476], tag = $arc)",
+                12.5 * PI,
+            ),
+            ("tangentialArc(end = [-10, 10], tag = $arc)", 15.0 * PI),
+            ("tangentialArc(end = [10, -10], tag = $arc)", 5.0 * PI),
+            ("tangentialArc(end = [0, -20], tag = $arc)", 10.0 * PI),
+            (
+                "tangentialArc(end = [-7.0710678118654755, -17.071067811865476], tag = $arc)",
+                12.5 * PI,
+            ),
+            ("tangentialArc(end = [-10, -10], tag = $arc)", 15.0 * PI),
+        ])
+        .await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn seg_len_of_arc_by_angles_is_the_arc_length() {
+        // Radius 5, so each arc is 5 * swept angle long.
+        assert_arc_lengths(&[
+            (
+                "arc(angleStart = 0, angleEnd = 90deg, radius = 5, tag = $arc)",
+                2.5 * PI,
+            ),
+            (
+                "arc(angleStart = 0, angleEnd = 180deg, radius = 5, tag = $arc)",
+                5.0 * PI,
+            ),
+            (
+                "arc(angleStart = 0, angleEnd = 225deg, radius = 5, tag = $arc)",
+                6.25 * PI,
+            ),
+            (
+                "arc(angleStart = 0, angleEnd = 270deg, radius = 5, tag = $arc)",
+                7.5 * PI,
+            ),
+            (
+                "arc(angleStart = 0, angleEnd = -90deg, radius = 5, tag = $arc)",
+                2.5 * PI,
+            ),
+            (
+                "arc(angleStart = 0, angleEnd = -180deg, radius = 5, tag = $arc)",
+                5.0 * PI,
+            ),
+            (
+                "arc(angleStart = 0, angleEnd = -225deg, radius = 5, tag = $arc)",
+                6.25 * PI,
+            ),
+            (
+                "arc(angleStart = 0, angleEnd = -270deg, radius = 5, tag = $arc)",
+                7.5 * PI,
+            ),
+            // Start and end angles 360 degrees apart draw a full circle.
+            (
+                "arc(angleStart = 0, angleEnd = 360deg, radius = 5, tag = $arc)",
+                10.0 * PI,
+            ),
+            (
+                "arc(angleStart = 0, angleEnd = -360deg, radius = 5, tag = $arc)",
+                10.0 * PI,
+            ),
+        ])
+        .await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn seg_len_of_arc_through_three_points_is_the_arc_length() {
+        // Every arc starts at [10, 0] on a circle of radius 5 centered at
+        // [5, 0]; the interior point picks the direction.
+        assert_arc_lengths(&[
+            (
+                "arc(interiorAbsolute = [8.535533905932738, 3.5355339059327373], endAbsolute = [5, 5], tag = $arc)",
+                2.5 * PI,
+            ),
+            ("arc(interiorAbsolute = [5, 5], endAbsolute = [0, 0], tag = $arc)", 5.0 * PI),
+            (
+                "arc(interiorAbsolute = [3.086582838174551, 4.619397662556434], endAbsolute = [1.4644660940672627, -3.5355339059327373], tag = $arc)",
+                6.25 * PI,
+            ),
+            (
+                "arc(interiorAbsolute = [1.4644660940672627, 3.5355339059327373], endAbsolute = [5, -5], tag = $arc)",
+                7.5 * PI,
+            ),
+            (
+                "arc(interiorAbsolute = [8.535533905932738, -3.5355339059327373], endAbsolute = [5, -5], tag = $arc)",
+                2.5 * PI,
+            ),
+            ("arc(interiorAbsolute = [5, -5], endAbsolute = [0, 0], tag = $arc)", 5.0 * PI),
+            (
+                "arc(interiorAbsolute = [3.086582838174551, -4.619397662556434], endAbsolute = [1.4644660940672627, 3.5355339059327373], tag = $arc)",
+                6.25 * PI,
+            ),
+            (
+                "arc(interiorAbsolute = [1.4644660940672627, -3.5355339059327373], endAbsolute = [5, 5], tag = $arc)",
+                7.5 * PI,
+            ),
+        ])
+        .await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn seg_len_of_a_circle_is_its_circumference() {
+        // p1, p2 and p3 lie on a circle of radius 5 * sqrt(2) centered at [5, 5].
+        let three_point = seg_len_of(
+            "@settings(kclVersion = 2.0)
+c = startSketchOn(XY)
+  |> circleThreePoint(p1 = [0, 0], p2 = [10, 0], p3 = [0, 10], tag = $circ)
+len = segLen(circ)",
+        )
+        .await;
+        assert!(
+            (three_point.n - 10.0 * PI * 2f64.sqrt()).abs() < 1e-9,
+            "got {}",
+            three_point.n
+        );
+
+        let by_radius = seg_len_of(
+            "@settings(kclVersion = 2.0)
+c = startSketchOn(XY)
+  |> circle(center = [0, 0], radius = 5, tag = $circ)
+len = segLen(circ)",
+        )
+        .await;
+        assert!((by_radius.n - 10.0 * PI).abs() < 1e-9, "got {}", by_radius.n);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn seg_len_of_an_arc_keeps_the_sketch_units() {
+        // A quarter turn of radius 10in is 5 * pi inches, however the radius
+        // was written.
+        for radius in ["10", "254mm"] {
+            let code = format!(
+                "@settings(kclVersion = 2.0, defaultLengthUnit = in)
+s = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0])
+  |> tangentialArc(angle = 90deg, radius = {radius}, tag = $arc)
+len = segLen(arc)"
+            );
+            let len = seg_len_of(&code).await;
+            assert!((len.n - 5.0 * PI).abs() < 1e-9, "got {} for:\n{code}", len.n);
+            assert_eq!(len.ty, NumericType::length(UnitLength::Inches), "{code}");
+        }
+    }
+}
