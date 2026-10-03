@@ -210,19 +210,25 @@ const splitErrors = (
   return { errors, warnings }
 }
 
+// Rust's root Program flattens the AST and adds kcl_version. The generated
+// Program type describes only the AST (also used for function bodies).
+export type RootProgram = Program & { kcl_version: KclVersion }
 export class ParseResult {
   program: Node<Program> | null
   errors: CompilationIssue[]
   warnings: CompilationIssue[]
+  kclVersion: KclVersion | null
 
   constructor(
     program: Node<Program> | null,
+    kclVersion: KclVersion | null,
     errors: CompilationIssue[],
     warnings: CompilationIssue[]
   ) {
     this.program = program
     this.errors = errors
     this.warnings = warnings
+    this.kclVersion = kclVersion
   }
 }
 
@@ -232,19 +238,24 @@ export class ParseResult {
  */
 class SuccessParseResult extends ParseResult {
   program: Node<Program>
+  kclVersion: KclVersion
 
   constructor(
     program: Node<Program>,
+    kclVersion: KclVersion,
     errors: CompilationIssue[],
     warnings: CompilationIssue[]
   ) {
-    super(program, errors, warnings)
+    super(program, kclVersion, errors, warnings)
     this.program = program
+    this.kclVersion = kclVersion
   }
 }
 
 export function resultIsOk(result: ParseResult): result is SuccessParseResult {
-  return !!result.program && result.errors.length === 0
+  return (
+    !!result.program && result.kclVersion !== null && result.errors.length === 0
+  )
 }
 
 export const parse = (
@@ -254,10 +265,15 @@ export const parse = (
   if (err(code)) return code
 
   try {
-    const parsed: [Node<Program>, CompilationIssue[]] =
+    const parsed: [Node<RootProgram> | null, CompilationIssue[]] =
       instance.parse_wasm(code)
     let errs = splitErrors(parsed[1])
-    return new ParseResult(parsed[0], errs.errors, errs.warnings)
+    return new ParseResult(
+      parsed[0],
+      parsed[0]?.kcl_version ?? null,
+      errs.errors,
+      errs.warnings
+    )
   } catch (e: any) {
     // throw e
     console.error(e.toString())
