@@ -7,23 +7,23 @@ description: Physical properties truss-structure.kcl
     "center": {
       "x": -2108.2000000000003,
       "y": 0.0,
-      "z": -38.40776005091311
+      "z": -51.10092093874164
     },
     "dimensions": {
       "x": 4318.000000000001,
       "y": 3657.6,
-      "z": 2361.584479898176
+      "z": 2336.1981581228033
     },
     "unit": "mm"
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 12279590.764590466
+    "value": 12279590.767617265
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 189929.82382716643
+    "value": 189930.49393316143
   }
 }

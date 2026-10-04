@@ -6,24 +6,24 @@ description: Physical properties pattern_into_union.kcl
   "bounding_box": {
     "center": {
       "x": 5.7625,
-      "y": 1.6437007874015666,
+      "y": 1.6437007874015723,
       "z": 0.675
     },
     "dimensions": {
       "x": 11.525,
-      "y": 3.2874015748032184,
+      "y": 3.287401574803315,
       "z": 1.35
     },
     "unit": "mm"
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 211.2944939863734
+    "value": 211.2944947677484
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.018006771176057534
+    "value": 0.01800677403256886
   }
 }
