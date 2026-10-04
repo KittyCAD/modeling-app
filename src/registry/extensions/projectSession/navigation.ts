@@ -54,6 +54,7 @@ export interface ResolvedProjectOpen {
     path: string
   }
   canonicalTarget: string
+  disposeIfUnused?: () => Promise<void>
 }
 
 export interface ProjectOpenResolutionSettings {
@@ -221,9 +222,10 @@ export function createOpenProjectIntentContribution(
     request: OpenProjectRequest
   ): Promise<OpenProjectOutcome> => {
     const projectOpen = beginProjectOpen()
+    let resolution: ResolvedProjectOpen | undefined
     try {
       projectOpen.throwIfSuperseded()
-      const resolution = await dependencies.resolveProjectOpen(
+      resolution = await dependencies.resolveProjectOpen(
         request,
         projectOpen.throwIfSuperseded
       )
@@ -237,6 +239,7 @@ export function createOpenProjectIntentContribution(
       return outcome
     } finally {
       projectOpen.finish()
+      await resolution?.disposeIfUnused?.()
     }
   }
 

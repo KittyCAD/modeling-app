@@ -1,6 +1,5 @@
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { createAppNavigationService } from '@src/lib/appNavigation'
-import { PATHS } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import {
   type ProjectNavigationDependencies,
@@ -263,6 +262,7 @@ describe('project.open navigation contribution', () => {
   })
 
   test('allows another primary intent to cancel an in-flight project open', async () => {
+    const disposeIfUnused = vi.fn(async () => undefined)
     let finishResolution: () => void = () => undefined
     const resolutionStarted = new Promise<void>((resolve) => {
       finishResolution = resolve
@@ -270,7 +270,7 @@ describe('project.open navigation contribution', () => {
     const { navigation, projectOpen } = navigationHarness({
       resolveProjectOpen: vi.fn(async () => {
         await resolutionStarted
-        return resolvedProject
+        return { ...resolvedProject, disposeIfUnused }
       }),
     })
 
@@ -281,5 +281,6 @@ describe('project.open navigation contribution', () => {
     finishResolution()
 
     await expect(firstOpen).rejects.toMatchObject({ name: 'AbortError' })
+    expect(disposeIfUnused).toHaveBeenCalledOnce()
   })
 })
