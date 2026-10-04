@@ -84,7 +84,7 @@ jobs:
           mkdir rust/kcl-lib/bindings
           cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
-      - run: npm run tsc
+      - run: npm run tsc -- --checkers 2
 
   npm-lint:
     # 8 cores for the extra memory: the type-aware lint needs more heap
