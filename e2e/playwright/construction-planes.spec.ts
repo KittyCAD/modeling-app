@@ -26,7 +26,13 @@ body = extrude(face, length = 20mm)`
       { x: 20, y: 20, z: 10 }
     )
     // Refresh the client camera after setting the engine camera directly.
-    await scene.getCameraInfo()
+    await page.evaluate(async () => {
+      await window.engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: crypto.randomUUID(),
+        cmd: { type: 'default_camera_get_settings' },
+      })
+    })
     const clickCorner = async (point: number[]) => {
       const projected = await page.evaluate((point) => {
         const camera =
@@ -105,7 +111,7 @@ body = extrude(face, length = 20mm)`
     await scene.settled()
     await toolbar.startSketchBtn.click()
     await (await toolbar.getFeatureTreeOperation('plane001', 0)).click()
-    await toolbar.waitUntilSketchingReady()
+    await expect(toolbar.exitSketchBtn).toBeVisible()
     await editor.expectEditor.toContain('sketch(on = plane001)')
   }
 )
@@ -138,6 +144,10 @@ for (const { method, args } of [
             return state.stage === 'arguments' ? state.currentArgKey : undefined
           })
           .toBe(arg)
+        await expect(page.locator('#arg-form')).toHaveAttribute(
+          'data-can-submit',
+          'true'
+        )
         await cmdBar.progressCmdBar()
       }
       await expect
@@ -149,7 +159,7 @@ for (const { method, args } of [
       await toolbar.startSketchBtn.click()
       const operation = await toolbar.getFeatureTreeOperation('plane001', 0)
       await operation.click()
-      await toolbar.waitUntilSketchingReady()
+      await expect(toolbar.exitSketchBtn).toBeVisible()
       await editor.expectEditor.toContain('sketch(on = plane001)')
       await expect(page.getByTestId('sketch-exit')).toBeVisible()
     }
