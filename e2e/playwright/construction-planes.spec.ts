@@ -63,9 +63,7 @@ body = extrude(face, length = 20mm)`
       )
       .toEqual(['vertex'])
 
-    await page
-      .getByRole('button', { name: /planes: open menu/ })
-      .click()
+    await page.getByRole('button', { name: /planes: open menu/ }).click()
     await page.getByTestId('dropdown-plane-points').click()
     await expect
       .poll(async () => {
