@@ -50,7 +50,7 @@ export default function useStateMachineCommands<
   isExecuting,
 }: UseStateMachineCommandsArgs<T, S>) {
   useSignals()
-  const { commands, settings, userFeatures } = useApp()
+  const { commands, settings, userFeatures, project } = useApp()
   const { kclManager } = useSingletons()
   const showExperimentalCommands = userFeatures.useHas(
     EXPERIMENTAL_POINT_AND_CLICK_FLAG,
@@ -67,6 +67,7 @@ export default function useStateMachineCommands<
     }
   )
   const shouldDisableEngineCommands =
+    project?.projectIORefSignal.value.cloudSource?.canEdit === false ||
     (overallState !== NetworkHealthState.Ok &&
       overallState !== NetworkHealthState.Weak) ||
     isExecuting ||

@@ -1,4 +1,5 @@
 import type { EntityType } from '@kittycad/lib'
+import { isReadOnlyProjectPath } from '@src/lib/fs-zds'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
@@ -376,8 +377,8 @@ export class ZDSProject {
   }
 
   /** Clean up resources and watchers for Project */
-  public close() {
-    this.closeAllEditors()
+  public close(preserveEditor?: KclManager) {
+    this.closeAllEditors(preserveEditor)
     window.electron?.watchFileOff(
       this.projectIORefSignal.value.path,
       this.fileWatcherId
@@ -553,9 +554,9 @@ export class ZDSProject {
     this.editors.delete(foundPathSignal[0])
   }
 
-  closeAllEditors() {
+  closeAllEditors(preserveEditor?: KclManager) {
     for (const editor of this.editors.values()) {
-      editor.close()
+      if (editor !== preserveEditor) editor.close()
     }
     this.editors.clear()
   }
@@ -688,6 +689,8 @@ const RECOVERY_SNAPSHOT_VERSION = 1
 const RECOVERY_SNAPSHOT_DEBOUNCE_MS = 300
 
 const keymapCompartment = new Compartment()
+const readOnlyCompartment = new Compartment()
+const loadProjectDocument = Annotation.define<boolean>()
 const executionCompartment = new Compartment()
 
 const updateOutsideEditorAnnotation = Annotation.define<boolean>()
@@ -2137,6 +2140,14 @@ export class KclManager extends File {
     this._automaticallyRenderEnabled = shouldAutomaticallyRender
 
     return [
+      readOnlyCompartment.of(
+        EditorState.readOnly.of(isReadOnlyProjectPath(this.path))
+      ),
+      EditorState.changeFilter.of(
+        (transaction) =>
+          !isReadOnlyProjectPath(this.path) ||
+          Boolean(transaction.annotation(loadProjectDocument))
+      ),
       baseEditorExtensions(),
       this.systemDeps.keymap
         ? Prec.highest(
@@ -2223,6 +2234,11 @@ export class KclManager extends File {
       providedEditor.editorView.state
     )
     providedEditor.path = file.path
+    providedEditor.editorView.dispatch({
+      effects: readOnlyCompartment.reconfigure(
+        EditorState.readOnly.of(isReadOnlyProjectPath(file.path))
+      ),
+    })
     providedEditor.id = file.id
     providedEditor.codeSignal.value = initialCode
     const savedEditorState = providedEditor.editorStatesByPath.get(file.path)
@@ -2240,17 +2256,21 @@ export class KclManager extends File {
       )
     } else {
       providedEditor.editorStatesByPath.delete(file.path)
-      providedEditor.updateCodeEditor(initialCode, {
-        shouldExecute:
-          options.shouldSyncRustOnOpen &&
-          providedEditor.engineCommandManager.connection?.connected,
-        shouldSyncRust: options.shouldSyncRustOnOpen,
-        shouldClearHistory: true,
-        shouldResetCamera: true,
-        // We explicitly do not write to the file here since we are loading from
-        // the file system and not the editor.
-        shouldWriteToDisk: false,
-      })
+      providedEditor.updateCodeEditor(
+        initialCode,
+        {
+          shouldExecute:
+            options.shouldSyncRustOnOpen &&
+            providedEditor.engineCommandManager.connection?.connected,
+          shouldSyncRust: options.shouldSyncRustOnOpen,
+          shouldClearHistory: true,
+          shouldResetCamera: true,
+          // We explicitly do not write to the file here since we are loading from
+          // the file system and not the editor.
+          shouldWriteToDisk: false,
+        },
+        { annotations: [loadProjectDocument.of(true)] }
+      )
     }
     providedEditor.markFileCodeAsSynced(diskCode)
     providedEditor.watch()
@@ -2791,6 +2811,7 @@ export class KclManager extends File {
   }
 
   async format() {
+    if (isReadOnlyProjectPath(this.path)) return
     const originalCode = this.code
     const ast = await this.safeParse(originalCode)
     if (!ast) {
@@ -2822,6 +2843,8 @@ export class KclManager extends File {
     newAst: Node<Program>
     selections?: Selections
   }> {
+    if (isReadOnlyProjectPath(this.path))
+      return Promise.reject(new Error('This project is view-only.'))
     const newCode = recast(ast, await this.systemDeps.wasmInstancePromise)
     if (err(newCode)) return Promise.reject(newCode)
 
@@ -3742,6 +3765,13 @@ export class KclManager extends File {
     options: Partial<UpdateCodeEditorOptions> = KclManager.defaultUpdateCodeEditorOptions,
     additionalSpec?: UpdateCodeEditorAdditionalSpec
   ): void {
+    if (
+      isReadOnlyProjectPath(this.path) &&
+      !additionalSpec?.annotations?.some(
+        (annotation) => annotation.type === loadProjectDocument
+      )
+    )
+      return
     const resolvedOptions: UpdateCodeEditorOptions = Object.assign(
       structuredClone(KclManager.defaultUpdateCodeEditorOptions),
       options
@@ -3861,6 +3891,7 @@ export class KclManager extends File {
     requestedDocumentVersion = this._documentVersion,
     options: { suppressConflictToast?: boolean } = {}
   ) {
+    if (isReadOnlyProjectPath(this.path)) return
     if (this.path !== '') {
       // KclManager is reused across file navigation. Bind this save to the
       // file that owned the buffer when the debounce was scheduled.

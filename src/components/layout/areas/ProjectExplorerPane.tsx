@@ -235,6 +235,9 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
         title={props.layout.label}
         Menu={
           <FileExplorerHeaderActions
+            readOnly={
+              project?.projectIORefSignal.value.cloudSource?.canEdit === false
+            }
             onCreateFile={() => {
               setCreateFilePressed(performance.now())
             }}
@@ -268,7 +271,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
             onRowDoubleClicked={onRowDoubleClicked}
             onRowEnter={onRowClicked}
             canNavigate={true}
-            readOnly={false}
+            readOnly={theProject.cloudSource?.canEdit === false}
             overrideApplicationProjectDirectory={projectDirectoryPath}
           />
         </div>

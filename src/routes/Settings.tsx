@@ -49,7 +49,9 @@ export const Settings = () => {
   }
   const location = useLocation()
   const isFileSettings = location.pathname.includes(PATHS.FILE)
-  const hasOpenProject = app.project !== undefined
+  const hasOpenProject =
+    app.project !== undefined &&
+    app.project.projectIORefSignal.value.cloudSource?.canEdit !== false
   const defaultTab: SettingsLevel =
     isFileSettings && hasOpenProject ? 'project' : 'user'
   const requestedTab = searchParams.get('tab')

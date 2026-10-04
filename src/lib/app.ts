@@ -7,6 +7,10 @@ import {
   type RegistryItem,
   Slot,
 } from '@kittycad/registry'
+import {
+  disposeReadOnlyProjectSnapshot,
+  isReadOnlyProjectPath,
+} from '@src/lib/fs-zds'
 import { effect, type Signal, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import { File, KclManager, ZDSProject } from '@src/lang/KclManager'
@@ -384,7 +388,7 @@ export class App implements AppSubsystems {
 
   private setCloudSyncOpenedProject(project?: Project) {
     this.registry.get(cloudSyncService).setOpenedProject(
-      project
+      project && project.cloudSource?.canEdit !== false
         ? {
             projectPath: project.path,
             ...(project.libraryPath
@@ -408,6 +412,13 @@ export class App implements AppSubsystems {
     projectIORef: Project,
     throwIfSuperseded: () => void = () => {}
   ) {
+    if (this.project?.path === projectIORef.path && projectIORef.cloudSource) {
+      this.project.projectIORefSignal.value = {
+        ...this.project.projectIORefSignal.value,
+        ...projectIORef,
+      }
+      return this.project
+    }
     const ownedProject = await projectWithLibraryOwnership(
       projectIORef,
       this.settings.get().app.libraries.current
@@ -417,6 +428,12 @@ export class App implements AppSubsystems {
     const projectIORefSignal = signal(ownedProject)
     const nextProject = await ZDSProject.open(projectIORefSignal, this)
     throwIfSuperseded()
+
+    const previousView = this.project?.path
+    if (previousView && isReadOnlyProjectPath(previousView)) {
+      this.project?.close(this.singletons.kclManager)
+      void disposeReadOnlyProjectSnapshot(previousView).catch(reportRejection)
+    }
 
     this.disposeProjectHistoryExtensions?.()
     this.project = nextProject
@@ -486,6 +503,7 @@ export class App implements AppSubsystems {
       if (foundProject && projectIORefSignal.value !== foundProject) {
         projectIORefSignal.value = {
           ...foundProject,
+          cloudSource: projectIORefSignal.value.cloudSource,
           ...(projectIORefSignal.value.libraryPath
             ? { libraryPath: projectIORefSignal.value.libraryPath }
             : {}),
@@ -553,6 +571,10 @@ export class App implements AppSubsystems {
     this.unsubscribeFromSettings = undefined
     this.setCloudSyncOpenedProject(undefined)
     this.project?.close()
+    if (this.project)
+      void disposeReadOnlyProjectSnapshot(this.project.path).catch(
+        reportRejection
+      )
     this.project = undefined
   }
 

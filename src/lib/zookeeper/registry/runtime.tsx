@@ -220,6 +220,10 @@ export function createZookeeperRuntime(
     const systemIO = services.systemIO.value
     const project = currentZdsProject.value
     const projectRef = project?.projectIORefSignal?.value
+    if (projectRef?.cloudSource?.canEdit === false) {
+      deactivate()
+      return
+    }
     const projectPath = projectRef?.path
     const settingsProjectPath =
       settings?.actor.getSnapshot().context.currentProject?.path

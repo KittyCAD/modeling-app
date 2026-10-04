@@ -284,7 +284,9 @@ export const FeatureTreePaneContents = memo(() => {
       ? kclManager.lastSuccessfulCode || kclManager.codeSignal.value
       : kclManager.codeSignal.value
   const isReadOnlyFeatureTree =
-    hasParseErrors || disableModelingForUnrenderedChanges
+    hasParseErrors ||
+    disableModelingForUnrenderedChanges ||
+    app.project?.projectIORefSignal.value.cloudSource?.canEdit === false
 
   // We filter out operations that are not useful to show in the feature tree
   const operationList = buildOperationTree(

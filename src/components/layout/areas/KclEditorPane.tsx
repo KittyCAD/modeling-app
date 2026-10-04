@@ -29,6 +29,7 @@ import {
   scheduleActiveTextFileWrite,
 } from '@src/lib/activeTextFile'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { isReadOnlyProjectPath } from '@src/lib/fs-zds'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { getResolvedTheme } from '@src/lib/theme'
@@ -183,6 +184,8 @@ function TextFileEditor({
       state: EditorState.create({
         doc: activeTextFile.text,
         extensions: [
+          EditorState.readOnly.of(isReadOnlyProjectPath(path)),
+          EditorState.changeFilter.of(() => !isReadOnlyProjectPath(path)),
           textThemeCompartment.of(
             textEditorThemeExtensions(resolvedTheme, isMarkdown)
           ),

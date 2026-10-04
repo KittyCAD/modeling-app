@@ -1,5 +1,6 @@
 import type { Feature } from '@kittycad/lib'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+import { isReadOnlyProjectPath } from '@src/lib/fs-zds'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 import type { JsonValue } from '@rust/kcl-lib/bindings/serde_json/JsonValue'
@@ -1041,8 +1042,9 @@ export async function loadAndValidateSettings(
     }
 
     if (
-      !projectSettings.settings?.meta?.id ||
-      projectSettings.settings.meta.id === uuidNIL
+      !isReadOnlyProjectPath(projectPath) &&
+      (!projectSettings.settings?.meta?.id ||
+        projectSettings.settings.meta.id === uuidNIL)
     ) {
       projectSettings = setProjectConfigurationId(projectSettings, v4())
       const projectTomlString = serializeProjectConfiguration(

@@ -9,14 +9,15 @@ export function getProjectExplorerProjectWithPlaceholders({
   projects: Project[] | undefined
 }) {
   const sourceProject =
-    projects?.find((p) => p.name === loadedProject.name) ??
-    (projects === undefined ? loadedProject : null)
+    projects?.find((p) => p.path === loadedProject.path) ??
+    (projects === undefined || loadedProject.cloudSource ? loadedProject : null)
 
   if (!sourceProject) {
     return null
   }
 
   const duplicated = structuredClone(sourceProject)
+  duplicated.cloudSource = loadedProject.cloudSource
   addPlaceHoldersForNewFileAndFolder(duplicated.children, duplicated.path)
   return duplicated
 }

@@ -92,7 +92,8 @@ function PublishPopoverContent({
   const isCheckingUser = authState.matches('checkIfLoggedIn') && !!token
   const publishRequiresUsername = !isCheckingUser && !!token && !username
   const accountUrl = withSiteBaseURL('/account')
-  const buttonDisabled = kclEmpty || hasKclErrors
+  const buttonDisabled =
+    kclEmpty || hasKclErrors || project?.cloudSource?.canEdit === false
   const cloudSync = app.registry.optional(cloudSyncService)
   const willMoveProjectToCloud = Boolean(
     cloudSync?.status.value.enabled &&
