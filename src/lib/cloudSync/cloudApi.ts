@@ -1,4 +1,5 @@
 import env from '@src/env'
+import type { PublicProjectResponse } from '@kittycad/lib'
 import {
   getMimeType,
   prepareProjectFilesForCloudUpload,
@@ -128,6 +129,27 @@ export async function getRemoteProject(
   projectId: string
 ) {
   return cloudJson<RemoteProject>(config, `/user/projects/${projectId}`)
+}
+
+export function getPublicRemoteProject(
+  config: CloudSyncConfig,
+  projectId: string
+) {
+  return cloudJson<PublicProjectResponse>(
+    config,
+    `/projects/public/${encodeURIComponent(projectId)}`
+  )
+}
+
+export async function downloadPublicRemoteProjectArchive(
+  config: CloudSyncConfig,
+  projectId: string
+) {
+  const response = await cloudFetch(
+    config,
+    `/projects/public/${encodeURIComponent(projectId)}/download?format=zip`
+  )
+  return response.arrayBuffer()
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
