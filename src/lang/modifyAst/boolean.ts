@@ -50,6 +50,20 @@ function booleanInputKey(expr: Expr, pathIfPipe?: PathToNode): string {
       return `PipeSubstitution:${
         pathIfPipe ? stringifyPathToNode(pathIfPipe) : ''
       }`
+    case 'BinaryExpression':
+    case 'CallExpressionKw':
+    case 'ArrayExpression':
+    case 'ObjectExpression':
+    case 'FunctionExpression':
+    case 'PipeExpression':
+    case 'UnaryExpression':
+    case 'SketchBlock':
+    case 'TagDeclarator':
+    case 'ArrayRangeExpression':
+    case 'IfExpression':
+    case 'LabelledExpression':
+    case 'AscribedExpression':
+    case 'SketchVar':
     default:
       return JSON.stringify(expr)
   }
