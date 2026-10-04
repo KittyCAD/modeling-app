@@ -248,6 +248,7 @@ export function buildCommandArgument<
       inputType: arg.inputType,
       allowArrays: arg.allowArrays,
       allowStringArrays: arg.allowStringArrays,
+      allowNestedArrays: arg.allowNestedArrays,
       allowUncalculated: arg.allowUncalculated,
       inputToKclValue: arg.inputToKclValue,
       kclValueToInput: arg.kclValueToInput,

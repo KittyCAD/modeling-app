@@ -1627,6 +1627,7 @@ export async function getEventForQueryEntityTypeWithPoint(
     const isShiftDown = kclManager.isShiftDown
     const selectionFilter = kclManager.selectionFilter.value
     const camera = kclManager.sceneInfra.camControls.camera.clone()
+    camera.updateMatrixWorld(true)
     const topology = engineTopologyFallbackFromReference(reference)
     const parentId =
       topology?.parentId ??

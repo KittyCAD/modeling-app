@@ -36,7 +36,8 @@ body = extrude(face, length = 20mm)`
     const clickCorner = async (point: number[]) => {
       const projected = await page.evaluate((point) => {
         const camera =
-          window.app.singletons.kclManager.sceneInfra.camControls.camera
+          window.app.singletons.kclManager.sceneInfra.camControls.camera.clone()
+        camera.updateMatrixWorld(true)
         const p = camera.position
           .clone()
           .set(point[0], point[1], point[2])
@@ -63,7 +64,7 @@ body = extrude(face, length = 20mm)`
       .toEqual(['vertex'])
 
     await page
-      .getByRole('button', { name: 'planes: open menu', exact: true })
+      .getByRole('button', { name: /planes: open menu/ })
       .click()
     await page.getByTestId('dropdown-plane-points').click()
     await expect
