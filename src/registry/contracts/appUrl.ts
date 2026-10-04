@@ -44,6 +44,7 @@ export type AppDestination =
   | { type: 'index' }
   | { type: 'home'; libraryId?: string }
   | { type: 'project'; target: string }
+  | { type: 'cloud-project'; projectId: string; file?: string }
   | { type: 'sign-in' }
 
 export interface ParsedAppNavigationIntent {

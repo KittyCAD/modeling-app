@@ -88,6 +88,7 @@ export const PATHS = {
   HOME,
   LIBRARY,
   FILE: '/file',
+  PROJECTS: '/projects',
   SETTINGS,
   SETTINGS_USER: `${SETTINGS}?tab=user` as const,
   SETTINGS_PROJECT: `${SETTINGS}?tab=project` as const,

@@ -15,6 +15,8 @@ import {
 
 export const projectSessionExtension = defineRegistryItemFactory(() => {
   const project = signal<ZDSProject | undefined>(undefined)
+  const cloudOpenError: ProjectSessionService['cloudOpenError'] =
+    signal(undefined)
   const currentProjectLibraryId = signal<string | undefined>(undefined)
   let runtime: ProjectSessionRuntime | undefined
 
@@ -53,6 +55,10 @@ export const projectSessionExtension = defineRegistryItemFactory(() => {
   }
 
   const serviceImpl: ProjectSessionService = {
+    cloudOpenError,
+    setCloudOpenError: (error) => {
+      cloudOpenError.value = error
+    },
     project,
     currentProjectLibraryId,
     getProject: () => project.value,

@@ -15,6 +15,8 @@ import type { AppUrlState } from '@src/registry/contracts/appUrl'
  */
 export interface OpenProjectRequest {
   target: string
+  /** Cloud ID, with target holding an optional project-relative file path. */
+  cloudProjectId?: string
   /** Parsed URL-owned state, present only while restoring cold startup. */
   startup?: AppUrlState
 }
@@ -79,6 +81,12 @@ export interface ProjectSessionRuntime {
  * fields delegate to this service while call sites are migrated.
  */
 export interface ProjectSessionService {
+  readonly cloudOpenError: Signal<
+    { projectId: string; message: string } | undefined
+  >
+  setCloudOpenError: (
+    error: { projectId: string; message: string } | undefined
+  ) => void
   readonly project: Signal<ZDSProject | undefined>
   readonly currentProjectLibraryId: Signal<string | undefined>
   getProject: () => ZDSProject | undefined

@@ -39,7 +39,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import type { SnapshotFrom } from 'xstate'
 
 interface ProjectSidebarMenuProps extends React.PropsWithChildren {
@@ -230,6 +230,7 @@ function ProjectMenuPopover({
   const machineApiEnabled = settings.useSettings().app.machineApi.current
   const platform = usePlatform()
   const navigate = useNavigate()
+  const location = useLocation()
   const keymap = app.registry.optional(keymapService)
   const projectSettingsKeybinding = keymapKeystrokesDisplay(
     keymap
@@ -300,6 +301,17 @@ function ProjectMenuPopover({
             </>
           ),
           onClick: () => {
+            if (project?.cloudSource) {
+              const search = new URLSearchParams(location.search)
+              search.set(
+                'tab',
+                project.cloudSource.canEdit ? 'project' : 'user'
+              )
+              void navigate(
+                `${PATHS.PROJECTS}/${encodeURIComponent(project.cloudSource.id)}${PATHS.SETTINGS}?${search}`
+              )
+              return
+            }
             const targetPath =
               filePath !== undefined
                 ? filePath + PATHS.SETTINGS_PROJECT
@@ -541,6 +553,7 @@ function ProjectMenuPopover({
       filePath,
       machineCount,
       navigate,
+      location.search,
       projectSettingsKeybinding,
       settings.actor,
     ]

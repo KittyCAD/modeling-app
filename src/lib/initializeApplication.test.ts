@@ -6,6 +6,7 @@ import { showHomeIntent } from '@src/registry/contracts/homeProjects'
 import { openProjectIntent } from '@src/registry/contracts/projectSession'
 import { openSettingsIntent } from '@src/registry/extensions/settings/overlay'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { createActor, createMachine } from 'xstate'
 
 const mocks = vi.hoisted(() => ({
   readInitialUrl: vi.fn(),
@@ -34,6 +35,53 @@ beforeEach(() => {
 })
 
 describe('initializeApplication', () => {
+  it.each(['loggedIn', 'loggedOut'])(
+    'resolves cloud URLs only after auth is %s',
+    async (authState) => {
+      const actor = createActor(
+        createMachine({
+          initial: authState,
+          states: { loggedIn: {}, loggedOut: {} },
+        })
+      ).start()
+      const app = fakeApp()
+      app.auth = { actor } as unknown as App['auth']
+      mocks.readInitialUrl.mockReturnValue({
+        type: 'launch',
+        destination: {
+          type: 'cloud-project',
+          projectId: 'project',
+          file: 'parts/main.kcl',
+        },
+        search: '?file=parts%2Fmain.kcl',
+        hash: '',
+      })
+      mocks.formatUrl.mockReturnValue('/projects/project?file=parts%2Fmain.kcl')
+      await initializeApplication(app)
+      if (authState === 'loggedIn') {
+        expect(mocks.dispatch).toHaveBeenCalledWith(openProjectIntent, {
+          cloudProjectId: 'project',
+          target: 'parts/main.kcl',
+          startup: { search: '?file=parts%2Fmain.kcl', hash: '' },
+        })
+      } else {
+        const search =
+          '?returnTo=%2Fprojects%2Fproject%3Ffile%3Dparts%252Fmain.kcl'
+        expect(mocks.navigate).toHaveBeenCalledWith(`/signin${search}`, {
+          replace: true,
+        })
+        expect(mocks.dispatch).toHaveBeenCalledWith(startSignInIntent, {
+          reason: 'startup',
+          startup: { search, hash: '' },
+        })
+        expect(mocks.dispatch).not.toHaveBeenCalledWith(
+          openProjectIntent,
+          expect.anything()
+        )
+      }
+      actor.stop()
+    }
+  )
   it('dispatches the initial project intent without React Router', async () => {
     mocks.readInitialUrl.mockReturnValue({
       type: 'launch',

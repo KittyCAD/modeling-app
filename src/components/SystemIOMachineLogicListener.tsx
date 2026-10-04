@@ -137,13 +137,17 @@ export function SystemIOMachineLogicListener() {
     void registry
       .get(appNavigationService)
       .dispatch(openProjectIntent, { target })
-      .then(() =>
-        registry
+      .then((outcome) => {
+        // Cloud project URLs are projected by the project-open intent. The
+        // legacy filesystem URL would expose the cache and lose cloud access.
+        if (outcome.kind === 'opened' && outcome.data.project?.cloudSource)
+          return
+        return registry
           .get(appUrlService)
           .navigate(requestedPath + (search ? `?${search}` : ''), {
             replace: requestedPath.includes(String(PATHS.ONBOARDING)),
           })
-      )
+      })
       .catch(reportRejection)
   }
 

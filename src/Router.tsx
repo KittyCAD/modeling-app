@@ -1,5 +1,6 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import { CommandBar } from '@src/components/CommandBar/CommandBar'
+import { CloudProjectPage } from '@src/components/CloudProjectPage'
 import { ErrorPage } from '@src/components/ErrorPage'
 import Loading from '@src/components/Loading'
 import { MachineApiController } from '@src/components/MachineApiController'
@@ -51,30 +52,32 @@ export const Router = () => {
               path: PATHS.INDEX,
               errorElement: <ErrorPage />,
             },
-            {
-              id: PATHS.FILE,
-              path: PATHS.FILE + '/:id',
+            ...[PATHS.FILE, PATHS.PROJECTS].map((projectRoute) => ({
+              id: projectRoute,
+              path: projectRoute + '/:id',
               errorElement: <ErrorPage />,
               element: (
-                <ModelingPageProvider>
-                  <Suspense
-                    fallback={
-                      <div className="absolute inset-0 grid place-content-center">
-                        <Loading>Loading Design Studio...</Loading>
-                      </div>
-                    }
-                  >
-                    <ModelingMachineProvider>
-                      <Outlet />
-                      <OpenedProject />
-                      <CommandBar />
-                    </ModelingMachineProvider>
-                  </Suspense>
-                </ModelingPageProvider>
+                <ProjectRouteShell cloud={projectRoute === PATHS.PROJECTS}>
+                  <ModelingPageProvider>
+                    <Suspense
+                      fallback={
+                        <div className="absolute inset-0 grid place-content-center">
+                          <Loading>Loading Design Studio...</Loading>
+                        </div>
+                      }
+                    >
+                      <ModelingMachineProvider>
+                        <Outlet />
+                        <OpenedProject />
+                        <CommandBar />
+                      </ModelingMachineProvider>
+                    </Suspense>
+                  </ModelingPageProvider>
+                </ProjectRouteShell>
               ),
               children: [
                 {
-                  id: PATHS.FILE + 'SETTINGS',
+                  id: projectRoute + 'SETTINGS',
                   children: [
                     {
                       path: makeUrlPathRelative(PATHS.SETTINGS),
@@ -88,7 +91,7 @@ export const Router = () => {
                   ],
                 },
                 {
-                  id: PATHS.FILE + 'TELEMETRY',
+                  id: projectRoute + 'TELEMETRY',
                   children: [
                     {
                       path: makeUrlPathRelative(PATHS.TELEMETRY),
@@ -97,7 +100,7 @@ export const Router = () => {
                   ],
                 },
               ],
-            },
+            })),
             {
               path: PATHS.HOME,
               errorElement: <ErrorPage />,
@@ -197,4 +200,11 @@ export const Router = () => {
       <RouterProvider router={router} />
     </NetworkContext.Provider>
   )
+}
+
+function ProjectRouteShell({
+  cloud,
+  children,
+}: React.PropsWithChildren<{ cloud: boolean }>) {
+  return cloud ? <CloudProjectPage>{children}</CloudProjectPage> : children
 }

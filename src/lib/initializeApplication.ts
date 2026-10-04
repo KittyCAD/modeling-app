@@ -4,6 +4,7 @@ import { startSignInIntent } from '@src/registry/contracts/auth'
 import { appUrlService } from '@src/registry/contracts/appUrl'
 import { showHomeIntent } from '@src/registry/contracts/homeProjects'
 import { openProjectIntent } from '@src/registry/contracts/projectSession'
+import { waitFor } from 'xstate'
 
 /**
  * Restore application state from the URL once, before React is mounted.
@@ -54,6 +55,28 @@ export async function initializeApplication(
         startup: urlState,
       })
       break
+    case 'cloud-project': {
+      const auth = await waitFor(
+        app.auth.actor,
+        (state) => state.matches('loggedIn') || state.matches('loggedOut')
+      )
+      if (!auth.matches('loggedIn')) {
+        const returnTo = appUrl.formatUrl({ destination, ...urlState })
+        const search = `?returnTo=${encodeURIComponent(returnTo)}`
+        await appUrl.navigate(`/signin${search}`, { replace: true })
+        await appNavigation.dispatch(startSignInIntent, {
+          reason: 'startup',
+          startup: { search, hash: '' },
+        })
+        return
+      }
+      await appNavigation.dispatch(openProjectIntent, {
+        cloudProjectId: destination.projectId,
+        target: destination.file ?? '',
+        startup: urlState,
+      })
+      break
+    }
     case 'sign-in':
       await appNavigation.dispatch(startSignInIntent, {
         reason: 'startup',
