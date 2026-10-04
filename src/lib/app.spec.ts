@@ -346,7 +346,7 @@ describe('project system', () => {
     }
   })
 
-  it('annotates opened projects with their owning library path', async () => {
+  it('preserves library ownership and cloud identity when reusing a project', async () => {
     const app = createAppForTest()
 
     try {
@@ -371,6 +371,20 @@ describe('project system', () => {
           libraryPath: library.path,
           libraryType: library.type,
         })
+      )
+      const cloudSource: NonNullable<Project['cloudSource']> = {
+        id: 'remote-project',
+        canEdit: true,
+        kind: 'private',
+      }
+      expect(
+        await openProject(app, {
+          ...openedProject.projectIORefSignal.value,
+          cloudSource,
+        })
+      ).toBe(openedProject)
+      expect(openedProject.projectIORefSignal.value.cloudSource).toEqual(
+        cloudSource
       )
     } finally {
       app.dispose()

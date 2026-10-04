@@ -1,6 +1,7 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import type { KclManager } from '@src/lang/KclManager'
+import { isReadOnlyProjectPath } from '@src/lib/fs-zds'
 import {
   mockExecAstAndReportErrors,
   updateModelingState,
@@ -101,6 +102,8 @@ export async function runModelingCodemod<CommandArgs>({
     code: string
   }
 }) {
+  if (isReadOnlyProjectPath(kclManager.path))
+    return new Error('This project is view-only.')
   const resolvedWasmInstance =
     wasmInstance ?? (await kclManager.wasmInstancePromise)
   let ast = sourceSnapshot?.ast ?? kclManager.ast

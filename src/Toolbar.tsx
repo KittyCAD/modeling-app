@@ -396,6 +396,14 @@ const Toolbar_ = memo(
       []
     )
 
+    if (app.project?.projectIORefSignal.value.cloudSource?.canEdit === false) {
+      return (
+        <div className="px-3 py-2 text-sm" data-testid="view-only-indicator">
+          View only
+        </div>
+      )
+    }
+
     return (
       <menu
         aria-disabled={disableSketchToolbar}

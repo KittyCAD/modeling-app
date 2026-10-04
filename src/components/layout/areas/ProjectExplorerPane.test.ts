@@ -18,6 +18,24 @@ const project = (name: string, children: Project['children']): Project => ({
 })
 
 describe('getProjectExplorerProjectWithPlaceholders', () => {
+  it('preserves cloud access during hydration and keeps viewers outside the library', () => {
+    const loadedProject = {
+      ...project('demo', []),
+      cloudSource: { id: 'remote', canEdit: false, kind: 'public' as const },
+    }
+    const hydratedProject = project('demo', [])
+    expect(
+      getProjectExplorerProjectWithPlaceholders({
+        loadedProject,
+        projects: [hydratedProject],
+      })?.cloudSource
+    ).toEqual(loadedProject.cloudSource)
+    expect(
+      getProjectExplorerProjectWithPlaceholders({ loadedProject, projects: [] })
+        ?.cloudSource
+    ).toEqual(loadedProject.cloudSource)
+    expect(hydratedProject).not.toHaveProperty('cloudSource')
+  })
   it('uses the loaded project while folder hydration is pending', () => {
     const loadedProject = project('demo', [
       {

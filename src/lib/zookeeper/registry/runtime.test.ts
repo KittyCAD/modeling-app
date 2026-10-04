@@ -150,6 +150,22 @@ function createControllerLoader(
 }
 
 describe('Zookeeper runtime', () => {
+  it('deactivates an existing session when the project becomes view-only', async () => {
+    const { projectFixture, services } = createServices()
+    const { controllers, loadController } = createControllerLoader()
+    const runtime = createZookeeperRuntime(services, loadController)
+    await vi.waitFor(() => expect(controllers).toHaveLength(1))
+    projectFixture.project.projectIORefSignal.value = {
+      ...projectFixture.project.projectIORefSignal.value,
+      cloudSource: { id: 'remote', canEdit: false, kind: 'public' },
+    }
+    expect(runtime.session.value).toBeUndefined()
+    await vi.waitFor(() =>
+      expect(controllers[0]?.dispose).toHaveBeenCalledOnce()
+    )
+    expect(loadController).toHaveBeenCalledOnce()
+    await runtime.dispose()
+  })
   it('starts without waiting for the pane once auth is hydrated', async () => {
     const { services, token } = createServices({ apiToken: '' })
     const { createZookeeperSessionController, loadController } =
