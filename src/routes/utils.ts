@@ -84,6 +84,20 @@ export function getReleaseUrl(version: string | undefined = APP_VERSION) {
 }
 
 export function generateSignInUrl() {
+  if (typeof window !== 'undefined') {
+    const current = new URL(window.location.href)
+    const returnTo = current.searchParams.get('returnTo')
+    const projectUrl = current.pathname.startsWith(`${PATHS.PROJECTS}/`)
+      ? current
+      : returnTo?.startsWith(`${PATHS.PROJECTS}/`)
+        ? new URL(returnTo, current.origin)
+        : undefined
+    if (projectUrl?.origin === current.origin) {
+      return withSiteBaseURL(
+        `${PATHS.SIGN_IN}?callbackUrl=${encodeURIComponent(projectUrl.href)}`
+      )
+    }
+  }
   const queryParamsNext =
     typeof window !== 'undefined'
       ? getRouterSearchFromRequestUrl(

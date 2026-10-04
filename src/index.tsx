@@ -32,6 +32,11 @@ async function launchApp(app: App) {
     initElectronBehavior(window.electron, app)
   }
   await initializeApplication(app).catch(reportRejection)
+  // Browser history is an external navigation request, just like a cold URL.
+  // Keep project loading out of the React route shell.
+  window.addEventListener('popstate', () => {
+    void initializeApplication(app).catch(reportRejection)
+  })
   mountAppToReact(app)
 }
 

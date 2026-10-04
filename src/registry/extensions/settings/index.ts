@@ -162,7 +162,9 @@ const settingsRegistryItem = defineRegistryItem({
           ? pathname
           : webSafeJoin([routePath, makeUrlPathRelative(PATHS.SETTINGS)])
 
-        return `${settingsPath}${routePath.includes(PATHS.FILE) ? '?tab=project' : ''}`
+        const search = new URLSearchParams(location.search)
+        if (routePath.includes(PATHS.FILE)) search.set('tab', 'project')
+        return `${settingsPath}${search.size ? `?${search}` : ''}`
       },
       'data-testid': 'settings-link',
       order: 1,

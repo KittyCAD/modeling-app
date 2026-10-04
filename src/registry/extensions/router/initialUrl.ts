@@ -59,6 +59,11 @@ function formatDestination(destination: AppDestination): string {
         : PATHS.HOME
     case 'project':
       return joinRouterPaths(PATHS.FILE, encodeURIComponent(destination.target))
+    case 'cloud-project':
+      return joinRouterPaths(
+        PATHS.PROJECTS,
+        encodeURIComponent(destination.projectId)
+      )
     case 'sign-in':
       return PATHS.SIGN_IN
   }
@@ -70,9 +75,17 @@ export function formatAppUrl(
   navigationIntents: readonly AppNavigationUrlContribution[]
 ): string {
   const destinationPath = formatDestination(projection.destination)
+  const formatSearch = (search: string) => {
+    if (projection.destination.type !== 'cloud-project') return search
+    const params = new URLSearchParams(search)
+    params.delete('file')
+    if (projection.destination.file)
+      params.set('file', projection.destination.file)
+    return params.size ? `?${params}` : ''
+  }
   const additionalIntent = projection.additionalIntents?.[0]
   if (!additionalIntent) {
-    return `${destinationPath}${projection.search}${projection.hash}`
+    return `${destinationPath}${formatSearch(projection.search)}${projection.hash}`
   }
 
   const contribution = navigationIntents.find(
@@ -86,9 +99,9 @@ export function formatAppUrl(
   }
 
   const intentUrl = contribution.format(additionalIntent.input)
-  return `${joinRouterPaths(destinationPath, intentUrl.path)}${
+  return `${joinRouterPaths(destinationPath, intentUrl.path)}${formatSearch(
     intentUrl.search ?? projection.search
-  }${intentUrl.hash ?? projection.hash}`
+  )}${intentUrl.hash ?? projection.hash}`
 }
 
 function parseDestination(pathname: string):
@@ -137,6 +150,17 @@ function parseDestination(pathname: string):
         }
   }
 
+  if (head === PATHS.PROJECTS.slice(1) && encodedId) {
+    const projectId = decodeSegment(encodedId)
+    return !projectId || /[\\/]/.test(projectId)
+      ? undefined
+      : {
+          destination: { type: 'cloud-project', projectId },
+          intentDestination: 'project',
+          intentPath,
+        }
+  }
+
   if (head === PATHS.SIGN_IN.slice(1) && segments.length === 1) {
     return { destination: { type: 'sign-in' }, intentPath: '' }
   }
@@ -159,6 +183,10 @@ export function parseInitialUrl(
   const parsedDestination = parseDestination(applicationUrl.pathname)
   if (!parsedDestination) {
     return { type: 'unrecognized', ...applicationUrl }
+  }
+  if (parsedDestination.destination.type === 'cloud-project') {
+    parsedDestination.destination.file =
+      new URLSearchParams(applicationUrl.search).get('file') || undefined
   }
 
   if (parsedDestination.destination.type === 'index') {

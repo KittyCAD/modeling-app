@@ -11,6 +11,26 @@ const navigationIntents = [
 ]
 
 describe('parseInitialUrl', () => {
+  it.each([false, true])(
+    'round trips cloud URLs with nested files (hash router: %s)',
+    (usesHashRouter) => {
+      const url = '/projects/project-id?file=parts%2Fbracket.kcl'
+      const parsed = parseInitialUrl(
+        `https://app.zoo.dev${usesHashRouter ? '/#' : ''}${url}`,
+        { navigationIntents, usesHashRouter }
+      )
+      expect(parsed).toMatchObject({
+        type: 'launch',
+        destination: {
+          type: 'cloud-project',
+          projectId: 'project-id',
+          file: 'parts/bracket.kcl',
+        },
+      })
+      if (parsed.type !== 'launch') return
+      expect(formatAppUrl(parsed, navigationIntents)).toBe(url)
+    }
+  )
   it('parses a project target and its capability-owned settings overlay', () => {
     expect(
       parseInitialUrl(
