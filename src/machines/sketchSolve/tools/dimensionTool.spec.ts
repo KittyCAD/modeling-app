@@ -399,6 +399,69 @@ describe('dimensionTool distance selection', () => {
     })
   })
 
+  describe('when the points are picked in the negative direction', () => {
+    const reversedContext: DimensionDistanceDraftContext = {
+      kind: 'pointPoint',
+      point0: distanceContext.point1,
+      point1: distanceContext.point0,
+    }
+
+    it.each<{ type: string; mousePoint: Coords2d; value: number }>([
+      { type: 'HorizontalDistance', mousePoint: [2, 5], value: 4 },
+      { type: 'VerticalDistance', mousePoint: [6, 1], value: 3 },
+    ])(
+      'orders the points so $type stays positive',
+      ({ type, mousePoint, value }) => {
+        const expected = {
+          type,
+          segments: [1, 2],
+          distance: { value, units: 'Mm' },
+          source: { expr: value.toString(), is_literal: true },
+        }
+
+        expect(
+          buildDimensionDistanceConstraint(reversedContext, mousePoint, 'Mm')
+        ).toMatchObject(expected)
+        expect(
+          buildDimensionDistanceConstraint(distanceContext, mousePoint, 'Mm')
+        ).toMatchObject(expected)
+      }
+    )
+
+    it('keeps the click order for absolute distance', () => {
+      expect(
+        buildDimensionDistanceConstraint(reversedContext, [2, 1], 'Mm')
+      ).toMatchObject({
+        type: 'Distance',
+        segments: [2, 1],
+        distance: { value: 5, units: 'Mm' },
+      })
+    })
+
+    it('puts the origin second when the point is on its negative side', () => {
+      const originDistanceContext: DimensionDistanceDraftContext = {
+        kind: 'pointPoint',
+        point0: { type: 'point', id: ORIGIN_TARGET, point: [0, 0] },
+        point1: { type: 'point', id: 2, point: [-4, -3] },
+      }
+
+      expect(
+        buildDimensionDistanceConstraint(originDistanceContext, [-2, 5], 'Mm')
+      ).toMatchObject({
+        type: 'HorizontalDistance',
+        segments: [2, 'ORIGIN'],
+        distance: { value: 4, units: 'Mm' },
+      })
+      expect(
+        buildDimensionDistanceConstraint(originDistanceContext, [6, -1], 'Mm')
+      ).toMatchObject({
+        type: 'VerticalDistance',
+        segments: [2, 'ORIGIN'],
+        distance: { value: 3, units: 'Mm' },
+      })
+    })
+  })
+
   it('keeps point-to-line dimensions absolute in every cursor region', () => {
     const pointLineContext: DimensionDistanceDraftContext = {
       kind: 'pointLine',
@@ -535,6 +598,59 @@ describe('dimensionTool', () => {
     })
     expect((rustContext.addConstraint as any).mock.calls).toHaveLength(1)
     expect((rustContext.deleteObjects as any).mock.calls).toHaveLength(0)
+  })
+
+  it('keeps horizontal and vertical distances positive when points are clicked in reverse', async () => {
+    const sketch = createSketchApiObject({ id: 0 })
+    const point0 = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const point1 = createPointApiObject({ id: 2, x: 4, y: 3 })
+    const { actor, sceneInfra, rustContext } = createParentHarness([
+      sketch,
+      point0,
+      point1,
+    ])
+    const callbacks = (sceneInfra.setCallbacks as any).mock.calls[0][0]
+
+    callbacks.onClick(createMouseEvent([4, 3]))
+    callbacks.onClick(createMouseEvent([0, 0]))
+
+    await waitFor(
+      actor,
+      () => (rustContext.addConstraint as any).mock.calls.length === 1
+    )
+    expect((rustContext.addConstraint as any).mock.calls[0][2]).toMatchObject({
+      type: 'Distance',
+      segments: [2, 1],
+      distance: { value: 5, units: 'Mm' },
+    })
+
+    callbacks.onMove(createMouseEvent([2, 5]))
+    await waitFor(
+      actor,
+      () => (rustContext.editDistanceConstraint as any).mock.calls.length === 1
+    )
+    expect(
+      (rustContext.editDistanceConstraint as any).mock.calls[0][3]
+    ).toMatchObject({
+      type: 'HorizontalDistance',
+      segments: [1, 2],
+      distance: { value: 4, units: 'Mm' },
+      source: { expr: '4', is_literal: true },
+    })
+
+    callbacks.onClick(createMouseEvent([6, 1]))
+    await waitFor(
+      actor,
+      () => (rustContext.editDistanceConstraint as any).mock.calls.length === 2
+    )
+    expect(
+      (rustContext.editDistanceConstraint as any).mock.calls[1][3]
+    ).toMatchObject({
+      type: 'VerticalDistance',
+      segments: [1, 2],
+      distance: { value: 3, units: 'Mm' },
+      source: { expr: '3', is_literal: true },
+    })
   })
 
   async function expectPointLineDraft(clicks: [Coords2d, Coords2d]) {
