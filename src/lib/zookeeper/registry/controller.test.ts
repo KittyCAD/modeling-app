@@ -27,6 +27,7 @@ const workerMocks = vi.hoisted(() => ({
     dispose: ReturnType<typeof vi.fn>
     handleActorSnapshot: ReturnType<typeof vi.fn>
     reset: ReturnType<typeof vi.fn>
+    waitForPendingWrites: ReturnType<typeof vi.fn>
   }>,
 }))
 
@@ -64,6 +65,7 @@ vi.mock('@src/lib/zookeeper/registry/ZookeeperFileRequestProcessor', () => ({
     readonly dispose = vi.fn(async () => undefined)
     readonly handleActorSnapshot = vi.fn()
     readonly reset = vi.fn(async () => undefined)
+    readonly waitForPendingWrites = vi.fn(async () => undefined)
 
     constructor() {
       workerMocks.processors.push(this)
@@ -450,7 +452,9 @@ describe('Zookeeper session controller', () => {
       throw new Error('Expected the prompt to be queued')
     }
     actor.emit('ready-await', { awaitingResponse: false })
-    expect(projectFilesMocks.collect).toHaveBeenCalledOnce()
+    await vi.waitFor(() => {
+      expect(projectFilesMocks.collect).toHaveBeenCalledOnce()
+    })
 
     controller.removeQueued(queuedMessage.id)
     collectedFiles.resolve([])
@@ -493,7 +497,9 @@ describe('Zookeeper session controller', () => {
     controller.sendOrQueue('first prompt', undefined, [])
     controller.sendOrQueue('second prompt', undefined, [])
 
-    expect(projectFilesMocks.collect).toHaveBeenCalledOnce()
+    await vi.waitFor(() => {
+      expect(projectFilesMocks.collect).toHaveBeenCalledOnce()
+    })
     expect(controller.queue.value.map(({ text }) => text)).toEqual([
       'first prompt',
       'second prompt',
@@ -525,6 +531,9 @@ describe('Zookeeper session controller', () => {
     })
 
     controller.sendOrQueue('use the current code', undefined, [])
+    await vi.waitFor(() => {
+      expect(projectFilesMocks.collect).toHaveBeenCalledOnce()
+    })
     kclManager.code = 'updated code'
     firstCollection.resolve([])
 
@@ -773,6 +782,9 @@ describe('Zookeeper session controller', () => {
     ).mockReturnValueOnce(deletion.promise)
 
     controller.sendOrQueue('do not send this', undefined, [])
+    await vi.waitFor(() => {
+      expect(projectFilesMocks.collect).toHaveBeenCalledOnce()
+    })
     const clearPromise = controller.clearConversation()
     collectedFiles.resolve([])
     await flushPromises()
@@ -798,6 +810,9 @@ describe('Zookeeper session controller', () => {
     const { actor, controller } = createHarness({ actorState: 'ready-await' })
 
     controller.sendOrQueue('old prompt', undefined, [])
+    await vi.waitFor(() => {
+      expect(projectFilesMocks.collect).toHaveBeenCalledOnce()
+    })
     await controller.clearConversation()
     actor.emit('await')
     await flushPromises()
