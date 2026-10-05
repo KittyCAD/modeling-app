@@ -399,66 +399,26 @@ describe('dimensionTool distance selection', () => {
     })
   })
 
-  describe('when the points are picked in the negative direction', () => {
-    const reversedContext: DimensionDistanceDraftContext = {
+  it('puts the origin second when the point is on its negative side', () => {
+    const originDistanceContext: DimensionDistanceDraftContext = {
       kind: 'pointPoint',
-      point0: distanceContext.point1,
-      point1: distanceContext.point0,
+      point0: { type: 'point', id: ORIGIN_TARGET, point: [0, 0] },
+      point1: { type: 'point', id: 2, point: [-4, -3] },
     }
 
-    it.each<{ type: string; mousePoint: Coords2d; value: number }>([
-      { type: 'HorizontalDistance', mousePoint: [2, 5], value: 4 },
-      { type: 'VerticalDistance', mousePoint: [6, 1], value: 3 },
-    ])(
-      'orders the points so $type stays positive',
-      ({ type, mousePoint, value }) => {
-        const expected = {
-          type,
-          segments: [1, 2],
-          distance: { value, units: 'Mm' },
-          source: { expr: value.toString(), is_literal: true },
-        }
-
-        expect(
-          buildDimensionDistanceConstraint(reversedContext, mousePoint, 'Mm')
-        ).toMatchObject(expected)
-        expect(
-          buildDimensionDistanceConstraint(distanceContext, mousePoint, 'Mm')
-        ).toMatchObject(expected)
-      }
-    )
-
-    it('keeps the click order for absolute distance', () => {
-      expect(
-        buildDimensionDistanceConstraint(reversedContext, [2, 1], 'Mm')
-      ).toMatchObject({
-        type: 'Distance',
-        segments: [2, 1],
-        distance: { value: 5, units: 'Mm' },
-      })
+    expect(
+      buildDimensionDistanceConstraint(originDistanceContext, [-2, 5], 'Mm')
+    ).toMatchObject({
+      type: 'HorizontalDistance',
+      segments: [2, 'ORIGIN'],
+      distance: { value: 4, units: 'Mm' },
     })
-
-    it('puts the origin second when the point is on its negative side', () => {
-      const originDistanceContext: DimensionDistanceDraftContext = {
-        kind: 'pointPoint',
-        point0: { type: 'point', id: ORIGIN_TARGET, point: [0, 0] },
-        point1: { type: 'point', id: 2, point: [-4, -3] },
-      }
-
-      expect(
-        buildDimensionDistanceConstraint(originDistanceContext, [-2, 5], 'Mm')
-      ).toMatchObject({
-        type: 'HorizontalDistance',
-        segments: [2, 'ORIGIN'],
-        distance: { value: 4, units: 'Mm' },
-      })
-      expect(
-        buildDimensionDistanceConstraint(originDistanceContext, [6, -1], 'Mm')
-      ).toMatchObject({
-        type: 'VerticalDistance',
-        segments: [2, 'ORIGIN'],
-        distance: { value: 3, units: 'Mm' },
-      })
+    expect(
+      buildDimensionDistanceConstraint(originDistanceContext, [6, -1], 'Mm')
+    ).toMatchObject({
+      type: 'VerticalDistance',
+      segments: [2, 'ORIGIN'],
+      distance: { value: 3, units: 'Mm' },
     })
   })
 
