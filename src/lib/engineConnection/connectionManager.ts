@@ -77,6 +77,8 @@ import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 
+const RECONNECT_CAMERA_CAPTURE_TIMEOUT_MS = 300
+
 export type ConnectionSystemDeps = {
   settingsActor: SettingsActorType
 }
@@ -109,6 +111,11 @@ export class ConnectionManager extends EventTarget {
 
   connection: Connection | undefined
   private reconnectingConnection: Connection | undefined
+  private prepareForReconnect:
+    | ((signal: AbortSignal) => Promise<undefined | Error>)
+    | undefined
+  private reconnectPreparation: AbortController | undefined
+  private reconnectPreparationFinished = false
   private readonly activeExecutions = new Set<symbol>()
   private readonly activeRecoveries = new Set<symbol>()
 
@@ -243,15 +250,66 @@ export class ConnectionManager extends EventTarget {
     if (
       !connection ||
       connection !== this.connection ||
+      this.reconnectPreparation ||
       this.activeExecutions.size > 0 ||
       this.activeRecoveries.size > 0 ||
       Object.keys(this.pendingCommands).length > 0
     ) {
       return
     }
-    // Close the original connection when there are no
-    // tracked executions or pending commands.
+
+    if (this.prepareForReconnect && !this.reconnectPreparationFinished) {
+      const controller = new AbortController()
+      this.reconnectPreparation = controller
+      this.prepareReconnect(
+        connection,
+        controller,
+        this.prepareForReconnect
+      ).catch(reportRejection)
+      return
+    }
+
     connection.closeForReconnect()
+  }
+
+  private async prepareReconnect(
+    connection: Connection,
+    controller: AbortController,
+    prepare: (signal: AbortSignal) => Promise<undefined | Error>
+  ): Promise<void> {
+    let stopWaiting!: () => void
+    const cancelled = new Promise<void>((resolve) => {
+      stopWaiting = resolve
+    })
+
+    controller.signal.addEventListener('abort', stopWaiting, { once: true })
+    const timeout = setTimeout(() => {
+      controller.abort()
+    }, RECONNECT_CAMERA_CAPTURE_TIMEOUT_MS)
+
+    try {
+      const result = await Promise.race([prepare(controller.signal), cancelled])
+      if (result instanceof Error && !controller.signal.aborted) {
+        console.warn('Unable to capture camera before reconnect')
+      }
+    } catch {
+      if (!controller.signal.aborted) {
+        console.warn('Unable to capture camera before reconnect')
+      }
+    } finally {
+      clearTimeout(timeout)
+      controller.signal.removeEventListener('abort', stopWaiting)
+      controller.abort()
+
+      if (
+        this.connection === connection &&
+        this.reconnectPreparation === controller
+      ) {
+        this.reconnectPreparation = undefined
+        this.reconnectPreparationFinished = true
+        this.tryReconnectWhenIdle()
+      }
+    }
   }
 
   private handleReconnectRequested(connection: Connection) {
@@ -280,6 +338,7 @@ export class ConnectionManager extends EventTarget {
     unitTestPool,
     rustContext,
     kclVersion,
+    prepareForReconnect,
   }: {
     width: number
     height: number
@@ -290,6 +349,7 @@ export class ConnectionManager extends EventTarget {
     unitTestPool?: 'cpu'
     rustContext?: RustContext
     kclVersion?: KclVersion
+    prepareForReconnect?: (signal: AbortSignal) => Promise<undefined | Error>
   }) {
     EngineDebugger.addLog({
       label: 'connectionManager',
@@ -317,6 +377,7 @@ export class ConnectionManager extends EventTarget {
     this.lastConnectionError = undefined
     this.connectionStartedAt = performance.now()
     this.shutdownReported = false
+    this.prepareForReconnect = prepareForReconnect
     this.started = true
     this.rejectAllPendingCommands()
 
@@ -1303,6 +1364,10 @@ export class ConnectionManager extends EventTarget {
     this.connection?.disconnectAll()
     this.connection = undefined
     this.reconnectingConnection = undefined
+    this.reconnectPreparationFinished = false
+    this.prepareForReconnect = undefined
+    this.reconnectPreparation?.abort()
+    this.reconnectPreparation = undefined
     this.activeExecutions.clear()
     this.activeRecoveries.clear()
 
@@ -1322,7 +1387,13 @@ export class ConnectionManager extends EventTarget {
    * within the engine connection manager. This will reject a specific pendingCommand which will prevent it from
    * hanging forever
    */
-  rejectPendingCommand({ cmdId }: { cmdId: string }) {
+  rejectPendingCommand({
+    cmdId,
+    message = REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE,
+  }: {
+    cmdId: string
+    message?: string
+  }) {
     if (this.pendingCommands[cmdId]) {
       const pendingCommand = this.pendingCommands[cmdId]
       pendingCommand.reject([
@@ -1331,7 +1402,7 @@ export class ConnectionManager extends EventTarget {
           errors: [
             {
               error_code: 'connection_problem',
-              message: REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE,
+              message,
             },
           ],
         },

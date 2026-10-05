@@ -162,6 +162,61 @@ describe('ConnectionManager', () => {
     return { manager, connection, close, requestReconnect, sendCommand }
   }
 
+  it('captures the camera only after execution drains and before closing', async () => {
+    const { manager, close, requestReconnect } = reconnectHarness()
+    let complete!: () => void
+    const prepare = vi.fn(
+      () =>
+        new Promise<undefined>((resolve) => {
+          complete = () => resolve(undefined)
+        })
+    )
+    manager['prepareForReconnect'] = prepare
+    const finish = manager.trackExecution()
+    requestReconnect()
+    expect(prepare).not.toHaveBeenCalled()
+    finish()
+    requestReconnect()
+    expect(prepare).toHaveBeenCalledOnce()
+    expect(close).not.toHaveBeenCalled()
+    complete()
+    await vi.waitFor(() => expect(close).toHaveBeenCalledOnce())
+  })
+
+  it('bounds an unresponsive camera capture and aborts it', async () => {
+    vi.useFakeTimers()
+    const { manager, close, requestReconnect } = reconnectHarness()
+    let signal!: AbortSignal
+    manager['prepareForReconnect'] = vi.fn((captureSignal) => {
+      signal = captureSignal
+      return new Promise<undefined>(() => {})
+    })
+    requestReconnect()
+    await vi.advanceTimersByTimeAsync(299)
+    expect(close).not.toHaveBeenCalled()
+    await vi.advanceTimersByTimeAsync(1)
+    expect(signal.aborted).toBe(true)
+    expect(close).toHaveBeenCalledOnce()
+  })
+
+  it('does not close a replacement connection when old camera capture completes', async () => {
+    const { manager, close, requestReconnect } = reconnectHarness()
+    let complete!: () => void
+    manager['prepareForReconnect'] = () =>
+      new Promise<undefined>((resolve) => {
+        complete = () => resolve(undefined)
+      })
+    requestReconnect()
+    addConnectedState(manager)
+    const replacementClose = vi.fn()
+    manager.connection!.closeForReconnect = replacementClose
+    complete()
+    await Promise.resolve()
+    await Promise.resolve()
+    expect(close).not.toHaveBeenCalled()
+    expect(replacementClose).not.toHaveBeenCalled()
+  })
+
   it('waits through command-free gaps until every execution finishes', () => {
     const { manager, close, requestReconnect } = reconnectHarness()
     const finishFirst = manager.trackExecution()
