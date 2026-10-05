@@ -1280,12 +1280,8 @@ export class LanguageServerPlugin implements PluginValue {
           from !== null && to !== null && from !== undefined && to !== undefined
       )
       .sort((a, b) => {
-        switch (true) {
-          case a.from < b.from:
-            return -1
-          case a.from > b.from:
-            return 1
-        }
+        if (a.from < b.from) return -1
+        if (a.from > b.from) return 1
         return 0
       })
 

@@ -48,10 +48,7 @@ impl core::error::Error for KclVersionError {}
 
 impl std::fmt::Display for KclVersionError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "Unrecognized version. Valid versions are 1.0, 2.0, 3.0 and (experimentally) 3.0-preview"
-        )
+        write!(f, "Unrecognized version, expected 1.0, 2.0, or 3.0")
     }
 }
 

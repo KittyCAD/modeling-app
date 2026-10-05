@@ -27,7 +27,7 @@ getCommonEdge(faces: [TaggedFace; 2]): Edge
 ### Examples
 
 ```kcl
-@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+@settings(defaultLengthUnit = mm, kclVersion = 3.0)
 
 scale = 20mm
 partSketch = sketch(on = XY) {
