@@ -3,7 +3,7 @@
 // Categories: Mechanical Components; Industrial & Manufacturing
 
 // Set units
-@settings(defaultLengthUnit = in, kclVersion = 1.0)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 // Input bolt pattern dimensions to mount the bracket
 mountingBoltDiameter = 1 / 4
@@ -234,10 +234,10 @@ hidden002 = hide(sketch002)
 solid001 = subtract(bracketProfile, tools = extrude001)
   |> fillet(
        tags = [
-         getCommonEdge(faces = [region0011.tags.arc2, capEnd001]),
-         getCommonEdge(faces = [region0011.tags.line11, capEnd001]),
-         getCommonEdge(faces = [region0011.tags.line11, capStart001]),
-         getCommonEdge(faces = [region0011.tags.arc2, capStart001])
+         getCommonEdge(faces = [region0011.tags.line21, capEnd001]),
+         getCommonEdge(faces = [region0011.tags.line10, capEnd001]),
+         getCommonEdge(faces = [region0011.tags.line10, capStart001]),
+         getCommonEdge(faces = [region0011.tags.line21, capStart001])
        ],
        radius = flangeLength / 3,
      )

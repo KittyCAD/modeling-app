@@ -79,6 +79,19 @@ impl TyF64 {
         self.to_length_units(UnitLength::Millimeters)
     }
 
+    /// Returns true if this can be used as a length unit (e.g. mm, inches, etc)
+    pub fn is_length_compatible(&self) -> bool {
+        #[expect(
+            clippy::match_like_matches_macro,
+            reason = "Want to mirror the structure of `to_length_units` below"
+        )]
+        match self.ty {
+            NumericType::Default { .. } => true,
+            NumericType::Known(UnitType::Length(_)) => true,
+            _ => false,
+        }
+    }
+
     pub fn to_length_units(&self, units: UnitLength) -> f64 {
         let len = match &self.ty {
             NumericType::Default { len, .. } => *len,
@@ -150,6 +163,11 @@ impl TyF64 {
             },
         })
     }
+}
+
+/// Are all numbers in this slice compatible with being lengths?
+fn is_lengths(nums: &[TyF64]) -> bool {
+    nums.iter().all(|num| num.is_length_compatible())
 }
 
 impl Args {
@@ -1160,6 +1178,14 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis2dOrEdgeReference {
             let obj = arg.as_object()?;
             let_field_of!(obj, direction);
             let_field_of!(obj, origin);
+            let origin: [TyF64; 2] = origin;
+            if !is_lengths(&origin) {
+                return None;
+            }
+            let direction: [TyF64; 2] = direction;
+            if !is_lengths(&direction) {
+                return None;
+            }
             Some(Self::Axis { direction, origin })
         };
         let case2 = super::fillet::EdgeReference::from_kcl_val;
@@ -1175,7 +1201,15 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis3dOrEdgeReference {
         let case1 = |arg: &KclValue| {
             let obj = arg.as_object()?;
             let_field_of!(obj, direction);
+            let direction: [TyF64; 3] = direction;
+            if !is_lengths(&direction) {
+                return None;
+            }
             let_field_of!(obj, origin);
+            let origin: [TyF64; 3] = origin;
+            if !is_lengths(&origin) {
+                return None;
+            }
             Some(Self::Axis { direction, origin })
         };
         let case2 = super::fillet::EdgeReference::from_kcl_val;
@@ -1204,7 +1238,15 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::MirrorAcross3d {
         let case2 = |arg: &KclValue| {
             let obj = arg.as_object()?;
             let_field_of!(obj, direction);
+            let direction: [TyF64; 3] = direction;
+            if !is_lengths(&direction) {
+                return None;
+            }
             let_field_of!(obj, origin);
+            let origin: [TyF64; 3] = origin;
+            if !is_lengths(&origin) {
+                return None;
+            }
             Some(Self::Axis {
                 direction: Box::new(direction),
                 origin: Box::new(origin),
@@ -1251,10 +1293,24 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Point3dAxis3dOrGeometryR
         let case1 = |arg: &KclValue| {
             let obj = arg.as_object()?;
             let_field_of!(obj, direction);
+            let direction: [TyF64; 3] = direction;
+            if !is_lengths(&direction) {
+                return None;
+            }
             let_field_of!(obj, origin);
+            let origin: [TyF64; 3] = origin;
+            if !is_lengths(&origin) {
+                return None;
+            }
             Some(Self::Axis { direction, origin })
         };
-        let case2 = <[TyF64; 3]>::from_kcl_val;
+        let case2 = |arg: &KclValue| {
+            let point: [TyF64; 3] = FromKclValue::from_kcl_val(arg)?;
+            if !is_lengths(&point) {
+                return None;
+            }
+            Some(point)
+        };
         let case3 = super::fillet::EdgeReference::from_kcl_val;
         let case4 = FaceTag::from_kcl_val;
         let case5 = Box::<Solid>::from_kcl_val;
