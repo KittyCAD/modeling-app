@@ -103,7 +103,7 @@ impl TyF64 {
     /// This is legacy, and all callers should stop using this.
     pub fn unwrap_to_length_units(&self, units: UnitLength) -> f64 {
         self.to_length_units(units)
-            .unwrap_or_else(|| unreachable!("expected length, found {:?}", self.ty))
+            .unwrap_or_else(|| panic!("expected length, found {:?}", self.ty))
     }
 
     /// The original that returns `f64` was renamed to
@@ -122,7 +122,7 @@ impl TyF64 {
     /// all callers should stop using this.
     pub fn unwrap_to_degrees(&self, exec_state: &mut ExecState, source_range: SourceRange) -> f64 {
         self.to_degrees(exec_state, source_range)
-            .unwrap_or_else(|| unreachable!("expected angle, found {:?}", self.ty))
+            .unwrap_or_else(|| panic!("expected angle, found {:?}", self.ty))
     }
 
     /// The original that returns `f64` was renamed to
@@ -149,7 +149,7 @@ impl TyF64 {
     /// all callers should stop using this.
     pub fn unwrap_to_radians(&self, exec_state: &mut ExecState, source_range: SourceRange) -> f64 {
         self.to_radians(exec_state, source_range)
-            .unwrap_or_else(|| unreachable!("expected angle, found {:?}", self.ty))
+            .unwrap_or_else(|| panic!("expected angle, found {:?}", self.ty))
     }
 
     /// The original that returns `f64` was renamed to
