@@ -35,7 +35,6 @@ describe('kcl runtime flags', () => {
     expect(
       kclRuntimeFlagsFromUserFeatures(userFeaturesWith(new Set()))
     ).toEqual({
-      use_cek_executor: 'Off',
       use_new_lexer_parser: 'Off',
     })
   })
@@ -52,7 +51,6 @@ describe('kcl runtime flags', () => {
 
     expect(wasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
       JSON.stringify({
-        use_cek_executor: 'Off',
         use_new_lexer_parser: 'On',
       })
     )
