@@ -752,9 +752,6 @@ function numericSuffixToUnitLength(suffix: NumericSuffix): UnitLength | null {
     case 'Unknown':
       return null
     default:
-      // this is more of a type completeness check
-      // rather then something we expect to hit at runtime
-      const _exhaustiveCheck: never = suffix
       return null
   }
 }
@@ -777,7 +774,6 @@ function unitLengthToNumericSuffix(unit: UnitLength): NumericSuffix {
     case 'yd':
       return 'Yd'
     default:
-      const _exhaustiveCheck: never = unit
       return 'Mm'
   }
 }
@@ -1055,8 +1051,6 @@ export function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
       case 'SketchVar':
         // TODO: sketch-api: implement initial.
         break
-      default:
-        const _exhaustiveCheck: never = step
     }
   }
   return pathToNode

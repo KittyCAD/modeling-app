@@ -187,6 +187,9 @@ function ArgumentInput({
           onSubmit={onSubmit}
         />
       )
+    case 'string':
+    case 'color':
+    case 'tagDeclarator':
     default:
       return (
         <CommandBarBasicInput
