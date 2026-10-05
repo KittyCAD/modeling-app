@@ -736,7 +736,36 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
       "originalId": "[uuid]",
       "topologyId": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [],
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 6799,
+            "end": 6806,
+            "moduleId": 0,
+            "start": 6799,
+            "type": "TagDeclarator",
+            "value": "circle1"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 6922,
+            "end": 6929,
+            "moduleId": 0,
+            "start": 6922,
+            "type": "TagDeclarator",
+            "value": "circle2"
+          },
+          "type": "extrudeArc"
+        }
+      ],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -859,8 +888,8 @@ description: Variables in memory after executing mirror3d_and_boolean.kcl
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": null,
-      "endCapId": null,
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
