@@ -236,24 +236,21 @@ describe('LSP runtime feature flags', () => {
   })
 
   it('restarts once for changed flags and not for unchanged flags', async () => {
-    const features = createUserFeatures(
-      UserFeaturesState.Ready,
-      new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG])
-    )
+    const features = createUserFeatures(UserFeaturesState.Ready)
     attachService({ features })
     await flushMicrotasks()
     expect(mocks.workers).toHaveLength(1)
 
-    features.update(UserFeaturesState.Ready, new Set([]))
+    features.update(UserFeaturesState.Ready, new Set())
     await flushMicrotasks()
-    expect(mocks.workers).toHaveLength(2)
+    expect(mocks.workers).toHaveLength(1)
 
     features.update(
       UserFeaturesState.Ready,
       new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG])
     )
     await flushMicrotasks()
-    expect(mocks.workers).toHaveLength(3)
+    expect(mocks.workers).toHaveLength(2)
     expect(mocks.workers[0].terminate).toHaveBeenCalledTimes(1)
     expect(initPayload(mocks.workers[1])).toMatchObject({
       kclRuntimeFlags: {
