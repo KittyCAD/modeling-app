@@ -215,18 +215,16 @@ async function getUniqueProjectNameForCreate({
 const prepareBulkProjectWrite = async ({
   context,
   requestedProjectName,
-  wasmInstance,
   useReservedProjectName = false,
   useSettingsProjectDirectoryFallback = false,
 }: {
   context: SystemIOContext
   requestedProjectName?: string
-  wasmInstance: ModuleType
   useReservedProjectName?: boolean
   useSettingsProjectDirectoryFallback?: boolean
 }) => {
   const operations = fileOperations(context)
-  const configuration = await readAppSettingsFile(operations, wasmInstance)
+  const configuration = await readAppSettingsFile(operations)
   const projectDirectoryPath =
     context.projectDirectoryPath ||
     (useSettingsProjectDirectoryFallback
@@ -279,7 +277,6 @@ const sharedBulkCreateWorkflow = async ({
   } = await prepareBulkProjectWrite({
     context: input.context,
     requestedProjectName: input.files[0]?.requestedProjectName,
-    wasmInstance: input.wasmInstance,
   })
 
   for (let fileIndex = 0; fileIndex < input.files.length; fileIndex++) {
@@ -342,11 +339,9 @@ const sharedBulkWriteImportedProjectFilesWorkflow = async ({
       )
     }
 
-    const wasmInstance = await input.context.wasmInstancePromise
     const { projectName, projectRoot } = await prepareBulkProjectWrite({
       context: input.context,
       requestedProjectName: input.requestedProjectName,
-      wasmInstance,
       useReservedProjectName: true,
       useSettingsProjectDirectoryFallback: true,
     })
@@ -720,7 +715,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       })
 
       const operations = fileOperations(input.context)
-      const configuration = await readAppSettingsFile(operations, wasmInstance)
+      const configuration = await readAppSettingsFile(operations)
 
       // Create the project around the file if newProject
       await createNewProjectDirectory(
@@ -1083,8 +1078,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         if (fsZds.extname(input.requestedAbsolutePath) === FILE_EXT) {
           const wasmInstance = await input.context.wasmInstancePromise
           const configuration = await readAppSettingsFile(
-            fileOperations(input.context),
-            wasmInstance
+            fileOperations(input.context)
           )
           if (err(configuration)) {
             return Promise.reject(configuration)
