@@ -156,7 +156,9 @@ describe('feature tree React performance tracking', () => {
       }
     })
 
-    const rows = measurements.filter(({ name }) => /OperationItem$/.test(name))
+    const rows = measurements.filter(({ name }) =>
+      /Operation(TreeNode)?Item$/.test(name)
+    )
     expect(rows.length).toBeGreaterThan(0)
     // A closed import must not copy the thousands of operations in other
     // modules into each visible row's performance measurement.

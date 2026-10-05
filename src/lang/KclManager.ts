@@ -972,6 +972,7 @@ export class KclManager extends File {
   /** Operation key (from getOperationKey) of the most recent live operation. */
   private _liveLatestOperationKey = signal<string | null>(null)
   private activeLiveOperationExecutionId: number | null = null
+  private _operationExecutionGeneration = signal(0)
 
   private _variables = signal<VariableMap>({})
   lastSuccessfulVariables: VariableMap = {}
@@ -1039,6 +1040,10 @@ export class KclManager extends File {
   }
   get liveLatestOperationKey() {
     return this._liveLatestOperationKey.value
+  }
+  /** Scopes feature-tree expansion even when consecutive executions are batched. */
+  get operationExecutionGeneration() {
+    return this._operationExecutionGeneration.value
   }
   /**
    * A client-side representation of the commands that have been sent,
@@ -1232,6 +1237,7 @@ export class KclManager extends File {
   }
 
   private beginLiveOperationUpdates(executionId: number) {
+    this._operationExecutionGeneration.value += 1
     this.activeLiveOperationExecutionId = executionId
     this._liveOperationsByModule.value = emptyOperationsByModule()
     this._liveActiveModuleId.value = null

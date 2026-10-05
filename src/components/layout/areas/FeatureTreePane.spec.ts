@@ -8,7 +8,31 @@ import {
 } from '@src/components/layout/areas/FeatureTreePane'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import { defaultNodePath, type OperationsByModule } from '@src/lang/wasm'
+import {
+  isOperationTreeBranch,
+  type OperationTree,
+  type OperationTreeBranch,
+  type OperationTreeNode,
+} from '@src/lib/featureTreeOperationTree'
 import { describe, expect, it } from 'vitest'
+
+type ExpandedTreeNode =
+  | Operation
+  | Operation[]
+  | {
+      parent: OperationTreeBranch['parent']
+      children: ExpandedTreeNode[]
+    }
+
+function expandOperationTree(tree: OperationTree): ExpandedTreeNode[] {
+  const expand = (nodes: OperationTreeNode[]): ExpandedTreeNode[] =>
+    nodes.map((node) =>
+      isOperationTreeBranch(node)
+        ? { parent: node.parent, children: expand(tree.getChildren(node)) }
+        : node
+    )
+  return expand(tree.nodes)
+}
 
 describe('FeatureTreePane', () => {
   describe('getFeatureTreeSketchSelectionContext', () => {
@@ -149,7 +173,9 @@ describe('FeatureTreePane', () => {
         },
       }
 
-      const tree = buildOperationTree(operationsByModule, 0)
+      const tree = expandOperationTree(
+        buildOperationTree(operationsByModule, 0)
+      )
 
       expect(tree[0]).toMatchObject({
         parent: { name: 'Parameters' },
@@ -219,7 +245,9 @@ describe('FeatureTreePane', () => {
         },
       }
 
-      const tree = buildOperationTree(operationsByModule, 0)
+      const tree = expandOperationTree(
+        buildOperationTree(operationsByModule, 0)
+      )
 
       // 1. Imports come first: the first 5 items are module instances
       //    (parameters, brakeRotor, carTire, carWheel, lugNut)
@@ -289,7 +317,9 @@ describe('FeatureTreePane', () => {
         },
       }
 
-      const tree = buildOperationTree(operationsByModule, 0)
+      const tree = expandOperationTree(
+        buildOperationTree(operationsByModule, 0)
+      )
 
       // Module 1 is expanded once (from module 0's "first" reference).
       // Module 2's "second" reference to the same module is not added
