@@ -76,13 +76,10 @@ describe('settings without Wasm', () => {
     })
   })
 
-  it('loads user settings while Wasm initialization is still pending', async () => {
+  it('loads user settings without a Wasm dependency', async () => {
     vi.spyOn(fsZds, 'getPath').mockResolvedValue('/settings-test')
-    const pendingWasm = new Promise<ModuleType>(() => {})
-
     const settings = await loadAndValidateSettings(
-      settingsFiles('[settings.app.appearance]\ntheme = "dark"'),
-      pendingWasm
+      settingsFiles('[settings.app.appearance]\ntheme = "dark"')
     )
 
     expect(settings.settings.app.theme.current).toBe('dark')
@@ -100,7 +97,7 @@ describe('settings without Wasm', () => {
     expect(files.readFile).toHaveBeenCalledWith('/project/project.toml')
   })
 
-  it('loads settings for a project with an existing ID without waiting for Wasm', async () => {
+  it('loads settings for a project with an existing ID without a Wasm dependency', async () => {
     vi.spyOn(fsZds, 'getPath').mockResolvedValue('/settings-test')
     const files: FileOperationsRegistryService = {
       ...settingsFiles(''),
@@ -113,9 +110,7 @@ describe('settings without Wasm', () => {
       ),
       writeFile: vi.fn(),
     }
-    const pendingWasm = new Promise<ModuleType>(() => {})
-
-    const result = await loadAndValidateSettings(files, pendingWasm, '/project')
+    const result = await loadAndValidateSettings(files, '/project')
 
     expect(result.settings.app.theme.current).toBe('dark')
     expect(result.settings.modeling.defaultUnit.current).toBe('cm')

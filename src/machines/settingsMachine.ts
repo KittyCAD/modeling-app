@@ -139,19 +139,14 @@ export const settingsMachine = setup({
         projectLibrarySettingDefaultPolicies: readonly ProjectLibrarySettingDefaultPolicy[]
         extensionSettings: ResolvedExtensionSettings
         fileOperations: FileOperationsRegistryService
-        wasmInstancePromise: Promise<ModuleType>
       }
     >(async ({ input }) => {
-      const { settings } = await loadAndValidateSettings(
-        input.fileOperations,
-        input.wasmInstancePromise,
-        {
-          defaultProjectLibraries: input.defaultProjectLibraries,
-          projectLibrarySettingDefaultPolicies:
-            input.projectLibrarySettingDefaultPolicies,
-          extensionSettings: input.extensionSettings,
-        }
-      )
+      const { settings } = await loadAndValidateSettings(input.fileOperations, {
+        defaultProjectLibraries: input.defaultProjectLibraries,
+        projectLibrarySettingDefaultPolicies:
+          input.projectLibrarySettingDefaultPolicies,
+        extensionSettings: input.extensionSettings,
+      })
       return settings
     }),
     loadProjectSettings: fromPromise<
@@ -163,20 +158,15 @@ export const settingsMachine = setup({
         fileOperations: FileOperationsRegistryService
         project: Project
         settings: SettingsType
-        wasmInstancePromise: Promise<ModuleType>
       }
     >(async ({ input }) => {
-      const { settings } = await loadAndValidateSettings(
-        input.fileOperations,
-        input.wasmInstancePromise,
-        {
-          defaultProjectLibraries: input.defaultProjectLibraries,
-          projectLibrarySettingDefaultPolicies:
-            input.projectLibrarySettingDefaultPolicies,
-          extensionSettings: input.extensionSettings,
-          projectPath: input.project.path,
-        }
-      )
+      const { settings } = await loadAndValidateSettings(input.fileOperations, {
+        defaultProjectLibraries: input.defaultProjectLibraries,
+        projectLibrarySettingDefaultPolicies:
+          input.projectLibrarySettingDefaultPolicies,
+        extensionSettings: input.extensionSettings,
+        projectPath: input.project.path,
+      })
       return settings
     }),
     reloadSettings: fromPromise<
@@ -187,20 +177,15 @@ export const settingsMachine = setup({
         projectLibrarySettingDefaultPolicies: readonly ProjectLibrarySettingDefaultPolicy[]
         extensionSettings: ResolvedExtensionSettings
         fileOperations: FileOperationsRegistryService
-        wasmInstancePromise: Promise<ModuleType>
       }
     >(async ({ input }) => {
-      const { settings } = await loadAndValidateSettings(
-        input.fileOperations,
-        input.wasmInstancePromise,
-        {
-          defaultProjectLibraries: input.defaultProjectLibraries,
-          projectLibrarySettingDefaultPolicies:
-            input.projectLibrarySettingDefaultPolicies,
-          extensionSettings: input.extensionSettings,
-          projectPath: input.currentProject?.path,
-        }
-      )
+      const { settings } = await loadAndValidateSettings(input.fileOperations, {
+        defaultProjectLibraries: input.defaultProjectLibraries,
+        projectLibrarySettingDefaultPolicies:
+          input.projectLibrarySettingDefaultPolicies,
+        extensionSettings: input.extensionSettings,
+        projectPath: input.currentProject?.path,
+      })
       return settings
     }),
     watchSystemTheme: fromCallback<{
@@ -635,7 +620,6 @@ export const settingsMachine = setup({
           projectLibrarySettingDefaultPolicies:
             context.projectLibrarySettingDefaultPolicies,
           extensionSettings: context.extensionSettings,
-          wasmInstancePromise: context.wasmInstancePromise,
         }),
       },
     },
@@ -690,7 +674,6 @@ export const settingsMachine = setup({
           projectLibrarySettingDefaultPolicies:
             context.projectLibrarySettingDefaultPolicies,
           extensionSettings: context.extensionSettings,
-          wasmInstancePromise: context.wasmInstancePromise,
         }),
         onDone: {
           target: 'idle',
@@ -745,7 +728,6 @@ export const settingsMachine = setup({
             extensionSettings: context.extensionSettings,
             settings: getOnlySettingsFromContext(context),
             project: event.project,
-            wasmInstancePromise: context.wasmInstancePromise,
           }
         },
       },

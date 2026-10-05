@@ -1,5 +1,3 @@
-import { join } from 'node:path'
-import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import {
@@ -9,7 +7,6 @@ import {
   settingsProjectId,
   settingsProjectPath,
 } from '@src/lib/settings/settingsLoading.fixtures'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import fc from 'fast-check'
 import { parse as parseToml, stringify } from 'smol-toml'
 import { validate as validateUuid } from 'uuid'
@@ -23,12 +20,8 @@ import {
   vi,
 } from 'vitest'
 
-let wasmInstance: ModuleType
 beforeAll(async () => {
   await moduleFsViaModuleImport({ type: StorageName.NodeFS, options: {} })
-  wasmInstance = await loadAndInitialiseWasmInstance(
-    join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
-  )
 })
 beforeEach(() => {
   vi.spyOn(fsZds, 'getPath').mockResolvedValue('/settings-test')
@@ -59,7 +52,6 @@ project_id = "${settingsCloudId}"
 `)
     const result = await loadAndValidateSettings(
       fixture.files,
-      wasmInstance,
       settingsProjectPath
     )
 
@@ -88,7 +80,7 @@ project_id = "${settingsCloudId}"
   it('keeps an existing UUID and leaves the original file untouched', async () => {
     const original = `# retain this comment\ntitle = "Project"\n[settings.meta]\nid = "${settingsProjectId}"`
     const fixture = await settingsLoadingFiles(original)
-    await loadAndValidateSettings(fixture.files, wasmInstance, {
+    await loadAndValidateSettings(fixture.files, {
       projectPath: settingsProjectPath,
     })
     expect(fixture.files.writeFile).not.toHaveBeenCalled()
@@ -103,11 +95,7 @@ project_id = "${settingsCloudId}"
     'creates a stable UUID for an absent, empty, or nil-ID project: %j',
     async (toml) => {
       const fixture = await settingsLoadingFiles(toml)
-      await loadAndValidateSettings(
-        fixture.files,
-        wasmInstance,
-        settingsProjectPath
-      )
+      await loadAndValidateSettings(fixture.files, settingsProjectPath)
       const written = writtenProject(fixture.contents)
       const serialized = fixture.contents.get(settingsProjectFile)
       expect(written).toMatchObject({
@@ -116,11 +104,7 @@ project_id = "${settingsCloudId}"
       const idMatch = serialized?.match(/id = "([^"]+)"/)
       expect(validateUuid(idMatch?.[1] ?? '')).toBe(true)
       expect(idMatch?.[1]).not.toBe('00000000-0000-0000-0000-000000000000')
-      await loadAndValidateSettings(
-        fixture.files,
-        wasmInstance,
-        settingsProjectPath
-      )
+      await loadAndValidateSettings(fixture.files, settingsProjectPath)
       expect(fixture.contents.get(settingsProjectFile)).toBe(serialized)
       expect(fixture.files.writeFile).toHaveBeenCalledOnce()
     }
@@ -130,11 +114,7 @@ project_id = "${settingsCloudId}"
     const fixture = await settingsLoadingFiles(
       '[settings.plugins]\ncreated = 2024-01-01T00:00:00Z'
     )
-    await loadAndValidateSettings(
-      fixture.files,
-      wasmInstance,
-      settingsProjectPath
-    )
+    await loadAndValidateSettings(fixture.files, settingsProjectPath)
     expect(writtenProject(fixture.contents)).toMatchObject({
       settings: {
         plugins: {
@@ -148,7 +128,7 @@ project_id = "${settingsCloudId}"
     const original = '[settings.plugins]\nvalue = nan'
     const fixture = await settingsLoadingFiles(original)
     await expect(
-      loadAndValidateSettings(fixture.files, wasmInstance, settingsProjectPath)
+      loadAndValidateSettings(fixture.files, settingsProjectPath)
     ).rejects.toThrow('Could not serialize project configuration')
     expect(fixture.files.writeFile).not.toHaveBeenCalled()
     expect(fixture.contents.get(settingsProjectFile)).toBe(original)
@@ -157,7 +137,7 @@ project_id = "${settingsCloudId}"
   it('rejects malformed project settings without rewriting them', async () => {
     const fixture = await settingsLoadingFiles('broken = [')
     await expect(
-      loadAndValidateSettings(fixture.files, wasmInstance, settingsProjectPath)
+      loadAndValidateSettings(fixture.files, settingsProjectPath)
     ).rejects.toThrow()
     expect(fixture.files.writeFile).not.toHaveBeenCalled()
   })
@@ -167,7 +147,7 @@ project_id = "${settingsCloudId}"
     const failure = new Error('EACCES')
     fixture.faults.read = failure
     await expect(
-      loadAndValidateSettings(fixture.files, wasmInstance, settingsProjectPath)
+      loadAndValidateSettings(fixture.files, settingsProjectPath)
     ).rejects.toBe(failure)
     expect(fixture.files.writeFile).not.toHaveBeenCalled()
   })
@@ -177,7 +157,7 @@ project_id = "${settingsCloudId}"
     const failure = new Error('Disk full')
     fixture.faults.write = failure
     await expect(
-      loadAndValidateSettings(fixture.files, wasmInstance, settingsProjectPath)
+      loadAndValidateSettings(fixture.files, settingsProjectPath)
     ).rejects.toBe(failure)
     expect(fixture.contents.get(settingsProjectFile)).toBe('')
   })
@@ -197,11 +177,7 @@ project_id = "${settingsCloudId}"
               cloud: { 'zoo.dev': { project_id: settingsCloudId } },
             })
           )
-          await loadAndValidateSettings(
-            fixture.files,
-            wasmInstance,
-            settingsProjectPath
-          )
+          await loadAndValidateSettings(fixture.files, settingsProjectPath)
           const first = fixture.contents.get(settingsProjectFile)
           expect(writtenProject(fixture.contents)).toMatchObject({
             title,
@@ -209,11 +185,7 @@ project_id = "${settingsCloudId}"
             settings: { plugins: { enabled, count } },
             cloud: { 'zoo.dev': { project_id: settingsCloudId } },
           })
-          await loadAndValidateSettings(
-            fixture.files,
-            wasmInstance,
-            settingsProjectPath
-          )
+          await loadAndValidateSettings(fixture.files, settingsProjectPath)
           expect(fixture.contents.get(settingsProjectFile)).toBe(first)
           expect(fixture.files.writeFile).toHaveBeenCalledOnce()
         }
