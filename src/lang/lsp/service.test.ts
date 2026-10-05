@@ -253,7 +253,7 @@ describe('LSP runtime feature flags', () => {
       new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG])
     )
     await flushMicrotasks()
-    expect(mocks.workers).toHaveLength(2)
+    expect(mocks.workers).toHaveLength(3)
     expect(mocks.workers[0].terminate).toHaveBeenCalledTimes(1)
     expect(initPayload(mocks.workers[1])).toMatchObject({
       kclRuntimeFlags: {
