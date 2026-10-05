@@ -181,10 +181,17 @@ export function sanitizeServiceImplementation<T extends object>(
 /** Helpers for authoring registry items. */
 export function defineRegistryItemFactory<TModel = unknown>(
   factory: RegistryItemFactory<TModel>,
-  itemKey?: RegistryItemKey
+  itemKey?: RegistryItemKey,
+  dependencies: readonly RegistryItem[] = []
 ): RegistryItemFactory<TModel> {
   Object.defineProperty(factory, 'itemKey', {
     value: itemKey ?? factory,
+    enumerable: false,
+    configurable: false,
+    writable: false,
+  })
+  Object.defineProperty(factory, 'dependencies', {
+    value: Object.freeze([...dependencies]),
     enumerable: false,
     configurable: false,
     writable: false,

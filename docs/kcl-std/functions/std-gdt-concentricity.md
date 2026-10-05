@@ -58,7 +58,7 @@ where appropriate. ISO standards use the name coaxiality for this concept.
 ### Examples
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 datumSketch = sketch(on = XY) {
   diameter = line(start = [var -6mm, var 0mm], end = [var 6mm, var 0mm])
@@ -112,7 +112,7 @@ gdt::concentricity(
 ![Rendered example of gdt::concentricity 0](/kcl-test-outputs/serial_test_example_fn_std-gdt-concentricity0.png)
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 datumSketch = sketch(on = XY) {
   perimeter = circle(start = [var 6mm, var 0mm], center = [var 0mm, var 0mm])

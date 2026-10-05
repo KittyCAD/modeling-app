@@ -23,8 +23,6 @@ import {
 } from '@src/registry/contracts/commands'
 import { isCommandVisibleInSearch } from '@src/components/CommandBar/commandSearchVisibility'
 
-export const COMMAND_PALETTE_HOTKEY = 'mod+k'
-
 export const CommandBar = () => {
   const { pathname } = useLocation()
   const { commands: cmd, project, registry } = useApp()
@@ -87,12 +85,12 @@ export const CommandBar = () => {
   }, [pathname])
 
   // Close the command bar when navigating
-  // but importantly not when the query parameters change
-  // biome-ignore lint/correctness/useExhaustiveDependencies: this intentionally reacts only to path changes.
+  // but importantly not when the query parameters change.
+  // Do not close when a command is selected (e.g. edit flow from feature tree)
+  // so that programmatic "Find and select command" is not immediately closed.
   useEffect(() => {
-    if (commandBarState.matches('Closed')) {
-      return
-    }
+    if (commandBarState.matches('Closed')) return
+    if (commandBarState.context.selectedCommand) return
     cmd.send({ type: 'Close' })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [pathname])
@@ -164,21 +162,25 @@ export const CommandBar = () => {
 
   const commandBar = (
     <Transition.Root
-      show={isCommandBarOpen || false}
+      show={!commandBarState.matches('Closed') || false}
       afterLeave={() => {
-        if (selectedCommand?.onCancel) {
-          selectedCommand.onCancel()
-        }
+        if (selectedCommand?.onCancel) selectedCommand.onCancel()
         cmd.send({ type: 'Clear' })
       }}
       as={Fragment}
     >
       <WrapperComponent
-        open={isCommandBarOpen || isArgumentThatShouldBeHardToDismiss}
+        open={
+          !commandBarState.matches('Closed') ||
+          isArgumentThatShouldBeHardToDismiss
+        }
         onClose={() => {
           cmd.send({ type: 'Close' })
         }}
-        className={`fixed inset-0 z-50 overflow-y-auto pb-4 pt-1 ${isArgumentThatShouldBeHardToDismiss ? 'pointer-events-none' : ''}`}
+        className={
+          'fixed inset-0 z-50 overflow-y-auto pb-4 pt-1 ' +
+          (isArgumentThatShouldBeHardToDismiss ? 'pointer-events-none' : '')
+        }
         data-testid="command-bar-wrapper"
       >
         <Transition.Child

@@ -77,6 +77,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
         Profiles: '1 profile',
         Length: '5',
       },
+      reviewValidationError: undefined,
     })
     await cmdBar.progressCmdBar()
     await expect(page.locator('.cm-activeLine')).toHaveText(
@@ -297,7 +298,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     )
     await cmdBar.progressCmdBar()
 
-    // Review step and argument hotkeys
+    // Closed profiles use KCL's solid default and skip the body type step.
     await cmdBar.expectState({
       stage: 'review',
       commandName: 'Extrude',
@@ -305,13 +306,22 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
         Profiles: '1 profile',
         Length: '5',
       },
+      reviewValidationError: undefined,
     })
     await page.keyboard.press('Meta+Backspace')
 
-    // Assert we're back on the distance step
-    await expect(
-      page.getByRole('button', { name: 'length', exact: false })
-    ).toBeDisabled()
+    // Step back returns to the preceding length argument.
+    await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Extrude',
+      currentArgKey: 'length',
+      currentArgValue: '5',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+      },
+      highlightedHeaderArg: 'length',
+    })
 
     await cmdBar.progressCmdBar()
 

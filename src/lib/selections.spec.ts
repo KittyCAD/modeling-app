@@ -1,33 +1,115 @@
+import { describe, expect, test, vi } from 'vitest'
+
 import type { Plane } from '@rust/kcl-lib/bindings/Plane'
 import type { PlaneInfo } from '@rust/kcl-lib/bindings/PlaneInfo'
 import type { Point3d } from '@rust/kcl-lib/bindings/Point3d'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
+import { createEdgeRefObjectExpression } from '@src/lang/modifyAst/edges'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import type { Artifact } from '@src/lang/std/artifactGraph'
-import type { ArtifactGraph, ExecState, SourceRange } from '@src/lang/wasm'
-import { assertParse } from '@src/lang/wasm'
+import type { KclManager } from '@src/lang/KclManager'
+import type {
+  ArtifactGraph,
+  Artifact,
+  ExecState,
+  SourceRange,
+} from '@src/lang/wasm'
+import { assertParse, recast } from '@src/lang/wasm'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
+  canSubmitSelectionArg,
   codeToIdSelections,
   findLastRangeStartingBefore,
+  getEventForQueryEntityTypeWithPoint,
+  getCodeRefsFromEntityReference,
   getSelectionReferences,
   getSelectionTypeDisplayText,
   getStableOffsetPlaneData,
   getUnresolvedEnginePrimitiveSelections,
   handleSelectionBatch,
+  normalizeEntityReference,
   removeEnginePrimitiveSelectionFromSelections,
   removeReferenceFromSelections,
-  selectSketchPlane,
 } from '@src/lib/selections'
-import { enginelessExecutor } from '@src/lib/testHelpers'
 import type {
   DefaultPlaneSelection,
   EnginePrimitiveSelection,
   Selection,
+  Selections,
 } from '@src/machines/modelingSharedTypes'
+import { enginelessExecutor } from '@src/lib/testHelpers'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
-import { describe, expect, test, vi } from 'vitest'
+
+test('includes region, source segment, and sweep ranges for a wall face', () => {
+  const sourceSegmentRange = [10, 20, 0] as SourceRange
+  const regionRange = [30, 40, 0] as SourceRange
+  const sweepRange = [50, 60, 0] as SourceRange
+  const sourceSegment = {
+    type: 'segment',
+    id: 'source-segment',
+    pathId: 'sketch-path',
+    edgeIds: [],
+    codeRef: {
+      range: sourceSegmentRange,
+      nodePath: { steps: [] },
+      pathToNode: [],
+    },
+    commonSurfaceIds: [],
+  } satisfies Extract<Artifact, { type: 'segment' }>
+  const regionSegment = {
+    type: 'segment',
+    id: 'region-segment',
+    pathId: 'region-path',
+    originalSegId: sourceSegment.id,
+    edgeIds: [],
+    codeRef: { range: regionRange, nodePath: { steps: [] }, pathToNode: [] },
+    commonSurfaceIds: [],
+  } satisfies Extract<Artifact, { type: 'segment' }>
+  const wall = {
+    type: 'wall',
+    id: 'wall',
+    segId: regionSegment.id,
+    edgeCutEdgeIds: [],
+    sweepId: 'sweep',
+    pathIds: [],
+    faceCodeRef: {
+      range: sweepRange,
+      nodePath: { steps: [] },
+      pathToNode: [],
+    },
+    cmdId: 'wall-command',
+  } satisfies Extract<Artifact, { type: 'wall' }>
+  const sweep = {
+    type: 'sweep',
+    id: 'sweep',
+    subType: 'extrusion',
+    pathId: 'region-path',
+    surfaceIds: [wall.id],
+    edgeIds: [],
+    codeRef: { range: sweepRange, nodePath: { steps: [] }, pathToNode: [] },
+    trajectoryId: null,
+    method: 'new',
+    consumed: false,
+  } satisfies Extract<Artifact, { type: 'sweep' }>
+  const artifactGraph = new Map<string, Artifact>([
+    [sourceSegment.id, sourceSegment],
+    [regionSegment.id, regionSegment],
+    [wall.id, wall],
+    [sweep.id, sweep],
+  ])
+
+  expect(
+    getCodeRefsFromEntityReference(
+      { type: 'face', face_id: 'wall' },
+      artifactGraph
+    )
+  ).toEqual([
+    { range: regionRange },
+    { range: sourceSegmentRange },
+    { range: sweepRange },
+  ])
+})
 
 describe('testing source range to artifact conversion', () => {
   const MY_CODE = `sketch001 = startSketchOn(XZ)
@@ -1707,6 +1789,1308 @@ cube = extrude(cubeRegion, length = 10)
   })
 })
 
+describe('getSelectionReferences for entity references', () => {
+  function sourceFor(tagEnd: boolean) {
+    const extrude = tagEnd
+      ? 'cube = extrude(cubeRegion, length = 10, tagEnd = $endCap)'
+      : 'cube = extrude(cubeRegion, length = 10)'
+    return `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+cubeSketch = sketch(on = XY) {
+  right = line(end = [10, 0])
+  bottom = line(end = [0, -10])
+}
+cubeRegion = region(segments = [cubeSketch.right, cubeSketch.bottom])
+${extrude}
+`
+  }
+
+  async function setup(options?: { tagEnd?: boolean }) {
+    const code = sourceFor(options?.tagEnd === true)
+    const { instance } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse(code, instance)
+    const codeRefForSnippet = (snippet: string) => {
+      const start = code.indexOf(snippet)
+      expect(start).toBeGreaterThanOrEqual(0)
+      const range: SourceRange = [start, start + snippet.length, 0]
+      return {
+        range,
+        nodePath: { steps: [] },
+        pathToNode: getNodePathFromSourceRange(ast, range),
+      }
+    }
+
+    const rightSegment = {
+      type: 'segment',
+      id: 'right-segment',
+      pathId: 'cube-path',
+      edgeIds: [],
+      codeRef: codeRefForSnippet('right = line(end = [10, 0])'),
+      commonSurfaceIds: [],
+    } satisfies Extract<Artifact, { type: 'segment' }>
+    const bottomSegment = {
+      type: 'segment',
+      id: 'bottom-segment',
+      pathId: 'cube-path',
+      edgeIds: [],
+      codeRef: codeRefForSnippet('bottom = line(end = [0, -10])'),
+      commonSurfaceIds: [],
+    } satisfies Extract<Artifact, { type: 'segment' }>
+    const regionCodeRef = codeRefForSnippet(
+      'cubeRegion = region(segments = [cubeSketch.right, cubeSketch.bottom])'
+    )
+    const rightRegionSegment = {
+      type: 'segment',
+      id: 'right-region-segment',
+      pathId: 'region-path',
+      originalSegId: rightSegment.id,
+      edgeIds: [],
+      codeRef: regionCodeRef,
+      commonSurfaceIds: [],
+    } satisfies Extract<Artifact, { type: 'segment' }>
+    const bottomRegionSegment = {
+      type: 'segment',
+      id: 'bottom-region-segment',
+      pathId: 'region-path',
+      originalSegId: bottomSegment.id,
+      edgeIds: [],
+      codeRef: regionCodeRef,
+      commonSurfaceIds: [],
+    } satisfies Extract<Artifact, { type: 'segment' }>
+    const cubePath = {
+      type: 'path',
+      id: 'cube-path',
+      subType: 'region',
+      planeId: 'plane',
+      segIds: [rightRegionSegment.id, bottomRegionSegment.id],
+      consumed: true,
+      trajectorySweepId: null,
+      codeRef: regionCodeRef,
+    } satisfies Extract<Artifact, { type: 'path' }>
+    const sweepCodeRef = codeRefForSnippet(
+      options?.tagEnd
+        ? 'extrude(cubeRegion, length = 10, tagEnd = $endCap)'
+        : 'extrude(cubeRegion, length = 10)'
+    )
+    const cubeSweep = {
+      type: 'sweep',
+      id: 'cube-sweep',
+      subType: 'extrusion',
+      pathId: cubePath.id,
+      surfaceIds: [],
+      edgeIds: [],
+      codeRef: sweepCodeRef,
+      trajectoryId: null,
+      method: 'new',
+      consumed: false,
+    } satisfies Extract<Artifact, { type: 'sweep' }>
+    const rightWall = {
+      type: 'wall',
+      id: 'right-wall',
+      segId: rightRegionSegment.id,
+      edgeCutEdgeIds: [],
+      sweepId: cubeSweep.id,
+      pathIds: [],
+      faceCodeRef: sweepCodeRef,
+      cmdId: 'right-wall-cmd',
+    } satisfies Extract<Artifact, { type: 'wall' }>
+    const bottomWall = {
+      type: 'wall',
+      id: 'bottom-wall',
+      segId: bottomRegionSegment.id,
+      edgeCutEdgeIds: [],
+      sweepId: cubeSweep.id,
+      pathIds: [],
+      faceCodeRef: sweepCodeRef,
+      cmdId: 'bottom-wall-cmd',
+    } satisfies Extract<Artifact, { type: 'wall' }>
+    const endCap = {
+      type: 'cap',
+      id: 'end-cap',
+      subType: 'end',
+      edgeCutEdgeIds: [],
+      sweepId: cubeSweep.id,
+      pathIds: [],
+      faceCodeRef: sweepCodeRef,
+      cmdId: 'end-cap-cmd',
+    } satisfies Extract<Artifact, { type: 'cap' }>
+    const artifactGraph = new Map<string, Artifact>([
+      [rightSegment.id, rightSegment],
+      [bottomSegment.id, bottomSegment],
+      [rightRegionSegment.id, rightRegionSegment],
+      [bottomRegionSegment.id, bottomRegionSegment],
+      [cubePath.id, cubePath],
+      [cubeSweep.id, cubeSweep],
+      [rightWall.id, rightWall],
+      [bottomWall.id, bottomWall],
+      [endCap.id, endCap],
+    ])
+
+    return {
+      instance,
+      ast,
+      artifactGraph,
+      cubeSweep,
+      rightWall,
+      bottomWall,
+      rightSegment,
+      endCap,
+    }
+  }
+
+  async function referencesFor(
+    setupResult: {
+      ast: Awaited<ReturnType<typeof setup>>['ast']
+      instance: Awaited<ReturnType<typeof setup>>['instance']
+      artifactGraph: ArtifactGraph
+    },
+    graphSelections: Selection[]
+  ) {
+    const before = recast(setupResult.ast, setupResult.instance)
+    const references = await getSelectionReferences({
+      graphSelections,
+      defaultPlaneSelections: [],
+      enginePrimitives: [],
+      artifactGraph: setupResult.artifactGraph,
+      engineCommandManager: null as never,
+      kclManager: { ast: setupResult.ast } as KclManager,
+      wasmInstance: setupResult.instance,
+    })
+    const after = recast(setupResult.ast, setupResult.instance)
+    expect(before).not.toBeInstanceOf(Error)
+    expect(after).toBe(before)
+    return references
+  }
+
+  test('copies an existing face tag for a face entity reference', async () => {
+    const world = await setup()
+    const references = await referencesFor(world, [
+      {
+        entityRef: { type: 'face', face_id: world.rightWall.id },
+        codeRef: world.cubeSweep.codeRef,
+      },
+    ])
+
+    expect(references).toEqual([
+      expect.objectContaining({
+        label: 'Face',
+        code: 'cubeRegion.tags.right',
+      }),
+    ])
+  })
+
+  test('falls back to faceId when a face has no tag', async () => {
+    const world = await setup()
+    const references = await referencesFor(world, [
+      {
+        entityRef: {
+          type: 'face',
+          face_id: '271d3690-1e35-58c2-a8f6-b759dc5e155b',
+        },
+        codeRef: world.cubeSweep.codeRef,
+        engineTopologyFallback: {
+          parentId: world.cubeSweep.id,
+          primitiveIndex: 0,
+        },
+      },
+    ])
+
+    expect(references).toEqual([
+      expect.objectContaining({
+        label: 'Face',
+        code: 'faceId(cube, index = 0)',
+      }),
+    ])
+  })
+
+  test('copies the exact sideFaces object when both edge faces are already tagged', async () => {
+    const world = await setup()
+    const references = await referencesFor(world, [
+      {
+        entityRef: {
+          type: 'edge',
+          side_faces: [world.rightWall.id, world.bottomWall.id],
+        },
+        codeRef: world.cubeSweep.codeRef,
+      },
+    ])
+
+    expect(references).toEqual([
+      expect.objectContaining({
+        label: 'Edge',
+        code: `{
+  sideFaces = [
+    cubeRegion.tags.right,
+    cubeRegion.tags.bottom
+  ]
+}`,
+      }),
+    ])
+  })
+
+  test('copies side faces, end faces, and index when every face is already tagged', async () => {
+    const world = await setup({ tagEnd: true })
+    const references = await referencesFor(world, [
+      {
+        entityRef: {
+          type: 'edge',
+          side_faces: [world.rightWall.id, world.bottomWall.id],
+          end_faces: [world.endCap.id],
+          index: 1,
+        },
+        codeRef: world.cubeSweep.codeRef,
+      },
+    ])
+
+    expect(references).toEqual([
+      expect.objectContaining({
+        label: 'Edge',
+        code: `{
+  sideFaces = [
+    cubeRegion.tags.right,
+    cubeRegion.tags.bottom
+  ],
+  endFaces = [endCap],
+  index = 1
+}`,
+      }),
+    ])
+  })
+
+  test('falls back to edgeId when an end face cannot be referenced', async () => {
+    const world = await setup()
+    const references = await referencesFor(world, [
+      {
+        entityRef: {
+          type: 'edge',
+          side_faces: [world.rightWall.id, world.bottomWall.id],
+          end_faces: ['missing-end-face'],
+        },
+        codeRef: world.cubeSweep.codeRef,
+        engineTopologyFallback: {
+          parentId: world.cubeSweep.id,
+          primitiveIndex: 5,
+        },
+      },
+    ])
+
+    expect(references).toEqual([
+      expect.objectContaining({
+        label: 'Edge',
+        code: 'edgeId(cube, index = 5)',
+      }),
+    ])
+  })
+
+  test('falls back to edgeId when an end face would need a new tag', async () => {
+    const world = await setup()
+    const references = await referencesFor(world, [
+      {
+        entityRef: {
+          type: 'edge',
+          side_faces: [world.rightWall.id, world.bottomWall.id],
+          end_faces: [world.endCap.id],
+        },
+        codeRef: world.cubeSweep.codeRef,
+        engineTopologyFallback: {
+          parentId: world.cubeSweep.id,
+          primitiveIndex: 6,
+        },
+      },
+    ])
+
+    expect(references).toEqual([
+      expect.objectContaining({
+        label: 'Edge',
+        code: 'edgeId(cube, index = 6)',
+      }),
+    ])
+  })
+
+  test('falls back to edgeId when a face API snippet cannot be built', async () => {
+    const world = await setup()
+    const untaggedWall = {
+      type: 'wall',
+      id: 'untagged-wall',
+      segId: world.rightSegment.id,
+      edgeCutEdgeIds: [],
+      sweepId: world.cubeSweep.id,
+      pathIds: [],
+      faceCodeRef: world.cubeSweep.codeRef,
+      cmdId: 'untagged-wall-cmd',
+    } satisfies Extract<Artifact, { type: 'wall' }>
+    world.artifactGraph.set(untaggedWall.id, untaggedWall)
+
+    const references = await referencesFor(world, [
+      {
+        entityRef: {
+          type: 'edge',
+          side_faces: [untaggedWall.id, world.rightWall.id],
+        },
+        codeRef: world.cubeSweep.codeRef,
+        engineTopologyFallback: {
+          parentId: world.cubeSweep.id,
+          primitiveIndex: 4,
+        },
+      },
+    ])
+
+    expect(references).toEqual([
+      expect.objectContaining({
+        label: 'Edge',
+        code: 'edgeId(cube, index = 4)',
+      }),
+    ])
+  })
+
+  test('falls back to edgeId when an edge would need new tags', async () => {
+    const world = await setup()
+    const references = await referencesFor(world, [
+      {
+        entityRef: {
+          type: 'edge',
+          side_faces: ['missing-face-a', 'missing-face-b'],
+        },
+        codeRef: world.cubeSweep.codeRef,
+        engineTopologyFallback: {
+          parentId: world.cubeSweep.id,
+          primitiveIndex: 2,
+        },
+      },
+    ])
+
+    expect(references).toEqual([
+      expect.objectContaining({
+        label: 'Edge',
+        code: 'edgeId(cube, index = 2)',
+      }),
+    ])
+  })
+
+  test('does not invent a primitive index without a topology fallback', async () => {
+    const world = await setup()
+    const references = await referencesFor(world, [
+      {
+        entityRef: {
+          type: 'edge',
+          side_faces: ['missing-face-a', 'missing-face-b'],
+        },
+        codeRef: world.cubeSweep.codeRef,
+      },
+    ])
+
+    expect(references).toEqual([])
+  })
+
+  test('uses one reference id when the same edge faces arrive in reverse order', async () => {
+    const world = await setup()
+    const edge = (sideFaces: [string, string]): Selection => ({
+      entityRef: {
+        type: 'edge',
+        side_faces: sideFaces,
+      },
+      codeRef: world.cubeSweep.codeRef,
+    })
+    const forward = await referencesFor(world, [
+      edge([world.rightWall.id, world.bottomWall.id]),
+    ])
+    const reverse = await referencesFor(world, [
+      edge([world.bottomWall.id, world.rightWall.id]),
+    ])
+    const both = await referencesFor(world, [
+      edge([world.rightWall.id, world.bottomWall.id]),
+      edge([world.bottomWall.id, world.rightWall.id]),
+    ])
+
+    expect(forward).toHaveLength(1)
+    expect(reverse).toHaveLength(1)
+    expect(forward[0].id).toBe(reverse[0].id)
+    expect(both).toHaveLength(1)
+    expect(both[0].id).toBe(forward[0].id)
+  })
+
+  test('copies the body variable for a solid3d entity reference', async () => {
+    const world = await setup()
+    const references = await referencesFor(world, [
+      {
+        entityRef: { type: 'solid3d', solid3d_id: world.cubeSweep.id },
+        codeRef: world.cubeSweep.codeRef,
+      },
+    ])
+
+    expect(references).toEqual([
+      expect.objectContaining({
+        label: 'Body',
+        code: 'cube',
+      }),
+    ])
+  })
+
+  test('removes one face when two faces share a code range', async () => {
+    const world = await setup()
+    const faceA: Selection = {
+      entityRef: { type: 'face', face_id: 'face-a' },
+      codeRef: world.cubeSweep.codeRef,
+      engineTopologyFallback: {
+        parentId: world.cubeSweep.id,
+        primitiveIndex: 0,
+      },
+    }
+    const faceB: Selection = {
+      entityRef: { type: 'face', face_id: 'face-b' },
+      codeRef: world.cubeSweep.codeRef,
+      engineTopologyFallback: {
+        parentId: world.cubeSweep.id,
+        primitiveIndex: 1,
+      },
+    }
+    const references = await referencesFor(world, [faceA, faceB])
+    const faceAReference = references.find((reference) =>
+      reference.code.includes('index = 0')
+    )
+    if (!faceAReference) {
+      throw new Error('Expected a reference for face A')
+    }
+
+    expect(
+      removeReferenceFromSelections(
+        { graphSelections: [faceA, faceB], otherSelections: [] },
+        faceAReference
+      )
+    ).toEqual({
+      graphSelections: [faceB],
+      otherSelections: [],
+    })
+  })
+
+  test('removes one edge when two edges share a code range', async () => {
+    const world = await setup()
+    const edgeA: Selection = {
+      entityRef: {
+        type: 'edge',
+        side_faces: ['edge-a-face-1', 'edge-a-face-2'],
+      },
+      codeRef: world.cubeSweep.codeRef,
+      engineTopologyFallback: {
+        parentId: world.cubeSweep.id,
+        primitiveIndex: 1,
+      },
+    }
+    const edgeB: Selection = {
+      entityRef: {
+        type: 'edge',
+        side_faces: ['edge-b-face-1', 'edge-b-face-2'],
+      },
+      codeRef: world.cubeSweep.codeRef,
+      engineTopologyFallback: {
+        parentId: world.cubeSweep.id,
+        primitiveIndex: 2,
+      },
+    }
+    const references = await referencesFor(world, [edgeA, edgeB])
+    const edgeAReference = references.find((reference) =>
+      reference.code.includes('index = 1')
+    )
+    if (!edgeAReference) {
+      throw new Error('Expected a reference for edge A')
+    }
+
+    expect(
+      removeReferenceFromSelections(
+        { graphSelections: [edgeA, edgeB], otherSelections: [] },
+        edgeAReference
+      )
+    ).toEqual({
+      graphSelections: [edgeB],
+      otherSelections: [],
+    })
+  })
+
+  async function untaggedSolid2dEdge() {
+    const code = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 10)
+body = extrude(profile001, length = 5)
+`
+    const { instance } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse(code, instance)
+    const codeRefForSnippet = (snippet: string) => {
+      const start = code.indexOf(snippet)
+      expect(start).toBeGreaterThanOrEqual(0)
+      const range: SourceRange = [start, start + snippet.length, 0]
+      return {
+        range,
+        nodePath: { steps: [] },
+        pathToNode: getNodePathFromSourceRange(ast, range),
+      }
+    }
+    const segmentCodeRef = codeRefForSnippet('xLine(length = 10)')
+    const pathCodeRef = codeRefForSnippet(
+      'startProfile(sketch001, at = [0, 0])'
+    )
+    const profilePath = {
+      type: 'path',
+      id: 'profile-path',
+      subType: 'sketch',
+      planeId: 'plane',
+      segIds: [],
+      consumed: true,
+      trajectorySweepId: null,
+      codeRef: pathCodeRef,
+    } satisfies Extract<Artifact, { type: 'path' }>
+    const bodySweep = {
+      type: 'sweep',
+      id: 'body-sweep',
+      subType: 'extrusion',
+      pathId: profilePath.id,
+      surfaceIds: [],
+      edgeIds: [],
+      codeRef: codeRefForSnippet('extrude(profile001, length = 5)'),
+      trajectoryId: null,
+      method: 'new',
+      consumed: false,
+    } satisfies Extract<Artifact, { type: 'sweep' }>
+    const profile = {
+      type: 'solid2d',
+      id: 'solid2d-profile',
+      pathId: profilePath.id,
+    } satisfies Extract<Artifact, { type: 'solid2d' }>
+    const artifactGraph = new Map<string, Artifact>([
+      [profilePath.id, profilePath],
+      [bodySweep.id, bodySweep],
+      [profile.id, profile],
+    ])
+    return { instance, ast, artifactGraph, segmentCodeRef, profile, bodySweep }
+  }
+
+  test('falls back to edgeId for an untagged Solid2D edge without editing the file', async () => {
+    const world = await untaggedSolid2dEdge()
+    const references = await referencesFor(world, [
+      {
+        entityRef: {
+          type: 'edge',
+          side_faces: [world.profile.id],
+        },
+        codeRef: world.segmentCodeRef,
+        engineTopologyFallback: {
+          parentId: world.bodySweep.id,
+          primitiveIndex: 3,
+        },
+      },
+    ])
+
+    expect(references).toEqual([
+      expect.objectContaining({
+        label: 'Edge',
+        code: 'edgeId(body, index = 3)',
+      }),
+    ])
+  })
+
+  test('falls back to edgeId when a Solid2D tag is applied before a later face is missing', async () => {
+    const world = await untaggedSolid2dEdge()
+    const references = await referencesFor(world, [
+      {
+        entityRef: {
+          type: 'edge',
+          side_faces: [world.profile.id, 'missing-later-face'],
+        },
+        codeRef: world.segmentCodeRef,
+        engineTopologyFallback: {
+          parentId: world.bodySweep.id,
+          primitiveIndex: 8,
+        },
+      },
+    ])
+
+    expect(references).toEqual([
+      expect.objectContaining({
+        label: 'Edge',
+        code: 'edgeId(body, index = 8)',
+      }),
+    ])
+  })
+
+  test('requireEveryFace rejects an in-place Solid2D tag and leaves the original AST unchanged', async () => {
+    const world = await untaggedSolid2dEdge()
+    const before = recast(world.ast, world.instance)
+    expect(before).not.toBeInstanceOf(Error)
+
+    const strict = createEdgeRefObjectExpression(
+      { side_faces: [world.profile.id] },
+      world.instance,
+      world.ast,
+      world.artifactGraph,
+      undefined,
+      world.segmentCodeRef,
+      undefined,
+      undefined,
+      { requireEveryFace: true }
+    )
+    expect(strict).toBeInstanceOf(Error)
+    expect(recast(world.ast, world.instance)).toBe(before)
+
+    const mutableAst = structuredClone(world.ast)
+    const loose = createEdgeRefObjectExpression(
+      { side_faces: [world.profile.id] },
+      world.instance,
+      mutableAst,
+      world.artifactGraph,
+      undefined,
+      world.segmentCodeRef
+    )
+    expect(loose).not.toBeInstanceOf(Error)
+    expect(recast(mutableAst, world.instance)).not.toBe(before)
+    expect(recast(world.ast, world.instance)).toBe(before)
+  })
+
+  test('requireEveryFace returns an error after an in-place tag when a later face is missing', async () => {
+    const world = await untaggedSolid2dEdge()
+    const before = recast(world.ast, world.instance)
+    expect(before).not.toBeInstanceOf(Error)
+    const payload = {
+      side_faces: [world.profile.id, 'missing-later-face'],
+    }
+
+    const strict = createEdgeRefObjectExpression(
+      payload,
+      world.instance,
+      world.ast,
+      world.artifactGraph,
+      undefined,
+      world.segmentCodeRef,
+      undefined,
+      undefined,
+      { requireEveryFace: true }
+    )
+    expect(strict).toBeInstanceOf(Error)
+    expect(recast(world.ast, world.instance)).toBe(before)
+
+    const mutableAst = structuredClone(world.ast)
+    const loose = createEdgeRefObjectExpression(
+      payload,
+      world.instance,
+      mutableAst,
+      world.artifactGraph,
+      undefined,
+      world.segmentCodeRef
+    )
+    expect(loose).toBeInstanceOf(Error)
+    expect(recast(mutableAst, world.instance)).not.toBe(before)
+    expect(recast(world.ast, world.instance)).toBe(before)
+  })
+
+  async function parsedSelectionWorld(code: string) {
+    const { instance } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse(code, instance)
+    const codeRefForSnippet = (snippet: string) => {
+      const start = code.indexOf(snippet)
+      expect(start).toBeGreaterThanOrEqual(0)
+      const range: SourceRange = [start, start + snippet.length, 0]
+      return {
+        range,
+        nodePath: { steps: [] },
+        pathToNode: getNodePathFromSourceRange(ast, range),
+      }
+    }
+    return { instance, ast, codeRefForSnippet }
+  }
+
+  function extrudeSweep(
+    id: string,
+    codeRef: ReturnType<
+      Awaited<ReturnType<typeof parsedSelectionWorld>>['codeRefForSnippet']
+    >,
+    sourceSweepId?: string
+  ) {
+    return {
+      type: 'sweep',
+      id,
+      subType: 'extrusion',
+      surfaceIds: [],
+      edgeIds: [],
+      codeRef,
+      sourceSweepId,
+      trajectoryId: null,
+      method: 'new',
+      consumed: false,
+    } satisfies Extract<Artifact, { type: 'sweep' }>
+  }
+
+  function capFace(
+    id: string,
+    subType: 'start' | 'end',
+    sweepId: string,
+    codeRef: ReturnType<
+      Awaited<ReturnType<typeof parsedSelectionWorld>>['codeRefForSnippet']
+    >
+  ) {
+    return {
+      type: 'cap',
+      id,
+      subType,
+      edgeCutEdgeIds: [],
+      sweepId,
+      pathIds: [],
+      faceCodeRef: codeRef,
+      cmdId: `${id}-cmd`,
+    } satisfies Extract<Artifact, { type: 'cap' }>
+  }
+
+  const taggedCapSource = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+boxSketch = sketch(on = XY) {
+  right = line(end = [10, 0])
+  bottom = line(end = [0, -10])
+}
+boxRegion = region(segments = [boxSketch.right, boxSketch.bottom])
+box = extrude(
+  boxRegion,
+  length = 12,
+  tagStart = $boxStart,
+  tagEnd = $boxEnd,
+)
+`
+
+  test('copies an existing start cap tag', async () => {
+    const world = await parsedSelectionWorld(taggedCapSource)
+    const extrudeRef = world.codeRefForSnippet(`extrude(
+  boxRegion,
+  length = 12,
+  tagStart = $boxStart,
+  tagEnd = $boxEnd,
+)`)
+    const sweep = extrudeSweep('box-sweep', extrudeRef)
+    const startCap = capFace('start-cap', 'start', sweep.id, extrudeRef)
+    const references = await referencesFor(
+      {
+        ...world,
+        artifactGraph: new Map<string, Artifact>([
+          [sweep.id, sweep],
+          [startCap.id, startCap],
+        ]),
+      },
+      [
+        {
+          entityRef: { type: 'face', face_id: startCap.id },
+          codeRef: extrudeRef,
+        },
+      ]
+    )
+
+    expect(references).toEqual([
+      expect.objectContaining({
+        label: 'Face',
+        code: 'boxStart',
+      }),
+    ])
+  })
+
+  test('copies an existing end cap tag', async () => {
+    const world = await parsedSelectionWorld(taggedCapSource)
+    const extrudeRef = world.codeRefForSnippet(`extrude(
+  boxRegion,
+  length = 12,
+  tagStart = $boxStart,
+  tagEnd = $boxEnd,
+)`)
+    const sweep = extrudeSweep('box-sweep', extrudeRef)
+    const endCap = capFace('end-cap', 'end', sweep.id, extrudeRef)
+    const references = await referencesFor(
+      {
+        ...world,
+        artifactGraph: new Map<string, Artifact>([
+          [sweep.id, sweep],
+          [endCap.id, endCap],
+        ]),
+      },
+      [
+        {
+          entityRef: { type: 'face', face_id: endCap.id },
+          codeRef: extrudeRef,
+        },
+      ]
+    )
+
+    expect(references).toEqual([
+      expect.objectContaining({
+        label: 'Face',
+        code: 'boxEnd',
+      }),
+    ])
+  })
+
+  test('falls back to faceId for an untagged cap', async () => {
+    const world =
+      await parsedSelectionWorld(`@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+boxSketch = sketch(on = XY) {
+  right = line(end = [10, 0])
+  bottom = line(end = [0, -10])
+}
+boxRegion = region(segments = [boxSketch.right, boxSketch.bottom])
+box = extrude(boxRegion, length = 12)
+`)
+    const extrudeRef = world.codeRefForSnippet(
+      'extrude(boxRegion, length = 12)'
+    )
+    const sweep = extrudeSweep('box-sweep', extrudeRef)
+    const endCap = capFace('end-cap', 'end', sweep.id, extrudeRef)
+    const references = await referencesFor(
+      {
+        ...world,
+        artifactGraph: new Map<string, Artifact>([
+          [sweep.id, sweep],
+          [endCap.id, endCap],
+        ]),
+      },
+      [
+        {
+          entityRef: { type: 'face', face_id: endCap.id },
+          codeRef: extrudeRef,
+          engineTopologyFallback: {
+            parentId: sweep.id,
+            primitiveIndex: 5,
+          },
+        },
+      ]
+    )
+
+    expect(references).toEqual([
+      expect.objectContaining({
+        label: 'Face',
+        code: 'faceId(box, index = 5)',
+      }),
+    ])
+  })
+
+  function edgeCutFace(
+    id: string,
+    subType: 'chamfer' | 'fillet',
+    codeRef: ReturnType<
+      Awaited<ReturnType<typeof parsedSelectionWorld>>['codeRefForSnippet']
+    >
+  ) {
+    return {
+      type: 'edgeCut',
+      id,
+      subType,
+      edgeIds: [],
+      codeRef,
+    } satisfies Extract<Artifact, { type: 'edgeCut' }>
+  }
+
+  async function edgeTreatmentWorld(options: {
+    operation: 'chamfer' | 'fillet'
+    tagged: boolean
+    piped?: boolean
+  }) {
+    const tagArg =
+      options.operation === 'chamfer'
+        ? ',\n  tag = $chamferFace,'
+        : ',\n  tag = $filletFace,'
+    const sizeArg =
+      options.operation === 'chamfer' ? 'length = 2' : 'radius = 1'
+    const call = options.piped
+      ? `${options.operation}ed = box
+  |> ${options.operation}(
+  edges = [{ sideFaces = [boxRegion.tags.right, boxEnd] }],
+  ${sizeArg}${options.tagged ? tagArg : ','}
+)`
+      : `${options.operation}ed = ${options.operation}(
+  box,
+  edges = [{ sideFaces = [boxRegion.tags.right, boxEnd] }],
+  ${sizeArg}${options.tagged ? tagArg : ','}
+)`
+    const code = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+boxSketch = sketch(on = XY) {
+  right = line(end = [10, 0])
+  bottom = line(end = [0, -10])
+}
+boxRegion = region(segments = [boxSketch.right, boxSketch.bottom])
+box = extrude(
+  boxRegion,
+  length = 12,
+  tagEnd = $boxEnd,
+)
+${call}
+`
+    const world = await parsedSelectionWorld(code)
+    const operationRef = world.codeRefForSnippet(
+      options.piped
+        ? `${options.operation}(
+  edges = [{ sideFaces = [boxRegion.tags.right, boxEnd] }]`
+        : `${options.operation}(
+  box,
+  edges = [{ sideFaces = [boxRegion.tags.right, boxEnd] }]`
+    )
+    const body = extrudeSweep('treatment-body', operationRef)
+    const face = edgeCutFace(
+      `${options.operation}-face`,
+      options.operation,
+      operationRef
+    )
+    return {
+      ...world,
+      artifactGraph: new Map<string, Artifact>([
+        [body.id, body],
+        [face.id, face],
+      ]),
+      body,
+      face,
+      operationRef,
+    }
+  }
+
+  test('copies an existing chamfer face tag', async () => {
+    const world = await edgeTreatmentWorld({
+      operation: 'chamfer',
+      tagged: true,
+    })
+    const references = await referencesFor(world, [
+      {
+        entityRef: { type: 'face', face_id: world.face.id },
+        codeRef: world.operationRef,
+        engineTopologyFallback: {
+          parentId: world.body.id,
+          primitiveIndex: 2,
+        },
+      },
+    ])
+
+    expect(references).toEqual([
+      expect.objectContaining({
+        label: 'Face',
+        code: 'chamferFace',
+      }),
+    ])
+  })
+
+  test('copies an existing fillet face tag', async () => {
+    const world = await edgeTreatmentWorld({
+      operation: 'fillet',
+      tagged: true,
+    })
+    const references = await referencesFor(world, [
+      {
+        entityRef: { type: 'face', face_id: world.face.id },
+        codeRef: world.operationRef,
+      },
+    ])
+
+    expect(references).toEqual([
+      expect.objectContaining({
+        label: 'Face',
+        code: 'filletFace',
+      }),
+    ])
+  })
+
+  test('falls back to faceId for an untagged chamfer face', async () => {
+    const world = await edgeTreatmentWorld({
+      operation: 'chamfer',
+      tagged: false,
+    })
+    const references = await referencesFor(world, [
+      {
+        entityRef: { type: 'face', face_id: world.face.id },
+        codeRef: world.operationRef,
+        engineTopologyFallback: {
+          parentId: world.body.id,
+          primitiveIndex: 4,
+        },
+      },
+    ])
+
+    expect(references).toEqual([
+      expect.objectContaining({
+        label: 'Face',
+        code: 'faceId(chamfered, index = 4)',
+      }),
+    ])
+  })
+
+  test('falls back to faceId for an untagged fillet face', async () => {
+    const world = await edgeTreatmentWorld({
+      operation: 'fillet',
+      tagged: false,
+    })
+    const references = await referencesFor(world, [
+      {
+        entityRef: { type: 'face', face_id: world.face.id },
+        codeRef: world.operationRef,
+        engineTopologyFallback: {
+          parentId: world.body.id,
+          primitiveIndex: 6,
+        },
+      },
+    ])
+
+    expect(references).toEqual([
+      expect.objectContaining({
+        label: 'Face',
+        code: 'faceId(filleted, index = 6)',
+      }),
+    ])
+  })
+
+  test('copies a piped chamfer tag without qualifying a module-level name', async () => {
+    const world = await edgeTreatmentWorld({
+      operation: 'chamfer',
+      tagged: true,
+      piped: true,
+    })
+    const references = await referencesFor(world, [
+      {
+        entityRef: { type: 'face', face_id: world.face.id },
+        codeRef: world.operationRef,
+      },
+    ])
+
+    expect(references).toEqual([
+      expect.objectContaining({
+        label: 'Face',
+        code: 'chamferFace',
+      }),
+    ])
+  })
+
+  test('qualifies a cap tag through the piped clone that owns it', async () => {
+    const world =
+      await parsedSelectionWorld(`${taggedCapSource}cloned = clone(box) |> translate(x = 30)
+`)
+    const extrudeRef = world.codeRefForSnippet(`extrude(
+  boxRegion,
+  length = 12,
+  tagStart = $boxStart,
+  tagEnd = $boxEnd,
+)`)
+    const cloneRef = world.codeRefForSnippet(
+      'cloned = clone(box) |> translate(x = 30)'
+    )
+    const source = extrudeSweep('box-sweep', extrudeRef)
+    const cloned = extrudeSweep('cloned-sweep', cloneRef, source.id)
+    const endCap = capFace('cloned-end', 'end', cloned.id, cloneRef)
+    const references = await referencesFor(
+      {
+        ...world,
+        artifactGraph: new Map<string, Artifact>([
+          [source.id, source],
+          [cloned.id, cloned],
+          [endCap.id, endCap],
+        ]),
+      },
+      [
+        {
+          entityRef: { type: 'face', face_id: endCap.id },
+          codeRef: cloneRef,
+        },
+      ]
+    )
+
+    expect(references).toEqual([
+      expect.objectContaining({
+        label: 'Face',
+        code: 'cloned.faces.boxEnd',
+      }),
+    ])
+  })
+
+  test('copies a helix variable with a Helix label', async () => {
+    const world =
+      await parsedSelectionWorld(`@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+spiral = helix(
+  axis = Z,
+  revolutions = 1,
+  angleStart = 0,
+  radius = 1,
+  length = 1,
+)
+`)
+    const helixRef = world.codeRefForSnippet(`spiral = helix(
+  axis = Z,
+  revolutions = 1,
+  angleStart = 0,
+  radius = 1,
+  length = 1,
+)`)
+    const helix = {
+      type: 'helix',
+      id: 'spiral-helix',
+      axisId: null,
+      codeRef: helixRef,
+      trajectorySweepId: null,
+      consumed: false,
+    } satisfies Extract<Artifact, { type: 'helix' }>
+    const references = await referencesFor(
+      {
+        ...world,
+        artifactGraph: new Map<string, Artifact>([[helix.id, helix]]),
+      },
+      [
+        {
+          entityRef: { type: 'helix', helix_id: helix.id },
+          codeRef: helixRef,
+        },
+      ]
+    )
+
+    expect(references).toEqual([
+      expect.objectContaining({
+        label: 'Helix',
+        code: 'spiral',
+      }),
+    ])
+  })
+
+  const offsetPlaneSource = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+upperPlane = offsetPlane(XY, offset = 15)
+lowerPlane = offsetPlane(XY, offset = -15)
+`
+
+  async function offsetPlaneWorld() {
+    const world = await parsedSelectionWorld(offsetPlaneSource)
+    const upperRef = world.codeRefForSnippet(
+      'upperPlane = offsetPlane(XY, offset = 15)'
+    )
+    const lowerRef = world.codeRefForSnippet(
+      'lowerPlane = offsetPlane(XY, offset = -15)'
+    )
+    const upperPlane = {
+      type: 'plane',
+      id: 'upper-plane',
+      pathIds: [],
+      codeRef: upperRef,
+    } satisfies Extract<Artifact, { type: 'plane' }>
+    const lowerPlane = {
+      type: 'plane',
+      id: 'lower-plane',
+      pathIds: [],
+      codeRef: lowerRef,
+    } satisfies Extract<Artifact, { type: 'plane' }>
+    return {
+      ...world,
+      artifactGraph: new Map<string, Artifact>([
+        [upperPlane.id, upperPlane],
+        [lowerPlane.id, lowerPlane],
+      ]),
+      upperPlane,
+      lowerPlane,
+    }
+  }
+
+  test('copies an offset plane from an entity reference', async () => {
+    const world = await offsetPlaneWorld()
+    const references = await referencesFor(world, [
+      {
+        entityRef: { type: 'plane', plane_id: world.upperPlane.id },
+        codeRef: world.upperPlane.codeRef,
+      },
+    ])
+
+    expect(references).toEqual([
+      expect.objectContaining({
+        label: 'Plane',
+        code: 'upperPlane',
+      }),
+    ])
+  })
+
+  test('copies an offset plane from a feature-tree selection', async () => {
+    const world = await offsetPlaneWorld()
+    const references = await referencesFor(world, [
+      {
+        entityRef: { type: 'plane', plane_id: world.upperPlane.id },
+        artifact: world.upperPlane,
+        codeRef: world.upperPlane.codeRef,
+      },
+    ])
+
+    expect(references).toEqual([
+      expect.objectContaining({
+        label: 'Plane',
+        code: 'upperPlane',
+      }),
+    ])
+  })
+
+  test('removes one offset plane when two are selected', async () => {
+    const world = await offsetPlaneWorld()
+    const upper: Selection = {
+      entityRef: { type: 'plane', plane_id: world.upperPlane.id },
+      codeRef: world.upperPlane.codeRef,
+    }
+    const lower: Selection = {
+      entityRef: { type: 'plane', plane_id: world.lowerPlane.id },
+      artifact: world.lowerPlane,
+      codeRef: world.lowerPlane.codeRef,
+    }
+    const references = await referencesFor(world, [upper, lower])
+    const upperReference = references.find(
+      (reference) => reference.code === 'upperPlane'
+    )
+    if (!upperReference) {
+      throw new Error('Expected a reference for upperPlane')
+    }
+
+    expect(references.map((reference) => reference.code).sort()).toEqual([
+      'lowerPlane',
+      'upperPlane',
+    ])
+    expect(
+      removeReferenceFromSelections(
+        { graphSelections: [upper, lower], otherSelections: [] },
+        upperReference
+      )
+    ).toEqual({
+      graphSelections: [lower],
+      otherSelections: [],
+    })
+  })
+
+  test('keeps a default XY plane off the offset-plane path', async () => {
+    const world = await offsetPlaneWorld()
+    const defaultPlaneSelection = {
+      id: 'default-plane-xy',
+      name: 'xy',
+    } as unknown as DefaultPlaneSelection
+    const before = recast(world.ast, world.instance)
+    const references = await getSelectionReferences({
+      graphSelections: [
+        {
+          entityRef: { type: 'plane', plane_id: world.upperPlane.id },
+          codeRef: world.upperPlane.codeRef,
+        },
+      ],
+      defaultPlaneSelections: [defaultPlaneSelection],
+      enginePrimitives: [],
+      artifactGraph: world.artifactGraph,
+      engineCommandManager: null as never,
+      kclManager: { ast: world.ast } as KclManager,
+      wasmInstance: world.instance,
+    })
+
+    expect(recast(world.ast, world.instance)).toBe(before)
+    expect(references).toEqual([
+      {
+        id: 'plane:default-plane-xy',
+        label: 'XY Plane',
+        code: 'XY',
+        defaultPlaneSelection,
+      },
+      expect.objectContaining({
+        label: 'Plane',
+        code: 'upperPlane',
+      }),
+    ])
+  })
+})
+
 describe('findLastRangeStartingBefore', () => {
   test('finds last range starting before target even if no overlap', () => {
     const mockIndex = [
@@ -1803,9 +3187,10 @@ describe('pattern copy selection highlighting', () => {
     copyEdgeIds: ['copy-edge-id'],
     codeRef: {
       range: selectionCodeRef.range,
-      nodePath: [],
+      nodePath: { steps: [] },
+      pathToNode: [],
     },
-  } as unknown as Artifact
+  } satisfies Extract<Artifact, { type: 'pattern' }>
   const artifactGraph = new Map([[patternArtifact.id, patternArtifact]])
 
   test('maps pattern code selections to copied engine entities', () => {
@@ -1858,14 +3243,524 @@ describe('pattern copy selection highlighting', () => {
   })
 })
 
+describe('default plane selection synchronization', () => {
+  test('selects the plane in the engine and clears the code selection', () => {
+    const code = 'body001 = extrude(region001, length = 10)'
+    const result = handleSelectionBatch({
+      selections: {
+        graphSelections: [],
+        otherSelections: [{ name: 'XY', id: 'xy-plane-id' }],
+      },
+      artifactGraph: new Map(),
+      code,
+      ast: {} as any,
+      systemDeps: {
+        engineCommandManager: {
+          connection: { pingIntervalId: 1 },
+        } as any,
+        sceneEntitiesManager: { activeSegments: {} } as any,
+        wasmInstance: {} as any,
+      },
+    })
+
+    expect(
+      result.engineEvents.map((event) =>
+        event.type === 'modeling_cmd_req' ? event.cmd : undefined
+      )
+    ).toEqual([
+      { type: 'select_clear' },
+      { type: 'select_add', entities: ['xy-plane-id'] },
+    ])
+    expect(result.codeMirrorSelection.main.head).toBe(code.length)
+  })
+})
+
+describe('mixed entity-reference selection highlighting', () => {
+  test('keeps engine primitive selections when graph selections use entity references', () => {
+    const graphFaceId = 'graph-face-id'
+    const primitiveFaceId = 'primitive-face-id'
+    const graphCodeRef = {
+      range: [10, 20, 0] as SourceRange,
+      pathToNode: [],
+    }
+
+    const result = handleSelectionBatch({
+      selections: {
+        graphSelections: [
+          {
+            entityRef: { type: 'face', face_id: graphFaceId },
+            codeRef: graphCodeRef,
+          },
+        ],
+        otherSelections: [
+          {
+            type: 'enginePrimitive',
+            entityId: primitiveFaceId,
+            parentEntityId: 'body-id',
+            primitiveIndex: 2,
+            primitiveType: 'face',
+          },
+        ],
+      },
+      artifactGraph: new Map(),
+      code: 'body001 = extrude(region001, length = 10)',
+      ast: {} as any,
+      systemDeps: {
+        engineCommandManager: {
+          connection: { pingIntervalId: 1 },
+        } as any,
+        sceneEntitiesManager: { activeSegments: {} } as any,
+        wasmInstance: {} as any,
+      },
+    })
+
+    const selectEntity = result.engineEvents.find(
+      (event) =>
+        event.type === 'modeling_cmd_req' && event.cmd.type === 'select_entity'
+    )
+    expect(selectEntity?.type).toBe('modeling_cmd_req')
+    if (selectEntity?.type !== 'modeling_cmd_req') return
+    expect(selectEntity.cmd.type).toBe('select_entity')
+    if (selectEntity.cmd.type !== 'select_entity') return
+    expect(selectEntity.cmd.entities).toEqual([
+      { type: 'face', face_id: graphFaceId },
+    ])
+
+    const selectAdd = result.engineEvents.find(
+      (event) =>
+        event.type === 'modeling_cmd_req' && event.cmd.type === 'select_add'
+    )
+    expect(selectAdd?.type).toBe('modeling_cmd_req')
+    if (selectAdd?.type !== 'modeling_cmd_req') return
+    expect(selectAdd.cmd.type).toBe('select_add')
+    if (selectAdd.cmd.type !== 'select_add') return
+    expect(selectAdd.cmd.entities).toEqual([primitiveFaceId])
+  })
+
+  test('creates a valid editor selection when only some graph selections have code refs', () => {
+    const result = handleSelectionBatch({
+      selections: {
+        graphSelections: [
+          {
+            entityRef: { type: 'face', face_id: 'tagged-face-id' },
+            codeRef: {
+              range: [10, 20, 0],
+              pathToNode: [],
+            },
+          },
+          {
+            entityRef: { type: 'face', face_id: 'primitive-face-id' },
+          },
+        ],
+        otherSelections: [],
+      },
+      artifactGraph: new Map(),
+      code: 'body001 = extrude(region001, length = 10)',
+      ast: {} as any,
+      systemDeps: {
+        engineCommandManager: {
+          connection: { pingIntervalId: 1 },
+        } as any,
+        sceneEntitiesManager: { activeSegments: {} } as any,
+        wasmInstance: {} as any,
+      },
+    })
+
+    expect(result.codeMirrorSelection.ranges).toHaveLength(1)
+    expect(result.codeMirrorSelection.mainIndex).toBe(0)
+    expect(result.codeMirrorSelection.main.head).toBe(20)
+  })
+
+  test('does not send a legacy select_add for an entity-reference edge', () => {
+    const result = handleSelectionBatch({
+      selections: {
+        graphSelections: [
+          {
+            entityRef: {
+              type: 'edge',
+              side_faces: ['side-face-1', 'side-face-2'],
+              end_faces: ['end-face-1'],
+            },
+            codeRef: {
+              range: [10, 20, 0],
+              pathToNode: [],
+            },
+          },
+        ],
+        otherSelections: [],
+      },
+      artifactGraph: new Map(),
+      code: 'body001 = extrude(region001, length = 10)',
+      ast: {} as any,
+      systemDeps: {
+        engineCommandManager: {
+          connection: { pingIntervalId: 1 },
+        } as any,
+        sceneEntitiesManager: { activeSegments: {} } as any,
+        wasmInstance: {} as any,
+      },
+    })
+
+    expect(
+      result.engineEvents.some(
+        (event) =>
+          event.type === 'modeling_cmd_req' &&
+          event.cmd.type === 'select_entity'
+      )
+    ).toBe(true)
+    expect(
+      result.engineEvents.some(
+        (event) =>
+          event.type === 'modeling_cmd_req' && event.cmd.type === 'select_add'
+      )
+    ).toBe(false)
+  })
+
+  test('retains legacy selection for a code-only graph selection mixed with an entity reference', () => {
+    const codeOnlyArtifact: Artifact = {
+      type: 'segment',
+      id: 'code-only-segment',
+      pathId: 'path-id',
+      edgeIds: [],
+      commonSurfaceIds: [],
+      codeRef: {
+        range: [30, 40, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+    }
+    const artifactGraph: ArtifactGraph = new Map<string, Artifact>([
+      [codeOnlyArtifact.id, codeOnlyArtifact],
+    ])
+
+    const result = handleSelectionBatch({
+      selections: {
+        graphSelections: [
+          {
+            entityRef: { type: 'face', face_id: 'face-id' },
+            codeRef: {
+              range: [10, 20, 0],
+              pathToNode: [],
+            },
+          },
+          {
+            codeRef: codeOnlyArtifact.codeRef,
+          },
+        ],
+        otherSelections: [],
+      },
+      artifactGraph,
+      code: 'body001 = extrude(region001, length = 10)',
+      ast: {} as any,
+      systemDeps: {
+        engineCommandManager: {
+          connection: { pingIntervalId: 1 },
+        } as any,
+        sceneEntitiesManager: { activeSegments: {} } as any,
+        wasmInstance: {} as any,
+      },
+    })
+
+    const selectAdd = result.engineEvents.find(
+      (event) =>
+        event.type === 'modeling_cmd_req' && event.cmd.type === 'select_add'
+    )
+    expect(selectAdd?.type).toBe('modeling_cmd_req')
+    if (selectAdd?.type !== 'modeling_cmd_req') return
+    expect(selectAdd.cmd.type).toBe('select_add')
+    if (selectAdd.cmd.type !== 'select_add') return
+    expect(selectAdd.cmd.entities).toEqual([codeOnlyArtifact.id])
+  })
+})
+
 describe('getSelectionTypeDisplayText', () => {
+  test('preserves the clicked pattern copy identity in viewport selections', async () => {
+    const { instance } = await buildTheWorldAndNoEngineConnection()
+    const code = `body001 = 0
+bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
+    const ast = assertParse(code, instance)
+    const patternRange = [
+      code.indexOf('patternLinear3d'),
+      code.length,
+      0,
+    ] as SourceRange
+    const codeRef = {
+      range: patternRange,
+      pathToNode: getNodePathFromSourceRange(ast, patternRange),
+      nodePath: { steps: [] },
+    }
+    const patternArtifact = {
+      type: 'pattern',
+      id: 'pattern-command-id',
+      subType: 'linear',
+      sourceId: 'body-id',
+      copyIds: ['copy-body-1', 'copy-body-2'],
+      copyFaceIds: ['copy-face-1'],
+      copyEdgeIds: [],
+      codeRef,
+    } satisfies Extract<Artifact, { type: 'pattern' }>
+    const artifactGraph: ArtifactGraph = new Map([
+      [patternArtifact.id, patternArtifact],
+    ])
+    const engineCommandManager = {
+      sendSceneCommand: vi.fn(async () => ({
+        resp: {
+          type: 'modeling',
+          data: { modeling_response: { type: 'empty' } },
+        },
+      })),
+    }
+
+    await expect(
+      getEventForQueryEntityTypeWithPoint(
+        {
+          entity_id: 'copy-face-1',
+          reference: { type: 'solid3d', solid3d_id: 'copy-body-1' },
+        },
+        {
+          engineCommandManager: engineCommandManager as any,
+          kclManager: { ast, artifactGraph } as any,
+          rustContext: { defaultPlanes: null } as any,
+          wasmInstance: instance,
+          useSegmentsBasedRegions: false,
+        }
+      )
+    ).resolves.toEqual({
+      type: 'Set selection',
+      data: {
+        selectionType: 'singleCodeCursor',
+        selection: {
+          artifact: patternArtifact,
+          codeRef,
+          engineEntityId: 'copy-face-1',
+          entityRef: { type: 'solid3d', solid3d_id: 'copy-body-1' },
+          patternIndex: 1,
+        },
+      },
+    })
+  })
+
+  test('normalizes standalone helix entity references', () => {
+    expect(
+      normalizeEntityReference({
+        type: 'helix',
+        helix_id: 'helix-1',
+      })
+    ).toEqual({
+      type: 'helix',
+      helix_id: 'helix-1',
+    })
+  })
+
+  test('labels a standalone 3D curve using its helix artifact', () => {
+    const selection: Selections = {
+      graphSelections: [{ entityRef: { type: 'helix', helix_id: 'helix-1' } }],
+      otherSelections: [],
+    }
+    const artifactGraph = new Map([
+      [
+        'helix-1',
+        {
+          type: 'helix',
+          id: 'helix-1',
+          codeRef: { range: [0, 1, 0] },
+        },
+      ],
+    ]) as ArtifactGraph
+
+    expect(
+      getSelectionTypeDisplayText({} as any, selection, artifactGraph)
+    ).toBe('1 helix')
+  })
+
+  test('normalizes region entity references', () => {
+    expect(
+      normalizeEntityReference({
+        type: 'region',
+        region_id: 'region-1',
+      })
+    ).toEqual({
+      type: 'region',
+      region_id: 'region-1',
+    })
+  })
+
+  test('converts region query responses to engine region selections', async () => {
+    const { instance } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse('', instance)
+    const pathToNode = [['body', '']] as any
+    const codeRef = {
+      range: [0, 0, 0] as SourceRange,
+      pathToNode,
+      nodePath: { steps: [] },
+    }
+    const sketchBlock = {
+      type: 'sketchBlock',
+      id: 'sketch-1',
+      codeRef,
+      planeId: 'plane-1',
+      sketchId: 1,
+    } satisfies Extract<Artifact, { type: 'sketchBlock' }>
+    const sketchPath = {
+      type: 'path',
+      subType: 'sketch',
+      id: 'path-1',
+      codeRef,
+      planeId: 'plane-1',
+      segIds: [],
+      trajectorySweepId: null,
+      consumed: false,
+      sketchBlockId: sketchBlock.id,
+    } satisfies Extract<Artifact, { type: 'path' }>
+    const artifactGraph: ArtifactGraph = new Map<string, Artifact>([
+      [sketchBlock.id, sketchBlock],
+      [sketchPath.id, sketchPath],
+    ])
+    const engineCommandManager = {
+      sendSceneCommand: vi.fn(async (event: any) => {
+        if (event.cmd.type === 'region_get_query_point') {
+          return {
+            resp: {
+              type: 'modeling',
+              data: {
+                modeling_response: {
+                  type: 'region_get_query_point',
+                  data: { query_point: { x: 12, y: 34 } },
+                },
+              },
+            },
+          }
+        }
+        if (event.cmd.type === 'entity_get_parent_id') {
+          return {
+            resp: {
+              type: 'modeling',
+              data: {
+                modeling_response: {
+                  type: 'entity_get_parent_id',
+                  data: { entity_id: 'path-1' },
+                },
+              },
+            },
+          }
+        }
+        return undefined
+      }),
+    }
+
+    await expect(
+      getEventForQueryEntityTypeWithPoint(
+        {
+          reference: {
+            type: 'region',
+            region_id: 'region-1',
+          },
+        },
+        {
+          engineCommandManager: engineCommandManager as any,
+          kclManager: { ast, artifactGraph } as any,
+          rustContext: { defaultPlanes: null } as any,
+          wasmInstance: instance,
+          useSegmentsBasedRegions: false,
+        }
+      )
+    ).resolves.toEqual({
+      type: 'Set selection',
+      data: {
+        selectionType: 'engineRegionSelection',
+        selection: {
+          type: 'engineRegion',
+          id: 'region-1',
+          point: { x: 12, y: 34 },
+          sketchId: 'sketch-1',
+        },
+      },
+    })
+  })
+
+  test('falls back to a primitive selection for a surface boundary edge without face metadata', async () => {
+    const { instance } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse('', instance)
+    const surfaceSweep = {
+      type: 'sweep',
+      id: 'surface-sweep',
+      subType: 'extrusion',
+      codeRef: {
+        range: [0, 0, 0] as SourceRange,
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+      pathId: '',
+      surfaceIds: [],
+      edgeIds: [],
+      trajectoryId: null,
+      method: 'new',
+      consumed: false,
+    } satisfies Extract<Artifact, { type: 'sweep' }>
+    const artifactGraph: ArtifactGraph = new Map([
+      [surfaceSweep.id, surfaceSweep],
+    ])
+    const modelingResponse = (modeling_response: unknown) => ({
+      success: true,
+      resp: {
+        type: 'modeling',
+        data: { modeling_response },
+      },
+    })
+    const engineCommandManager = {
+      sendSceneCommand: vi.fn(async (event: any) => {
+        if (event.cmd.type === 'entity_get_primitive_index') {
+          return modelingResponse({
+            type: 'entity_get_primitive_index',
+            data: { primitive_index: 1, entity_type: 'edge' },
+          })
+        }
+        if (event.cmd.type === 'entity_get_parent_id') {
+          return modelingResponse({
+            type: 'entity_get_parent_id',
+            data: { entity_id: 'surface-sweep' },
+          })
+        }
+        return undefined
+      }),
+    }
+
+    await expect(
+      getEventForQueryEntityTypeWithPoint(
+        {
+          entity_id: 'surface-edge',
+          reference: { type: 'edge', side_faces: [] },
+        },
+        {
+          engineCommandManager: engineCommandManager as any,
+          kclManager: { ast, artifactGraph } as any,
+          rustContext: { defaultPlanes: null } as any,
+          wasmInstance: instance,
+          useSegmentsBasedRegions: false,
+        }
+      )
+    ).resolves.toEqual({
+      type: 'Set selection',
+      data: {
+        selectionType: 'enginePrimitiveSelection',
+        selection: {
+          type: 'enginePrimitive',
+          entityId: 'surface-edge',
+          parentEntityId: 'surface-sweep',
+          primitiveIndex: 1,
+          primitiveType: 'edge',
+        },
+      },
+    })
+  })
+
   test('coalesces face-like selections under face', () => {
     const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
-    const selection = {
+    const selection: Selections = {
       graphSelections: [
-        { artifact: { type: 'wall' } as Artifact, codeRef },
-        { artifact: { type: 'cap' } as Artifact, codeRef },
-        { artifact: { type: 'primitiveFace' } as Artifact, codeRef },
+        { entityRef: { type: 'face', face_id: 'wall-1' }, codeRef },
+        { entityRef: { type: 'face', face_id: 'cap-1' }, codeRef },
+        { entityRef: { type: 'face', face_id: 'primitive-face-1' }, codeRef },
       ],
       otherSelections: [
         {
@@ -1877,15 +3772,15 @@ describe('getSelectionTypeDisplayText', () => {
       ],
     }
 
-    expect(getSelectionTypeDisplayText({} as any, selection as any)).toBe(
-      '4 faces'
-    )
+    expect(getSelectionTypeDisplayText({} as any, selection)).toBe('4 faces')
   })
 
   test('does not coalesce region selections under profile', () => {
     const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
-    const selection = {
-      graphSelections: [{ artifact: { type: 'solid2d' } as Artifact, codeRef }],
+    const selection: Selections = {
+      graphSelections: [
+        { entityRef: { type: 'solid2d', solid2d_id: 'solid2d-1' }, codeRef },
+      ],
       otherSelections: [
         {
           type: 'engineRegion',
@@ -1903,10 +3798,24 @@ describe('getSelectionTypeDisplayText', () => {
 
   test('treats path artifacts with region subtype as region selections', () => {
     const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
+    const regionPath = {
+      type: 'path',
+      id: 'region-path',
+      subType: 'region',
+      planeId: 'xy-plane',
+      segIds: [],
+      consumed: false,
+      trajectorySweepId: null,
+      codeRef: {
+        range: [0, 0, 0] as SourceRange,
+        nodePath: { steps: [] },
+        pathToNode: [],
+      },
+    } satisfies Extract<Artifact, { type: 'path' }>
     const selection = {
       graphSelections: [
         {
-          artifact: { type: 'path', subType: 'region' } as Artifact,
+          artifact: regionPath,
           codeRef,
         },
       ],
@@ -1918,13 +3827,77 @@ describe('getSelectionTypeDisplayText', () => {
     )
   })
 
+  test('resolves solid2d entity refs to region path artifacts before display', () => {
+    const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
+    const regionPath = {
+      id: 'path-1',
+      type: 'path',
+      subType: 'region',
+      planeId: 'xy-plane',
+      segIds: [],
+      consumed: false,
+      trajectorySweepId: null,
+      codeRef: {
+        range: [0, 0, 0] as SourceRange,
+        nodePath: { steps: [] },
+        pathToNode: [],
+      },
+    } satisfies Extract<Artifact, { type: 'path' }>
+    const artifactGraph = new Map<string, Artifact>([
+      [regionPath.id, regionPath],
+    ])
+    const selection: Selections = {
+      graphSelections: [
+        { entityRef: { type: 'solid2d', solid2d_id: 'path-1' }, codeRef },
+      ],
+      otherSelections: [],
+    }
+
+    expect(
+      getSelectionTypeDisplayText({} as any, selection, artifactGraph)
+    ).toBe('1 region')
+  })
+
+  test('resolves solid3d entity refs to sweep artifacts before display', () => {
+    const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
+    const sweep = {
+      id: 'sweep-1',
+      type: 'sweep',
+      subType: 'extrusion',
+      surfaceIds: [],
+      edgeIds: [],
+      codeRef: {
+        range: [0, 0, 0] as SourceRange,
+        nodePath: { steps: [] },
+        pathToNode: [],
+      },
+      trajectoryId: null,
+      method: 'new',
+      consumed: false,
+    } satisfies Extract<Artifact, { type: 'sweep' }>
+    const artifactGraph = new Map<string, Artifact>([[sweep.id, sweep]])
+    const selection: Selections = {
+      graphSelections: [
+        { entityRef: { type: 'solid3d', solid3d_id: 'sweep-1' }, codeRef },
+      ],
+      otherSelections: [],
+    }
+
+    expect(
+      getSelectionTypeDisplayText({} as any, selection, artifactGraph)
+    ).toBe('1 sweep')
+  })
+
   test('coalesces edge-like selections under edge', () => {
     const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
     const selection = {
       graphSelections: [
-        { artifact: { type: 'segment' } as Artifact, codeRef },
-        { artifact: { type: 'sweepEdge' } as Artifact, codeRef },
-        { artifact: { type: 'primitiveEdge' } as Artifact, codeRef },
+        {
+          entityRef: { type: 'segment', path_id: 'p1', segment_id: 's1' },
+          codeRef,
+        },
+        { entityRef: { type: 'edge', faces: ['f1', 'f2'] }, codeRef },
+        { entityRef: { type: 'solid2d_edge', edge_id: 'e1' }, codeRef },
       ],
       otherSelections: [
         {
@@ -1938,6 +3911,38 @@ describe('getSelectionTypeDisplayText', () => {
 
     expect(getSelectionTypeDisplayText({} as any, selection as any)).toBe(
       '4 edges'
+    )
+  })
+})
+
+describe('canSubmitSelectionArg', () => {
+  const bodyArgument = {
+    inputType: 'selection' as const,
+    selectionTypes: ['sweep'],
+    multiple: false,
+  } as Parameters<typeof canSubmitSelectionArg>[1]
+
+  test('accepts a selection containing only an allowed type', () => {
+    expect(canSubmitSelectionArg(new Map([['sweep', 1]]), bodyArgument)).toBe(
+      true
+    )
+  })
+
+  test('rejects a selection containing an allowed and a disallowed type', () => {
+    expect(
+      canSubmitSelectionArg(
+        new Map([
+          ['sweep', 1],
+          ['wall', 1],
+        ]),
+        bodyArgument
+      )
+    ).toBe(false)
+  })
+
+  test('rejects a selection containing only a disallowed type', () => {
+    expect(canSubmitSelectionArg(new Map([['wall', 1]]), bodyArgument)).toBe(
+      false
     )
   })
 })

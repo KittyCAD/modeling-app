@@ -1,6 +1,7 @@
 //! Wasm bindings for `kcl`.
 
 use gloo_utils::format::JsValueSerdeExt;
+use kcl_api::KclVersion;
 use kcl_lib::KclRuntimeFlags;
 use kcl_lib::Program;
 use kcl_lib::SourceRange;
@@ -15,14 +16,13 @@ use wasm_bindgen::prelude::*;
 
 // wasm_bindgen wrapper for lint
 #[wasm_bindgen]
-pub async fn kcl_lint(program_ast_json: &str, enable_z0006: bool) -> Result<JsValue, JsValue> {
+pub async fn kcl_lint(program_ast_json: &str) -> Result<JsValue, JsValue> {
     console_error_panic_hook::set_once();
 
     let program: Program = serde_json::from_str(program_ast_json).map_err(|e| e.to_string())?;
     let program = program.fill_node_paths();
     let mut findings = vec![];
-    let options = kcl_lib::lint::LintOptions::default().with_z0006(enable_z0006);
-    for discovered_finding in program.lint_all_with_options(options).into_iter().flatten() {
+    for discovered_finding in program.lint_all().into_iter().flatten() {
         findings.push(discovered_finding);
     }
 
@@ -362,7 +362,7 @@ pub fn change_default_units(code: &str, len_str: &str) -> Result<String, String>
 pub fn change_kcl_version(code: &str, version_str: &str) -> Result<String, String> {
     console_error_panic_hook::set_once();
 
-    let version: Option<String> = serde_json::from_str(version_str).map_err(|e| e.to_string())?;
+    let version: Option<KclVersion> = serde_json::from_str(version_str).map_err(|e| e.to_string())?;
     let program = Program::parse_no_errs(code).map_err(|e| e.to_string())?;
 
     let new_program = program.change_kcl_version(version).map_err(|e| e.to_string())?;
