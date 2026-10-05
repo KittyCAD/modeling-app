@@ -820,7 +820,6 @@ mod lexer_mode_tests {
     fn set_runtime_lexer_flag(flag: RuntimeFlag) {
         crate::set_kcl_runtime_flags(KclRuntimeFlags {
             use_new_lexer_parser: flag,
-            ..Default::default()
         });
     }
 
@@ -866,7 +865,6 @@ mod lexer_mode_tests {
             crate::kcl_runtime_flags(),
             KclRuntimeFlags {
                 use_new_lexer_parser: RuntimeFlag::Unset,
-                ..Default::default()
             }
         );
     }

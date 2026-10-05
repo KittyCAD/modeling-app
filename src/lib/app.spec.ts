@@ -5,7 +5,6 @@ import { File, type KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
 import {
   IS_PLAYWRIGHT_KEY,
-  KCL_CEK_EXECUTOR_FEATURE_FLAG,
   KCL_NEW_LEXER_PARSER_FEATURE_FLAG,
 } from '@src/lib/constants'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
@@ -197,12 +196,8 @@ function createRuntimeFlagsWasmInstance() {
   }
 }
 
-function expectedRuntimeFlags(
-  useNewLexerParser: 'On' | 'Off',
-  useCekExecutor: 'On' | 'Off'
-) {
+function expectedRuntimeFlags(useNewLexerParser: 'On' | 'Off') {
   return JSON.stringify({
-    use_cek_executor: useCekExecutor,
     use_new_lexer_parser: useNewLexerParser,
   })
 }
@@ -403,7 +398,7 @@ describe('project system', () => {
       await wasmPromise
 
       expect(wasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
-        expectedRuntimeFlags('Off', 'Off')
+        expectedRuntimeFlags('Off')
       )
     } finally {
       app.dispose()
@@ -427,14 +422,14 @@ describe('project system', () => {
       userFeatures.setFeatureIds(new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG]))
 
       expect(wasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
-        expectedRuntimeFlags('On', 'Off')
+        expectedRuntimeFlags('On')
       )
     } finally {
       app.dispose()
     }
   })
 
-  it('updates the CEK executor runtime flag when the feature is enabled', async () => {
+  it('updates the new lexer runtime flag when the feature is enabled', async () => {
     const userFeatures = createUserFeaturesForTest(new Set())
     const wasmInstance = createRuntimeFlagsWasmInstance()
     const wasmPromise = Promise.resolve(wasmInstance)
@@ -448,10 +443,10 @@ describe('project system', () => {
       await wasmPromise
       wasmInstance.set_kcl_runtime_flags.mockClear()
 
-      userFeatures.setFeatureIds(new Set([KCL_CEK_EXECUTOR_FEATURE_FLAG]))
+      userFeatures.setFeatureIds(new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG]))
 
       expect(wasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
-        expectedRuntimeFlags('Off', 'On')
+        expectedRuntimeFlags('On')
       )
     } finally {
       app.dispose()
@@ -477,7 +472,7 @@ describe('project system', () => {
       await notifyActiveWasmInstance(nextWasmInstance)
 
       expect(nextWasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
-        expectedRuntimeFlags('On', 'Off')
+        expectedRuntimeFlags('On')
       )
     } finally {
       app.dispose()
