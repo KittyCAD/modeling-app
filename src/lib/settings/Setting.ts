@@ -1,3 +1,4 @@
+import { computed, type Signal, signal } from '@preact/signals-core'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type {
   SettingProps,
@@ -12,7 +13,6 @@ export class Setting<T = unknown> {
   /**
    * The current value of the setting, prioritizing project, then user, then default
    */
-  public current: T
   public hideOnLevel: SettingProps<T>['hideOnLevel']
   public hideOnPlatform: SettingProps<T>['hideOnPlatform']
   public hideWithoutFeature: SettingProps<T>['hideWithoutFeature']
@@ -22,13 +22,24 @@ export class Setting<T = unknown> {
   public description?: string
   private validate: (v: T) => boolean
   public readonly isEnabled: (c: SettingsType) => boolean
-  private _default: T
-  private _user?: T
-  private _project?: T
+  private _default: Signal<T>
+  private _user: Signal<T | undefined> = signal(undefined)
+  private _project: Signal<T | undefined> = signal(undefined)
+  public currentSignal = computed(() => {
+    // Only undefined means unset; false, 0, and empty strings are overrides.
+    const project = this.project
+    if (project !== undefined) {
+      return project
+    }
+    const user = this.user
+    return user !== undefined ? user : this.default
+  })
+  get current(): T {
+    return this.currentSignal.peek()
+  }
 
   constructor(props: SettingProps<T>) {
-    this._default = props.defaultValue
-    this.current = props.defaultValue
+    this._default = signal(props.defaultValue)
     this.validate = props.validate
     this.isEnabled = props.isEnabled || (() => true)
     this.description = props.description
@@ -39,46 +50,35 @@ export class Setting<T = unknown> {
     this.commandConfig = props.commandConfig
     this.Component = props.Component
   }
+
   /**
    * The default setting. Overridden by the user and project if set
    */
   get default(): T {
-    return this._default
+    return this._default.value
   }
   set default(v: T) {
-    this._default = this.validate(v) ? v : this._default
-    this.current = this.resolve()
+    this._default.value = this.validate(v) ? v : this._default.value
   }
   /**
    * The user-level setting. Overrides the default, overridden by the project
    */
   get user(): T | undefined {
-    return this._user
+    return this._user.value
   }
   set user(v: T | undefined) {
-    this._user = v !== undefined ? (this.validate(v) ? v : this._user) : v
-    this.current = this.resolve()
+    this._user.value =
+      v !== undefined ? (this.validate(v) ? v : this._user.value) : v
   }
   /**
    * The project-level setting. Overrides the user and default
    */
   get project(): T | undefined {
-    return this._project
+    return this._project.value
   }
   set project(v: T | undefined) {
-    this._project = v !== undefined ? (this.validate(v) ? v : this._project) : v
-    this.current = this.resolve()
-  }
-  /**
-   * @returns {T} - The value of the setting, prioritizing project, then user, then default
-   * @todo - This may have issues if future settings can have a value that is valid but falsy
-   */
-  private resolve() {
-    return this._project !== undefined
-      ? this._project
-      : this._user !== undefined
-        ? this._user
-        : this._default
+    this._project.value =
+      v !== undefined ? (this.validate(v) ? v : this._project.value) : v
   }
   /**
    * @param {SettingsLevel} level - The level to get the fallback for
@@ -86,10 +86,10 @@ export class Setting<T = unknown> {
    */
   public getFallback(level: SettingsLevel | 'default'): T {
     return level === 'project'
-      ? this._user !== undefined
-        ? this._user
-        : this._default
-      : this._default
+      ? this.user !== undefined
+        ? this.user
+        : this.default
+      : this.default
   }
   /**
    * For the purposes of showing the `current` label in the command bar,
@@ -99,9 +99,10 @@ export class Setting<T = unknown> {
     level: SettingsLevel | 'default',
     valueToMatch: T
   ): boolean {
-    return this[`_${level}`] === undefined
+    const value = this[level]
+    return value === undefined
       ? this.getFallback(level) === valueToMatch
-      : this[`_${level}`] === valueToMatch
+      : value === valueToMatch
   }
   public getParentLevel(level: SettingsLevel): SettingsLevel | 'default' {
     return level === 'project' ? 'user' : 'default'
