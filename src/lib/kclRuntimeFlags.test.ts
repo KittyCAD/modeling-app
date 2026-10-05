@@ -28,6 +28,7 @@ describe('kcl runtime flags', () => {
       )
     ).toEqual({
       use_new_lexer_parser: 'On',
+      use_new_parser: 'Off',
     })
   })
 
@@ -36,7 +37,21 @@ describe('kcl runtime flags', () => {
       kclRuntimeFlagsFromUserFeatures(userFeaturesWith(new Set()))
     ).toEqual({
       use_new_lexer_parser: 'Off',
+      use_new_parser: 'Off',
     })
+  })
+
+  it('keeps the reserved parser flag Off without an API feature lookup', () => {
+    const userFeatures = { has: vi.fn().mockReturnValue(true) }
+
+    expect(kclRuntimeFlagsFromUserFeatures(userFeatures).use_new_parser).toBe(
+      'Off'
+    )
+    expect(userFeatures.has).toHaveBeenCalledTimes(1)
+    expect(userFeatures.has).toHaveBeenCalledWith(
+      KCL_NEW_LEXER_PARSER_FEATURE_FLAG,
+      false
+    )
   })
 
   it('sets serialized runtime flags on the wasm instance', () => {
@@ -52,6 +67,7 @@ describe('kcl runtime flags', () => {
     expect(wasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
       JSON.stringify({
         use_new_lexer_parser: 'On',
+        use_new_parser: 'Off',
       })
     )
   })
@@ -61,10 +77,14 @@ describe('kclRuntimeFlagsEqual', () => {
   it('is true only when both flags match', () => {
     const flags: KclRuntimeFlags = {
       use_new_lexer_parser: 'Off',
+      use_new_parser: 'Off',
     }
     expect(kclRuntimeFlagsEqual(flags, { ...flags })).toBe(true)
     expect(
       kclRuntimeFlagsEqual(flags, { ...flags, use_new_lexer_parser: 'On' })
+    ).toBe(false)
+    expect(
+      kclRuntimeFlagsEqual(flags, { ...flags, use_new_parser: 'On' })
     ).toBe(false)
   })
 
@@ -74,6 +94,7 @@ describe('kclRuntimeFlagsEqual', () => {
     }
     const flags: ExtendedKclRuntimeFlags = {
       use_new_lexer_parser: 'Off',
+      use_new_parser: 'Off',
       future_flag: 'On',
     }
     const differentFutureFlag: ExtendedKclRuntimeFlags = {
@@ -85,6 +106,7 @@ describe('kclRuntimeFlagsEqual', () => {
     expect(
       kclRuntimeFlagsEqual(flags, {
         use_new_lexer_parser: 'Off',
+        use_new_parser: 'Off',
       })
     ).toBe(false)
   })
@@ -129,6 +151,7 @@ describe('waitForSettledKclRuntimeFlags', () => {
 
     expect(await waitForSettledKclRuntimeFlags(userFeatures)).toEqual({
       use_new_lexer_parser: 'On',
+      use_new_parser: 'Off',
     })
   })
 
@@ -148,6 +171,7 @@ describe('waitForSettledKclRuntimeFlags', () => {
     settleWith(new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG]))
     expect(await pending).toEqual({
       use_new_lexer_parser: 'On',
+      use_new_parser: 'Off',
     })
   })
 })

@@ -24,6 +24,8 @@ export function kclRuntimeFlagsFromUserFeatures(
     )
       ? 'On'
       : 'Off',
+    // The API does not expose a parser feature flag yet.
+    use_new_parser: 'Off',
   }
 }
 

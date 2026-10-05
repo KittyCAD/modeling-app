@@ -79,6 +79,7 @@ describe('KCL LSP worker initialization', () => {
       }
       const kclRuntimeFlags: KclRuntimeFlags = {
         use_new_lexer_parser: useNewLexerParser,
+        use_new_parser: 'Off',
       }
 
       workerGlobal.onmessage(
