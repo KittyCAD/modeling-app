@@ -234,6 +234,13 @@ function getBadgeTypeForSnappingTarget(
       return 'Vertical'
     case 'midpoint':
       return 'Midpoint'
+    case undefined:
+    case 'arc':
+    case 'circle':
+    case 'line':
+    case 'point':
+    case 'origin':
+    case 'grid':
     default:
       return 'Coincident'
   }

@@ -23385,7 +23385,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                                         "commentStart": 0,
                                         "end": 0,
                                         "moduleId": 0,
-                                        "name": "arc2",
+                                        "name": "line21",
                                         "start": 0,
                                         "type": "Identifier"
                                       },
@@ -23524,7 +23524,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                                         "commentStart": 0,
                                         "end": 0,
                                         "moduleId": 0,
-                                        "name": "line11",
+                                        "name": "line10",
                                         "start": 0,
                                         "type": "Identifier"
                                       },
@@ -23663,7 +23663,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                                         "commentStart": 0,
                                         "end": 0,
                                         "moduleId": 0,
-                                        "name": "line11",
+                                        "name": "line10",
                                         "start": 0,
                                         "type": "Identifier"
                                       },
@@ -23802,7 +23802,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                                         "commentStart": 0,
                                         "end": 0,
                                         "moduleId": 0,
-                                        "name": "arc2",
+                                        "name": "line21",
                                         "start": 0,
                                         "type": "Identifier"
                                       },
@@ -24047,12 +24047,12 @@ description: Result of parsing sheet-metal-bracket.kcl
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "raw": "1.0",
+              "raw": "2.0",
               "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
-                "value": 1.0,
+                "value": 2.0,
                 "suffix": "None"
               }
             }

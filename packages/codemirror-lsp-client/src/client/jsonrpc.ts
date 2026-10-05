@@ -114,6 +114,8 @@ export default class Client extends jsrpc.JSONRPCServerAndClient {
           messageString += '  [log] '
           break
         }
+        case LSP.MessageType.Debug:
+          break
       }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       messageString += message

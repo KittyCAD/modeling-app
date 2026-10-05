@@ -492,7 +492,7 @@ extrude(endSweep, length = 2, method = NEW)
 
 ```kcl
 // Examples showing extrude with a positive/negative draft.
-@settings(experimentalFeatures = allow, kclVersion = 2.0)
+@settings(experimentalFeatures = allow, kclVersion = 3.0)
 
 sketch001 = sketch(on = XY) {
   line1 = line(start = [var -3.39mm, var 2.51mm], end = [var -4.52mm, var 0.96mm])
@@ -648,7 +648,7 @@ extrude(
 </model-viewer>
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 // The direction parameter can apply to sketches, segments, or edges
 // Directions can be specified by an axis, a sketch segment, or a body's edge.
@@ -725,7 +725,7 @@ extrude003 = extrude(
 </model-viewer>
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 // Extruding edges can infer a direction or accept a custom direction
 sketch001 = sketch(on = XY) {
