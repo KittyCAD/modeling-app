@@ -5,25 +5,25 @@ description: Physical properties artificial-heart.kcl
 {
   "bounding_box": {
     "center": {
-      "x": -29.952347754556072,
-      "y": 1.0942220478680085,
+      "x": -29.95231135487471,
+      "y": 1.0786902140443644,
       "z": -21.48581115589407
     },
     "dimensions": {
-      "x": 155.96306961898952,
-      "y": 73.48414599393286,
+      "x": 155.96314241835225,
+      "y": 73.51520966158012,
       "z": 144.22634297790384
     },
     "unit": "mm"
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 138485.21358110776
+    "value": 138486.36303344506
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 121.59687846351144
+    "value": 121.59780475498329
   }
 }

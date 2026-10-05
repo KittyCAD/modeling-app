@@ -5102,10 +5102,42 @@ description: Operations executed bench.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "radius",
+      "name": "horizontalDistance",
       "unlabeledArg": {
         "value": {
-          "type": "KclNone"
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Known",
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
+                  }
+                },
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Known",
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
         },
         "sourceRange": []
       },
@@ -5141,10 +5173,42 @@ description: Operations executed bench.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "radius",
+      "name": "verticalDistance",
       "unlabeledArg": {
         "value": {
-          "type": "KclNone"
+          "type": "Array",
+          "value": [
+            {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Known",
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
+                  }
+                },
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Known",
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
         },
         "sourceRange": []
       },
@@ -5180,10 +5244,42 @@ description: Operations executed bench.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "radius",
+      "name": "horizontalDistance",
       "unlabeledArg": {
         "value": {
-          "type": "KclNone"
+          "type": "Array",
+          "value": [
+            {
+              "type": "KclNone"
+            },
+            {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Known",
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
+                  }
+                },
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Known",
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
         },
         "sourceRange": []
       },
@@ -5219,10 +5315,42 @@ description: Operations executed bench.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "radius",
+      "name": "verticalDistance",
       "unlabeledArg": {
         "value": {
-          "type": "KclNone"
+          "type": "Array",
+          "value": [
+            {
+              "type": "Array",
+              "value": [
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Known",
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
+                  }
+                },
+                {
+                  "type": "Number",
+                  "value": 0.0,
+                  "ty": {
+                    "type": "Known",
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "KclNone"
+            }
+          ]
         },
         "sourceRange": []
       },
@@ -5406,9 +5534,6 @@ description: Operations executed bench.kcl
           "type": "Array",
           "value": [
             {
-              "type": "KclNone"
-            },
-            {
               "type": "Array",
               "value": [
                 {
@@ -5434,6 +5559,9 @@ description: Operations executed bench.kcl
                   }
                 }
               ]
+            },
+            {
+              "type": "KclNone"
             }
           ]
         },
@@ -5548,9 +5676,6 @@ description: Operations executed bench.kcl
           "type": "Array",
           "value": [
             {
-              "type": "KclNone"
-            },
-            {
               "type": "Array",
               "value": [
                 {
@@ -5576,6 +5701,9 @@ description: Operations executed bench.kcl
                   }
                 }
               ]
+            },
+            {
+              "type": "KclNone"
             }
           ]
         },
@@ -6239,290 +6367,6 @@ description: Operations executed bench.kcl
           {
             "type": "SketchBlockBodyItem",
             "index": 95
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          },
-          {
-            "type": "BinaryLeft"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "horizontalDistance",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Array",
-              "value": [
-                {
-                  "type": "Number",
-                  "value": 0.0,
-                  "ty": {
-                    "type": "Known",
-                    "value": {
-                      "type": "Length",
-                      "value": "mm"
-                    }
-                  }
-                },
-                {
-                  "type": "Number",
-                  "value": 0.0,
-                  "ty": {
-                    "type": "Known",
-                    "value": {
-                      "type": "Length",
-                      "value": "mm"
-                    }
-                  }
-                }
-              ]
-            },
-            {
-              "type": "KclNone"
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 9
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 96
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          },
-          {
-            "type": "BinaryLeft"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "verticalDistance",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Array",
-              "value": [
-                {
-                  "type": "Number",
-                  "value": 0.0,
-                  "ty": {
-                    "type": "Known",
-                    "value": {
-                      "type": "Length",
-                      "value": "mm"
-                    }
-                  }
-                },
-                {
-                  "type": "Number",
-                  "value": 0.0,
-                  "ty": {
-                    "type": "Known",
-                    "value": {
-                      "type": "Length",
-                      "value": "mm"
-                    }
-                  }
-                }
-              ]
-            },
-            {
-              "type": "KclNone"
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 9
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 97
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          },
-          {
-            "type": "BinaryLeft"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "horizontalDistance",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Array",
-              "value": [
-                {
-                  "type": "Number",
-                  "value": 0.0,
-                  "ty": {
-                    "type": "Known",
-                    "value": {
-                      "type": "Length",
-                      "value": "mm"
-                    }
-                  }
-                },
-                {
-                  "type": "Number",
-                  "value": 0.0,
-                  "ty": {
-                    "type": "Known",
-                    "value": {
-                      "type": "Length",
-                      "value": "mm"
-                    }
-                  }
-                }
-              ]
-            },
-            {
-              "type": "KclNone"
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 9
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 98
-          },
-          {
-            "type": "ExpressionStatementExpr"
-          },
-          {
-            "type": "BinaryLeft"
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "StdLibCall",
-      "name": "verticalDistance",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "Array",
-              "value": [
-                {
-                  "type": "Number",
-                  "value": 0.0,
-                  "ty": {
-                    "type": "Known",
-                    "value": {
-                      "type": "Length",
-                      "value": "mm"
-                    }
-                  }
-                },
-                {
-                  "type": "Number",
-                  "value": 0.0,
-                  "ty": {
-                    "type": "Known",
-                    "value": {
-                      "type": "Length",
-                      "value": "mm"
-                    }
-                  }
-                }
-              ]
-            },
-            {
-              "type": "KclNone"
-            }
-          ]
-        },
-        "sourceRange": []
-      },
-      "labeledArgs": {},
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 9
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          },
-          {
-            "type": "SketchBlockBody"
-          },
-          {
-            "type": "SketchBlockBodyItem",
-            "index": 99
           },
           {
             "type": "ExpressionStatementExpr"
@@ -7237,7 +7081,7 @@ description: Operations executed bench.kcl
       "type": "GroupBegin",
       "group": {
         "type": "SketchBlock",
-        "sketchId": 152
+        "sketchId": 148
       },
       "nodePath": {
         "steps": [
@@ -9242,7 +9086,7 @@ description: Operations executed bench.kcl
       "type": "GroupBegin",
       "group": {
         "type": "SketchBlock",
-        "sketchId": 198
+        "sketchId": 194
       },
       "nodePath": {
         "steps": [
@@ -11099,7 +10943,7 @@ description: Operations executed bench.kcl
       "type": "GroupBegin",
       "group": {
         "type": "SketchBlock",
-        "sketchId": 239
+        "sketchId": 235
       },
       "nodePath": {
         "steps": [
@@ -13003,7 +12847,7 @@ description: Operations executed bench.kcl
       "type": "GroupBegin",
       "group": {
         "type": "SketchBlock",
-        "sketchId": 281
+        "sketchId": 277
       },
       "nodePath": {
         "steps": [
@@ -14191,7 +14035,7 @@ description: Operations executed bench.kcl
       "type": "GroupBegin",
       "group": {
         "type": "SketchBlock",
-        "sketchId": 311
+        "sketchId": 307
       },
       "nodePath": {
         "steps": [
