@@ -40,6 +40,7 @@ import {
   type SettingsType,
 } from '@src/lib/settings/initialSettings'
 import { Setting } from '@src/lib/settings/Setting'
+import { serializeLoadedProjectSettings } from '@src/lib/settings/serializeLoadedProjectSettings'
 import type {
   SaveSettingsPayload,
   SettingsLevel,
@@ -956,15 +957,12 @@ export interface AppSettings {
 }
 
 /**
- * Finds the TOML settings files for user-level (and project-level if projectPath is provided)
- * settings, deserialize them and validate them, serialize and write the validated TOML back to the locations,
- * and return the settings object and the raw "configuration" object returned from WASM.
- *
- * Relies on WASM for TOML de/serialization.
+ * Read app and optional project settings with smol-toml, apply registry defaults
+ * and level precedence, and return the settings plus the app configuration.
+ * Only projects missing an ID need their project.toml rewritten during loading.
  */
 export async function loadAndValidateSettings(
   fileOperations: FileOperationsRegistryService,
-  initPromise: Promise<ModuleType> | ModuleType,
   projectPathOrOptions:
     | string
     | {
@@ -1022,8 +1020,6 @@ export async function loadAndValidateSettings(
 
   settingsNext = setSettingsAtLevel(settingsNext, 'user', appSettings)
 
-  // Reading project settings does not require Wasm. Initialize it only when
-  // a missing project ID requires serializing and writing project.toml.
   if (projectPath) {
     let projectSettings = await readProjectSettingsFile(
       fileOperations,
@@ -1039,11 +1035,7 @@ export async function loadAndValidateSettings(
       projectSettings.settings.meta.id === uuidNIL
     ) {
       projectSettings = setProjectConfigurationId(projectSettings, v4())
-      const wasmInstance = await initPromise
-      const projectTomlString = serializeProjectConfiguration(
-        projectSettings,
-        wasmInstance
-      )
+      const projectTomlString = serializeLoadedProjectSettings(projectSettings)
       if (err(projectTomlString)) {
         return Promise.reject(
           new Error('Could not serialize project configuration')

@@ -37,25 +37,17 @@ import { waitFor } from 'xstate'
 
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
 
-function loadRouteSettings(
-  app: App,
-  wasmInstance: Awaited<App['wasmPromise']>,
-  projectPath?: string
-) {
-  return loadAndValidateSettings(
-    app.registry.get(fileOperationsService),
-    wasmInstance,
-    {
-      defaultProjectLibraries: app.registry.get(
-        projectLibrarySettingDefaultsValueSpec
-      ),
-      projectLibrarySettingDefaultPolicies: app.registry.get(
-        projectLibrarySettingDefaultPoliciesValueSpec
-      ),
-      extensionSettings: app.registry.get(settingsValueSpec),
-      projectPath,
-    }
-  )
+function loadRouteSettings(app: App, projectPath?: string) {
+  return loadAndValidateSettings(app.registry.get(fileOperationsService), {
+    defaultProjectLibraries: app.registry.get(
+      projectLibrarySettingDefaultsValueSpec
+    ),
+    projectLibrarySettingDefaultPolicies: app.registry.get(
+      projectLibrarySettingDefaultPoliciesValueSpec
+    ),
+    extensionSettings: app.registry.get(settingsValueSpec),
+    projectPath,
+  })
 }
 
 /**
@@ -102,7 +94,7 @@ export const fileLoader =
     // Resolve the project root before loading project settings. Loading project
     // settings from a selected file's parent folder creates project.toml in
     // nested folders and makes them look like project roots.
-    const appSettings = await loadRouteSettings(app, wasmInstance)
+    const appSettings = await loadRouteSettings(app)
     assertCurrent()
     const currentProjectPath = app.project?.projectIORefSignal.value.path
     const targetLibraryPath = params.id
@@ -128,7 +120,7 @@ export const fileLoader =
       )
     }
 
-    await loadRouteSettings(app, wasmInstance, projectPathData.projectPath)
+    await loadRouteSettings(app, projectPathData.projectPath)
     assertCurrent()
 
     const { projectName, projectPath, currentFileName, currentFilePath } =
