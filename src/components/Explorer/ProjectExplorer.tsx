@@ -1,56 +1,64 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { FileExplorer, StatusDot } from '@src/components/Explorer/FileExplorer'
-import {
-  CONTAINER_IS_SELECTED,
-  FILE_PLACEHOLDER_NAME,
-  FOLDER_PLACEHOLDER_NAME,
-  NOTHING_IS_SELECTED,
-  STARTING_INDEX_TO_SELECT,
-  constructPath,
-  copyPasteSourceAndTarget,
-  flattenProject,
-  isExternalFileDrag,
-  isPathWithinFileExplorerEntry,
-} from '@src/components/Explorer/utils'
 import type {
   FileExplorerEntry,
   FileExplorerRow,
 } from '@src/components/Explorer/utils'
+import {
+  CONTAINER_IS_SELECTED,
+  constructPath,
+  copyPasteSourceAndTarget,
+  FILE_PLACEHOLDER_NAME,
+  FOLDER_PLACEHOLDER_NAME,
+  flattenProject,
+  isExternalFileDrag,
+  isPathWithinFileExplorerEntry,
+  NOTHING_IS_SELECTED,
+  STARTING_INDEX_TO_SELECT,
+} from '@src/components/Explorer/utils'
 import { fsArchiveFile, fsMoveFile } from '@src/editor/plugins/fs'
 import { kclErrorsByFilename } from '@src/lang/errors'
+import { importFileExtensions } from '@src/lang/wasmUtils'
 import { useApp, useSingletons } from '@src/lib/boot'
 import type { Command } from '@src/lib/commandTypes'
 import { FILE_EXT } from '@src/lib/constants'
 import { getNextFileName, sortFilesAndDirectories } from '@src/lib/desktopFS'
+import { ensureDirectory } from '@src/lib/fileSystem/ensureDirectory'
 import fsZds from '@src/lib/fs-zds'
 import {
   desktopSafePathJoin,
   desktopSafePathSplit,
   fileNameHasExtension,
   getParentAbsolutePath,
+  isExtensionARelevantExtension,
   joinOSPaths,
   parentPathRelativeToApplicationDirectory,
   parentPathRelativeToProject,
   toArchivePath,
+  toProjectRelativePath,
 } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
+import { reportRejection } from '@src/lib/trap'
 import type { MaybePressOrBlur } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
+import { PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 import {
-  PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE,
-  PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE,
   keymapService,
+  PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE,
 } from '@src/registry/contracts/keymap'
-import { projectExplorerRowContextMenuItemsValueSpec } from '@src/registry/contracts/projectExplorer'
+import {
+  type ProjectExplorerRowContextMenuItem,
+  projectExplorerRowContextMenuItemsValueSpec,
+} from '@src/registry/contracts/projectExplorer'
 import { PROJECT_EXPLORER_COMMAND_IDS } from '@src/registry/extensions/keymap/defaultKeymap'
 import { useSelector } from '@xstate/react'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { FocusEvent as ReactFocusEvent } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 
 const isFileExplorerEntryOpened = (
@@ -194,11 +202,51 @@ export const ProjectExplorer = ({
   overrideApplicationProjectDirectory?: string
 }) => {
   useSignals()
-  const { commands, registry, systemIOActor } = useApp()
+  const { commands, fileOperations, registry, systemIOActor } = useApp()
   const keymap = registry.optional(keymapService)
-  const rowContextMenuItems = registry.signal(
+  const extensionRowContextMenuItems = registry.signal(
     projectExplorerRowContextMenuItemsValueSpec
   ).value
+  const rowContextMenuItems = useMemo<ProjectExplorerRowContextMenuItem[]>(
+    () => [
+      {
+        id: 'import-in-current-file',
+        label: 'Import in current file',
+        dataTestId: 'context-menu-import-in-current-file',
+        isVisible: ({ row }) =>
+          !readOnly &&
+          !!file &&
+          !row.isFolder &&
+          !row.isFake &&
+          row.path !== file.path &&
+          isExtensionARelevantExtension(row.path, [
+            'kcl',
+            ...importFileExtensions(wasmInstance),
+          ]),
+        onSelect: ({ row }) => {
+          commands.send({
+            type: 'Find and select command',
+            data: {
+              name: 'Import',
+              groupId: 'code',
+              argDefaultValues: {
+                path: toProjectRelativePath(project.path, row.path),
+              },
+            },
+          })
+        },
+      },
+      ...extensionRowContextMenuItems,
+    ],
+    [
+      commands,
+      extensionRowContextMenuItems,
+      file,
+      project.path,
+      readOnly,
+      wasmInstance,
+    ]
+  )
   const { kclManager } = useSingletons()
   const isSystemIOIdle = useSelector(systemIOActor, (state) =>
     state.matches(SystemIOMachineStates.idle)
@@ -392,7 +440,7 @@ export const ProjectExplorer = ({
   )
 
   const focusProjectExplorer = useCallback(() => {
-    keymap?.applyScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
+    keymap?.applyScope(PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE)
     fileExplorerContainer.current?.focus()
   }, [keymap])
 
@@ -618,6 +666,7 @@ export const ProjectExplorer = ({
     () => [
       {
         id: PROJECT_EXPLORER_COMMAND_IDS.arrowLeft,
+        scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'arrow-left',
         groupId: 'project-explorer',
         displayName: 'Close selected project explorer row',
@@ -627,6 +676,7 @@ export const ProjectExplorer = ({
       },
       {
         id: PROJECT_EXPLORER_COMMAND_IDS.arrowRight,
+        scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'arrow-right',
         groupId: 'project-explorer',
         displayName: 'Open selected project explorer row',
@@ -636,6 +686,7 @@ export const ProjectExplorer = ({
       },
       {
         id: PROJECT_EXPLORER_COMMAND_IDS.arrowUp,
+        scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'arrow-up',
         groupId: 'project-explorer',
         displayName: 'Move project explorer selection up',
@@ -645,6 +696,7 @@ export const ProjectExplorer = ({
       },
       {
         id: PROJECT_EXPLORER_COMMAND_IDS.arrowDown,
+        scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'arrow-down',
         groupId: 'project-explorer',
         displayName: 'Move project explorer selection down',
@@ -654,6 +706,7 @@ export const ProjectExplorer = ({
       },
       {
         id: PROJECT_EXPLORER_COMMAND_IDS.enter,
+        scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'enter',
         groupId: 'project-explorer',
         displayName: 'Open selected project explorer file',
@@ -663,6 +716,7 @@ export const ProjectExplorer = ({
       },
       {
         id: PROJECT_EXPLORER_COMMAND_IDS.rename,
+        scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'rename',
         groupId: 'project-explorer',
         displayName: 'Rename selected project explorer row',
@@ -672,6 +726,7 @@ export const ProjectExplorer = ({
       },
       {
         id: PROJECT_EXPLORER_COMMAND_IDS.delete,
+        scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'delete',
         groupId: 'project-explorer',
         displayName: 'Delete selected project explorer row',
@@ -681,6 +736,7 @@ export const ProjectExplorer = ({
       },
       {
         id: PROJECT_EXPLORER_COMMAND_IDS.copy,
+        scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'copy',
         groupId: 'project-explorer',
         displayName: 'Copy selected project explorer row',
@@ -690,6 +746,7 @@ export const ProjectExplorer = ({
       },
       {
         id: PROJECT_EXPLORER_COMMAND_IDS.paste,
+        scopes: [PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE],
         name: 'paste',
         groupId: 'project-explorer',
         displayName: 'Paste into selected project explorer row',
@@ -717,7 +774,7 @@ export const ProjectExplorer = ({
 
   useEffect(() => {
     return () => {
-      keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
+      keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE)
       keymap?.removeScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
     }
   }, [keymap])
@@ -783,20 +840,19 @@ export const ProjectExplorer = ({
         setFileTreeMutationPending(true)
         const targetPath = getDropTargetPath(target, project.path)
         const createdDirs = new Set<string>()
-
         for (const { file, relativePath } of supportedFiles) {
           try {
             const destinationDirPath = relativePath
               ? joinOSPaths(targetPath, relativePath)
               : targetPath
 
-            // Create parent directories if needed
             if (relativePath && !createdDirs.has(destinationDirPath)) {
-              await fsZds.mkdir(destinationDirPath, { recursive: true })
+              await ensureDirectory(fileOperations, destinationDirPath)
               createdDirs.add(destinationDirPath)
             }
 
             const { path: destinationPath } = await getNextFileName({
+              fileOperations,
               entryName: file.name,
               baseDir: destinationDirPath,
               wasmInstance,
@@ -804,7 +860,10 @@ export const ProjectExplorer = ({
             })
 
             const arrayBuffer = await file.arrayBuffer()
-            await fsZds.writeFile(destinationPath, new Uint8Array(arrayBuffer))
+            await fileOperations.writeFile(
+              destinationPath,
+              new Uint8Array(arrayBuffer)
+            )
           } catch (e) {
             console.error('Failed to copy file:', file.name, e)
             toast.error(`Failed to import ${file.name}.`)
@@ -830,6 +889,7 @@ export const ProjectExplorer = ({
     },
     [
       readOnly,
+      fileOperations,
       project.path,
       wasmInstance,
       systemIOActor,
@@ -858,7 +918,7 @@ export const ProjectExplorer = ({
       setIsRenaming(false)
       setIsDeleting(false)
       lastSyncedFilePathRef.current = undefined
-      keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
+      keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE)
       keymap?.removeScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
     }
 
@@ -1060,6 +1120,10 @@ export const ProjectExplorer = ({
                       target,
                       successMessage: 'Archived successfully',
                       requestedProjectName: project.name,
+                      requestedFileName: parentPathRelativeToProject(
+                        project.default_file,
+                        applicationProjectDirectory
+                      ),
                     },
                   })
                   kclManager.addGlobalHistoryEvent(
@@ -1296,14 +1360,20 @@ export const ProjectExplorer = ({
                   requestedAbsolutePath,
                   applicationProjectDirectory
                 )
-                sendFileTreeMutationEvent({
-                  type: SystemIOMachineEvents.importFileFromURL,
-                  data: {
-                    requestedCode: '',
-                    requestedProjectName: project.name,
-                    requestedFileNameWithExtension: pathRelativeToParent,
-                  },
-                })
+                void kclManager
+                  .flushWriteToFile()
+                  .then((saved) => {
+                    if (!saved) return
+                    sendFileTreeMutationEvent({
+                      type: SystemIOMachineEvents.importFileFromURL,
+                      data: {
+                        requestedCode: '',
+                        requestedProjectName: project.name,
+                        requestedFileNameWithExtension: pathRelativeToParent,
+                      },
+                    })
+                  })
+                  .catch(reportRejection)
               } else {
                 // Create a blank file. The actor seeds default KCL content only
                 // for .kcl files and writes an empty file for everything else,
@@ -1423,12 +1493,12 @@ export const ProjectExplorer = ({
   useEffect(() => {
     if (isRenaming) {
       const fileExplorerContainerElement = fileExplorerContainer.current
-      keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
+      keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE)
       keymap?.applyScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
       return () => {
         keymap?.removeScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
         if (fileExplorerContainerElement?.contains(document.activeElement)) {
-          keymap?.applyScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
+          keymap?.applyScope(PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE)
         }
       }
     }
@@ -1445,7 +1515,7 @@ export const ProjectExplorer = ({
         projectExplorerRef.current &&
         !path.includes(projectExplorerRef.current)
       ) {
-        keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
+        keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE)
         keymap?.removeScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
         setActiveIndexWrapper(NOTHING_IS_SELECTED)
       }
@@ -1476,7 +1546,7 @@ export const ProjectExplorer = ({
 
   const handleExplorerFocus = useCallback(
     (event: ReactFocusEvent<HTMLDivElement>) => {
-      keymap?.applyScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
+      keymap?.applyScope(PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE)
       if (
         event.target === fileExplorerContainer.current &&
         activeIndexRef.current === NOTHING_IS_SELECTED
@@ -1497,7 +1567,7 @@ export const ProjectExplorer = ({
         return
       }
 
-      keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE)
+      keymap?.removeScope(PROJECT_EXPLORER_FOCUSED_COMMAND_SCOPE)
       keymap?.removeScope(PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE)
       setActiveIndexWrapper(NOTHING_IS_SELECTED)
     },

@@ -3,8 +3,9 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 test(
   'Toolbar dropdowns stay anchored when showPopover ignores its source',
   { tag: '@web' },
-  async ({ page }) => {
+  async ({ page, homePage }) => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
+    await homePage.goToModelingScene()
 
     await page.evaluate(() => {
       // eslint-disable-next-line @typescript-eslint/unbound-method -- preserve the native implementation before replacing the prototype method.

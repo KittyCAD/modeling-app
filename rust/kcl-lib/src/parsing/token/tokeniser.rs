@@ -27,7 +27,7 @@ use crate::parsing::token::Token;
 use crate::parsing::token::TokenType;
 
 lazy_static! {
-    pub(crate) static ref RESERVED_WORDS: AHashMap<&'static str, TokenType> = {
+    pub static ref RESERVED_WORDS: AHashMap<&'static str, TokenType> = {
         let mut set = AHashMap::default();
         set.insert("if", TokenType::Keyword);
         set.insert("else", TokenType::Keyword);
@@ -50,6 +50,7 @@ lazy_static! {
         set.insert("var", TokenType::Keyword);
         set.insert("const", TokenType::Keyword);
         set.insert("import", TokenType::Keyword);
+        set.insert("use", TokenType::Keyword);
         set.insert("export", TokenType::Keyword);
         set.insert("type", TokenType::Keyword);
         set.insert("interface", TokenType::Keyword);
@@ -405,6 +406,12 @@ fn unambiguous_keyword_type_or_word(i: &mut Input<'_>) -> ModalResult<Token> {
     let mut w = word.parse_next(i)?;
     if let Some(token_type) = RESERVED_WORDS.get(w.value.as_str()) {
         w.token_type = *token_type;
+    }
+    if w.value == "use" {
+        let followed_by_open_paren: ModalResult<char> = peek('(').parse_next(i);
+        if followed_by_open_paren.is_ok() {
+            w.token_type = TokenType::Word;
+        }
     }
     Ok(w)
 }
@@ -782,6 +789,21 @@ const things = "things"
             module_id,
         };
         assert_eq!(actual.tokens[0], expected);
+    }
+
+    #[test]
+    fn use_keyword_and_function_name() {
+        let module_id = ModuleId::default();
+        for (source, expected_type) in [
+            ("use", TokenType::Keyword),
+            ("use = 1", TokenType::Keyword),
+            ("use(3)", TokenType::Word),
+            ("use (3)", TokenType::Keyword),
+            ("useful", TokenType::Word),
+        ] {
+            let tokens = lex(source, module_id).unwrap();
+            assert_eq!(tokens.tokens[0].token_type, expected_type, "{source}");
+        }
     }
 
     #[test]

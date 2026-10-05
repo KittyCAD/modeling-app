@@ -2,7 +2,8 @@ import type { WebSocketResponse } from '@kittycad/lib'
 import type { StdLibCallOp } from '@src/lang/queryAst'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import { exportSketchToDxf } from '@src/lib/exportDxf'
-import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { err } from '@src/lib/trap'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -68,6 +69,11 @@ beforeAll(async () => {
 
 // Mock dependencies
 const createMockDependencies = (): Parameters<typeof exportSketchToDxf>[1] => ({
+  fileOperations: {
+    createDirectory: vi.fn().mockResolvedValue(undefined),
+    stat: vi.fn(),
+    writeFile: mockElectron.writeFile,
+  } as unknown as FileOperationsRegistryService,
   engineCommandManager: {
     sendSceneCommand: vi.fn(),
     engineConnection: undefined,
@@ -421,6 +427,27 @@ describe('DXF Export', () => {
         'DXF export completed.',
         { id: 'toast-id' }
       )
+
+      mockElectron.process.env.NODE_ENV = 'test'
+      try {
+        mockElectron.getAppTestProperty.mockResolvedValue('/test-settings')
+        mockElectron.path.join.mockImplementation((...parts: string[]) =>
+          parts.join(mockElectron.path.sep)
+        )
+
+        const testResult = await exportSketchToDxf(mockOperation, mockDeps)
+
+        expect(testResult).toBe(true)
+        expect(mockDeps.fileOperations.createDirectory).toHaveBeenCalledWith(
+          '/test-settings/downloads-during-playwright'
+        )
+        expect(mockElectron.writeFile).toHaveBeenCalledWith(
+          '/test-settings/downloads-during-playwright/sketch.dxf',
+          expect.any(Uint8Array)
+        )
+      } finally {
+        mockElectron.process.env.NODE_ENV = 'development'
+      }
     })
 
     it('should return error when plane artifact is not found', async () => {

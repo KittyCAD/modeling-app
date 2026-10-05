@@ -12,6 +12,7 @@ import {
   setAutoUpdateReady,
 } from '@src/lib/autoUpdate'
 import { AppContext, app } from '@src/lib/boot'
+import { initializeClientErrorReporting } from '@src/lib/clientErrors'
 import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { initializeElectronLifecycleClientReporting } from '@src/lib/electronLifecycleClientReporting'
 import { initializeWindowExceptionHandler } from '@src/lib/exceptions'
@@ -34,6 +35,7 @@ function launchApp(app: App) {
 
 /** initialize behaviors that rely on singletons */
 function initSingletonBehavior(app: App) {
+  initializeClientErrorReporting(app.auth.isLoggedIn)
   const { singletons } = app
   markOnce('code/willAuth')
   initializeWindowExceptionHandler(singletons.kclManager)

@@ -157,7 +157,7 @@ const primaryPane: Layout = {
     },
     {
       id: 'export',
-      label: 'Export part',
+      label: 'Export',
       icon: 'floppyDiskArrow',
       actionType: ActionType.Export,
     },

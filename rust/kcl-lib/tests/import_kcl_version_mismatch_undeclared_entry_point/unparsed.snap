@@ -1,0 +1,10 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing import_kcl_version_mismatch_undeclared_entry_point.kcl
+---
+// KCL 3.0: a file that declares kclVersion 3.0-preview can only be imported
+// when the entry point declares it too. This entry point declares no
+// kclVersion.
+import width from "dep.kcl"
+
+x = width

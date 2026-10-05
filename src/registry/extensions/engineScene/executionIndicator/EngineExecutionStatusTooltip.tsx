@@ -15,18 +15,22 @@ function formatExecutionDuration(elapsedMs: number) {
 }
 
 export function EngineExecutionStatusTooltip({
+  isExecuting,
   executionElapsedMs,
   getPendingCommandCount,
 }: {
-  executionElapsedMs: ReadonlySignal<number>
+  isExecuting: boolean
+  executionElapsedMs: ReadonlySignal<number | null>
   getPendingCommandCount: () => number
 }) {
   useSignals()
-  const [pendingCommandCount, setPendingCommandCount] = useState(
-    getPendingCommandCount
+  const [pendingCommandCount, setPendingCommandCount] = useState(() =>
+    isExecuting ? getPendingCommandCount() : 0
   )
 
   useEffect(() => {
+    if (!isExecuting) return
+
     const updatePendingCommandCount = () => {
       setPendingCommandCount(getPendingCommandCount())
     }
@@ -35,15 +39,19 @@ export function EngineExecutionStatusTooltip({
     const intervalId = window.setInterval(updatePendingCommandCount, 100)
 
     return () => window.clearInterval(intervalId)
-  }, [getPendingCommandCount])
+  }, [isExecuting, getPendingCommandCount])
 
   return (
     <>
       <p className="text-sm">
-        Engine executing for {formatExecutionDuration(executionElapsedMs.value)}
-        .
+        {isExecuting ? 'Engine executing for' : 'Engine execution took'}{' '}
+        {formatExecutionDuration(executionElapsedMs.value ?? 0)}.
       </p>
-      <p className="text-sm text-2">Pending commands: {pendingCommandCount}</p>
+      {isExecuting && (
+        <p className="text-sm text-2">
+          Pending commands: {pendingCommandCount}
+        </p>
+      )}
     </>
   )
 }

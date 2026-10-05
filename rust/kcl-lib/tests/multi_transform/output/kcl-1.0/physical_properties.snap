@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties multi_transform.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 14.121320343559644,
+      "y": 30.0,
+      "z": 2.0
+    },
+    "dimensions": {
+      "x": 62.18376618407356,
+      "y": 93.94112549695429,
+      "z": 4.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 3360.0011811358854
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 4.800001950873896
+  }
+}

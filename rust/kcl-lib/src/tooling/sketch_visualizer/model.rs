@@ -6,7 +6,6 @@ use crate::front::Freedom;
 #[derive(Debug, Clone)]
 pub(super) struct InternalPoint {
     pub(super) position: SketchVisualizationPoint,
-    pub(super) owner: Option<usize>,
     pub(super) freedom: Freedom,
 }
 

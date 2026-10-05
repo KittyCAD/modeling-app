@@ -25,6 +25,7 @@ export function appThemeToTheme(
       return Themes.Dark
     case 'system':
       return Themes.System
+    case undefined:
     default:
       return undefined
   }
@@ -73,6 +74,12 @@ export function getThemeColorForEngine(theme: Themes) {
   return resolvedTheme === Themes.Dark
     ? { r: dark, g: dark, b: dark, a: 1 }
     : { r: light, g: light, b: light, a: 1 }
+}
+
+/** Same edge color regardless of theme */
+export function edgeColor() {
+  const light = 28 / 255
+  return { r: light, g: light, b: light, a: 1 }
 }
 
 /**

@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties modular-shelf-grid.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 800.0,
+      "y": -200.0,
+      "z": 750.0
+    },
+    "dimensions": {
+      "x": 2000.0,
+      "y": 400.0,
+      "z": 1500.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 22631999.612785876
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 206400.11360713592
+  }
+}

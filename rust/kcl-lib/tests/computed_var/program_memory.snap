@@ -11,8 +11,10 @@ description: Variables in memory after executing computed_var.kcl
         "value": 0.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -20,8 +22,10 @@ description: Variables in memory after executing computed_var.kcl
         "value": 0.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -29,8 +33,10 @@ description: Variables in memory after executing computed_var.kcl
         "value": 0.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -38,8 +44,10 @@ description: Variables in memory after executing computed_var.kcl
         "value": 10.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -49,8 +57,10 @@ description: Variables in memory after executing computed_var.kcl
     "value": 3.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "obj": {
@@ -61,8 +71,10 @@ description: Variables in memory after executing computed_var.kcl
         "value": 0.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "foo": {
@@ -70,8 +82,10 @@ description: Variables in memory after executing computed_var.kcl
         "value": 1.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       }
     },
@@ -82,8 +96,10 @@ description: Variables in memory after executing computed_var.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "ten": {
@@ -91,8 +107,10 @@ description: Variables in memory after executing computed_var.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "x": {
@@ -100,8 +118,10 @@ description: Variables in memory after executing computed_var.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   }
 }

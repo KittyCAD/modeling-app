@@ -98,7 +98,15 @@ async fn inner_is_equal_body_type(
         };
     }
 
-    let meta = ModelingCmdMeta::from_args(exec_state, &args);
+    Ok(expected == query_body_type(&surface, exec_state, &args).await?)
+}
+
+pub(crate) async fn query_body_type(
+    surface: &Solid,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<BodyType, KclError> {
+    let meta = ModelingCmdMeta::from_args(exec_state, args);
     let cmd = ModelingCmd::from(mcmd::Solid3dGetBodyType::builder().object_id(surface.id).build());
 
     let response = exec_state.send_modeling_cmd(meta, cmd).await?;
@@ -115,7 +123,7 @@ async fn inner_is_equal_body_type(
         )));
     };
 
-    Ok(expected == body.body_type)
+    Ok(body.body_type)
 }
 
 pub async fn delete_face(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {

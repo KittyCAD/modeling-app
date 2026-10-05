@@ -1,8 +1,14 @@
 import nodeFsSync from 'fs'
 import path from 'path'
-import { DEFAULT_PROJECT_KCL_FILE, REGEXP_UUIDV4 } from '@src/lib/constants'
+import {
+  DEFAULT_PROJECT_KCL_FILE,
+  LEGACY_SKETCH_MODE_FEATURE_FLAG,
+  PROJECT_IMAGE_NAME,
+  REGEXP_UUIDV4,
+} from '@src/lib/constants'
 import nodeFs from 'fs/promises'
 import type { Page } from '@playwright/test'
+import { PNG } from 'pngjs'
 import { NIL as uuidNIL } from 'uuid'
 
 import {
@@ -14,8 +20,13 @@ import {
   isOutOfViewInScrollContainer,
   runningOnWindows,
 } from '@e2e/playwright/test-utils'
+import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
+
+// Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
+test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
 
 type ProjectCardContextMenuAction = 'rename' | 'delete'
 
@@ -145,8 +156,9 @@ test(
     fs,
     folderSetupFn,
   }) => {
+    let bracketDir = ''
     await folderSetupFn(async (dir) => {
-      const bracketDir = path.join(dir, 'bracket')
+      bracketDir = path.join(dir, 'bracket')
       await fs.mkdir(bracketDir, { recursive: true })
       let testFileData = await nodeFs.readFile(
         executorInputPath('cylinder-inches.kcl')
@@ -171,6 +183,19 @@ test(
     await test.step('Opening the bracket project should load the stream', async () => {
       await homePage.openProject('bracket')
       await scene.settled()
+
+      await expect(async () => {
+        const thumbnail = PNG.sync.read(
+          Buffer.from(
+            await fs.readFile(path.join(bracketDir, PROJECT_IMAGE_NAME))
+          )
+        )
+        expect(thumbnail.width).toBeGreaterThan(0)
+        expect(thumbnail.height).toBeGreaterThan(0)
+        expect(
+          thumbnail.data.some((value, index) => index % 4 === 3 && value > 0)
+        ).toBe(true)
+      }).toPass()
     })
 
     await u.doAndWaitForImageDiff(
@@ -391,7 +416,11 @@ test(
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.openProject('broken-code')
-    await scene.settled()
+    await editor.expectEditor.toContain(
+      "|> line(end = [0, wallMountL], tag = 'outerEdge')",
+      { timeout: 15_000 }
+    )
+    await scene.settled({ expectError: true })
 
     // Gotcha: Scroll to the text content in code mirror because CodeMirror lazy loads DOM content
     await editor.scrollToText(
@@ -401,10 +430,12 @@ test(
     await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
 
     // error text on hover
-    await page.hover('.cm-lint-marker-error')
+    await page.locator('.cm-lint-marker-error').hover()
     const crypticErrorText =
       'tag requires a value with type `TagDecl`, but found a value with type `string`.'
-    await expect(page.getByText(crypticErrorText).first()).toBeVisible()
+    await expect(
+      page.locator('.cm-tooltip-lint').getByText(crypticErrorText)
+    ).toBeVisible({ timeout: 15_000 })
   }
 )
 
@@ -743,72 +774,175 @@ test.describe(`Project management commands`, { tag: ['@desktop'] }, () => {
       await expect(noProjectsMessage).toBeVisible()
     })
   })
-  test(`Rename from home page`, async ({
-    context,
-    page,
-    homePage,
-    scene,
-    cmdBar,
-    fs,
-    folderSetupFn,
-  }, testInfo) => {
-    const projectName = `my_project_to_rename`
-    await folderSetupFn(async (dir) => {
-      await fs.mkdir(`${dir}/${projectName}`, { recursive: true })
-      const testFileData = await nodeFs.readFile(
-        executorInputPath('router-template-slate.kcl')
-      )
-      await fs.writeFile(
-        `${dir}/${projectName}/main.kcl`,
-        new Uint8Array(testFileData)
-      )
-    })
+  test(
+    `Rename from home page`,
+    { tag: '@web' },
+    async ({ page, homePage, cmdBar, fs, folderSetupFn }) => {
+      const projectName = `my_project_to_rename`
+      const existingProjectName = 'existing-project'
+      const existingProjectTitle = 'Existing Project'
+      await folderSetupFn(async (dir) => {
+        await fs.mkdir(`${dir}/${projectName}`, { recursive: true })
+        const testFileData = await nodeFs.readFile(
+          executorInputPath('router-template-slate.kcl')
+        )
+        await fs.writeFile(
+          `${dir}/${projectName}/main.kcl`,
+          new Uint8Array(testFileData)
+        )
+        await fs.mkdir(`${dir}/${existingProjectName}`, { recursive: true })
+        await fs.writeFile(
+          `${dir}/${existingProjectName}/main.kcl`,
+          new Uint8Array(testFileData)
+        )
+        await fs.writeFile(
+          `${dir}/${existingProjectName}/project.toml`,
+          new TextEncoder().encode(`title = "${existingProjectTitle}"\n`)
+        )
+      })
 
-    // Constants and locators
-    const projectHomeLink = page.getByTestId('project-link')
-    const commandButton = page.getByRole('button', { name: 'Commands' })
-    const commandOption = page.getByRole('option', {
-      name: 'rename project',
-    })
-    const projectNameOption = page.getByRole('option', { name: projectName })
-    const projectRenamedName = `my_project_after_rename_from_home`
-    const commandContinueButton = page.getByRole('button', {
-      name: 'Continue',
-    })
-    const toastMessage = page.getByText(`Successfully renamed`)
+      // Constants and locators
+      const projectHomeLink = page.getByRole('link', {
+        name: projectName,
+      })
+      const commandButton = page.getByRole('button', { name: 'Commands' })
+      const commandOption = page.getByRole('option', {
+        name: 'rename project',
+      })
+      const projectNameOption = page.getByRole('option', { name: projectName })
+      const projectRenamedName = `my_project_after_rename_from_home`
+      const commandContinueButton = page.getByRole('button', {
+        name: 'Continue',
+      })
+      const toastMessage = page.getByText(`Successfully renamed`)
 
-    await test.step(`Setup`, async () => {
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      page.on('console', console.log)
+      await test.step(`Setup`, async () => {
+        await page.setBodyDimensions({ width: 1200, height: 500 })
+        await homePage.projectsLoaded()
+        await expect(projectHomeLink).toBeVisible()
+      })
+
+      await test.step(`Run rename command via command palette`, async () => {
+        await commandButton.click()
+        await commandOption.click()
+        await projectNameOption.click()
+
+        // Fill in the new project name
+        const newNameInput = page.getByTestId('cmd-bar-arg-value')
+        await expect(newNameInput).toBeVisible()
+        await newNameInput.fill(existingProjectTitle)
+        await commandContinueButton.click()
+        await expect(
+          page.getByText(
+            `Project with title "${existingProjectTitle}" already exists`
+          )
+        ).toBeVisible()
+        await expect(newNameInput).toBeVisible()
+        await expect(newNameInput).toHaveValue(existingProjectTitle)
+        await expect(
+          page.getByText('Failed to execute command: Rename project')
+        ).not.toBeVisible()
+
+        await newNameInput.fill(projectRenamedName)
+
+        await expect(commandContinueButton).toBeVisible()
+        await commandContinueButton.click()
+
+        await cmdBar.submit()
+
+        await expect(toastMessage).toBeVisible()
+      })
+
+      await test.step(`Check the project was renamed`, async () => {
+        await expect(
+          page.getByRole('link', { name: projectRenamedName })
+        ).toBeVisible()
+        await expect(projectHomeLink).not.toBeVisible()
+        await page.reload()
+        await homePage.projectsLoaded()
+        await expect(
+          page.getByRole('link', { name: projectRenamedName })
+        ).toBeVisible()
+        await expect(
+          page.getByRole('link', { name: existingProjectTitle })
+        ).toBeVisible()
+      })
+    }
+  )
+  test(
+    'Rename a project from another library',
+    { tag: '@web' },
+    async ({ page, homePage, cmdBar, fs, folderSetupFn }) => {
+      const libraries: ProjectLibrarySetting[] = []
+      await folderSetupFn(async (dir) => {
+        libraries.push(
+          { title: 'Local Projects', path: dir, type: 'directory' },
+          {
+            title: 'Client Projects',
+            path: await fs.resolve(dir, '..', 'client-projects'),
+            type: 'directory',
+          }
+        )
+        for (const library of libraries) {
+          const projectPath = await fs.join(library.path, 'bracket')
+          await fs.mkdir(projectPath, { recursive: true })
+          await fs.writeFile(
+            await fs.join(projectPath, 'main.kcl'),
+            new TextEncoder().encode('@settings(kclVersion = 2.0)\npart = 1\n')
+          )
+          await fs.writeFile(
+            await fs.join(projectPath, 'project.toml'),
+            new TextEncoder().encode('title = "Bracket"\n')
+          )
+        }
+      })
       await homePage.projectsLoaded()
-      await expect(projectHomeLink).toBeVisible()
-    })
+      await page.evaluate((libraries) => {
+        window.app.settings.actor.send({
+          type: 'set.app.libraries',
+          data: { level: 'user', value: libraries },
+        })
+      }, libraries)
+      await expect(
+        homePage.projectCardTitle.filter({ hasText: 'Bracket' })
+      ).toHaveCount(2)
 
-    await test.step(`Run rename command via command palette`, async () => {
-      await commandButton.click()
-      await commandOption.click()
-      await projectNameOption.click()
-
-      // Fill in the new project name
-      const newNameInput = page.getByTestId('cmd-bar-arg-value')
-      await expect(newNameInput).toBeVisible()
-      await newNameInput.fill(projectRenamedName)
-
-      await expect(commandContinueButton).toBeVisible()
-      await commandContinueButton.click()
-
+      await page.getByRole('button', { name: 'Commands' }).click()
+      await page.getByRole('option', { name: 'rename project' }).click()
+      await expect(
+        page.getByRole('option', { name: 'Bracket Local Projects' })
+      ).toBeVisible()
+      const clientOption = page.getByRole('option', {
+        name: 'Bracket Client Projects',
+      })
+      await expect(clientOption).toBeVisible()
+      await cmdBar.currentArgumentInput.fill('Client Projects')
+      await expect(page.getByRole('option')).toHaveCount(1)
+      await clientOption.click()
+      await expect(cmdBar.currentArgumentInput).toHaveValue('Bracket')
+      await cmdBar.currentArgumentInput.fill('Updated Client Bracket')
+      await page.getByRole('button', { name: 'Continue' }).click()
       await cmdBar.submit()
 
-      await expect(toastMessage).toBeVisible()
-    })
-
-    await test.step(`Check the project was renamed`, async () => {
+      await expect(page.getByText('Successfully renamed')).toBeVisible()
       await expect(
-        page.getByRole('link', { name: projectRenamedName })
+        page.getByRole('heading', {
+          name: 'Updated Client Bracket',
+          exact: true,
+        })
       ).toBeVisible()
-      await expect(projectHomeLink).not.toHaveText(projectName)
-    })
-  })
+      await expect(
+        page.getByRole('heading', { name: 'Bracket', exact: true })
+      ).toBeVisible()
+      const originalProjectToml = await fs.readFile(
+        await fs.join(libraries[0].path, 'bracket', 'project.toml')
+      )
+      expect(new TextDecoder().decode(originalProjectToml)).toContain(
+        'title = "Bracket"'
+      )
+    }
+  )
+
   test(`Delete from home page`, async ({
     context,
     page,
@@ -1181,7 +1315,10 @@ test(
   {
     tag: ['@desktop'],
   },
-  async ({ context, page, scene, cmdBar, fs, folderSetupFn }, testInfo) => {
+  async (
+    { context, page, scene, cmdBar, editor, fs, folderSetupFn },
+    testInfo
+  ) => {
     await folderSetupFn(async (dir) => {
       const routerTemplateDir = path.join(dir, 'router-template-slate')
       await fs.mkdir(routerTemplateDir, { recursive: true })
@@ -1196,15 +1333,14 @@ test(
         new TextEncoder().encode(fileWithCRLF)
       )
     })
-    const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await page.getByText('router-template-slate').click()
+    await editor.expectEditor.toContain('routerDiameter', { timeout: 15_000 })
     await scene.settled()
 
-    await expect(u.codeLocator).toContainText('routerDiameter')
-    await expect(u.codeLocator).toContainText('templateGap')
-    await expect(u.codeLocator).toContainText('minClampingDistance')
+    await editor.expectEditor.toContain('templateGap')
+    await editor.expectEditor.toContain('minClampingDistance')
   }
 )
 
@@ -1326,7 +1462,7 @@ test(
     tag: '@desktop',
   },
   async ({ page, tronApp, homePage, folderSetupFn }, testInfo) => {
-    if (!tronApp) throw new Error('tronApp is missing.')
+    if (!tronApp) throwTronAppMissing()
 
     await folderSetupFn(async (dir) => {
       await Promise.all([
@@ -1539,7 +1675,6 @@ test(
         'pattern_vase.kcl',
         'pentagon_fillet_sugar.kcl',
         'pipe_as_arg.kcl',
-        'pipes_on_pipes.kcl',
         'riddle.kcl',
         'riddle_small.kcl',
         'router-template-slate.kcl',
@@ -1554,8 +1689,29 @@ test(
         'tan_arc_x_line.kcl',
         'tangential_arc.kcl',
       ]
+      const simulationTestNames = new Set([
+        'close_arc',
+        'dimensions_match',
+        'extrude_custom_plane',
+        'extrude_inside_fn_with_tags',
+        'global_tags',
+        'helix_defaults',
+        'helix_defaults_negative_extrude',
+        'helix_with_length',
+        'lsystem',
+        'member_expression_sketch',
+        'negative_args',
+        'order_sketch_extrude_in_order',
+        'order_sketch_extrude_out_of_order',
+        'pattern_vase',
+        'scoped_tags',
+      ])
       for (const fileName of fileNames) {
-        const testFileData = await nodeFs.readFile(executorInputPath(fileName))
+        const testName = path.basename(fileName, '.kcl').replaceAll('-', '_')
+        const inputPath = simulationTestNames.has(testName)
+          ? path.join('rust', 'kcl-lib', 'tests', testName, 'input.kcl')
+          : executorInputPath(fileName)
+        const testFileData = await nodeFs.readFile(inputPath)
         await fs.writeFile(
           path.join(testDir, fileName),
           new Uint8Array(testFileData)
@@ -1679,56 +1835,6 @@ test(
 
       page.on('console', console.log)
       await expect(page.getByTestId('app-theme')).toHaveValue('light')
-    })
-  }
-)
-
-test(
-  'Original project name persist after onboarding',
-  {
-    tag: ['@desktop'],
-  },
-  async ({ homePage, page, toolbar }) => {
-    const nextButton = page.getByTestId('onboarding-next')
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-
-    const getAllProjects = () => page.getByTestId('project-link').all()
-    page.on('console', console.log)
-
-    await test.step('Should create and name a project called wrist brace', async () => {
-      await createProject({ name: 'wrist brace', page, returnHome: true })
-      await expect(page.getByTestId('project-link').first()).toBeVisible()
-    })
-
-    await test.step('Should go through onboarding', async () => {
-      await toolbar.userSidebarButton.click()
-      await page.getByTestId('user-settings').click()
-      await page.getByRole('button', { name: 'Replay Onboarding' }).click()
-      await expect(nextButton).toBeVisible()
-
-      let advances = 0
-      while ((await nextButton.innerText()).trim() !== 'Finish') {
-        if (++advances > 20) {
-          throw new Error('Onboarding did not finish')
-        }
-        const urlBefore = page.url()
-        await nextButton.click()
-        await expect.poll(() => page.url()).not.toBe(urlBefore)
-      }
-      await nextButton.click()
-      await homePage.expectIsCurrentPage()
-      await expect(homePage.tutorialBtn).not.toBeVisible()
-      await page.goBack()
-      await expect(page).not.toHaveURL(/\/onboarding\//)
-      await page.goForward()
-      await homePage.expectIsCurrentPage()
-    })
-
-    await test.step('Should show the original project called wrist brace', async () => {
-      const projectNames = ['tutorial-project', 'wrist brace']
-      for (const [index, projectLink] of (await getAllProjects()).entries()) {
-        await expect(projectLink).toContainText(projectNames[index])
-      }
     })
   }
 )

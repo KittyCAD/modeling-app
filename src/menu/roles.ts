@@ -22,7 +22,7 @@ type FileRoleLabel =
   | 'Keybindings'
   | 'Sign Out'
   | 'Theme'
-  | 'Export Current Part'
+  | 'Export'
   | 'Create New File'
   | 'Create New Folder'
   | 'Share Part via Zoo Link'
@@ -83,7 +83,7 @@ type ViewRoleLabel =
 type DesignRoleLabel =
   | 'Design'
   | 'Create a Parameter'
-  | 'Insert from Project File'
+  | 'Import from Project File'
   | 'Start Sketch'
   | 'Create an Offset Plane'
   | 'Create a Helix'

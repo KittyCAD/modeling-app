@@ -1,0 +1,5 @@
+@settings(kclVersion = 2.0)
+import makeProfile as makeFirst from "first.kcl"
+import makeProfile as makeSecond from "second.kcl"
+first = makeFirst()
+second = makeSecond()

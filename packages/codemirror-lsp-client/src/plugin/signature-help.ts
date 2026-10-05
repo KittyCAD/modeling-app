@@ -1,15 +1,56 @@
 import type { Extension } from '@codemirror/state'
-import { Prec } from '@codemirror/state'
-import type { ViewPlugin } from '@codemirror/view'
-import { EditorView } from '@codemirror/view'
+import { Prec, StateEffect, StateField } from '@codemirror/state'
+import type { Tooltip, ViewPlugin } from '@codemirror/view'
+import { EditorView, showTooltip } from '@codemirror/view'
 import { keymap } from '@codemirror/view'
 
 import type { LanguageServerPlugin } from './lsp'
+
+export const setSignatureHelpTooltip = StateEffect.define<Tooltip | null>()
+
+const signatureHelpTooltip = StateField.define<Tooltip | null>({
+  create: () => null,
+  update(tooltip, transaction) {
+    // Selecting a body can change the code selection without editor input,
+    // so close the tooltip when a transaction sets the selection.
+    if (transaction.selection) tooltip = null
+    if (tooltip && transaction.docChanged) {
+      tooltip = {
+        ...tooltip,
+        pos: transaction.changes.mapPos(tooltip.pos),
+        end:
+          tooltip.end === undefined
+            ? undefined
+            : transaction.changes.mapPos(tooltip.end),
+      }
+    }
+    for (const effect of transaction.effects) {
+      if (effect.is(setSignatureHelpTooltip)) tooltip = effect.value
+    }
+    return tooltip
+  },
+  // Let CodeMirror manage tooltip placement, viewport size limits, and DOM cleanup.
+  provide: (field) => showTooltip.from(field),
+})
 
 export default function lspSignatureHelpExt(
   plugin: ViewPlugin<LanguageServerPlugin>
 ): Extension {
   return [
+    signatureHelpTooltip,
+    EditorView.domEventHandlers({
+      // Focus can leave the editor without changing its code selection,
+      // so close the tooltip on blur as well.
+      blur: (_event, view) => {
+        if (view.state.field(signatureHelpTooltip) !== null) {
+          view.dispatch({ effects: setSignatureHelpTooltip.of(null) })
+        }
+      },
+    }),
+    EditorView.baseTheme({
+      // Keep long documentation scrollable within CodeMirror's constrained height.
+      '.cm-signature-tooltip': { overflowY: 'auto' },
+    }),
     Prec.highest(
       keymap.of([
         {
@@ -34,16 +75,15 @@ export default function lspSignatureHelpExt(
     EditorView.updateListener.of(async (update) => {
       if (!(plugin && update.docChanged)) return
 
-      // Make sure this is a valid user typing event.
+      // Only typing should open signature help; 'input' also includes pasting.
       let isRelevant = false
       for (const tr of update.transactions) {
-        if (tr.isUserEvent('input')) {
+        if (tr.isUserEvent('input.type')) {
           isRelevant = true
         }
       }
 
       if (!isRelevant) {
-        // We only want signature help on user events.
         return
       }
 

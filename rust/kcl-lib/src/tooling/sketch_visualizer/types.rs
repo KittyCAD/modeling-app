@@ -22,8 +22,12 @@ pub(super) struct SketchVisualizationPoint {
 pub enum SketchVisualizationError {
     #[error("no sketch named `{name}` was found in the execution outcome")]
     SketchNotFound { name: String },
-    #[error("found {count} sketches named `{name}` in the execution outcome")]
+    #[error(
+        "found {count} sketches named `{name}` in the execution outcome; pass instance_index from the constraint report (zero-based creation order for this entrypoint; refresh after edits)"
+    )]
     AmbiguousSketchName { name: String, count: usize },
+    #[error("instance_index {index} is out of range for sketch `{name}`: found {count} instances (zero-based)")]
+    InstanceNotFound { name: String, index: usize, count: usize },
     #[error("object id {id} was missing from the execution scene objects")]
     MissingObject { id: usize },
     #[error("failed to encode sketch visualization PNG: {0}")]

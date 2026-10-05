@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties counterdrilled-weldment.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": 31.623000000000005
+    },
+    "dimensions": {
+      "x": 165.10000000000036,
+      "y": 114.30000000000064,
+      "z": 63.754000000000005
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 66384.79176012347
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 250.97198460055648
+  }
+}

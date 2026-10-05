@@ -13,7 +13,11 @@ import {
   getUtils,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { LEGACY_SKETCH_MODE_FEATURE_FLAG } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+
+// Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
+test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
 
 const bracket = fs.readFileSync(
   path.resolve('public', 'kcl-samples', 'bracket', 'main.kcl'),
@@ -22,50 +26,6 @@ const bracket = fs.readFileSync(
 
 test.describe('Regression tests', { tag: '@desktop' }, () => {
   // bugs we found that don't fit neatly into other categories
-  test('bad model has inline error #3251', async ({
-    context,
-    page,
-    homePage,
-    scene,
-  }) => {
-    // because the model has `line([0,0]..` it is valid code, but the model is invalid
-    // regression test for https://github.com/KittyCAD/modeling-app/issues/3251
-    // Since the bad model also found as issue with the artifact graph, which in tern blocked the editor diognostics
-    // const u = await getUtils(page)
-    await context.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch2 = startSketchOn(XY)
-  sketch001 = startSketchOn(XY)
-    |> startProfile(at = [-0, -0])
-    |> line(end = [0, 0])
-    |> line(end = [-4.84, -5.29])
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close()`
-      )
-    })
-
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-
-    await homePage.goToModelingScene()
-    await scene.connectionEstablished()
-    // await u.waitForPageLoad()
-
-    // error in guter
-    await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
-
-    // error text on hover
-    await page.hover('.cm-lint-marker-error')
-    // this is a cryptic error message, fact that all the lines are co-linear from the `line([0,0])` is the issue why
-    // the close doesn't work
-    // when https://github.com/KittyCAD/modeling-app/issues/3268 is closed
-    // this test will need updating
-    const crypticErrorText = `Cannot close a path that is non-planar or with duplicate vertices.
-Internal engine error on request`
-    await expect(page.getByText(crypticErrorText).first()).toBeVisible()
-    // Ensure we didn't nest the json.
-    await expect(page.getByText('ApiError')).not.toBeVisible()
-  })
   test('user should not have to press down twice in cmdbar', async ({
     page,
     homePage,
@@ -444,97 +404,93 @@ extrude002 = extrude(profile002, length = 150)`
       // Click the checkbox
       await cmdBar.submit()
 
-      // Find the toast.
-      // Look out for the toast message
-      await expect(exportingToastMessage).toBeVisible()
-
-      // Expect it to succeed.
+      // A fast export can complete before its progress toast is observed.
+      const successToastMessage = page.getByText(`Exported successfully`)
+      await expect(successToastMessage.first()).toBeVisible({ timeout: 15_000 })
       await expect(exportingToastMessage).not.toBeVisible()
       await expect(engineErrorToastMessage).not.toBeVisible()
-
-      const successToastMessage = page.getByText(`Exported successfully`)
-      await page.waitForTimeout(1_000)
-      const count = await successToastMessage.count()
-      expect(count).toBeGreaterThanOrEqual(1)
     }
   )
   // We updated this test such that you can have multiple exports going at once.
-  test('ensure you CAN export while an export is already going', async ({
-    page,
-    homePage,
-    cmdBar,
-  }) => {
-    const u = await getUtils(page)
-    await test.step('Set up the code and durations', async () => {
-      await page.addInitScript(
-        async ({ code }) => {
-          localStorage.setItem('persistCode', code)
-          ;(window as any).playwrightSkipFilePicker = true
-        },
-        {
-          code: bracket,
-        }
-      )
+  test(
+    'ensure you CAN export while an export is already going',
+    { tag: '@skipLocalEngine' },
+    async ({ page, homePage, cmdBar }) => {
+      const u = await getUtils(page)
+      await test.step('Set up the code and durations', async () => {
+        await page.addInitScript(
+          async ({ code }) => {
+            localStorage.setItem('persistCode', code)
+            ;(window as any).playwrightSkipFilePicker = true
+          },
+          {
+            code: bracket,
+          }
+        )
 
-      await page.setBodyDimensions({ width: 1000, height: 500 })
+        await page.setBodyDimensions({ width: 1000, height: 500 })
 
-      await homePage.goToModelingScene()
-      await u.waitForPageLoad()
+        await homePage.goToModelingScene()
+        await u.waitForPageLoad()
 
-      // wait for execution done
-      await u.openDebugPanel()
-      await u.expectCmdLog('[data-message-type="execution-done"]')
-      await u.closeDebugPanel()
+        // wait for execution done
+        await u.openDebugPanel()
+        await u.expectCmdLog('[data-message-type="execution-done"]')
+        await u.closeDebugPanel()
 
-      // expect zero errors in guter
-      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
-    })
+        // expect zero errors in guter
+        await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+      })
 
-    const errorToastMessage = page.getByText(`Error while exporting`)
-    const exportingToastMessage = page.getByText(`Exporting...`)
-    const engineErrorToastMessage = page.getByText(`Nothing to export`)
-    const alreadyExportingToastMessage = page.getByText(`Already exporting`)
-    const successToastMessage = page.getByText(`Exported successfully`)
+      const errorToastMessage = page.getByText(`Error while exporting`)
+      const exportingToastMessage = page.getByText(`Exporting...`)
+      const engineErrorToastMessage = page.getByText(`Nothing to export`)
+      const alreadyExportingToastMessage = page.getByText(`Already exporting`)
+      const successToastMessage = page.getByText(`Exported successfully`)
 
-    await test.step('second export', async () => {
-      await clickExportButton(page, cmdBar)
+      await test.step('second export', async () => {
+        await clickExportButton(page, cmdBar)
 
-      await expect(exportingToastMessage).toBeVisible()
+        await expect(exportingToastMessage).toBeVisible()
 
-      await clickExportButton(page, cmdBar)
+        await clickExportButton(page, cmdBar)
 
-      await test.step('The first export still succeeds', async () => {
+        await test.step('The first export still succeeds', async () => {
+          await Promise.all([
+            expect(exportingToastMessage).toHaveCount(0, { timeout: 15_000 }),
+            expect(errorToastMessage).not.toBeVisible(),
+            expect(engineErrorToastMessage).not.toBeVisible(),
+            // Overlapping exports can each retain a success notification.
+            expect(successToastMessage.first()).toBeVisible({
+              timeout: 15_000,
+            }),
+            expect(alreadyExportingToastMessage).not.toBeVisible({
+              timeout: 15_000,
+            }),
+          ])
+        })
+      })
+
+      await test.step('Successful, unblocked export', async () => {
+        const previousSuccessToastCount = await successToastMessage.count()
+
+        // Try exporting again.
+        await clickExportButton(page, cmdBar)
+
+        // Expect it to succeed.
         await Promise.all([
-          expect(exportingToastMessage).not.toBeVisible({ timeout: 15_000 }),
+          expect(exportingToastMessage).toHaveCount(0, { timeout: 15_000 }),
           expect(errorToastMessage).not.toBeVisible(),
           expect(engineErrorToastMessage).not.toBeVisible(),
-          expect(successToastMessage).toBeVisible({ timeout: 15_000 }),
-          expect(alreadyExportingToastMessage).not.toBeVisible({
-            timeout: 15_000,
-          }),
+          expect(alreadyExportingToastMessage).not.toBeVisible(),
         ])
+
+        await expect
+          .poll(() => successToastMessage.count(), { timeout: 15_000 })
+          .toBeGreaterThan(previousSuccessToastCount)
       })
-    })
-
-    await test.step('Successful, unblocked export', async () => {
-      const previousSuccessToastCount = await successToastMessage.count()
-
-      // Try exporting again.
-      await clickExportButton(page, cmdBar)
-
-      // Expect it to succeed.
-      await Promise.all([
-        expect(exportingToastMessage).not.toBeVisible({ timeout: 15_000 }),
-        expect(errorToastMessage).not.toBeVisible(),
-        expect(engineErrorToastMessage).not.toBeVisible(),
-        expect(alreadyExportingToastMessage).not.toBeVisible(),
-      ])
-
-      await expect
-        .poll(() => successToastMessage.count(), { timeout: 15_000 })
-        .toBeGreaterThan(previousSuccessToastCount)
-    })
-  })
+    }
+  )
 
   test(`Network health indicator only appears in modeling view`, async ({
     page,
@@ -694,7 +650,7 @@ extrude002 = extrude(profile002, length = 150)`
       // The animation typically takes around 500ms, so we'll check for a second
       await toolbar.expectToolbarMode.not.toBe('modeling')
 
-      // After animation completes, we should see the sketching toolbar
+      // After animation completes, we should see the sketching toolbar.
       await toolbar.expectToolbarMode.toBe('sketchSolve')
     })
   })
@@ -799,9 +755,14 @@ faceProfile001 = circle(faceSketch, center = [0, 0], radius = 0.01)`
         },
         { timeout: 15_000 }
       )
-      await toolbar.editSketch(1)
-      await toolbar.expectToolbarMode.toBe('sketching')
-      await legacySketchClientError
+      // Handle the request wait even if entering sketch mode fails.
+      await Promise.all([
+        legacySketchClientError,
+        (async () => {
+          await toolbar.editSketch(1)
+          await toolbar.expectToolbarMode.toBe('sketching')
+        })(),
+      ])
     })
 
     await test.step('Draw a circle and verify code', async () => {

@@ -11,20 +11,21 @@ import { PATHS, webSafeJoin } from '@src/lib/paths'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import {
-  type SettingsActorType,
   getOnlySettingsFromContext,
+  type SettingsActorType,
   settingsMachine,
 } from '@src/machines/settingsMachine'
 import { commandSystemService } from '@src/registry/contracts/commands'
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
+import {
+  projectLibrarySettingDefaultPoliciesValueSpec,
+  projectLibrarySettingDefaultsValueSpec,
+} from '@src/registry/contracts/projectLibraries'
 import {
   type SettingsRegistryService,
   settingsService,
   settingsValueSpec,
 } from '@src/registry/contracts/settings'
-import {
-  projectLibrarySettingDefaultPoliciesValueSpec,
-  projectLibrarySettingDefaultsValueSpec,
-} from '@src/registry/contracts/projectLibraries'
 import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { useSelector } from '@xstate/react'
@@ -59,6 +60,7 @@ export const settingsExtension = defineRegistryItemFactory((ctx) => {
         defaultProjectLibraries,
         projectLibrarySettingDefaultPolicies,
         extensionSettings,
+        fileOperations: ctx.services.get(fileOperationsService),
         wasmInstancePromise: getWasmPromise(),
       },
     }).start()
@@ -112,13 +114,19 @@ const settingsRegistryItem = defineRegistryItem({
       id: 'settings',
       element: 'link',
       icon: 'settings',
-      href: (location) => {
+      href: (location, { activeFileRoutePath } = {}) => {
         const pathname = location.pathname
+        const routePath =
+          !pathname.includes(PATHS.SETTINGS) &&
+          pathname.includes(PATHS.FILE) &&
+          activeFileRoutePath
+            ? activeFileRoutePath
+            : pathname
         const settingsPath = pathname.includes(PATHS.SETTINGS)
           ? pathname
-          : webSafeJoin([pathname, makeUrlPathRelative(PATHS.SETTINGS)])
+          : webSafeJoin([routePath, makeUrlPathRelative(PATHS.SETTINGS)])
 
-        return `${settingsPath}${pathname.includes(PATHS.FILE) ? '?tab=project' : ''}`
+        return `${settingsPath}${routePath.includes(PATHS.FILE) ? '?tab=project' : ''}`
       },
       'data-testid': 'settings-link',
       order: 1,

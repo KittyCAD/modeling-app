@@ -23,7 +23,7 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 
 import { calculate_circle_from_3_points } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 
-import type { Sketch } from '@rust/kcl-lib/bindings/Sketch'
+import type { SketchView as Sketch } from '@rust/kcl-lib/bindings/SketchView'
 import {
   ARC_ANGLE_END,
   ARC_ANGLE_REFERENCE_LINE,
@@ -1833,18 +1833,20 @@ function createLengthIndicator({
       return
     }
 
+    const firstGraphSelection = selection.graphSelections?.[0]
+    if (!firstGraphSelection) return
     sceneInfra.modelingSend({
       type: 'Set selection',
       data: {
         selectionType: 'singleCodeCursor',
-        selection: selection.graphSelections[0],
+        selection: firstGraphSelection,
       },
     })
 
     const canConstrainLength = angleLengthInfo({
       selectionRanges: {
         ...selection,
-        graphSelections: [selection.graphSelections[0]],
+        graphSelections: [firstGraphSelection],
       },
       angleOrLength: 'setLength',
       kclManager,

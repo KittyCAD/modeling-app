@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties shell_with_tag.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 214.2950000000001,
+      "y": -20.192999937057497,
+      "z": 61.77500005245207
+    },
+    "dimensions": {
+      "x": 358.5959997482299,
+      "y": 40.385999874114994,
+      "z": 346.451999874115
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 418118.47280769143
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 653.0420678245719
+  }
+}

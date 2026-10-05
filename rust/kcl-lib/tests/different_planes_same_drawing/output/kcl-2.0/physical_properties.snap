@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties different_planes_same_drawing.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -15.0,
+      "y": 24.5,
+      "z": 6.5
+    },
+    "dimensions": {
+      "x": 66.0,
+      "y": 73.0,
+      "z": 49.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 3677.999851788627
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 8.468998539494047
+  }
+}

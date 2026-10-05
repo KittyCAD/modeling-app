@@ -2,7 +2,6 @@ import { Popover } from '@headlessui/react'
 import { HelpMenu } from '@src/components/HelpMenu'
 import { AutoUpdateDownloadStatus } from '@src/components/StatusBar/AutoUpdateDownloadStatus'
 import { AutoUpdateReadyStatus } from '@src/components/StatusBar/AutoUpdateReadyStatus'
-import { DownloadDesktopApp } from '@src/components/StatusBar/DownloadDesktopApp'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import {
   EnvironmentChip,
@@ -19,13 +18,11 @@ export const defaultGlobalStatusBarItems = ({
   appVersion = APP_VERSION,
   autoUpdateDownloadProgress,
   autoUpdateReady,
-  hasCloudSyncFeature,
   onRestartToUpdate,
 }: {
   appVersion?: string
   autoUpdateDownloadProgress?: AutoUpdateDownloadProgress | null
   autoUpdateReady?: AutoUpdateReady | null
-  hasCloudSyncFeature: boolean
   onRestartToUpdate?: () => void
 }): StatusBarItemType[] => [
   ...(appVersion && isDesktop()
@@ -40,15 +37,7 @@ export const defaultGlobalStatusBarItems = ({
           },
         },
       ]
-    : !isDesktop() && !hasCloudSyncFeature
-      ? [
-          {
-            id: 'download-desktop-app',
-            'data-testid': 'download-desktop-app',
-            component: DownloadDesktopApp,
-          },
-        ]
-      : []),
+    : []),
   ...(isDesktop() && autoUpdateDownloadProgress && !autoUpdateReady
     ? [
         {

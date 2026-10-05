@@ -47,11 +47,10 @@ import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   DEFAULT_EXPERIMENTAL_FEATURES,
-  DEFAULT_KCL_VERSION,
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
 } from '@src/lib/constants'
+import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
 import { getOperationKey } from '@src/lib/featureTreeOperationTree'
-import fsZds from '@src/lib/fs-zds'
 import { markOnce } from '@src/lib/performance'
 import type RustContext from '@src/lib/rustContext'
 import type {
@@ -183,6 +182,7 @@ import {
   waitForUserFeaturesSettled,
 } from '@src/machines/userFeaturesMachine'
 import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import {
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
@@ -197,6 +197,7 @@ interface ExecuteArgs {
 
 type UpdateCodeEditorOptions = {
   shouldExecute: boolean
+  shouldSyncRust: boolean
   shouldClearHistory: boolean
   /** Only has an effect if `shouldClearHistory` is `false`.
   if it is `true` then this will act as `false`. */
@@ -211,6 +212,13 @@ type UpdateCodeEditorAdditionalSpec = {
   effects?: StateEffect<unknown>[]
   sketchCheckpointId?: number | null
 }
+
+type FromFileOptions = {
+  shouldSyncRustOnOpen: boolean
+  assertCurrent?: () => void
+}
+
+const requestSkipRustUpdate = StateEffect.define<boolean>()
 
 type SyntheticHistoryCommit = {
   undoCode: string
@@ -420,7 +428,8 @@ export class ZDSProject {
      * editor state through localstorage.
      */
     providedCode?: string,
-    isExecuting = true
+    isExecuting = true,
+    assertCurrent: () => void = () => {}
   ) {
     const foundEditor = this.findEditor(path)
     const found = foundEditor?.[1]
@@ -464,8 +473,16 @@ export class ZDSProject {
         : new File(path, this.nextFileId++),
       systemDeps,
       providedEditor,
-      providedCode
+      providedCode,
+      // Project-level file opens refresh Rust with the full project snapshot
+      // below. Do not let the reused editor send update_file for a new file ID
+      // before that snapshot has registered the file.
+      {
+        shouldSyncRustOnOpen: !providedEditor,
+        assertCurrent,
+      }
     )
+    assertCurrent()
 
     // Splice our new editor into our files array
     if (foundFileIndex > -1) {
@@ -494,18 +511,34 @@ export class ZDSProject {
 
     // Initialize a snapshot of the project for Rust
     // to have for executions and code mods
+    if (isExecuting) {
+      this.executingPath = path
+    }
+
     markOnce('project/startCollectFiles')
     const apiFiles = await this.getAllKclFiles()
     markOnce('project/endCollectFiles')
+    assertCurrent()
 
     markOnce('project/startSendProjectToWasm')
     await newEditor.rustContext
       .sendOpenProject(path, apiFiles)
       .catch(reportRejection)
     markOnce('project/endSendProjectToWasm')
+    assertCurrent()
 
-    if (isExecuting) {
-      this.executingPath = path
+    if (
+      isExecuting &&
+      providedEditor &&
+      newEditor.engineCommandManager.connection?.connected
+    ) {
+      await newEditor.executeCode(newEditor.code)
+      assertCurrent()
+      await resetCameraPosition({
+        sceneInfra: newEditor.sceneInfra,
+        engineCommandManager: newEditor.engineCommandManager,
+        settingsActor: this.app.settings.actor,
+      })
     }
     return newEditor
   }
@@ -752,17 +785,20 @@ export class File extends EventTarget {
 
   /** Allows environments to swap their implementation of these IO-interfacing functions */
   static ioImplementations = {
-    read: (path: string) => fsZds.readFile(path, 'utf8'),
-    write: (path: string, content: string) =>
-      fsZds.writeFile(path, File.encoder.encode(content)),
+    read: (_path: string): Promise<string> =>
+      Promise.reject(new Error('File IO has not been configured')),
+    write: (_path: string, _content: string): Promise<void> =>
+      Promise.reject(new Error('File IO has not been configured')),
     watch: window.electron?.watchFileOn || (() => {}),
     unwatch: window.electron?.watchFileOff || (() => {}),
   }
-  static encoder = new TextEncoder()
 }
 
 export class KclManager extends File {
   // SYSTEM DEPENDENCIES
+
+  /** Application storage facade used by workflows owned by this manager. */
+  fileOperations?: FileOperationsRegistryService
 
   private _wasmInstance: ModuleType | null = null
   /** in the case of WASM crash, we should ensure the new refreshed WASM module is held here. */
@@ -917,6 +953,7 @@ export class KclManager extends File {
    * subscribes here rather than to `execStateSignal`.
    */
   private _engineSceneGeneration = signal(0)
+  /** Incremented on every execution completion (success, failure, or cancel). Used so callers can wait for "next" run. */
   private _executionGeneration = 0
   private _lastExecutionCompletion: ExecutionCompletionResult = {
     generation: 0,
@@ -1105,7 +1142,7 @@ export class KclManager extends File {
   private _cancelTokens: Map<number, boolean> = new Map()
   private _executeIsStale: ExecuteArgs | null = null
   private _isExecuting = signal(false)
-  private _executionElapsedMs = signal(0)
+  private _executionElapsedMs = signal<number | null>(null)
   private executionStartedAtMs: number | null = null
   private executionTimerIntervalId: ReturnType<typeof setInterval> | undefined =
     undefined
@@ -1160,12 +1197,16 @@ export class KclManager extends File {
     this._switchedFiles = switchedFiles
 
     // These belonged to the previous file
-    this.lastSuccessfulOperations = emptyOperationsByModule()
+    const emptyState = emptyExecState()
+    this.execState = emptyState
+    this.lastSuccessfulOperations = emptyState.operations
     this.endLiveOperationUpdates()
+    this.dispatchUpdateOperations([])
+    this.setArtifactGraphState(emptyState.artifactGraph)
     this.lastExecutedCode = ''
     this.lastSuccessfulCode = ''
     this._hasEditsSinceLastExecution.value = false
-    this.lastSuccessfulVariables = {}
+    this.lastSuccessfulVariables = emptyState.variables
 
     // Without this, when leaving a project which has errors and opening another project which doesn't,
     // you'd see the errors from the previous project for a short time until the new code is executed.
@@ -1273,12 +1314,20 @@ export class KclManager extends File {
       pendingFeatureTreeSourceSelection
   }
 
+  /**
+   * If the current code has fillet/chamfer calls with deprecated tags and we have
+   * execution metadata, apply the Z0006 fix (convert to edges), update the
+   * editor, and wait for the next run to complete. Used before opening the edit
+   * flow so P&C works (artifact graph no longer has sweepEdges).
+   * @returns Promise<true> if fix was applied and we waited for run; Promise<false> otherwise.
+   */
   async applyZ0006FixBeforeEdit(): Promise<boolean> {
     const execState = this.execState
     const hasMeta =
       (execState.edgeRefactorMetadata?.length ?? 0) > 0 ||
       (execState.directTagFilletMetadata?.length ?? 0) > 0
-    if (!hasMeta || !this.artifactGraph?.size) return false
+    if (!hasMeta) return false
+    if (!this.artifactGraph?.size) return false
 
     const instance = await this.wasmInstancePromise
     const newSource = refactorZ0006Unified(
@@ -1313,6 +1362,10 @@ export class KclManager extends File {
     )
   }
 
+  /**
+   * Returns a promise that resolves when an execution has completed after the given generation.
+   * Used by applyZ0006FixBeforeEdit to wait for the re-run after dispatching refactored code.
+   */
   private waitForExecutionGenerationAfter(
     afterGeneration: number
   ): Promise<ExecutionCompletionResult> {
@@ -1322,6 +1375,13 @@ export class KclManager extends File {
     return new Promise((resolve) => {
       this._executionCompletionWaiters.push({ afterGeneration, resolve })
     })
+  }
+
+  private async waitForExecutionQueueToIdle(): Promise<void> {
+    while (this.isExecuting || this.executeIsStale) {
+      const generationBeforeWait = this._executionGeneration
+      await this.waitForExecutionGenerationAfter(generationBeforeWait)
+    }
   }
 
   private notifyExecutionCompletion(status: ExecutionCompletionStatus): void {
@@ -1572,7 +1632,12 @@ export class KclManager extends File {
         this.lastExecutedCode
       )
       this.persistRecoverySnapshot()
-      this.rustContext.sendUpdateFile(this.id, newCode).catch(reportRejection)
+      const shouldSkipRustUpdate = update.transactions.some((tr) =>
+        tr.effects.some((e) => e.is(requestSkipRustUpdate) && e.value)
+      )
+      if (!shouldSkipRustUpdate) {
+        this.rustContext.sendUpdateFile(this.id, newCode).catch(reportRejection)
+      }
     }
   })
 
@@ -1586,7 +1651,7 @@ export class KclManager extends File {
       if (newCode === '') {
         this.sendModelingEvent({
           type: 'Set selection',
-          data: { selection: undefined, selectionType: 'singleCodeCursor' },
+          data: { selection: {}, selectionType: 'singleCodeCursor' },
         })
       }
     }
@@ -1680,12 +1745,14 @@ export class KclManager extends File {
       newCode,
       shouldResetCamera,
       requestedUserDocumentVersion,
+      forceExecution = false,
     }: {
       newCode: string
       shouldResetCamera: boolean
       requestedUserDocumentVersion: number
+      forceExecution?: boolean
     }) => {
-      if (!this._automaticallyRenderEnabled) {
+      if (!forceExecution && !this._automaticallyRenderEnabled) {
         return
       }
 
@@ -1773,11 +1840,6 @@ export class KclManager extends File {
                 checkpointId: directEditCheckpointId,
               },
             })
-          } else {
-            console.debug(
-              'Error when executing after user edit:',
-              setProgramOutcome
-            )
           }
         } else {
           await this.executeCode(newCode)
@@ -1796,19 +1858,50 @@ export class KclManager extends File {
     1000
   )
 
+  scheduleCurrentCodeExecution(shouldResetCamera: boolean) {
+    this.deferredExecution({
+      newCode: this.code,
+      shouldResetCamera,
+      requestedUserDocumentVersion: this._userDocumentVersion,
+      forceExecution: true,
+    })
+  }
+
+  /**
+   * Finish the latest direct editor execution before a workflow consumes the
+   * current AST or Rust scene graph.
+   */
+  async flushPendingEditorExecution(): Promise<void> {
+    while (true) {
+      const userDocumentVersion = this._userDocumentVersion
+      await this.deferredExecution.flush()
+      await this.waitForExecutionQueueToIdle()
+
+      if (userDocumentVersion === this._userDocumentVersion) {
+        return
+      }
+    }
+  }
+
   /**
    * `EditorView.setState` bypasses the usual editor update effects. After
    * restoring a captured state for Zookeeper history, manually resync the
    * manager state, recovery snapshot, Rust file contents, and deferred
    * execution that ordinary editor writes would have triggered.
    */
-  private refreshRestoredEditorStateAfterFileSwitch(code: string) {
+  private refreshRestoredEditorStateAfterFileSwitch(
+    code: string,
+    options: FromFileOptions = { shouldSyncRustOnOpen: true }
+  ) {
     this._code.value = code
     this._hasEditsSinceLastExecution.value = !isCodeTheSame(
       code,
       this.lastExecutedCode
     )
     this.persistRecoverySnapshot()
+    if (!options.shouldSyncRustOnOpen) {
+      return
+    }
     this.rustContext.sendUpdateFile(this.id, code).catch(reportRejection)
 
     if (!this.engineCommandManager.connection?.connected) {
@@ -2110,9 +2203,11 @@ export class KclManager extends File {
     file: File,
     systemDeps: SystemDeps,
     providedEditor?: KclManager,
-    providedCode?: string
+    providedCode?: string,
+    options: FromFileOptions = { shouldSyncRustOnOpen: true }
   ) {
     const diskCode = normalizeLineEndings(providedCode ?? (await file.read()))
+    options.assertCurrent?.()
     const recoverySnapshot = readRecoverySnapshot(file.path)
     const initialCode =
       recoverySnapshot && !isCodeTheSame(recoverySnapshot.code, diskCode)
@@ -2129,6 +2224,7 @@ export class KclManager extends File {
     }
 
     // TODO: remove all this once the app can handle an undefined currently-executing editor
+    await providedEditor.flushWriteToFile({ suppressConflictToast: true })
     providedEditor.flushRecoverySnapshot()
     providedEditor.editorStatesByPath.set(
       providedEditor.path,
@@ -2146,12 +2242,17 @@ export class KclManager extends File {
     if (savedEditorState && canRestoreEditorState) {
       providedEditor.editorView.setState(savedEditorState)
       providedEditor.updateHistoryDepth(savedEditorState)
-      providedEditor.refreshRestoredEditorStateAfterFileSwitch(initialCode)
+      providedEditor.refreshRestoredEditorStateAfterFileSwitch(
+        initialCode,
+        options
+      )
     } else {
       providedEditor.editorStatesByPath.delete(file.path)
       providedEditor.updateCodeEditor(initialCode, {
         shouldExecute:
+          options.shouldSyncRustOnOpen &&
           providedEditor.engineCommandManager.connection?.connected,
+        shouldSyncRust: options.shouldSyncRustOnOpen,
         shouldClearHistory: true,
         shouldResetCamera: true,
         // We explicitly do not write to the file here since we are loading from
@@ -2289,6 +2390,7 @@ export class KclManager extends File {
 
   clearAst() {
     this.ast = {
+      type: 'Program',
       body: [],
       shebang: null,
       start: 0,
@@ -2359,20 +2461,8 @@ export class KclManager extends File {
   private async updateArtifactGraph(
     execStateArtifactGraph: ExecState['artifactGraph']
   ) {
-    this.artifactGraph = execStateArtifactGraph
-    this.artifactIndex = buildArtifactIndex(execStateArtifactGraph)
+    this.setArtifactGraphState(execStateArtifactGraph)
 
-    // Push the artifact graph into the editor state so annotations/decorations update
-    const editorView = this.editorView
-    if (editorView) {
-      editorView.dispatch({
-        effects: [setArtifactGraphEffect.of(this.artifactGraph)],
-        annotations: [
-          artifactAnnotationsEvent,
-          Transaction.addToHistory.of(false),
-        ],
-      })
-    }
     if (this.artifactGraph.size) {
       // TODO: we wanna remove this logic from xstate, it is racey
       // This defer is bullshit but playwright wants it
@@ -2398,6 +2488,25 @@ export class KclManager extends File {
         })
       }
     }, 200)(null)
+  }
+
+  private setArtifactGraphState(
+    execStateArtifactGraph: ExecState['artifactGraph']
+  ) {
+    this.artifactGraph = execStateArtifactGraph
+    this.artifactIndex = buildArtifactIndex(execStateArtifactGraph)
+
+    // Push the artifact graph into the editor state so annotations/decorations update
+    const editorView = this.editorView
+    if (editorView) {
+      editorView.dispatch({
+        effects: [setArtifactGraphEffect.of(this.artifactGraph)],
+        annotations: [
+          artifactAnnotationsEvent,
+          Transaction.addToHistory.of(false),
+        ],
+      })
+    }
   }
 
   async safeParse(
@@ -2586,7 +2695,11 @@ export class KclManager extends File {
 
     // Update project thumbnail after successful execution
     if (!isInterrupted && errors.length === 0 && projectFsManager.dir) {
+      if (!this.fileOperations) {
+        return
+      }
       createThumbnailPNGOnDesktop({
+        fileOperations: this.fileOperations,
         projectDirectoryWithoutEndingSlash: projectFsManager.dir,
       })
     }
@@ -2942,7 +3055,7 @@ export class KclManager extends File {
     this._isShiftDown = isShiftDown
   }
   private selectionsWithSafeEnds(
-    selection: Array<Selection['codeRef']['range']>
+    selection: Array<NonNullable<Selection['codeRef']>['range']>
   ): Array<[number, number]> {
     if (!this._editorView) {
       return selection.filter(isTopLevelModule).map((s): [number, number] => {
@@ -2981,7 +3094,9 @@ export class KclManager extends File {
   get highlightRange(): Array<[number, number]> {
     return this._highlightRange
   }
-  setHighlightRange(range: Array<Selection['codeRef']['range']>): void {
+  setHighlightRange(
+    range: Array<NonNullable<Selection['codeRef']>['range']>
+  ): void {
     const selectionsWithSafeEnds = this.selectionsWithSafeEnds(range).filter(
       (selection) => {
         // Only keep valid selections.
@@ -3074,7 +3189,6 @@ export class KclManager extends File {
       // Clear out any diagnostics that don't fit with the current document
       (d) => d.from <= docLength && d.to <= docLength
     )
-
     this._editorView.dispatch({
       effects: [setDiagnosticsEffect.of(diagnostics)],
       annotations: [
@@ -3090,14 +3204,13 @@ export class KclManager extends File {
   scrollToSelection() {
     if (!this._editorView || !this._selectionRanges.graphSelections[0]) return
     const firstSelection = this._selectionRanges.graphSelections[0]
+    const codeRef = firstSelection.codeRef
+    if (!codeRef?.range) return
     this._editorView.focus()
     this._editorView.dispatch({
       effects: [
         EditorView.scrollIntoView(
-          EditorSelection.range(
-            firstSelection.codeRef.range[0],
-            firstSelection.codeRef.range[1]
-          ),
+          EditorSelection.range(codeRef.range[0], codeRef.range[1]),
           { y: 'center' }
         ),
       ],
@@ -3382,17 +3495,24 @@ export class KclManager extends File {
       return EditorSelection.create([defaultCursor], 0)
     }
     for (const selection of selections.graphSelections) {
+      const cr = selection.codeRef
+      if (!cr?.range) continue
       const safeEnd = Math.min(
-        selection.codeRef.range[1],
-        this._editorView?.state.doc.length || selection.codeRef.range[1]
+        cr.range[1],
+        this._editorView?.state.doc.length || cr.range[1]
       )
-      codeBasedSelections.push(
-        EditorSelection.range(selection.codeRef.range[0], safeEnd)
-      )
+      codeBasedSelections.push(EditorSelection.range(cr.range[0], safeEnd))
     }
-    const end =
-      selections.graphSelections[selections.graphSelections.length - 1].codeRef
-        .range[1]
+    const lastSel =
+      selections.graphSelections[selections.graphSelections.length - 1]
+    const lastRange = lastSel?.codeRef?.range
+    if (!lastRange) {
+      const defaultCursor = EditorSelection.cursor(
+        this._editorView?.state.doc.length || 0
+      )
+      return EditorSelection.create([defaultCursor], 0)
+    }
+    const end = lastRange[1]
     const safeEnd = Math.min(end, this._editorView?.state.doc.length || end)
     codeBasedSelections.push(EditorSelection.cursor(safeEnd))
     return EditorSelection.create(codeBasedSelections, 1)
@@ -3495,6 +3615,7 @@ export class KclManager extends File {
 
   static defaultUpdateCodeEditorOptions: UpdateCodeEditorOptions = {
     shouldExecute: false,
+    shouldSyncRust: true,
     shouldWriteToDisk: true,
     shouldResetCamera: false,
     shouldClearHistory: false,
@@ -3692,6 +3813,7 @@ export class KclManager extends File {
           ],
           effects: [
             requestWriteToFile.of(resolvedOptions.shouldWriteToDisk),
+            requestSkipRustUpdate.of(!resolvedOptions.shouldSyncRust),
             ...(additionalSpec?.effects || []),
           ],
         })
@@ -3734,6 +3856,7 @@ export class KclManager extends File {
       ],
       effects: [
         requestSkipExecution.of(!resolvedOptions.shouldExecute),
+        requestSkipRustUpdate.of(!resolvedOptions.shouldSyncRust),
         requestCameraReset.of(resolvedOptions.shouldResetCamera),
         requestWriteToFile.of(resolvedOptions.shouldWriteToDisk),
         ...this.getCheckpointHistoryEffect(resolvedOptions, additionalSpec),
@@ -3754,6 +3877,9 @@ export class KclManager extends File {
     options: { suppressConflictToast?: boolean } = {}
   ) {
     if (this.path !== '') {
+      // KclManager is reused across file navigation. Bind this save to the
+      // file that owned the buffer when the debounce was scheduled.
+      const requestedPath = this.path
       // Only write our buffer contents to file once per second. Any faster
       // and file-system watchers which read, will receive empty data during
       // writes.
@@ -3761,9 +3887,11 @@ export class KclManager extends File {
       clearTimeout(this.timeoutRewatch)
       return new Promise((resolve, reject) => {
         this.timeoutWriter = setTimeout(() => {
+          this.timeoutWriter = undefined
           this.performDelayedWriteToFile({
             newCode,
             requestedDocumentVersion,
+            requestedPath,
             options,
           }).then(resolve, reject)
         }, 1000)
@@ -3776,6 +3904,43 @@ export class KclManager extends File {
     }
   }
 
+  async flushWriteToFile(
+    options: { suppressConflictToast?: boolean } = {}
+  ): Promise<boolean> {
+    if (!this.path) {
+      return true
+    }
+
+    const hasPendingWrite = this.timeoutWriter !== undefined
+    if (!hasPendingWrite && !this.hasUnsavedLocalChanges()) {
+      return true
+    }
+
+    clearTimeout(this.timeoutWriter)
+    clearTimeout(this.timeoutRewatch)
+    this.timeoutWriter = undefined
+    this.timeoutRewatch = undefined
+
+    const flushCurrentBuffer = () =>
+      this.performDelayedWriteToFile({
+        newCode: this.code,
+        requestedDocumentVersion: this._documentVersion,
+        requestedPath: this.path,
+        options,
+      })
+    await flushCurrentBuffer()
+
+    // Seeding an empty main.kcl (or an edit that lands during the flush) can
+    // schedule one more save. Persist that latest buffer before changing paths.
+    if (this.timeoutWriter !== undefined) {
+      clearTimeout(this.timeoutWriter)
+      this.timeoutWriter = undefined
+      await flushCurrentBuffer()
+    }
+
+    return !this.hasUnsavedLocalChanges()
+  }
+
   /**
    * Performs the debounced disk-sync work after `writeToFile()` schedules it.
    * This keeps the timeout callback synchronous while preserving the existing
@@ -3784,27 +3949,37 @@ export class KclManager extends File {
   private async performDelayedWriteToFile({
     newCode,
     requestedDocumentVersion,
+    requestedPath,
     options,
   }: {
     newCode: string
     requestedDocumentVersion: number
+    requestedPath: string
     options: { suppressConflictToast?: boolean }
   }) {
-    if (!this.path) {
+    if (!requestedPath) {
       return Promise.reject(new Error('currentFilePath not set'))
     }
-    if (requestedDocumentVersion !== this._documentVersion) {
+    if (
+      requestedDocumentVersion !== this._documentVersion ||
+      requestedPath !== this.path
+    ) {
       return
     }
 
-    if (await this.seedDefaultKclVersionOnBlankMain(requestedDocumentVersion)) {
+    if (
+      await this.seedDefaultKclVersionOnBlankMain(
+        requestedDocumentVersion,
+        requestedPath
+      )
+    ) {
       return
     }
 
     let currentDiskCode: string | null = null
     try {
       currentDiskCode = normalizeLineEndings(
-        await File.ioImplementations.read(this.path)
+        await File.ioImplementations.read(requestedPath)
       )
     } catch (err: unknown) {
       if (isPathNotFoundError(err)) {
@@ -3825,7 +4000,10 @@ export class KclManager extends File {
       }
     }
 
-    if (requestedDocumentVersion !== this._documentVersion) {
+    if (
+      requestedDocumentVersion !== this._documentVersion ||
+      requestedPath !== this.path
+    ) {
       return
     }
     if (currentDiskCode !== null && isCodeTheSame(currentDiskCode, newCode)) {
@@ -3854,6 +4032,12 @@ export class KclManager extends File {
 
     try {
       await this.write(newCode)
+      if (
+        requestedDocumentVersion !== this._documentVersion ||
+        requestedPath !== this.path
+      ) {
+        return
+      }
       this.markFileCodeAsSynced(newCode)
 
       // After a cooldown, start watching this file again on disk.
@@ -3887,9 +4071,10 @@ export class KclManager extends File {
    * version to prevent them from implicitly falling back to a legacy version.
    */
   private async seedDefaultKclVersionOnBlankMain(
-    requestedDocumentVersion: number
+    requestedDocumentVersion: number,
+    requestedPath: string
   ): Promise<boolean> {
-    if (!isMainKclPath(this.path) || this.code.trim() !== '') {
+    if (!isMainKclPath(requestedPath) || this.code.trim() !== '') {
       return false
     }
 
@@ -3897,13 +4082,16 @@ export class KclManager extends File {
     if (typeof wasmInstance === 'string') {
       return false
     }
-    if (requestedDocumentVersion !== this._documentVersion) {
+    if (
+      requestedDocumentVersion !== this._documentVersion ||
+      requestedPath !== this.path
+    ) {
       return false
     }
 
     const currentCode = this.code
     const seeded = ensureDefaultKclVersionOnBlankMain(
-      this.path,
+      requestedPath,
       currentCode,
       wasmInstance
     )

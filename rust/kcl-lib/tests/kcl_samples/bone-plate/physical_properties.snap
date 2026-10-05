@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties bone-plate.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -2.052546915451593,
+      "y": 49.01302610038835,
+      "z": 70.84877587300453
+    },
+    "dimensions": {
+      "x": 75.44355645642527,
+      "y": 59.400516666687295,
+      "z": 141.69755174600922
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 16695.5027382666
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 46.92365499194516
+  }
+}

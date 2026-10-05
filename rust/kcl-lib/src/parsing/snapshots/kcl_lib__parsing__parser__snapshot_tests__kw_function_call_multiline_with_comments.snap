@@ -137,5 +137,6 @@ expression: actual
   "commentStart": 0,
   "end": 90,
   "moduleId": 0,
-  "start": 0
+  "start": 0,
+  "type": "Program"
 }

@@ -2,6 +2,8 @@ export const throwError = (message: string): never => {
   throw new Error(message)
 }
 
-export const throwTronAppMissing = () => {
-  throwError('tronApp is missing')
+export function throwTronAppMissing(): never {
+  return throwError(
+    'tronApp is required for this desktop test. Run it without TARGET=web.'
+  )
 }

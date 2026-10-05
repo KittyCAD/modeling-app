@@ -12,8 +12,10 @@ description: Operations executed propeller.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -41,8 +43,10 @@ description: Operations executed propeller.kcl
         "value": 86.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -70,8 +74,10 @@ description: Operations executed propeller.kcl
         "value": 8.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -99,8 +105,10 @@ description: Operations executed propeller.kcl
         "value": 4.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -128,8 +136,10 @@ description: Operations executed propeller.kcl
         "value": 0.25,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -156,9 +166,11 @@ description: Operations executed propeller.kcl
         "type": "Number",
         "value": 45.0,
         "ty": {
-          "degrees": null,
           "type": "Known",
-          "type": "Angle"
+          "value": {
+            "type": "Angle",
+            "value": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -186,8 +198,10 @@ description: Operations executed propeller.kcl
         "value": 0.000000005,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -215,8 +229,10 @@ description: Operations executed propeller.kcl
         "value": 2.6666666666666665,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -271,18 +287,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -297,18 +317,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 4.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -362,18 +386,22 @@ description: Operations executed propeller.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -461,18 +489,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.667,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -487,18 +519,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 0.125,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.667,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -553,8 +589,10 @@ description: Operations executed propeller.kcl
                   "value": 0.00000000000000016328623988631375,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -562,8 +600,10 @@ description: Operations executed propeller.kcl
                   "value": 2.6666666666666665,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -651,18 +691,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": -1.568,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.157,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -677,18 +721,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": -1.443,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.157,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -743,8 +791,10 @@ description: Operations executed propeller.kcl
                   "value": -1.5674273394465947,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -752,8 +802,10 @@ description: Operations executed propeller.kcl
                   "value": 2.1573786516665265,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -841,18 +893,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": -2.536,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.824,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -867,18 +923,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": -2.411,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.824,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -933,8 +993,10 @@ description: Operations executed propeller.kcl
                   "value": -2.5361507101204093,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -942,8 +1004,10 @@ description: Operations executed propeller.kcl
                   "value": 0.8240453183331933,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -1031,18 +1095,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": -2.536,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.824,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1057,18 +1125,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": -2.411,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.824,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1123,8 +1195,10 @@ description: Operations executed propeller.kcl
                   "value": -2.5361507101204093,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -1132,8 +1206,10 @@ description: Operations executed propeller.kcl
                   "value": -0.8240453183331939,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -1221,18 +1297,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": -1.568,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.157,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1247,18 +1327,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": -1.443,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.157,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1313,8 +1397,10 @@ description: Operations executed propeller.kcl
                   "value": -1.5674273394465952,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -1322,8 +1408,10 @@ description: Operations executed propeller.kcl
                   "value": -2.157378651666526,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -1411,18 +1499,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.667,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1437,18 +1529,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 0.125,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.667,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1503,8 +1599,10 @@ description: Operations executed propeller.kcl
                   "value": -0.0000000000000004898587196589412,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -1512,8 +1610,10 @@ description: Operations executed propeller.kcl
                   "value": -2.6666666666666665,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -1601,18 +1701,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 1.568,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.157,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1627,18 +1731,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 1.693,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.157,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1693,8 +1801,10 @@ description: Operations executed propeller.kcl
                   "value": 1.5674273394465943,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -1702,8 +1812,10 @@ description: Operations executed propeller.kcl
                   "value": -2.1573786516665265,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -1791,18 +1903,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 2.536,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.824,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1817,18 +1933,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 2.661,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.824,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -1883,8 +2003,10 @@ description: Operations executed propeller.kcl
                   "value": 2.5361507101204093,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -1892,8 +2014,10 @@ description: Operations executed propeller.kcl
                   "value": -0.8240453183331936,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -1981,18 +2105,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 2.536,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.824,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2007,18 +2135,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 2.661,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.824,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2073,8 +2205,10 @@ description: Operations executed propeller.kcl
                   "value": 2.5361507101204093,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -2082,8 +2216,10 @@ description: Operations executed propeller.kcl
                   "value": 0.824045318333193,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -2171,18 +2307,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 1.568,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.157,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2197,18 +2337,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 1.693,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.157,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2263,8 +2407,10 @@ description: Operations executed propeller.kcl
                   "value": 1.567427339446595,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -2272,8 +2418,10 @@ description: Operations executed propeller.kcl
                   "value": 2.1573786516665265,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -2404,8 +2552,10 @@ description: Operations executed propeller.kcl
             "value": 4.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2467,8 +2617,10 @@ description: Operations executed propeller.kcl
             "value": 0.6666666666666666,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2514,8 +2666,10 @@ description: Operations executed propeller.kcl
         "value": 1.0,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -2543,8 +2697,10 @@ description: Operations executed propeller.kcl
         "value": 0.4,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -2599,18 +2755,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2625,18 +2785,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2686,18 +2850,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.6,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2712,18 +2880,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2773,18 +2945,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 1.4,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2799,18 +2975,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 1.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 1.6,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2860,18 +3040,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2886,18 +3070,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 1.4,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2947,18 +3135,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -2.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -2973,18 +3165,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3039,8 +3235,10 @@ description: Operations executed propeller.kcl
                   "value": 0.0,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -3048,8 +3246,10 @@ description: Operations executed propeller.kcl
                   "value": -2.0,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -3103,8 +3303,10 @@ description: Operations executed propeller.kcl
                   "value": 1.0,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -3112,8 +3314,10 @@ description: Operations executed propeller.kcl
                   "value": -2.0,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -3211,8 +3415,10 @@ description: Operations executed propeller.kcl
                   "value": 1.0,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -3220,8 +3426,10 @@ description: Operations executed propeller.kcl
                   "value": 1.6,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -3319,8 +3527,10 @@ description: Operations executed propeller.kcl
                   "value": 1.4,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -3328,8 +3538,10 @@ description: Operations executed propeller.kcl
                   "value": 2.0,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -3427,8 +3639,10 @@ description: Operations executed propeller.kcl
                   "value": 0.0,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -3436,8 +3650,10 @@ description: Operations executed propeller.kcl
                   "value": 2.0,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -3627,8 +3843,10 @@ description: Operations executed propeller.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3636,8 +3854,10 @@ description: Operations executed propeller.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -3650,8 +3870,10 @@ description: Operations executed propeller.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -3659,8 +3881,10 @@ description: Operations executed propeller.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -3733,8 +3957,10 @@ description: Operations executed propeller.kcl
         "value": 1.72,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -3789,18 +4015,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 4.15,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 3.88,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3815,18 +4045,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 4.45,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.18,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3841,18 +4075,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 3.05,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.56,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -3907,8 +4145,10 @@ description: Operations executed propeller.kcl
                   "value": 3.0489331069412065,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -3916,8 +4156,10 @@ description: Operations executed propeller.kcl
                   "value": 2.5583586455185645,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -3971,8 +4213,10 @@ description: Operations executed propeller.kcl
                   "value": 4.154527795602054,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -3980,8 +4224,10 @@ description: Operations executed propeller.kcl
                   "value": 3.8759550876832067,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -4035,8 +4281,10 @@ description: Operations executed propeller.kcl
                   "value": 4.453202661189174,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -4044,8 +4292,10 @@ description: Operations executed propeller.kcl
                   "value": 2.182085752502209,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -4094,18 +4344,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 37.22,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -183.66,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4120,18 +4374,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 4.45,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.18,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4146,18 +4404,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 37.53,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 5.05,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4212,8 +4474,10 @@ description: Operations executed propeller.kcl
                   "value": 37.53012573811225,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -4221,8 +4485,10 @@ description: Operations executed propeller.kcl
                   "value": 5.048752419168876,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -4359,18 +4625,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 37.52,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.45,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4385,18 +4655,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 37.53,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 5.05,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4411,18 +4685,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 43.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.01,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4477,8 +4755,10 @@ description: Operations executed propeller.kcl
                   "value": 43.0,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -4486,8 +4766,10 @@ description: Operations executed propeller.kcl
                   "value": 0.01,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -4624,18 +4906,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 43.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4650,18 +4936,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 43.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.01,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4760,8 +5050,10 @@ description: Operations executed propeller.kcl
                   "value": 43.0,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -4769,8 +5061,10 @@ description: Operations executed propeller.kcl
                   "value": 0.0,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -4819,18 +5113,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 3.05,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4845,18 +5143,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 43.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -4955,8 +5257,10 @@ description: Operations executed propeller.kcl
                   "value": 3.0489331069412065,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -4964,8 +5268,10 @@ description: Operations executed propeller.kcl
                   "value": 0.0,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -5014,18 +5320,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 3.05,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 2.56,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -5040,18 +5350,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 3.05,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -5242,8 +5556,10 @@ description: Operations executed propeller.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -5251,8 +5567,10 @@ description: Operations executed propeller.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -5265,8 +5583,10 @@ description: Operations executed propeller.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -5274,8 +5594,10 @@ description: Operations executed propeller.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -5336,18 +5658,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -5362,18 +5688,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 4.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -5427,18 +5757,22 @@ description: Operations executed propeller.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -5569,8 +5903,10 @@ description: Operations executed propeller.kcl
             "value": 20.0,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5618,8 +5954,10 @@ description: Operations executed propeller.kcl
             "value": 0.000000005,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -5658,8 +5996,10 @@ description: Operations executed propeller.kcl
         "value": 8.6,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -5687,8 +6027,10 @@ description: Operations executed propeller.kcl
         "value": 0.05,
         "ty": {
           "type": "Default",
-          "len": "in",
-          "angle": "degrees"
+          "value": {
+            "len": "in",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -5743,18 +6085,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 8.55,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -5769,18 +6115,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 8.56,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.05,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -5795,18 +6145,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 8.6,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -5861,8 +6215,10 @@ description: Operations executed propeller.kcl
                   "value": 8.6,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -5870,8 +6226,10 @@ description: Operations executed propeller.kcl
                   "value": 0.0,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -5925,8 +6283,10 @@ description: Operations executed propeller.kcl
                   "value": 8.549999999999999,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -5934,8 +6294,10 @@ description: Operations executed propeller.kcl
                   "value": 0.0,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -5989,8 +6351,10 @@ description: Operations executed propeller.kcl
                   "value": 8.556093467170257,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -5998,8 +6362,10 @@ description: Operations executed propeller.kcl
                   "value": 0.0496273075820661,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -6048,18 +6414,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -69.63,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6074,18 +6444,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": -8.56,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.05,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6100,18 +6474,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 8.56,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.05,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6166,8 +6544,10 @@ description: Operations executed propeller.kcl
                   "value": 8.556093467170257,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -6175,8 +6555,10 @@ description: Operations executed propeller.kcl
                   "value": 0.0496273075820661,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -6230,8 +6612,10 @@ description: Operations executed propeller.kcl
                   "value": -8.556093467170257,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -6239,8 +6623,10 @@ description: Operations executed propeller.kcl
                   "value": 0.0496273075820661,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -6294,8 +6680,10 @@ description: Operations executed propeller.kcl
                   "value": 0.0,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -6303,8 +6691,10 @@ description: Operations executed propeller.kcl
                   "value": -69.63416195918276,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -6353,18 +6743,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": -8.55,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6379,18 +6773,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": -8.6,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6405,18 +6803,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": -8.56,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.05,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6471,8 +6873,10 @@ description: Operations executed propeller.kcl
                   "value": -8.556093467170257,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -6480,8 +6884,10 @@ description: Operations executed propeller.kcl
                   "value": 0.0496273075820661,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -6535,8 +6941,10 @@ description: Operations executed propeller.kcl
                   "value": -8.6,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -6544,8 +6952,10 @@ description: Operations executed propeller.kcl
                   "value": 0.0,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -6599,8 +7009,10 @@ description: Operations executed propeller.kcl
                   "value": -8.549999999999999,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -6608,8 +7020,10 @@ description: Operations executed propeller.kcl
                   "value": 0.0,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -6658,18 +7072,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": -8.55,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6684,18 +7102,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": -8.56,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.05,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6710,18 +7132,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": -8.6,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6776,8 +7202,10 @@ description: Operations executed propeller.kcl
                   "value": -8.6,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -6785,8 +7213,10 @@ description: Operations executed propeller.kcl
                   "value": 0.0,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -6840,8 +7270,10 @@ description: Operations executed propeller.kcl
                   "value": -8.556093467170257,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -6849,8 +7281,10 @@ description: Operations executed propeller.kcl
                   "value": -0.0496273075820661,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -6904,8 +7338,10 @@ description: Operations executed propeller.kcl
                   "value": -8.549999999999999,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -6913,8 +7349,10 @@ description: Operations executed propeller.kcl
                   "value": 0.0,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -6963,18 +7401,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 69.63,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -6989,18 +7431,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 8.56,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.05,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7015,18 +7461,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": -8.56,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.05,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7081,8 +7531,10 @@ description: Operations executed propeller.kcl
                   "value": -8.556093467170257,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -7090,8 +7542,10 @@ description: Operations executed propeller.kcl
                   "value": -0.0496273075820661,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -7145,8 +7599,10 @@ description: Operations executed propeller.kcl
                   "value": 8.556093467170257,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -7154,8 +7610,10 @@ description: Operations executed propeller.kcl
                   "value": -0.0496273075820661,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -7209,8 +7667,10 @@ description: Operations executed propeller.kcl
                   "value": 0.0,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -7218,8 +7678,10 @@ description: Operations executed propeller.kcl
                   "value": 69.63416195918276,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -7268,18 +7730,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 8.55,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7294,18 +7760,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 8.6,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7320,18 +7790,22 @@ description: Operations executed propeller.kcl
                 "type": "SketchVar",
                 "value": 8.56,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.05,
                 "ty": {
-                  "in": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "in"
+                  }
                 }
               }
             ]
@@ -7386,8 +7860,10 @@ description: Operations executed propeller.kcl
                   "value": 8.556093467170257,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -7395,8 +7871,10 @@ description: Operations executed propeller.kcl
                   "value": -0.0496273075820661,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -7450,8 +7928,10 @@ description: Operations executed propeller.kcl
                   "value": 8.6,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -7459,8 +7939,10 @@ description: Operations executed propeller.kcl
                   "value": 0.0,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -7514,8 +7996,10 @@ description: Operations executed propeller.kcl
                   "value": 8.549999999999999,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 },
                 {
@@ -7523,8 +8007,10 @@ description: Operations executed propeller.kcl
                   "value": 0.0,
                   "ty": {
                     "type": "Default",
-                    "len": "in",
-                    "angle": "degrees"
+                    "value": {
+                      "len": "in",
+                      "angle": "degrees"
+                    }
                   }
                 }
               ]
@@ -7620,8 +8106,10 @@ description: Operations executed propeller.kcl
             "value": 45.26315789473684,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7631,9 +8119,11 @@ description: Operations executed propeller.kcl
             "type": "Number",
             "value": 45.0,
             "ty": {
-              "degrees": null,
               "type": "Known",
-              "type": "Angle"
+              "value": {
+                "type": "Angle",
+                "value": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7685,8 +8175,10 @@ description: Operations executed propeller.kcl
             "value": 0.000000005,
             "ty": {
               "type": "Default",
-              "len": "in",
-              "angle": "degrees"
+              "value": {
+                "len": "in",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -7733,8 +8225,10 @@ description: Operations executed propeller.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -7742,8 +8236,10 @@ description: Operations executed propeller.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -7751,8 +8247,10 @@ description: Operations executed propeller.kcl
                     "value": 1.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -7765,8 +8263,10 @@ description: Operations executed propeller.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -7774,8 +8274,10 @@ description: Operations executed propeller.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   },
                   {
@@ -7783,8 +8285,10 @@ description: Operations executed propeller.kcl
                     "value": 0.0,
                     "ty": {
                       "type": "Default",
-                      "len": "mm",
-                      "angle": "degrees"
+                      "value": {
+                        "len": "mm",
+                        "angle": "degrees"
+                      }
                     }
                   }
                 ]
@@ -7802,8 +8306,10 @@ description: Operations executed propeller.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -7811,8 +8317,10 @@ description: Operations executed propeller.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -7820,8 +8328,10 @@ description: Operations executed propeller.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "in",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "in",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -7834,7 +8344,9 @@ description: Operations executed propeller.kcl
             "value": 2.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -8008,7 +8520,9 @@ description: Operations executed propeller.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -8036,7 +8550,9 @@ description: Operations executed propeller.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -8070,7 +8586,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8094,7 +8610,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8118,7 +8634,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8142,7 +8658,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8166,7 +8682,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8190,7 +8706,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8214,7 +8730,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -8238,7 +8754,7 @@ description: Operations executed propeller.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

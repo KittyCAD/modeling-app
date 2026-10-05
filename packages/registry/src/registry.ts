@@ -7,6 +7,7 @@ import {
 import {
   MissingServiceError,
   ReconfigurationError,
+  RegistryDependencyError,
   ServiceConflictError,
   ServiceResolutionError,
 } from './errors'
@@ -24,6 +25,7 @@ import type {
   Precedence,
   RegistryItem,
   RegistryItemContext,
+  RegistryItemDefinition,
   RegistryItemFactory,
   RegistryItemKey,
   RuntimeRegistryItemHandle,
@@ -53,13 +55,21 @@ interface FlattenedServiceContribution {
 interface RuntimeInstance {
   readonly key: RegistryItemKey
   readonly handle: RuntimeRegistryItemHandle<unknown>
-  readonly dispose?: () => void
+  readonly dispose?: () => void | PromiseLike<void>
 }
 
 interface FlattenResult {
   readonly contributions: readonly FlattenedContribution[]
   readonly serviceContributions: readonly FlattenedServiceContribution[]
   readonly slots: ReadonlyMap<symbol, readonly RegistryItem[]>
+}
+
+/** A planned node has no runtime instance until the execution traversal reaches it. */
+interface RegistryGraphNode {
+  readonly node: RegistryItemDefinition | RegistryItemFactory
+  readonly path: string
+  readonly dependencies: RegistryGraphNode[]
+  readonly children: RegistryGraphNode[]
 }
 
 function isServiceDefinition(
@@ -92,6 +102,10 @@ export class Registry implements ValueSpecReader, ServiceReader {
     ReadonlySignal<readonly DebugValueSpecItem[]>
   >()
   private readonly serviceSignals = new Map<symbol, ReadonlySignal<unknown>>()
+  private readonly sanitizedServices = new WeakMap<
+    object,
+    Map<symbol, object>
+  >()
   private readonly debugServiceItems = new Map<
     symbol,
     ReadonlySignal<readonly DebugServiceItem[]>
@@ -101,12 +115,16 @@ export class Registry implements ValueSpecReader, ServiceReader {
     RuntimeInstance
   >()
   private readonly resolvingServices = new Set<symbol>()
+  private readonly pendingDisposals = new Set<Promise<void>>()
+  private latestReconciliation: Promise<void> = Promise.resolve()
+  private shutdownPromise: Promise<void> | undefined
 
   private combineDepth = 0
   private flattenDepth = 0
 
   private readonly flat = computed<FlattenResult>(() => {
     this.flattenDepth++
+    const previousInstances = new Map(this.runtimeInstances)
 
     try {
       const contributions: FlattenedContribution[] = []
@@ -122,34 +140,36 @@ export class Registry implements ValueSpecReader, ServiceReader {
         services: this,
       }
 
-      const visit = (node: RegistryItem, path: string): void => {
-        if (node instanceof SlotInstance) {
-          slots.set(node.slot.id, node.content)
+      // Expand known dependencies and deduplicate before invoking any callbacks.
+      const graph = this.assembleGraph(
+        this.roots.value.map((node, index) => ({
+          node,
+          path: `root[${index}]`,
+        })),
+        slots
+      )
 
-          let holder = this.slotContent.get(node.slot.id)
-          if (!holder) {
-            holder = signal(node.content)
-            this.slotContent.set(node.slot.id, holder)
-          }
-
-          for (const child of holder.value) {
-            visit(child, `${path}/slot`)
-          }
-          return
-        }
-
+      const execute = (entry: RegistryGraphNode): void => {
+        const { node, path } = entry
         if (typeof node === 'function') {
           const key = node.itemKey ?? node
-          const runtime = this.ensureRuntimeInstance(key, node, ctx)
+          if (runtimeKeys.has(key)) return
+          for (const dependency of entry.dependencies) execute(dependency)
           runtimeKeys.add(key)
-          visit(runtime.handle.item, `${path}/factory`)
+          const runtime = this.ensureRuntimeInstance(key, node, ctx)
+          // Returned items are only known after the callback. Normalize that
+          // subtree too; already executed identities win before any child runs.
+          for (const child of this.assembleGraph(
+            [{ node: runtime.handle.item, path: `${path}/factory` }],
+            slots
+          ))
+            execute(child)
           return
         }
 
-        if (node.id != null) {
-          if (seenItems.has(node.id)) return
-          seenItems.add(node.id)
-        }
+        const itemKey = node.id ?? node
+        if (seenItems.has(itemKey)) return
+        seenItems.add(itemKey)
 
         for (const contribution of node.provides ?? []) {
           contributions.push({
@@ -161,7 +181,6 @@ export class Registry implements ValueSpecReader, ServiceReader {
             sourcePath: path,
           })
         }
-
         for (const service of node.providesServices ?? []) {
           serviceContributions.push({
             service: service.service,
@@ -169,18 +188,26 @@ export class Registry implements ValueSpecReader, ServiceReader {
             sourcePath: path,
           })
         }
-
-        for (let index = 0; index < (node.uses?.length ?? 0); index++) {
-          visit(node.uses![index], `${path}/uses[${index}]`)
-        }
+        for (const child of entry.children) execute(child)
       }
+      for (const entry of graph) execute(entry)
 
-      for (let index = 0; index < this.roots.value.length; index++) {
-        visit(this.roots.value[index], `root[${index}]`)
-      }
-
-      this.reconcileRuntimeInstances(runtimeKeys)
+      this.reconcileRuntimeInstances(runtimeKeys, previousInstances)
       return { contributions, serviceContributions, slots }
+    } catch (error) {
+      // Failed construction must not retain partially initialized dependents.
+      const created = [...this.runtimeInstances.values()].filter(
+        (instance) => previousInstances.get(instance.key) !== instance
+      )
+      this.runtimeInstances.clear()
+      for (const [key, instance] of previousInstances)
+        this.runtimeInstances.set(key, instance)
+      void this.enqueueDisposers(
+        created
+          .reverse()
+          .flatMap((instance) => (instance.dispose ? [instance.dispose] : []))
+      )
+      throw error
     } finally {
       this.flattenDepth--
     }
@@ -189,6 +216,14 @@ export class Registry implements ValueSpecReader, ServiceReader {
   /** Replace the entire active registry item tree. */
   configure(items: readonly RegistryItem[]): void {
     this.roots.value = items
+  }
+
+  /** Replace the active tree and await every runtime instance it unmounts. */
+  configureAsync(items: readonly RegistryItem[]): Promise<void> {
+    this.latestReconciliation = Promise.resolve()
+    this.roots.value = items
+    void this.flat.value
+    return this.latestReconciliation
   }
 
   /** Replace the content of one slot while preserving unrelated runtime state. */
@@ -211,6 +246,16 @@ export class Registry implements ValueSpecReader, ServiceReader {
       this.slotContent.set(slot.id, holder)
     }
     holder.value = items
+  }
+
+  /** Replace one slot and await every runtime instance it unmounts. */
+  reconfigureAsync(slot: Slot, items: readonly RegistryItem[]): Promise<void> {
+    this.latestReconciliation = Promise.resolve()
+    this.reconfigure(slot, items)
+    // Flattening is otherwise lazy. Force this transition so inactive runtime
+    // instances begin disposal even when no value-spec or service is read next.
+    void this.flat.value
+    return this.latestReconciliation
   }
 
   /** Resolve a registry value spec or service as a live Preact signal. */
@@ -355,7 +400,7 @@ export class Registry implements ValueSpecReader, ServiceReader {
    * Resolve the current implementation of a service.
    *
    * Guards enforced here:
-   * - no eager service reads while flattening the registry graph
+   * - no eager service reads while building the registry graph
    * - no recursive resolution cycles
    * - singleton services must have exactly one provider
    * - exposed services are sanitized before being returned
@@ -368,6 +413,7 @@ export class Registry implements ValueSpecReader, ServiceReader {
       )
     }
 
+    const view = this.flat.value
     if (this.resolvingServices.has(service.id)) {
       throw new ServiceResolutionError(
         `Detected recursive service resolution for ${service.name}. ` +
@@ -377,7 +423,7 @@ export class Registry implements ValueSpecReader, ServiceReader {
 
     this.resolvingServices.add(service.id)
     try {
-      const matches = this.flat.value.serviceContributions.filter(
+      const matches = view.serviceContributions.filter(
         (item) => item.service.id === service.id
       )
       if (matches.length === 0) return undefined
@@ -403,11 +449,7 @@ export class Registry implements ValueSpecReader, ServiceReader {
               )
             }
 
-            return sanitizeServiceImplementation(
-              this,
-              service,
-              item.implementation
-            )
+            return this.sanitizeService(service, item.implementation)
           })
         ) as unknown as T
       }
@@ -419,10 +461,28 @@ export class Registry implements ValueSpecReader, ServiceReader {
         )
       }
 
-      return sanitizeServiceImplementation(this, service, provider) as T
+      return this.sanitizeService(service, provider) as T
     } finally {
       this.resolvingServices.delete(service.id)
     }
+  }
+
+  private sanitizeService<T extends object>(
+    service: Service<T>,
+    implementation: T
+  ): T {
+    // Unrelated slot changes must not invalidate consumers' service dependencies.
+    let services = this.sanitizedServices.get(implementation)
+    if (!services) {
+      services = new Map()
+      this.sanitizedServices.set(implementation, services)
+    }
+    let sanitized = services.get(service.id)
+    if (!sanitized) {
+      sanitized = sanitizeServiceImplementation(this, service, implementation)
+      services.set(service.id, sanitized)
+    }
+    return sanitized as T
   }
 
   /** Create or reuse a runtime instance for one registry item factory. */
@@ -440,31 +500,205 @@ export class Registry implements ValueSpecReader, ServiceReader {
       handle,
       dispose: normalizeDisposer(handle.item.dispose),
     }
-
     this.runtimeInstances.set(key, instance)
     return instance
   }
 
   /** Dispose runtime instances that are no longer reachable from the registry graph. */
   private reconcileRuntimeInstances(
-    activeKeys: ReadonlySet<RegistryItemKey>
+    activeKeys: ReadonlySet<RegistryItemKey>,
+    previousInstances: ReadonlyMap<RegistryItemKey, RuntimeInstance>
   ): void {
-    for (const [key, instance] of this.runtimeInstances) {
-      if (activeKeys.has(key)) continue
+    const disposers: Array<() => void | PromiseLike<void>> = []
+    for (const [key, instance] of previousInstances) {
+      if (activeKeys.has(key) && this.runtimeInstances.get(key) === instance)
+        continue
 
-      try {
-        instance.dispose?.()
-      } catch {
-        // cleanup failures are intentionally swallowed during reconciliation
+      if (!activeKeys.has(key)) this.runtimeInstances.delete(key)
+      if (instance.dispose) disposers.push(instance.dispose)
+    }
+
+    const orderedInstances = [...activeKeys].flatMap((key) => {
+      const instance = this.runtimeInstances.get(key)
+      return instance ? [instance] : []
+    })
+    this.runtimeInstances.clear()
+    for (const instance of orderedInstances)
+      this.runtimeInstances.set(instance.key, instance)
+    this.latestReconciliation = this.enqueueDisposers(disposers.reverse())
+  }
+
+  /** Expand dependencies and choose the first identity without running callbacks. */
+  private assembleGraph(
+    roots: readonly { readonly node: RegistryItem; readonly path: string }[],
+    slots: Map<symbol, readonly RegistryItem[]>
+  ): RegistryGraphNode[] {
+    const definitions = new Map<RegistryItemKey, RegistryGraphNode>()
+    const factories = new Map<RegistryItemKey, RegistryGraphNode>()
+    const visitingSlots = new Set<symbol>()
+    const visitingFactories = new Map<RegistryItemKey, string>()
+
+    const visit = (node: RegistryItem, path: string): RegistryGraphNode[] => {
+      if (node instanceof SlotInstance) {
+        if (visitingSlots.has(node.slot.id)) return []
+        visitingSlots.add(node.slot.id)
+        slots.set(node.slot.id, node.content)
+        let holder = this.slotContent.get(node.slot.id)
+        if (!holder) {
+          holder = signal(node.content)
+          this.slotContent.set(node.slot.id, holder)
+        }
+        const children = holder.value.flatMap((child) =>
+          visit(child, `${path}/slot`)
+        )
+        visitingSlots.delete(node.slot.id)
+        return children
       }
+      if (typeof node === 'function') {
+        const key = node.itemKey ?? node
+        const cycleStart = visitingFactories.get(key)
+        if (cycleStart !== undefined) {
+          throw new RegistryDependencyError(
+            `Cyclic factory dependency: ${cycleStart} -> ${path}.`
+          )
+        }
+        const existing = factories.get(key)
+        if (existing) return [existing]
+        visitingFactories.set(key, path)
+        const dependencies = (node.dependencies ?? []).flatMap(
+          (dependency, index) =>
+            visit(dependency, `${path}/dependencies[${index}]`)
+        )
+        visitingFactories.delete(key)
+        const entry: RegistryGraphNode = {
+          node,
+          path,
+          dependencies,
+          children: [],
+        }
+        factories.set(key, entry)
+        return [entry]
+      }
+      const key = node.id ?? node
+      const existing = definitions.get(key)
+      if (existing) return [existing]
+      const entry: RegistryGraphNode = {
+        node,
+        path,
+        dependencies: [],
+        children: [],
+      }
+      definitions.set(key, entry)
+      for (const [index, child] of (node.uses ?? []).entries()) {
+        entry.children.push(...visit(child, `${path}/uses[${index}]`))
+      }
+      return [entry]
+    }
+    return roots.flatMap(({ node, path }) => visit(node, path))
+  }
 
-      this.runtimeInstances.delete(key)
+  /** Start cleanup immediately while retaining its awaitable completion. */
+  private enqueueDisposers(
+    disposers: readonly (() => void | PromiseLike<void>)[]
+  ): Promise<void> {
+    if (disposers.length === 0) return Promise.resolve()
+
+    const completion = this.disposeBatch(disposers)
+    this.pendingDisposals.add(completion)
+    void completion.then(
+      () => this.pendingDisposals.delete(completion),
+      () => this.pendingDisposals.delete(completion)
+    )
+    // Attach recovery immediately so ignored synchronous APIs cannot produce
+    // unhandled rejections; awaited APIs still receive `completion` itself.
+    void completion.catch(() => undefined)
+    return completion
+  }
+
+  private async disposeBatch(
+    disposers: readonly (() => void | PromiseLike<void>)[]
+  ): Promise<void> {
+    const failures: Array<{ readonly index: number; readonly error: unknown }> =
+      []
+    const pending: Promise<void>[] = []
+
+    for (let index = 0; index < disposers.length; index++) {
+      const dispose = disposers[index]
+      try {
+        const result = dispose()
+        if (result !== undefined) {
+          pending.push(
+            Promise.resolve(result).then(
+              () => undefined,
+              (error) => {
+                failures.push({ index, error })
+              }
+            )
+          )
+        }
+      } catch (error) {
+        failures.push({ index, error })
+      }
+    }
+
+    // Every runtime is deactivated in reverse construction order before an
+    // asynchronous finalizer can yield. This prevents queued work from
+    // observing half-mounted sibling runtimes during teardown.
+    await Promise.all(pending)
+
+    if (failures.length > 0) {
+      failures.sort((left, right) => left.index - right.index)
+      throw new AggregateError(
+        failures.map((failure) => failure.error),
+        'One or more registry runtime instances failed to dispose.'
+      )
     }
   }
 
-  /** Dispose the container and all active runtime instances. */
+  private async awaitDisposalCompletions(
+    completions: readonly Promise<void>[]
+  ): Promise<void> {
+    const results = await Promise.allSettled(completions)
+    const failures = results.flatMap((result) =>
+      result.status === 'rejected' ? [result.reason] : []
+    )
+    if (failures.length === 1) throw failures[0]
+    if (failures.length > 1) {
+      throw new AggregateError(
+        failures,
+        'One or more registry cleanup batches failed to complete.'
+      )
+    }
+  }
+
+  private beginShutdown(): Promise<void> {
+    if (this.shutdownPromise) return this.shutdownPromise
+
+    const disposers = [...this.runtimeInstances.values()]
+      .reverse()
+      .flatMap((instance) => (instance.dispose ? [instance.dispose] : []))
+    const pendingBeforeShutdown = [...this.pendingDisposals]
+    // Finalizers may consult services owned by runtimes earlier in the graph.
+    // Invoke their synchronous phase before clearing the registry, then await
+    // any asynchronous continuation after the graph is deactivated.
+    const shutdownDisposal = this.enqueueDisposers(disposers)
+    this.runtimeInstances.clear()
+    this.roots.value = []
+    this.slotContent.clear()
+    this.registryValueSpecSignals.clear()
+    this.debugValueSpecItems.clear()
+    this.serviceSignals.clear()
+    this.debugServiceItems.clear()
+    this.shutdownPromise = this.awaitDisposalCompletions([
+      ...pendingBeforeShutdown,
+      shutdownDisposal,
+    ])
+    return this.shutdownPromise
+  }
+
+  /** Dispose the container and all active runtime instances synchronously. */
   [Symbol.dispose](): void {
-    for (const [, instance] of this.runtimeInstances) {
+    for (const instance of [...this.runtimeInstances.values()].reverse()) {
       try {
         instance.dispose?.()
       } catch {
@@ -479,5 +713,10 @@ export class Registry implements ValueSpecReader, ServiceReader {
     this.debugValueSpecItems.clear()
     this.serviceSignals.clear()
     this.debugServiceItems.clear()
+  }
+
+  /** Dispose the container and await all active runtime finalizers. */
+  disposeAsync(): Promise<void> {
+    return this.beginShutdown()
   }
 }

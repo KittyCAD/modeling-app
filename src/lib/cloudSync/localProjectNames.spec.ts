@@ -4,6 +4,7 @@ import {
   configureCloudSyncLocalFileSystem,
   deleteCloudSyncDuplicateProjectRealizations,
   deleteCloudSyncLocalProjectRealizations,
+  disableCloudSyncEngineForTest,
   ensureCloudProjectLocallySynced,
   getCloudSyncProjectMetadata,
   scheduleCloudProjectDirectoryNameSyncFromTitles,
@@ -75,7 +76,13 @@ function installFetchMock() {
     }
     if (url === remoteProjectDownloadUrl && method === 'GET') {
       return jsonResponse({
-        files: [{ relativePath: 'main.kcl', contents: 'x = 1' }],
+        files: [
+          { relativePath: 'main.kcl', contents: 'x = 1' },
+          {
+            relativePath: PROJECT_SETTINGS_FILE_NAME,
+            contents: cloudProjectToml(),
+          },
+        ],
       })
     }
 
@@ -185,7 +192,7 @@ describe('cloud sync local project names', () => {
   })
 
   afterEach(async () => {
-    configureCloudSyncEngine({ enabled: false })
+    await disableCloudSyncEngineForTest()
     configureCloudSyncLocalFileSystem(
       createCloudSyncTestFs(new Map(), { projectDirectory })
     )

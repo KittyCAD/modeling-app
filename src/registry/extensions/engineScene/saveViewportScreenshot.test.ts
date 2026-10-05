@@ -19,6 +19,7 @@ vi.mock('@src/lib/screenshot', () => ({
 }))
 vi.mock('react-hot-toast', () => ({ default: toast }))
 
+import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import {
   saveViewportScreenshot,
   VIEWPORT_SCREENSHOT_FILE_NAME,
@@ -32,7 +33,7 @@ describe('saveViewportScreenshot', () => {
   it('reports when the modeling viewport is unavailable', async () => {
     takeViewportScreenshot.mockReturnValue('')
 
-    await saveViewportScreenshot()
+    await saveViewportScreenshot(testFileOperations)
 
     expect(toast.error).toHaveBeenCalledWith(
       'Screenshot unavailable because the modeling viewport is not ready.'
@@ -49,13 +50,14 @@ describe('saveViewportScreenshot', () => {
       })
     )
 
-    await saveViewportScreenshot()
+    await saveViewportScreenshot(testFileOperations)
 
     expect(dataUrlToFile).toHaveBeenCalledWith(
       pngDataUrl,
       VIEWPORT_SCREENSHOT_FILE_NAME
     )
     expect(exportSave).toHaveBeenCalledWith({
+      fileOperations: testFileOperations,
       files: [
         {
           name: VIEWPORT_SCREENSHOT_FILE_NAME,

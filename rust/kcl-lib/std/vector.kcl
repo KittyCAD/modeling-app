@@ -1,5 +1,5 @@
 @no_std
-@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm, experimentalFeatures = allow)
 
 import assert from "std"
 import Point3d from "std::types"

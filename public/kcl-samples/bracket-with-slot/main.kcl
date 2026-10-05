@@ -2,7 +2,7 @@
 // Sketch-solve reconstruction with matching feature order
 // Categories: Mechanical Components; Parametric
 
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 // model parameters
 halfBracketWidth = 20
@@ -74,8 +74,8 @@ bracketBodySolid = extrude(
 insideBendFillet = fillet(
   bracketBodySolid,
   tags = getCommonEdge(faces = [
-    outlineRegion.tags.line5,
-    outlineRegion.tags.line4
+    outlineRegion.tags.line4,
+    outlineRegion.tags.line3
   ]),
   radius = insideBendRadius,
 )
@@ -84,7 +84,7 @@ outsideBendFillet = fillet(
   insideBendFillet,
   tags = getCommonEdge(faces = [
     outlineRegion.tags.line1,
-    outlineRegion.tags.line2
+    outlineRegion.tags.line6
   ]),
   radius = insideBendRadius + sheetMetalThickness,
 )
@@ -133,9 +133,9 @@ tabHoleSketch = sketch(on = tabHolePlane) {
   ])
   horizontal(countersinkGuide)
   horizontalDistance([
-  countersinkGuide.start,
-  countersinkGuide.end
-]) == countersinkOuterDiameter / 2
+    countersinkGuide.start,
+    countersinkGuide.end
+  ]) == countersinkOuterDiameter / 2
 
   coincident([
     fastenerCircle.center,
@@ -246,9 +246,9 @@ slotProfile = sketch(on = XY) {
   vertical(rightBottomGuide)
 
   horizontalDistance([
-  slotCenterline.start,
-  slotCenterline.end
-]) == slotOverallLength
+    slotCenterline.start,
+    slotCenterline.end
+  ]) == slotOverallLength
   radius(arc2) == slotWidth / 2
   radius(arc4) == slotWidth / 2
   coincident([

@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties sprocket.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -0.00000000000008526512829121202,
+      "y": -1.42875,
+      "z": 0.000000000000035527136788005016
+    },
+    "dimensions": {
+      "x": 72.04360834604955,
+      "y": 2.857500000000016,
+      "z": 72.0436083460495
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 5577.738524522147
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 6.200057351107846
+  }
+}

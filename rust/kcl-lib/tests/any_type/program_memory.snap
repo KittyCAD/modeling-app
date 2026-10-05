@@ -15,8 +15,10 @@ description: Variables in memory after executing any_type.kcl
         "value": 1.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -32,7 +34,9 @@ description: Variables in memory after executing any_type.kcl
     "value": 0.0,
     "ty": {
       "type": "Known",
-      "type": "Count"
+      "value": {
+        "type": "Count"
+      }
     }
   },
   "len1": {
@@ -40,7 +44,9 @@ description: Variables in memory after executing any_type.kcl
     "value": 1.0,
     "ty": {
       "type": "Known",
-      "type": "Count"
+      "value": {
+        "type": "Count"
+      }
     }
   },
   "one": {
@@ -48,8 +54,10 @@ description: Variables in memory after executing any_type.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "singleton": {

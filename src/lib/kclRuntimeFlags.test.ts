@@ -24,7 +24,7 @@ function userFeaturesWith(features: Set<Feature>) {
 }
 
 describe('kcl runtime flags', () => {
-  it('maps an enabled TS feature to On', () => {
+  it('maps enabled TS features to On', () => {
     expect(
       kclRuntimeFlagsFromUserFeatures(
         userFeaturesWith(new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG]))

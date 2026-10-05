@@ -6,6 +6,7 @@ import { defaultSourceRange } from '@src/lang/sourceRange'
 import { topLevelRange } from '@src/lang/util'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
 
 import {
@@ -13,8 +14,13 @@ import {
   assertParse,
   defaultNodePath,
   nodePathFromRange,
+  pathToNodeFromRustNodePath,
 } from '@src/lang/wasm'
 import type { Artifact, ArtifactGraph } from '@src/lang/wasm'
+import {
+  LEGACY_SKETCH_MODE_FEATURE_FLAG,
+  LEGACY_SKETCH_MODE_REMOVED_MESSAGE,
+} from '@src/lib/constants'
 import {
   enterEditFlow,
   filterOperations,
@@ -175,6 +181,23 @@ function toArtifactGraph(artifacts: Artifact[]): ArtifactGraph {
   return new Map(artifacts.map((artifact) => [artifact.id, artifact]))
 }
 
+const EMPTY_SELECTIONS = {
+  graphSelections: [],
+  otherSelections: [],
+}
+
+/** Stands in for the global app instance that holds the user's feature flags. */
+function stubUserFeatures(features: string[]) {
+  const previousApp = window.app
+  window.app = {
+    userFeatures: { has: (feature: string) => features.includes(feature) },
+  } as unknown as typeof window.app
+
+  return () => {
+    window.app = previousApp
+  }
+}
+
 function sketchBlockBegin(index = 0): Operation {
   return {
     type: 'GroupBegin',
@@ -296,7 +319,7 @@ describe('operations.test.ts', () => {
   //   scalar shape is tested.
   describe('hide operation argument shapes', () => {
     it('reads a plane, whose id sits on the variant', () => {
-      // tests/named_views_hide_plane/ops.snap
+      // tests/named_views_hide_plane/output/kcl-2.0/ops.snap
       const hideOp = hideOperationOf({
         type: 'Plane',
         artifact_id: 'plane-artifact',
@@ -306,7 +329,7 @@ describe('operations.test.ts', () => {
     })
 
     it('reads a GD&T annotation, whose id sits on the variant', () => {
-      // tests/named_views_hide_gdt/ops.snap
+      // tests/named_views_hide_gdt/output/kcl-2.0/ops.snap
       const hideOp = hideOperationOf({
         type: 'GdtAnnotation',
         artifact_id: 'annotation-artifact',
@@ -318,7 +341,7 @@ describe('operations.test.ts', () => {
     })
 
     it('reads imported geometry, whose id sits on the variant', () => {
-      // tests/named_views_hide_imported/ops.snap
+      // tests/named_views_hide_imported/output/kcl-2.0/ops.snap
       const hideOp = hideOperationOf({
         type: 'ImportedGeometry',
         artifact_id: 'imported-artifact',
@@ -328,7 +351,7 @@ describe('operations.test.ts', () => {
     })
 
     it('reads a solid, whose id sits in a struct payload', () => {
-      // tests/named_views_hide_extrude/ops.snap
+      // tests/named_views_hide_extrude/output/kcl-2.0/ops.snap
       const hideOp = hideOperationOf({
         type: 'Solid',
         value: { artifactId: 'solid-artifact' },
@@ -338,7 +361,7 @@ describe('operations.test.ts', () => {
     })
 
     it('reads a sketch, whose id sits in a struct payload', () => {
-      // tests/named_views_hide_sketch/ops.snap
+      // tests/named_views_hide_sketch/output/kcl-2.0/ops.snap
       const hideOp = hideOperationOf({
         type: 'Sketch',
         value: { artifactId: 'sketch-artifact' },
@@ -348,7 +371,7 @@ describe('operations.test.ts', () => {
     })
 
     it('reads a helix, whose id sits in a struct payload', () => {
-      // tests/named_views_hide_helix/ops.snap
+      // tests/named_views_hide_helix/output/kcl-2.0/ops.snap
       const hideOp = hideOperationOf({
         type: 'Helix',
         value: { artifactId: 'helix-artifact' },
@@ -559,11 +582,45 @@ describe('operations.test.ts', () => {
     )
   }
 
+  describe('tangent chain edit flow', () => {
+    it.each(['fillet', 'chamfer'])(
+      'restores evaluated booleans for %s',
+      async (name) => {
+        const { rustContext } = await buildTheWorldAndNoEngineConnection()
+        const dimension = name === 'fillet' ? 'radius' : 'length'
+        const code = `@settings(kclVersion = 3.0)\nchain = false\npart = ${name}(body, ${dimension} = 7, tangentChain = chain)`
+        const operation = stdlib(name)
+        if (operation.type !== 'StdLibCall')
+          throw new Error('Expected stdlib call')
+        operation.labeledArgs[dimension] = {
+          value: { type: 'Number', value: 7, ty: { type: 'Any' } },
+          sourceRange: rangeOfText(code, '7'),
+        }
+        for (const value of [false, true]) {
+          operation.labeledArgs.tangentChain = {
+            value: { type: 'Bool', value },
+            sourceRange: rangeOfText(code, 'chain'),
+          }
+          const result = await enterEditFlow({
+            operation,
+            code,
+            artifactGraph: new Map(),
+            rustContext,
+          })
+          if (isErr(result)) throw result
+          if (result.type !== 'Find and select command')
+            throw new Error('Expected edit flow')
+          expect(result.data.argDefaultValues?.tangentChain).toBe(value)
+        }
+      }
+    )
+  })
+
   describe('Extrude edit flow', () => {
-    it('continues when the unlabeled selection cannot be retrieved', async () => {
+    it('continues when selections cannot be retrieved', async () => {
       const { rustContext } = await buildTheWorldAndNoEngineConnection()
       const code =
-        'extrude001 = extrude(region(point = [1, 1], sketch = s), length = 10)'
+        'extrude001 = extrude(region(point = [1, 1], sketch = s), length = 10, to = missingFace, direction = missingEdge)'
       const operation = stdlib('extrude')
       if (operation.type !== 'StdLibCall') {
         throw new Error('Expected operation to be a StdLibCall')
@@ -576,6 +633,18 @@ describe('operations.test.ts', () => {
         length: {
           value: { type: 'Number', value: 10, ty: { type: 'Any' } },
           sourceRange: rangeOfText(code, '10'),
+        },
+        to: {
+          value: {
+            type: 'TagIdentifier',
+            value: 'missingFace',
+            artifact_id: 'missing-face-id',
+          },
+          sourceRange: rangeOfText(code, 'missingFace'),
+        },
+        direction: {
+          value: { type: 'Object', value: {} },
+          sourceRange: rangeOfText(code, 'missingEdge'),
         },
       }
 
@@ -594,12 +663,13 @@ describe('operations.test.ts', () => {
 
       const argDefaultValues = result.data.argDefaultValues as {
         sketches?: { graphSelections: unknown[]; otherSelections: unknown[] }
+        to?: typeof EMPTY_SELECTIONS
+        direction?: typeof EMPTY_SELECTIONS
         length?: { valueText: string }
       }
-      expect(argDefaultValues.sketches).toEqual({
-        graphSelections: [],
-        otherSelections: [],
-      })
+      expect(argDefaultValues.sketches).toEqual(EMPTY_SELECTIONS)
+      expect(argDefaultValues.to).toEqual(EMPTY_SELECTIONS)
+      expect(argDefaultValues.direction).toEqual(EMPTY_SELECTIONS)
       expect(argDefaultValues.length?.valueText).toBe('10')
     })
 
@@ -697,13 +767,15 @@ describe('operations.test.ts', () => {
 
       const argDefaultValues = result.data.argDefaultValues as {
         direction?: {
-          graphSelections: Array<{ artifact: Artifact }>
+          graphSelections: Array<{
+            entityRef?: { type: string; segment_id?: string }
+          }>
         }
       }
       expect(result.data.name).toBe('Extrude')
-      expect(argDefaultValues.direction?.graphSelections[0].artifact.id).toBe(
-        'segment-id'
-      )
+      expect(
+        argDefaultValues.direction?.graphSelections[0].entityRef?.segment_id
+      ).toBe('segment-id')
     })
 
     it('preserves sweep edge profiles and direction in the command defaults', async () => {
@@ -780,6 +852,49 @@ describe('operations.test.ts', () => {
   })
 
   describe('Sweep edit flow', () => {
+    it('continues when the path selection cannot be retrieved', async () => {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      const code = 'sweep001 = sweep(profile001, path = missingPath)'
+      const operation = stdlib('sweep')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.unlabeledArg = {
+        value: {
+          type: 'Sketch',
+          value: { artifactId: 'profile-path-id' },
+        },
+        sourceRange: rangeOfText(code, 'profile001'),
+      }
+      operation.labeledArgs = {
+        path: {
+          value: {
+            type: 'Sketch',
+            value: { artifactId: 'missing-path-id' },
+          },
+          sourceRange: rangeOfText(code, 'missingPath'),
+        },
+      }
+
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: toArtifactGraph([pathArtifact('profile-path-id')]),
+        rustContext,
+      })
+      if (isErr(result)) {
+        throw result
+      }
+      if (result.type !== 'Find and select command') {
+        throw new Error(`Expected edit flow event, got ${result.type}`)
+      }
+
+      const argDefaultValues = result.data.argDefaultValues as {
+        path?: typeof EMPTY_SELECTIONS
+      }
+      expect(argDefaultValues.path).toEqual(EMPTY_SELECTIONS)
+    })
+
     it('retrieves tagged cap profiles in the command defaults', async () => {
       const { rustContext } = await buildTheWorldAndNoEngineConnection()
       const code =
@@ -934,7 +1049,264 @@ describe('operations.test.ts', () => {
     })
   })
 
+  describe('Legacy sketch edit flow', () => {
+    const code = 'sketch001 = startSketchOn(XZ)'
+
+    async function editStartSketchOn() {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      return enterEditFlow({
+        operation: stdlib('startSketchOn'),
+        code,
+        artifact: pathArtifact('path-id'),
+        artifactGraph: toArtifactGraph([pathArtifact('path-id')]),
+        rustContext,
+      })
+    }
+
+    it('refuses to edit without the legacy sketch mode feature', async () => {
+      const result = await editStartSketchOn()
+
+      expect(isErr(result)).toBe(true)
+      expect((result as Error).message).toBe(LEGACY_SKETCH_MODE_REMOVED_MESSAGE)
+    })
+
+    it('enters sketch mode with the legacy sketch mode feature', async () => {
+      const restoreApp = stubUserFeatures([LEGACY_SKETCH_MODE_FEATURE_FLAG])
+
+      try {
+        const result = await editStartSketchOn()
+        if (isErr(result)) {
+          throw result
+        }
+        if (result.type !== 'Find and select command') {
+          throw new Error(`Expected edit flow event, got ${result.type}`)
+        }
+
+        expect(result.data.name).toBe('Enter sketch')
+      } finally {
+        restoreApp()
+      }
+    })
+  })
+
   describe('GDT edit flow', () => {
+    it.each(['gdt::straightness', 'gdt::distance'])(
+      'recovers mixed UUID, tagged, and Face API edges in order for %s',
+      async (operationName) => {
+        const { rustContext } = await buildTheWorldAndNoEngineConnection()
+        const code = `${operationName}(edges = edgeRefs, tolerance = 0.1mm)`
+        const operation = stdlib(operationName)
+        if (operation.type !== 'StdLibCall') {
+          throw new Error('Expected operation to be a StdLibCall')
+        }
+        const uuidEdge = segmentArtifact('uuid-edge-id')
+        const taggedEdge = segmentArtifact('tagged-edge-id')
+        const sideA = segmentArtifact('side-a-id')
+        const sideB = segmentArtifact('side-b-id')
+        operation.labeledArgs = {
+          edges: {
+            value: {
+              type: 'Array',
+              value: [
+                { type: 'Uuid', value: uuidEdge.id },
+                {
+                  type: 'Object',
+                  value: {
+                    sideFaces: {
+                      type: 'Array',
+                      value: [
+                        {
+                          type: 'TagIdentifier',
+                          value: 'sideA',
+                          artifact_id: sideA.id,
+                        },
+                        {
+                          type: 'TagIdentifier',
+                          value: 'sideB',
+                          artifact_id: sideB.id,
+                        },
+                      ],
+                    },
+                    endFaces: {
+                      type: 'Array',
+                      value: [
+                        {
+                          type: 'TagIdentifier',
+                          value: 'bound',
+                          artifact_id: 'bound-id',
+                        },
+                      ],
+                    },
+                    index: { type: 'Number', value: 1, ty: { type: 'Any' } },
+                  },
+                },
+                {
+                  type: 'TagIdentifier',
+                  value: 'taggedEdge',
+                  artifact_id: taggedEdge.id,
+                },
+              ],
+            },
+            sourceRange: rangeOfText(code, 'edgeRefs'),
+          },
+          tolerance: {
+            value: { type: 'Number', value: 0.1, ty: { type: 'Any' } },
+            sourceRange: rangeOfText(code, '0.1mm'),
+          },
+        }
+
+        const result = await enterEditFlow({
+          operation,
+          code,
+          artifactGraph: toArtifactGraph([uuidEdge, taggedEdge, sideA, sideB]),
+          rustContext,
+        })
+        if (isErr(result)) throw result
+        if (result.type !== 'Find and select command') {
+          throw new Error(`Expected edit flow event, got ${result.type}`)
+        }
+        const defaults = result.data.argDefaultValues as {
+          objects?: Selections
+        }
+        expect(
+          defaults.objects?.graphSelections.map(
+            (selection) => selection.entityRef
+          )
+        ).toEqual([
+          {
+            type: 'segment',
+            path_id: uuidEdge.pathId,
+            segment_id: uuidEdge.id,
+          },
+          {
+            type: 'edge',
+            side_faces: [sideA.id, sideB.id],
+            end_faces: ['bound-id'],
+            index: 1,
+          },
+          {
+            type: 'segment',
+            path_id: taggedEdge.pathId,
+            segment_id: taggedEdge.id,
+          },
+        ])
+      }
+    )
+
+    it.each([false, true])(
+      'recovers mixed Distance endpoints in order (Face API edge first: %s)',
+      async (edgeFirst) => {
+        const { rustContext } = await buildTheWorldAndNoEngineConnection()
+        const code =
+          'gdt::distance(from = first, to = second, tolerance = 0.1mm)'
+        const operation = stdlib('gdt::distance')
+        if (operation.type !== 'StdLibCall') {
+          throw new Error('Expected operation to be a StdLibCall')
+        }
+        const face = capArtifact('cap-id', 'sweep-id')
+        const path = pathArtifact('path-id')
+        const sweep = sweepArtifact('sweep-id', 'path-id')
+        const side = segmentArtifact('side-id')
+        const faceValue: OpKclValue = { type: 'Face', artifact_id: face.id }
+        const edgeValue: OpKclValue = {
+          type: 'Object',
+          value: {
+            sideFaces: {
+              type: 'Array',
+              value: [
+                { type: 'TagIdentifier', value: 'side', artifact_id: side.id },
+                { type: 'TagIdentifier', value: 'cap', artifact_id: face.id },
+              ],
+            },
+          },
+        }
+        operation.labeledArgs = {
+          from: {
+            value: edgeFirst ? edgeValue : faceValue,
+            sourceRange: rangeOfText(code, 'first'),
+          },
+          to: {
+            value: edgeFirst ? faceValue : edgeValue,
+            sourceRange: rangeOfText(code, 'second'),
+          },
+          tolerance: {
+            value: { type: 'Number', value: 0.1, ty: { type: 'Any' } },
+            sourceRange: rangeOfText(code, '0.1mm'),
+          },
+        }
+
+        const result = await enterEditFlow({
+          operation,
+          code,
+          artifactGraph: toArtifactGraph([face, path, sweep, side]),
+          rustContext,
+        })
+        if (isErr(result)) throw result
+        if (result.type !== 'Find and select command') {
+          throw new Error(`Expected edit flow event, got ${result.type}`)
+        }
+        const defaults = result.data.argDefaultValues as {
+          objects?: Selections
+        }
+        const faceSelection = expect.objectContaining({ artifact: face })
+        const edgeSelection = {
+          entityRef: { type: 'edge', side_faces: [side.id, face.id] },
+          codeRef: side.codeRef,
+        }
+        expect(defaults.objects?.graphSelections).toEqual(
+          edgeFirst
+            ? [edgeSelection, faceSelection]
+            : [faceSelection, edgeSelection]
+        )
+      }
+    )
+
+    it('continues when geometry selections cannot be retrieved', async () => {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      const code = 'gdt::straightness(faces = [missingFace], tolerance = 0.1mm)'
+      const operation = stdlib('gdt::straightness')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.labeledArgs = {
+        faces: {
+          value: {
+            type: 'Array',
+            value: [
+              {
+                type: 'TagIdentifier',
+                value: 'missingFace',
+                artifact_id: 'missing-face-id',
+              },
+            ],
+          },
+          sourceRange: rangeOfText(code, '[missingFace]'),
+        },
+        tolerance: {
+          value: { type: 'Number', value: 0.1, ty: { type: 'Any' } },
+          sourceRange: rangeOfText(code, '0.1mm'),
+        },
+      }
+
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: new Map(),
+        rustContext,
+      })
+      if (isErr(result)) {
+        throw result
+      }
+      if (result.type !== 'Find and select command') {
+        throw new Error(`Expected edit flow event, got ${result.type}`)
+      }
+
+      const argDefaultValues = result.data.argDefaultValues as {
+        objects?: typeof EMPTY_SELECTIONS
+      }
+      expect(argDefaultValues.objects).toEqual(EMPTY_SELECTIONS)
+    })
+
     it.each([
       {
         operationName: 'gdt::profile',
@@ -1184,6 +1556,59 @@ ${operationName}(${targetLabel} = ${targetExpression}, tolerance = 0.1mm, datums
       }
       expect(argDefaultValues.note).toBe('Note on XY')
       expect(argDefaultValues.framePlane).toBe('XZ')
+    })
+  })
+
+  describe('Clone edit flow', () => {
+    it('enters edit flow with the existing cloned object selection', async () => {
+      const { instance, rustContext } =
+        await buildTheWorldAndNoEngineConnection()
+      const code = `extrude001 = extrude(profile001, length = 1)
+clone001 = clone(extrude001)`
+      const operation = stdlib('clone')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.nodePath = await buildNodePath(
+        code,
+        'clone(extrude001)',
+        instance
+      )
+      operation.unlabeledArg = {
+        value: {
+          type: 'Solid',
+          value: { artifactId: 'source-sweep' },
+        },
+        sourceRange: rangeOfText(code, 'extrude001'),
+      }
+
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: toArtifactGraph([
+          sweepArtifact('source-sweep', 'source-path'),
+        ]),
+        rustContext,
+      })
+      if (result instanceof Error) {
+        throw result
+      }
+      if (result.type !== 'Find and select command') {
+        throw new Error(`Expected edit flow event, got ${result.type}`)
+      }
+
+      const argDefaultValues = result.data.argDefaultValues as {
+        objects?: { graphSelections: unknown[]; otherSelections: unknown[] }
+        variableName?: string
+        nodeToEdit?: unknown
+      }
+      expect(result.data.name).toBe('Clone')
+      expect(argDefaultValues.objects?.graphSelections).toHaveLength(1)
+      expect(argDefaultValues.objects?.otherSelections).toEqual([])
+      expect(argDefaultValues.variableName).toBe('clone')
+      expect(argDefaultValues.nodeToEdit).toEqual(
+        pathToNodeFromRustNodePath(operation.nodePath)
+      )
     })
   })
 

@@ -1,0 +1,11 @@
+@settings(kclVersion = 2.0)
+
+fn makeProfile(@height) {
+  profile = sketch(on = XY) {
+    edge = line(start = [0mm, 0mm], end = [20mm, height])
+  }
+  return profile
+}
+
+first = makeProfile(6.5mm)
+second = makeProfile(10.5mm)

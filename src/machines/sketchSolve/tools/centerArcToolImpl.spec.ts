@@ -58,6 +58,7 @@ function createSceneGraphDelta(
         project_directory: null,
         current_file: null,
         fixed_size_grid: true,
+        geometry_only: false,
       },
       sketch_mode: null,
     },
@@ -156,6 +157,53 @@ function createArcApiObject({
     comments: '',
     artifact_id: '0',
     source: { type: 'Simple', range: [0, 0, 0], node_path: null },
+  }
+}
+
+function createArcFinalizationFixture(checkpointId?: number) {
+  const rustContext = createMockRustContext()
+  const kclManager = createMockKclManager()
+  const editSegmentsSpy = vi.spyOn(rustContext, 'editSegments')
+  const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
+  const currentArc = createArcApiObject({
+    id: 4,
+    center: 1,
+    start: 2,
+    end: 3,
+    startX: 10,
+    startY: 0,
+  })
+  const inputSceneGraphDelta = createSceneGraphDelta(
+    [
+      createPointApiObject({ id: 1, x: 0, y: 0 }),
+      createPointApiObject({ id: 2, x: 10, y: 0 }),
+      createPointApiObject({ id: 3, x: 10, y: 0 }),
+      currentArc,
+    ],
+    [1, 2, 3, 4]
+  )
+  const editResult = {
+    kclSource: { text: 'edit' },
+    sceneGraphDelta: createSceneGraphDelta(
+      [
+        createPointApiObject({ id: 1, x: 0, y: 0 }),
+        createPointApiObject({ id: 2, x: 10, y: 0 }),
+        createPointApiObject({ id: 3, x: 0, y: 10 }),
+        currentArc,
+      ],
+      [4]
+    ),
+    ...(checkpointId === undefined ? {} : { checkpointId }),
+  }
+  editSegmentsSpy.mockResolvedValue(editResult)
+
+  return {
+    rustContext,
+    kclManager,
+    editSegmentsSpy,
+    addConstraintSpy,
+    inputSceneGraphDelta,
+    editResult,
   }
 }
 
@@ -555,39 +603,13 @@ describe('centerArcToolImpl', () => {
     ])(
       'anchors the center and radius-defining endpoint when finalizing a %s arc without snaps',
       async (_name, arcIsSwapped, expectedAnchorIds) => {
-        const rustContext = createMockRustContext()
-        const kclManager = createMockKclManager()
-        const editSegmentsSpy = vi.spyOn(rustContext, 'editSegments')
-        const currentArc = createArcApiObject({
-          id: 4,
-          center: 1,
-          start: 2,
-          end: 3,
-          startX: 10,
-          startY: 0,
-        })
-        const inputSceneGraphDelta = createSceneGraphDelta(
-          [
-            createPointApiObject({ id: 1, x: 0, y: 0 }),
-            createPointApiObject({ id: 2, x: 10, y: 0 }),
-            createPointApiObject({ id: 3, x: 10, y: 0 }),
-            currentArc,
-          ],
-          [1, 2, 3, 4]
-        )
-        const editResult = {
-          kclSource: { text: 'edit' },
-          sceneGraphDelta: createSceneGraphDelta(
-            [
-              createPointApiObject({ id: 1, x: 0, y: 0 }),
-              createPointApiObject({ id: 2, x: 10, y: 0 }),
-              createPointApiObject({ id: 3, x: 0, y: 10 }),
-              currentArc,
-            ],
-            [4]
-          ),
-        }
-        ;(rustContext.editSegments as any).mockResolvedValue(editResult)
+        const {
+          rustContext,
+          kclManager,
+          editSegmentsSpy,
+          inputSceneGraphDelta,
+          editResult,
+        } = createArcFinalizationFixture()
 
         const result = await finalizeArcActor({
           input: {
@@ -622,6 +644,76 @@ describe('centerArcToolImpl', () => {
       }
     )
 
+    it('checkpoints the final edit directly when endpoints only snap to the grid', async () => {
+      const {
+        rustContext,
+        kclManager,
+        editSegmentsSpy,
+        addConstraintSpy,
+        inputSceneGraphDelta,
+        editResult,
+      } = createArcFinalizationFixture(42)
+
+      const result = await finalizeArcActor({
+        input: {
+          arcId: 4,
+          centerPoint: [0, 0],
+          endPoint: [0, 10],
+          sceneGraphDelta: inputSceneGraphDelta,
+          startSnapTarget: { type: 'grid' },
+          endSnapTarget: { type: 'grid' },
+          rustContext,
+          kclManager,
+          sketchId: 7,
+        },
+      })
+
+      expect(editSegmentsSpy.mock.calls[0]?.[4]).toBe(true)
+      expect(addConstraintSpy).not.toHaveBeenCalled()
+      expect(result).toEqual(editResult)
+    })
+
+    it('queues only constraint-bearing targets after a grid-snapped endpoint', async () => {
+      const {
+        rustContext,
+        kclManager,
+        editSegmentsSpy,
+        addConstraintSpy,
+        inputSceneGraphDelta,
+      } = createArcFinalizationFixture()
+      addConstraintSpy.mockResolvedValue({
+        kclSource: { text: 'point-snap' },
+        sceneGraphDelta: createSceneGraphDelta([], [20]),
+      })
+
+      await finalizeArcActor({
+        input: {
+          arcId: 4,
+          centerPoint: [0, 0],
+          endPoint: [0, 10],
+          sceneGraphDelta: inputSceneGraphDelta,
+          startSnapTarget: { type: 'grid' },
+          endSnapTarget: { type: 'point', id: 99 },
+          rustContext,
+          kclManager,
+          sketchId: 7,
+        },
+      })
+
+      expect(editSegmentsSpy.mock.calls[0]?.[4]).toBe(false)
+      expect(addConstraintSpy).toHaveBeenCalledTimes(1)
+      expect(addConstraintSpy).toHaveBeenCalledWith(
+        0,
+        7,
+        {
+          type: 'Coincident',
+          segments: [3, 99],
+        },
+        expect.anything(),
+        true
+      )
+    })
+
     it('adds coincident constraints to stable endpoints when finalizing a clockwise arc', async () => {
       const rustContext = createMockRustContext()
       const kclManager = createMockKclManager()
@@ -648,16 +740,16 @@ describe('centerArcToolImpl', () => {
         center: 1,
         start: 2,
         end: 3,
-        startX: 0,
-        startY: 10,
+        startX: 10,
+        startY: 0,
       })
       ;(rustContext.editSegments as any).mockResolvedValue({
         kclSource: { text: 'edit' },
         sceneGraphDelta: createSceneGraphDelta(
           [
             createPointApiObject({ id: 1, x: 0, y: 0 }),
-            createPointApiObject({ id: 2, x: 0, y: 10 }),
-            createPointApiObject({ id: 3, x: 10, y: 0 }),
+            createPointApiObject({ id: 2, x: 10, y: 0 }),
+            createPointApiObject({ id: 3, x: 0, y: 10 }),
             editedArc,
           ],
           [4]

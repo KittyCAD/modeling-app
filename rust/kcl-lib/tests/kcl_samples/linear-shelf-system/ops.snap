@@ -12,8 +12,10 @@ description: Operations executed linear-shelf-system.kcl
         "value": 5.0,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -41,8 +43,10 @@ description: Operations executed linear-shelf-system.kcl
         "value": 0.4,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -70,8 +74,10 @@ description: Operations executed linear-shelf-system.kcl
         "value": 2.0,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -99,8 +105,10 @@ description: Operations executed linear-shelf-system.kcl
         "value": 0.4,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -128,8 +136,10 @@ description: Operations executed linear-shelf-system.kcl
         "value": 5.0,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -157,8 +167,10 @@ description: Operations executed linear-shelf-system.kcl
         "value": 0.02,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -186,8 +198,10 @@ description: Operations executed linear-shelf-system.kcl
         "value": 0.38,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -215,8 +229,10 @@ description: Operations executed linear-shelf-system.kcl
         "value": 0.05,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -244,8 +260,10 @@ description: Operations executed linear-shelf-system.kcl
         "value": 0.03,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -273,8 +291,10 @@ description: Operations executed linear-shelf-system.kcl
         "value": 0.36000000000000004,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -302,8 +322,10 @@ description: Operations executed linear-shelf-system.kcl
         "value": 0.37,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -331,8 +353,10 @@ description: Operations executed linear-shelf-system.kcl
         "value": 0.05,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -360,8 +384,10 @@ description: Operations executed linear-shelf-system.kcl
         "value": 0.02,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -389,8 +415,10 @@ description: Operations executed linear-shelf-system.kcl
         "value": 0.36000000000000004,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -418,8 +446,10 @@ description: Operations executed linear-shelf-system.kcl
         "value": 0.4,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -447,8 +477,10 @@ description: Operations executed linear-shelf-system.kcl
         "value": 6.0,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -476,8 +508,10 @@ description: Operations executed linear-shelf-system.kcl
         "value": 1.93,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -505,8 +539,10 @@ description: Operations executed linear-shelf-system.kcl
         "value": 0.386,
         "ty": {
           "type": "Default",
-          "len": "m",
-          "angle": "degrees"
+          "value": {
+            "len": "m",
+            "angle": "degrees"
+          }
         }
       },
       "visibility": "default",
@@ -561,18 +597,22 @@ description: Operations executed linear-shelf-system.kcl
                 "type": "SketchVar",
                 "value": -0.2,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.4,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -587,18 +627,22 @@ description: Operations executed linear-shelf-system.kcl
                 "type": "SketchVar",
                 "value": -0.2,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -648,18 +692,22 @@ description: Operations executed linear-shelf-system.kcl
                 "type": "SketchVar",
                 "value": -0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.4,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -674,18 +722,22 @@ description: Operations executed linear-shelf-system.kcl
                 "type": "SketchVar",
                 "value": -0.2,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.4,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -779,18 +831,22 @@ description: Operations executed linear-shelf-system.kcl
                 "type": "SketchVar",
                 "value": -0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -805,18 +861,22 @@ description: Operations executed linear-shelf-system.kcl
                 "type": "SketchVar",
                 "value": -0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.4,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -910,18 +970,22 @@ description: Operations executed linear-shelf-system.kcl
                 "type": "SketchVar",
                 "value": -0.2,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -936,18 +1000,22 @@ description: Operations executed linear-shelf-system.kcl
                 "type": "SketchVar",
                 "value": -0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1092,18 +1160,22 @@ description: Operations executed linear-shelf-system.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1118,18 +1190,22 @@ description: Operations executed linear-shelf-system.kcl
                 "type": "SketchVar",
                 "value": -0.2,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1227,18 +1303,22 @@ description: Operations executed linear-shelf-system.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -1655,8 +1735,10 @@ description: Operations executed linear-shelf-system.kcl
             "value": 2.0,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1726,8 +1808,10 @@ description: Operations executed linear-shelf-system.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -1735,8 +1819,10 @@ description: Operations executed linear-shelf-system.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -1744,8 +1830,10 @@ description: Operations executed linear-shelf-system.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -1758,8 +1846,10 @@ description: Operations executed linear-shelf-system.kcl
             "value": 0.38,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -1770,7 +1860,9 @@ description: Operations executed linear-shelf-system.kcl
             "value": 2.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -1827,18 +1919,22 @@ description: Operations executed linear-shelf-system.kcl
                 "type": "SketchVar",
                 "value": -0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.37,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1853,18 +1949,22 @@ description: Operations executed linear-shelf-system.kcl
                 "type": "SketchVar",
                 "value": -0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1914,18 +2014,22 @@ description: Operations executed linear-shelf-system.kcl
                 "type": "SketchVar",
                 "value": 0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.37,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -1940,18 +2044,22 @@ description: Operations executed linear-shelf-system.kcl
                 "type": "SketchVar",
                 "value": -0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.37,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2045,18 +2153,22 @@ description: Operations executed linear-shelf-system.kcl
                 "type": "SketchVar",
                 "value": 0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2071,18 +2183,22 @@ description: Operations executed linear-shelf-system.kcl
                 "type": "SketchVar",
                 "value": 0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.37,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2176,18 +2292,22 @@ description: Operations executed linear-shelf-system.kcl
                 "type": "SketchVar",
                 "value": -0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2202,18 +2322,22 @@ description: Operations executed linear-shelf-system.kcl
                 "type": "SketchVar",
                 "value": 0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2358,18 +2482,22 @@ description: Operations executed linear-shelf-system.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2384,18 +2512,22 @@ description: Operations executed linear-shelf-system.kcl
                 "type": "SketchVar",
                 "value": -0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -2493,18 +2625,22 @@ description: Operations executed linear-shelf-system.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -2921,8 +3057,10 @@ description: Operations executed linear-shelf-system.kcl
             "value": 0.05,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -2987,8 +3125,10 @@ description: Operations executed linear-shelf-system.kcl
             "value": 0.05,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -3045,18 +3185,22 @@ description: Operations executed linear-shelf-system.kcl
                 "type": "SketchVar",
                 "value": -0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.4,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3071,18 +3215,22 @@ description: Operations executed linear-shelf-system.kcl
                 "type": "SketchVar",
                 "value": -0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3132,18 +3280,22 @@ description: Operations executed linear-shelf-system.kcl
                 "type": "SketchVar",
                 "value": 0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.4,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3158,18 +3310,22 @@ description: Operations executed linear-shelf-system.kcl
                 "type": "SketchVar",
                 "value": -0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.4,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3263,18 +3419,22 @@ description: Operations executed linear-shelf-system.kcl
                 "type": "SketchVar",
                 "value": 0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3289,18 +3449,22 @@ description: Operations executed linear-shelf-system.kcl
                 "type": "SketchVar",
                 "value": 0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": -0.4,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3394,18 +3558,22 @@ description: Operations executed linear-shelf-system.kcl
                 "type": "SketchVar",
                 "value": -0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3420,18 +3588,22 @@ description: Operations executed linear-shelf-system.kcl
                 "type": "SketchVar",
                 "value": 0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3576,18 +3748,22 @@ description: Operations executed linear-shelf-system.kcl
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3602,18 +3778,22 @@ description: Operations executed linear-shelf-system.kcl
                 "type": "SketchVar",
                 "value": -0.18,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               },
               {
                 "type": "SketchVar",
                 "value": 0.0,
                 "ty": {
-                  "m": null,
                   "type": "Known",
-                  "type": "Length"
+                  "value": {
+                    "type": "Length",
+                    "value": "m"
+                  }
                 }
               }
             ]
@@ -3711,18 +3891,22 @@ description: Operations executed linear-shelf-system.kcl
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 },
                 {
                   "type": "Number",
                   "value": 0.0,
                   "ty": {
-                    "mm": null,
                     "type": "Known",
-                    "type": "Length"
+                    "value": {
+                      "type": "Length",
+                      "value": "mm"
+                    }
                   }
                 }
               ]
@@ -4139,8 +4323,10 @@ description: Operations executed linear-shelf-system.kcl
             "value": 0.02,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -4210,8 +4396,10 @@ description: Operations executed linear-shelf-system.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -4219,8 +4407,10 @@ description: Operations executed linear-shelf-system.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -4228,8 +4418,10 @@ description: Operations executed linear-shelf-system.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -4242,8 +4434,10 @@ description: Operations executed linear-shelf-system.kcl
             "value": 0.386,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -4254,7 +4448,9 @@ description: Operations executed linear-shelf-system.kcl
             "value": 6.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -4351,8 +4547,10 @@ description: Operations executed linear-shelf-system.kcl
                 "value": 1.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -4360,8 +4558,10 @@ description: Operations executed linear-shelf-system.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               },
               {
@@ -4369,8 +4569,10 @@ description: Operations executed linear-shelf-system.kcl
                 "value": 0.0,
                 "ty": {
                   "type": "Default",
-                  "len": "m",
-                  "angle": "degrees"
+                  "value": {
+                    "len": "m",
+                    "angle": "degrees"
+                  }
                 }
               }
             ]
@@ -4383,8 +4585,10 @@ description: Operations executed linear-shelf-system.kcl
             "value": 0.4,
             "ty": {
               "type": "Default",
-              "len": "m",
-              "angle": "degrees"
+              "value": {
+                "len": "m",
+                "angle": "degrees"
+              }
             }
           },
           "sourceRange": []
@@ -4395,7 +4599,9 @@ description: Operations executed linear-shelf-system.kcl
             "value": 5.0,
             "ty": {
               "type": "Known",
-              "type": "Count"
+              "value": {
+                "type": "Count"
+              }
             }
           },
           "sourceRange": []
@@ -4454,7 +4660,9 @@ description: Operations executed linear-shelf-system.kcl
         "value": 2.718281828459045,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -4482,7 +4690,9 @@ description: Operations executed linear-shelf-system.kcl
         "value": 6.283185307179586,
         "ty": {
           "type": "Known",
-          "type": "Count"
+          "value": {
+            "type": "Count"
+          }
         }
       },
       "visibility": "export",
@@ -4516,7 +4726,7 @@ description: Operations executed linear-shelf-system.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 23
+            "index": 24
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4540,7 +4750,7 @@ description: Operations executed linear-shelf-system.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 24
+            "index": 25
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4564,7 +4774,7 @@ description: Operations executed linear-shelf-system.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 25
+            "index": 26
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4588,7 +4798,7 @@ description: Operations executed linear-shelf-system.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 26
+            "index": 27
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4612,7 +4822,7 @@ description: Operations executed linear-shelf-system.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 27
+            "index": 28
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4636,7 +4846,7 @@ description: Operations executed linear-shelf-system.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 28
+            "index": 29
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4660,7 +4870,7 @@ description: Operations executed linear-shelf-system.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 29
+            "index": 30
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -4684,7 +4894,7 @@ description: Operations executed linear-shelf-system.kcl
         "steps": [
           {
             "type": "ProgramBodyItem",
-            "index": 30
+            "index": 31
           },
           {
             "type": "VariableDeclarationDeclaration"

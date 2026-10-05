@@ -22,7 +22,7 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
-      - run: npm install
+      - run: npm ci
       - run: npm run generate:machine-api
       - run: npm run fmt || true
       - name: Commit generated files

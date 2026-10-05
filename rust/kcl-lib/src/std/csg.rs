@@ -90,6 +90,18 @@ fn subtract_output_ids(
     output_ids
 }
 
+fn inherit_face_tags<'item, I>(output: &mut Solid, inputs: I)
+where
+    I: Iterator<Item = &'item Solid>,
+{
+    for input in inputs {
+        for (name, tag) in &input.faces {
+            // Preserve the first input's tag when multiple bodies use the same name.
+            output.faces.entry(name.clone()).or_insert_with(|| tag.clone());
+        }
+    }
+}
+
 pub(crate) async fn inner_union(
     solids: Vec<Solid>,
     tolerance: Option<TyF64>,
@@ -102,6 +114,7 @@ pub(crate) async fn inner_union(
     let solid_out_id = exec_state.next_uuid();
 
     let mut solid = solids[0].clone();
+    inherit_face_tags(&mut solid, solids.iter());
     solid.set_id(solid_out_id);
     solid.become_new_body(solid_out_id, solid_out_id.into());
     let mut new_solids = vec![solid.clone()];
@@ -197,6 +210,7 @@ pub(crate) async fn inner_intersect(
     let solid_out_id = exec_state.next_uuid();
 
     let mut solid = solids[0].clone();
+    inherit_face_tags(&mut solid, solids.iter());
     solid.set_id(solid_out_id);
     solid.become_new_body(solid_out_id, solid_out_id.into());
     let mut new_solids = vec![solid.clone()];
@@ -302,6 +316,8 @@ pub(crate) async fn inner_subtract(
                     exec_state.next_uuid()
                 };
                 let mut new_solid = solid.clone();
+                let first = vec![solid];
+                inherit_face_tags(&mut new_solid, first.into_iter().chain(tools.iter()));
                 new_solid.set_id(output_id);
                 new_solid.become_new_body(output_id, output_id.into());
                 new_solid
@@ -356,6 +372,8 @@ pub(crate) async fn inner_subtract(
         .into_iter()
         .map(|output_id| {
             let mut new_solid = solids[0].clone();
+            let first = solids.first().map(|s| vec![s]).unwrap_or_default();
+            inherit_face_tags(&mut new_solid, first.into_iter().chain(tools.iter()));
             new_solid.set_id(output_id);
             new_solid.value_id = solid_out_id;
             new_solid.become_new_body(output_id, output_id.into());
@@ -516,7 +534,140 @@ mod tests {
 
     use super::subtract_output_ids;
     use crate::errors::KclError;
+    use crate::execution::KclValue;
     use crate::execution::MockConfig;
+    use crate::execution::parse_execute;
+
+    const FACE_TAG_INPUTS: &str = r#"@settings(kclVersion = 2.0)
+fn profile(@plane) {
+  return sketch(on = plane) {
+    bottom = line(start = [-10mm, -10mm], end = [10mm, -10mm])
+    right = line(start = [10mm, -10mm], end = [10mm, 10mm])
+    top = line(start = [10mm, 10mm], end = [-10mm, 10mm])
+    left = line(start = [-10mm, 10mm], end = [-10mm, -10mm])
+  }
+}
+firstProfile = profile(XY)
+secondProfile = profile(YZ)
+thirdProfile = profile(XZ)
+firstRegion = region(segments = [firstProfile.bottom])
+secondRegion = region(segments = [secondProfile.bottom])
+thirdRegion = region(segments = [thirdProfile.bottom])
+first = extrude(firstRegion, length = 5mm, symmetric = true, tagEnd = $firstEnd)
+second = extrude(secondRegion, length = 5mm, symmetric = true, tagEnd = $secondEnd)
+third = extrude(thirdRegion, length = 5mm, symmetric = true, tagEnd = $thirdEnd)
+untagged = extrude(region(segments = [firstProfile.bottom]), length = 5mm, symmetric = true)
+"#;
+
+    async fn assert_csg_inherits_face_tags(operation: &str) {
+        for (input_names, tag_names) in [
+            ("first, second", &["first", "second"][..]),
+            ("first, second, third", &["first", "second", "third"]),
+            ("third, second, first", &["third", "second", "first"]),
+            ("untagged, second", &["second"]),
+        ] {
+            let mut code = FACE_TAG_INPUTS.to_owned();
+            for name in tag_names {
+                code.push_str(&format!("{name}Original = {name}.faces.{name}End\n"));
+            }
+            if operation == "subtract" {
+                let (target, tools) = input_names.split_once(", ").unwrap();
+                code.push_str(&format!("body = subtract({target}, tools = [{tools}])\n"));
+            } else {
+                code.push_str(&format!("body = {operation}([{input_names}])\n"));
+            }
+            for name in tag_names {
+                code.push_str(&format!("{name}FromBody = body.faces.{name}End\n"));
+            }
+            let result = parse_execute(&code).await.unwrap();
+            for name in tag_names {
+                let output_tag = result.variable(&format!("{name}FromBody"));
+                assert!(matches!(&output_tag, KclValue::TagIdentifier(_)));
+                assert_eq!(
+                    output_tag,
+                    result.variable(&format!("{name}Original")),
+                    "{operation}: {name}"
+                );
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn union_inherits_face_tags_from_all_inputs() {
+        assert_csg_inherits_face_tags("union").await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn intersect_inherits_face_tags_from_all_inputs() {
+        assert_csg_inherits_face_tags("intersect").await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn subtract_inherits_face_tags_from_target_and_tools() {
+        let tag_names = ["first", "second", "third"];
+        let mut code = FACE_TAG_INPUTS.to_owned();
+        for name in tag_names {
+            code.push_str(&format!("{name}Original = {name}.faces.{name}End\n"));
+        }
+        code.push_str("bodies = subtract([first, second], tools = [third, untagged])\n");
+        let output_tag_names = [["first", "third"], ["second", "third"]];
+        for (index, names) in output_tag_names.iter().enumerate() {
+            for name in names {
+                code.push_str(&format!("{name}FromBody{index} = bodies[{index}].faces.{name}End\n"));
+            }
+        }
+        let result = parse_execute(&code).await.unwrap();
+        let KclValue::HomArray { value: bodies, .. } = result.variable("bodies") else {
+            panic!("Expected subtract to return an array of solids");
+        };
+        assert_eq!(bodies.len(), output_tag_names.len());
+        for (index, names) in output_tag_names.iter().enumerate() {
+            let KclValue::Solid { value: body } = &bodies[index] else {
+                panic!("Expected subtract output {index} to be a solid");
+            };
+            assert_eq!(body.faces.len(), names.len(), "subtract: output {index}");
+            for name in names {
+                assert_eq!(
+                    result.variable(&format!("{name}FromBody{index}")),
+                    result.variable(&format!("{name}Original")),
+                    "subtract: output {index}, tag {name}"
+                );
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn csg_keeps_first_input_for_duplicate_face_tag_names() {
+        let inputs = r#"@settings(kclVersion = 2.0)
+fn body(@plane) {
+  profile = sketch(on = plane) {
+    circle1 = circle(center = [0mm, 0mm], start = [10mm, 0mm])
+  }
+  return extrude(region(segments = [profile.circle1]), length = 5mm, tagEnd = $cap)
+}
+first = body(XY)
+second = body(YZ)
+firstCap = first.faces.cap
+secondCap = second.faces.cap
+"#;
+        for operation in ["union", "intersect", "subtract"] {
+            for (inputs_order, expected, other) in [
+                ("first, second", "firstCap", "secondCap"),
+                ("second, first", "secondCap", "firstCap"),
+            ] {
+                let expression = if operation == "subtract" {
+                    let (target, tool) = inputs_order.split_once(", ").unwrap();
+                    format!("subtract({target}, tools = {tool})")
+                } else {
+                    format!("{operation}([{inputs_order}])")
+                };
+                let code = format!("{inputs}\ncombined = {expression}\nselected = combined.faces.cap\n");
+                let result = parse_execute(&code).await.unwrap();
+                assert_eq!(result.variable("selected"), result.variable(expected));
+                assert_ne!(result.variable("selected"), result.variable(other));
+            }
+        }
+    }
 
     fn test_uuid(id: u128) -> Uuid {
         Uuid::from_u128(id)

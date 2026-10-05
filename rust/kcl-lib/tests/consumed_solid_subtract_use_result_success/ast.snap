@@ -5021,6 +5021,7 @@ description: Result of parsing consumed_solid_subtract_use_result_success.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

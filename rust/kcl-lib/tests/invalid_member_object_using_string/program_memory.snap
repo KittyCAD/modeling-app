@@ -11,8 +11,10 @@ description: Variables in memory after executing invalid_member_object_using_str
         "value": 0.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       "foo": {
@@ -20,8 +22,10 @@ description: Variables in memory after executing invalid_member_object_using_str
         "value": 1.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       }
     },

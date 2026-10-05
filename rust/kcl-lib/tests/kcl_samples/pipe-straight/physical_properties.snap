@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties pipe-straight.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 10.0,
+      "y": 0.0,
+      "z": 0.0
+    },
+    "dimensions": {
+      "x": 170.0,
+      "y": 156.0,
+      "z": 156.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 160126.25160374228
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 681.7612452228635
+  }
+}

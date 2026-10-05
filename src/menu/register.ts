@@ -61,6 +61,8 @@ export function modelingMenuCallbackMostActions({
           projectName: currentProject.name,
           projectPath: currentProject.path,
           requestedProjectName: getProjectDisplayName(currentProject),
+          currentFilePath: filePath,
+          currentFileContents: kclManager.code,
         },
       })
     } else if (data.menuLabel === 'File.Open project') {
@@ -316,7 +318,7 @@ export function modelingMenuCallbackMostActions({
         type: 'Find and select command',
         data: {
           groupId: 'code',
-          name: 'Insert',
+          name: 'Import',
         },
       })
     }

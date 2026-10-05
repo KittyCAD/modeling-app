@@ -17,6 +17,7 @@ gdt::circularity(
   framePlane?: Plane,
   leaderScale?: number(_),
   fontSize?: number(Length),
+  annotationName?: string,
 ): [GdtAnnotation; 1+]
 ```
 
@@ -43,6 +44,7 @@ Circularity is a form tolerance, so it does not reference datums.
 | `framePlane` | [`Plane`](/docs/kcl-std/types/std-types-Plane) | The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane. | No |
 | `leaderScale` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`. | No |
 | `fontSize` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit. This changes the scene size, not the internal raster texture quality. | No |
+| `annotationName` | [`string`](/docs/kcl-std/types/std-types-string) | Human-friendly name for this annotation in exports and model metadata. This is not displayed visually. | No |
 
 ### Returns
 
@@ -52,7 +54,7 @@ Circularity is a form tolerance, so it does not reference datums.
 ### Examples
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 cylinderSketch = sketch(on = XY) {
   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
@@ -69,7 +71,7 @@ gdt::circularity(edges = [cylinderRegion.tags.perimeter], tolerance = 0.05mm, fr
 ![Rendered example of gdt::circularity 0](/kcl-test-outputs/serial_test_example_fn_std-gdt-circularity0.png)
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 cylinderSketch = sketch(on = XY) {
   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
@@ -89,7 +91,7 @@ gdt::circularity(
 ![Rendered example of gdt::circularity 1](/kcl-test-outputs/serial_test_example_fn_std-gdt-circularity1.png)
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 cylinderSketch = sketch(on = XY) {
   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])

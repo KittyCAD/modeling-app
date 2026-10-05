@@ -36958,6 +36958,7 @@ description: Result of parsing bench.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

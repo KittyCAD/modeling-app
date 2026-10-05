@@ -25,6 +25,10 @@ export type MeasurementCapability = {
 
 const defaultDistanceMode: DistanceMode = 'euclidean'
 
+function canMeasureDistance(entity: MeasurementEntity): boolean {
+  return entity.kind !== 'other'
+}
+
 /** User-facing explanation for a known endpoint gap: body area works, face area does not. */
 export const unsupportedFaceSurfaceAreaMessage =
   'Face surface area is not supported by the current engine endpoint. Select the body to measure total surface area, volume, and center of mass.'
@@ -44,6 +48,9 @@ export const measurementCapabilities: readonly MeasurementCapability[] = [
     label: 'Distance',
     getTarget(selectedEntities) {
       if (selectedEntities.length !== 2) {
+        return null
+      }
+      if (!selectedEntities.every(canMeasureDistance)) {
         return null
       }
 

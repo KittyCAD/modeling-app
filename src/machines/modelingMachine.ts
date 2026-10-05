@@ -118,6 +118,8 @@ import {
   getNodeFromPath,
   isCursorInFunctionDefinition,
   isNodeSafeToReplacePath,
+  resolveToCodeRef,
+  selectionV2Equals,
   stringifyPathToNode,
   traverse,
   updatePathToNodesAfterEdit,
@@ -159,12 +161,15 @@ import {
   EXECUTION_TYPE_REAL,
   EXPORT_TOAST_MESSAGES,
   MAKE_TOAST_MESSAGES,
+  PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { exportMake } from '@src/lib/exportMake'
 import { exportSave } from '@src/lib/exportSave'
+import { toProjectRelativePath, webSafePathSplit } from '@src/lib/paths'
 import { toPlaneName } from '@src/lib/planes'
 import type { Project } from '@src/lib/project'
+import { sanitizeProjectName } from '@src/lib/projectName'
 import type RustContext from '@src/lib/rustContext'
 import {
   getDefaultSketchPlaneData,
@@ -172,9 +177,11 @@ import {
   getOffsetSketchPlaneData,
   getPlaneDataFromSketchBlock,
   handleSelectionBatch,
+  getEngineTopologyFallbackNormalized,
   isEnginePrimitiveSelection,
   isEngineRegionSelection,
   selectionBodyFace,
+  tryEnterSketchOnDoubleClickFromScene,
   updateExtraSegments,
   updateSelections,
 } from '@src/lib/selections'
@@ -183,6 +190,7 @@ import { err, isErr, reject, reportRejection, trap } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
+import { isSketchBlockSelected } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type {
   EquipTool,
   UpdateSketchOutcomeEvent,
@@ -258,42 +266,6 @@ function findSceneObjectForPlaneSelection(
       sourceRangesEqual(object.kind.source.segment.range, segmentRange)
     )
   })
-}
-
-function getSelectedSketchBlockArtifact({
-  artifactGraph,
-  selectionRanges,
-}: {
-  artifactGraph: ModelingMachineContext['kclManager']['artifactGraph']
-  selectionRanges: Selections
-}): Extract<Artifact, { type: 'sketchBlock' }> | undefined {
-  const selectedArtifact = selectionRanges.graphSelections[0]?.artifact
-  const selectedSketchBlock = getSketchBlockForArtifact(
-    selectedArtifact,
-    artifactGraph
-  )
-  if (typeof selectedSketchBlock?.sketchId === 'number') {
-    return selectedSketchBlock
-  }
-
-  const sketchPathId = isCursorInSketchCommandRange(
-    artifactGraph,
-    selectionRanges
-  )
-  if (!sketchPathId) {
-    return undefined
-  }
-
-  const sketchPathArtifact = artifactGraph.get(sketchPathId)
-  const sketchBlockFromCursor = getSketchBlockForArtifact(
-    sketchPathArtifact,
-    artifactGraph
-  )
-  if (typeof sketchBlockFromCursor?.sketchId !== 'number') {
-    return undefined
-  }
-
-  return sketchBlockFromCursor
 }
 
 async function enterSketchSolveFromSketchBlockArtifact({
@@ -525,22 +497,14 @@ export type ModelingMachineEvent =
       data: Partial<SketchDetails>
     }
   | { type: 'Appearance'; data: ModelingCommandSchema['Appearance'] }
+  | { type: 'Delete'; data: ModelingCommandSchema['Delete'] }
   | { type: 'Translate'; data: ModelingCommandSchema['Translate'] }
   | { type: 'Rotate'; data: ModelingCommandSchema['Rotate'] }
   | { type: 'Scale'; data: ModelingCommandSchema['Scale'] }
+  | { type: 'Mirror 3D'; data: ModelingCommandSchema['Mirror 3D'] }
   | { type: 'Clone'; data: ModelingCommandSchema['Clone'] }
   | {
-      type: 'Mirror 3D'
-      data: ModelingCommandSchema['Mirror 3D']
-    }
-  | {
       type: 'Hide'
-      data: {
-        objects: Selections
-      }
-    }
-  | {
-      type: 'Delete'
       data: {
         objects: Selections
       }
@@ -684,7 +648,9 @@ export type ModelingMachineEvent =
       type: 'equip tool'
       data: { tool: EquipTool }
       keepSelection?: boolean
+      forceEquip?: boolean
     }
+  | { type: 'pick hovered tool' }
   | {
       type: 'Dimension' | 'construction'
       keepSelection?: boolean
@@ -724,10 +690,7 @@ export const modelingMachine = setup({
     }): boolean => {
       if (event.type !== 'Enter sketch') return false
       if (event.data?.forceNewSketch) return false
-      return !!getSelectedSketchBlockArtifact({
-        artifactGraph: kclManager.artifactGraph,
-        selectionRanges,
-      })
+      return isSketchBlockSelected(selectionRanges, kclManager.artifactGraph)
     },
     'Selection is on face': ({
       context: { selectionRanges, kclManager, wasmInstance },
@@ -735,25 +698,25 @@ export const modelingMachine = setup({
     }): boolean => {
       if (event.type !== 'Enter sketch') return false
       if (event.data?.forceNewSketch) return false
-      if (
-        getSelectedSketchBlockArtifact({
-          artifactGraph: kclManager.artifactGraph,
-          selectionRanges,
-        })
-      ) {
-        return false
-      }
-      if (artifactIsPlaneWithPaths(selectionRanges)) {
+      if (artifactIsPlaneWithPaths(selectionRanges, kclManager.artifactGraph)) {
         return true
-      } else if (selectionRanges.graphSelections[0]?.artifact) {
-        // See if the selection is "close enough" to be coerced to the plane later
+      }
+      const firstResolved =
+        selectionRanges.graphSelections[0] != null
+          ? resolveToCodeRef(
+              selectionRanges.graphSelections[0],
+              kclManager.artifactGraph
+            )
+          : null
+      if (firstResolved?.artifact) {
         const maybePlane = getPlaneFromArtifact(
-          selectionRanges.graphSelections[0].artifact,
+          firstResolved.artifact,
           kclManager.artifactGraph
         )
         return !err(maybePlane)
       }
       if (
+        selectionRanges.graphSelections[0] != null &&
         isCursorInFunctionDefinition(
           kclManager.ast,
           selectionRanges.graphSelections[0],
@@ -953,9 +916,9 @@ export const modelingMachine = setup({
 
       const pathToNodes = event.data
         ? [event.data]
-        : selectionRanges.graphSelections.map(({ codeRef }) => {
-            return codeRef.pathToNode
-          })
+        : (selectionRanges.graphSelections
+            .map((s) => s.codeRef?.pathToNode)
+            .filter(Boolean) as PathToNode[])
       const info = removeConstrainingValuesInfo(
         pathToNodes,
         kclManager,
@@ -1046,7 +1009,10 @@ export const modelingMachine = setup({
         event.type === 'change tool' ? event.data.tool || 'none' : 'none',
     }),
     'reset selections': assign({
-      selectionRanges: { graphSelections: [], otherSelections: [] },
+      selectionRanges: {
+        otherSelections: [],
+        graphSelections: [],
+      },
     }),
     'set sketchMetadata from pathToNode': assign(
       ({ context: { sketchDetails } }) => {
@@ -1541,6 +1507,25 @@ export const modelingMachine = setup({
       // Orbit controls are always active though.
       context.kclManager.sceneInfra.resetMouseListeners()
     },
+    'set modeling idle double-click callback': ({ context }) => {
+      const sceneInfra = context.kclManager.sceneInfra
+      if (!sceneInfra) return
+      sceneInfra.setCallbacks({
+        onClick: (args) => {
+          if (args?.mouseEvent?.detail === 2) {
+            void tryEnterSketchOnDoubleClickFromScene(
+              args,
+              sceneInfra.renderer.domElement,
+              {
+                engineCommandManager: context.engineCommandManager,
+                kclManager: context.kclManager,
+                sceneInfra,
+              }
+            )
+          }
+        },
+      })
+    },
     'restore modeling camera controls': ({ context }) => {
       const camControls = context.kclManager.sceneInfra.camControls
       camControls.enablePan = true
@@ -1717,93 +1702,39 @@ export const modelingMachine = setup({
           otherSelections: [],
         }
         if (setSelections.selectionType === 'singleCodeCursor') {
-          if (!setSelections.selection && kclManager.isShiftDown) {
+          const sel = setSelections.selection
+          const isEmpty =
+            !sel || (typeof sel === 'object' && !sel.entityRef && !sel.codeRef)
+          if (isEmpty && kclManager.isShiftDown) {
             // if the user is holding shift, but they didn't select anything
             // don't nuke their other selections (frustrating to have one bad click ruin your
             // whole selection)
             selections = {
-              graphSelections: selectionRanges.graphSelections,
+              graphSelections: selectionRanges.graphSelections || [],
               otherSelections: selectionRanges.otherSelections,
             }
-          } else if (!setSelections.selection && !kclManager.isShiftDown) {
+          } else if (isEmpty && !kclManager.isShiftDown) {
             selections = {
               graphSelections: [],
               otherSelections: [],
             }
-          } else if (setSelections.selection && !kclManager.isShiftDown) {
+          } else if (!isEmpty && !kclManager.isShiftDown) {
             selections = {
-              graphSelections: [setSelections.selection],
+              graphSelections: [sel],
               otherSelections: [],
             }
-          } else if (setSelections.selection && kclManager.isShiftDown) {
-            // selecting and deselecting multiple objects
-
-            /**
-             * There are two scenarios:
-             * 1. General case:
-             *    When selecting and deselecting edges,
-             *    faces or segment (during sketch edit)
-             *    we use its artifact ID to identify the selection
-             * 2. Initial sketch setup:
-             *    The artifact is not yet created
-             *    so we use the codeRef.range
-             */
-
-            let updatedSelections: typeof selectionRanges.graphSelections
-
-            // 1. General case: Artifact exists, use its ID
-            if (setSelections.selection.artifact?.id) {
-              // check if already selected
-              const alreadySelected = selectionRanges.graphSelections.some(
-                (selection) =>
-                  selection.artifact?.id ===
-                  setSelections.selection?.artifact?.id
-              )
-              if (alreadySelected && setSelections.selection?.artifact?.id) {
-                // remove it
-                updatedSelections = selectionRanges.graphSelections.filter(
-                  (selection) =>
-                    selection.artifact?.id !==
-                    setSelections.selection?.artifact?.id
-                )
-              } else {
-                // add it
-                updatedSelections = [
-                  ...selectionRanges.graphSelections,
-                  setSelections.selection,
-                ]
-              }
-            } else {
-              // 2. Initial sketch setup: Artifact not yet created – use codeRef.range
-              const selectionRange = JSON.stringify(
-                setSelections.selection?.codeRef?.range
-              )
-
-              // check if already selected
-              const alreadySelected = selectionRanges.graphSelections.some(
-                (selection) => {
-                  const existingRange = JSON.stringify(selection.codeRef?.range)
-                  return existingRange === selectionRange
-                }
-              )
-
-              if (alreadySelected && setSelections.selection?.codeRef?.range) {
-                // remove it
-                updatedSelections = selectionRanges.graphSelections.filter(
-                  (selection) =>
-                    JSON.stringify(selection.codeRef?.range) !== selectionRange
-                )
-              } else {
-                // add it
-                updatedSelections = [
-                  ...selectionRanges.graphSelections,
-                  setSelections.selection,
-                ]
-              }
-            }
-
+          } else if (!isEmpty && kclManager.isShiftDown) {
+            // Handle Shift key – compare V2 to V2 via selectionV2Equals
+            const newV2 = sel
+            const current = selectionRanges.graphSelections || []
+            const alreadySelected = current.some((s) =>
+              selectionV2Equals(s, newV2)
+            )
+            const updatedSelectionsV2 = alreadySelected
+              ? current.filter((s) => !selectionV2Equals(s, newV2))
+              : [...current, newV2]
             selections = {
-              graphSelections: updatedSelections,
+              graphSelections: updatedSelectionsV2,
               otherSelections: selectionRanges.otherSelections,
             }
           }
@@ -1957,7 +1888,7 @@ export const modelingMachine = setup({
         ) {
           if (kclManager.isShiftDown) {
             selections = {
-              graphSelections: selectionRanges.graphSelections,
+              graphSelections: selectionRanges.graphSelections || [],
               otherSelections: [setSelections.selection],
             }
           } else {
@@ -1980,15 +1911,11 @@ export const modelingMachine = setup({
               },
             })
 
-            if (codeMirrorSelection) {
-              // Default planes are non-code selections, so clear any previous
-              // graph selection still highlighted in the editor.
-              kclManager.editorView.dispatch({
-                selection: codeMirrorSelection,
-              })
-            }
+            kclManager.editorView.dispatch({
+              selection: codeMirrorSelection,
+            })
 
-            engineEvents?.forEach((event) => {
+            engineEvents.forEach((event) => {
               engineCommandManager
                 .sendSceneCommand(event)
                 .catch(reportRejection)
@@ -3265,6 +3192,7 @@ export const modelingMachine = setup({
           defaultUnit,
           projectRef,
         } = input
+        await kclManager.flushPendingEditorExecution()
         if (kclManager.hasParseErrors()) {
           return reject(
             new Error('Unable to enter sketch while KCL has parse errors.')
@@ -3279,45 +3207,12 @@ export const modelingMachine = setup({
                 index: primitiveFaceSelection.primitiveIndex,
               }
 
-        if (primitiveFaceSelection && !primitiveFace) {
-          return reject(
-            new Error('Could not resolve the selected primitive face in KCL.')
-          )
-        }
-
-        if (primitiveFaceSelection) {
-          const faceInfo = await kclManager.sceneEntitiesManager.getFaceDetails(
-            primitiveFaceSelection.entityId
-          )
-          if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis) {
-            return reject(
-              new Error(
-                'Could not get details for the selected primitive face.'
-              )
-            )
-          }
-          const { origin, z_axis, y_axis } = faceInfo
-          result = {
-            type: 'extrudeFace',
-            faceId: primitiveFaceSelection.entityId,
-            faceInfo: { type: 'primitiveFace' },
-            position: [origin.x, origin.y, origin.z].map(
-              (coordinate) =>
-                coordinate / kclManager.sceneInfra.baseUnitMultiplier
-            ) as [number, number, number],
-            zAxis: [z_axis.x, z_axis.y, z_axis.z],
-            yAxis: [y_axis.x, y_axis.y, y_axis.z],
-            sketchPathToNode: [],
-            extrudePathToNode: [],
-          }
-        } else {
-          const defaultResult = getDefaultSketchPlaneData(artifactOrPlaneId, {
-            sceneInfra: kclManager.sceneInfra,
-            rustContext,
-          })
-          if (!err(defaultResult) && defaultResult) {
-            result = defaultResult
-          }
+        const defaultResult = getDefaultSketchPlaneData(artifactOrPlaneId, {
+          sceneInfra: kclManager.sceneInfra,
+          rustContext,
+        })
+        if (!err(defaultResult) && defaultResult) {
+          result = defaultResult
         }
 
         // Look up the artifact from the artifact graph for getOffsetSketchPlaneData
@@ -3348,23 +3243,58 @@ export const modelingMachine = setup({
             result = sweepFaceSelected
           }
         }
+        if (!result && primitiveFaceSelection) {
+          if (!primitiveFace) {
+            return reject(
+              new Error('Could not resolve the selected primitive face in KCL.')
+            )
+          }
+          const faceInfo = await kclManager.sceneEntitiesManager.getFaceDetails(
+            primitiveFaceSelection.entityId
+          )
+          if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis) {
+            return reject(
+              new Error(
+                'Could not get details for the selected primitive face.'
+              )
+            )
+          }
+          const { origin, z_axis, y_axis } = faceInfo
+          result = {
+            type: 'extrudeFace',
+            faceId: primitiveFaceSelection.entityId,
+            faceInfo: { type: 'primitiveFace' },
+            position: [origin.x, origin.y, origin.z].map(
+              (coordinate) =>
+                coordinate / kclManager.sceneInfra.baseUnitMultiplier
+            ) as [number, number, number],
+            zAxis: [z_axis.x, z_axis.y, z_axis.z],
+            yAxis: [y_axis.x, y_axis.y, y_axis.z],
+            sketchPathToNode: [],
+            extrudePathToNode: [],
+          }
+        }
         if (!result) {
           return reject(new Error('Please select a valid sketch plane.'))
         }
 
-        const legacyExtrudeFaceTemporaryCompat: ExtrudeFacePlane | null =
+        const selectedFaceArtifact =
+          result.type === 'extrudeFace'
+            ? kclManager.artifactGraph.get(result.faceId)
+            : undefined
+        const faceRequiringSourceMaterialization: ExtrudeFacePlane | null =
           result.type === 'extrudeFace' &&
-          result.faceInfo.type === 'wall' &&
-          isFaceFromLegacySketch(result.faceId, kclManager.artifactGraph)
+          (selectedFaceArtifact?.type === 'edgeCut' ||
+            (result.faceInfo.type === 'wall' &&
+              isFaceFromLegacySketch(result.faceId, kclManager.artifactGraph)))
             ? result
             : null
 
-        if (legacyExtrudeFaceTemporaryCompat) {
-          // Temporary compatibility branch for legacy sketch V1.
-          // Remove this once sketch-on-face always originates from sketch
-          // blocks and no longer needs a JS-side code mod before sketch solve.
+        if (faceRequiringSourceMaterialization) {
+          // Edge-cut faces and legacy sketch V1 walls need a concrete Face
+          // expression before the Rust frontend can create a sketch on them.
           const legacyFaceArtifact = kclManager.artifactGraph.get(
-            legacyExtrudeFaceTemporaryCompat.faceId
+            faceRequiringSourceMaterialization.faceId
           )
           const legacyFaceCodeRef = legacyFaceArtifact
             ? getFaceCodeRef(legacyFaceArtifact)
@@ -3378,11 +3308,10 @@ export const modelingMachine = setup({
           const legacySketchBlock = sketchBlockOnExtrudedFace(
             kclManager.ast,
             {
-              artifact: legacyFaceArtifact,
               codeRef: legacyFaceCodeRef,
             },
-            legacyExtrudeFaceTemporaryCompat.sketchPathToNode,
-            legacyExtrudeFaceTemporaryCompat.extrudePathToNode,
+            faceRequiringSourceMaterialization.sketchPathToNode,
+            faceRequiringSourceMaterialization.extrudePathToNode,
             kclManager.artifactGraph,
             wasmInstance
           )
@@ -3436,7 +3365,11 @@ export const modelingMachine = setup({
           sketchArgs = {
             on: { default: toPlaneName(result.plane) },
           }
-        } else if (primitiveFace) {
+        } else if (
+          result.type === 'extrudeFace' &&
+          result.faceInfo.type === 'primitiveFace' &&
+          primitiveFace
+        ) {
           if (setProgramOutcome.type !== 'Success') {
             return reject(
               new Error('Could not update SceneGraph before creating sketch.')
@@ -3774,7 +3707,14 @@ export const modelingMachine = setup({
           engineCommandManager: ConnectionManager
         }
       }): Promise<ModelingMachineContext['sketchDetails']> => {
-        const artifact = selectionRanges.graphSelections[0].artifact
+        const firstResolved = selectionRanges.graphSelections[0]
+          ? resolveToCodeRef(
+              selectionRanges.graphSelections[0],
+              kclManager.artifactGraph
+            )
+          : null
+        const artifact = firstResolved?.artifact
+        if (!artifact) return Promise.reject(new Error('No selection artifact'))
         const plane = getPlaneFromArtifact(artifact, kclManager.artifactGraph)
         if (err(plane)) return Promise.reject(plane)
         // if the user selected a segment, make sure we enter the right sketch as there can be multiple on a plane
@@ -4360,13 +4300,19 @@ export const modelingMachine = setup({
         return new Promise((resolve, reject) => {
           if (!selectionRanges) {
             reject(new Error(deletionErrorMessage))
+            return
           }
-
-          const selection = selectionRanges.graphSelections[0]
-          if (!selectionRanges) {
+          const firstResolved = selectionRanges.graphSelections[0]
+            ? resolveToCodeRef(
+                selectionRanges.graphSelections[0],
+                systemDeps.kclManager.artifactGraph
+              )
+            : null
+          const selection = firstResolved
+          if (!selection) {
             reject(new Error(deletionErrorMessage))
+            return
           }
-
           deleteSelectionPromise({ selection, systemDeps })
             .then((result) => {
               if (err(result)) {
@@ -4504,13 +4450,14 @@ export const modelingMachine = setup({
               kclManager: KclManager
               rustContext: RustContext
               defaultUnit?: ModelingMachineContext['store']['defaultUnit']
+              fileName: string
             }
           | undefined
       }) => {
         if (!input || !input.data) {
           return new Error(NO_INPUT_PROVIDED_MESSAGE)
         }
-        const { data, kclManager, rustContext, defaultUnit } = input
+        const { data, kclManager, rustContext, defaultUnit, fileName } = input
 
         if (kclManager.hasErrors() || kclManager.ast.body.length === 0) {
           let errorMessage = 'Unable to Export '
@@ -4522,15 +4469,6 @@ export const modelingMachine = setup({
           console.error(errorMessage)
           toast.error(errorMessage)
           return new Error(errorMessage)
-        }
-
-        let fileName = (kclManager.currentFileName ?? 'output.kcl')?.replace(
-          '.kcl',
-          `.${data.type}`
-        )
-        // Ensure the file has an extension.
-        if (!fileName.includes('.')) {
-          fileName += `.${data.type}`
         }
 
         const { up, scale, ...formatData } = data
@@ -4606,7 +4544,17 @@ export const modelingMachine = setup({
           return
         }
 
-        await exportSave({ files, toastId, fileName })
+        const fileOperations = kclManager.fileOperations
+        if (!fileOperations) {
+          return new Error('File operations are not configured.')
+        }
+
+        await exportSave({
+          fileOperations,
+          files,
+          toastId,
+          fileName,
+        })
       }
     ),
     makeFromEngine: fromPromise(
@@ -4925,12 +4873,12 @@ export const modelingMachine = setup({
           target: 'Applying scale',
         },
 
-        Clone: {
-          target: 'Applying clone',
-        },
-
         'Mirror 3D': {
           target: 'Applying Mirror 3D',
+        },
+
+        Clone: {
+          target: 'Applying clone',
         },
 
         Hide: {
@@ -5059,6 +5007,7 @@ export const modelingMachine = setup({
       },
 
       entry: [
+        'set modeling idle double-click callback',
         'restore modeling camera controls',
         'reset client scene mouse handlers',
       ],
@@ -6485,6 +6434,9 @@ export const modelingMachine = setup({
             'equip tool': {
               actions: ['forward event to sketch solve if active'],
             },
+            'pick hovered tool': {
+              actions: ['forward event to sketch solve if active'],
+            },
             'unequip tool': {
               actions: ['forward event to sketch solve if active'],
             },
@@ -6809,7 +6761,6 @@ export const modelingMachine = setup({
           return {
             data: event.data,
             kclManager: context.kclManager,
-            engineCommandManager: context.engineCommandManager,
             rustContext: context.rustContext,
             wasmInstance: context.wasmInstance,
           }
@@ -6831,7 +6782,6 @@ export const modelingMachine = setup({
           return {
             data: event.data,
             kclManager: context.kclManager,
-            engineCommandManager: context.engineCommandManager,
             rustContext: context.rustContext,
             wasmInstance: context.wasmInstance,
           }
@@ -6874,7 +6824,10 @@ export const modelingMachine = setup({
           if (event.type !== 'Prompt-to-edit' || !event.data) {
             return {
               prompt: '',
-              selection: { graphSelections: [], otherSelections: [] },
+              selection: {
+                graphSelections: [],
+                otherSelections: [],
+              },
             }
           }
           return event.data
@@ -6993,12 +6946,12 @@ export const modelingMachine = setup({
       },
     },
 
-    'Applying clone': {
+    'Applying Mirror 3D': {
       invoke: {
-        src: 'cloneAstMod',
-        id: 'cloneAstMod',
+        src: 'mirror3DAstMod',
+        id: 'mirror3DAstMod',
         input: ({ event, context }) => {
-          if (event.type !== 'Clone') return undefined
+          if (event.type !== 'Mirror 3D') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,
@@ -7014,12 +6967,12 @@ export const modelingMachine = setup({
       },
     },
 
-    'Applying Mirror 3D': {
+    'Applying clone': {
       invoke: {
-        src: 'mirror3DAstMod',
-        id: 'mirror3DAstMod',
+        src: 'cloneAstMod',
+        id: 'cloneAstMod',
         input: ({ event, context }) => {
-          if (event.type !== 'Mirror 3D') return undefined
+          if (event.type !== 'Clone') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,
@@ -7027,7 +6980,7 @@ export const modelingMachine = setup({
             wasmInstance: context.wasmInstance,
           }
         },
-        onDone: 'idle',
+        onDone: ['idle'],
         onError: {
           target: 'idle',
           actions: 'toastError',
@@ -7445,12 +7398,40 @@ export const modelingMachine = setup({
         id: 'exportFromEngine',
         input: ({ event, context }) => {
           if (event.type !== 'Export') return undefined
+          const project = context.projectRef?.current
+          const currentFileName = context.kclManager.currentFileName ?? ''
+          // start with the file name by default, eg. "other.kcl"
+          let fileName = currentFileName
+          if (currentFileName === PROJECT_ENTRYPOINT && project) {
+            // currentFileName is "main.kcl"
+
+            const projectRelativePath = toProjectRelativePath(
+              project.path,
+              context.kclManager.path
+            )
+            if (projectRelativePath === PROJECT_ENTRYPOINT) {
+              // root "main.kcl" -> use project title or directory name
+              fileName = project.title?.trim() || project.name
+            } else if (!projectRelativePath.startsWith('../')) {
+              // "subfolder/main.kcl" -> export as "subfolder.gltf" (in case gltf format)
+              fileName =
+                webSafePathSplit(projectRelativePath).at(-2) || currentFileName
+            }
+          }
+          fileName = fileName.replace(/\.kcl$/i, '') // remove trailing .kcl
+          fileName = sanitizeProjectName(fileName, 'output') // remove slash, backslash
+          const extension =
+            event.data.type === 'gltf' && event.data.storage === 'binary'
+              ? 'glb'
+              : event.data.type
+          fileName += `.${extension}` // add file extension
+
           return {
             data: event.data,
             kclManager: context.kclManager,
             rustContext: context.rustContext,
             defaultUnit: context.store.defaultUnit,
-            fileName: context.fileName,
+            fileName,
           }
         },
         onDone: ['idle'],
@@ -7622,16 +7603,43 @@ export const modelingMachine = setup({
         },
         input: ({ event, context }) => {
           if (event.type !== 'Select sketch solve plane') return undefined
-          const primitiveFaceSelection =
-            context.selectionRanges.otherSelections.find(
-              (selection): selection is EnginePrimitiveSelection =>
-                isEnginePrimitiveSelection(selection) &&
-                selection.entityId === event.data &&
-                selection.primitiveType === 'face'
+          const graphFaceSelection =
+            context.selectionRanges.graphSelections.find(
+              (candidate) =>
+                candidate.engineEntityId === event.data ||
+                (candidate.entityRef?.type === 'face' &&
+                  candidate.entityRef.face_id === event.data)
             )
+          const graphFaceTopology = graphFaceSelection
+            ? getEngineTopologyFallbackNormalized(graphFaceSelection)
+            : null
+          let primitiveFaceReference: EnginePrimitiveSelection | undefined
+          if (
+            graphFaceSelection?.entityRef?.type === 'face' &&
+            graphFaceTopology
+          ) {
+            primitiveFaceReference = {
+              type: 'enginePrimitive',
+              entityId:
+                graphFaceSelection.engineEntityId ??
+                graphFaceSelection.entityRef.face_id,
+              parentEntityId: graphFaceTopology.parentId,
+              primitiveIndex: graphFaceTopology.primitiveIndex,
+              primitiveType: 'face',
+            }
+          } else {
+            // Legacy selections store untagged generated faces separately.
+            primitiveFaceReference =
+              context.selectionRanges.otherSelections.find(
+                (selection): selection is EnginePrimitiveSelection =>
+                  isEnginePrimitiveSelection(selection) &&
+                  selection.entityId === event.data &&
+                  selection.primitiveType === 'face'
+              )
+          }
           return {
             artifactOrPlaneId: event.data,
-            primitiveFaceSelection,
+            primitiveFaceSelection: primitiveFaceReference,
             kclManager: context.kclManager,
             rustContext: context.rustContext,
             engineCommandManager: context.engineCommandManager,
@@ -7658,13 +7666,21 @@ export const modelingMachine = setup({
             }
           }
           if (event.type === 'Enter sketch') {
-            const sketchBlockArtifact = getSelectedSketchBlockArtifact({
-              artifactGraph: context.kclManager.artifactGraph,
-              selectionRanges: context.selectionRanges,
-            })
-            if (sketchBlockArtifact?.id) {
+            // Get artifact ID from selection
+            const firstResolved = context.selectionRanges.graphSelections[0]
+              ? resolveToCodeRef(
+                  context.selectionRanges.graphSelections[0],
+                  context.kclManager.artifactGraph
+                )
+              : null
+            const artifact = firstResolved?.artifact
+            const sketchBlock = getSketchBlockForArtifact(
+              artifact,
+              context.kclManager.artifactGraph
+            )
+            if (sketchBlock?.id) {
               return {
-                artifactId: sketchBlockArtifact.id,
+                artifactId: sketchBlock.id,
                 kclManager: context.kclManager,
                 rustContext: context.rustContext,
                 engineCommandManager: context.engineCommandManager,

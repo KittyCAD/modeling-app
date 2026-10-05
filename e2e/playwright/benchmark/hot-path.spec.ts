@@ -1,4 +1,5 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { LEGACY_SKETCH_MODE_FEATURE_FLAG } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 /**
@@ -8,6 +9,9 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
  */
 
 test.describe('Hot path', { tag: '@desktop' }, () => {
+  // These sketches are KCL 1.0, so editing them needs the legacy sketch flag.
+  test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
+
   test(`Draw a circle and extrude it`, async ({
     page,
     homePage,

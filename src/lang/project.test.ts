@@ -2,9 +2,12 @@ import {
   ensureDefaultKclVersionOnBlankMain,
   isMainKclPath,
   newKclFile,
+  projectSkeletonCreate,
 } from '@src/lang/project'
-import { DEFAULT_KCL_VERSION } from '@src/lib/constants'
+import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
+import fsZds from '@src/lib/fs-zds'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const changeDefaultUnits = vi.fn((kcl: string, len: string) => {
@@ -71,6 +74,39 @@ describe('newKclFile', () => {
       '@settings(defaultLengthUnit = in)\n\n',
       JSON.stringify(DEFAULT_KCL_VERSION)
     )
+  })
+})
+
+describe('projectSkeletonCreate', () => {
+  it('ensures the project directory before writing its entrypoint', async () => {
+    const dirname = vi.spyOn(fsZds, 'dirname').mockReturnValue('/projects/demo')
+    const calls: string[] = []
+    const fileOperations = {
+      createDirectory: vi.fn(async () => {
+        calls.push('directory')
+      }),
+      stat: vi.fn(),
+      writeFile: vi.fn(async () => {
+        calls.push('file')
+      }),
+    } as unknown as FileOperationsRegistryService
+
+    await projectSkeletonCreate(
+      fileOperations,
+      '/projects/demo/main.kcl',
+      'mm',
+      wasmInstance
+    )
+
+    expect(fileOperations.createDirectory).toHaveBeenCalledWith(
+      '/projects/demo'
+    )
+    expect(fileOperations.writeFile).toHaveBeenCalledWith(
+      '/projects/demo/main.kcl',
+      `@settings(kclVersion = ${DEFAULT_KCL_VERSION})\n`
+    )
+    expect(calls).toEqual(['directory', 'file'])
+    dirname.mockRestore()
   })
 })
 

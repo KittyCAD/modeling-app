@@ -20,8 +20,10 @@ description: Variables in memory after executing hand-trolley.kcl
     "value": 0.11249999999999999,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "color": {
@@ -33,8 +35,10 @@ description: Variables in memory after executing hand-trolley.kcl
     "value": 20.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "grateDepth": {
@@ -42,8 +46,10 @@ description: Variables in memory after executing hand-trolley.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "grateThickness": {
@@ -51,8 +57,10 @@ description: Variables in memory after executing hand-trolley.kcl
     "value": 0.09,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "height": {
@@ -60,8 +68,10 @@ description: Variables in memory after executing hand-trolley.kcl
     "value": 51.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "metalness": {
@@ -69,8 +79,10 @@ description: Variables in memory after executing hand-trolley.kcl
     "value": 40.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "roughness": {
@@ -78,8 +90,10 @@ description: Variables in memory after executing hand-trolley.kcl
     "value": 30.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "tubeBend": {
@@ -87,8 +101,10 @@ description: Variables in memory after executing hand-trolley.kcl
     "value": 2.5,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "tubeDiameter": {
@@ -96,8 +112,10 @@ description: Variables in memory after executing hand-trolley.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "wheelDiameter": {
@@ -105,8 +123,10 @@ description: Variables in memory after executing hand-trolley.kcl
     "value": 10.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   }
 }

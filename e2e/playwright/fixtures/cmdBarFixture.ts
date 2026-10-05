@@ -60,8 +60,8 @@ export class CmdBarFixture {
         inputs.map((input) => {
           const key = input
             .locator('[data-test-name="arg-name"]')
-            .innerText()
-            .then((a) => a.trim())
+            .getAttribute('data-test-arg-label')
+            .then((a) => a?.trim() || '')
           const value = input
             .getByTestId('header-arg-value')
             .innerText()
@@ -120,7 +120,7 @@ export class CmdBarFixture {
         this.page
           .locator('[data-is-current-arg="true"]')
           .locator('[data-test-name="arg-name"]')
-          .textContent(),
+          .getAttribute('data-test-arg-name'),
         getCommandName(),
         this.page.getByTestId('vector2d-x-input').inputValue(),
         this.page.getByTestId('vector2d-y-input').inputValue(),
@@ -167,7 +167,7 @@ export class CmdBarFixture {
         this.page
           .locator('[data-is-current-arg="true"]')
           .locator('[data-test-name="arg-name"]')
-          .textContent(),
+          .getAttribute('data-test-arg-name'),
         getCommandName(),
         this.page.getByTestId('vector3d-x-input').inputValue(),
         this.page.getByTestId('vector3d-y-input').inputValue(),
@@ -199,7 +199,7 @@ export class CmdBarFixture {
       this.page
         .locator('[data-is-current-arg="true"]')
         .locator('[data-test-name="arg-name"]')
-        .textContent(),
+        .getAttribute('data-test-arg-name'),
       getCommandName(),
     ])
     return {
@@ -211,6 +211,8 @@ export class CmdBarFixture {
       commandName: commandName || '',
     }
   }
+  getState = async (): Promise<CmdBarSerialised> => this._serialiseCmdBar()
+
   expectState = async (expected: CmdBarSerialised) => {
     if (expected.stage === 'review') {
       await this.cmdBarLoadingCheckingArguments.waitFor({ state: 'hidden' })
@@ -227,7 +229,7 @@ export class CmdBarFixture {
    * and assumes we are past the `pickCommand` step.
    */
   progressCmdBar = async (shouldUseKeyboard = false) => {
-    await this.page.waitForTimeout(2000)
+    await this.page.waitForTimeout(100)
     if (shouldUseKeyboard) {
       await this.page.keyboard.press('Enter')
       return

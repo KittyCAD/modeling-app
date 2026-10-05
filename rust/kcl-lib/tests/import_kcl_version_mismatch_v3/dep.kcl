@@ -1,0 +1,3 @@
+@settings(kclVersion = 2.0)
+
+export width = 10

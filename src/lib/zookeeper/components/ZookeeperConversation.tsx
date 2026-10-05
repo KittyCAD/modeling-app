@@ -1,5 +1,5 @@
 import { Popover } from '@headlessui/react'
-import type { MlCopilotAccessDeniedCode } from '@kittycad/lib'
+import type { AttachmentRef, MlCopilotAccessDeniedCode } from '@kittycad/lib'
 import { ActionButton } from '@src/components/ActionButton'
 import { ConnectionRecovery } from '@src/components/ConnectionRecovery'
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -9,17 +9,20 @@ import Loading from '@src/components/Loading'
 import { MakeathonAnnouncement } from '@src/components/MakeathonAnnouncement'
 import Tooltip from '@src/components/Tooltip'
 import { noAutofillInputProps } from '@src/lib/autofill'
-import { useApp } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
+import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 import { isNonNullable } from '@src/lib/utils'
 import { ZookeeperConnectionErrorBanner } from '@src/lib/zookeeper/components/ZookeeperConnectionErrorBanner'
+import type { QueuedMessage } from '@src/lib/zookeeper/registry/controller'
 import {
   type Conversation,
   type Exchange,
   isResponseComplete,
   type MlCopilotModeId,
   type MlCopilotModeOption,
+  type ZookeeperAttachmentFetchState,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
@@ -32,13 +35,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 const noop = () => {}
 
 export const SHOW_ZOOKEEPER_REASONING_MODE_DROPDOWN = true
-
-export interface QueuedMessage {
-  id: string
-  text: string
-  mode?: MlCopilotModeId
-  attachments: File[]
-}
+export type { QueuedMessage }
 
 export interface ZookeeperConversationProps {
   isLoading: boolean
@@ -82,6 +79,8 @@ export interface ZookeeperConversationProps {
   onSteer: (id: string) => void
   modeOptions?: MlCopilotModeOption[]
   modeScopeKey?: string
+  attachmentFetches?: Record<string, ZookeeperAttachmentFetchState>
+  onFetchAttachment?: (attachmentRef: AttachmentRef) => void
 }
 
 const getModeOption = (
@@ -173,6 +172,7 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
 }
 
 export interface ZookeeperExtraInputsProps {
+  context?: Extract<ZookeeperManagerPromptContext, { type: 'selections' }>
   mode?: MlCopilotModeId
   onSetMode: (mode: MlCopilotModeId) => void
   onAttachFiles: () => void
@@ -193,6 +193,9 @@ export const ZookeeperExtraInputs = (props: ZookeeperExtraInputsProps) => {
       data-testid="ml-ephant-extra-inputs"
     >
       <div className="flex w-full min-w-0 flex-wrap items-end gap-1">
+        {props.context && (
+          <MlCopilotSelectionsContext selections={props.context} />
+        )}
         {SHOW_ZOOKEEPER_REASONING_MODE_DROPDOWN && currentMode && (
           <MlCopilotModes
             onClick={props.onSetMode}
@@ -268,7 +271,25 @@ export interface ZookeeperContextsProps {
   contexts: ZookeeperManagerPromptContext[]
 }
 
+const MlCopilotSelectionsContext = (props: {
+  selections: Extract<ZookeeperManagerPromptContext, { type: 'selections' }>
+}) => {
+  const { kclManager } = useSingletons()
+  const selectionText = getSelectionTypeDisplayText(
+    kclManager.astSignal.value,
+    props.selections.data,
+    kclManager.artifactGraph
+  )
+  return selectionText ? (
+    <button className="group/tool h-7 bg-default flex-none flex flex-row items-center gap-1 m-0 pl-1 pr-2 rounded-sm">
+      <CustomIcon name="clipboardCheckmark" className="w-6 h-6 block" />
+      {selectionText}
+    </button>
+  ) : null
+}
+
 interface ZookeeperConversationInputProps {
+  contexts: ZookeeperManagerPromptContext[]
   onProcess: ZookeeperConversationProps['onProcess']
   onCancel: ZookeeperConversationProps['onCancel']
   hasPromptCompleted: ZookeeperConversationProps['hasPromptCompleted']
@@ -515,6 +536,15 @@ export const ZookeeperConversationInput = (
     appendAttachments(files)
   }
 
+  const selectionsContext = props.contexts.find(
+    (
+      context
+    ): context is Extract<
+      ZookeeperManagerPromptContext,
+      { type: 'selections' }
+    > => context.type === 'selections'
+  )
+
   return (
     <div className="flex flex-col p-4 gap-2">
       <div
@@ -590,6 +620,7 @@ export const ZookeeperConversationInput = (
           data-testid="ml-ephant-composer-actions"
         >
           <ZookeeperExtraInputs
+            context={selectionsContext}
             mode={mode}
             onSetMode={(m) => {
               userHasPickedMode.current = true
@@ -676,6 +707,8 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
           userAvatar={props.userAvatarSrc}
           isLastResponse={isLastResponse}
           onClickClearChat={isLastResponse ? props.onClickClearChat : noop}
+          attachmentFetches={props.attachmentFetches}
+          onFetchAttachment={props.onFetchAttachment}
         />
       )
     }
@@ -833,6 +866,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
           ) : null}
           <div className="border-t b-4">
             <ZookeeperConversationInput
+              contexts={props.contexts}
               disabled={props.disabled || props.isLoading}
               hasPromptCompleted={props.hasPromptCompleted}
               needsReconnect={props.needsReconnect}

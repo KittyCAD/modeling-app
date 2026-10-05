@@ -4616,6 +4616,7 @@ description: Result of parsing consumed_solid_binary_add.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

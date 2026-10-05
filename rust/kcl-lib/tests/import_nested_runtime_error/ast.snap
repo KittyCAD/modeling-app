@@ -89,6 +89,7 @@ description: Result of parsing import_nested_runtime_error.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

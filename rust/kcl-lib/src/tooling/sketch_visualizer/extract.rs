@@ -132,7 +132,6 @@ impl<'a> Extraction<'a> {
             id.0,
             InternalPoint {
                 position: position_to_point(&point.position),
-                owner: point.owner.map(|owner| owner.0),
                 freedom: point.freedom(),
             },
         );

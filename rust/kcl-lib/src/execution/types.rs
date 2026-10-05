@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::str::FromStr;
 
 use anyhow::Result;
+use async_recursion::async_recursion;
 pub use kcl_api::NumericType;
 use kcl_api::UnitAngle;
 use kcl_api::UnitLength;
@@ -15,6 +16,7 @@ use crate::SourceRange;
 use crate::errors::KclErrorDetails;
 use crate::exec::PlaneKind;
 use crate::execution::ExecState;
+use crate::execution::ExecutorContext;
 use crate::execution::Plane;
 use crate::execution::PlaneInfo;
 use crate::execution::Point3d;
@@ -26,6 +28,12 @@ use crate::execution::kcl_value::KclValue;
 use crate::execution::kcl_value::TypeDef;
 use crate::execution::memory::{self};
 use crate::fmt;
+use crate::modules::ModuleItems;
+use crate::modules::ModulePath;
+use crate::parsing::ast::types::ABSOLUTE_PATHS_NOT_SUPPORTED;
+use crate::parsing::ast::types::Identifier;
+use crate::parsing::ast::types::Name;
+use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::PrimitiveType as AstPrimitiveType;
 use crate::parsing::ast::types::Type;
 use crate::parsing::token::NumericSuffix;
@@ -43,6 +51,108 @@ pub enum RuntimeType {
     /// its structure. Kept out of `PrimitiveType`, which is the closed set of
     /// built-in types that `std_ty` can name.
     Enum(EnumTypeId),
+}
+
+/// Looks up a type in the current scope or in an executed module.
+pub(super) fn type_value_named_by_segment(
+    exec_state: &ExecState,
+    segment: &Node<Identifier>,
+    within: Option<&ModuleItems>,
+) -> Option<KclValue> {
+    let key = format!("{}{}", memory::TYPE_PREFIX, segment.name);
+    match within {
+        Some(items) => {
+            if !items.exports.contains(&key) {
+                return None;
+            }
+
+            exec_state
+                .stack()
+                .memory
+                .get_from_owned(&key, items.environment, segment.as_source_range(), 0)
+                .ok()
+        }
+        None => exec_state.stack().get(&key, segment.as_source_range()).ok(),
+    }
+}
+
+/// Resolves a named type to the definition stored in the type environment.
+///
+/// Keeping the definition available lets a type alias preserve an enum's
+/// declaration handle rather than reducing it to an `EnumTypeId` and later
+/// attempting to recover declaration data from that identity.
+pub(super) async fn resolve_named_type_def(
+    name: &Node<Name>,
+    exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
+    source_range: SourceRange,
+    suppress_warnings: bool,
+) -> Result<TypeDef, KclError> {
+    if name.abs_path {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            ABSOLUTE_PATHS_NOT_SUPPORTED.to_owned(),
+            vec![source_range],
+        )));
+    }
+
+    let unknown_type = || {
+        KclError::new_semantic(KclErrorDetails::new(
+            format!("Unknown type: {name}"),
+            vec![source_range],
+        ))
+    };
+
+    let mut within: Option<ModuleItems> = None;
+    for segment in &name.path {
+        let key = format!("{}{}", memory::MODULE_PREFIX, segment.name);
+        let module = match &within {
+            Some(items) => {
+                if !items.exports.contains(&key) {
+                    return Err(unknown_type());
+                }
+                exec_state
+                    .stack()
+                    .memory
+                    .get_from_owned(&key, items.environment, segment.as_source_range(), 0)
+                    .map_err(|_| unknown_type())?
+            }
+            None => exec_state
+                .stack()
+                .get(&key, segment.as_source_range())
+                .map_err(|_| exec_state.with_not_yet_added_hint(&[&key], unknown_type()))?,
+        };
+        let KclValue::Module { value: module_id, .. } = module else {
+            return Err(unknown_type());
+        };
+        within = Some(
+            ctx.exec_module_for_items(module_id, exec_state, segment.as_source_range())
+                .await?,
+        );
+    }
+
+    let type_value = type_value_named_by_segment(exec_state, &name.name, within.as_ref()).ok_or_else(|| {
+        // The type may be a declaration skipped as not yet added.
+        let key = format!("{}{}", memory::TYPE_PREFIX, name.name.name);
+        match &within {
+            Some(items) => exec_state.with_not_yet_added_hint_from(&items.not_yet_added, &[&key], unknown_type()),
+            None => exec_state.with_not_yet_added_hint(&[&key], unknown_type()),
+        }
+    })?;
+    let KclValue::Type {
+        value, experimental, ..
+    } = type_value
+    else {
+        return Err(KclError::new_internal(KclErrorDetails::new(
+            format!("Type environment entry for `{name}` does not contain a type."),
+            vec![source_range],
+        )));
+    };
+
+    if experimental && !suppress_warnings {
+        exec_state.warn_experimental(&format!("the type `{name}`"), source_range);
+    }
+
+    Ok(value)
 }
 
 impl RuntimeType {
@@ -231,42 +341,73 @@ impl RuntimeType {
         RuntimeType::Primitive(PrimitiveType::Number(NumericType::Any))
     }
 
-    pub fn from_parsed(
+    #[async_recursion]
+    pub async fn from_parsed(
         value: Type,
         exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
         source_range: SourceRange,
         constrainable: bool,
         suppress_warnings: bool,
-    ) -> Result<Self, CompilationIssue> {
+    ) -> Result<Self, KclError> {
         match value {
-            Type::Primitive(pt) => Self::from_parsed_primitive(pt, exec_state, source_range, suppress_warnings),
-            Type::Array { ty, len } => {
-                Self::from_parsed(*ty, exec_state, source_range, constrainable, suppress_warnings)
-                    .map(|t| RuntimeType::Array(Box::new(t), len))
+            Type::Primitive(pt) => {
+                if matches!(pt, AstPrimitiveType::Never)
+                    && !matches!(exec_state.mod_local.path, ModulePath::Std { .. })
+                    && !exec_state.entry_point_version_is_v3_or_higher()
+                {
+                    return Err(crate::parsing::never_type_error(
+                        source_range,
+                        exec_state.entry_point_kcl_version(),
+                    ));
+                }
+                Ok(Self::from_parsed_primitive(pt, exec_state))
             }
-            Type::Union { tys } => tys
-                .into_iter()
-                .map(|t| Self::from_parsed(t.inner, exec_state, source_range, constrainable, suppress_warnings))
-                .collect::<Result<Vec<_>, CompilationIssue>>()
-                .map(RuntimeType::Union),
-            Type::Object { properties } => properties
-                .into_iter()
-                .map(|(id, ty)| {
-                    RuntimeType::from_parsed(ty.inner, exec_state, source_range, constrainable, suppress_warnings)
-                        .map(|ty| (id.name.clone(), ty))
-                })
-                .collect::<Result<Vec<_>, CompilationIssue>>()
-                .map(|values| RuntimeType::Object(values, constrainable)),
+            Type::Named { name } => Self::from_alias(&name, exec_state, ctx, source_range, suppress_warnings).await,
+            Type::Array { ty, len } => Ok(RuntimeType::Array(
+                Box::new(
+                    Self::from_parsed(*ty, exec_state, ctx, source_range, constrainable, suppress_warnings).await?,
+                ),
+                len,
+            )),
+            Type::Union { tys } => {
+                let mut resolved = Vec::with_capacity(tys.len());
+                for ty in tys {
+                    resolved.push(
+                        Self::from_parsed(
+                            ty.inner,
+                            exec_state,
+                            ctx,
+                            source_range,
+                            constrainable,
+                            suppress_warnings,
+                        )
+                        .await?,
+                    );
+                }
+                Ok(RuntimeType::Union(resolved))
+            }
+            Type::Object { properties } => {
+                let mut resolved = Vec::with_capacity(properties.len());
+                for (id, ty) in properties {
+                    let ty = Self::from_parsed(
+                        ty.inner,
+                        exec_state,
+                        ctx,
+                        source_range,
+                        constrainable,
+                        suppress_warnings,
+                    )
+                    .await?;
+                    resolved.push((id.name.clone(), ty));
+                }
+                Ok(RuntimeType::Object(resolved, constrainable))
+            }
         }
     }
 
-    fn from_parsed_primitive(
-        value: AstPrimitiveType,
-        exec_state: &mut ExecState,
-        source_range: SourceRange,
-        suppress_warnings: bool,
-    ) -> Result<Self, CompilationIssue> {
-        Ok(match value {
+    fn from_parsed_primitive(value: AstPrimitiveType, exec_state: &mut ExecState) -> Self {
+        match value {
             AstPrimitiveType::Any => RuntimeType::Primitive(PrimitiveType::Any),
             AstPrimitiveType::Never => RuntimeType::never(),
             AstPrimitiveType::None => RuntimeType::Primitive(PrimitiveType::None),
@@ -279,40 +420,24 @@ impl RuntimeType {
                 };
                 RuntimeType::Primitive(PrimitiveType::Number(ty))
             }
-            AstPrimitiveType::Named { id } => Self::from_alias(&id.name, exec_state, source_range, suppress_warnings)?,
             AstPrimitiveType::TagDecl => RuntimeType::Primitive(PrimitiveType::TagDecl),
             AstPrimitiveType::ImportedGeometry => RuntimeType::Primitive(PrimitiveType::ImportedGeometry),
             AstPrimitiveType::Function(_) => RuntimeType::Primitive(PrimitiveType::Function),
-        })
+        }
     }
 
-    pub fn from_alias(
-        alias: &str,
+    pub async fn from_alias(
+        name: &Node<Name>,
         exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
         source_range: SourceRange,
         suppress_warnings: bool,
-    ) -> Result<Self, CompilationIssue> {
-        let ty_val = exec_state
-            .stack()
-            .get(&format!("{}{}", memory::TYPE_PREFIX, alias), source_range)
-            .map_err(|_| CompilationIssue::err(source_range, format!("Unknown type: {alias}")))?;
-
-        Ok(match ty_val {
-            KclValue::Type {
-                value, experimental, ..
-            } => {
-                let result = match value {
-                    TypeDef::RustRepr(ty, _) => RuntimeType::Primitive(ty),
-                    TypeDef::Alias(ty) => ty,
-                    TypeDef::Enum(def) => RuntimeType::Enum(def.id().clone()),
-                };
-                if experimental && !suppress_warnings {
-                    exec_state.warn_experimental(&format!("the type `{alias}`"), source_range);
-                }
-                result
-            }
-            _ => unreachable!(),
-        })
+    ) -> Result<Self, KclError> {
+        Ok(
+            resolve_named_type_def(name, exec_state, ctx, source_range, suppress_warnings)
+                .await?
+                .into_runtime_type(),
+        )
     }
 
     pub fn human_friendly_type(&self) -> String {
@@ -2583,6 +2708,7 @@ mod test {
             EnumTypeDef::new(
                 EnumTypeId::new(ModuleId::from_usize(module_id as usize), name),
                 variants.iter().map(|v| (*v).to_owned()).collect(),
+                false,
             )
             .unwrap(),
         )
@@ -2662,7 +2788,9 @@ mod test {
     async fn from_alias_resolves_a_declared_enum_to_its_nominal_type() {
         // Gate 4 registers enums during execution; until then, bind one by hand
         // into a real environment to exercise the resolution path.
-        let mut exec_state = parse_execute("x = 1").await.unwrap().exec_state;
+        let result = parse_execute("x = 1").await.unwrap();
+        let ctx = result.exec_ctxt;
+        let mut exec_state = result.exec_state;
         let id = EnumTypeId::new(ModuleId::default(), "Color");
         let source_range = SourceRange::default();
 
@@ -2673,7 +2801,9 @@ mod test {
             .add(
                 format!("{}Color", memory::TYPE_PREFIX),
                 KclValue::Type {
-                    value: TypeDef::Enum(Arc::new(EnumTypeDef::new(id.clone(), vec!["Red".to_owned()]).unwrap())),
+                    value: TypeDef::Enum(Arc::new(
+                        EnumTypeDef::new(id.clone(), vec!["Red".to_owned()], false).unwrap(),
+                    )),
                     experimental: false,
                     meta: vec![],
                 },
@@ -2682,11 +2812,15 @@ mod test {
             .unwrap();
 
         assert_eq!(
-            RuntimeType::from_alias("Color", &mut exec_state, source_range, false).unwrap(),
+            RuntimeType::from_alias(&Name::new("Color"), &mut exec_state, &ctx, source_range, false)
+                .await
+                .unwrap(),
             RuntimeType::Enum(id)
         );
         // An unregistered name is still an unknown type, not a silent enum.
-        RuntimeType::from_alias("Shape", &mut exec_state, source_range, false).unwrap_err();
+        RuntimeType::from_alias(&Name::new("Shape"), &mut exec_state, &ctx, source_range, false)
+            .await
+            .unwrap_err();
     }
 
     #[tokio::test(flavor = "multi_thread")]

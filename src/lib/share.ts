@@ -3,9 +3,12 @@ import env, { getEnvironmentNameFromEnv } from '@src/env'
 import { collectLocalProjectFilesForCloudSync } from '@src/lib/cloudSync/localManifest'
 import {
   getMimeType,
-  withRemoteProjectMetadataInArchiveFiles,
+  prepareProjectFilesForCloudUpload,
 } from '@src/lib/cloudSync/projectArchive'
-import type { ProjectArchiveFile } from '@src/lib/cloudSync/types'
+import type {
+  ProjectArchiveFile,
+  ProjectUploadPublicationMetadata,
+} from '@src/lib/cloudSync/types'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import { readProjectSettingsFile } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
@@ -16,15 +19,18 @@ import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import { getProjectTomlContents } from '@src/lib/projectToml'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import toast from 'react-hot-toast'
 
 export type PublishCurrentProjectArgs = {
+  fileOperations: FileOperationsRegistryService
   token: string
   project: Project | undefined
   currentFilePath: string
   currentFileContents: string
   wasmInstance: ModuleType
   submission: ProjectPublishSubmission
+  remoteProjectId?: string
 }
 
 export type ProjectPublishSubmission = {
@@ -44,19 +50,18 @@ export type CurrentProjectPublicationDetails = {
   updatedAt: string
 }
 
+/** Remote identity of the project submitted to Aquarium. */
+export type PublishedProject = {
+  remoteProjectId: string
+}
+
 type CurrentProjectUploadArgs = Omit<PublishCurrentProjectArgs, 'project'> & {
   project: Project
 }
 
-type ProjectUpsertBody = {
-  title: string
-  description: string
-  category_ids: string[]
-}
-
 export async function publishCurrentProject(
   args: PublishCurrentProjectArgs
-): Promise<boolean> {
+): Promise<PublishedProject | false> {
   if (!args.token) {
     toast.error('You need to be signed in to publish a project.', {
       duration: 5000,
@@ -104,7 +109,9 @@ export async function publishCurrentProject(
     }
   )
 
-  return true
+  return {
+    remoteProjectId: uploadedProject.projectId,
+  }
 }
 
 function getPublishErrorMessage(error: Error) {
@@ -119,30 +126,38 @@ function getPublishErrorMessage(error: Error) {
 }
 
 export async function getCurrentProjectPublicationDetails({
+  fileOperations,
   token,
   project,
   wasmInstance,
+  remoteProjectId,
 }: {
+  fileOperations: FileOperationsRegistryService
   token: string
   project: Project | undefined
   wasmInstance: ModuleType
+  remoteProjectId?: string
 }): Promise<CurrentProjectPublicationDetails | null | Error> {
   if (!token || !project) {
     return null
   }
 
-  const environmentName = getCurrentEnvironmentName()
-  if (err(environmentName)) {
-    return environmentName
-  }
-
-  const projectId = await getCloudProjectIdForEnvironment(
-    project.path,
-    wasmInstance,
-    environmentName
-  )
-  if (err(projectId)) {
-    return projectId
+  let projectId = remoteProjectId
+  if (!projectId) {
+    const environmentName = getCurrentEnvironmentName()
+    if (err(environmentName)) {
+      return environmentName
+    }
+    const localProjectId = await getCloudProjectIdForEnvironment(
+      fileOperations,
+      project.path,
+      wasmInstance,
+      environmentName
+    )
+    if (err(localProjectId)) {
+      return localProjectId
+    }
+    projectId = localProjectId
   }
 
   if (!projectId) {
@@ -186,6 +201,7 @@ async function ensureCurrentProjectUploaded(
   }
 
   const uploadFiles = await buildProjectUploadFiles({
+    fileOperations: args.fileOperations,
     project,
     currentFilePath: args.currentFilePath,
     currentFileContents: args.currentFileContents,
@@ -196,37 +212,32 @@ async function ensureCurrentProjectUploaded(
   }
 
   const client = createKCClient(args.token)
-  const existingProjectId = await getCloudProjectIdForEnvironment(
-    project.path,
-    args.wasmInstance,
-    environmentName
-  )
+  const existingProjectId =
+    args.remoteProjectId ??
+    (await getCloudProjectIdForEnvironment(
+      args.fileOperations,
+      project.path,
+      args.wasmInstance,
+      environmentName
+    ))
   if (err(existingProjectId)) {
     return existingProjectId
   }
 
   if (existingProjectId) {
-    const projectBody = getProjectUpsertBody(project, args.submission)
-
     const projectResp = await kcCall(() =>
       projects.update_project({
         client,
         id: existingProjectId,
-        files: toKittyCadFiles(uploadFiles, projectBody),
+        files: toKittyCadFiles(
+          project.path,
+          uploadFiles,
+          getProjectUploadPublicationMetadata(args.submission)
+        ),
       })
     )
     if (err(projectResp)) {
       return projectResp
-    }
-
-    const persisted = await persistUploadedProjectMetadata({
-      projectPath: project.path,
-      environmentName,
-      remoteProject: projectResp,
-      uploadFiles,
-    })
-    if (err(persisted)) {
-      return persisted
     }
 
     return {
@@ -235,40 +246,30 @@ async function ensureCurrentProjectUploaded(
     }
   }
 
-  const projectBody = getProjectUpsertBody(project, args.submission)
   const projectResp = await kcCall(() =>
     projects.create_project({
       client,
-      files: toKittyCadFiles(uploadFiles, projectBody),
+      files: toKittyCadFiles(
+        project.path,
+        uploadFiles,
+        getProjectUploadPublicationMetadata(args.submission)
+      ),
     })
   )
   if (err(projectResp)) {
     return projectResp
   }
 
-  const projectId = projectResp.id
-  const persisted = await persistUploadedProjectMetadata({
-    projectPath: project.path,
-    environmentName,
-    remoteProject: projectResp,
-    uploadFiles,
-  })
-  if (err(persisted)) {
-    return persisted
-  }
-
   return {
     client,
-    projectId,
+    projectId: projectResp.id,
   }
 }
 
-function getProjectUpsertBody(
-  project: Project,
+function getProjectUploadPublicationMetadata(
   submission: ProjectPublishSubmission
-): ProjectUpsertBody {
+): ProjectUploadPublicationMetadata {
   return {
-    title: submission.title.trim() || getDefaultProjectTitle(project),
     description: submission.description.trim(),
     category_ids: submission.categoryIds,
   }
@@ -296,6 +297,7 @@ function getRemoteProject({
 }
 
 async function buildProjectUploadFiles({
+  fileOperations,
   project,
   currentFilePath,
   currentFileContents,
@@ -306,7 +308,7 @@ async function buildProjectUploadFiles({
   let files: ProjectArchiveFile[]
   try {
     files = await collectLocalProjectFilesForCloudSync({
-      localFs: fsZds,
+      fileOperations,
       projectRoot: project.path,
     })
   } catch (error) {
@@ -336,6 +338,7 @@ async function buildProjectUploadFiles({
   }
 
   const projectToml = await getProjectTomlContents({
+    fileOperations,
     projectPath: project.path,
     wasmInstance,
   })
@@ -353,12 +356,14 @@ async function buildProjectUploadFiles({
 }
 
 async function getCloudProjectIdForEnvironment(
+  fileOperations: FileOperationsRegistryService,
   projectPath: string,
   wasmInstance: ModuleType,
   environmentName: string
 ): Promise<string | undefined | Error> {
   try {
     const projectSettings = await readProjectSettingsFile(
+      fileOperations,
       projectPath,
       wasmInstance
     )
@@ -371,58 +376,22 @@ async function getCloudProjectIdForEnvironment(
   }
 }
 
-async function persistUploadedProjectMetadata({
-  projectPath,
-  environmentName,
-  remoteProject,
-  uploadFiles,
-}: {
-  projectPath: string
-  environmentName: string
-  remoteProject: { id: string; title: string }
-  uploadFiles: ProjectArchiveFile[]
-}) {
-  try {
-    // The API currently shares one title between the stored project and its
-    // Aquarium listing. Mirror the server-normalized metadata byte-for-byte so
-    // cloud sync can adopt this upload without an artificial first conflict.
-    // Once Publication owns a separate title, this should retain the local
-    // project title while persisting only the cloud project ID.
-    const filesWithRemoteMetadata = withRemoteProjectMetadataInArchiveFiles(
-      uploadFiles,
-      remoteProject.title,
-      remoteProject.id,
-      environmentName
-    )
-    const projectToml = filesWithRemoteMetadata.find(
-      (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
-    )
-    if (!projectToml) {
-      return new Error('Published project metadata was not generated.')
-    }
-
-    await fsZds.writeFile(
-      fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME),
-      Uint8Array.from(projectToml.data)
-    )
-    return true
-  } catch (error) {
-    return new Error(
-      `Failed to save published project metadata: ${error instanceof Error ? error.message : String(error)}`
-    )
-  }
-}
-
 function toKittyCadFiles(
+  projectPath: string,
   files: ProjectArchiveFile[],
-  body: ProjectUpsertBody
+  publicationMetadata: ProjectUploadPublicationMetadata
 ): Parameters<typeof projects.create_project>[0]['files'] {
+  const upload = prepareProjectFilesForCloudUpload(projectPath, files, {
+    publicationMetadata,
+  })
   return [
     {
       name: 'body',
-      data: new Blob([JSON.stringify(body)], { type: 'application/json' }),
+      data: new Blob([JSON.stringify(upload.body)], {
+        type: 'application/json',
+      }),
     },
-    ...files.map((file) => ({
+    ...upload.files.map((file) => ({
       name: file.relativePath,
       data: new Blob([Uint8Array.from(file.data)], {
         type: getMimeType(file.relativePath),

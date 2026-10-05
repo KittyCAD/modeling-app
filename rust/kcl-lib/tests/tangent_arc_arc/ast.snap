@@ -591,6 +591,7 @@ description: Result of parsing tangent_arc_arc.kcl
     "commentStart": 0,
     "end": 0,
     "moduleId": 0,
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

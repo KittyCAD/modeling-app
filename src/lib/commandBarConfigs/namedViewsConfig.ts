@@ -16,6 +16,7 @@ import { err, reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { MODE_MODELING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 
 function isWorldCoordinateSystemType(x: string): x is WorldCoordinateSystem {
   return x === 'right_handed_up_z' || x === 'right_handed_up_y'
@@ -109,6 +110,7 @@ export function createNamedViewsCommand(
   // hit the engine for the camera properties and write them back to disk
   // in project.toml.
   const createNamedViewCommand: Command = {
+    scopes: [MODE_MODELING_COMMAND_SCOPE],
     name: 'Create named view',
     displayName: `Create named view`,
     description:
@@ -192,6 +194,7 @@ export function createNamedViewsCommand(
   // find it in the setting state, remove it from the array and
   // rewrite the project.toml settings to disk to delete the named view
   const deleteNamedViewCommand: Command = {
+    scopes: [MODE_MODELING_COMMAND_SCOPE],
     name: 'Delete named view',
     displayName: `Delete named view`,
     description: 'Deletes the named view from settings',
@@ -256,6 +259,7 @@ export function createNamedViewsCommand(
 
   // Read the named view from settings state and pass that camera information to the engine command to set the view of the engine camera
   const loadNamedViewCommand: Command = {
+    scopes: [MODE_MODELING_COMMAND_SCOPE],
     name: 'Load named view',
     displayName: `Load named view`,
     description: 'Loads your camera to the named view',

@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties circle_three_point.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 24.75,
+      "y": 19.75,
+      "z": 5.0
+    },
+    "dimensions": {
+      "x": 12.614277624977184,
+      "y": 12.614277624977184,
+      "z": 10.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 503.5570579324799
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.8669957664390419
+  }
+}

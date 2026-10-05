@@ -1488,6 +1488,7 @@ description: Result of parsing wedge.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

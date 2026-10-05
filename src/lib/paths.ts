@@ -1,5 +1,6 @@
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import { APP_NAME, ARCHIVE_DIR, IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
+import { getEXTNoPeriod } from '@src/lib/fileExtensions'
 import fsZds from '@src/lib/fs-zds'
 import { webSafeJoin } from '@src/lib/pathUtils'
 import {
@@ -352,10 +353,7 @@ export function desktopSafePathJoin(paths: string[]): string {
   return paths.join(fsZds.sep)
 }
 
-export const getEXTNoPeriod = (filePath: string) => {
-  const extension = filePath.split('.').pop() || null
-  return extension
-}
+export { getEXTNoPeriod }
 
 /**
  * Whether a file name includes a user-typed extension: a `.` that is neither the

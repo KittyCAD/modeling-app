@@ -8,7 +8,11 @@ import {
 import { computed } from '@preact/signals-core'
 import { getCloudProjectLibraryMaterializationDirectoryPath } from '@src/lib/cloudSync/paths'
 import { getProjectInfo } from '@src/lib/desktop'
-import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
+import {
+  getHomeProjectDisplayName,
+  homeProjectDisplayNameExists,
+} from '@src/lib/homeProjects'
+import { separateProjectsSharingProjectId } from '@src/lib/projectIdentity'
 import {
   CLOUD_PROJECT_LIBRARY_TYPE,
   PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
@@ -23,6 +27,7 @@ import {
   cloudSyncService,
 } from '@src/registry/contracts/cloudSync'
 import { commandSystemService } from '@src/registry/contracts/commands'
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import {
   type HomeProjectActionsService,
   type HomeProjectDuplicateRealization,
@@ -36,6 +41,7 @@ import { projectExplorerProjectMenuItemsValueSpec } from '@src/registry/contract
 import {
   getProjectLibraryOperation,
   type ProjectLibraryRealization,
+  type ProjectLibraryRelationshipMembershipPolicy,
   type ProjectLibraryTypeOperations,
   projectLibraryRealizationsValueSpec,
   projectLibraryTypesValueSpec,
@@ -43,24 +49,7 @@ import {
 import { settingsService } from '@src/registry/contracts/settings'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import toast from 'react-hot-toast'
-
-function homeProjectDisplayNameExists({
-  entries,
-  requestedName,
-  projectId,
-}: {
-  entries: readonly HomeProjectEntry[] | undefined
-  requestedName: string
-  projectId: string
-}) {
-  return Boolean(
-    entries?.some(
-      (project) =>
-        project.id !== projectId &&
-        getHomeProjectDisplayName(project) === requestedName
-    )
-  )
-}
+import { NIL as uuidNIL } from 'uuid'
 
 function homeProjectStatusFromRealization(
   realization: ProjectLibraryRealization
@@ -91,12 +80,12 @@ function realizationDeletesRemoteOnDelete(
 }
 
 /**
- * Converts a local realization that is not part of a cloud relationship into a
- * Home card. This path must stay local-only; cloud ID observations on the
- * realization are not enough for Home to infer relationship identity.
+ * Converts a local realization into a Home card without relationship actions.
+ * Cloud ID observations alone do not give Home relationship identity.
  */
 function homeProjectEntryFromRealization(
-  realization: ProjectLibraryRealization
+  realization: ProjectLibraryRealization,
+  duplicateProjectIdPaths: readonly string[] | undefined
 ): HomeProjectEntryContribution {
   return {
     source: 'local',
@@ -116,7 +105,40 @@ function homeProjectEntryFromRealization(
     thumbnail: realization.thumbnail,
     conflict: realization.conflict,
     syncFailure: realization.syncFailure,
+    duplicateProjectIdPaths,
   }
+}
+
+function duplicateProjectIdPathsByLocalPath(
+  realizations: readonly ProjectLibraryRealization[]
+) {
+  const projectPathsById = new Map<string, Set<string>>()
+
+  for (const realization of realizations) {
+    if (!realization.projectId || realization.projectId === uuidNIL) {
+      continue
+    }
+    const projectPaths =
+      projectPathsById.get(realization.projectId) ?? new Set()
+    projectPaths.add(realization.localProjectPath)
+    projectPathsById.set(realization.projectId, projectPaths)
+  }
+
+  const duplicatePathsByLocalPath = new Map<string, string[]>()
+  for (const projectPathSet of projectPathsById.values()) {
+    if (projectPathSet.size < 2) {
+      continue
+    }
+    const projectPaths = Array.from(projectPathSet)
+    for (const projectPath of projectPaths) {
+      duplicatePathsByLocalPath.set(
+        projectPath,
+        projectPaths.filter((candidatePath) => candidatePath !== projectPath)
+      )
+    }
+  }
+
+  return duplicatePathsByLocalPath
 }
 
 /** Local library membership is copied from relationship realizations. */
@@ -179,7 +201,8 @@ function homeProjectDuplicateRealizationFromRelationship(
  * merge arbitrary provider entries or decide which local folders are duplicates.
  */
 function homeProjectEntryFromCloudRelationship(
-  relationship: CloudProjectRelationship
+  relationship: CloudProjectRelationship,
+  duplicateProjectIdPaths: readonly string[] | undefined
 ): HomeProjectEntryContribution {
   const canonical = relationship.canonicalRealization?.realization
   const duplicateRealizations = relationship.duplicateRealizations.map(
@@ -229,21 +252,28 @@ function homeProjectEntryFromCloudRelationship(
     syncFailure: relationship.syncFailure ?? canonical?.syncFailure,
     duplicateRealizations:
       duplicateRealizations.length > 0 ? duplicateRealizations : undefined,
+    duplicateProjectIdPaths,
   }
 }
 
 /**
  * Builds Home project cards from explicit inputs:
  * - one card for each cloud relationship;
+ * - org-owned projects are excluded from Personal Cloud, preserving explicit
+ *   copies in other libraries at their own local paths;
  * - one local-only card for each realization not claimed by a relationship.
  */
 export function deriveHomeProjectEntryContributions({
   realizations,
   cloudRelationships,
+  relationshipMembershipPolicies = [],
 }: {
   realizations: readonly ProjectLibraryRealization[]
   cloudRelationships: readonly CloudProjectRelationship[]
+  relationshipMembershipPolicies?: readonly ProjectLibraryRelationshipMembershipPolicy[]
 }): HomeProjectEntryContribution[] {
+  const duplicateProjectIdPaths =
+    duplicateProjectIdPathsByLocalPath(realizations)
   const relationshipLocalPaths = new Set(
     cloudRelationships.flatMap((relationship) =>
       relationship.localRealizations.map(
@@ -251,14 +281,106 @@ export function deriveHomeProjectEntryContributions({
       )
     )
   )
-  const relationshipEntries = cloudRelationships.map(
-    homeProjectEntryFromCloudRelationship
-  )
+  const relationshipMembershipPoliciesByLibraryId = new Map<
+    string,
+    ProjectLibraryRelationshipMembershipPolicy[]
+  >()
+  for (const policy of relationshipMembershipPolicies) {
+    const policies =
+      relationshipMembershipPoliciesByLibraryId.get(policy.libraryId) ?? []
+    policies.push(policy)
+    relationshipMembershipPoliciesByLibraryId.set(policy.libraryId, policies)
+  }
+  const relationshipEntries = cloudRelationships.flatMap((relationship) => {
+    const canonicalPath =
+      relationship.canonicalRealization?.realization.localProjectPath
+    const entry = homeProjectEntryFromCloudRelationship(
+      relationship,
+      canonicalPath ? duplicateProjectIdPaths.get(canonicalPath) : undefined
+    )
+    const includedPolicyLibraryIds = new Set(
+      Array.from(relationshipMembershipPoliciesByLibraryId)
+        .filter(([, policies]) =>
+          policies.every((policy) => policy.includes({ relationship }))
+        )
+        .map(([libraryId]) => libraryId)
+    )
+    const originalLibraryIds = entry.libraryIds ?? []
+    const projectedLibraryIds = Array.from(
+      new Set([
+        ...originalLibraryIds.filter(
+          (libraryId) =>
+            !relationshipMembershipPoliciesByLibraryId.has(libraryId)
+        ),
+        ...includedPolicyLibraryIds,
+      ])
+    )
+    const removedObservedMembership = originalLibraryIds.some(
+      (libraryId) =>
+        relationshipMembershipPoliciesByLibraryId.has(libraryId) &&
+        !includedPolicyLibraryIds.has(libraryId)
+    )
+
+    if (!removedObservedMembership) {
+      return projectedLibraryIds.length > 0
+        ? [{ ...entry, libraryIds: projectedLibraryIds }]
+        : []
+    }
+
+    // When policy removes a relationship's observed library, keep its other
+    // local realizations at their own paths. Their actions must not target the
+    // hidden canonical realization owned by the filtered library.
+    const policyRelationshipEntries = projectedLibraryIds.filter(
+      (libraryId) => !originalLibraryIds.includes(libraryId)
+    )
+    const localEntries = relationship.localRealizations.flatMap(
+      ({ realization }) => {
+        const libraryIds = realization.libraryIds.filter(
+          (libraryId) =>
+            !relationshipMembershipPoliciesByLibraryId.has(libraryId) ||
+            includedPolicyLibraryIds.has(libraryId)
+        )
+        if (libraryIds.length === 0) {
+          return []
+        }
+        const isCanonical = realization.localProjectPath === canonicalPath
+        return [
+          homeProjectEntryFromRealization(
+            {
+              ...realization,
+              cloudProjectId: relationship.remoteProjectId,
+              libraryIds,
+              libraryRefs: realization.libraryRefs.filter(({ id }) =>
+                libraryIds.includes(id)
+              ),
+              conflict: isCanonical ? entry.conflict : realization.conflict,
+              syncFailure: isCanonical
+                ? entry.syncFailure
+                : realization.syncFailure,
+            },
+            duplicateProjectIdPaths.get(realization.localProjectPath)
+          ),
+        ]
+      }
+    )
+
+    return [
+      ...(policyRelationshipEntries.length > 0
+        ? [{ ...entry, libraryIds: policyRelationshipEntries }]
+        : []),
+      ...localEntries,
+    ]
+  })
   const localOnlyEntries = realizations
     .filter(
       (realization) => !relationshipLocalPaths.has(realization.localProjectPath)
     )
-    .map(homeProjectEntryFromRealization)
+    .map((realization) =>
+      homeProjectEntryFromRealization(
+        realization,
+        duplicateProjectIdPaths.get(realization.localProjectPath)
+      )
+    )
 
   return [...relationshipEntries, ...localOnlyEntries]
 }
@@ -403,6 +525,10 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
     )
 
   const serviceImpl: HomeProjectActionsService = {
+    watchRemoteThumbnail: (remoteProjectId) =>
+      ctx.services
+        .optional(cloudProjectRelationshipsService)
+        ?.watchRemoteThumbnail(remoteProjectId),
     canOpen: (project) =>
       Boolean(
         (project.readWriteAccess &&
@@ -431,6 +557,12 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
     canMoveToLibrary: (project) => getMoveToLibraryTargets(project).length > 0,
     canReviewDuplicateRealizations: (project) =>
       Boolean(project.duplicateRealizations?.length),
+    canSeparateProjectCopies: (project) =>
+      Boolean(
+        project.readWriteAccess &&
+          project.localProjectPath &&
+          project.duplicateProjectIdPaths?.length
+      ),
     open: async (project) => {
       const openProject = getProjectOperation(project, 'openProject')
       if (openProject && project.readWriteAccess && project.defaultFile) {
@@ -466,6 +598,7 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       }
 
       const projectInfo = await getProjectInfo(
+        ctx.services.get(fileOperationsService),
         syncedProject.projectPath,
         await wasmInstancePromise
       )
@@ -485,7 +618,7 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         toast.success(result.message)
       }
     },
-    rename: async (project, requestedName) => {
+    rename: async (project, requestedName, options) => {
       const renameProject = getProjectOperation(project, 'renameProject')
       if (!serviceImpl.canRename(project) || !renameProject) {
         return
@@ -499,7 +632,9 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         })
       ) {
         const message = `Project with title "${requestedName}" already exists`
-        toast.error(message)
+        if (options?.notify !== false) {
+          toast.error(message)
+        }
         return Promise.reject(new Error(message))
       }
 
@@ -508,9 +643,11 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         project,
         requestedName,
       })
-      toast.success(
-        `Successfully renamed "${getHomeProjectDisplayName(project)}" to "${requestedName}"`
-      )
+      if (options?.notify !== false) {
+        toast.success(
+          `Successfully renamed "${getHomeProjectDisplayName(project)}" to "${requestedName}"`
+        )
+      }
     },
     delete: async (project) => {
       const deleteProject = getProjectOperation(project, 'deleteProject')
@@ -570,6 +707,7 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       return result?.defaultFile
         ? {
             defaultFile: result.defaultFile,
+            localProjectPath: result.localProjectPath,
           }
         : undefined
     },
@@ -585,6 +723,27 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       })
       invalidateProjectLibraryRealizations()
       toast.success('Deleted duplicate project copies.')
+    },
+    separateProjectCopies: async (project, keepProjectPath) => {
+      if (!serviceImpl.canSeparateProjectCopies(project)) {
+        return
+      }
+
+      const projectPaths = [
+        project.localProjectPath,
+        ...(project.duplicateProjectIdPaths ?? []),
+      ].filter((projectPath): projectPath is string => Boolean(projectPath))
+      await separateProjectsSharingProjectId({
+        fileOperations: ctx.services.get(fileOperationsService),
+        projectPaths,
+        keepProjectPath,
+      })
+      invalidateProjectLibraryRealizations()
+      toast.success(
+        keepProjectPath
+          ? 'Separated project copies. The selected project kept its Zookeeper history.'
+          : 'Separated project copies and cleared their Zookeeper history.'
+      )
     },
   }
 
@@ -610,11 +769,19 @@ const homeProjectEntryViewModels = defineRegistryItemFactory((ctx) => {
   const cloudProjectRelationships = ctx.services.signal(
     cloudProjectRelationshipsService
   )
+  const projectLibraryTypes = ctx.valueSpecs.signal(
+    projectLibraryTypesValueSpec
+  )
   const entries = computed(() =>
     deriveHomeProjectEntryContributions({
       realizations: projectLibraryRealizations.value,
       cloudRelationships:
         cloudProjectRelationships.value?.relationships.value ?? [],
+      relationshipMembershipPolicies: Array.from(
+        projectLibraryTypes.value.values()
+      ).flatMap(
+        (libraryType) => libraryType.relationshipMembershipPolicies ?? []
+      ),
     })
   )
 

@@ -151,13 +151,18 @@ patternIds?: Array<ArtifactId>, };
 
 export type CompositeSolidSubType = "intersect" | "subtract" | "split" | "union";
 
-export type EdgeCut = { id: ArtifactId, subType: EdgeCutSubType, consumedEdgeId: ArtifactId, edgeIds: Array<ArtifactId>, surfaceId?: ArtifactId | null, codeRef: CodeRef, };
+export type EdgeCut = { id: ArtifactId, subType: EdgeCutSubType, 
+/**
+ * Index of the source selector in an `edges` argument, when this edge cut
+ * was created from an edge-reference command.
+ */
+sourceSelectorIndex?: number | null, consumedEdgeId?: ArtifactId | null, edgeIds: Array<ArtifactId>, surfaceId?: ArtifactId | null, codeRef: CodeRef, };
 
 export type EdgeCutEdge = { id: ArtifactId, edgeCutId: ArtifactId, surfaceId: ArtifactId, };
 
 export type EdgeCutSubType = "fillet" | "chamfer" | "custom";
 
-export type GdtAnnotationArtifact = { id: ArtifactId, codeRef: CodeRef, };
+export type GdtAnnotationArtifact = { id: ArtifactId, codeRef: CodeRef, consumed: boolean, };
 
 export type Helix = { id: ArtifactId, 
 /**
@@ -174,7 +179,7 @@ trajectorySweepId: ArtifactId | null,
  */
 consumed: boolean, };
 
-export type ImportedGeometryArtifact = { id: ArtifactId, codeRef: CodeRef, };
+export type ImportedGeometryArtifact = { id: ArtifactId, codeRef: CodeRef, consumed: boolean, };
 
 /**
  * A named view declared in KCL by `view::named`: a display name, camera intent
@@ -338,7 +343,7 @@ export type StartSketchOnPlane = { id: ArtifactId, planeId: ArtifactId, codeRef:
 /**
  * A sweep is a more generic term for extrude, revolve, loft, sweep, and blend.
  */
-export type Sweep = { id: ArtifactId, subType: SweepSubType, pathId: ArtifactId, surfaceIds: Array<ArtifactId>, edgeIds: Array<ArtifactId>, codeRef: CodeRef, 
+export type Sweep = { id: ArtifactId, subType: SweepSubType, pathId?: ArtifactId | null, surfaceIds: Array<ArtifactId>, edgeIds: Array<ArtifactId>, codeRef: CodeRef, 
 /**
  * The original sweep this body was cloned from, if any. For clones of
  * clones, this continues to point to the originating sweep.

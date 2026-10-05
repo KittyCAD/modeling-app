@@ -5,10 +5,12 @@ import type { MachineManager } from '@src/lib/MachineManager'
 import type { Command } from '@src/lib/commandTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
+import { GLOBAL_COMMAND_SCOPES } from '@src/registry/contracts/commands'
 
 describe('commandBarMachine', () => {
   it('preserves hidden default values that are not declared command args', () => {
     const command = {
+      scopes: GLOBAL_COMMAND_SCOPES,
       name: 'Test command',
       groupId: 'test',
       needsReview: false,
@@ -60,6 +62,7 @@ describe('commandBarMachine', () => {
       reviewDetails,
     })
     const command = {
+      scopes: GLOBAL_COMMAND_SCOPES,
       name: 'Test codemod',
       groupId: 'test',
       needsReview: true,

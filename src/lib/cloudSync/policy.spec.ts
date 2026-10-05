@@ -3,6 +3,7 @@ import type * as ClientErrorsModule from '@src/lib/clientErrors'
 import {
   configureCloudSyncEngine,
   configureCloudSyncLocalFileSystem,
+  disableCloudSyncEngineForTest,
   filterCloudSyncProjectFilesForSync,
   notifyCloudSyncRemoveMutation,
   notifyCloudSyncRenameMutation,
@@ -111,7 +112,7 @@ describe('cloud sync file policy', () => {
 
   afterEach(async () => {
     setCloudSyncOpenedProject(undefined)
-    configureCloudSyncEngine({ enabled: false })
+    await disableCloudSyncEngineForTest()
     clientErrorsMock.reportClientError.mockClear()
     vi.unstubAllGlobals()
     await deleteCloudSyncTestDatabase()

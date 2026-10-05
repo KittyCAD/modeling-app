@@ -75,8 +75,8 @@ fn visit_module(name: &str, preferred_prefix: &str, names: WalkForNames) -> Resu
     let mut result = ModData::new(name, preferred_prefix);
 
     let source = crate::modules::read_std(name).unwrap();
-    let parsed = crate::parsing::parse_str(source, ModuleId::from_usize(0))
-        .parse_errs_as_err()
+    let (_, parsed, never_type_ranges) = crate::parsing::parse_str_syntax(source, ModuleId::from_usize(0)).unwrap();
+    crate::parsing::validate_never_type_ranges(&never_type_ranges, crate::parsing::SyntaxSource::BundledStdlib)
         .unwrap();
 
     let mut summary = String::new();
@@ -460,6 +460,7 @@ impl ConstData {
             ty,
             properties: Properties {
                 exported: !var.visibility.is_default(),
+                added_in: None,
                 deprecated: false,
                 deprecated_since: None,
                 experimental: false,
@@ -558,6 +559,7 @@ impl ModData {
             module_name,
             properties: Properties {
                 exported: false,
+                added_in: None,
                 deprecated: false,
                 deprecated_since: None,
                 experimental: false,
@@ -649,6 +651,7 @@ impl FnData {
             return_type: expr.return_type.as_ref().map(|t| t.to_string()),
             properties: Properties {
                 exported: !var.visibility.is_default(),
+                added_in: None,
                 deprecated: false,
                 deprecated_since: None,
                 experimental: false,
@@ -844,6 +847,8 @@ impl DocCategory {
 
 #[derive(Debug, Clone)]
 pub struct Properties {
+    /// KCL version in which this item was added, e.g. "3.0".
+    pub added_in: Option<VersionConstraint>,
     pub deprecated: bool,
     /// Constraint on the KCL version at or after which this item is deprecated,
     /// e.g. "2.0".
@@ -912,10 +917,14 @@ pub struct ArgData {
     pub docs: Option<String>,
     /// If given, LSP should use these as completion items.
     pub snippet_array: Option<Vec<String>>,
+    /// Constraint on the KCL version in which this argument was added.
+    pub added_in: Option<VersionConstraint>,
     /// Whether this argument is deprecated regardless of the KCL version.
     pub deprecated: bool,
     /// Constraint on the KCL version at or after which this argument is deprecated.
     pub deprecated_since: Option<VersionConstraint>,
+    /// Constraint on the KCL version at or after which this argument is removed.
+    pub removed_in: Option<VersionConstraint>,
 }
 
 impl fmt::Display for ArgData {
@@ -954,8 +963,10 @@ impl ArgData {
             } else {
                 ArgKind::Special
             },
+            added_in: arg.added_in.clone(),
             deprecated: arg.deprecated,
             deprecated_since: arg.deprecated_since.clone(),
+            removed_in: arg.removed_in.clone(),
         };
 
         for attr in &arg.identifier.outer_attrs {
@@ -1179,6 +1190,7 @@ impl TyData {
             qual_name,
             properties: Properties {
                 exported: !ty.visibility.is_default(),
+                added_in: None,
                 deprecated: false,
                 deprecated_since: None,
                 experimental: false,
@@ -1295,6 +1307,7 @@ trait ApplyMeta {
         description: Option<String>,
         examples: Vec<(String, ExampleProperties)>,
     );
+    fn added_in(&mut self, added_in: Option<VersionConstraint>);
     fn deprecated(&mut self, deprecated: bool);
     fn deprecated_since(&mut self, deprecated_since: Option<VersionConstraint>);
     fn experimental(&mut self, experimental: bool);
@@ -1435,6 +1448,13 @@ trait ApplyMeta {
                                 self.impl_kind(annotations::Impl::from_str(s).unwrap());
                             }
                         }
+                        annotations::ADDED_IN => {
+                            if let Some(s) = p.value.literal_str()
+                                && let Some(v) = VersionConstraint::parse(s)
+                            {
+                                self.added_in(Some(v));
+                            }
+                        }
                         annotations::DEPRECATED => {
                             if let Some(b) = p.value.literal_bool() {
                                 self.deprecated(b);
@@ -1484,6 +1504,10 @@ impl ApplyMeta for ConstData {
         self.examples = examples;
     }
 
+    fn added_in(&mut self, added_in: Option<VersionConstraint>) {
+        self.properties.added_in = added_in;
+    }
+
     fn deprecated(&mut self, deprecated: bool) {
         self.properties.deprecated = deprecated;
     }
@@ -1517,6 +1541,10 @@ impl ApplyMeta for FnData {
         self.summary = summary;
         self.description = description;
         self.examples = examples;
+    }
+
+    fn added_in(&mut self, added_in: Option<VersionConstraint>) {
+        self.properties.added_in = added_in;
     }
 
     fn deprecated(&mut self, deprecated: bool) {
@@ -1556,6 +1584,10 @@ impl ApplyMeta for ModData {
         assert!(examples.is_empty());
     }
 
+    fn added_in(&mut self, added_in: Option<VersionConstraint>) {
+        assert!(added_in.is_none(), "added_in is not supported for modules");
+    }
+
     fn deprecated(&mut self, deprecated: bool) {
         assert!(!deprecated);
     }
@@ -1589,6 +1621,10 @@ impl ApplyMeta for TyData {
         self.summary = summary;
         self.description = description;
         self.examples = examples;
+    }
+
+    fn added_in(&mut self, added_in: Option<VersionConstraint>) {
+        self.properties.added_in = added_in;
     }
 
     fn deprecated(&mut self, deprecated: bool) {
@@ -1634,6 +1670,10 @@ impl ApplyMeta for ArgData {
         self.docs = Some(docs);
     }
 
+    fn added_in(&mut self, _added_in: Option<VersionConstraint>) {
+        unreachable!();
+    }
+
     fn deprecated(&mut self, _deprecated: bool) {
         unreachable!();
     }
@@ -1668,6 +1708,7 @@ mod test {
     use kcl_derive_docs::for_each_example_test;
 
     use super::*;
+    use crate::test_server::TestGraphicsArtifact;
 
     fn stdlib_module_path(module_name: &str) -> PathBuf {
         let file_stem = match module_name {
@@ -1721,6 +1762,96 @@ mod test {
         );
         assert_eq!(fixed.examples.len(), 1);
         assert!(fixed.examples[0].0.contains("fixed([edge.start, ORIGIN])"));
+    }
+
+    #[test]
+    fn stdlib_parameters_removed_in_kcl_3_are_marked() {
+        let stdlib = walk_stdlib();
+        for (func, param) in [
+            ("chamfer", "legacyMethod"),
+            ("fillet", "legacyMethod"),
+            ("union", "legacyMethod"),
+            ("intersect", "legacyMethod"),
+            ("subtract", "legacyMethod"),
+            ("split", "legacyMethod"),
+            ("sweep", "relativeTo"),
+        ] {
+            let Some(DocData::Fn(f)) = stdlib.find_by_name(func) else {
+                panic!("{func} should be a documented function");
+            };
+            let arg = f
+                .args
+                .iter()
+                .find(|a| a.name == param)
+                .unwrap_or_else(|| panic!("{func} should declare {param}"));
+            assert_eq!(arg.removed_in, VersionConstraint::parse("3.0"), "{func}({param})");
+        }
+    }
+
+    #[test]
+    fn arg_data_carries_added_in() {
+        let program = crate::parsing::top_level_parse(
+            r#"fn foo(
+  @(added_in = "3.0")
+  x?: number,
+) {
+  return x
+}"#,
+        )
+        .unwrap();
+        let crate::parsing::ast::types::BodyItem::VariableDeclaration(decl) = &program.body[0] else {
+            panic!("expected a function declaration");
+        };
+        let Expr::FunctionExpression(func) = &decl.declaration.init else {
+            panic!("expected a function expression");
+        };
+
+        let arg = ArgData::from_ast(&func.params[0]);
+
+        assert_eq!(arg.added_in, VersionConstraint::parse("3.0"));
+        assert_eq!(arg.kind, ArgKind::Labelled(true));
+    }
+
+    #[test]
+    fn declaration_docs_carry_added_in() {
+        use crate::parsing::ast::types::BodyItem;
+
+        let program = crate::parsing::top_level_parse(
+            r#"@(added_in = "3.0")
+export fn foo() {
+  return 1
+}
+
+@(added_in = "2.1", experimental = true)
+export type Pair = [number; 2]
+
+@(added_in = "3.0")
+export FOO = 1
+"#,
+        )
+        .unwrap();
+
+        let BodyItem::VariableDeclaration(var) = &program.body[0] else {
+            panic!("expected a function declaration");
+        };
+        let mut func = FnData::from_ast(var, "std::".to_owned(), "", "std");
+        func.with_meta(&var.outer_attrs);
+        assert_eq!(func.properties.added_in, VersionConstraint::parse("3.0"));
+
+        let BodyItem::TypeDeclaration(ty) = &program.body[1] else {
+            panic!("expected a type declaration");
+        };
+        let mut ty_data = TyData::from_ast(ty, "std::".to_owned(), "", "std");
+        ty_data.with_meta(&ty.outer_attrs);
+        assert_eq!(ty_data.properties.added_in, VersionConstraint::parse("2.1"));
+        assert!(ty_data.properties.experimental);
+
+        let BodyItem::VariableDeclaration(var) = &program.body[2] else {
+            panic!("expected a constant declaration");
+        };
+        let mut cnst = ConstData::from_ast(var, "std::".to_owned(), "", "std");
+        cnst.with_meta(&var.outer_attrs);
+        assert_eq!(cnst.properties.added_in, VersionConstraint::parse("3.0"));
     }
 
     #[test]
@@ -1807,50 +1938,56 @@ mod test {
             }
             eprintln!("Testing example {NAME} for {owner_name} in {}", source_path.display());
             eprintln!("KCL program:\n---\n{}\n---", eg.0.trim_end());
-            let result = match crate::test_server::execute_and_snapshot_3d(&eg.0, None).await {
-                Err(crate::errors::ExecError::Kcl(e)) => {
+
+            let result =
+                match crate::test_server::kcl_doc_execute_and_snapshot(&eg.0, None, eg.1.no3d, eg.1.norun).await {
+                    Err(crate::errors::ExecError::Kcl(e)) => {
+                        panic!(
+                            "Error testing example {NAME} for {owner_name} in {}: {}",
+                            source_path.display(),
+                            e.error.message()
+                        );
+                    }
+                    Err(other_err) => panic!(
+                        "Error testing example {NAME} for {owner_name} in {}: {other_err}",
+                        source_path.display()
+                    ),
+                    Ok(img) => img,
+                };
+
+            let assert_images_match = |img: image::DynamicImage| {
+                if let Err(err) = twenty_twenty::try_assert_image(
+                    format!(
+                        "tests/outputs/serial_test_example_fn_{}{i}.png",
+                        qualname.replace("::", "-")
+                    ),
+                    &img,
+                    0.99,
+                ) {
                     panic!(
-                        "Error testing example {NAME} for {owner_name} in {}: {}",
-                        source_path.display(),
-                        e.error.message()
+                        "Image assertion failed for example {NAME} for {owner_name} in {}: {err}",
+                        source_path.display()
                     );
                 }
-                Err(other_err) => panic!(
-                    "Error testing example {NAME} for {owner_name} in {}: {other_err}",
-                    source_path.display()
-                ),
-                Ok(img) => img,
             };
-            if eg.1.norun {
-                return;
-            }
-            if let Err(err) = twenty_twenty::try_assert_image(
-                format!(
-                    "tests/outputs/serial_test_example_fn_{}{i}.png",
-                    qualname.replace("::", "-")
-                ),
-                &result.image,
-                0.99,
-            ) {
-                panic!(
-                    "Image assertion failed for example {NAME} for {owner_name} in {}: {err}",
-                    source_path.display()
-                );
-            }
-            // Doc generation omits the model viewer for a `no3d` example, so
-            // writing its glTF would produce a file no page can ever link to.
-            // Keep this in step with the `gltf_path` rule in `gen_std_tests`.
-            if !eg.1.no3d {
-                for gltf_file in result.gltf {
+
+            match result {
+                TestGraphicsArtifact::None => return,
+                TestGraphicsArtifact::Image(img) => assert_images_match(img),
+                TestGraphicsArtifact::ImageAndGlb { image, glb } => {
+                    assert_images_match(image);
+                    // Doc generation omits the model viewer for a `no3d` example. Its
+                    // glb export was already skipped by `execute_and_snapshot_3d`.
+                    // Keep this in step with the `gltf_path` rule in `gen_std_tests`.
                     let path = format!(
                         "tests/outputs/models/serial_test_example_fn_{}{i}_{}",
                         qualname.replace("::", "-"),
-                        gltf_file.name,
+                        glb.name,
                     );
                     let mut f = std::fs::File::create(path).expect("could not create file");
-                    std::io::Write::write_all(&mut f, &gltf_file.contents).expect("could not write to file");
+                    std::io::Write::write_all(&mut f, &glb.bytes).expect("could not write to file");
                 }
-            }
+            };
             return;
         }
 

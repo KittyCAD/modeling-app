@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties surgical-drill-guide.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -0.000000001897298318453977,
+      "y": 44.23213446488944,
+      "z": 12.80536482172553
+    },
+    "dimensions": {
+      "x": 38.91891891752432,
+      "y": 250.45464998654543,
+      "z": 119.61072964345108
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 27956.215690217337
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 74.10358453519007
+  }
+}

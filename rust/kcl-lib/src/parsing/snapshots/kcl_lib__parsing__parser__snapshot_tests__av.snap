@@ -113,7 +113,8 @@ expression: actual
             "commentStart": 13,
             "end": 59,
             "moduleId": 0,
-            "start": 13
+            "start": 13,
+            "type": "Program"
           },
           "commentStart": 4,
           "end": 59,
@@ -163,5 +164,6 @@ expression: actual
   "commentStart": 0,
   "end": 59,
   "moduleId": 0,
-  "start": 0
+  "start": 0,
+  "type": "Program"
 }

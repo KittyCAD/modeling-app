@@ -257,6 +257,21 @@ fn lexes_import_as_keyword_based_on_text_only() {
 }
 
 #[test]
+fn lexes_use_as_keyword_based_on_text_only() {
+    assert_tokens("use", &[(SyntaxKind::UseKw, "use", 0..3)]);
+    assert_tokens(
+        "use(3)",
+        &[
+            (SyntaxKind::UseKw, "use", 0..3),
+            (SyntaxKind::OpenParen, "(", 3..4),
+            (SyntaxKind::Number, "3", 4..5),
+            (SyntaxKind::CloseParen, ")", 5..6),
+        ],
+    );
+    assert_tokens("useful", &[(SyntaxKind::Word, "useful", 0..6)]);
+}
+
+#[test]
 fn lexes_numbers_and_ranges() {
     assert_tokens(
         "1_ 1_mm 1m 1inch .5 0..10 0..<10",

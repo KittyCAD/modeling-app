@@ -94,18 +94,14 @@ extrude001 = extrude(sketch001, length = 5)`
     await expect(page.getByText('ApiError')).not.toBeVisible()
   })
 
-  test('KCL errors with functions show hints for the entire backtrace', async ({
-    page,
-    homePage,
-    scene,
-    cmdBar,
-    editor,
-    toolbar,
-  }) => {
-    await homePage.goToModelingScene()
-    await scene.settled()
+  test(
+    'KCL errors with functions show hints for the entire backtrace',
+    { tag: '@web' },
+    async ({ page, homePage, scene, cmdBar, editor, toolbar }) => {
+      await homePage.goToModelingScene()
+      await scene.settled()
 
-    const code = `fn check(@x) {
+      const code = `fn check(@x) {
   return assert(x, isGreaterThan = 0)
 }
 
@@ -116,28 +112,29 @@ fn middle(@x) {
 middle(1)
 middle(0)
 `
-    await test.step('Set the code with a KCL error', async () => {
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.replaceCode('', code)
-    })
-    // This shows all the diagnostics in a way that doesn't require the mouse
-    // pointer hovering over a coordinate, which would be brittle.
-    await test.step('Open CodeMirror diagnostics list', async () => {
-      // Ensure keyboard focus is in the editor.
-      await page.getByText('fn check(').click()
-      await page.keyboard.press('ControlOrMeta+Shift+M')
-    })
-    await expect(
-      page.getByText(`assert failed: Expected 0 to be greater than 0 but it wasn't
+      await test.step('Set the code with a KCL error', async () => {
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.replaceCode('', code)
+      })
+      // This shows all the diagnostics in a way that doesn't require the mouse
+      // pointer hovering over a coordinate, which would be brittle.
+      await test.step('Open CodeMirror diagnostics list', async () => {
+        // Ensure keyboard focus is in the editor.
+        await page.getByText('fn check(').click()
+        await page.keyboard.press('ControlOrMeta+Shift+M')
+      })
+      await expect(
+        page.getByText(`assert failed: Expected 0 to be greater than 0 but it wasn't
 
 Backtrace:
 assert()
 check()
 middle()`)
-    ).toBeVisible()
-    // There should be one hint inside middle() and one at the top level.
-    await expect(page.getByText('Part of the error backtrace')).toHaveCount(2)
-  })
+      ).toBeVisible()
+      // There should be one hint inside middle() and one at the top level.
+      await expect(page.getByText('Part of the error backtrace')).toHaveCount(2)
+    }
+  )
 
   test('KCL errors from imported files show the import backtrace', async ({
     page,
@@ -189,7 +186,7 @@ middle()`)
     // The original error message is preserved, and import frames are
     // labeled as imports (no call parens), innermost first.
     await expect(
-      page.getByText(`\`missingName\` is not defined
+      page.getByLabel('Diagnostics').getByText(`\`missingName\` is not defined
 
 Backtrace:
 import broken.kcl
@@ -201,104 +198,106 @@ import assembly.kcl`)
   })
 })
 
-test('Opening multiple panes persists when switching projects', async ({
-  page,
-  folderSetupFn,
-}) => {
-  // Setup multiple projects.
-  await folderSetupFn(async (dir) => {
-    const routerTemplateDir = join(dir, 'router-template-slate')
-    const bracketDir = join(dir, 'bracket')
-    await Promise.all([
-      fsp.mkdir(routerTemplateDir, { recursive: true }),
-      fsp.mkdir(bracketDir, { recursive: true }),
-    ])
-    await Promise.all([
-      fsp.copyFile(
-        executorInputPath('cylinder-inches.kcl'),
-        join(routerTemplateDir, 'main.kcl')
-      ),
-      fsp.copyFile(
-        executorInputPath('e2e-can-sketch-on-chamfer.kcl'),
-        join(bracketDir, 'main.kcl')
-      ),
-    ])
-  })
+test(
+  'Opening multiple panes persists when switching projects',
+  { tag: '@desktop' },
+  async ({ page, folderSetupFn }) => {
+    // Setup multiple projects.
+    await folderSetupFn(async (dir) => {
+      const routerTemplateDir = join(dir, 'router-template-slate')
+      const bracketDir = join(dir, 'bracket')
+      await Promise.all([
+        fsp.mkdir(routerTemplateDir, { recursive: true }),
+        fsp.mkdir(bracketDir, { recursive: true }),
+      ])
+      await Promise.all([
+        fsp.copyFile(
+          executorInputPath('cylinder-inches.kcl'),
+          join(routerTemplateDir, 'main.kcl')
+        ),
+        fsp.copyFile(
+          executorInputPath('e2e-can-sketch-on-chamfer.kcl'),
+          join(bracketDir, 'main.kcl')
+        ),
+      ])
+    })
 
-  const u = await getUtils(page)
-  await page.setBodyDimensions({ width: 1200, height: 500 })
+    const u = await getUtils(page)
+    await page.setBodyDimensions({ width: 1200, height: 500 })
 
-  await test.step('Opening the bracket project should load', async () => {
-    await expect(page.getByText('bracket')).toBeVisible()
+    await test.step('Opening the bracket project should load', async () => {
+      await expect(page.getByText('bracket')).toBeVisible()
 
-    await page.getByText('bracket').click()
+      await page.getByText('bracket').click()
 
-    await u.waitForPageLoad()
-  })
+      await u.waitForPageLoad()
+    })
 
-  // If they're open by default, we're not actually testing anything.
-  await test.step('Pre-condition: panes are not already visible', async () => {
-    await expect(page.locator('#variables-pane')).not.toBeVisible()
-    await expect(page.locator('#logs-pane')).not.toBeVisible()
-  })
+    // If they're open by default, we're not actually testing anything.
+    await test.step('Pre-condition: panes are not already visible', async () => {
+      await expect(page.locator('#variables-pane')).not.toBeVisible()
+      await expect(page.locator('#logs-pane')).not.toBeVisible()
+    })
 
-  await test.step('Open multiple panes', async () => {
+    await test.step('Open multiple panes', async () => {
+      await u.openKclCodePanel()
+      await u.openVariablesPane()
+      await u.openLogsPane()
+    })
+
+    await test.step('Clicking the logo takes us back to the projects page / home', async () => {
+      await page.getByTestId('app-logo').click()
+
+      await expect(page.getByRole('link', { name: 'bracket' })).toBeVisible()
+      await expect(page.getByText('router-template-slate')).toBeVisible()
+      await expect(page.getByText('Create project')).toBeVisible()
+    })
+
+    await test.step('Opening the router-template project should load', async () => {
+      await expect(page.getByText('router-template-slate')).toBeVisible()
+
+      await page.getByText('router-template-slate').click()
+
+      await u.waitForPageLoad()
+    })
+
+    await test.step('All panes opened before should be visible', async () => {
+      await expect(page.locator('#code-pane')).toBeVisible()
+      await expect(page.locator('#variables-pane')).toBeVisible()
+      await expect(page.locator('#logs-pane')).toBeVisible()
+    })
+  }
+)
+
+test(
+  'external change of file contents are reflected in editor',
+  { tag: '@desktop' },
+  async ({ page, folderSetupFn }) => {
+    const PROJECT_DIR_NAME = 'lee-was-here'
+    const { dir: projectsDir } = await folderSetupFn(async (dir) => {
+      const aProjectDir = join(dir, PROJECT_DIR_NAME)
+      await fsp.mkdir(aProjectDir, { recursive: true })
+    })
+
+    const u = await getUtils(page)
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+
+    await test.step('Open the project', async () => {
+      await expect(page.getByText(PROJECT_DIR_NAME)).toBeVisible()
+      await page.getByText(PROJECT_DIR_NAME).click()
+      await u.waitForPageLoad()
+    })
+
+    await u.openFilePanel()
     await u.openKclCodePanel()
-    await u.openVariablesPane()
-    await u.openLogsPane()
-  })
 
-  await test.step('Clicking the logo takes us back to the projects page / home', async () => {
-    await page.getByTestId('app-logo').click()
-
-    await expect(page.getByRole('link', { name: 'bracket' })).toBeVisible()
-    await expect(page.getByText('router-template-slate')).toBeVisible()
-    await expect(page.getByText('Create project')).toBeVisible()
-  })
-
-  await test.step('Opening the router-template project should load', async () => {
-    await expect(page.getByText('router-template-slate')).toBeVisible()
-
-    await page.getByText('router-template-slate').click()
-
-    await u.waitForPageLoad()
-  })
-
-  await test.step('All panes opened before should be visible', async () => {
-    await expect(page.locator('#code-pane')).toBeVisible()
-    await expect(page.locator('#variables-pane')).toBeVisible()
-    await expect(page.locator('#logs-pane')).toBeVisible()
-  })
-})
-
-test('external change of file contents are reflected in editor', async ({
-  page,
-  folderSetupFn,
-}) => {
-  const PROJECT_DIR_NAME = 'lee-was-here'
-  const { dir: projectsDir } = await folderSetupFn(async (dir) => {
-    const aProjectDir = join(dir, PROJECT_DIR_NAME)
-    await fsp.mkdir(aProjectDir, { recursive: true })
-  })
-
-  const u = await getUtils(page)
-  await page.setBodyDimensions({ width: 1200, height: 500 })
-
-  await test.step('Open the project', async () => {
-    await expect(page.getByText(PROJECT_DIR_NAME)).toBeVisible()
-    await page.getByText(PROJECT_DIR_NAME).click()
-    await u.waitForPageLoad()
-  })
-
-  await u.openFilePanel()
-  await u.openKclCodePanel()
-
-  await test.step('Write to file externally and check for changed content', async () => {
-    const content = 'foobar'
-    await fsp.writeFile(
-      join(projectsDir, PROJECT_DIR_NAME, 'main.kcl'),
-      content
-    )
-    await u.editorTextMatches(content)
-  })
-})
+    await test.step('Write to file externally and check for changed content', async () => {
+      const content = 'foobar'
+      await fsp.writeFile(
+        join(projectsDir, PROJECT_DIR_NAME, 'main.kcl'),
+        content
+      )
+      await u.editorTextMatches(content)
+    })
+  }
+)

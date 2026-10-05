@@ -206,7 +206,8 @@ description: Result of parsing named_views_duplicate_from_a_function.kcl
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "start": 0
+              "start": 0,
+              "type": "Program"
             },
             "commentStart": 0,
             "end": 0,
@@ -371,7 +372,7 @@ description: Result of parsing named_views_duplicate_from_a_function.kcl
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "name": "experimentalFeatures",
+              "name": "kclVersion",
               "start": 0,
               "type": "Identifier"
             },
@@ -379,22 +380,14 @@ description: Result of parsing named_views_duplicate_from_a_function.kcl
             "start": 0,
             "type": "ObjectProperty",
             "value": {
-              "abs_path": false,
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "name": {
-                "commentStart": 0,
-                "end": 0,
-                "moduleId": 0,
-                "name": "allow",
-                "start": 0,
-                "type": "Identifier"
-              },
-              "path": [],
+              "raw": "\"3.0-preview\"",
               "start": 0,
-              "type": "Name",
-              "type": "Name"
+              "type": "Literal",
+              "type": "Literal",
+              "value": "3.0-preview"
             }
           }
         ],
@@ -420,6 +413,7 @@ description: Result of parsing named_views_duplicate_from_a_function.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

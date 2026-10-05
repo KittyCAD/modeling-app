@@ -2066,6 +2066,7 @@ description: Result of parsing sketch_block_coincident_constraint.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

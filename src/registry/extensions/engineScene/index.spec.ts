@@ -1,12 +1,16 @@
 import {
-  Registry,
   defineRegistryItem,
   pluginsValueSpec,
   provideService,
+  Registry,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import type { modelingMachine } from '@src/machines/modelingMachine'
-import { commandsValueSpec } from '@src/registry/contracts/commands'
+import {
+  commandsValueSpec,
+  FILE_COMMAND_SCOPES,
+  MODE_MODELING_COMMAND_SCOPE,
+} from '@src/registry/contracts/commands'
 import {
   type EngineSceneExtensionContext,
   engineSceneStreamClassNamesValueSpec,
@@ -17,10 +21,7 @@ import {
 } from '@src/registry/contracts/engineScene'
 import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
-import {
-  MODE_MODELING_KEYMAP_SCOPE,
-  keymapValueSpec,
-} from '@src/registry/contracts/keymap'
+import { keymapValueSpec } from '@src/registry/contracts/keymap'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import {
   statusBarGlobalItemsValueSpec,
@@ -31,7 +32,6 @@ import type { StateFrom } from 'xstate'
 import engineSceneExtension, { ENGINE_SCENE_COMMAND_IDS } from '.'
 import { measurementToolService } from './measurementToolService'
 import { physicalAnalysisService } from './physicalAnalysis/physicalAnalysisService'
-import { saveViewportScreenshot } from './saveViewportScreenshot'
 
 vi.mock('@src/components/ExperimentalFeaturesMenu', () => ({
   ExperimentalFeaturesMenu: () => null,
@@ -48,14 +48,15 @@ vi.mock('@src/components/UnitsMenu', () => ({
 
 function createExecutingEditorService(
   isExecuting = signal(false),
-  showExperimentalFeaturesStatusBarItem = signal(true)
+  showExperimentalFeaturesStatusBarItem = signal(true),
+  selectionStatusLabel = signal('No selection')
 ): ExecutingEditorService {
   return {
     code: signal(''),
     hasEditsSinceLastExecution: signal(false),
     isExecuting,
-    executionElapsedMs: signal(0),
-    selectionStatusLabel: signal('No selection'),
+    executionElapsedMs: signal<number | null>(null),
+    selectionStatusLabel,
     showExperimentalFeaturesStatusBarItem,
     getPendingCommandCount: vi.fn(() => 0),
     executeCode: vi.fn(),
@@ -137,6 +138,34 @@ describe('engineScene extension', () => {
     ])
   })
 
+  it('updates the selection status item when its label changes', () => {
+    const registry = new Registry()
+    const selectionStatusLabel = signal('No selection')
+    const executionService = createExecutingEditorService(
+      undefined,
+      undefined,
+      selectionStatusLabel
+    )
+    registry.configure([
+      defineRegistryItem({
+        id: 'test-executing-editor-service',
+        providesServices: [
+          provideService(executingEditorService, executionService),
+        ],
+      }),
+      engineSceneExtension,
+    ])
+
+    const before = registry.get(statusBarLocalItemsValueSpec)
+    selectionStatusLabel.value = '1 edge'
+    const after = registry.get(statusBarLocalItemsValueSpec)
+
+    expect(after).not.toBe(before)
+    expect(after.find((item) => item.id === 'selection')).not.toBe(
+      before.find((item) => item.id === 'selection')
+    )
+  })
+
   it('contributes a command and modeling keybinding to open the measure tool', () => {
     measurementToolService.close()
     const registry = new Registry()
@@ -155,10 +184,11 @@ describe('engineScene extension', () => {
       displayName: 'Open measure tool',
       icon: 'ruler',
       needsReview: false,
+      scopes: [MODE_MODELING_COMMAND_SCOPE],
     })
     expect(keymapItem).toMatchObject({
       title: 'Open measure tool',
-      scopes: [MODE_MODELING_KEYMAP_SCOPE],
+      when: [MODE_MODELING_COMMAND_SCOPE],
       keystrokes: ['shift+m'],
       command: ENGINE_SCENE_COMMAND_IDS.openMeasureTool,
     })
@@ -189,10 +219,11 @@ describe('engineScene extension', () => {
       displayName: 'Open physical analysis tool',
       icon: 'scales',
       needsReview: false,
+      scopes: [MODE_MODELING_COMMAND_SCOPE],
     })
     expect(keymapItem).toMatchObject({
       title: 'Open physical analysis tool',
-      scopes: [MODE_MODELING_KEYMAP_SCOPE],
+      when: [MODE_MODELING_COMMAND_SCOPE],
       keystrokes: ['shift+p'],
       command: ENGINE_SCENE_COMMAND_IDS.openPhysicalAnalysisTool,
     })
@@ -220,7 +251,8 @@ describe('engineScene extension', () => {
       description: 'Save the current modeling viewport as a PNG image.',
       icon: 'camera',
       needsReview: false,
-      onSubmit: saveViewportScreenshot,
+      scopes: FILE_COMMAND_SCOPES,
+      onSubmit: expect.any(Function),
     })
     expect(command?.hideFromSearch).not.toBe(true)
   })

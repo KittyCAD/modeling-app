@@ -180,10 +180,25 @@ export function throttle<T>(
 export function deferredCallback<T>(func: (args: T) => any, wait: number) {
   let timeout: ReturnType<typeof setTimeout> | null
   let latestArgs: T
+  let running: Promise<void> | null = null
+
+  function invoke() {
+    timeout = null
+    const invocation = Promise.resolve(func(latestArgs)).then(() => undefined)
+    running = invocation
+    void invocation.then(
+      () => {
+        if (running === invocation) running = null
+      },
+      () => {
+        if (running === invocation) running = null
+      }
+    )
+    return invocation
+  }
 
   function later() {
-    timeout = null
-    func(latestArgs)
+    void invoke()
   }
 
   function deferred(args: T) {
@@ -192,6 +207,18 @@ export function deferredCallback<T>(func: (args: T) => any, wait: number) {
       clearTimeout(timeout)
     }
     timeout = setTimeout(later, wait)
+  }
+
+  deferred.flush = async () => {
+    while (running || timeout) {
+      if (running) {
+        await running
+        continue
+      }
+
+      clearTimeout(timeout as ReturnType<typeof setTimeout>)
+      await invoke()
+    }
   }
 
   return deferred
@@ -366,8 +393,7 @@ export function baseUnitToMm(baseUnit: BaseUnit): number {
       return 914.4
   }
 
-  const _exhaustiveCheck: never = baseUnit
-  console.error(`Unsupported base unit: ${String(_exhaustiveCheck)}`)
+  console.error(`Unsupported base unit: ${String(baseUnit)}`)
   return Number.NaN
 }
 

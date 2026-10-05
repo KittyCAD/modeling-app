@@ -38,7 +38,10 @@ describe('useOnPageExit', () => {
     unmount()
     expect(callback).toHaveBeenCalledTimes(1)
     // eslint-disable-next-line @typescript-eslint/unbound-method
-    expect(engineCommandManager.tearDown).toHaveBeenCalledTimes(1)
+    expect(engineCommandManager.tearDown).toHaveBeenCalledExactlyOnceWith({
+      route: 'page-exit',
+      initiatedBy: 'client',
+    })
     expect(sceneInfra.camControls.oldCameraState).toBe(undefined)
   })
 })

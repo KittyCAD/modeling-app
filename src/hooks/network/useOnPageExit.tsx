@@ -32,7 +32,10 @@ export const useOnPageExit = ({
         label: 'useOnPageExit.tsx',
         message: `Exiting the page, calling tearDown()`,
       })
-      engineCommandManager.tearDown()
+      engineCommandManager.tearDown({
+        route: 'page-exit',
+        initiatedBy: 'client',
+      })
       sceneInfra.camControls.oldCameraState = undefined
     }
   }, [callback, engineCommandManager, sceneInfra])

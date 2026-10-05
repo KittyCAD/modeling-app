@@ -31,6 +31,8 @@ use crate::front::Freedom;
 use crate::front::Object;
 use crate::front::ObjectKind;
 use crate::std::args::TyF64;
+use crate::std::solver::POINT_POINT_2D_COINCIDENT_CHEBYSHEV_TOLERANCE_MM;
+use crate::std::solver::SOLVER_CONVERGENCE_TOLERANCE;
 
 /// Freedom analysis results from solving a sketch constraint system. The `Vec`
 /// is converted to a set to avoid quadratic runtime.
@@ -54,6 +56,17 @@ impl FreedomAnalysis {
 
 fn solver_unit(exec_state: &ExecState) -> UnitLength {
     exec_state.length_unit()
+}
+
+pub(crate) fn solver_convergence_tolerance(exec_state: &ExecState) -> f64 {
+    if exec_state.entry_point_version_is_v3_or_higher() {
+        UnitLength::Millimeters.convert_to(
+            solver_unit(exec_state),
+            POINT_POINT_2D_COINCIDENT_CHEBYSHEV_TOLERANCE_MM,
+        )
+    } else {
+        SOLVER_CONVERGENCE_TOLERANCE
+    }
 }
 
 pub(crate) fn solver_numeric_type(exec_state: &ExecState) -> NumericType {
@@ -1014,6 +1027,8 @@ mod tests {
     use crate::execution::ArtifactId;
     use crate::execution::BasePath;
     use crate::execution::GeoMeta;
+    use crate::execution::KclVersion;
+    use crate::execution::Path;
     use crate::execution::Plane;
     use crate::execution::PlaneInfo;
     use crate::execution::PlaneKind;
@@ -1025,6 +1040,37 @@ mod tests {
     use crate::front::ObjectId;
     use crate::front::Point2d;
     use crate::std::sketch::PlaneData;
+
+    #[tokio::test]
+    async fn solver_convergence_tolerance_uses_entry_point_version_and_sketch_units() {
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new(&ctx);
+
+        exec_state.global.entry_point_kcl_version = Some(KclVersion::V2);
+        exec_state.mod_local.settings.default_length_units = UnitLength::Millimeters;
+        assert_eq!(solver_convergence_tolerance(&exec_state), SOLVER_CONVERGENCE_TOLERANCE);
+
+        exec_state.mod_local.settings.default_length_units = UnitLength::Inches;
+        assert_eq!(solver_convergence_tolerance(&exec_state), SOLVER_CONVERGENCE_TOLERANCE);
+
+        exec_state.global.entry_point_kcl_version = Some(KclVersion::V3Preview);
+        for (unit, expected) in [
+            (UnitLength::Millimeters, 1e-8),
+            (UnitLength::Centimeters, 1e-9),
+            (UnitLength::Meters, 1e-11),
+            (UnitLength::Inches, 1e-8 / 25.4),
+            (UnitLength::Feet, 1e-8 / (25.4 * 12.0)),
+            (UnitLength::Yards, 1e-8 / (25.4 * 36.0)),
+        ] {
+            exec_state.mod_local.settings.default_length_units = unit;
+            approx::assert_relative_eq!(
+                solver_convergence_tolerance(&exec_state),
+                expected,
+                epsilon = 0.0,
+                max_relative = 1e-12
+            );
+        }
+    }
 
     fn test_point(x: f64, y: f64) -> Point2d<Expr> {
         Point2d {
@@ -1061,7 +1107,7 @@ mod tests {
         };
         Sketch {
             id,
-            paths: vec![],
+            paths: Default::default(),
             inner_paths: vec![],
             on: surface,
             start: base,
@@ -1075,6 +1121,42 @@ mod tests {
             units: UnitLength::Millimeters,
             meta: vec![],
             is_closed: ProfileClosed::No,
+        }
+    }
+
+    #[test]
+    fn sketch_path_clones_are_independent_and_serialize_as_arrays() {
+        for path_count in [0, 1, 64, 65, 128, 129, 1024] {
+            let mut original = test_sketch(test_surface());
+            let paths: Vec<_> = (0..path_count)
+                .map(|i| {
+                    let mut base = original.start.clone();
+                    base.to = [i as f64, 0.0];
+                    Path::ToPoint { base }
+                })
+                .collect();
+            original.paths = paths.iter().cloned().collect();
+            let before = serde_json::to_value(&original).unwrap();
+            assert_eq!(before["paths"], serde_json::to_value(&paths).unwrap());
+
+            let mut cloned = original.clone();
+            cloned.paths.push_back(Path::ToPoint {
+                base: original.start.clone(),
+            });
+            let new_id = Uuid::new_v4();
+            cloned.paths.front_mut().unwrap().set_id(new_id);
+
+            assert_eq!(cloned.paths.len(), path_count + 1);
+            assert_eq!(cloned.paths.front().unwrap().get_id(), new_id);
+            assert_eq!(original.paths.len(), path_count);
+            assert_eq!(serde_json::to_value(&original).unwrap(), before);
+            assert_eq!(
+                serde_json::to_value(&cloned).unwrap()["paths"]
+                    .as_array()
+                    .unwrap()
+                    .len(),
+                path_count + 1
+            );
         }
     }
 

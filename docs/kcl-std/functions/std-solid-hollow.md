@@ -68,7 +68,7 @@ subtract([solidCube, hollowCube], tools = tool)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the hollow function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-hollow0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-hollow0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-hollow0.png"
@@ -105,7 +105,7 @@ hollow(case, thickness = 0.5)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the hollow function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-hollow1_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-hollow1_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-hollow1.png"

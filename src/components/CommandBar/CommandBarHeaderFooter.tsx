@@ -1,3 +1,4 @@
+import decamelize from 'decamelize'
 import type React from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -14,7 +15,7 @@ import type {
   KclExpressionWithVariable,
 } from '@src/lib/commandTypes'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
-import { roundOffWithUnits } from '@src/lib/utils'
+import { capitaliseFC, roundOffWithUnits } from '@src/lib/utils'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 
 function CommandBarHeaderFooter({
@@ -230,9 +231,13 @@ function CommandBarHeaderFooter({
                     <span
                       data-testid={`arg-name-${argName.toLowerCase()}`}
                       data-test-name="arg-name"
-                      className="capitalize"
+                      data-test-arg-name={arg.displayName || argName}
+                      data-test-arg-label={
+                        arg.displayName || capitaliseFC(argName)
+                      }
                     >
-                      {arg.displayName || argName}
+                      {arg.displayName ||
+                        capitaliseFC(decamelize(argName, { separator: ' ' }))}
                     </span>
                     <span className="sr-only">:&nbsp;</span>
                     <span data-testid="header-arg-value">
@@ -242,7 +247,8 @@ function CommandBarHeaderFooter({
                           arg.inputType === 'selectionMixed') ? (
                           getSelectionTypeDisplayText(
                             project.executingEditor.value.astSignal.value,
-                            argValue as Selections
+                            argValue as Selections,
+                            project.executingEditor.value.artifactGraph
                           )
                         ) : arg.inputType === 'kcl' &&
                           (argValue as KclCommandValue).valueCalculated ? (

@@ -304,7 +304,8 @@ pub struct Segment {
 pub struct Sweep {
     pub id: ArtifactId,
     pub sub_type: SweepSubType,
-    pub path_id: ArtifactId,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub path_id: Option<ArtifactId>,
     pub surface_ids: Vec<ArtifactId>,
     pub edge_ids: Vec<ArtifactId>,
     pub code_ref: CodeRef,
@@ -520,7 +521,12 @@ pub enum SweepEdgeSubType {
 pub struct EdgeCut {
     pub id: ArtifactId,
     pub sub_type: EdgeCutSubType,
-    pub consumed_edge_id: ArtifactId,
+    /// Index of the source selector in an `edges` argument, when this edge cut
+    /// was created from an edge-reference command.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source_selector_index: Option<usize>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub consumed_edge_id: Option<ArtifactId>,
     pub edge_ids: Vec<ArtifactId>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub surface_id: Option<ArtifactId>,
@@ -566,6 +572,8 @@ pub struct Helix {
 pub struct ImportedGeometryArtifact {
     pub id: ArtifactId,
     pub code_ref: CodeRef,
+    #[serde(default)]
+    pub consumed: bool,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, Eq, ts_rs::TS)]
@@ -574,6 +582,8 @@ pub struct ImportedGeometryArtifact {
 pub struct GdtAnnotationArtifact {
     pub id: ArtifactId,
     pub code_ref: CodeRef,
+    #[serde(default)]
+    pub consumed: bool,
 }
 
 /// A named view declared in KCL by `view::named`: a display name, camera intent

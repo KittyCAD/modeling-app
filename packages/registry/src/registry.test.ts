@@ -16,6 +16,14 @@ import {
   mergeObjectsValueSpec,
 } from './valueSpec'
 
+function deferred() {
+  let resolve = () => {}
+  const promise = new Promise<void>((done) => {
+    resolve = done
+  })
+  return { promise, resolve }
+}
+
 describe('Registry', () => {
   it('resolves static and reactive value-spec contributions', () => {
     const itemsSignal = appendValueSpec<string>('items')
@@ -196,5 +204,174 @@ describe('Registry', () => {
 
     expect(container.get(visitedValueSpec)).toEqual(['a', 'b'])
     expect(unreachableCalls).not.toHaveBeenCalled()
+  })
+
+  it('removes an unmounted runtime immediately and awaits its async finalizer', async () => {
+    const values = appendValueSpec<string>('async-disposal.values')
+    const slot = new Slot()
+    const release = deferred()
+    const events: string[] = []
+    const runtime = defineRegistryItemFactory(() => {
+      return {
+        item: {
+          provides: [provide(values, 'mounted')],
+          dispose: async () => {
+            events.push('dispose:start')
+            await release.promise
+            events.push('dispose:end')
+          },
+        },
+      }
+    }, 'async-disposal.runtime')
+    const container = new Registry()
+    container.configure([slot.of(runtime)])
+    expect(container.get(values)).toEqual(['mounted'])
+
+    const disposed = container.reconfigureAsync(slot, [])
+    expect(container.get(values)).toEqual([])
+    expect(container.inspect().runtimeInstanceCount).toBe(0)
+    await vi.waitFor(() => expect(events).toEqual(['dispose:start']))
+
+    release.resolve()
+    await disposed
+    expect(events).toEqual(['dispose:start', 'dispose:end'])
+  })
+
+  it('deactivates every runtime before awaiting asynchronous finalizers', async () => {
+    const slot = new Slot()
+    const release = deferred()
+    const events: string[] = []
+    const immediate = defineRegistryItemFactory(() => {
+      return {
+        item: {
+          dispose: async () => {
+            events.push('immediate')
+          },
+        },
+      }
+    }, 'async-disposal.immediate')
+    const asynchronous = defineRegistryItemFactory(() => {
+      return {
+        item: {
+          dispose: async () => {
+            events.push('async:start')
+            await release.promise
+            events.push('async:end')
+          },
+        },
+      }
+    }, 'mixed-disposal.async')
+    const container = new Registry()
+    container.configure([slot.of(immediate, asynchronous)])
+    container.inspect()
+
+    const disposed = container.reconfigureAsync(slot, [])
+
+    expect(events).toEqual(['async:start', 'immediate'])
+    release.resolve()
+    await disposed
+    expect(events).toEqual(['async:start', 'immediate', 'async:end'])
+  })
+
+  it('disposes dependent runtime instances before their providers', async () => {
+    const events: string[] = []
+    const child = defineRegistryItemFactory(() => {
+      return {
+        item: {
+          dispose: async () => {
+            events.push('child')
+          },
+        },
+      }
+    }, 'async-disposal.child')
+    const parent = defineRegistryItemFactory(() => {
+      return {
+        item: {
+          uses: [child],
+          dispose: async () => {
+            events.push('parent')
+          },
+        },
+      }
+    }, 'async-disposal.parent')
+    const container = new Registry()
+    container.configure([parent])
+    container.inspect()
+
+    await container.configureAsync([])
+
+    expect(events).toEqual(['child', 'parent'])
+  })
+
+  it('runs every finalizer, aggregates failures, and keeps later cleanup healthy', async () => {
+    const firstFailure = new Error('first cleanup failed')
+    const secondFailure = new Error('second cleanup failed')
+    const events: string[] = []
+    const failingRuntime = (id: string, failure: Error) =>
+      defineRegistryItemFactory(() => {
+        return {
+          item: {
+            dispose: async () => {
+              events.push(id)
+              return Promise.reject(failure)
+            },
+          },
+        }
+      }, id)
+    const healthyRuntime = defineRegistryItemFactory(() => {
+      return {
+        item: {
+          dispose: async () => {
+            events.push('healthy')
+          },
+        },
+      }
+    }, 'async-disposal.healthy')
+    const container = new Registry()
+    container.configure([
+      failingRuntime('first', firstFailure),
+      failingRuntime('second', secondFailure),
+    ])
+    container.inspect()
+
+    const failed = container.configureAsync([])
+    await expect(failed).rejects.toEqual(
+      expect.objectContaining({
+        name: 'AggregateError',
+        errors: [secondFailure, firstFailure],
+      })
+    )
+    expect(events).toEqual(['second', 'first'])
+
+    await container.configureAsync([healthyRuntime])
+    await container.configureAsync([])
+    expect(events).toEqual(['second', 'first', 'healthy'])
+  })
+
+  it('supports awaited container disposal', async () => {
+    const release = deferred()
+    const events: string[] = []
+    const runtime = defineRegistryItemFactory(() => {
+      return {
+        item: {
+          dispose: async () => {
+            events.push('dispose:start')
+            await release.promise
+            events.push('dispose:end')
+          },
+        },
+      }
+    }, 'async-disposal.container')
+    const container = new Registry()
+    container.configure([runtime])
+    container.inspect()
+
+    const disposed = container.disposeAsync()
+    await vi.waitFor(() => expect(events).toEqual(['dispose:start']))
+    release.resolve()
+    await disposed
+
+    expect(events).toEqual(['dispose:start', 'dispose:end'])
+    expect(container.inspect().runtimeInstanceCount).toBe(0)
   })
 })

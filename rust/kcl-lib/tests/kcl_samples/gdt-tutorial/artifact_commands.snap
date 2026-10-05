@@ -314,6 +314,15 @@ description: Artifact commands gdt-tutorial.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "make_plane",
         "origin": {
           "x": 0.0,
@@ -349,14 +358,22 @@ description: Artifact commands gdt-tutorial.kcl
           "units": "mm",
           "dimension": {
             "from_entity_id": "[uuid]",
-            "from_entity_pos": {
-              "x": 0.0,
-              "y": 0.0
+            "from_entity_leader_pos": {
+              "normalized_pos": {
+                "pos": {
+                  "x": 0.0,
+                  "y": 0.0
+                }
+              }
             },
             "to_entity_id": "[uuid]",
-            "to_entity_pos": {
-              "x": 1.0,
-              "y": 0.0
+            "to_entity_leader_pos": {
+              "normalized_pos": {
+                "pos": {
+                  "x": 1.0,
+                  "y": 0.0
+                }
+              }
             },
             "dimension": {
               "symbol": null,

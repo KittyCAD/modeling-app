@@ -1,11 +1,14 @@
+import type { HoleBody, HoleBottom, HoleType } from '@src/lang/modifyAst/faces'
+import type { ProfileGdtFunction } from '@src/lang/modifyAst/gdt'
+import type { SweepRelativeTo } from '@src/lang/modifyAst/sweeps'
+import type {
+  ModelingStdLibCommandName,
+  modelingCommandStdLibDriftConfig,
+} from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type {
   STD_LIB_COMMANDS,
   StdLibCommandName,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
-
-import type { HoleBody, HoleBottom, HoleType } from '@src/lang/modifyAst/faces'
-import type { ProfileGdtFunction } from '@src/lang/modifyAst/gdt'
-import type { SweepRelativeTo } from '@src/lang/modifyAst/sweeps'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type {
   KclPreludeBodyType,
@@ -13,11 +16,48 @@ import type {
 } from '@src/lib/constants'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 
-// Adapts generated KCL stdlib metadata into the command-bar argument shapes.
-// UI-specific aliases and omissions stay explicit here.
-type StdLibCommandArg<Name extends StdLibCommandName> =
-  (typeof STD_LIB_COMMANDS)[Name]['args'][number]
+type DriftConfig = typeof modelingCommandStdLibDriftConfig
 
+// Extracts either `omittedStdLibArgs` or `deprecatedStdLibArgs` for one command, or `never`.
+type ConfiguredArgNames<
+  Name extends ModelingStdLibCommandName,
+  Key extends 'omittedStdLibArgs' | 'deprecatedStdLibArgs',
+> = DriftConfig[Name] extends Record<
+  Key,
+  readonly (infer ArgName extends string)[]
+>
+  ? ArgName
+  : never
+
+// Maps display names like `Boolean Subtract` to KCL names like `subtract`
+type ConfiguredStdLibName<Name extends ModelingStdLibCommandName> =
+  DriftConfig[Name]['stdLibName'] & StdLibCommandName
+
+// Retrieves the generated union of arguments for the KCL function
+type StdLibArgForCommand<Name extends ModelingStdLibCommandName> =
+  (typeof STD_LIB_COMMANDS)[ConfiguredStdLibName<Name>]['args'][number]
+
+// Filters that union of args:
+// - explicit omission through `omittedStdLibArgs` win
+// - active args are included automatically
+// - deprecated args are excluded unless explicitly listed in `deprecatedStdLibArgs`
+type PointAndClickStdLibCommandArg<
+  Name extends ModelingStdLibCommandName,
+  Arg = StdLibArgForCommand<Name>,
+> = Arg extends { readonly name: infer ArgName extends string }
+  ? ArgName extends ConfiguredArgNames<Name, 'omittedStdLibArgs'>
+    ? never
+    : Arg extends {
+          readonly deprecated: false
+          readonly deprecatedSince: null
+        }
+      ? Arg
+      : ArgName extends ConfiguredArgNames<Name, 'deprecatedStdLibArgs'>
+        ? Arg
+        : never
+  : never
+
+// Maps KCL types to TS types, with a fallback to Selections
 type StdLibCommandArgValue<Arg extends { readonly ty: string | null }> =
   Arg['ty'] extends 'bool'
     ? boolean
@@ -32,15 +72,20 @@ type StdLibCommandArgValue<Arg extends { readonly ty: string | null }> =
         ? KclCommandValue
         : Selections
 
-type StdLibCommandArgs<Name extends StdLibCommandName> = {
-  [Arg in StdLibCommandArg<Name> as Arg['required'] extends true
+// Turns the filtered stdlib args into an object type: `required: true` args become
+// required properties, while `required: false` args become optional properties.
+type PointAndClickCommandArgs<Name extends ModelingStdLibCommandName> = {
+  [Arg in PointAndClickStdLibCommandArg<Name> as Arg['required'] extends true
     ? Arg['name']
     : never]: StdLibCommandArgValue<Arg>
 } & {
-  [Arg in StdLibCommandArg<Name> as Arg['required'] extends false
+  [Arg in PointAndClickStdLibCommandArg<Name> as Arg['required'] extends false
     ? Arg['name']
     : never]?: StdLibCommandArgValue<Arg>
 }
+
+// Below we use the UI command name for all stdlib-derived base types, which
+// forces them through the drift config.
 
 type Override<Base, Overrides> = Omit<Base, keyof Overrides> & Overrides
 
@@ -53,14 +98,13 @@ type GdtObjectsArgs<Base> = Override<
   { objects: Selections } & GdtFrameArgs
 >
 
-type GdtObjectsCommandArgs<Name extends StdLibCommandName> = GdtObjectsArgs<
-  StdLibCommandArgs<Name>
->
+type GdtObjectsCommandArgs<Name extends ModelingStdLibCommandName> =
+  GdtObjectsArgs<PointAndClickCommandArgs<Name>>
 
 export type HelixModes = 'Axis' | 'Edge' | 'Cylinder'
 
 export type ExtrudeCommandArgs = Override<
-  StdLibCommandArgs<'extrude'>,
+  PointAndClickCommandArgs<'Extrude'>,
   {
     direction?: Selections
     method?: KclPreludeExtrudeMethod
@@ -69,7 +113,7 @@ export type ExtrudeCommandArgs = Override<
 >
 
 export type SweepCommandArgs = Override<
-  StdLibCommandArgs<'sweep'>,
+  PointAndClickCommandArgs<'Sweep'>,
   {
     relativeTo?: SweepRelativeTo
     bodyType?: KclPreludeBodyType
@@ -77,14 +121,14 @@ export type SweepCommandArgs = Override<
 >
 
 export type LoftCommandArgs = Override<
-  StdLibCommandArgs<'loft'>,
+  PointAndClickCommandArgs<'Loft'>,
   {
     bodyType?: KclPreludeBodyType
   }
 >
 
 export type RevolveCommandArgs = Override<
-  Omit<StdLibCommandArgs<'revolve'>, 'axis'>,
+  Omit<PointAndClickCommandArgs<'Revolve'>, 'axis'>,
   {
     axisOrEdge: 'Axis' | 'Edge'
     axis: string | undefined
@@ -94,10 +138,10 @@ export type RevolveCommandArgs = Override<
   }
 >
 
-export type ShellCommandArgs = Omit<StdLibCommandArgs<'shell'>, 'solids'>
+export type ShellCommandArgs = PointAndClickCommandArgs<'Shell'>
 
 export type HoleCommandArgs = Override<
-  Omit<StdLibCommandArgs<'hole::hole'>, 'solid'>,
+  PointAndClickCommandArgs<'Hole'>,
   {
     face: Selections
     cutAt: KclCommandValue
@@ -116,7 +160,7 @@ export type HoleCommandArgs = Override<
 >
 
 export type FilletCommandArgs = Override<
-  Omit<StdLibCommandArgs<'fillet'>, 'solid' | 'tags' | 'edges'>,
+  Omit<PointAndClickCommandArgs<'Fillet'>, 'tags'>,
   {
     selection: Selections
     radius: KclCommandValue
@@ -125,7 +169,7 @@ export type FilletCommandArgs = Override<
 >
 
 export type ChamferCommandArgs = Override<
-  Omit<StdLibCommandArgs<'chamfer'>, 'solid' | 'tags' | 'edges'>,
+  Omit<PointAndClickCommandArgs<'Chamfer'>, 'tags'>,
   {
     selection: Selections
     length: KclCommandValue
@@ -135,10 +179,10 @@ export type ChamferCommandArgs = Override<
   }
 >
 
-export type OffsetPlaneCommandArgs = StdLibCommandArgs<'offsetPlane'>
+export type OffsetPlaneCommandArgs = PointAndClickCommandArgs<'Offset plane'>
 
 export type HelixCommandArgs = Override<
-  Omit<StdLibCommandArgs<'helix'>, 'axis'>,
+  Omit<PointAndClickCommandArgs<'Helix'>, 'axis'>,
   {
     mode: HelixModes
     axis?: string
@@ -146,44 +190,45 @@ export type HelixCommandArgs = Override<
   }
 >
 
-export type HelicalGearCommandArgs = StdLibCommandArgs<'gear::helical'>
-export type HerringboneGearCommandArgs = StdLibCommandArgs<'gear::herringbone'>
-export type SpurGearCommandArgs = StdLibCommandArgs<'gear::spur'>
-export type RingGearCommandArgs = StdLibCommandArgs<'gear::ring'>
+export type HelicalGearCommandArgs = PointAndClickCommandArgs<'Helical Gear'>
+export type HerringboneGearCommandArgs =
+  PointAndClickCommandArgs<'Herringbone Gear'>
+export type SpurGearCommandArgs = PointAndClickCommandArgs<'Spur Gear'>
+export type RingGearCommandArgs = PointAndClickCommandArgs<'Ring Gear'>
 
 export type AppearanceCommandArgs = Override<
-  Omit<StdLibCommandArgs<'appearance'>, 'solids'>,
+  Omit<PointAndClickCommandArgs<'Appearance'>, 'solids'>,
   {
     objects: Selections
     color: string
   }
 >
 
-export type DeleteCommandArgs = StdLibCommandArgs<'delete'>
+export type DeleteCommandArgs = PointAndClickCommandArgs<'Delete'>
 
-export type TranslateCommandArgs = StdLibCommandArgs<'translate'>
+export type TranslateCommandArgs = PointAndClickCommandArgs<'Translate'>
 
 export type RotateCommandArgs = Override<
-  StdLibCommandArgs<'rotate'>,
+  PointAndClickCommandArgs<'Rotate'>,
   {
     axis?: string
   }
 >
 
-export type ScaleCommandArgs = StdLibCommandArgs<'scale'>
+export type ScaleCommandArgs = PointAndClickCommandArgs<'Scale'>
 
 export type CloneCommandArgs = Override<
-  Omit<StdLibCommandArgs<'clone'>, 'geometries'>,
+  Omit<PointAndClickCommandArgs<'Clone'>, 'geometries'>,
   {
     objects: Selections
     variableName: string
   }
 >
 
-export type Mirror3DCommandArgs = StdLibCommandArgs<'mirror3d'>
+export type Mirror3DCommandArgs = PointAndClickCommandArgs<'Mirror 3D'>
 
 export type PatternCircular3DCommandArgs = Override<
-  StdLibCommandArgs<'patternCircular3d'>,
+  PointAndClickCommandArgs<'Pattern Circular 3D'>,
   {
     axis: string
     center: KclCommandValue
@@ -191,74 +236,62 @@ export type PatternCircular3DCommandArgs = Override<
 >
 
 export type PatternLinear3DCommandArgs = Override<
-  StdLibCommandArgs<'patternLinear3d'>,
+  PointAndClickCommandArgs<'Pattern Linear 3D'>,
   { axis: string }
 >
 
 export type GdtFlatnessCommandArgs = Override<
-  StdLibCommandArgs<'gdt::flatness'>,
+  PointAndClickCommandArgs<'GDT Flatness'>,
   GdtFrameArgs
 >
 export type GdtStraightnessCommandArgs =
-  GdtObjectsCommandArgs<'gdt::straightness'>
-export type GdtCircularityCommandArgs =
-  GdtObjectsCommandArgs<'gdt::circularity'>
+  GdtObjectsCommandArgs<'GDT Straightness'>
+export type GdtCircularityCommandArgs = GdtObjectsCommandArgs<'GDT Circularity'>
 export type GdtCylindricityCommandArgs =
-  GdtObjectsCommandArgs<'gdt::cylindricity'>
-export type GdtPositionCommandArgs = GdtObjectsCommandArgs<'gdt::position'>
+  GdtObjectsCommandArgs<'GDT Cylindricity'>
+export type GdtPositionCommandArgs = GdtObjectsCommandArgs<'GDT Position'>
 export type GdtProfileCommandArgs = Override<
-  Omit<StdLibCommandArgs<'gdt::profileLine'>, 'edges'>,
+  Omit<PointAndClickCommandArgs<'GDT Profile'>, 'edges'>,
   {
     objects: Selections
     profileFunction?: ProfileGdtFunction
   } & GdtFrameArgs
 >
 export type GdtDistanceCommandArgs = Override<
-  Omit<StdLibCommandArgs<'gdt::distance'>, 'from' | 'to' | 'edges'>,
+  Omit<PointAndClickCommandArgs<'GDT Distance'>, 'from' | 'to' | 'edges'>,
   { objects: Selections } & GdtFrameArgs
 >
 export type GdtPerpendicularityCommandArgs =
-  GdtObjectsCommandArgs<'gdt::perpendicularity'>
-export type GdtAngularityCommandArgs = GdtObjectsCommandArgs<'gdt::angularity'>
+  GdtObjectsCommandArgs<'GDT Perpendicularity'>
+export type GdtAngularityCommandArgs = GdtObjectsCommandArgs<'GDT Angularity'>
 export type GdtConcentricityCommandArgs =
-  GdtObjectsCommandArgs<'gdt::concentricity'>
-export type GdtSymmetryCommandArgs = GdtObjectsCommandArgs<'gdt::symmetry'>
-export type GdtRunoutCommandArgs = GdtObjectsCommandArgs<'gdt::runout'>
-export type GdtParallelismCommandArgs =
-  GdtObjectsCommandArgs<'gdt::parallelism'>
-export type GdtAnnotationCommandArgs = GdtObjectsCommandArgs<'gdt::annotation'>
+  GdtObjectsCommandArgs<'GDT Concentricity'>
+export type GdtSymmetryCommandArgs = GdtObjectsCommandArgs<'GDT Symmetry'>
+export type GdtRunoutCommandArgs = GdtObjectsCommandArgs<'GDT Runout'>
+export type GdtParallelismCommandArgs = GdtObjectsCommandArgs<'GDT Parallelism'>
+export type GdtAnnotationCommandArgs = GdtObjectsCommandArgs<'GDT Annotation'>
 export type GdtNoteCommandArgs = Override<
-  StdLibCommandArgs<'gdt::note'>,
+  PointAndClickCommandArgs<'GDT Note'>,
   GdtFrameArgs
 >
 export type GdtDatumCommandArgs = Override<
-  Omit<StdLibCommandArgs<'gdt::datum'>, 'face'>,
+  Omit<PointAndClickCommandArgs<'GDT Datum'>, 'face'>,
   { faces: Selections } & GdtFrameArgs
 >
 
-export type BooleanSubtractCommandArgs = Omit<
-  StdLibCommandArgs<'subtract'>,
-  'legacyMethod'
->
-export type BooleanUnionCommandArgs = Omit<
-  StdLibCommandArgs<'union'>,
-  'legacyMethod'
->
-export type BooleanIntersectCommandArgs = Omit<
-  StdLibCommandArgs<'intersect'>,
-  'legacyMethod'
->
-export type BooleanSplitCommandArgs = Omit<
-  StdLibCommandArgs<'split'>,
-  'legacyMethod'
->
-export type FlipSurfaceCommandArgs = StdLibCommandArgs<'flipSurface'>
+export type BooleanSubtractCommandArgs =
+  PointAndClickCommandArgs<'Boolean Subtract'>
+export type BooleanUnionCommandArgs = PointAndClickCommandArgs<'Boolean Union'>
+export type BooleanIntersectCommandArgs =
+  PointAndClickCommandArgs<'Boolean Intersect'>
+export type BooleanSplitCommandArgs = PointAndClickCommandArgs<'Boolean Split'>
+export type FlipSurfaceCommandArgs = PointAndClickCommandArgs<'Flip Surface'>
 export type DeleteFaceCommandArgs = Override<
-  Omit<StdLibCommandArgs<'deleteFace'>, 'body' | 'faceIndices'>,
+  PointAndClickCommandArgs<'Delete Face'>,
   { faces: Selections }
 >
-export type BlendCommandArgs = StdLibCommandArgs<'blend'>
-export type JoinSurfacesCommandArgs = StdLibCommandArgs<'joinSurfaces'>
+export type BlendCommandArgs = PointAndClickCommandArgs<'Blend'>
+export type JoinSurfacesCommandArgs = PointAndClickCommandArgs<'Join Surfaces'>
 
 export type StdLibModelingCommandSchema = {
   Extrude: ExtrudeCommandArgs

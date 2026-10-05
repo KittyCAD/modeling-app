@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties subtract_with_pattern_cut_thru.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 14.05707214165922,
+      "y": 0.8599999999999959,
+      "z": 250.0
+    },
+    "dimensions": {
+      "x": 29.07414428331844,
+      "y": 27.21600000000006,
+      "z": 500.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 26856.169857637724
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 112.83961248883163
+  }
+}

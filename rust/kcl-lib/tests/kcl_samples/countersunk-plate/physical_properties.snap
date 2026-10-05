@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties countersunk-plate.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -0.000000000044209969018993434,
+      "y": -0.000000000018047785488306545,
+      "z": 4.445000000000002
+    },
+    "dimensions": {
+      "x": 198.12000000278832,
+      "y": 135.49855902823953,
+      "z": 10.160000000000014
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 18955.78302026024
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 59.26681734713668
+  }
+}

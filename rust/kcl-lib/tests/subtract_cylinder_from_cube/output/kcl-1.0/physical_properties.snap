@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties subtract_cylinder_from_cube.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 2.0,
+      "y": 1.59999999999998,
+      "z": 5.193000000000001
+    },
+    "dimensions": {
+      "x": 20.0,
+      "y": 20.80000000000004,
+      "z": 10.386000000000005
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 1676.6956723340832
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 3.900691117793749
+  }
+}

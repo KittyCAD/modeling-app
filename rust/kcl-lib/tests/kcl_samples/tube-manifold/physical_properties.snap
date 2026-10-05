@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties tube-manifold.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -214.63000000000005,
+      "y": 0.0,
+      "z": 36.83000000000027
+    },
+    "dimensions": {
+      "x": 734.0600000000001,
+      "y": 157.48000000000002,
+      "z": 231.14000000000055
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 791357.3030907912
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 2003.5864794113088
+  }
+}

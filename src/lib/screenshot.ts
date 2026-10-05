@@ -1,5 +1,6 @@
 import { writeProjectThumbnailFile } from '@src/lib/desktop'
 import { getVisibleElementRect } from '@src/lib/viewportElement'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
 const getVisibleCanvasCrop = (canvas: HTMLCanvasElement) => {
   const canvasRect = canvas.getBoundingClientRect()
@@ -81,7 +82,7 @@ const drawVisibleVideoStream = (
   return crop
 }
 
-export function takeScreenshotOfVideoStreamCanvas() {
+async function takeScreenshotOfVideoStreamCanvas(): Promise<Blob | null> {
   const canvas = document.querySelector('[data-engine]')
   const video = document.getElementById('video-stream')
   if (
@@ -93,12 +94,20 @@ export function takeScreenshotOfVideoStreamCanvas() {
     const videoCanvas = document.createElement('canvas')
     const crop = drawVisibleVideoStream(video, canvas, videoCanvas)
     if (!crop) {
-      return ''
+      return null
     }
-    const url = videoCanvas.toDataURL('image/png')
-    return url
+    return new Promise((resolve, reject) => {
+      // Serialize thumbnails asynchronously so PNG encoding does not block input.
+      videoCanvas.toBlob((blob) => {
+        if (blob) {
+          resolve(blob)
+        } else {
+          reject(new Error('Failed to encode project thumbnail'))
+        }
+      }, 'image/png')
+    })
   } else {
-    return ''
+    return null
   }
 }
 
@@ -160,18 +169,26 @@ export function dataUrlToFile(dataUrl: string, fileName: string): File | Error {
 }
 
 export function createThumbnailPNGOnDesktop({
+  fileOperations,
   projectDirectoryWithoutEndingSlash,
 }: {
+  fileOperations: FileOperationsRegistryService
   projectDirectoryWithoutEndingSlash: string
 }) {
   setTimeout(() => {
     if (!projectDirectoryWithoutEndingSlash) {
       return
     }
-    const dataUrl: string = takeScreenshotOfVideoStreamCanvas()
     // zoom to fit command does not wait, wait 500ms to see if zoom to fit finishes
-    writeProjectThumbnailFile(dataUrl, projectDirectoryWithoutEndingSlash)
-      .then(() => {})
+    takeScreenshotOfVideoStreamCanvas()
+      .then(async (thumbnail) => {
+        if (!thumbnail) return
+        await writeProjectThumbnailFile(
+          fileOperations,
+          new Uint8Array(await thumbnail.arrayBuffer()),
+          projectDirectoryWithoutEndingSlash
+        )
+      })
       .catch((e) => {
         console.error(
           `Failed to generate thumbnail for ${projectDirectoryWithoutEndingSlash}`

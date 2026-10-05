@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties plane_of_chamfer.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.665,
+      "y": 0.5700000000000001,
+      "z": 1.0499999999999998
+    },
+    "dimensions": {
+      "x": 1.596,
+      "y": 1.368,
+      "z": 2.0999999999999996
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 7.670607087284509
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.0010456430906321164
+  }
+}

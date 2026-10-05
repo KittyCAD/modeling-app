@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties sketch_block_get_common_edge_fillet.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 50.0,
+      "y": 50.0,
+      "z": 50.0
+    },
+    "dimensions": {
+      "x": 100.0,
+      "y": 100.0,
+      "z": 100.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 58967.64453221693
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 991.365459564501
+  }
+}

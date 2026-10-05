@@ -19390,6 +19390,7 @@ description: Result of parsing hammer.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

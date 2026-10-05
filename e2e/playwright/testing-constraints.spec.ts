@@ -8,9 +8,13 @@ import {
   pollEditorLinesSelectedLength,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { LEGACY_SKETCH_MODE_FEATURE_FLAG } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Testing constraints', { tag: '@desktop' }, () => {
+  // These sketches are KCL 1.0, so editing them needs the legacy sketch flag.
+  test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
+
   test('Can constrain line length', async ({ page, homePage, cmdBar }) => {
     await page.addInitScript(async () => {
       localStorage.setItem(
@@ -989,7 +993,10 @@ profile001 = startProfile(sketch001, at = [-47.54, -26.74])
     }
   })
 })
-test.describe('Electron constraint tests', () => {
+test.describe('Electron constraint tests', { tag: '@desktop' }, () => {
+  // KCL 1.0 sketch in the fixture needs the legacy sketch flag for segment labels.
+  test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
+
   test('Able to double click label to set constraint', async ({
     page,
     homePage,

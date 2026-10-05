@@ -786,6 +786,7 @@ description: Result of parsing index_of_array.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

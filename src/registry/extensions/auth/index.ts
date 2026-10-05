@@ -13,11 +13,12 @@ import {
 import { reportRejection } from '@src/lib/trap'
 import { authMachine } from '@src/machines/authMachine'
 import {
-  type AuthSessionExpiredListener,
   type AuthRegistryService,
-  authSessionExpiredListenersValueSpec,
+  type AuthSessionExpiredListener,
   authService,
+  authSessionExpiredListenersValueSpec,
 } from '@src/registry/contracts/auth'
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { useSelector } from '@xstate/react'
 import { createActor } from 'xstate'
 
@@ -30,7 +31,13 @@ const expireAuthSession: AuthSessionExpiredListener = ({ auth }) => {
 }
 
 export const authExtension = defineRegistryItemFactory((ctx) => {
-  const authActor = createActor(authMachine).start()
+  // Defer service resolution until registry graph construction has completed.
+  const fileOperations = Promise.resolve().then(() =>
+    ctx.services.get(fileOperationsService)
+  )
+  const authActor = createActor(authMachine, {
+    input: { fileOperations },
+  }).start()
   const authState = signal(authActor.getSnapshot())
   const authSubscription = authActor.subscribe((snapshot) => {
     authState.value = snapshot

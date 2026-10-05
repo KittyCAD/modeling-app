@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties gingerbread-man.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -0.00000000006770051186322235,
+      "y": 199.44518862131588,
+      "z": 30.00000000000002
+    },
+    "dimensions": {
+      "x": 505.91069606753126,
+      "y": 699.1096227581268,
+      "z": 60.00000000000004
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 493902.7613080285
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 7814.147032373005
+  }
+}

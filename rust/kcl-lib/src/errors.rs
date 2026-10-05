@@ -30,8 +30,8 @@ use crate::execution::RefactorMetadata;
 use crate::front::Number;
 use crate::front::Object;
 use crate::front::ObjectId;
-use crate::lsp::IntoDiagnostic;
-use crate::lsp::ToLspRange;
+use crate::lsp_types::IntoDiagnostic;
+use crate::lsp_types::ToLspRange;
 use crate::modules::ModulePath;
 use crate::modules::ModuleSource;
 
@@ -245,6 +245,17 @@ impl KclErrorWithOutputs {
 
     pub fn sketch_constraint_report(&self) -> crate::SketchConstraintReport {
         crate::execution::sketch_constraint_report_from_scene_objects(&self.scene_objects)
+    }
+
+    /// Get a debug visualization of the named sketch.
+    /// If there's multiple sketches with the same name, disambiguate them
+    /// with `instance_index`.
+    pub fn render_sketch_png_instance(
+        &self,
+        sketch_name: &str,
+        instance_index: Option<usize>,
+    ) -> std::result::Result<Vec<u8>, crate::tooling::sketch_visualizer::SketchVisualizationError> {
+        crate::execution::render_sketch_png_from_scene_objects(&self.scene_objects, sketch_name, instance_index)
     }
 
     pub fn into_miette_report_with_outputs(self, code: &str) -> anyhow::Result<ReportWithOutputs> {

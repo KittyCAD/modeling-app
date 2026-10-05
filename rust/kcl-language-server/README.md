@@ -3,9 +3,9 @@
 The `kcl` [Language Server Protocol](https://microsoft.github.io/language-server-protocol)
 implementation and VSCode extension.
 
-This language server is a thin wrapper around the KCL language tooling library.
-That is found in the [modeling-app](https://github.com/kittycad/modeling-app) repo, and published as
-on crates.io as [kcl-lib](https://crates.io/crates/kcl-lib).
+The Rust language-server implementation, its executable, tests, benchmarks,
+and VS Code extension live in this crate. It depends on the KCL compiler and
+language tooling published as [kcl-lib](https://crates.io/crates/kcl-lib).
 
 ## VSCode
 

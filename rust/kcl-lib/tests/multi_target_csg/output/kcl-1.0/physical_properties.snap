@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties multi_target_csg.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.0,
+      "y": -2.243085271794347,
+      "z": 0.0
+    },
+    "dimensions": {
+      "x": 11.429999999999998,
+      "y": 7.737635336411305,
+      "z": 11.429999999999998
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 425.0095025933112
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.23463975400589732
+  }
+}

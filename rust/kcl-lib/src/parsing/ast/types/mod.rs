@@ -12,6 +12,7 @@ use std::sync::Arc;
 use std::sync::Mutex;
 
 use anyhow::Result;
+use kcl_api::KclVersion;
 pub use kcl_api::ast::ItemVisibility;
 use parse_display::Display;
 use parse_display::FromStr;
@@ -42,7 +43,7 @@ use crate::execution::annotations::VersionConstraint;
 use crate::execution::annotations::WarningLevel;
 use crate::execution::annotations::{self};
 use crate::execution::types::ArrayLen;
-use crate::lsp::ToLspRange;
+use crate::lsp_types::ToLspRange;
 use crate::parsing::PIPE_OPERATOR;
 use crate::parsing::ast::digest::Digest;
 pub use crate::parsing::ast::types::condition::ElseIf;
@@ -439,7 +440,7 @@ pub trait CodeBlock {
 /// A KCL program top level, or function body.
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
-#[serde(rename_all = "camelCase")]
+#[serde(tag = "type", rename_all = "camelCase")]
 pub struct Program {
     pub body: Vec<BodyItem>,
     #[serde(default, skip_serializing_if = "NonCodeMeta::is_empty")]
@@ -489,27 +490,32 @@ impl CodeBlock for Node<Program> {
     }
 }
 
-fn kcl_version_expr(kcl_version: &str) -> Result<Expr, KclError> {
-    let version = kcl_version.parse::<crate::KclVersion>()?;
-    let (value, raw) = match version {
-        crate::KclVersion::V1 | crate::KclVersion::V2 => {
-            let value = kcl_version.parse::<f64>().map_err(|_| {
-                KclError::new_semantic(crate::errors::KclErrorDetails::new(
-                    format!("Unexpected numeric KCL version value: `{kcl_version}`"),
-                    vec![],
-                ))
-            })?;
-            (
-                LiteralValue::Number {
-                    value,
-                    suffix: NumericSuffix::None,
-                },
-                kcl_version.to_owned(),
-            )
-        }
+fn kcl_version_expr(kcl_version: KclVersion) -> Result<Expr, KclError> {
+    let (value, raw) = match kcl_version {
+        crate::KclVersion::V1 => (
+            LiteralValue::Number {
+                value: 1.0,
+                suffix: NumericSuffix::None,
+            },
+            "1.0".to_owned(),
+        ),
+        crate::KclVersion::V2 => (
+            LiteralValue::Number {
+                value: 2.0,
+                suffix: NumericSuffix::None,
+            },
+            "2.0".to_owned(),
+        ),
         crate::KclVersion::V3Preview => (
-            LiteralValue::String(version.as_str().to_owned()),
-            format!("\"{}\"", version.as_str()),
+            LiteralValue::String(kcl_version.as_str().to_owned()),
+            format!("\"{}\"", kcl_version.as_str()),
+        ),
+        crate::KclVersion::V3 => (
+            LiteralValue::Number {
+                value: 3.0,
+                suffix: NumericSuffix::None,
+            },
+            "3.0".to_owned(),
         ),
     };
 
@@ -592,23 +598,15 @@ impl Node<Program> {
     }
 
     pub fn lint_all(&self) -> Result<Vec<crate::lint::Discovered>> {
-        self.lint_all_with_options(crate::lint::LintOptions::default())
-    }
-
-    /// Check the provided Program using the standard lint rules and explicitly
-    /// enabled opt-in rules.
-    pub fn lint_all_with_options(&self, options: crate::lint::LintOptions) -> Result<Vec<crate::lint::Discovered>> {
-        let mut rules = vec![
+        let rules = vec![
             crate::lint::checks::lint_variables,
             crate::lint::checks::lint_object_properties,
             crate::lint::checks::lint_should_be_default_plane,
             crate::lint::checks::lint_should_be_offset_plane,
             crate::lint::checks::lint_profiles_should_not_be_chained,
+            crate::lint::checks::lint_deprecated_edge_stdlib_in_fillet_chamfer,
             crate::lint::checks::lint_legacy_angle,
         ];
-        if options.z0006_enabled() {
-            rules.push(crate::lint::checks::lint_deprecated_edge_stdlib_in_fillet_chamfer);
-        }
 
         let mut findings = vec![];
         for rule in rules {
@@ -619,15 +617,16 @@ impl Node<Program> {
 
     /// Get the annotations for the meta settings from the kcl file.
     pub fn meta_settings(&self) -> Result<Option<crate::execution::MetaSettings>, KclError> {
+        let mut meta_settings = None;
         for annotation in &self.inner_attrs {
             if annotation.name() == Some(annotations::SETTINGS) {
-                let mut meta_settings = crate::execution::MetaSettings::default();
-                meta_settings.update_from_annotation(annotation)?;
-                return Ok(Some(meta_settings));
+                meta_settings
+                    .get_or_insert_with(crate::execution::MetaSettings::default)
+                    .update_from_annotation(annotation)?;
             }
         }
 
-        Ok(None)
+        Ok(meta_settings)
     }
 
     pub fn change_default_units(
@@ -668,7 +667,7 @@ impl Node<Program> {
     }
 
     /// Return a new program with the KCL version changed.
-    pub fn change_kcl_version(&self, kcl_version: Option<String>) -> Result<Self, KclError> {
+    pub fn change_kcl_version(&self, kcl_version: Option<KclVersion>) -> Result<Self, KclError> {
         let mut new_program = self.clone();
         new_program.set_kcl_version(kcl_version)?;
 
@@ -676,14 +675,14 @@ impl Node<Program> {
     }
 
     /// Set the KCL version in place.
-    pub(crate) fn set_kcl_version(&mut self, kcl_version: Option<String>) -> Result<(), KclError> {
+    pub(crate) fn set_kcl_version(&mut self, kcl_version: Option<KclVersion>) -> Result<(), KclError> {
         let mut found = false;
-        for node in &mut self.inner_attrs {
+        // We don't currently support removing the kclVersion.
+        let kcl_version = kcl_version.unwrap_or_default();
+        for node in self.inner_attrs.iter_mut().rev() {
             if node.name() == Some(annotations::SETTINGS) {
-                if let Some(version) = &kcl_version {
-                    node.inner
-                        .add_or_update(annotations::SETTINGS_VERSION, kcl_version_expr(version)?);
-                }
+                node.inner
+                    .add_or_update(annotations::SETTINGS_VERSION, kcl_version_expr(kcl_version)?);
                 // Previous source range no longer makes sense, but we want to
                 // preserve other things like comments.
                 node.reset_source();
@@ -694,11 +693,9 @@ impl Node<Program> {
 
         if !found {
             let mut settings = Annotation::new(annotations::SETTINGS);
-            if let Some(version) = &kcl_version {
-                settings
-                    .inner
-                    .add_or_update(annotations::SETTINGS_VERSION, kcl_version_expr(version)?);
-            }
+            settings
+                .inner
+                .add_or_update(annotations::SETTINGS_VERSION, kcl_version_expr(kcl_version)?);
 
             self.inner_attrs.push(settings);
         }
@@ -1004,7 +1001,14 @@ impl Program {
     }
 
     /// Rename the variable declaration at the given position.
-    pub fn rename_symbol(&mut self, new_name: &str, pos: usize) {
+    ///
+    /// Returns whether anything was actually renamed. Only top-level
+    /// declarations, import aliases, and parameters of top-level functions are
+    /// supported; a position inside a nested declaration (e.g. a local in a
+    /// function body or an if-expression arm) renames nothing and returns
+    /// false.
+    #[must_use = "if this returns false, nothing was renamed"]
+    pub fn rename_symbol(&mut self, new_name: &str, pos: usize) -> bool {
         // The position must be within the variable declaration.
         let mut old_name = None;
         for item in &mut self.body {
@@ -1028,12 +1032,13 @@ impl Program {
         if let Some(old_name) = old_name {
             // Now rename all the identifiers in the rest of the program.
             self.rename_identifiers(&old_name, new_name, &[]);
+            true
         } else {
             // Okay so this was not a top level variable declaration.
             // But it might be a variable declaration inside a function or function params.
             // So we need to check that.
             let Some(ref mut item) = self.get_mut_body_item_for_position(pos) else {
-                return;
+                return false;
             };
 
             // Recurse over the item.
@@ -1058,10 +1063,12 @@ impl Program {
                         param.identifier.rename(&old_name, new_name);
                         // Now rename all the identifiers in the rest of the program.
                         function_expression.body.rename_identifiers(&old_name, new_name, &[]);
-                        return;
+                        return true;
                     }
                 }
             }
+
+            false
         }
     }
 
@@ -1941,7 +1948,8 @@ pub struct SketchBlock {
 }
 
 impl SketchBlock {
-    pub(crate) const CALLEE_NAME: &str = "sketch";
+    #[doc(hidden)]
+    pub const CALLEE_NAME: &str = "sketch";
 
     /// Iterate over all arguments.
     pub fn iter_arguments(&self) -> impl Iterator<Item = (Option<&Node<Identifier>>, &Expr)> {
@@ -3308,6 +3316,9 @@ impl Identifier {
     }
 }
 
+pub(crate) const ABSOLUTE_PATHS_NOT_SUPPORTED: &str =
+    "Absolute paths (names beginning with `::`) are not yet supported";
+
 /// A qualified name, e.g., `foo`, `bar::foo`, or `::bar::foo`.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
@@ -4112,8 +4123,6 @@ pub enum PrimitiveType {
     ImportedGeometry,
     /// `fn`, type of functions.
     Function(FunctionType),
-    /// An identifier used as a type (not really a primitive type, but whatever).
-    Named { id: Node<Identifier> },
 }
 
 impl PrimitiveType {
@@ -4142,7 +4151,6 @@ impl PrimitiveType {
             PrimitiveType::Boolean => "bools".to_owned(),
             PrimitiveType::ImportedGeometry => "imported geometries".to_owned(),
             PrimitiveType::Function(_) => "functions".to_owned(),
-            PrimitiveType::Named { id } => format!("`{}`s", id.name),
             PrimitiveType::TagDecl => "tag declarations".to_owned(),
         }
     }
@@ -4188,7 +4196,6 @@ impl fmt::Display for PrimitiveType {
                 }
                 Ok(())
             }
-            PrimitiveType::Named { id: n } => write!(f, "{}", n.name),
         }
     }
 }
@@ -4223,6 +4230,10 @@ impl FunctionType {
 pub enum Type {
     /// A primitive type.
     Primitive(PrimitiveType),
+    /// An unresolved type name, possibly qualified by a module path.
+    Named {
+        name: Node<Name>,
+    },
     // An array of a primitive type.
     Array {
         ty: Box<Type>,
@@ -4242,6 +4253,10 @@ impl Type {
     pub fn human_friendly_type(&self) -> String {
         match self {
             Type::Primitive(ty) => format!("a value with type `{ty}`"),
+            Type::Named { name } => {
+                let name_string = name.to_string();
+                format!("a value with type `{name_string}`")
+            }
             Type::Array {
                 ty,
                 len: ArrayLen::None | ArrayLen::Minimum(0),
@@ -4274,6 +4289,10 @@ impl Type {
     fn display_multiple(&self) -> String {
         match self {
             Type::Primitive(ty) => ty.display_multiple(),
+            Type::Named { name } => {
+                let name_string = name.to_string();
+                format!("`{name_string}`s")
+            }
             Type::Array { .. } => "arrays".to_owned(),
             Type::Union { tys } => tys
                 .iter()
@@ -4289,6 +4308,7 @@ impl fmt::Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Type::Primitive(primitive_type) => primitive_type.fmt(f),
+            Type::Named { name } => name.write_to(f),
             Type::Array { ty, len } => {
                 write!(f, "[{ty}")?;
                 match len {
@@ -4355,6 +4375,16 @@ pub struct Parameter {
     /// Whether it's experimental.
     #[serde(default, skip_serializing_if = "is_false")]
     pub experimental: bool,
+    /// If set, this parameter was added in the given KCL version (e.g., "3.0").
+    /// Before that version, passing the parameter is an error, exactly as if
+    /// the function did not declare it, and the function body sees the
+    /// parameter's default value. The parser requires an added parameter to be
+    /// optional. A pre-release version such as "3.0-preview" counts as the
+    /// release it precedes. May be combined with `deprecated`,
+    /// `deprecated_since` (which must not be earlier than `added_in`), or
+    /// `removed_in` (which must be later than `added_in`).
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub added_in: Option<VersionConstraint>,
     /// If true, this parameter is deprecated regardless of the KCL version. Use
     /// `deprecated_since` instead to deprecate the parameter only at or after a
     /// particular version. At most one of the two may be set.
@@ -4365,6 +4395,15 @@ pub struct Parameter {
     /// downstream code reparses it into a `VersionConstraint`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub deprecated_since: Option<VersionConstraint>,
+    /// If set, this parameter is removed in the given KCL version (e.g.,
+    /// "3.0"). On that version or later, passing the parameter is an error,
+    /// exactly as if the function did not declare it, and the function body
+    /// sees the parameter's default value. The parser requires a removed
+    /// parameter to be optional. A pre-release version such as "3.0-preview"
+    /// counts as the release it precedes. May be combined with `deprecated` or
+    /// `deprecated_since`.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub removed_in: Option<VersionConstraint>,
     /// The parameter's label or name.
     pub identifier: Node<Identifier>,
     /// The type of the parameter.
@@ -4970,7 +5009,7 @@ cylinder = startSketchOn(-XZ)
     #[test]
     fn test_parse_never_type() {
         let program = parse(
-            "@settings(experimentalFeatures = allow)\n\
+            "@settings(kclVersion = \"3.0-preview\")\n\
              fn stop(@impossible: never): never { return impossible }\n\
              type impossible = never\n\
              type neverReturns = fn(): never\n\
@@ -5177,8 +5216,10 @@ cylinder = startSketchOn(-XZ)
                     name: None,
                     params: vec![Parameter {
                         experimental: Default::default(),
+                        added_in: None,
                         deprecated: false,
                         deprecated_since: None,
+                        removed_in: None,
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
                             digest: None,
@@ -5200,8 +5241,10 @@ cylinder = startSketchOn(-XZ)
                     name: None,
                     params: vec![Parameter {
                         experimental: Default::default(),
+                        added_in: None,
                         deprecated: false,
                         deprecated_since: None,
+                        removed_in: None,
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
                             digest: None,
@@ -5224,8 +5267,10 @@ cylinder = startSketchOn(-XZ)
                     params: vec![
                         Parameter {
                             experimental: Default::default(),
+                            added_in: None,
                             deprecated: false,
                             deprecated_since: None,
+                            removed_in: None,
                             identifier: Node::no_src(Identifier {
                                 name: "foo".to_owned(),
                                 digest: None,
@@ -5237,8 +5282,10 @@ cylinder = startSketchOn(-XZ)
                         },
                         Parameter {
                             experimental: Default::default(),
+                            added_in: None,
                             deprecated: false,
                             deprecated_since: None,
+                            removed_in: None,
                             identifier: Node::no_src(Identifier {
                                 name: "bar".to_owned(),
                                 digest: None,
@@ -5309,6 +5356,19 @@ cylinder = startSketchOn(-XZ)
         };
 
         assert_eq!(l.raw, "false");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_parse_get_meta_settings_multiple_annotations() {
+        let program = crate::parsing::top_level_parse(
+            r#"@settings(defaultLengthUnit = in)
+@settings(kclVersion = "3.0-preview")
+"#,
+        )
+        .unwrap();
+        let settings = program.meta_settings().unwrap().unwrap();
+        assert_eq!(settings.default_length_units, UnitLength::Inches);
+        assert_eq!(settings.kcl_version, crate::KclVersion::V3Preview);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -5391,7 +5451,7 @@ startSketchOn(XY)
         assert!(result.is_none());
 
         // Edit the ast.
-        let new_program = program.change_kcl_version(Some("2.0".to_owned())).unwrap();
+        let new_program = program.change_kcl_version(Some(KclVersion::V2)).unwrap();
 
         let result = new_program.meta_settings().unwrap();
         assert!(result.is_some());
@@ -5418,7 +5478,7 @@ startSketchOn(XY)"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
         // Edit the ast.
-        let new_program = program.change_kcl_version(Some("2.0".to_owned())).unwrap();
+        let new_program = program.change_kcl_version(Some(KclVersion::V2)).unwrap();
 
         let result = new_program.meta_settings().unwrap();
         assert!(result.is_some());
@@ -5438,6 +5498,47 @@ startSketchOn(XY)
         );
     }
 
+    #[test]
+    fn test_set_kcl_version_none_resets_existing_version_to_default() {
+        let mut program = parse(
+            r#"@settings(defaultLengthUnit = in, kclVersion = "3.0-preview")
+
+x = 1
+"#,
+        );
+
+        program.set_kcl_version(None).unwrap();
+
+        let meta_settings = program.meta_settings().unwrap().unwrap();
+        assert_eq!(meta_settings.kcl_version, KclVersion::default());
+        assert_eq!(meta_settings.default_length_units, UnitLength::Inches);
+        assert_eq!(
+            program.recast_top(&Default::default(), 0),
+            r#"@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+x = 1
+"#
+        );
+    }
+
+    #[test]
+    fn test_set_kcl_version_none_adds_default_version() {
+        let mut program = parse("x = 1");
+        assert!(program.meta_settings().unwrap().is_none());
+
+        program.set_kcl_version(None).unwrap();
+
+        let meta_settings = program.meta_settings().unwrap().unwrap();
+        assert_eq!(meta_settings.kcl_version, KclVersion::default());
+        assert_eq!(
+            program.recast_top(&Default::default(), 0),
+            r#"@settings(kclVersion = 1.0)
+
+x = 1
+"#
+        );
+    }
+
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_get_meta_settings_rejects_unsupported_kcl_version() {
         let program = crate::parsing::top_level_parse(
@@ -5449,7 +5550,7 @@ startSketchOn(XY)"#,
 
         let err = program.meta_settings().unwrap_err();
 
-        assert!(err.get_message().contains("Unrecognized version 99.123"));
+        assert!(err.get_message().contains("Unrecognized version"));
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -5468,7 +5569,7 @@ startSketchOn(XY)"#,
     async fn test_change_kcl_version_writes_preview_as_string() {
         let program = crate::parsing::top_level_parse("startSketchOn(XY)").unwrap();
 
-        let new_program = program.change_kcl_version(Some("3.0-preview".to_owned())).unwrap();
+        let new_program = program.change_kcl_version(Some(KclVersion::V3Preview)).unwrap();
 
         assert_eq!(
             new_program.recast_top(&Default::default(), 0),
@@ -5477,6 +5578,31 @@ startSketchOn(XY)"#,
 startSketchOn(XY)
 "#
         );
+    }
+
+    #[test]
+    fn test_change_kcl_version_writes_stable_version_as_number() {
+        for (source, expected) in [
+            ("x = 1\n", "@settings(kclVersion = 3.0)\n\nx = 1\n"),
+            (
+                "@settings(defaultLengthUnit = in)\nx = 1\n",
+                "@settings(defaultLengthUnit = in, kclVersion = 3.0)\n\nx = 1\n",
+            ),
+            (
+                "@settings(defaultLengthUnit = in, kclVersion = \"3.0-preview\")\nx = 1\n",
+                "@settings(defaultLengthUnit = in, kclVersion = 3.0)\n\nx = 1\n",
+            ),
+        ] {
+            let program = crate::Program::parse_no_errs(source).unwrap();
+            let changed = program.change_kcl_version(Some(KclVersion::V3)).unwrap();
+
+            assert_eq!(changed.kcl_version, KclVersion::V3);
+            assert_eq!(changed.language_version().unwrap(), KclVersion::V3);
+            assert_eq!(changed.recast(), expected, "{source}");
+
+            let reparsed = crate::Program::parse_no_errs(&changed.recast()).unwrap();
+            assert_eq!(reparsed.language_version().unwrap(), KclVersion::V3);
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -5591,7 +5717,7 @@ byField = obj.key + key
         let mut program = parse(code);
         let pos = code.find("key").unwrap() + 1;
 
-        program.rename_symbol("idx", pos);
+        assert!(program.rename_symbol("idx", pos));
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -5623,7 +5749,7 @@ angle = atan(rise / run)"#;
         assert_eq!(lit.raw, "8");
 
         // Rename it.
-        program.rename_symbol("yoyo", var_decl.as_source_range().start() + 1);
+        assert!(program.rename_symbol("yoyo", var_decl.as_source_range().start() + 1));
 
         // Recast the program to a string.
         let formatted = program.recast_top(&Default::default(), 0);
@@ -5659,7 +5785,7 @@ foo()
         };
         let pos = first_decl.declaration.id.start + 1;
 
-        program.rename_symbol("BETTER", pos);
+        assert!(program.rename_symbol("BETTER", pos));
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -5697,7 +5823,7 @@ fn demo(a) {
         };
         let pos = first_decl.declaration.id.start + 1;
 
-        program.rename_symbol("foo_initial", pos);
+        assert!(program.rename_symbol("foo_initial", pos));
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -5728,7 +5854,7 @@ result = line1
         let mut program = parse(code);
         let pos = code.find("line1 = 99").unwrap() + 1;
 
-        program.rename_symbol("width", pos);
+        assert!(program.rename_symbol("width", pos));
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -5760,7 +5886,7 @@ s = sketch(on = XY) {
         };
         let pos = first_decl.declaration.id.start + 1;
 
-        program.rename_symbol("foo_initial", pos);
+        assert!(program.rename_symbol("foo_initial", pos));
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -5795,7 +5921,7 @@ result = line1
         let mut program = parse(code);
         let pos = code.find("line1 = line").unwrap() + 1;
 
-        program.rename_symbol("renamed", pos);
+        assert!(!program.rename_symbol("renamed", pos));
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(formatted, code);
@@ -5816,7 +5942,46 @@ result = line1
         let mut program = parse(code);
         let pos = code.find("line1.end").unwrap() + 1;
 
-        program.rename_symbol("renamed", pos);
+        assert!(!program.rename_symbol("renamed", pos));
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(formatted, code);
+    }
+
+    #[test]
+    fn test_rename_of_declaration_inside_if_arm_is_a_no_op() {
+        // Renaming a variable declared inside an if-expression arm is not supported yet; the
+        // rename must report that nothing changed instead of silently doing nothing.
+        let code = r#"x = if true {
+  localValue = 1
+  localValue
+} else {
+  0
+}
+"#;
+        let mut program = parse(code);
+        let pos = code.find("localValue").unwrap() + 1;
+
+        assert!(!program.rename_symbol("renamed", pos));
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(formatted, code);
+    }
+
+    #[test]
+    fn test_rename_of_declaration_inside_fn_body_is_a_no_op() {
+        // Renaming a variable declared inside a function body is not supported yet; the rename
+        // must report that nothing changed instead of silently doing nothing.
+        let code = r#"fn foo() {
+  localValue = 1
+  return localValue
+}
+y = foo()
+"#;
+        let mut program = parse(code);
+        let pos = code.find("localValue").unwrap() + 1;
+
+        assert!(!program.rename_symbol("renamed", pos));
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(formatted, code);
@@ -5837,7 +6002,7 @@ b = helper()
         let mut program = parse(code);
         let pos = code.find("helper").unwrap() + 1;
 
-        program.rename_symbol("assist", pos);
+        assert!(program.rename_symbol("assist", pos));
 
         let BodyItem::VariableDeclaration(decl) = program.body.first().unwrap() else {
             panic!("expected variable declaration")
@@ -5872,7 +6037,7 @@ result = myFunc()
         let mut program = parse(code);
         let pos = code.find("myFunc").unwrap() + 1;
 
-        program.rename_symbol("yourFunc", pos);
+        assert!(program.rename_symbol("yourFunc", pos));
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -5898,7 +6063,7 @@ total = accum(3)
         };
         let pos = first_decl.declaration.id.start + 1;
 
-        program.rename_symbol("addUp", pos);
+        assert!(program.rename_symbol("addUp", pos));
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -5928,7 +6093,7 @@ fn helper() {
         };
         let pos = first_decl.declaration.id.start + 1;
 
-        program.rename_symbol("bar", pos);
+        assert!(program.rename_symbol("bar", pos));
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -5962,7 +6127,7 @@ fn helper() {
         };
         let pos = first_decl.declaration.id.start + 1;
 
-        program.rename_symbol("bar", pos);
+        assert!(program.rename_symbol("bar", pos));
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -5993,7 +6158,7 @@ if true {
         let mut program = parse(code);
         let pos = code.find("param1").unwrap() + 1;
 
-        program.rename_symbol("height", pos);
+        assert!(program.rename_symbol("height", pos));
 
         let formatted = program.recast_top(&Default::default(), 0);
         assert_eq!(
@@ -6008,6 +6173,95 @@ if true {
 }
 "#
         );
+    }
+
+    #[test]
+    fn test_rename_outer_variable_skips_if_branch_shadow() {
+        // Renaming an outer variable must not touch uses that a branch-local
+        // shadowing declaration captures. This matches if-arm scoping under
+        // KCL 3.0: the shadow declaration's own init still
+        // refers to the outer binding (use before the local is bound), so it
+        // is renamed; uses after the shadow within that branch are local and
+        // stay; the other branch and code after the if use the outer binding
+        // and are renamed.
+        let code = r#"x = 1
+y = if x > 0 {
+  x = x + 10
+  x + 1
+} else {
+  x
+}
+z = x
+"#;
+        let mut program = parse(code);
+        let pos = code.find("x = 1").unwrap() + 1;
+
+        assert!(program.rename_symbol("width", pos));
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"width = 1
+y = if width > 0 {
+  x = width + 10
+  x + 1
+} else {
+  width
+}
+z = width
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_of_declaration_inside_if_branch_is_a_no_op() {
+        // Renaming a variable declared inside an if branch is intentionally
+        // not supported; the rename must be a no-op, like declarations inside
+        // sketch blocks.
+        //
+        // The same-named top-level `local1` pins that the attempt doesn't
+        // rename the outer binding instead.
+        let code = r#"y = if true {
+  local1 = 1
+  local1 + 1
+} else {
+  0
+}
+
+local1 = 99
+result = local1
+"#;
+        let mut program = parse(code);
+        let pos = code.find("local1 = 1").unwrap() + 1;
+
+        assert!(!program.rename_symbol("renamed", pos));
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(formatted, code);
+    }
+
+    #[test]
+    fn test_rename_of_reference_inside_if_branch_is_a_no_op() {
+        // Like test_rename_of_declaration_inside_if_branch_is_a_no_op, but
+        // with the cursor on a reference to the branch-local variable instead
+        // of its declaration.
+        let code = r#"y = if true {
+  local1 = 1
+  local1 + 1
+} else {
+  0
+}
+
+local1 = 99
+result = local1
+"#;
+        let mut program = parse(code);
+        let pos = code.find("local1 + 1").unwrap() + 1;
+
+        assert!(!program.rename_symbol("renamed", pos));
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(formatted, code);
     }
 
     /// Helper to create a comment NonCodeNode for tests.

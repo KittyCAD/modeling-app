@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties out_of_band_sketches.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 248.57000000000005,
+      "y": -129.6885,
+      "z": 44.66
+    },
+    "dimensions": {
+      "x": 546.4559999999999,
+      "y": 259.377,
+      "z": 467.232
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 462665.01338686794
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 2213.54285167763
+  }
+}

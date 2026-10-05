@@ -32,7 +32,7 @@ mirror3d(
 
 ```kcl
 // Simple mirror3d example, showing mirroring across named axes.
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 sketch001 = sketch(on = XY) {
   line3 = line(start = [var -4.59mm, var -5.11mm], end = [var -5mm, var 3.51mm])
@@ -54,7 +54,7 @@ mirror3d([mySolid, mySolid2], across = XY)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the mirror3d function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-mirror3d0_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-mirror3d0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-mirror3d0.png"
@@ -66,7 +66,7 @@ mirror3d([mySolid, mySolid2], across = XY)
 
 ```kcl
 // Similar mirror example, but showing mirroring across an arbitrary plane.
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 sketch001 = sketch(on = XY) {
   line3 = line(start = [var -4.59mm, var -5.11mm], end = [var -5mm, var 3.51mm])
@@ -92,7 +92,7 @@ shape2 = mirror3d([shape1], across = customPlane)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the mirror3d function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-mirror3d1_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-mirror3d1_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-mirror3d1.png"
@@ -104,7 +104,7 @@ shape2 = mirror3d([shape1], across = customPlane)
 
 ```kcl
 // Example of mirroring across segments.
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 sketch001 = sketch(on = XY) {
   line3 = line(start = [var -4.59mm, var -5.11mm], end = [var -5mm, var 3.51mm])
@@ -126,7 +126,7 @@ shape2 = mirror3d([shape1], across = sketch001.axisLine)
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the mirror3d function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-mirror3d2_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-mirror3d2_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-mirror3d2.png"
@@ -138,7 +138,7 @@ shape2 = mirror3d([shape1], across = sketch001.axisLine)
 
 ```kcl
 // Mirror geometry across the edge of some other geometry.
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 // Sketch the solid to mirror.
 sketch001 = sketch(on = XY) {
@@ -180,7 +180,7 @@ shape2 = mirror3d([shape1], across = getOppositeEdge(extrude001.sketch.tags.line
 <model-viewer
   class="kcl-example"
   alt="Example showing a rendered KCL program that uses the mirror3d function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-mirror3d3_output.gltf"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-transform-mirror3d3_output.glb"
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-transform-mirror3d3.png"

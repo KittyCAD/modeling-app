@@ -1,6 +1,3 @@
-import JSZip from 'jszip'
-import toast from 'react-hot-toast'
-
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import {
   EXPORT_TOAST_MESSAGES,
@@ -15,6 +12,9 @@ import { getProjectTomlContents } from '@src/lib/projectToml'
 import { isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import JSZip from 'jszip'
+import toast from 'react-hot-toast'
 
 type ProjectZipFile = {
   relativePath: string
@@ -24,11 +24,13 @@ type ProjectZipFile = {
 type ProjectZipEntry = ProjectZipFile
 
 export async function exportProjectZip({
+  fileOperations,
   project,
   currentFilePath,
   currentFileContents,
   wasmInstance,
 }: {
+  fileOperations: FileOperationsRegistryService
   project: Project | undefined
   currentFilePath?: string | null
   currentFileContents?: string
@@ -36,6 +38,7 @@ export async function exportProjectZip({
 }) {
   const toastId = toast.loading(EXPORT_TOAST_MESSAGES.START)
   const archive = await createProjectZipArchive({
+    fileOperations,
     project,
     currentFilePath,
     currentFileContents,
@@ -51,11 +54,13 @@ export async function exportProjectZip({
 }
 
 export async function createProjectZipArchive({
+  fileOperations,
   project,
   currentFilePath,
   currentFileContents,
   wasmInstance,
 }: {
+  fileOperations: FileOperationsRegistryService
   project: Project | undefined
   currentFilePath?: string | null
   currentFileContents?: string
@@ -66,6 +71,7 @@ export async function createProjectZipArchive({
   }
 
   const entries = await collectProjectZipEntries({
+    fileOperations,
     project,
     currentFilePath,
     currentFileContents,
@@ -93,11 +99,13 @@ export async function createProjectZipArchive({
 }
 
 export async function collectProjectZipEntries({
+  fileOperations,
   project,
   currentFilePath,
   currentFileContents,
   wasmInstance,
 }: {
+  fileOperations: FileOperationsRegistryService
   project: Project
   currentFilePath?: string | null
   currentFileContents?: string
@@ -109,6 +117,7 @@ export async function collectProjectZipEntries({
         ? currentFilePath
         : undefined
     const projectFiles = await collectProjectFiles({
+      fileOperations,
       selectedFileContents: currentFileContents ?? '',
       selectedFilePath,
       fileNames: selectedFilePath
@@ -171,6 +180,7 @@ export async function collectProjectZipEntries({
 
     if (!hasProjectSettingsFile) {
       const projectToml = await getProjectTomlContents({
+        fileOperations,
         projectPath: project.path,
         defaultFilePath: project.default_file,
         defaultFileFallback: 'main.kcl',

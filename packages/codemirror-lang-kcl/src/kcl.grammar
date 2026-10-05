@@ -85,7 +85,7 @@ LabeledArgument { ArgumentLabel Equals expression }
 ArgumentList { "(" commaSep<LabeledArgument | expression> ")" }
 
 type[@isGroup=Type] {
-  PrimitiveType { identifier } |
+  TypeName { "::"? identifier ("::" identifier)* } |
   ArrayType { "[" type !member (";" Number "+"?)? "]" } |
   ObjectType { "{" commaSep<ObjectProperty { PropertyName ":" type }> "}" }
 }

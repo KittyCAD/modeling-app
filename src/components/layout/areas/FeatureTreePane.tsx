@@ -1,9 +1,10 @@
 import type { Diagnostic } from '@codemirror/lint'
+import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import type { PlaneName } from '@rust/kcl-lib/bindings/PlaneName'
-import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 import { type ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import {
   findOperationArtifact,
@@ -14,49 +15,51 @@ import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
 import {
-  ROOT_MODULE_ID,
-  type SourceRange,
   base64Decode,
   countOperations,
   emptyOperationsByModule,
   getAllOperations,
+  ROOT_MODULE_ID,
+  type SourceRange,
 } from '@src/lang/wasm'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { LEGACY_SKETCH_MODE_REMOVED_MESSAGE } from '@src/lib/constants'
 import {
-  type OperationTreeNode,
   buildOperationTree,
   findSameVisibleStdLibOperationAfterSourceChange,
   getOperationKey,
   getOperationTreeNodeKey,
   isOperationTreeBranch,
+  type OperationTreeNode,
 } from '@src/lib/featureTreeOperationTree'
 import {
-  getOpTypeLabel,
   getOperationCalculatedDisplay,
   getOperationIcon,
   getOperationLabel,
   getOperationVariableName,
+  getOpTypeLabel,
   onHide,
   onUnhide,
   stdLibMap,
 } from '@src/lib/operations'
 import { defaultPlaneNameToKcl } from '@src/lib/planes'
-import { getSelectedDefaultPlane, selectSketchPlane } from '@src/lib/selections'
 import { err, isErr, reportRejection } from '@src/lib/trap'
 import { isArray, isOverlap, stripQuotes, uuidv4 } from '@src/lib/utils'
 import type { ComponentProps, ReactNode } from 'react'
 import { memo, use, useCallback, useMemo } from 'react'
 import toast from 'react-hot-toast'
+
 export { buildOperationTree } from '@src/lib/featureTreeOperationTree'
+
 import { Disclosure } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
+import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import Tooltip from '@src/components/Tooltip'
 import { VisibilityToggle } from '@src/components/VisibilityToggle'
-import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
-import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
 import usePlatform from '@src/hooks/usePlatform'
 import { sourceRangeToUtf16, toUtf16 } from '@src/lang/errors'
 import {
@@ -64,6 +67,7 @@ import {
   shouldDisableModelingForUnrenderedChanges,
 } from '@src/lib/automaticRendering'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { exportSketchToDxf } from '@src/lib/exportDxf'
 import {
   prepareEditCommand,
@@ -74,14 +78,13 @@ import {
 import {
   type AreaTypeComponentProps,
   DefaultLayoutPaneID,
-  type Layout,
   getOpenPanes,
+  type Layout,
   togglePaneLayoutNode,
 } from '@src/lib/layout'
 import { PATHS } from '@src/lib/paths'
 import type RustContext from '@src/lib/rustContext'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import {
   findKeymapItemForCommand,
@@ -104,10 +107,6 @@ type SystemDeps = Pick<Singletons, 'kclManager'> & {
   rustContext: RustContext
 }
 
-// Keep automatic edit-time migration disabled until all feature-tree and
-// point-click edit flows support the new edge specifier syntax. Until then,
-// expose Z0006 only as an explicit lint action.
-//
 // IMPORTANT: Edit after auto-fix is only correct if auto-fix doesn't change the
 // operations. The migration can change the KCL, and we need to choose the
 // correct operation to edit.
@@ -115,7 +114,6 @@ type SystemDeps = Pick<Singletons, 'kclManager'> & {
 // may fail since operations don't have an identity that persists across
 // executions. Currently, we don't change the operations in an auto-fix, but
 // this seems brittle.
-const ENABLE_Z0006_AUTO_FIX_BEFORE_FEATURE_TREE_EDIT = false
 const UNRENDERED_EXECUTE_HOTKEY = 'mod+s'
 
 const Z0006_AUTO_FIX_BEFORE_EDIT_OPERATION_NAMES = new Set([
@@ -231,7 +229,7 @@ export const FeatureTreePaneContents = memo(() => {
   const selectOperation = useCallback(
     (sourceRange: SourceRange) => {
       sendSelectionEvent({
-        sourceRange: sourceRangeToUtf16(sourceRange, kclManager.code),
+        sourceRange,
         kclManager,
         modelingSend,
       })
@@ -849,6 +847,17 @@ interface OperationProps {
   referenceModuleId?: number
 }
 
+export function getFeatureTreeSketchSelectionContext({
+  modelingActor,
+}: Pick<OperationProps, 'modelingActor'>) {
+  const modelingSnapshot = modelingActor.getSnapshot()
+  return {
+    sketchNoFace: modelingSnapshot.matches('Sketch no face'),
+    useSketchSolveMode:
+      modelingSnapshot.context.store.useSketchSolveMode?.current,
+  }
+}
+
 function getFeatureTreeArtifactForEditOperation(
   operation: Operation,
   artifactGraph: SystemDeps['kclManager']['artifactGraph']
@@ -913,7 +922,6 @@ async function prepareFeatureTreeEditCommand({
 
   let operationToEdit: Operation | undefined = operation
   if (
-    ENABLE_Z0006_AUTO_FIX_BEFORE_FEATURE_TREE_EDIT &&
     operation.type === 'StdLibCall' &&
     supportsZ0006AutoFixBeforeFeatureTreeEdit(operation)
   ) {
@@ -1030,7 +1038,10 @@ const OperationItem = ({
       if (isModuleOwned) {
         return
       }
-      if (sketchNoFace) {
+      const sketchSelectionContext = getFeatureTreeSketchSelectionContext({
+        modelingActor,
+      })
+      if (sketchSelectionContext.sketchNoFace) {
         if (isOffsetPlane(item)) {
           const artifact = findOperationPlaneArtifact(
             item,
@@ -1038,7 +1049,7 @@ const OperationItem = ({
           )
           const result = await selectSketchPlane(
             artifact?.id,
-            useSketchSolveMode,
+            sketchSelectionContext.useSketchSolveMode,
             kclManager
           )
           if (err(result)) {
@@ -1054,14 +1065,7 @@ const OperationItem = ({
         onSelect(sourceRangeFromRust(item.sourceRange))
       }
     },
-    [
-      isModuleOwned,
-      sketchNoFace,
-      onSelect,
-      item,
-      kclManager,
-      useSketchSolveMode,
-    ]
+    [isModuleOwned, modelingActor, onSelect, item, kclManager]
   )
 
   const viewOperationSource = useCallback(
@@ -1139,7 +1143,11 @@ const OperationItem = ({
         selectOperation,
         systemDeps,
       }).catch((e) => {
-        toast.error(err(e) ? e.message : JSON.stringify(e))
+        const message = err(e) ? e.message : JSON.stringify(e)
+        toast.error(message, {
+          duration:
+            message === LEGACY_SKETCH_MODE_REMOVED_MESSAGE ? 5_000 : undefined,
+        })
       })
     }
   }, [
@@ -1281,6 +1289,7 @@ const OperationItem = ({
       return
     }
     exportSketchToDxf(item, {
+      fileOperations: app.fileOperations,
       engineCommandManager,
       kclManager,
       toast,
@@ -1601,9 +1610,13 @@ const DefaultPlanes = ({
   const { rustContext, sceneInfra, kclManager } = systemDeps
   const { state: modelingState, send } = useModelingContext()
   const sketchNoFace = modelingState.matches('Sketch no face')
-  const selectedDefaultPlaneId = getSelectedDefaultPlane(
-    modelingState.context.selectionRanges
-  )?.id
+  const selectedDefaultPlaneId =
+    modelingState.context.selectionRanges.otherSelections.find(
+      (selection) =>
+        typeof selection === 'object' &&
+        'id' in selection &&
+        'name' in selection
+    )?.id
 
   const onClickPlane = useCallback(
     (planeId: string) => {

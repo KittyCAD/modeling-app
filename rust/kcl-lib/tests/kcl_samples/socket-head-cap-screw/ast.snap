@@ -3857,6 +3857,7 @@ description: Result of parsing socket-head-cap-screw.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

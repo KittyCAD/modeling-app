@@ -287,6 +287,7 @@ fn keyword_or_word(text: &str) -> SyntaxKind {
         "var" => SyntaxKind::VarKw,
         "const" => SyntaxKind::ConstKw,
         "import" => SyntaxKind::ImportKw,
+        "use" => SyntaxKind::UseKw,
         "export" => SyntaxKind::ExportKw,
         "type" => SyntaxKind::TypeKw,
         "interface" => SyntaxKind::InterfaceKw,

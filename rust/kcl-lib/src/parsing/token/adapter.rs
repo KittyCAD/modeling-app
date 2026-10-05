@@ -10,9 +10,9 @@
 //! 2. the rich diagnostic pass in [`lex_with_diagnostics`], which produces
 //!    [`LexDiagnostic`]s from the raw `SyntaxKind` stream *before* the mapping
 //!    above collapses the recovery kinds and loses the distinction.
-//! 3. [`legacy_import_paren_quirk`] -- the winnow tokeniser classified `import`
-//!    written directly before `(` as a `Word` (not the `import` keyword). We
-//!    replicate it here so the two lexers agree; it is a temporary shim.
+//! 3. [`keyword_before_paren_as_word`] -- the parser accepts `import(` and
+//!    `use(` as function names. The adapter classifies those tokens as `Word`
+//!    to match the winnow tokeniser.
 
 use kcl_error::KclErrorDetails;
 use kcl_syntax::syntax_kind::SyntaxKind;
@@ -41,7 +41,7 @@ enum LexErrorKind {
 /// Lexical problems stay lexical by converting to `KclError::new_lexical` (see
 /// [`LexResult::to_lexical_error`]).
 #[derive(Debug, Clone)]
-pub(crate) struct LexDiagnostic {
+pub struct LexDiagnostic {
     kind: LexErrorKind,
     /// Offending source text, used to render `found unknown token '<x>'`.
     text: String,
@@ -64,9 +64,9 @@ impl LexDiagnostic {
 /// [`LexResult::to_lexical_error`]; the LSP renders each as a diagnostic while
 /// keeping `tokens` for highlighting.
 #[derive(Debug)]
-pub(crate) struct LexResult {
-    pub(crate) tokens: TokenStream,
-    pub(crate) issues: Vec<LexDiagnostic>,
+pub struct LexResult {
+    pub tokens: TokenStream,
+    pub issues: Vec<LexDiagnostic>,
 }
 
 impl LexResult {
@@ -74,7 +74,7 @@ impl LexResult {
     /// there are none. Matches the legacy public contract: a run of unknown
     /// tokens aggregates into one message with all ranges (mirroring
     /// `parse_tokens`); any other case reports the first issue in source order.
-    pub(crate) fn to_lexical_error(&self) -> Option<KclError> {
+    pub fn to_lexical_error(&self) -> Option<KclError> {
         let issues = &self.issues;
         let first = issues.first()?;
 
@@ -103,7 +103,7 @@ impl LexResult {
 /// Lex `source` with the `kcl-syntax` lexer, mapping to the legacy token stream
 /// and collecting lexical diagnostics. Never fails: recoverable problems appear
 /// in `tokens` (as `Unknown`) and in `issues`.
-pub(crate) fn lex_with_diagnostics(source: &str, module_id: ModuleId) -> LexResult {
+pub fn lex_with_diagnostics(source: &str, module_id: ModuleId) -> LexResult {
     let lexed = kcl_syntax::lexer::lex(source);
 
     let mut tokens: Vec<Token> = Vec::with_capacity(lexed.len());
@@ -130,7 +130,7 @@ pub(crate) fn lex_with_diagnostics(source: &str, module_id: ModuleId) -> LexResu
         ));
     }
 
-    legacy_import_paren_quirk(&mut tokens);
+    keyword_before_paren_as_word(&mut tokens);
 
     LexResult {
         tokens: TokenStream::new(tokens),
@@ -148,20 +148,17 @@ fn recovery_kind(kind: SyntaxKind) -> Option<LexErrorKind> {
     }
 }
 
-/// TODO: temporary shim -- delete once the parser no longer distinguishes
-/// `import(` from the `import` keyword. The winnow tokeniser classified `import`
-/// written directly before `(` (no intervening whitespace) as a `Word` rather
-/// than the `import` keyword (see `tokeniser::import_keyword`); the parser's item
-/// dispatch relies on this, so we replicate it to keep the two lexers in agreement.
-fn legacy_import_paren_quirk(tokens: &mut [Token]) {
+/// Preserve the function-name exception for keywords immediately followed by
+/// `(`. The parser requires a `Word` token for these function names.
+fn keyword_before_paren_as_word(tokens: &mut [Token]) {
     for i in 0..tokens.len() {
-        if tokens[i].token_type != TokenType::Keyword || tokens[i].value != "import" {
+        if tokens[i].token_type != TokenType::Keyword || !matches!(tokens[i].value.as_str(), "import" | "use") {
             continue;
         }
-        let import_end = tokens[i].end;
+        let keyword_end = tokens[i].end;
         let followed_by_open_paren = tokens
             .get(i + 1)
-            .is_some_and(|next| next.token_type == TokenType::Brace && next.value == "(" && next.start == import_end);
+            .is_some_and(|next| next.token_type == TokenType::Brace && next.value == "(" && next.start == keyword_end);
         if followed_by_open_paren {
             tokens[i].token_type = TokenType::Word;
         }
@@ -218,6 +215,7 @@ pub(crate) fn syntax_kind_to_token_type(kind: SyntaxKind) -> TokenType {
         | SyntaxKind::VarKw
         | SyntaxKind::ConstKw
         | SyntaxKind::ImportKw
+        | SyntaxKind::UseKw
         | SyntaxKind::ExportKw
         | SyntaxKind::TypeKw
         | SyntaxKind::InterfaceKw
@@ -253,5 +251,30 @@ pub(crate) fn syntax_kind_to_token_type(kind: SyntaxKind) -> TokenType {
         SyntaxKind::QuestionMark => TokenType::QuestionMark,
         SyntaxKind::At => TokenType::At,
         SyntaxKind::SemiColon => TokenType::SemiColon,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn use_keyword_and_function_name() {
+        let module_id = ModuleId::default();
+        for (source, expected_type) in [
+            ("use", TokenType::Keyword),
+            ("use = 1", TokenType::Keyword),
+            ("use(3)", TokenType::Word),
+            ("use (3)", TokenType::Keyword),
+            ("useful", TokenType::Word),
+        ] {
+            let result = lex_with_diagnostics(source, module_id);
+            assert!(result.issues.is_empty(), "{source}");
+            assert_eq!(
+                result.tokens.iter().next().unwrap().token_type,
+                expected_type,
+                "{source}"
+            );
+        }
     }
 }

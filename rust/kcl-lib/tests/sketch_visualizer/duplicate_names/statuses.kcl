@@ -1,0 +1,18 @@
+@settings(kclVersion = 2.0)
+
+fn freeProfile() {
+  profile = sketch(on = XY) {
+    edge = line(start = [var 0mm, var 0mm], end = [var 20mm, var 10mm])
+  }
+  return profile
+}
+
+fn fixedProfile() {
+  profile = sketch(on = XY) {
+    edge = line(start = [0mm, 0mm], end = [20mm, 10mm])
+  }
+  return profile
+}
+
+first = freeProfile()
+second = fixedProfile()

@@ -6,6 +6,7 @@ import type {
   UnitVolume,
 } from '@kittycad/lib'
 import type { Artifact } from '@src/lang/std/artifactGraph'
+import { engineIdForArtifact } from '@src/lang/std/kclNamedViews'
 import type { ArtifactGraph } from '@src/lang/wasm'
 import {
   isDefaultPlaneSelection,
@@ -121,19 +122,69 @@ function getMeasurementKindForEntityType(
   return 'other'
 }
 
+function getBodyEntityIdForSelection(
+  selection: Selection,
+  artifactGraph?: ArtifactGraph
+): string | null {
+  const artifact = selection.artifact
+  if (!artifactGraph || !artifact) {
+    return selection.engineEntityId ?? artifact?.id ?? null
+  }
+
+  if (artifact.type === 'sweep' || artifact.type === 'compositeSolid') {
+    return engineIdForArtifact({
+      id: artifact.id,
+      artifact,
+      artifactGraph,
+    })
+  }
+
+  if (artifact.type === 'pattern') {
+    if (!selection.engineEntityId) {
+      return null
+    }
+
+    const sourceArtifact = artifactGraph.get(selection.engineEntityId)
+    if (
+      sourceArtifact?.type === 'sweep' ||
+      sourceArtifact?.type === 'compositeSolid'
+    ) {
+      return engineIdForArtifact({
+        id: sourceArtifact.id,
+        artifact: sourceArtifact,
+        artifactGraph,
+      })
+    }
+
+    return selection.engineEntityId
+  }
+
+  return selection.engineEntityId ?? artifact.id
+}
+
 function getEntitiesForGraphSelection(
-  selection: Selection
+  selection: Selection,
+  artifactGraph?: ArtifactGraph
 ): MeasurementEntity[] {
+  const artifact = selection.artifact
+  const kind = getMeasurementKindForArtifact(selection.artifact)
+  if (
+    kind === 'body' ||
+    (artifact?.type === 'pattern' && selection.engineEntityId)
+  ) {
+    const id = getBodyEntityIdForSelection(selection, artifactGraph)
+    return id ? [{ id, kind: 'body' }] : []
+  }
+
   if (selection.engineEntityId) {
     return [
       {
         id: selection.engineEntityId,
-        kind: getMeasurementKindForArtifact(selection.artifact),
+        kind,
       },
     ]
   }
 
-  const artifact = selection.artifact
   if (!artifact?.id) {
     return []
   }
@@ -167,10 +218,13 @@ function dedupeMeasurementEntities(
 }
 
 export function getMeasurementEntities(
-  selectionRanges: Selections
+  selectionRanges: Selections,
+  artifactGraph?: ArtifactGraph
 ): MeasurementEntity[] {
   return dedupeMeasurementEntities([
-    ...selectionRanges.graphSelections.flatMap(getEntitiesForGraphSelection),
+    ...selectionRanges.graphSelections.flatMap((selection) =>
+      getEntitiesForGraphSelection(selection, artifactGraph)
+    ),
     ...selectionRanges.otherSelections.flatMap(
       (selection): MeasurementEntity[] => {
         if (isEnginePrimitiveSelection(selection)) {
@@ -206,8 +260,13 @@ export function graphSelectionsReferenceCurrentArtifacts(
   })
 }
 
-export function getMeasurementEntityIds(selectionRanges: Selections): string[] {
-  return getMeasurementEntities(selectionRanges).map((entity) => entity.id)
+export function getMeasurementEntityIds(
+  selectionRanges: Selections,
+  artifactGraph?: ArtifactGraph
+): string[] {
+  return getMeasurementEntities(selectionRanges, artifactGraph).map(
+    (entity) => entity.id
+  )
 }
 
 export function getDistanceTypeForMode(mode: DistanceMode): DistanceType {

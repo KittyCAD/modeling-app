@@ -3215,6 +3215,7 @@ description: Result of parsing single-impeller-blade.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

@@ -3844,6 +3844,7 @@ description: Result of parsing box.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

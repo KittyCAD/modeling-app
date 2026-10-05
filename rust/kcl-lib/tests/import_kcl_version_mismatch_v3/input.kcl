@@ -1,0 +1,7 @@
+// KCL 3.0: an imported file may not declare a kclVersion that differs from
+// the entry point's.
+@settings(kclVersion = "3.0-preview")
+
+import width from "dep.kcl"
+
+x = width

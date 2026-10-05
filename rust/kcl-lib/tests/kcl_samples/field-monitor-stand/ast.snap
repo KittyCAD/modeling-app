@@ -9207,7 +9207,7 @@ description: Result of parsing field-monitor-stand.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "name": "line4",
+                                    "name": "line3",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
@@ -9346,7 +9346,7 @@ description: Result of parsing field-monitor-stand.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "name": "line4",
+                                    "name": "line3",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
@@ -9485,7 +9485,7 @@ description: Result of parsing field-monitor-stand.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "name": "line2",
+                                    "name": "line6",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
@@ -9624,7 +9624,7 @@ description: Result of parsing field-monitor-stand.kcl
                                     "commentStart": 0,
                                     "end": 0,
                                     "moduleId": 0,
-                                    "name": "line2",
+                                    "name": "line6",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
@@ -9840,6 +9840,34 @@ description: Result of parsing field-monitor-stand.kcl
               "type": "Name",
               "type": "Name"
             }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "kclVersion",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "moduleId": 0,
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "raw": "2.0",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
+            }
           }
         ],
         "start": 0,
@@ -9996,6 +10024,7 @@ description: Result of parsing field-monitor-stand.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

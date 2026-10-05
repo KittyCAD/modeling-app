@@ -1,9 +1,15 @@
+import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { useAppState } from '@src/AppState'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { getKclLanguageVersion } from '@src/lang/kclLanguageVersion'
 import type { KclManager } from '@src/lang/KclManager'
 import { useSingletons } from '@src/lib/boot'
+import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { NUMBER_OF_ENGINE_RETRIES } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { getDimensions } from '@src/lib/engineConnection/utils'
+import { preflightEngineVideoCodecSupport } from '@src/lib/engineConnection/videoCodecSupport'
 import { reapplyActiveViewAfterReconnect } from '@src/lib/kclNamedViewActivation'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import type RustContext from '@src/lib/rustContext'
@@ -11,10 +17,8 @@ import {
   getSettingsFromActorContext,
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
-import { reportRejection } from '@src/lib/trap'
+import { isErr, reportRejection } from '@src/lib/trap'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import { getDimensions } from '@src/lib/engineConnection/utils'
 import { useRef } from 'react'
 
 /**
@@ -28,6 +32,7 @@ const attemptToConnectToEngine = async ({
   setIsSceneReady,
   timeToConnect,
   engineCommandManager,
+  kclVersion,
   rustContext,
 }: {
   authToken: string
@@ -37,8 +42,24 @@ const attemptToConnectToEngine = async ({
   setIsSceneReady: React.Dispatch<React.SetStateAction<boolean>>
   timeToConnect: number
   engineCommandManager: ConnectionManager
+  kclVersion?: KclVersion
   rustContext: RustContext
 }) => {
+  const codecError = await preflightEngineVideoCodecSupport()
+  if (codecError) {
+    engineCommandManager.lastConnectionError = codecError
+    void reportClientError({
+      code: ClientErrorCode.EngineUnsupportedVideoCodec,
+      error: codecError,
+      dedupeKey: ClientErrorCode.EngineUnsupportedVideoCodec,
+      extra: {
+        browserVideoCodecs: codecError.browserCodecs,
+        engineVideoCodecs: codecError.engineCodecs,
+      },
+    })
+    return Promise.reject(codecError)
+  }
+
   const connection = new Promise<boolean>((resolve, reject) => {
     const cancelTimeout = setTimeout(() => {
       EngineDebugger.addLog({
@@ -74,6 +95,7 @@ const attemptToConnectToEngine = async ({
             setAppState({ isStreamReady: true })
           },
           rustContext,
+          kclVersion,
         })
 
         if (!videoRef.current) {
@@ -81,7 +103,10 @@ const attemptToConnectToEngine = async ({
             label: 'ConnectionStream.tsx',
             message: 'Unable to reference the video. Calling tearDown()',
           })
-          engineCommandManager.tearDown()
+          engineCommandManager.tearDown({
+            route: 'connection-attempt-failed',
+            initiatedBy: 'client',
+          })
           return reject('Unable to reference the video, calling tearDown()')
         }
 
@@ -90,7 +115,10 @@ const attemptToConnectToEngine = async ({
             label: 'ConnectionStream.tsx',
             message: 'Unable to reference the mediaStream, calling tearDown()',
           })
-          engineCommandManager.tearDown()
+          engineCommandManager.tearDown({
+            route: 'connection-attempt-failed',
+            initiatedBy: 'client',
+          })
           return reject(
             'Unable to reference the mediaStream, calling tearDown()'
           )
@@ -186,7 +214,8 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
  * No part of the system should be trying to directly connect. This file wraps multiple levels of business logic and state management to provide
  * a single safe location to connect to the engine.
  */
-async function tryConnecting({
+export async function tryConnecting({
+  abnormalCloseRetries,
   isConnecting,
   numberOfConnectionAttempts,
   authToken,
@@ -202,6 +231,7 @@ async function tryConnecting({
   kclManager,
   rustContext,
 }: {
+  abnormalCloseRetries: React.RefObject<number>
   isConnecting: React.RefObject<boolean>
   numberOfConnectionAttempts: React.RefObject<number>
   authToken: string
@@ -230,6 +260,8 @@ async function tryConnecting({
           numberOfConnectionAttempts.current + 1
 
         try {
+          const instance = await rustContext.wasmInstancePromise
+          const kclVersion = getKclLanguageVersion(kclManager.code, instance)
           // Has a time to connect window, if it does not connect, it will go to the next attempt
           await attemptToConnectToEngine({
             authToken: authToken,
@@ -239,6 +271,8 @@ async function tryConnecting({
             setIsSceneReady,
             timeToConnect,
             engineCommandManager,
+            // Invalid source can still connect; execution reports its diagnostics.
+            kclVersion: isErr(kclVersion) ? undefined : kclVersion,
             rustContext,
           })
 
@@ -267,6 +301,7 @@ async function tryConnecting({
             )
           }
 
+          abnormalCloseRetries.current = 0
           isConnecting.current = false
           setAppState({ isStreamAcceptingInput: true })
           numberOfConnectionAttempts.current = 0
@@ -277,14 +312,28 @@ async function tryConnecting({
           })
           resolve('connected')
         } catch (e) {
-          isConnecting.current = false
           setAppState({ isStreamAcceptingInput: false })
+          const terminalConnectionError =
+            engineCommandManager.lastConnectionError?.terminal === true
+              ? engineCommandManager.lastConnectionError
+              : undefined
           EngineDebugger.addLog({
             label: 'useTryConnect.tsx',
-            message: `Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES} failed, calling tearDown()`,
+            message: `Attempt ${numberOfConnectionAttempts.current}/${NUMBER_OF_ENGINE_RETRIES} failed`,
+            metadata: { terminalConnectionError },
           })
-          engineCommandManager.tearDown()
+          if (terminalConnectionError) {
+            isConnecting.current = false
+            numberOfConnectionAttempts.current = 0
+            setShowManualConnect(true)
+            return reject(terminalConnectionError)
+          }
+          engineCommandManager.tearDown({
+            route: 'connection-attempt-failed',
+            initiatedBy: 'client',
+          })
           if (numberOfConnectionAttempts.current >= NUMBER_OF_ENGINE_RETRIES) {
+            isConnecting.current = false
             numberOfConnectionAttempts.current = 0
             return reject(e)
           }
@@ -300,9 +349,13 @@ export const useTryConnect = () => {
   const { kclManager } = useSingletons()
   const isConnecting = useRef(false)
   const numberOfConnectionAttempts = useRef(0)
+  const abnormalCloseRetries = useRef(0)
   type TryConnectingArgs = Omit<
     Parameters<typeof tryConnecting>[0],
-    'engineCommandManager' | 'kclManager' | 'rustContext'
+    | 'engineCommandManager'
+    | 'kclManager'
+    | 'rustContext'
+    | 'abnormalCloseRetries'
   >
 
   return {
@@ -312,8 +365,10 @@ export const useTryConnect = () => {
         engineCommandManager: kclManager.engineCommandManager,
         kclManager,
         rustContext: kclManager.rustContext,
+        abnormalCloseRetries,
       }),
     isConnecting,
     numberOfConnectionAttempts,
+    abnormalCloseRetries,
   }
 }

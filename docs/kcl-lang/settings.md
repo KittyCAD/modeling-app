@@ -27,7 +27,7 @@ For example:
 
 ```kcl
 // The settings attribute.
-@settings(kclVersion = 2.0, defaultLengthUnit = in)
+@settings(kclVersion = 3.0, defaultLengthUnit = in)
 
 // The rest of your KCL code goes below...
 
@@ -39,12 +39,23 @@ Valid properties are:
 
 - `defaultLengthUnit`: the default length unit to use for numbers declared in this file.
   - Accepted values: `mm`, `cm`, `m`, `in` (inches), `ft` (feet), `yd` (yards).
-- `defaultAngleUnit`: the default angle unit to use for numbers declared in this file.
-  - Accepted values: `deg` (degrees), `rad` (radians).
-  - It's recommended to not use this. Instead, use explicit suffixes for angles, e.g. `180deg`, to avoid ambiguity and receive more helpful error messages.
 - `experimentalFeatures`: how experimental features are handled within this file.
   - Accepted values: `allow` (experimental features can be used freely), `warn` (experimental features
   cause a warning), `deny` (the default, experimental features cause an error).
-- `kclVersion`: the version of the KCL language and standard libary to execute with.
+- `kclVersion`: the version of the KCL language and standard library to execute with.
+  - `1.0`: the original language version, for existing programs.
+  - `2.0`: the previous language version, for existing programs.
+  - `3.0`: the current language version, for new programs.
+  - See [Migrating to KCL 3.0](/docs/kcl-lang/migrating-to-kcl-3) for how to
+    update a program to the newest version.
+
+`defaultAngleUnit` is not accepted in KCL 3.0. Use explicit angle suffixes,
+such as `180deg` or `3.14rad`, instead.
+
+The entry point's `kclVersion` selects the language version for the whole
+program, including imported KCL files. For imported files:
+
+- An explicit `kclVersion` must match the entry point's version.
+- A file without `kclVersion` inherits the entry point's version.
 
 These settings override any project-wide settings (configured in project.toml or via the UI).

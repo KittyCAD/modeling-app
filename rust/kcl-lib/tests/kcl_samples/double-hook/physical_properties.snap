@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties double-hook.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -12.99999999113737,
+      "y": 17.00000004637261,
+      "z": 0.0
+    },
+    "dimensions": {
+      "x": 31.001338603898244,
+      "y": 55.001338697872875,
+      "z": 5.000000000000007
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 1386.6405493786206
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 1.6801962189191124
+  }
+}

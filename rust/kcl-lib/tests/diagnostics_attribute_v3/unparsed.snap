@@ -1,0 +1,10 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing diagnostics_attribute_v3.kcl
+---
+// KCL 3.0: the `@diagnostics` attribute customizes how diagnostics are
+// reported. Denying `unknownUnits` makes its warning an error.
+@settings(kclVersion = "3.0-preview")
+@diagnostics(deny = unknownUnits)
+
+a = PI * 2

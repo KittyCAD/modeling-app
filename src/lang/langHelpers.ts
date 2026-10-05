@@ -1,6 +1,5 @@
 import type { Diagnostic } from '@codemirror/lint'
 import { lspCodeActionEvent } from '@kittycad/codemirror-lsp-client'
-import type { Feature } from '@kittycad/lib'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { LegacyAngleRefactorMeta } from '@rust/kcl-lib/bindings/LegacyAngleRefactorMeta'
 
@@ -28,15 +27,6 @@ import { REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE } from '@src/lib/engineConnection/
 import type { EditorView } from 'codemirror'
 export type { ToolTip } from '@src/lang/toolTips'
 export { isToolTip, toolTips } from '@src/lang/toolTips'
-
-const ENABLE_Z0006_LINT_FLAG = 'enable_z0006_lint'
-
-function userHasFeature(featureFlagId: string, defaultValue: boolean): boolean {
-  return (
-    window.app?.userFeatures.has(featureFlagId as Feature, defaultValue) ??
-    defaultValue
-  )
-}
 
 interface ExecutionResult {
   logs: string[]
@@ -165,8 +155,7 @@ export async function lintAst({
   artifactGraph?: ArtifactGraph
 }): Promise<Array<Diagnostic>> {
   try {
-    const shouldShowZ0006 = userHasFeature(ENABLE_Z0006_LINT_FLAG, false)
-    let discovered_findings = await kclLint(ast, instance, shouldShowZ0006)
+    let discovered_findings = await kclLint(ast, instance)
     // Filter out Z0005 if sketch solve mode is not enabled
     // Only show Z0005 when useSketchSolveMode setting is enabled
     let shouldShowZ0005 = false
@@ -186,11 +175,10 @@ export async function lintAst({
       )
     }
 
-    // Process findings - for Z0005 without suggestion, we'll create actions async
+    // Process findings and add any available async refactor actions.
     const z0006RefactorCache: Z0006RefactorCache = {}
     const diagnosticsPromises = discovered_findings.map(async (lint) => {
       let actions
-      let message = lint.finding.title
       const suggestion = lint.suggestion
 
       if (suggestion) {
@@ -215,8 +203,6 @@ export async function lintAst({
           ast,
           sourceCode,
           instance,
-          rustContext,
-          shouldShowZ0005,
           edgeRefactorMetadata,
           directTagFilletMetadata,
           legacyAngleRefactorMetadata,
@@ -224,15 +210,12 @@ export async function lintAst({
           z0006RefactorCache,
         })
         actions = refactorResult.actions
-        if (refactorResult.messageOverride) {
-          message = refactorResult.messageOverride
-        }
       }
 
       const diagnostic = {
         from: toUtf16(lint.pos[0], sourceCode),
         to: toUtf16(lint.pos[1], sourceCode),
-        message,
+        message: lint.finding.title,
         severity: 'info',
         actions,
       } as const

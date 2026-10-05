@@ -11,6 +11,9 @@ import {
   setCallInAst,
 } from '@src/lang/modifyAst'
 import {
+  createEdgeRefObjectExpression,
+  edgeSelectionToEntityReference,
+  entityReferenceToEdgeRefPayload,
   getEdgeTagCall,
   getPrimitiveEdgeSelections,
   groupSelectionsByBodyAndAddTags,
@@ -19,9 +22,14 @@ import {
 import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/tagManagement'
 import {
   getVariableExprsFromSelection,
+  resolveToCodeRef,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import {
+  getArtifactFromRange,
+  getFaceCodeRef,
+} from '@src/lang/std/artifactGraph'
 import type {
   ArtifactGraph,
   LabeledArg,
@@ -52,6 +60,7 @@ export function addHelix({
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   wasmInstance: ModuleType
+  mode?: 'Axis' | 'Edge' | 'Cylinder'
   axis?: string
   cylinder?: Selections
   edge?: Selections
@@ -76,13 +85,15 @@ export function addHelix({
   let pathIfNewPipe: PathToNode | undefined
   const axisExpr: LabeledArg[] = []
   const cylinderExpr: LabeledArg[] = []
-  if (cylinder) {
+  // Only explicit X/Y/Z axes are editable. Selection-backed axis and cylinder
+  // arguments are omitted here, then restored verbatim by setCallInAst.
+  if (cylinder && !mNodeToEdit) {
     const vars = getVariableExprsFromSelection(
       cylinder,
       artifactGraph,
       modifiedAst,
       wasmInstance,
-      mNodeToEdit,
+      undefined,
       {
         lastChildLookup: true,
       }
@@ -92,20 +103,21 @@ export function addHelix({
     }
     cylinderExpr.push(createLabeledArg('cylinder', vars.exprs[0]))
     pathIfNewPipe = vars.pathIfPipe
-  } else if (axis || edge) {
+  } else if (axis || (edge && !mNodeToEdit)) {
     const result = getAxisExpression(
       axis,
       edge,
       modifiedAst,
       wasmInstance,
-      artifactGraph
+      artifactGraph,
+      mNodeToEdit
     )
     if (err(result)) {
       return result
     }
     axisExpr.push(createLabeledArg('axis', result.generatedAxis))
     modifiedAst = result.modifiedAst
-  } else {
+  } else if (!mNodeToEdit) {
     return new Error('Helix must have either an axis or a cylinder')
   }
 
@@ -161,6 +173,9 @@ export function addHelix({
     pathToEdit: mNodeToEdit,
     pathIfNewPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.HELIX,
+    // During edits, `axis` is set only for explicit X/Y/Z values. If it is
+    // undefined, keep whichever selection-backed input exists: `axis` or `cylinder`.
+    labeledSelectionArgNames: mNodeToEdit && !axis ? ['axis', 'cylinder'] : [],
     wasmInstance,
   })
   if (err(pathToNode)) {
@@ -185,13 +200,53 @@ export function getAxisExpression(
   if (axis) {
     return { generatedAxis: createLocalName(axis), modifiedAst }
   } else if (edge && artifactGraph) {
+    const firstEdgeSelection = edge.graphSelections[0]
+    const originalEdgeSelection = firstEdgeSelection
+      ? resolveToCodeRef(firstEdgeSelection, artifactGraph)
+      : null
+    const shouldInferEdgeRef =
+      firstEdgeSelection?.entityRef?.type === 'edge' ||
+      originalEdgeSelection?.artifact?.type === 'edgeCut'
+    const edgeEntityRef =
+      firstEdgeSelection?.entityRef?.type === 'edge'
+        ? firstEdgeSelection.entityRef
+        : shouldInferEdgeRef && originalEdgeSelection?.artifact
+          ? edgeSelectionToEntityReference(
+              {
+                ...originalEdgeSelection,
+                artifact: originalEdgeSelection.artifact,
+              },
+              artifactGraph
+            )
+          : undefined
+
+    if (edgeEntityRef && !err(edgeEntityRef) && edgeEntityRef.type === 'edge') {
+      const payload = entityReferenceToEdgeRefPayload(edgeEntityRef)
+      const edgeRefResult = createEdgeRefObjectExpression(
+        payload,
+        wasmInstance,
+        modifiedAst,
+        artifactGraph,
+        originalEdgeSelection ?? undefined
+      )
+      if (err(edgeRefResult)) {
+        return edgeRefResult
+      }
+
+      return {
+        generatedAxis: edgeRefResult.expr,
+        modifiedAst: edgeRefResult.modifiedAst,
+      }
+    }
+
     // Direct segment case (sketch solve)
     const segmentAxisExpr = getVariableExprsFromSelection(
       edge,
       artifactGraph,
       modifiedAst,
       wasmInstance,
-      nodeToEdit
+      nodeToEdit,
+      { preferDirectSegment: true }
     )
     if (!err(segmentAxisExpr) && segmentAxisExpr.exprs[0]) {
       const directAxisExpr = segmentAxisExpr.exprs[0]
@@ -201,10 +256,70 @@ export function getAxisExpression(
     }
 
     // Direct segment case (old sketch)
-    const pathToAxisSelection = getNodePathFromSourceRange(
-      modifiedAst,
-      edge.graphSelections[0]?.codeRef.range
-    )
+    const edgeResolved = originalEdgeSelection
+    let axisSelection =
+      edge?.graphSelections[0] != null
+        ? resolveToCodeRef(edge.graphSelections[0], artifactGraph)?.artifact
+        : undefined
+    // Fallback: resolveToCodeRef returns no artifact for entityRef.type === 'edge' (BRep), or segment/solid2d_edge when ID not in graph;
+    // try to find an artifact by codeRef.range or by codeRef.pathToNode (segment/path/edgeCut for tag-based axis).
+    if (
+      (!axisSelection || !getFaceCodeRef(axisSelection)) &&
+      edge?.graphSelections[0] != null &&
+      artifactGraph
+    ) {
+      const resolved = resolveToCodeRef(edge.graphSelections[0], artifactGraph)
+      if (resolved?.codeRef) {
+        const byRange = getArtifactFromRange(
+          resolved.codeRef.range,
+          artifactGraph
+        )
+        if (
+          byRange &&
+          (byRange.type === 'segment' ||
+            byRange.type === 'path' ||
+            byRange.type === 'edgeCut')
+        ) {
+          axisSelection = byRange
+        }
+        // If range didn't find one, try matching by pathToNode (e.g. segment on solid2d from engine)
+        if (
+          !axisSelection &&
+          resolved.codeRef.pathToNode &&
+          resolved.codeRef.pathToNode.length > 0
+        ) {
+          const pathStr = JSON.stringify(resolved.codeRef.pathToNode)
+          for (const artifact of artifactGraph.values()) {
+            const cr = getFaceCodeRef(artifact)
+            if (
+              cr &&
+              (artifact.type === 'segment' ||
+                artifact.type === 'path' ||
+                artifact.type === 'edgeCut') &&
+              JSON.stringify(cr.pathToNode) === pathStr
+            ) {
+              axisSelection = artifact
+              break
+            }
+          }
+        }
+      }
+    }
+    if (!axisSelection) {
+      return new Error('Generated axis selection is missing.')
+    }
+
+    let pathToAxisSelection: PathToNode
+    const axisCodeRef = getFaceCodeRef(axisSelection) ?? edgeResolved?.codeRef
+    if (axisCodeRef?.pathToNode && axisCodeRef.pathToNode.length > 0) {
+      pathToAxisSelection = axisCodeRef.pathToNode
+    } else {
+      pathToAxisSelection = getNodePathFromSourceRange(
+        ast,
+        axisCodeRef?.range ?? edgeResolved?.codeRef?.range ?? [0, 0, 0]
+      )
+    }
+
     const tagResult = mutateAstWithTagForSketchSegment(
       modifiedAst,
       pathToAxisSelection,
@@ -213,11 +328,6 @@ export function getAxisExpression(
     if (!err(tagResult)) {
       modifiedAst = tagResult.modifiedAst
       const { tag } = tagResult
-      const axisSelection = edge?.graphSelections[0]?.artifact
-      if (!axisSelection) {
-        return new Error('Generated axis selection is missing.')
-      }
-
       const generatedAxis = getEdgeTagCall(tag, axisSelection)
       return { generatedAxis, modifiedAst }
     }

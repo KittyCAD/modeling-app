@@ -6943,6 +6943,7 @@ description: Result of parsing radial-flow-centrifugal-impeller.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

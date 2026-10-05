@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties extrude_face.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 1.8642135623730949,
+      "y": -0.8642135623730949,
+      "z": 0.5
+    },
+    "dimensions": {
+      "x": 3.92842712474619,
+      "y": 3.92842712474619,
+      "z": 1.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 26.55636978943221
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.006156860484403855
+  }
+}

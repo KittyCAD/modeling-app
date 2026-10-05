@@ -12,6 +12,10 @@ fn representative_sources_match_old_scanner() {
         "const part001 = startSketchOn(XY)",
         "import foo",
         "import(3)",
+        "use",
+        "use(3)",
+        "use (3)",
+        "useful",
         "import",
         "import\tfoo",
         "import\nfoo",
@@ -89,8 +93,8 @@ enum MatchKind {
     Strict,
     /// New scanner emitted a recovery token; only lossless reconstruction is required.
     Recovery,
-    /// The intentional `import(` policy divergence (old: Word, new: Keyword).
-    ImportPolicy,
+    /// The raw syntax lexer retains keyword kinds before the adapter applies the function-name exception.
+    FunctionNamePolicy,
     /// Old scanner rejected the source; new scanner reconstructs it losslessly.
     OldError,
 }
@@ -112,13 +116,13 @@ fn check_matches_old_scanner(source: &str) -> Result<MatchKind, String> {
                 Err("new scanner did not preserve text while recovering from a lexical error".to_owned())
             }
         }
-        Ok(old_tokens) if has_import_policy_divergence(&old_tokens, &new_tokens) => {
+        Ok(old_tokens) if has_function_name_policy_divergence(&old_tokens, &new_tokens) => {
             if reconstructed() != source {
-                Err("new scanner did not preserve text in the import-policy case".to_owned())
+                Err("new scanner did not preserve text in the function-name policy case".to_owned())
             } else if old_tokens == new_tokens {
-                Err("import-policy case expected a divergence but tokens matched".to_owned())
+                Err("function-name policy case expected a divergence but tokens matched".to_owned())
             } else {
-                Ok(MatchKind::ImportPolicy)
+                Ok(MatchKind::FunctionNamePolicy)
             }
         }
         Ok(old_tokens) => {
@@ -160,7 +164,7 @@ fn corpus_matches_old_scanner() {
     let mut checked = 0usize;
     let mut strict = 0usize;
     let mut recovery = 0usize;
-    let mut import_policy = 0usize;
+    let mut function_name_policy = 0usize;
     let mut old_error = 0usize;
     let mut divergences: Vec<(String, String)> = Vec::new();
 
@@ -180,7 +184,7 @@ fn corpus_matches_old_scanner() {
             match check_matches_old_scanner(&source) {
                 Ok(MatchKind::Strict) => strict += 1,
                 Ok(MatchKind::Recovery) => recovery += 1,
-                Ok(MatchKind::ImportPolicy) => import_policy += 1,
+                Ok(MatchKind::FunctionNamePolicy) => function_name_policy += 1,
                 Ok(MatchKind::OldError) => old_error += 1,
                 Err(divergence) => divergences.push((path.display().to_string(), divergence)),
             }
@@ -188,7 +192,7 @@ fn corpus_matches_old_scanner() {
     }
 
     eprintln!(
-        "[corpus] checked {checked} .kcl file(s): strict={strict} recovery={recovery} import={import_policy} old_error={old_error}; {} untolerated divergence(s)",
+        "[corpus] checked {checked} .kcl file(s): strict={strict} recovery={recovery} function_name={function_name_policy} old_error={old_error}; {} untolerated divergence(s)",
         divergences.len()
     );
     for (path, divergence) in divergences.iter().take(50) {
@@ -208,7 +212,7 @@ fn corpus_matches_old_scanner() {
     );
 }
 
-fn has_import_policy_divergence(
+fn has_function_name_policy_divergence(
     old_tokens: &[(TokenType, String, Range<usize>)],
     new_tokens: &[(TokenType, String, Range<usize>)],
 ) -> bool {
@@ -216,7 +220,7 @@ fn has_import_policy_divergence(
         return false;
     }
 
-    let mut saw_import_difference = false;
+    let mut saw_function_name_difference = false;
     for (old, new) in old_tokens.iter().zip(new_tokens) {
         if old == new {
             continue;
@@ -224,18 +228,18 @@ fn has_import_policy_divergence(
 
         if old.0 == TokenType::Word
             && new.0 == TokenType::Keyword
-            && old.1 == "import"
-            && new.1 == "import"
+            && matches!(old.1.as_str(), "import" | "use")
+            && old.1 == new.1
             && old.2 == new.2
         {
-            saw_import_difference = true;
+            saw_function_name_difference = true;
             continue;
         }
 
         return false;
     }
 
-    saw_import_difference
+    saw_function_name_difference
 }
 
 fn has_recovery_token(tokens: &[(TokenType, String, Range<usize>)]) -> bool {
@@ -321,6 +325,7 @@ fn keyword() -> impl Strategy<Value = &'static str> {
         "var",
         "const",
         "import",
+        "use",
         "export",
         "type",
         "interface",

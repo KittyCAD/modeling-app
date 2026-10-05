@@ -1,0 +1,48 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing member_expression_order_v3.kcl
+---
+// Under KCL 3.0, a member expression evaluates its object before its
+// property: in `boxes()[chooseIndex()]`, boxes() runs first. Both functions
+// send engine commands, so the evaluation order is visible in the recorded
+// operations and artifact commands.
+@settings(defaultLengthUnit = mm, kclVersion = "3.0-preview")
+
+fn boxes() {
+  smallProfile = sketch(on = XY) {
+    bottom = line(start = [var 0mm, var 0mm], end = [var 5mm, var 0mm])
+    right = line(start = [var 5mm, var 0mm], end = [var 5mm, var 5mm])
+    top = line(start = [var 5mm, var 5mm], end = [var 0mm, var 5mm])
+    left = line(start = [var 0mm, var 5mm], end = [var 0mm, var 0mm])
+  }
+  smallRegion = region(segments = [
+    smallProfile.bottom,
+    smallProfile.right
+  ])
+  small = extrude(smallRegion, length = 5mm)
+
+  largeProfile = sketch(on = XY) {
+    bottom = line(start = [var 20mm, var 0mm], end = [var 30mm, var 0mm])
+    right = line(start = [var 30mm, var 0mm], end = [var 30mm, var 10mm])
+    top = line(start = [var 30mm, var 10mm], end = [var 20mm, var 10mm])
+    left = line(start = [var 20mm, var 10mm], end = [var 20mm, var 0mm])
+  }
+  largeRegion = region(segments = [
+    largeProfile.bottom,
+    largeProfile.right
+  ])
+  large = extrude(largeRegion, length = 10mm)
+
+  return [small, large]
+}
+
+fn chooseIndex() {
+  markerProfile = sketch(on = XY) {
+    perimeter = circle(start = [var -17mm, var 0mm], center = [var -20mm, var 0mm])
+  }
+  markerRegion = region(segments = [markerProfile.perimeter])
+  marker = extrude(markerRegion, length = 1mm)
+  return 1
+}
+
+picked = boxes()[chooseIndex()]

@@ -23,11 +23,14 @@ export function playwrightProjectLibraries(
 
 export function playwrightPluginSettings({
   cloudSyncEnabled = false,
+  zookeeperEnabled = false,
 }: {
   cloudSyncEnabled?: boolean
+  zookeeperEnabled?: boolean
 } = {}) {
   return {
     'cloud-sync': cloudSyncEnabled,
+    zookeeper: zookeeperEnabled,
   }
 }
 

@@ -1,9 +1,14 @@
+import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import {
   doExport,
   expectKeybindingsSettingsVisible,
   getUtils,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { LEGACY_SKETCH_MODE_FEATURE_FLAG } from '@src/lib/constants'
+
+// Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
+test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
 
 test('Units menu', { tag: '@desktop' }, async ({ page, homePage }) => {
   await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -83,7 +88,7 @@ part001 = startSketchOn(-XZ)
     await page.waitForTimeout(1000)
     await u.clearAndCloseDebugPanel()
 
-    if (!tronApp) throw new Error('tronApp is missing.')
+    if (!tronApp) throwTronAppMissing()
 
     await doExport(
       {

@@ -25,6 +25,7 @@ pub enum SyntaxKind {
     VarKw,
     ConstKw,
     ImportKw,
+    UseKw,
     ExportKw,
     TypeKw,
     InterfaceKw,

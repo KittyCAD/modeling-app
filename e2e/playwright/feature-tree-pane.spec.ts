@@ -2,7 +2,11 @@ import { join } from 'path'
 import * as fsp from 'fs/promises'
 
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { LEGACY_SKETCH_MODE_FEATURE_FLAG } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
+
+// These sketches are KCL 1.0, so editing them needs the legacy sketch flag.
+test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
 
 const FEATURE_TREE_EXAMPLE_CODE = `export fn timesFive(@x) {
   return 5 * x
@@ -298,6 +302,9 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
         sortBy: 'last-modified-desc',
       })
       await homePage.openProject('test-sample')
+      await editor.expectEditor.toContain('hidden001 = hide', {
+        timeout: 15_000,
+      })
       await scene.settled()
       await toolbar.closePane(DefaultLayoutPaneID.Debug)
       await toolbar.openFeatureTreePane()
@@ -390,12 +397,14 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
     })
 
     await test.step('On an extrude face should *not* work', async () => {
-      // Tooltip is getting in the way of clicking, so I'm first closing the pane
       await toolbar.closeFeatureTreePane()
       await page.waitForTimeout(1000)
       await editor.replaceCode('91', '90')
       await page.waitForTimeout(2000)
-      await (await toolbar.getFeatureTreeOperation('Sketch', 1)).dblclick()
+      await toolbar.waitForFeatureTreeToBeBuilt()
+      const sketchOnFaceBtn = await toolbar.getFeatureTreeOperation('Sketch', 1)
+      await sketchOnFaceBtn.scrollIntoViewIfNeeded()
+      await sketchOnFaceBtn.dblclick()
 
       await expect(
         toolbar.exitSketchBtn,
@@ -549,8 +558,9 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
     await test.step('Edit the parameter value in the editor', async () => {
       await editor.replaceCode('23 * 2', '42')
       await editor.expectEditor.toContain('= 42')
-      // Wait for the code to be executed.
-      await page.waitForTimeout(2000)
+      await page.evaluate(() =>
+        window.app.singletons.kclManager.flushPendingEditorExecution()
+      )
       // The parameter value should be updated in the feature tree.
       const operationButton = await toolbar.getFeatureTreeOperation(
         'length001',

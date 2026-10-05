@@ -20507,6 +20507,7 @@ description: Result of parsing gridfinity-bins.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

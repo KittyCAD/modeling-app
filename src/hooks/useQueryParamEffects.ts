@@ -32,6 +32,7 @@ import {
   SystemIOMachineStates,
   waitForIdleState,
 } from '@src/machines/systemIO/utils'
+import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import { useEffect } from 'react'
 import toast from 'react-hot-toast'
 import { useNavigate, useSearchParams } from 'react-router-dom'
@@ -199,6 +200,15 @@ export function useQueryParamEffects() {
       })
       if (!importedProject?.default_file) {
         return Promise.reject(new Error('Unable to create the shared project.'))
+      }
+      if (cancelled) {
+        return
+      }
+      if (
+        projectLibraryTarget.library.id === PERSONAL_CLOUD_PROJECT_LIBRARY_ID &&
+        app.registry.get(cloudSyncService).status.value.enabled
+      ) {
+        await app.registry.get(cloudSyncService).syncNow(importedProject.path)
       }
       if (cancelled) {
         return

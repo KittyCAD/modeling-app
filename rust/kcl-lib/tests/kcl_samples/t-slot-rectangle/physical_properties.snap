@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties t-slot-rectangle.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -228.5999999999999,
+      "y": 279.4,
+      "z": 12.699999999999996
+    },
+    "dimensions": {
+      "x": 462.2799999999999,
+      "y": 614.6800000000001,
+      "z": 30.480000000000004
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 471512.0546550295
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 516.2824798938814
+  }
+}

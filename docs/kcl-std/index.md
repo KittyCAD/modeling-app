@@ -14,7 +14,7 @@ layout: manual
   * [`clone`](/docs/kcl-std/functions/std-clone)
   * [`edgeId`](/docs/kcl-std/functions/std-edgeId)
   * [`faceId`](/docs/kcl-std/functions/std-faceId)
-  * [`fail`](/docs/kcl-std/functions/std-fail) Experimental
+  * [`fail`](/docs/kcl-std/functions/std-fail)
   * [`helix`](/docs/kcl-std/functions/std-helix)
   * [`offsetPlane`](/docs/kcl-std/functions/std-offsetPlane)
 * [**std::appearance**](/docs/kcl-std/modules/std-appearance)
@@ -88,6 +88,8 @@ layout: manual
   * [`sin`](/docs/kcl-std/functions/std-math-sin)
   * [`sqrt`](/docs/kcl-std/functions/std-math-sqrt)
   * [`tan`](/docs/kcl-std/functions/std-math-tan)
+* [**std::operation**](/docs/kcl-std/modules/std-operation)
+  * [`operation::facing`](/docs/kcl-std/functions/std-operation-facing) Experimental
 * [**std::runtime**](/docs/kcl-std/modules/std-runtime) Experimental
   * [`exit`](/docs/kcl-std/functions/std-runtime-exit) Experimental
 * [**std::sketch**](/docs/kcl-std/modules/std-sketch)
@@ -197,7 +199,7 @@ layout: manual
   * [`string::trimStart`](/docs/kcl-std/functions/std-string-trimStart)
   * [`string::uppercase`](/docs/kcl-std/functions/std-string-uppercase)
 * [**std::transform**](/docs/kcl-std/modules/std-transform)
-  * [`delete`](/docs/kcl-std/functions/std-transform-delete) Experimental
+  * [`delete`](/docs/kcl-std/functions/std-transform-delete)
   * [`hide`](/docs/kcl-std/functions/std-transform-hide)
   * [`mirror2d`](/docs/kcl-std/functions/std-transform-mirror2d)
   * [`mirror3d`](/docs/kcl-std/functions/std-transform-mirror3d)
@@ -222,10 +224,10 @@ layout: manual
   * [`vector::mul`](/docs/kcl-std/functions/std-vector-mul)
   * [`vector::normalize`](/docs/kcl-std/functions/std-vector-normalize)
   * [`vector::sub`](/docs/kcl-std/functions/std-vector-sub)
-* [**std::view**](/docs/kcl-std/modules/std-view) Experimental
-  * [`view::directed`](/docs/kcl-std/functions/std-view-directed) Experimental
-  * [`view::named`](/docs/kcl-std/functions/std-view-named) Experimental
-  * [`view::oriented`](/docs/kcl-std/functions/std-view-oriented) Experimental
+* [**std::view**](/docs/kcl-std/modules/std-view)
+  * [`view::directed`](/docs/kcl-std/functions/std-view-directed)
+  * [`view::named`](/docs/kcl-std/functions/std-view-named)
+  * [`view::oriented`](/docs/kcl-std/functions/std-view-oriented)
 
 ### Constants
 
@@ -269,7 +271,7 @@ See also the [types overview](/docs/kcl-lang/types)
   * [`any`](/docs/kcl-std/types/std-types-any)
   * [`bool`](/docs/kcl-std/types/std-types-bool)
   * [`fn`](/docs/kcl-std/types/std-types-fn)
-  * [`never`](/docs/kcl-std/types/std-types-never) Experimental
+  * [`never`](/docs/kcl-std/types/std-types-never)
   * [`none`](/docs/kcl-std/types/std-types-none) Experimental
   * [`number`](/docs/kcl-std/types/std-types-number)
   * [`string`](/docs/kcl-std/types/std-types-string)
@@ -297,9 +299,9 @@ See also the [types overview](/docs/kcl-lang/types)
   * [`mm`](/docs/kcl-std/types/std-types-mm)
   * [`rad`](/docs/kcl-std/types/std-types-rad)
   * [`yd`](/docs/kcl-std/types/std-types-yd)
-* [**std::view**](/docs/kcl-std/modules/std-view) Experimental
-  * [`view::CameraView`](/docs/kcl-std/types/std-view-CameraView) Experimental
-  * [`view::NamedView`](/docs/kcl-std/types/std-view-NamedView) Experimental
-  * [`view::Orientation`](/docs/kcl-std/types/std-view-Orientation) Experimental
-  * [`view::Projection`](/docs/kcl-std/types/std-view-Projection) Experimental
-  * [`view::Visibility`](/docs/kcl-std/types/std-view-Visibility) Experimental
+* [**std::view**](/docs/kcl-std/modules/std-view)
+  * [`view::CameraView`](/docs/kcl-std/types/std-view-CameraView)
+  * [`view::NamedView`](/docs/kcl-std/types/std-view-NamedView)
+  * [`view::Orientation`](/docs/kcl-std/types/std-view-Orientation)
+  * [`view::Projection`](/docs/kcl-std/types/std-view-Projection)
+  * [`view::Visibility`](/docs/kcl-std/types/std-view-Visibility)

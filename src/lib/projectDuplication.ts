@@ -2,6 +2,7 @@ import {
   DUPLICATE_PROJECT_TEMPORARY_PREFIX,
   PROJECT_SETTINGS_FILE_NAME,
 } from '@src/lib/constants'
+import { ensureDirectory } from '@src/lib/fileSystem/ensureDirectory'
 import fsZds from '@src/lib/fs-zds'
 import {
   getProjectDirectoryNameFromTitle,
@@ -11,6 +12,7 @@ import { getProjectTomlContents } from '@src/lib/projectToml'
 import { prepareProjectTomlForDuplication } from '@src/lib/projectTomlMetadata'
 import { isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import * as uuid from 'uuid'
 
 type DuplicateProjectSource = {
@@ -25,15 +27,62 @@ export type DuplicateProjectResult = {
   title: string
 }
 
+function getProjectRelativeCurrentFilePath({
+  sourcePath,
+  currentFilePath,
+}: {
+  sourcePath: string
+  currentFilePath?: string | null
+}) {
+  if (!currentFilePath) {
+    return undefined
+  }
+
+  const relativeCurrentFilePath = fsZds.relative(sourcePath, currentFilePath)
+  const isContainedFile =
+    relativeCurrentFilePath &&
+    relativeCurrentFilePath !== '..' &&
+    !relativeCurrentFilePath.startsWith(`..${fsZds.sep}`) &&
+    !relativeCurrentFilePath.startsWith('/') &&
+    !relativeCurrentFilePath.startsWith('\\') &&
+    !/^[a-zA-Z]:/.test(relativeCurrentFilePath)
+
+  if (
+    !isContainedFile ||
+    relativeCurrentFilePath === PROJECT_SETTINGS_FILE_NAME
+  ) {
+    return undefined
+  }
+
+  return relativeCurrentFilePath
+}
+
+async function writeProjectRelativeFile(
+  fileOperations: FileOperationsRegistryService,
+  projectPath: string,
+  relativePath: string,
+  contents: string
+) {
+  const filePath = fsZds.join(projectPath, relativePath)
+  await ensureDirectory(fileOperations, fsZds.dirname(filePath))
+  await fileOperations.writeFile(filePath, contents)
+}
+
 export async function duplicateProjectInDirectory({
+  fileOperations,
   source,
   projectDirectoryPath,
   requestedProjectTitle,
+  currentFilePath,
+  currentFileContents,
   wasmInstance,
 }: {
+  fileOperations: FileOperationsRegistryService
   source: DuplicateProjectSource
   projectDirectoryPath: string
   requestedProjectTitle: string
+  currentFilePath?: string | null
+  currentFileContents?: string
   wasmInstance: ModuleType
 }): Promise<DuplicateProjectResult> {
   const projectTitle = requestedProjectTitle.trim() || source.displayName
@@ -44,11 +93,12 @@ export async function duplicateProjectInDirectory({
   )
   const name = getUniqueProjectNameFromExistingNames(
     requestedCopyName,
-    await fsZds.readdir(projectDirectoryPath)
+    await fileOperations.readDirectory(projectDirectoryPath)
   )
   const title = `${requestedCopyTitle}${name.slice(requestedCopyName.length)}`
 
   const projectToml = await getProjectTomlContents({
+    fileOperations,
     projectPath: source.path,
     wasmInstance,
   })
@@ -71,16 +121,31 @@ export async function duplicateProjectInDirectory({
     `${DUPLICATE_PROJECT_TEMPORARY_PREFIX}${uuid.v4()}`
   )
   const targetPath = fsZds.join(projectDirectoryPath, name)
+  const relativeCurrentFilePath = getProjectRelativeCurrentFilePath({
+    sourcePath: source.path,
+    currentFilePath,
+  })
   try {
-    await fsZds.mkdir(temporaryPath)
-    await fsZds.cp(source.path, temporaryPath, { recursive: true })
-    await fsZds.writeFile(
+    await fileOperations.createDirectory(temporaryPath)
+    await fileOperations.copy(source.path, temporaryPath)
+    // Overlay the editor snapshot on the copy without bypassing source-file
+    // conflict detection or racing its pending autosave.
+    if (relativeCurrentFilePath && currentFileContents !== undefined) {
+      await writeProjectRelativeFile(
+        fileOperations,
+        temporaryPath,
+        relativeCurrentFilePath,
+        currentFileContents
+      )
+    }
+
+    await fileOperations.writeFile(
       fsZds.join(temporaryPath, PROJECT_SETTINGS_FILE_NAME),
-      new TextEncoder().encode(duplicatedProjectToml)
+      duplicatedProjectToml
     )
-    await fsZds.rename(temporaryPath, targetPath)
+    await fileOperations.rename(temporaryPath, targetPath)
   } catch (error) {
-    await fsZds.rm(temporaryPath, { recursive: true }).catch(() => undefined)
+    await fileOperations.remove(temporaryPath).catch(() => undefined)
     return Promise.reject(error)
   }
 

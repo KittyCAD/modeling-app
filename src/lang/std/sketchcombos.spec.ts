@@ -48,14 +48,17 @@ beforeEach(async () => {
   }
 
   const { instance, engineCommandManager, rustContext } =
-    await buildTheWorldAndConnectToEngine()
+    await buildTheWorldAndConnectToEngine({ webrtc: false, pool: 'cpu' })
   instanceInThisFile = instance
   engineCommandManagerInThisFile = engineCommandManager
   rustContextInThisFile = rustContext
 })
 
 afterAll(() => {
-  engineCommandManagerInThisFile.tearDown()
+  engineCommandManagerInThisFile.tearDown({
+    route: 'user-requested',
+    initiatedBy: 'client',
+  })
 })
 
 describe('testing getConstraintType', () => {
@@ -121,31 +124,24 @@ function getConstraintTypeFromSourceHelper(
     return new Error('must be expression')
   }
   const expr = item.expression
-  switch (expr.type) {
-    case 'CallExpressionKw': {
-      const end = findKwArg(ARG_END, expr)
-      const endAbsolute = findKwArg(ARG_END_ABSOLUTE, expr)
-      const arg = end || endAbsolute || findAngleLengthPair(expr)
-      if (!arg) {
-        return new Error("couldn't find either end or endAbsolute in KW call")
-      }
-      const isAbsolute = endAbsolute ? true : false
-      const fnName = fnNameToTooltip(allLabels(expr), expr.callee.name.name)
-      if (err(fnName)) {
-        return fnName
-      }
-      if (arg.type === 'ArrayExpression') {
-        return getConstraintType(
-          arg.elements as [Expr, Expr],
-          fnName,
-          isAbsolute
-        )
-      }
-      return new Error('arg did not have any key named elements')
-    }
-    default:
-      return new Error('must be a KCL function call, but it was ' + expr.type)
+  if (expr.type !== 'CallExpressionKw') {
+    return new Error('must be a KCL function call, but it was ' + expr.type)
   }
+  const end = findKwArg(ARG_END, expr)
+  const endAbsolute = findKwArg(ARG_END_ABSOLUTE, expr)
+  const arg = end || endAbsolute || findAngleLengthPair(expr)
+  if (!arg) {
+    return new Error("couldn't find either end or endAbsolute in KW call")
+  }
+  const isAbsolute = endAbsolute ? true : false
+  const fnName = fnNameToTooltip(allLabels(expr), expr.callee.name.name)
+  if (err(fnName)) {
+    return fnName
+  }
+  if (arg.type === 'ArrayExpression') {
+    return getConstraintType(arg.elements as [Expr, Expr], fnName, isAbsolute)
+  }
+  return new Error('arg did not have any key named elements')
 }
 
 function getConstraintTypeFromSourceHelper2(
@@ -158,25 +154,18 @@ function getConstraintTypeFromSourceHelper2(
     return new Error('was not a call expression')
   }
   const callExpr = bodyItem.expression
-  let arg
-  let isAbsolute = false
-  switch (callExpr.type) {
-    case 'CallExpressionKw':
-      const argEnd = getArgForEnd(callExpr)
-      if (err(argEnd)) {
-        return argEnd
-      }
-      const maybeAbsolute = isAbsoluteLine(callExpr)
-      if (err(maybeAbsolute)) {
-        return maybeAbsolute
-      } else {
-        isAbsolute = maybeAbsolute
-      }
-      arg = argEnd.val
-      break
-    default:
-      return new Error('was not a call expression')
+  if (callExpr.type !== 'CallExpressionKw') {
+    return new Error('was not a call expression')
   }
+  const argEnd = getArgForEnd(callExpr)
+  if (err(argEnd)) {
+    return argEnd
+  }
+  const isAbsolute = isAbsoluteLine(callExpr)
+  if (err(isAbsolute)) {
+    return isAbsolute
+  }
+  const arg = argEnd.val
   const fnName = callExpr.callee.name.name as ToolTip
   const constraintType = getConstraintType(arg, fnName, isAbsolute)
   return constraintType
@@ -186,7 +175,7 @@ function makeSelections(
   graphSelections: Selections['graphSelections']
 ): Selections {
   return {
-    graphSelections: graphSelections,
+    graphSelections,
     otherSelections: [],
   }
 }

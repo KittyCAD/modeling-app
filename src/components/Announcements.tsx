@@ -1,11 +1,12 @@
 import type { Announcement } from '@kittycad/lib'
-import { meta } from '@kittycad/lib'
 import { MarkdownText } from '@src/components/MarkdownText'
+import { listClientItems } from '@src/lib/apiPagination'
 import { createKCClient } from '@src/lib/kcClient'
 import { useEffect, useState } from 'react'
 
-export const LEGACY_SKETCH_MODE_BANNER =
-  'This older sketch opens in legacy mode. New projects use the redesigned sketch mode with a fully-integrated constraint solver.'
+import { LEGACY_SKETCH_MODE_REMOVED_MESSAGE } from '@src/lib/constants'
+
+const LEGACY_SKETCH_MODE_DEPRECATION_MESSAGE = `${LEGACY_SKETCH_MODE_REMOVED_MESSAGE}. This legacy sketch mode will soon be removed.`
 
 export function Announcements({ token }: { token?: string }) {
   const [announcements, setAnnouncements] = useState<Announcement[]>([])
@@ -16,11 +17,16 @@ export function Announcements({ token }: { token?: string }) {
     async function fetchAnnouncements() {
       try {
         const client = createKCClient(token)
-        const result = await meta.get_announcements({ client })
+        const result = await listClientItems<Announcement>(
+          client,
+          '/announcements',
+          controller.signal
+        )
         if (!controller.signal.aborted) {
-          setAnnouncements(result.announcements)
+          setAnnouncements(result)
         }
       } catch (e) {
+        if (controller.signal.aborted) return
         console.error('Error fetching announcements:', e)
       }
     }
@@ -69,7 +75,7 @@ export function LegacySketchModeBanner() {
       className="mt-2 w-[min(34rem,calc(100vw-2rem))] py-1 px-2 bg-chalkboard-10 dark:bg-chalkboard-90 border border-chalkboard-20 dark:border-chalkboard-80 rounded shadow-lg whitespace-normal"
     >
       <p className="text-xs text-center whitespace-normal break-words">
-        {LEGACY_SKETCH_MODE_BANNER}
+        {LEGACY_SKETCH_MODE_DEPRECATION_MESSAGE}
       </p>
     </div>
   )

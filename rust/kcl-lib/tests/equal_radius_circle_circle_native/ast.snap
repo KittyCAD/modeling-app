@@ -1498,6 +1498,7 @@ description: Result of parsing equal_radius_circle_circle_native.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

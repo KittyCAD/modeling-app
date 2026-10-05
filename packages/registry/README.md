@@ -122,6 +122,56 @@ contracts area instead of collecting them into one global file. A good shape is:
 That keeps contracts close to the registry layer while still avoiding a single
 "misc contracts" bucket.
 
+## Factory Dependencies
+
+Dependencies are an optional third argument to the ordinary callback helper:
+
+```ts
+export const settingsTomlSerialization = defineRegistryItemFactory(
+  ({ services, valueSpecs }) => {
+    const files = services.signal(fileOperationsService)
+    const settings = valueSpecs.signal(settingsValueSpecExperimental)
+
+    return {
+      item: {
+        providesServices: [
+          provideService(settingsTomlService, {
+            load: () => loadSettings(files.value, settings.value),
+          }),
+        ],
+      },
+    }
+  },
+  'settings-toml',
+  [fileOperationsExtension, coreSettingsRegistryItem]
+)
+```
+
+Dependencies are **registry items**, which identify providers to include; service
+and value-spec tokens alone do not identify an implementation. The registry first
+expands the known graph, placing dependencies before their consumers and choosing
+the first occurrence of each stable ID or object identity. This planning step does
+not run callbacks. Dependency cycles raise `RegistryDependencyError` before known
+factories run.
+
+The registry then executes the graph through its ordinary lazy runtime cache. Every
+factory follows the same callback and disposal rules, with or without dependencies.
+A duplicate factory does not run, and children belonging only to a discarded item
+do not run. Items returned by callbacks cannot be known during the initial planning
+step; their subtrees are normalized when returned, and already registered identities
+win before any of their children execute.
+
+Dependencies control inclusion and order, not access to a private registry snapshot.
+Factories still create signals or functions that read services after construction;
+eager reads of the registry during construction remain unsupported. The guarantee
+is synchronous callback ordering, not completion of asynchronous provider work.
+
+Replacing a dependency does not rerun a consumer with the same stable key. Retain
+service signals or perform lookups when an operation is called to observe replacement
+providers. Unmounted consumers dispose before their dependencies. Setup failures
+clean up newly created instances. Returned `uses` includes child items; it cannot
+establish prerequisites for the callback that returned it.
+
 ## Package Layout
 
 - [`src/index.ts`](./src/index.ts): public entrypoint

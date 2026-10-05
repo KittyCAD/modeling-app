@@ -317,6 +317,7 @@ description: Result of parsing runtime_exit_in_imported_module.kcl
       },
       "startNodes": []
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

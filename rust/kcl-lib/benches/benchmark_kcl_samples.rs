@@ -81,7 +81,13 @@ fn run_benchmarks(c: &mut Criterion) {
         group.bench_function(format!("execute_{dir_name}"), |b| {
             b.iter(|| {
                 if let Err(err) = rt.block_on(async {
-                    let ctx = kcl_lib::ExecutorContext::new_with_default_client().await?;
+                    let ctx = kcl_lib::ExecutorContext::new_with_client(
+                        Default::default(),
+                        None,
+                        None,
+                        program.language_version()?,
+                    )
+                    .await?;
                     let mut exec_state = kcl_lib::ExecState::new(&ctx);
                     ctx.run(black_box(&program), &mut exec_state).await?;
                     ctx.close().await;

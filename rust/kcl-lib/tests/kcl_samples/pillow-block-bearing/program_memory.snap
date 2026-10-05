@@ -16,8 +16,10 @@ description: Variables in memory after executing pillow-block-bearing.kcl
     "value": 1.75,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "bearingOuterDiameter": {
@@ -25,8 +27,10 @@ description: Variables in memory after executing pillow-block-bearing.kcl
     "value": 2.625,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "boltDiameter": {
@@ -34,8 +38,10 @@ description: Variables in memory after executing pillow-block-bearing.kcl
     "value": 0.375,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "boltSpacingX": {
@@ -43,8 +49,10 @@ description: Variables in memory after executing pillow-block-bearing.kcl
     "value": 5.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "boltSpacingY": {
@@ -52,8 +60,10 @@ description: Variables in memory after executing pillow-block-bearing.kcl
     "value": 3.0,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "chainThickness": {
@@ -61,8 +71,10 @@ description: Variables in memory after executing pillow-block-bearing.kcl
     "value": 0.02734375,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "chainWidth": {
@@ -70,8 +82,10 @@ description: Variables in memory after executing pillow-block-bearing.kcl
     "value": 0.109375,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "counterboreDepth": {
@@ -79,8 +93,10 @@ description: Variables in memory after executing pillow-block-bearing.kcl
     "value": 0.1875,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "counterboreDiameter": {
@@ -88,8 +104,10 @@ description: Variables in memory after executing pillow-block-bearing.kcl
     "value": 0.75,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "linkDiameter": {
@@ -97,8 +115,10 @@ description: Variables in memory after executing pillow-block-bearing.kcl
     "value": 0.0546875,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "sphereDia": {
@@ -106,8 +126,10 @@ description: Variables in memory after executing pillow-block-bearing.kcl
     "value": 0.21875,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   },
   "stockThickness": {
@@ -115,8 +137,10 @@ description: Variables in memory after executing pillow-block-bearing.kcl
     "value": 0.5,
     "ty": {
       "type": "Default",
-      "len": "in",
-      "angle": "degrees"
+      "value": {
+        "len": "in",
+        "angle": "degrees"
+      }
     }
   }
 }

@@ -3905,6 +3905,7 @@ description: Result of parsing blend-tutorial.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

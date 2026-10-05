@@ -123,7 +123,7 @@ export const modelingFileRole = (
         click: sendMenuAction(mainWindow, 'File.Add file to project'),
       },
       {
-        label: 'Export Current Part',
+        label: 'Export',
         id: 'File.Export current part',
         click: sendMenuAction(mainWindow, 'File.Export current part'),
       },

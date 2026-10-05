@@ -37,14 +37,19 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
   },
   "capEnd001": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "capEnd001"
+  },
+  "edgeForSurface": {
+    "type": "TagIdentifier",
+    "value": "line2"
   },
   "extrude001": {
     "type": "Solid",
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -52,10 +57,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 85,
-            "end": 90,
+            "commentStart": 123,
+            "end": 128,
             "moduleId": 0,
-            "start": 85,
+            "start": 123,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -66,10 +71,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 160,
-            "end": 165,
+            "commentStart": 198,
+            "end": 203,
             "moduleId": 0,
-            "start": 160,
+            "start": 198,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -80,10 +85,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 237,
-            "end": 242,
+            "commentStart": 275,
+            "end": 280,
             "moduleId": 0,
-            "start": 237,
+            "start": 275,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -94,10 +99,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 316,
-            "end": 321,
+            "commentStart": 354,
+            "end": 359,
             "moduleId": 0,
-            "start": 316,
+            "start": 354,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -108,10 +113,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 836,
-            "end": 846,
+            "commentStart": 874,
+            "end": 884,
             "moduleId": 0,
-            "start": 836,
+            "start": 874,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -139,10 +144,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 85,
-              "end": 90,
+              "commentStart": 123,
+              "end": 128,
               "moduleId": 0,
-              "start": 85,
+              "start": 123,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -163,10 +168,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 160,
-              "end": 165,
+              "commentStart": 198,
+              "end": 203,
               "moduleId": 0,
-              "start": 160,
+              "start": 198,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -187,10 +192,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
               2.5
             ],
             "tag": {
-              "commentStart": 237,
-              "end": 242,
+              "commentStart": 275,
+              "end": 280,
               "moduleId": 0,
-              "start": 237,
+              "start": 275,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -211,10 +216,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
               2.5
             ],
             "tag": {
-              "commentStart": 316,
-              "end": 321,
+              "commentStart": 354,
+              "end": 359,
               "moduleId": 0,
-              "start": 316,
+              "start": 354,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -227,17 +232,17 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -297,8 +302,8 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -311,6 +316,8 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
     "value": {
       "type": "Solid",
       "id": "[uuid]",
+      "originalId": "[uuid]",
+      "topologyId": "[uuid]",
       "artifactId": "[uuid]",
       "value": [
         {
@@ -318,10 +325,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 85,
-            "end": 90,
+            "commentStart": 123,
+            "end": 128,
             "moduleId": 0,
-            "start": 85,
+            "start": 123,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -332,10 +339,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 160,
-            "end": 165,
+            "commentStart": 198,
+            "end": 203,
             "moduleId": 0,
-            "start": 160,
+            "start": 198,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -346,10 +353,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 237,
-            "end": 242,
+            "commentStart": 275,
+            "end": 280,
             "moduleId": 0,
-            "start": 237,
+            "start": 275,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -360,10 +367,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 316,
-            "end": 321,
+            "commentStart": 354,
+            "end": 359,
             "moduleId": 0,
-            "start": 316,
+            "start": 354,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -374,10 +381,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 836,
-            "end": 846,
+            "commentStart": 874,
+            "end": 884,
             "moduleId": 0,
-            "start": 836,
+            "start": 874,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -405,10 +412,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 85,
-              "end": 90,
+              "commentStart": 123,
+              "end": 128,
               "moduleId": 0,
-              "start": 85,
+              "start": 123,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -429,10 +436,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 160,
-              "end": 165,
+              "commentStart": 198,
+              "end": 203,
               "moduleId": 0,
-              "start": 160,
+              "start": 198,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -453,10 +460,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
               2.5
             ],
             "tag": {
-              "commentStart": 237,
-              "end": 242,
+              "commentStart": 275,
+              "end": 280,
               "moduleId": 0,
-              "start": 237,
+              "start": 275,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -477,10 +484,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
               2.5
             ],
             "tag": {
-              "commentStart": 316,
-              "end": 321,
+              "commentStart": 354,
+              "end": 359,
               "moduleId": 0,
-              "start": 316,
+              "start": 354,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -493,17 +500,17 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
           }
         ],
         "on": {
+          "type": "plane",
           "artifactId": "[uuid]",
           "id": "[uuid]",
-          "kind": "Custom",
           "objectId": 0,
+          "kind": "Custom",
           "origin": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0,
             "units": "mm"
           },
-          "type": "plane",
           "xAxis": {
             "x": 1.0,
             "y": 0.0,
@@ -563,8 +570,8 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
-        "originSketchId": "[uuid]",
-        "units": "mm"
+        "units": "mm",
+        "isClosed": "explicitly"
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
@@ -576,8 +583,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
             "n": 13.0,
             "ty": {
               "type": "Default",
-              "len": "mm",
-              "angle": "degrees"
+              "value": {
+                "len": "mm",
+                "angle": "degrees"
+              }
             }
           },
           "edgeId": "[uuid]",
@@ -604,10 +613,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 85,
-            "end": 90,
+            "commentStart": 123,
+            "end": 128,
             "moduleId": 0,
-            "start": 85,
+            "start": 123,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -628,10 +637,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 160,
-            "end": 165,
+            "commentStart": 198,
+            "end": 203,
             "moduleId": 0,
-            "start": 160,
+            "start": 198,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -652,10 +661,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
             2.5
           ],
           "tag": {
-            "commentStart": 237,
-            "end": 242,
+            "commentStart": 275,
+            "end": 280,
             "moduleId": 0,
-            "start": 237,
+            "start": 275,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -676,10 +685,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
             2.5
           ],
           "tag": {
-            "commentStart": 316,
-            "end": 321,
+            "commentStart": 354,
+            "end": 359,
             "moduleId": 0,
-            "start": 316,
+            "start": 354,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -692,17 +701,17 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -764,21 +773,17 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
   },
   "line1": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line1"
   },
   "line2": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line2"
   },
   "line3": {
     "type": "TagIdentifier",
-    "type": "TagIdentifier",
     "value": "line3"
   },
   "line4": {
-    "type": "TagIdentifier",
     "type": "TagIdentifier",
     "value": "line4"
   },
@@ -798,10 +803,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 85,
-            "end": 90,
+            "commentStart": 123,
+            "end": 128,
             "moduleId": 0,
-            "start": 85,
+            "start": 123,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -822,10 +827,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 160,
-            "end": 165,
+            "commentStart": 198,
+            "end": 203,
             "moduleId": 0,
-            "start": 160,
+            "start": 198,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -846,10 +851,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
             2.5
           ],
           "tag": {
-            "commentStart": 237,
-            "end": 242,
+            "commentStart": 275,
+            "end": 280,
             "moduleId": 0,
-            "start": 237,
+            "start": 275,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -870,10 +875,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
             2.5
           ],
           "tag": {
-            "commentStart": 316,
-            "end": 321,
+            "commentStart": 354,
+            "end": 359,
             "moduleId": 0,
-            "start": 316,
+            "start": 354,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -886,17 +891,17 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
         }
       ],
       "on": {
+        "type": "plane",
         "artifactId": "[uuid]",
         "id": "[uuid]",
-        "kind": "Custom",
         "objectId": 0,
+        "kind": "Custom",
         "origin": {
           "x": 0.0,
           "y": 0.0,
           "z": 0.0,
           "units": "mm"
         },
-        "type": "plane",
         "xAxis": {
           "x": 1.0,
           "y": 0.0,
@@ -956,8 +961,8 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
-      "originSketchId": "[uuid]",
-      "units": "mm"
+      "units": "mm",
+      "isClosed": "explicitly"
     }
   },
   "sketch001": {
@@ -970,110 +975,118 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 4,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -2.5,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 2.5
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
                         }
                       },
-                      {
-                        "n": 0.0,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -2.5
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": 2.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -2.5,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
+                    "end_freedom": "Free",
+                    "end_object_id": 3,
+                    "start": [
+                      {
+                        "n": -2.5,
+                        "ty": {
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 2.5,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
+                      {
+                        "n": 0.0,
+                        "ty": {
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
-                    },
-                    "start_object_id": 2,
-                    "end_object_id": 3,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 2
                   }
                 },
+                "objectId": 4,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line1"
@@ -1090,110 +1103,118 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 7,
                 "kind": {
                   "line": {
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 2.5
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 2.5
+                        }
+                      },
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 2.5
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
+                        }
+                      }
+                    },
+                    "end": [
+                      {
+                        "n": 2.5,
+                        "ty": {
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
+                        }
+                      },
+                      {
+                        "n": 2.5,
+                        "ty": {
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
+                        }
+                      }
+                    ],
+                    "end_freedom": "Free",
+                    "end_object_id": 6,
                     "start": [
                       {
                         "n": 2.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
-                    "end": [
-                      {
-                        "n": 2.5,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      },
-                      {
-                        "n": 2.5,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
-                        }
-                      }
-                    ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 2.5,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
-                        }
-                      },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": 2.5,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 2.5,
-                          "units": "Mm"
-                        }
-                      }
-                    },
-                    "start_object_id": 5,
-                    "end_object_id": 6,
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 5
                   }
                 },
+                "objectId": 7,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line2"
@@ -1210,110 +1231,118 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 10,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": 2.5,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -2.5
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 2.5
                         }
                       },
-                      {
-                        "n": 2.5,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 2.5
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 2.5
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -2.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 2.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": 2.5,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 2.5,
-                          "units": "Mm"
+                    "end_freedom": "Free",
+                    "end_object_id": 9,
+                    "start": [
+                      {
+                        "n": 2.5,
+                        "ty": {
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -2.5,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 2.5,
-                          "units": "Mm"
+                      {
+                        "n": 2.5,
+                        "ty": {
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
-                    },
-                    "start_object_id": 8,
-                    "end_object_id": 9,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 8
                   }
                 },
+                "objectId": 10,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line3"
@@ -1330,110 +1359,118 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
             "Solved": {
               "segment": {
                 "id": "[uuid]",
-                "objectId": 13,
                 "kind": {
                   "line": {
-                    "start": [
-                      {
-                        "n": -2.5,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                    "construction": false,
+                    "ctor": {
+                      "end": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -2.5
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 0.0
                         }
                       },
-                      {
-                        "n": 2.5,
-                        "ty": {
-                          "mm": null,
-                          "type": "Known",
-                          "type": "Length"
+                      "start": {
+                        "x": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": -2.5
+                        },
+                        "y": {
+                          "type": "Var",
+                          "units": "Mm",
+                          "value": 2.5
                         }
                       }
-                    ],
+                    },
                     "end": [
                       {
                         "n": -2.5,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
                       {
                         "n": 0.0,
                         "ty": {
-                          "mm": null,
                           "type": "Known",
-                          "type": "Length"
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
                     ],
-                    "ctor": {
-                      "start": {
-                        "x": {
-                          "type": "Var",
-                          "value": -2.5,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 2.5,
-                          "units": "Mm"
+                    "end_freedom": "Free",
+                    "end_object_id": 12,
+                    "start": [
+                      {
+                        "n": -2.5,
+                        "ty": {
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       },
-                      "end": {
-                        "x": {
-                          "type": "Var",
-                          "value": -2.5,
-                          "units": "Mm"
-                        },
-                        "y": {
-                          "type": "Var",
-                          "value": 0.0,
-                          "units": "Mm"
+                      {
+                        "n": 2.5,
+                        "ty": {
+                          "type": "Known",
+                          "value": {
+                            "type": "Length",
+                            "value": "mm"
+                          }
                         }
                       }
-                    },
-                    "start_object_id": 11,
-                    "end_object_id": 12,
+                    ],
                     "start_freedom": "Free",
-                    "end_freedom": "Free",
-                    "construction": false
+                    "start_object_id": 11
                   }
                 },
+                "objectId": 13,
+                "sketchId": "[uuid]",
                 "surface": {
                   "artifactId": "[uuid]",
                   "id": "[uuid]",
                   "kind": "Custom",
                   "objectId": 0,
                   "origin": {
+                    "units": "mm",
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": "mm"
+                    "z": 0.0
                   },
                   "type": "plane",
                   "xAxis": {
+                    "units": null,
                     "x": 1.0,
                     "y": 0.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "yAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 1.0,
-                    "z": 0.0,
-                    "units": null
+                    "z": 0.0
                   },
                   "zAxis": {
+                    "units": null,
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 1.0,
-                    "units": null
+                    "z": 1.0
                   }
                 },
-                "sketchId": "[uuid]",
                 "tag": {
                   "type": "TagIdentifier",
                   "value": "line4"
@@ -1462,10 +1499,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 85,
-                    "end": 90,
+                    "commentStart": 123,
+                    "end": 128,
                     "moduleId": 0,
-                    "start": 85,
+                    "start": 123,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1486,10 +1523,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 160,
-                    "end": 165,
+                    "commentStart": 198,
+                    "end": 203,
                     "moduleId": 0,
-                    "start": 160,
+                    "start": 198,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -1510,10 +1547,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
                     2.5
                   ],
                   "tag": {
-                    "commentStart": 237,
-                    "end": 242,
+                    "commentStart": 275,
+                    "end": 280,
                     "moduleId": 0,
-                    "start": 237,
+                    "start": 275,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -1534,10 +1571,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
                     2.5
                   ],
                   "tag": {
-                    "commentStart": 316,
-                    "end": 321,
+                    "commentStart": 354,
+                    "end": 359,
                     "moduleId": 0,
-                    "start": 316,
+                    "start": 354,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -1550,17 +1587,17 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
                 }
               ],
               "on": {
+                "type": "plane",
                 "artifactId": "[uuid]",
                 "id": "[uuid]",
-                "kind": "Custom",
                 "objectId": 0,
+                "kind": "Custom",
                 "origin": {
                   "x": 0.0,
                   "y": 0.0,
                   "z": 0.0,
                   "units": "mm"
                 },
-                "type": "plane",
                 "xAxis": {
                   "x": 1.0,
                   "y": 0.0,

@@ -11,8 +11,10 @@ description: Variables in memory after executing index_of_array.kcl
         "value": 90.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -20,8 +22,10 @@ description: Variables in memory after executing index_of_array.kcl
         "value": 91.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       },
       {
@@ -29,8 +33,10 @@ description: Variables in memory after executing index_of_array.kcl
         "value": 92.0,
         "ty": {
           "type": "Default",
-          "len": "mm",
-          "angle": "degrees"
+          "value": {
+            "len": "mm",
+            "angle": "degrees"
+          }
         }
       }
     ]
@@ -40,8 +46,10 @@ description: Variables in memory after executing index_of_array.kcl
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "result0": {
@@ -49,8 +57,10 @@ description: Variables in memory after executing index_of_array.kcl
     "value": 91.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "result1": {
@@ -58,8 +68,10 @@ description: Variables in memory after executing index_of_array.kcl
     "value": 91.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   }
 }

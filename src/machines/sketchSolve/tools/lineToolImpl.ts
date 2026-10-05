@@ -159,10 +159,11 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
         const units = baseUnitToNumericSuffix(
           context.kclManager.fileSettings.defaultLengthUnit
         )
+        const [x, y] = snappingCandidate?.position ?? mousePosition
         try {
           isEditInProgress = true
           const settings = jsAppSettings(context.rustContext.settingsActor)
-          // Note: twoD comes from intersectionPoint.unscaledTwoD which is in world coordinates, and always mm
+          // Sketch-plane positions are scaled to the current units.
           const result = await context.rustContext.editSegments(
             0,
             context.sketchId,
@@ -174,12 +175,12 @@ export function animateDraftSegmentListener({ self, context }: ToolActionArgs) {
                   position: {
                     x: {
                       type: 'Var',
-                      value: roundOff(twoD.x),
+                      value: roundOff(x),
                       units,
                     },
                     y: {
                       type: 'Var',
-                      value: roundOff(twoD.y),
+                      value: roundOff(y),
                       units,
                     },
                   },

@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties tangential_arc.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": -2.5,
+      "y": 7.5,
+      "z": 5.0
+    },
+    "dimensions": {
+      "x": 6.0,
+      "y": 18.0,
+      "z": 10.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 400.89995022185576
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.3212707135509992
+  }
+}

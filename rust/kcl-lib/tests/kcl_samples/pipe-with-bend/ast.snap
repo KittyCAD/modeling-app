@@ -1509,6 +1509,7 @@ description: Result of parsing pipe-with-bend.kcl
         }
       ]
     },
-    "start": 0
+    "start": 0,
+    "type": "Program"
   }
 }

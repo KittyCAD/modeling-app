@@ -74,9 +74,9 @@ export interface SearchService {
 
 export interface ToggleService {
   readonly active: ReadonlySignal<boolean>
-  enable(): void
-  disable(): void
-  toggle(): void
+  enable(): Promise<void>
+  disable(): Promise<void>
+  toggle(): Promise<void>
 }
 
 export type WorkspaceToggleService = ToggleService
@@ -327,7 +327,9 @@ export const workspaceToggleRegistryItem = defineRegistryItemFactory(
               label: controller.active.value
                 ? 'Disable Team Workspace'
                 : 'Enable Team Workspace',
-              run: () => controller.toggle(),
+              run: () => {
+                void controller.toggle()
+              },
             })),
             { key: 'workspace.toggle', precedence: 'high' }
           ),
@@ -442,7 +444,9 @@ function createAnalyticsToggleRegistryItem(initialActive: boolean) {
                 label: controller.active.value
                   ? 'Disable Analytics Provider'
                   : 'Enable Analytics Provider',
-                run: () => controller.toggle(),
+                run: () => {
+                  void controller.toggle()
+                },
               })),
               { key: 'analytics.toggle', precedence: 'high' }
             ),

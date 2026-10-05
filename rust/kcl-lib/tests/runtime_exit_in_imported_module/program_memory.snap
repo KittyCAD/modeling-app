@@ -8,8 +8,10 @@ description: Variables in memory after executing runtime_exit_in_imported_module
     "value": 1.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   },
   "stillRuns": {
@@ -17,8 +19,10 @@ description: Variables in memory after executing runtime_exit_in_imported_module
     "value": 42.0,
     "ty": {
       "type": "Default",
-      "len": "mm",
-      "angle": "degrees"
+      "value": {
+        "len": "mm",
+        "angle": "degrees"
+      }
     }
   }
 }
