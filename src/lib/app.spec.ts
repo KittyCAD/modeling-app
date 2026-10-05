@@ -199,6 +199,7 @@ function createRuntimeFlagsWasmInstance() {
 function expectedRuntimeFlags(useNewLexerParser: 'On' | 'Off') {
   return JSON.stringify({
     use_new_lexer_parser: useNewLexerParser,
+    use_new_parser: 'Off',
   })
 }
 

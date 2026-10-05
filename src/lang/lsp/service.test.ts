@@ -205,6 +205,7 @@ describe('LSP runtime feature flags', () => {
       token: 'token-a',
       kclRuntimeFlags: {
         use_new_lexer_parser: 'On',
+        use_new_parser: 'Off',
       },
     })
   })
@@ -255,6 +256,7 @@ describe('LSP runtime feature flags', () => {
     expect(initPayload(mocks.workers[1])).toMatchObject({
       kclRuntimeFlags: {
         use_new_lexer_parser: 'On',
+        use_new_parser: 'Off',
       },
     })
   })
@@ -327,6 +329,7 @@ describe('LSP runtime feature flags', () => {
     expect(initPayload(mocks.workers[0])).toMatchObject({
       kclRuntimeFlags: {
         use_new_lexer_parser: 'Off',
+        use_new_parser: 'Off',
       },
     })
 
