@@ -1624,7 +1624,7 @@ export async function getEventForQueryEntityTypeWithPoint(
 
   // Only convert face to solid2d when face_id directly references a solid2d (un-extruded profile).
   if (entityRef.type === 'vertex') {
-    const isShiftDown = kclManager.isShiftDown
+    const isShiftDown = data?.isShiftDown ?? kclManager.isShiftDown
     const selectionFilter = kclManager.selectionFilter.value
     const camera = kclManager.sceneInfra.camControls.camera.clone()
     camera.updateMatrixWorld(true)
@@ -2462,11 +2462,13 @@ type QueryEntityTypeWithPointEvent =
   | (QueryEntityTypeWithPoint & {
       entity_id?: string
       selectedAtWindow?: Point2d
+      isShiftDown?: boolean
     })
   | {
       data: QueryEntityTypeWithPoint & {
         entity_id?: string
         selectedAtWindow?: Point2d
+        isShiftDown?: boolean
       }
     }
 
@@ -2476,6 +2478,7 @@ function getQueryEntityTypeWithPointEventData(
   | (QueryEntityTypeWithPoint & {
       entity_id?: string
       selectedAtWindow?: Point2d
+      isShiftDown?: boolean
     })
   | undefined {
   if (!engineEvent) return undefined
@@ -2938,15 +2941,19 @@ export async function sendQueryEntityTypeWithPoint(
     videoRef,
     systemDeps.engineCommandManager.streamDimensions
   )
-  let res = await systemDeps.engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_req',
-    cmd: {
-      type: 'query_entity_type_with_point',
-      selected_at_window: { x, y },
-      selection_type: 'add',
+  let res = await systemDeps.engineCommandManager.sendSceneCommand(
+    {
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'query_entity_type_with_point',
+        selected_at_window: { x, y },
+        selection_type: 'add',
+      },
+      cmd_id: uuidv4(),
     },
-    cmd_id: uuidv4(),
-  })
+    false,
+    { isShiftDown: e.shiftKey }
+  )
   if (!res) {
     console.warn('No response')
     return undefined

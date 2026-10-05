@@ -635,7 +635,8 @@ export class ConnectionManager extends EventTarget {
 
   async sendSceneCommand(
     command: EngineCommand,
-    forceWebsocket = false
+    forceWebsocket = false,
+    selectionContext?: PendingMessage['selectionContext']
   ): Promise<WebSocketResponse | [WebSocketResponse] | null> {
     if (
       this.connection === undefined ||
@@ -722,6 +723,7 @@ export class ConnectionManager extends EventTarget {
         command,
         idToRangeMap: {},
         range: defaultSourceRange(),
+        selectionContext,
       },
       true // isSceneCommand
     )
@@ -748,6 +750,7 @@ export class ConnectionManager extends EventTarget {
       command: PendingMessage['command']
       range: PendingMessage['range']
       idToRangeMap: PendingMessage['idToRangeMap']
+      selectionContext?: PendingMessage['selectionContext']
     },
     isSceneCommand = false
   ): Promise<[WebSocketResponse]> {
@@ -788,6 +791,7 @@ export class ConnectionManager extends EventTarget {
       range: message.range,
       idToRangeMap: message.idToRangeMap,
       isSceneCommand,
+      selectionContext: message.selectionContext,
     }
 
     // For exports do not time out the command
@@ -923,6 +927,7 @@ export class ConnectionManager extends EventTarget {
                 data: {
                   ...modelingResponse.data,
                   selectedAtWindow: pending.command.cmd.selected_at_window,
+                  isShiftDown: pending.selectionContext?.isShiftDown,
                 },
               }
             : modelingResponse

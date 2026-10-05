@@ -19,7 +19,7 @@ it('keeps a picked corner as a point selection and drops stale topology response
   const kclManager = {
     ast: assertParse('', world.instance),
     artifactGraph: new Map(),
-    isShiftDown: true,
+    isShiftDown: false,
     selectionFilter: { value: ['vertex'] },
     sceneInfra: { camControls: { camera: new PerspectiveCamera() } },
   }
@@ -55,6 +55,7 @@ it('keeps a picked corner as a point selection and drops stale topology response
     useSegmentsBasedRegions: false,
   }
   const query = {
+    isShiftDown: true,
     reference: {
       type: 'vertex' as const,
       side_faces: ['f1', 'f2', 'f3'],

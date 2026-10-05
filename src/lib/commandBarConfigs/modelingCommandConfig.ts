@@ -1191,16 +1191,23 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           hidden: (context) =>
             context.argumentsToSubmit.method !== 'Points' ||
             context.argumentsToSubmit.pointSource !== 'Pick',
-          validation: async ({ data }: { data: Selections }) => {
+          validation: async ({
+            data,
+          }: {
+            data: { pickedPoints: Selections }
+          }) => {
+            const selection = data.pickedPoints
             if (
-              data.otherSelections.length ||
-              data.graphSelections.some(
+              selection.otherSelections.length ||
+              selection.graphSelections.some(
                 (s) => s.entityRef?.type !== 'vertex' || !s.vertexPosition
               )
             )
               return 'Select exactly three corner points on the part.'
             const valid = validatePlanePoints(
-              data.graphSelections.map((s) => s.vertexPosition) as PickedPoint[]
+              selection.graphSelections.map(
+                (s) => s.vertexPosition
+              ) as PickedPoint[]
             )
             return isErr(valid) ? valid.message : true
           },
