@@ -178,7 +178,7 @@ export function parseInitialUrl(
 
   // Before multi-file web projects, the editor used a virtual `/browser`
   // project. Those URLs have no modern application-state meaning; restore
-  // Home, where the current default project can be selected.
+  // Home and preserve launch parameters for their one-shot owner.
   if (
     parsedDestination.destination.type === 'project' &&
     parsedDestination.destination.target.startsWith('/browser')
@@ -186,7 +186,7 @@ export function parseInitialUrl(
     return {
       type: 'launch',
       destination: { type: 'home' },
-      search: '',
+      search: applicationUrl.search,
       hash: '',
       shouldProjectUrl: true,
     }

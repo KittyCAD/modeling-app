@@ -11,6 +11,7 @@ it('keeps the Zookeeper pane closeable while its controller starts', () => {
   const runtime = {
     currentProject: signal({ path: '/project' } as Project),
     dispose: vi.fn(),
+    seedPrompt: vi.fn(() => true),
     session: signal<ZookeeperSessionController | undefined>(undefined),
   }
 

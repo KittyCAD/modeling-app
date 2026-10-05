@@ -1,7 +1,6 @@
 import { Spinner } from '@src/components/Spinner'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useApp } from '@src/lib/boot'
-import { SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY } from '@src/lib/constants'
 import { modifiedColdPlate } from '@src/lib/exampleKcl'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 import {
@@ -14,6 +13,7 @@ import { PATHS, joinRouterPaths } from '@src/lib/paths'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { zookeeperPromptService } from '@src/registry/contracts/zookeeperPrompt'
 import {
   OnboardingButtons,
   OnboardingCard,
@@ -24,7 +24,7 @@ import {
   useOnboardingPanes,
 } from '@src/routes/Onboarding/utils'
 import { useEffect, useState } from 'react'
-import { type RouteObject, useSearchParams } from 'react-router-dom'
+import type { RouteObject } from 'react-router-dom'
 
 type DesktopOnboardingRoute = RouteObject & {
   path: keyof typeof desktopOnboardingPaths
@@ -241,9 +241,9 @@ function Zookeeper() {
 }
 
 function ZookeeperPrompt() {
+  const app = useApp()
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/zookeeper-prompt'
-  const [searchParams, setSearchParams] = useSearchParams()
   const prompt =
     'Design a cold plate with a serpentine copper coolant tube and recessed channels for thermal management'
 
@@ -252,10 +252,13 @@ function ZookeeperPrompt() {
 
   // Enter the zookeeper flow with a prebaked prompt
   useEffect(() => {
-    searchParams.set(SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY, prompt)
-    setSearchParams(searchParams, { replace: true })
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [])
+    const projectPath = app.project?.projectIORefSignal.value.path
+    if (projectPath) {
+      app.registry
+        .optional(zookeeperPromptService)
+        ?.seedPrompt(projectPath, prompt)
+    }
+  }, [app, prompt])
 
   // Make it so submitting the command just advances the onboarding
   useAdvanceOnboardingOnFormSubmit(thisOnboardingStatus, 'desktop')
@@ -461,7 +464,8 @@ function PromptToEdit() {
 }
 
 function PromptToEditPrompt() {
-  const { commands } = useApp()
+  const app = useApp()
+  const { commands } = app
   const thisOnboardingStatus: DesktopOnboardingPath =
     '/desktop/prompt-to-edit-prompt'
   const prompt =
@@ -474,12 +478,14 @@ function PromptToEditPrompt() {
   )
 
   // Fill in the prompt if available
-  const [searchParams, setSearchParams] = useSearchParams()
   useEffect(() => {
-    searchParams.set(SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY, prompt)
-    setSearchParams(searchParams, { replace: true })
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [])
+    const projectPath = app.project?.projectIORefSignal.value.path
+    if (projectPath) {
+      app.registry
+        .optional(zookeeperPromptService)
+        ?.seedPrompt(projectPath, prompt)
+    }
+  }, [app, prompt])
 
   // Enter the prompt-to-edit flow with a prebaked prompt
   const [isReady, setIsReady] = useState(

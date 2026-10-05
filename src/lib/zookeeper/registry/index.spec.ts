@@ -21,6 +21,7 @@ import {
   layoutService,
 } from '@src/registry/contracts/layout'
 import { statusBarLocalItemsValueSpec } from '@src/registry/contracts/statusBar'
+import { zookeeperPromptService } from '@src/registry/contracts/zookeeperPrompt'
 import { describe, expect, it, vi } from 'vitest'
 
 vi.mock(
@@ -88,6 +89,7 @@ describe('zookeeper plugin', () => {
       .find((candidate) => candidate.id === 'zookeeper')
 
     expect(plugin).toBeDefined()
+    expect(registry.optional(zookeeperPromptService)).toBeDefined()
     const zookeeperArea = registry.get(layoutAreaLibraryValueSpec)[
       AreaType.Zookeeper
     ]
@@ -143,6 +145,7 @@ describe('zookeeper plugin', () => {
     }
 
     await registry.get(plugin.service).disable()
+    expect(registry.optional(zookeeperPromptService)).toBeUndefined()
 
     expect(registry.get(layoutAreaLibraryValueSpec)[AreaType.Zookeeper]).toBe(
       undefined
@@ -152,6 +155,7 @@ describe('zookeeper plugin', () => {
     ).not.toContain('zookeeper-credits')
 
     await registry.get(plugin.service).enable()
+    expect(registry.optional(zookeeperPromptService)).toBeDefined()
 
     expect(
       registry.get(layoutAreaLibraryValueSpec)[AreaType.Zookeeper]

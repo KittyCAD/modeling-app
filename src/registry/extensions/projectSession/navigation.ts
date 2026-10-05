@@ -40,7 +40,7 @@ export interface ProjectNavigationDependencies {
     outcome: Extract<OpenProjectOutcome, { kind: 'opened' }>,
     resolution: ResolvedProjectOpen,
     request: OpenProjectRequest
-  ) => void
+  ) => void | Promise<void>
 }
 
 export interface ResolvedProjectOpen {
@@ -201,15 +201,22 @@ export function createOpenProjectIntentContribution(
     activeProjectOpen = undefined
   }
 
-  const beginProjectOpen = () => {
+  const beginProjectOpen = (signal?: AbortSignal) => {
     cancelActiveProjectOpen()
 
     const controller = new AbortController()
     activeProjectOpen = controller
+    const abort = () => controller.abort()
+    if (signal?.aborted) {
+      abort()
+    } else {
+      signal?.addEventListener('abort', abort, { once: true })
+    }
 
     return {
       throwIfSuperseded: () => controller.signal.throwIfAborted(),
       finish: () => {
+        signal?.removeEventListener('abort', abort)
         if (activeProjectOpen === controller) {
           activeProjectOpen = undefined
         }
@@ -220,7 +227,7 @@ export function createOpenProjectIntentContribution(
   const openProject = async (
     request: OpenProjectRequest
   ): Promise<OpenProjectOutcome> => {
-    const projectOpen = beginProjectOpen()
+    const projectOpen = beginProjectOpen(request.signal)
     try {
       projectOpen.throwIfSuperseded()
       const resolution = await dependencies.resolveProjectOpen(
@@ -233,7 +240,9 @@ export function createOpenProjectIntentContribution(
         resolution,
         projectOpen.throwIfSuperseded
       )
-      dependencies.projectOpened(outcome, resolution, request)
+      projectOpen.throwIfSuperseded()
+      await dependencies.projectOpened(outcome, resolution, request)
+      projectOpen.throwIfSuperseded()
       return outcome
     } finally {
       projectOpen.finish()
