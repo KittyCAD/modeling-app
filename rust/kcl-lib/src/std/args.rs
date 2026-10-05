@@ -75,7 +75,14 @@ impl TyF64 {
         }
     }
 
-    pub fn to_mm(&self) -> f64 {
+    /// Soft-deprecated. Use [`Self::to_mm()`] instead. This is legacy, and all
+    /// callers should stop using this.
+    pub fn unwrap_to_mm(&self) -> f64 {
+        self.unwrap_to_length_units(UnitLength::Millimeters)
+    }
+
+    /// The original that returns `f64` was renamed to [`Self::unwrap_to_mm()`].
+    pub fn to_mm(&self) -> Option<f64> {
         self.to_length_units(UnitLength::Millimeters)
     }
 
@@ -92,17 +99,35 @@ impl TyF64 {
         }
     }
 
-    pub fn to_length_units(&self, units: UnitLength) -> f64 {
+    /// Soft-deprecated. Use [`Self::to_length_units()`] instead.
+    /// This is legacy, and all callers should stop using this.
+    pub fn unwrap_to_length_units(&self, units: UnitLength) -> f64 {
+        self.to_length_units(units)
+            .unwrap_or_else(|| unreachable!("expected length, found {:?}", self.ty))
+    }
+
+    /// The original that returns `f64` was renamed to
+    /// [`Self::unwrap_to_length_units()`].
+    pub fn to_length_units(&self, units: UnitLength) -> Option<f64> {
         let len = match &self.ty {
             NumericType::Default { len, .. } => *len,
             NumericType::Known(UnitType::Length(len)) => *len,
-            t => unreachable!("expected length, found {t:?}"),
+            _ => return None,
         };
 
-        crate::execution::types::adjust_length(len, self.n, units).0
+        Some(crate::execution::types::adjust_length(len, self.n, units).0)
     }
 
-    pub fn to_degrees(&self, exec_state: &mut ExecState, source_range: SourceRange) -> f64 {
+    /// Soft-deprecated. Use [`Self::to_degrees()`] instead. This is legacy, and
+    /// all callers should stop using this.
+    pub fn unwrap_to_degrees(&self, exec_state: &mut ExecState, source_range: SourceRange) -> f64 {
+        self.to_degrees(exec_state, source_range)
+            .unwrap_or_else(|| unreachable!("expected angle, found {:?}", self.ty))
+    }
+
+    /// The original that returns `f64` was renamed to
+    /// [`Self::unwrap_to_degrees()`].
+    pub fn to_degrees(&self, exec_state: &mut ExecState, source_range: SourceRange) -> Option<f64> {
         let angle = match self.ty {
             NumericType::Default { angle, .. } => {
                 if self.n != 0.0 {
@@ -114,13 +139,22 @@ impl TyF64 {
                 angle
             }
             NumericType::Known(UnitType::Angle(angle)) => angle,
-            _ => unreachable!(),
+            _ => return None,
         };
 
-        crate::execution::types::adjust_angle(angle, self.n, UnitAngle::Degrees).0
+        Some(crate::execution::types::adjust_angle(angle, self.n, UnitAngle::Degrees).0)
     }
 
-    pub fn to_radians(&self, exec_state: &mut ExecState, source_range: SourceRange) -> f64 {
+    /// Soft-deprecated. Use [`Self::to_radians()`] instead. This is legacy, and
+    /// all callers should stop using this.
+    pub fn unwrap_to_radians(&self, exec_state: &mut ExecState, source_range: SourceRange) -> f64 {
+        self.to_radians(exec_state, source_range)
+            .unwrap_or_else(|| unreachable!("expected angle, found {:?}", self.ty))
+    }
+
+    /// The original that returns `f64` was renamed to
+    /// [`Self::unwrap_to_radians()`].
+    pub fn to_radians(&self, exec_state: &mut ExecState, source_range: SourceRange) -> Option<f64> {
         let angle = match self.ty {
             NumericType::Default { angle, .. } => {
                 if self.n != 0.0 {
@@ -132,11 +166,12 @@ impl TyF64 {
                 angle
             }
             NumericType::Known(UnitType::Angle(angle)) => angle,
-            _ => unreachable!(),
+            _ => return None,
         };
 
-        crate::execution::types::adjust_angle(angle, self.n, UnitAngle::Radians).0
+        Some(crate::execution::types::adjust_angle(angle, self.n, UnitAngle::Radians).0)
     }
+
     pub fn count(n: f64) -> Self {
         Self {
             n,

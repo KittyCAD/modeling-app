@@ -174,8 +174,8 @@ async fn inner_chamfer(
         Default::default()
     };
 
-    let second_distance = second_length.map(|x| LengthUnit(x.to_mm()));
-    let angle = angle.map(|x| Angle::from_degrees(x.to_degrees(exec_state, args.source_range)));
+    let second_distance = second_length.map(|x| LengthUnit(x.unwrap_to_mm()));
+    let angle = angle.map(|x| Angle::from_degrees(x.unwrap_to_degrees(exec_state, args.source_range)));
     if let Some(angle) = angle
         && (angle.ge(&Angle::quarter_circle()) || angle.le(&Angle::zero()))
     {
@@ -203,7 +203,7 @@ async fn inner_chamfer(
         }
     } else {
         CutTypeV2::Chamfer {
-            distance: LengthUnit(length.to_mm()),
+            distance: LengthUnit(length.unwrap_to_mm()),
             second_distance,
             angle,
             swap: false,
@@ -332,8 +332,8 @@ async fn inner_chamfer_v2(
         Default::default()
     };
 
-    let second_distance = second_length.map(|x| LengthUnit(x.to_mm()));
-    let angle = angle.map(|x| Angle::from_degrees(x.to_degrees(exec_state, args.source_range)));
+    let second_distance = second_length.map(|x| LengthUnit(x.unwrap_to_mm()));
+    let angle = angle.map(|x| Angle::from_degrees(x.unwrap_to_degrees(exec_state, args.source_range)));
     if let Some(angle) = angle
         && (angle.ge(&Angle::quarter_circle()) || angle.le(&Angle::zero()))
     {
@@ -361,7 +361,7 @@ async fn inner_chamfer_v2(
         }
     } else {
         CutTypeV2::Chamfer {
-            distance: LengthUnit(length.to_mm()),
+            distance: LengthUnit(length.unwrap_to_mm()),
             second_distance,
             angle,
             swap: false,
@@ -483,8 +483,8 @@ async fn inner_chamfer_with_engine_refs(
         Default::default()
     };
 
-    let second_distance = second_length.map(|x| LengthUnit(x.to_mm()));
-    let angle = angle.map(|x| Angle::from_degrees(x.to_degrees(exec_state, args.source_range)));
+    let second_distance = second_length.map(|x| LengthUnit(x.unwrap_to_mm()));
+    let angle = angle.map(|x| Angle::from_degrees(x.unwrap_to_degrees(exec_state, args.source_range)));
     if let Some(angle) = angle
         && (angle.ge(&Angle::quarter_circle()) || angle.le(&Angle::zero()))
     {
@@ -495,7 +495,7 @@ async fn inner_chamfer_with_engine_refs(
     }
 
     let cut_type = CutTypeV2::Chamfer {
-        distance: LengthUnit(length.to_mm()),
+        distance: LengthUnit(length.unwrap_to_mm()),
         second_distance,
         angle,
         swap: false,

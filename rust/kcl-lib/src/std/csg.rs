@@ -136,7 +136,9 @@ pub(crate) async fn inner_union(
                 mcmd::BooleanUnion::builder()
                     .use_legacy(csg_algorithm.is_legacy())
                     .solid_ids(solids.iter().map(|s| s.id).collect())
-                    .tolerance(LengthUnit(tolerance.map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)))
+                    .tolerance(LengthUnit(
+                        tolerance.map(|t| t.unwrap_to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
+                    ))
                     .build(),
             ),
         )
@@ -232,7 +234,9 @@ pub(crate) async fn inner_intersect(
                 mcmd::BooleanIntersection::builder()
                     .use_legacy(csg_algorithm.is_legacy())
                     .solid_ids(solids.iter().map(|s| s.id).collect())
-                    .tolerance(LengthUnit(tolerance.map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)))
+                    .tolerance(LengthUnit(
+                        tolerance.map(|t| t.unwrap_to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
+                    ))
                     .build(),
             ),
         )
@@ -341,7 +345,9 @@ pub(crate) async fn inner_subtract(
                     .use_legacy(csg_algorithm.is_legacy())
                     .target_ids(target_ids.clone())
                     .tool_ids(tool_ids.clone())
-                    .tolerance(LengthUnit(tolerance.map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM)))
+                    .tolerance(LengthUnit(
+                        tolerance.map(|t| t.unwrap_to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
+                    ))
                     .build(),
             ),
         )
@@ -473,7 +479,7 @@ pub(crate) async fn inner_imprint(
 
     let body_ids = targets.iter().map(|body| body.id).collect();
     let tool_ids = tools.as_ref().map(|tools| tools.iter().map(|tool| tool.id).collect());
-    let tolerance = LengthUnit(tolerance.map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM));
+    let tolerance = LengthUnit(tolerance.map(|t| t.unwrap_to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM));
     let imprint_cmd = mcmd::BooleanImprint::builder()
         .use_legacy(csg_algorithm.is_legacy())
         .body_ids(body_ids)
