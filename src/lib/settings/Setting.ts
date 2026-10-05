@@ -36,7 +36,7 @@ export class Setting<T = unknown> {
     return user !== undefined ? user : this.default
   })
   get current(): T {
-    return this.currentSignal.value
+    return this.currentSignal.peek()
   }
 
   constructor(props: SettingProps<T>) {
