@@ -326,6 +326,8 @@ fn executor_settings(
     settings
 }
 
+// Keep the Python session's independent keyword options explicit at this boundary.
+#[allow(clippy::too_many_arguments)]
 async fn new_context_state(
     current_file: Option<PathBuf>,
     mock: bool,
@@ -334,6 +336,8 @@ async fn new_context_state(
     video_res_width: Option<u32>,
     video_res_height: Option<u32>,
     kcl_version: kcl_lib::KclVersion,
+    token: Option<String>,
+    base_url: Option<String>,
 ) -> Result<(ExecutorContext, kcl_lib::ExecState)> {
     let mut settings = executor_settings(current_file, highlight_edges, geometry_only);
     settings.video_res_width = video_res_width;
@@ -341,7 +345,7 @@ async fn new_context_state(
     let ctx = if mock {
         ExecutorContext::new_mock(Some(settings)).await
     } else {
-        ExecutorContext::new_with_client(settings, None, None, kcl_version).await?
+        ExecutorContext::new_with_client(settings, token, base_url, kcl_version).await?
     };
     let state = kcl_lib::ExecState::new(&ctx);
     Ok((ctx, state))
@@ -439,6 +443,8 @@ async fn run_kcl(
         program
             .language_version()
             .map_err(|err| into_miette_for_parse(&filename, &code, err))?,
+        None,
+        None,
     )
     .await
     .map_err(to_py_exception)?;
@@ -509,7 +515,7 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
         }
     };
 
-    let (ctx, mut state) = new_context_state(path, false, None, false, None, None, kcl_version)
+    let (ctx, mut state) = new_context_state(path, false, None, false, None, None, kcl_version, None, None)
         .await
         .map_err(to_py_exception)?;
     let result = match ctx.run(&program, &mut state).await {
@@ -786,6 +792,8 @@ async fn import_and_snapshot_views(
             None,
             None,
             kcl_lib::KclVersion::default(),
+            None,
+            None,
         )
         .await
         .map_err(to_py_exception)?;

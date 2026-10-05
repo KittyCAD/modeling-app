@@ -3,7 +3,7 @@
 // Categories: Architecture & Construction; Mechanical Components; Parametric
 
 // Set units and enable experimental sketch constraints.
-@settings(defaultLengthUnit = in, kclVersion = 1.0)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 // Define structural design inputs.
 allowableStress = 35000 // psi
@@ -122,8 +122,8 @@ bracketBlank = extrude(
 bracketWithInsideFillet = fillet(
   bracketBlank,
   tags = getCommonEdge(faces = [
-    bracketProfileRegion.tags.line6,
-    bracketProfileRegion.tags.line5
+    bracketProfileRegion.tags.line5,
+    bracketProfileRegion.tags.line4
   ]),
   radius = insideBendRadius,
 )
@@ -132,7 +132,7 @@ bracketWithInsideFillet = fillet(
 bracketWithBendFillets = fillet(
   bracketWithInsideFillet,
   tags = getCommonEdge(faces = [
-    bracketProfileRegion.tags.line3,
+    bracketProfileRegion.tags.line2,
     bracketProfileRegion.tags.line1
   ]),
   radius = outsideBendRadius,
@@ -143,19 +143,19 @@ bracketWithCornerFillets = fillet(
   bracketWithBendFillets,
   tags = [
     getCommonEdge(faces = [
-      bracketProfileRegion.tags.line2,
+      bracketProfileRegion.tags.line6,
       bracketEndFace
     ]),
     getCommonEdge(faces = [
-      bracketProfileRegion.tags.line4,
+      bracketProfileRegion.tags.line3,
       bracketEndFace
     ]),
     getCommonEdge(faces = [
-      bracketProfileRegion.tags.line4,
+      bracketProfileRegion.tags.line3,
       bracketStartFace
     ]),
     getCommonEdge(faces = [
-      bracketProfileRegion.tags.line2,
+      bracketProfileRegion.tags.line6,
       bracketStartFace
     ])
   ],
@@ -165,7 +165,7 @@ bracketWithCornerFillets = fillet(
 // Drill the shelf-side mounting holes into the horizontal leg.
 bracketWithShelfMountHoles = hole::holes(
   bracketWithCornerFillets,
-  face = bracketProfileRegion.tags.line5,
+  face = bracketProfileRegion.tags.line4,
   cutsAt = shelfMountHoleCenters,
   holeBottom = hole::flat(),
   holeBody = hole::blind(depth = shelfMountHoleDepth, diameter = shelfMountHoleDiameter),
@@ -175,7 +175,7 @@ bracketWithShelfMountHoles = hole::holes(
 // Drill the wall-side mounting holes into the vertical leg.
 finalBracket = hole::holes(
   bracketWithShelfMountHoles,
-  face = bracketProfileRegion.tags.line6,
+  face = bracketProfileRegion.tags.line5,
   cutsAt = wallMountHoleCenters,
   holeBottom = hole::flat(),
   holeBody = hole::blind(depth = wallMountHoleDepth, diameter = wallMountHoleDiameter),

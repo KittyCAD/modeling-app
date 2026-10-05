@@ -54,7 +54,7 @@ Circularity is a form tolerance, so it does not reference datums.
 ### Examples
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 cylinderSketch = sketch(on = XY) {
   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
@@ -71,7 +71,7 @@ gdt::circularity(edges = [cylinderRegion.tags.perimeter], tolerance = 0.05mm, fr
 ![Rendered example of gdt::circularity 0](/kcl-test-outputs/serial_test_example_fn_std-gdt-circularity0.png)
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 cylinderSketch = sketch(on = XY) {
   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
@@ -91,7 +91,7 @@ gdt::circularity(
 ![Rendered example of gdt::circularity 1](/kcl-test-outputs/serial_test_example_fn_std-gdt-circularity1.png)
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 cylinderSketch = sketch(on = XY) {
   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
