@@ -558,4 +558,41 @@ body = revolve(profile, axis = Y, angle = 90deg, bidirectionalAngle = 7rad)
             "{err:?}"
         );
     }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn revolve_panic_with_direction_unknown_units() {
+        // Regression test for https://github.com/KittyCAD/modeling-app/issues/14328
+        for code in [
+            // Case with non-length units in direction
+            r#"@settings(kclVersion = 2.0)
+profile = sketch(on = XY) {
+  circle1 = circle(center = [10mm, 0mm], start = [11mm, 0mm])
+}
+body = revolve(region(segments = [profile.circle1]),
+axis = { direction = [0, 1rad], origin = [1mm, 0mm] })
+"#,
+            // Case with non-length units in origin
+            r#"@settings(kclVersion = 2.0)
+profile = sketch(on = XY) {
+  circle1 = circle(center = [10mm, 0mm], start = [11mm, 0mm])
+}
+body = revolve(region(segments = [profile.circle1]),
+axis = { direction = [0, 1], origin = [1mm + 1deg, 0mm] })
+"#,
+        ] {
+            let program = crate::Program::parse_no_errs(code).unwrap();
+            let ctx = ExecutorContext::new_mock(None).await;
+            let outcome = ctx.run_mock(&program, &crate::MockConfig::default()).await;
+            ctx.close().await;
+            let err = outcome.expect_err("This should not have passed").error;
+            let KclError::Type { details } = err else {
+                panic!("Expected Type error, got {err}");
+            };
+            // Error message should be something like
+            // axis must be an Edge, Axis2d, Segment, or an object with 'sideFaces' (edge reference)
+            assert!(details.message.contains("Edge"));
+            assert!(details.message.contains("Axis2d"));
+            assert!(details.message.contains("Segment"));
+        }
+    }
 }
