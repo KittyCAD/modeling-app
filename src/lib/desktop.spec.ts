@@ -1,4 +1,6 @@
+import { join } from 'node:path'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import type { EnvironmentConfiguration } from '@src/lib/constants'
 import {
   getEnvironmentConfigurationPath,
@@ -6,6 +8,7 @@ import {
   getDefaultKclFileForDir,
   getProjectInfo,
   listProjects,
+  readAppSettingsFile,
   readEnvironmentConfigurationFile,
   readEnvironmentConfigurationToken,
   readEnvironmentFile,
@@ -13,11 +16,22 @@ import {
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import { FileAlreadyExists } from '@src/lib/fileSystem/fileOperations'
+import * as desktopPlatform from '@src/lib/isDesktop'
+import * as playwrightEnvironment from '@src/lib/isPlaywright'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/paths'
 import type { DeepPartial } from '@src/lib/types'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import { buildTheWorldNode } from '@src/unitTestUtils'
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest'
 
 const { mockElectron } = vi.hoisted(() => {
   // Mock the electron window global
@@ -246,6 +260,194 @@ describe('desktop utilities', () => {
     mockElectron.writeFile.mockResolvedValue(undefined)
     mockElectron.getPath.mockResolvedValue('/appData')
     mockElectron.kittycad.mockResolvedValue({})
+  })
+
+  describe('readAppSettingsFile with the real settings parser', () => {
+    let wasmInstance: ModuleType
+
+    beforeAll(async () => {
+      wasmInstance = await loadAndInitialiseWasmInstance(
+        join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+      )
+    })
+
+    beforeEach(() => {
+      mockElectron.path.resolve.mockImplementation((...parts: string[]) =>
+        webSafeJoin(parts)
+      )
+      mockElectron.getPath.mockImplementation(async (name: string) =>
+        name === 'documents' ? '/documents' : '/appData'
+      )
+    })
+
+    it('keeps configured project directories and plugin values', async () => {
+      mockElectron.readFile.mockResolvedValue(
+        '[settings.project]\ndirectory = "/my/projects"\n[settings.plugins]\ntelemetry = false\n'
+      )
+
+      expect(
+        await readAppSettingsFile(testFileOperations, wasmInstance)
+      ).toEqual({
+        settings: {
+          project: { directory: '/my/projects' },
+          plugins: { telemetry: false },
+        },
+      })
+      expect(mockElectron.writeFile).not.toHaveBeenCalled()
+    })
+
+    it.each([
+      '',
+      '[settings.project]\ndefault_project_name = "custom"',
+      '[settings.project]\ndirectory = ""\ndefault_project_name = "custom"',
+      '[settings.project]\ndirectory = false\ndefault_project_name = "custom"',
+    ])(
+      'injects the default directory while keeping other project settings for %j',
+      async (toml) => {
+        mockElectron.readFile.mockResolvedValue(toml)
+
+        expect(
+          await readAppSettingsFile(testFileOperations, wasmInstance)
+        ).toEqual({
+          settings: {
+            project: {
+              ...(toml ? { default_project_name: 'custom' } : {}),
+              directory: '/documents/zoo-design-studio-projects',
+            },
+          },
+        })
+        expect(mockElectron.writeFile).not.toHaveBeenCalled()
+      }
+    )
+
+    it('uses the directory library without injecting a legacy project directory', async () => {
+      mockElectron.readFile.mockResolvedValue(
+        '[[settings.app.libraries]]\ntitle = "Projects"\npath = "/library/projects"\ntype = "directory"\n'
+      )
+
+      expect(
+        await readAppSettingsFile(testFileOperations, wasmInstance)
+      ).toEqual({
+        settings: {
+          app: {
+            libraries: [
+              {
+                title: 'Projects',
+                path: '/library/projects',
+                type: 'directory',
+              },
+            ],
+          },
+        },
+      })
+    })
+
+    it.each([
+      'broken = [',
+      '[settings.app.appearance]\ntheme = "unknown"\n[settings.plugins]\ntelemetry = false',
+    ])(
+      'falls back to defaults for parser failures without rewriting %j',
+      async (toml) => {
+        mockElectron.readFile.mockResolvedValue(toml)
+        const defaultAppSettings = vi.fn(() =>
+          wasmInstance.default_app_settings()
+        )
+
+        expect(
+          await readAppSettingsFile(testFileOperations, {
+            ...wasmInstance,
+            default_app_settings: defaultAppSettings,
+          })
+        ).toEqual({
+          settings: {
+            project: { directory: '/documents/zoo-design-studio-projects' },
+          },
+        })
+        expect(defaultAppSettings).toHaveBeenCalledOnce()
+        expect(mockElectron.writeFile).not.toHaveBeenCalled()
+      }
+    )
+
+    it('uses defaults when the settings file does not exist', async () => {
+      mockElectron.stat.mockRejectedValueOnce(new Error('ENOENT'))
+
+      expect(
+        await readAppSettingsFile(testFileOperations, wasmInstance)
+      ).toEqual({
+        settings: {
+          project: { directory: '/documents/zoo-design-studio-projects' },
+        },
+      })
+      expect(mockElectron.readFile).not.toHaveBeenCalled()
+      expect(mockElectron.writeFile).not.toHaveBeenCalled()
+    })
+
+    describe('Playwright browser plugin seeds', () => {
+      beforeEach(() => {
+        vi.spyOn(desktopPlatform, 'isDesktop').mockReturnValue(false)
+        vi.spyOn(playwrightEnvironment, 'isPlaywright').mockReturnValue(true)
+        mockElectron.readFile.mockResolvedValue(
+          '[settings.project]\ndirectory = "/my/projects"'
+        )
+      })
+
+      afterEach(() => {
+        vi.restoreAllMocks()
+      })
+
+      it('merges only seeded plugins into the persisted configuration', async () => {
+        vi.spyOn(globalThis.localStorage, 'getItem').mockReturnValue(
+          '[settings.plugins]\ntelemetry = false\n[settings.project]\ndirectory = "/seed/projects"'
+        )
+
+        expect(
+          await readAppSettingsFile(testFileOperations, wasmInstance)
+        ).toEqual({
+          settings: {
+            project: { directory: '/my/projects' },
+            plugins: { telemetry: false },
+          },
+        })
+      })
+
+      it('gives even an empty persisted plugins section priority over the seed', async () => {
+        mockElectron.readFile.mockResolvedValue(
+          '[settings.project]\ndirectory = "/my/projects"\n[settings.plugins]'
+        )
+        const getItem = vi.spyOn(globalThis.localStorage, 'getItem')
+
+        expect(
+          await readAppSettingsFile(testFileOperations, wasmInstance)
+        ).toEqual({
+          settings: { project: { directory: '/my/projects' }, plugins: {} },
+        })
+        expect(getItem).not.toHaveBeenCalled()
+      })
+
+      it.each([
+        null,
+        '',
+        '[settings.app]',
+        '[settings]\nplugins = false',
+        '[settings]\nplugins = []',
+      ])('ignores absent or non-object plugin seeds: %j', async (seed) => {
+        vi.spyOn(globalThis.localStorage, 'getItem').mockReturnValue(seed)
+
+        expect(
+          await readAppSettingsFile(testFileOperations, wasmInstance)
+        ).toEqual({ settings: { project: { directory: '/my/projects' } } })
+      })
+
+      it('rejects a malformed seed rather than using the persisted-file fallback', async () => {
+        vi.spyOn(globalThis.localStorage, 'getItem').mockReturnValue(
+          'broken = ['
+        )
+
+        await expect(
+          readAppSettingsFile(testFileOperations, wasmInstance)
+        ).rejects.toEqual(expect.stringContaining('TOML parse error'))
+      })
+    })
   })
 
   describe('listProjects', () => {
