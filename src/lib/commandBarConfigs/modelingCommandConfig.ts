@@ -2028,6 +2028,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           tolerance: { ...gdtToleranceProps, required: false },
           ...gdtFrameArgOverrides,
           framePosition: { defaultValue: undefined },
+          framePlane: {
+            ...gdtFrameDisplayArgOverrides.framePlane,
+            defaultValue: undefined,
+          },
         },
       }
     ),

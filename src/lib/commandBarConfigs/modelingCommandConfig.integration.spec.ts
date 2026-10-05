@@ -103,6 +103,10 @@ describe('GDT tolerance defaults', () => {
     expect(command.args?.tolerance?.required).toBe(false)
     expect(command.args?.tolerance?.prepopulate).toBeFalsy()
     expect(command.args?.tolerance?.skip).toBeFalsy()
+    const framePlane = command.args?.framePlane
+    if (!framePlane || framePlane.inputType !== 'options')
+      throw new Error('Expected plane options')
+    expect(framePlane.defaultValue).toBeUndefined()
     expect(command.args?.objects).toMatchObject({
       selectionTypes: expect.arrayContaining(['enginePrimitiveEdge']),
     })

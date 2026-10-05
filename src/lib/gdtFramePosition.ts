@@ -6,6 +6,7 @@ import { createArrayExpression, createLiteral } from '@src/lang/create'
 import { toUtf16 } from '@src/lang/errors'
 import type {
   ArtifactId,
+  ArtifactGraph,
   CallExpressionKw,
   Expr,
   Program,
@@ -20,6 +21,7 @@ import {
   KCL_PLANE_YZ,
 } from '@src/lib/constants'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
+import { getDistanceFramePlaneFromKcl } from '@src/lib/gdtDistanceKclPlane'
 import { isArray, roundOff, uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -612,6 +614,7 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   data,
   engineCommandManager,
   ast,
+  artifactGraph,
   sourceCode,
   outputUnit = DEFAULT_DEFAULT_LENGTH_UNIT,
   wasmInstance,
@@ -620,6 +623,7 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   data: T
   engineCommandManager: ConnectionManager
   ast?: Node<Program>
+  artifactGraph?: ArtifactGraph
   sourceCode?: string
   outputUnit?: UnitLength
   wasmInstance: ModuleType
@@ -659,6 +663,17 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
         nextData = { ...nextData, framePlane }
         hasResolvedFramePlane = true
       }
+    }
+  }
+  if (distance && !nextData.framePlane) {
+    const framePlane = getDistanceFramePlaneFromKcl(
+      ast,
+      artifactGraph,
+      selections
+    )
+    if (framePlane) {
+      nextData = { ...nextData, framePlane }
+      hasResolvedFramePlane = true
     }
   }
   let framePositionSigns: GdtFramePositionSigns | undefined

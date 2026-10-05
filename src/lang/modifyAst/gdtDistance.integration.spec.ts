@@ -6,9 +6,13 @@ import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { describe, expect, it, vi } from 'vitest'
 
 describe('distance edge topology', () => {
-  it.each(['primitive', 'graph', 'mixed'] as const)(
-    'generates distinct endpoints for two hole rims arriving as %s selections',
-    async (route) => {
+  it.each(
+    (['primitive', 'graph', 'mixed'] as const).flatMap((route) =>
+      [true, false].map((engineBounds) => ({ route, engineBounds }))
+    )
+  )(
+    'generates endpoints and a vertical plane for $route selections with engine bounds $engineBounds',
+    async ({ route, engineBounds }) => {
       const { instance, kclManager, engineCommandManager } =
         await buildTheWorldAndNoEngineConnection()
       const ast = assertParse(
@@ -94,6 +98,8 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
             },
           },
         }))
+      if (!engineBounds)
+        sceneCommand.mockRejectedValue(new Error('Bounds unavailable'))
       const result = await modelingCommandCodemods['GDT Distance'].run({
         ast,
         args: { objects },
