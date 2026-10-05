@@ -134,11 +134,11 @@ const ERR_INVALID_ASSIGNMENT_IN_SKETCH_BLOCK: &str =
     "The left-hand side of the = cannot have a value assigned to it. Maybe you meant to use ==?";
 
 #[cfg(test)]
-pub fn run_parser(i: TokenSlice) -> super::ParseResult {
+pub(crate) fn run_parser(i: TokenSlice) -> super::InnerParseResult {
     run_parser_with_never_ranges(i).0
 }
 
-pub(super) fn run_parser_with_never_ranges(i: TokenSlice) -> (super::ParseResult, Vec<SourceRange>) {
+pub(super) fn run_parser_with_never_ranges(i: TokenSlice) -> (super::InnerParseResult, Vec<SourceRange>) {
     let _stats = crate::log::LogPerfStats::new("Parsing");
     ParseContext::init();
 
@@ -5912,7 +5912,7 @@ mySk1 = startSketchOn(XY)
         let result = crate::parsing::top_level_parse(p);
         let result = result.0.unwrap();
         assert!(result.1.iter().all(|e| !e.severity.is_err()), "found: {:#?}", result.1);
-        (result.0.unwrap(), result.1)
+        (result.0.unwrap().ast, result.1)
     }
 
     #[track_caller]
@@ -5924,7 +5924,7 @@ mySk1 = startSketchOn(XY)
             "found: {:#?}",
             result.1
         );
-        (result.0.unwrap(), result.1)
+        (result.0.unwrap().ast, result.1)
     }
 
     #[track_caller]

@@ -393,8 +393,7 @@ export function baseUnitToMm(baseUnit: BaseUnit): number {
       return 914.4
   }
 
-  const _exhaustiveCheck: never = baseUnit
-  console.error(`Unsupported base unit: ${String(_exhaustiveCheck)}`)
+  console.error(`Unsupported base unit: ${String(baseUnit)}`)
   return Number.NaN
 }
 

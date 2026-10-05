@@ -92,10 +92,8 @@ export async function deleteSelectionPromise({
             settings
           )
           break
-        default: {
-          const _exhaustiveCheck: never = artifact
+        default:
           return new Error('Should never happen at runtime')
-        }
       }
     } catch (e) {
       console.error('Error deleting sketch:', e)

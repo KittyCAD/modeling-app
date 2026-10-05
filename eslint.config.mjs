@@ -129,6 +129,7 @@ export default defineConfig([
       '@typescript-eslint/prefer-namespace-keyword': 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/restrict-plus-operands': 'error',
+      '@typescript-eslint/switch-exhaustiveness-check': 'error',
       '@typescript-eslint/unbound-method': 'error',
       'jsx-a11y/click-events-have-key-events': 'off',
       'jsx-a11y/no-autofocus': 'off',

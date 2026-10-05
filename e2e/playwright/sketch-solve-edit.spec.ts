@@ -226,520 +226,515 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     })
   })
 
-  test('add new sketch, add segments and verify a constraint can be added', async ({
-    page,
-    context,
-    homePage,
-    scene,
-    cmdBar,
-    editor,
-    toolbar,
-  }) => {
-    const INITIAL_CODE = ''
-    const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
+  test(
+    'add new sketch, add segments and verify a constraint can be added',
+    { tag: '@web' },
+    async ({ page, context, homePage, scene, cmdBar, editor, toolbar }) => {
+      const INITIAL_CODE = ''
+      const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
 
-    await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
-      await context.addInitScript(
-        async ({ code }) => {
-          localStorage.setItem('persistCode', code)
-        },
-        {
-          code: INITIAL_CODE,
+      await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
+        await context.addInitScript(
+          async ({ code }) => {
+            localStorage.setItem('persistCode', code)
+          },
+          {
+            code: INITIAL_CODE,
+          }
+        )
+
+        await page.setBodyDimensions({ width: 1200, height: 500 })
+
+        await homePage.goToModelingScene()
+        await scene.settled()
+      })
+
+      await test.step('Start a new sketch and select a plane', async () => {
+        await toolbar.startSketchOnDefaultPlane('Top plane')
+        await editor.expectEditor.toContain('sketch(on = XY) {')
+      })
+
+      await test.step('Add three line segments', async () => {
+        await toolbar.lineBtn.click()
+        await page.waitForTimeout(200) // Brief wait for tool to be active
+
+        let previousCode = await editor.getCurrentCode()
+
+        const cancelLineChaining = async () => {
+          await page.waitForTimeout(60)
+          return page.keyboard.press('Escape')
         }
-      )
+        // First line segment
+        const [line1Start] = scene.makeMouseHelpers(0.3, 0.4, {
+          format: 'ratio',
+        })
+        const [line1End] = scene.makeMouseHelpers(0.3, 0.8, {
+          format: 'ratio',
+        })
+        await line1Start()
+        previousCode = await waitForCodeChange(page, previousCode)
+        await line1End()
+        previousCode = await waitForCodeChange(page, previousCode)
+        await cancelLineChaining()
+        previousCode = await waitForCodeChange(page, previousCode)
+        await expect(pointHandles).toHaveCount(2)
 
-      await page.setBodyDimensions({ width: 1200, height: 500 })
+        // Second line segment
+        // Keep this start point away from the Y axis so origin/axis snapping
+        // does not inject an extra horizontalDistance constraint.
+        const [line2Start] = scene.makeMouseHelpers(0.6, 0.4, {
+          format: 'ratio',
+        })
+        const [line2End] = scene.makeMouseHelpers(0.8, 0.3, {
+          format: 'ratio',
+        })
+        await line2Start()
+        previousCode = await waitForCodeChange(page, previousCode)
+        await line2End()
+        previousCode = await waitForCodeChange(page, previousCode)
+        await cancelLineChaining()
+        previousCode = await waitForCodeChange(page, previousCode)
+        await expect(pointHandles).toHaveCount(4)
 
-      await homePage.goToModelingScene()
-      await scene.settled()
-    })
+        // Third line segment
+        const [line3Start] = scene.makeMouseHelpers(0.7, 0.4, {
+          format: 'ratio',
+        })
+        const [line3End] = scene.makeMouseHelpers(0.15, 0.3, {
+          format: 'ratio',
+        })
+        await line3Start()
+        previousCode = await waitForCodeChange(page, previousCode)
+        await line3End()
+        previousCode = await waitForCodeChange(page, previousCode)
+        await cancelLineChaining()
+        await waitForCodeChange(page, previousCode)
+        await expect(pointHandles).toHaveCount(6)
+      })
 
-    await test.step('Start a new sketch and select a plane', async () => {
-      await toolbar.startSketchOnDefaultPlane('Top plane')
-      await editor.expectEditor.toContain('sketch(on = XY) {')
-    })
+      await test.step('Add three points', async () => {
+        await page.getByTestId('point').click()
 
-    await test.step('Add three line segments', async () => {
-      await toolbar.lineBtn.click()
-      await page.waitForTimeout(200) // Brief wait for tool to be active
+        let previousCode = await editor.getCurrentCode()
 
-      let previousCode = await editor.getCurrentCode()
+        // First point
+        const [point1Click] = scene.makeMouseHelpers(0.2, 0.6, {
+          format: 'ratio',
+        })
+        await point1Click()
+        previousCode = await waitForCodeChange(page, previousCode)
 
-      const cancelLineChaining = async () => {
-        await page.waitForTimeout(60)
-        return page.keyboard.press('Escape')
-      }
-      // First line segment
-      const [line1Start] = scene.makeMouseHelpers(0.3, 0.4, {
+        // Second point
+        const [point2Click] = scene.makeMouseHelpers(0.5, 0.6, {
+          format: 'ratio',
+        })
+        await point2Click()
+        previousCode = await waitForCodeChange(page, previousCode)
+
+        // Third point
+        const [point3Click] = scene.makeMouseHelpers(0.6, 0.6, {
+          format: 'ratio',
+        })
+        await point3Click()
+        await waitForCodeChange(page, previousCode)
+        await page.getByTestId('point').click()
+      })
+
+      await test.step('Select segments 2 and 9, then apply coincident constraint', async () => {
+        await clickSegmentById(page, scene, '2')
+        // await page.waitForTimeout(100)
+        await clickSegmentById(page, scene, '9')
+        // await page.waitForTimeout(100)
+
+        // Click the coincident tool
+        await selectSketchSolveConstraintFromDropdown(page, 'coincident')
+
+        await editor.expectEditor.toContain(
+          'coincident([line1.start, line2.end])'
+        )
+        await page.waitForTimeout(100)
+      })
+      const [clearSelection] = scene.makeMouseHelpers(0.9, 0.5, {
         format: 'ratio',
       })
-      const [line1End] = scene.makeMouseHelpers(0.3, 0.8, {
-        format: 'ratio',
-      })
-      await line1Start()
-      previousCode = await waitForCodeChange(page, previousCode)
-      await line1End()
-      previousCode = await waitForCodeChange(page, previousCode)
-      await cancelLineChaining()
-      previousCode = await waitForCodeChange(page, previousCode)
-      await expect(pointHandles).toHaveCount(2)
-
-      // Second line segment
-      // Keep this start point away from the Y axis so origin/axis snapping
-      // does not inject an extra horizontalDistance constraint.
-      const [line2Start] = scene.makeMouseHelpers(0.6, 0.4, {
-        format: 'ratio',
-      })
-      const [line2End] = scene.makeMouseHelpers(0.8, 0.3, {
-        format: 'ratio',
-      })
-      await line2Start()
-      previousCode = await waitForCodeChange(page, previousCode)
-      await line2End()
-      previousCode = await waitForCodeChange(page, previousCode)
-      await cancelLineChaining()
-      previousCode = await waitForCodeChange(page, previousCode)
-      await expect(pointHandles).toHaveCount(4)
-
-      // Third line segment
-      const [line3Start] = scene.makeMouseHelpers(0.7, 0.4, {
-        format: 'ratio',
-      })
-      const [line3End] = scene.makeMouseHelpers(0.15, 0.3, {
-        format: 'ratio',
-      })
-      await line3Start()
-      previousCode = await waitForCodeChange(page, previousCode)
-      await line3End()
-      previousCode = await waitForCodeChange(page, previousCode)
-      await cancelLineChaining()
-      await waitForCodeChange(page, previousCode)
-      await expect(pointHandles).toHaveCount(6)
-    })
-
-    await test.step('Add three points', async () => {
-      await page.getByTestId('point').click()
-
-      let previousCode = await editor.getCurrentCode()
-
-      // First point
-      const [point1Click] = scene.makeMouseHelpers(0.2, 0.6, {
-        format: 'ratio',
-      })
-      await point1Click()
-      previousCode = await waitForCodeChange(page, previousCode)
-
-      // Second point
-      const [point2Click] = scene.makeMouseHelpers(0.5, 0.6, {
-        format: 'ratio',
-      })
-      await point2Click()
-      previousCode = await waitForCodeChange(page, previousCode)
-
-      // Third point
-      const [point3Click] = scene.makeMouseHelpers(0.6, 0.6, {
-        format: 'ratio',
-      })
-      await point3Click()
-      await waitForCodeChange(page, previousCode)
-      await page.getByTestId('point').click()
-    })
-
-    await test.step('Select segments 2 and 9, then apply coincident constraint', async () => {
-      await clickSegmentById(page, scene, '2')
-      // await page.waitForTimeout(100)
-      await clickSegmentById(page, scene, '9')
-      // await page.waitForTimeout(100)
-
-      // Click the coincident tool
-      await selectSketchSolveConstraintFromDropdown(page, 'coincident')
-
-      await editor.expectEditor.toContain(
-        'coincident([line1.start, line2.end])'
-      )
-      await page.waitForTimeout(100)
-    })
-    const [clearSelection] = scene.makeMouseHelpers(0.9, 0.5, {
-      format: 'ratio',
-    })
-    await test.step('Select lines between segments 2-3 and 5-6, then apply parallel constraint', async () => {
-      await clearSelection()
-      const segmentBox = await scene.getBoundingBoxOrThrow(
-        '[data-segment_id="2"]'
-      )
-      const centerX = segmentBox.x + segmentBox.width / 2
-      const centerY = segmentBox.y + segmentBox.height / 2
-      await page.mouse.move(centerX, centerY)
-      await page.mouse.down()
-      await page.mouse.move(centerX + 200, centerY + 0, { steps: 5 })
-      await page.mouse.up()
-    })
-
-    await test.step('Select lines between segments 2-3 and 5-6, then apply parallel constraint', async () => {
-      // Click in dead space to clear selections
-      const midpoint1_2 = await getMidpointBetweenSegments(scene, '2', '3')
-      const midpoint4_5 = await getMidpointBetweenSegments(scene, '5', '6')
-
-      await clearSelection()
-      // await page.waitForTimeout(100)
-      await page.mouse.click(midpoint1_2.x, midpoint1_2.y)
-      // await page.waitForTimeout(100)
-      await page.mouse.click(midpoint4_5.x, midpoint4_5.y)
-      // await page.waitForTimeout(100)
-
-      // Click the parallel tool
-      // await page.waitForTimeout(100)
-      await selectSketchSolveConstraintFromDropdown(page, 'Parallel')
-
-      await editor.expectEditor.toContain('parallel([line1, line3])')
-    })
-
-    await test.step('Create a circle in sketch solve mode and verify code updates', async () => {
-      await toolbar.circleBtn.click()
-      await expect(toolbar.circleBtn).toHaveAttribute('aria-pressed', 'true')
-
-      let previousCode = await editor.getCurrentCode()
-      const [circleCenterClick] = scene.makeMouseHelpers(0.75, 0.65, {
-        format: 'ratio',
-      })
-      const [circleRadiusClick] = scene.makeMouseHelpers(0.85, 0.78, {
-        format: 'ratio',
+      await test.step('Select lines between segments 2-3 and 5-6, then apply parallel constraint', async () => {
+        await clearSelection()
+        const segmentBox = await scene.getBoundingBoxOrThrow(
+          '[data-segment_id="2"]'
+        )
+        const centerX = segmentBox.x + segmentBox.width / 2
+        const centerY = segmentBox.y + segmentBox.height / 2
+        await page.mouse.move(centerX, centerY)
+        await page.mouse.down()
+        await page.mouse.move(centerX + 200, centerY + 0, { steps: 5 })
+        await page.mouse.up()
       })
 
-      await circleCenterClick()
-      previousCode = await waitForCodeChange(page, previousCode)
-      await circleRadiusClick()
-      await waitForCodeChange(page, previousCode)
+      await test.step('Select lines between segments 2-3 and 5-6, then apply parallel constraint', async () => {
+        // Click in dead space to clear selections
+        const midpoint1_2 = await getMidpointBetweenSegments(scene, '2', '3')
+        const midpoint4_5 = await getMidpointBetweenSegments(scene, '5', '6')
 
-      await editor.expectEditor.toContain('circle(start = [')
-      await expect(pointHandles).toHaveCount(11)
-    })
-  })
+        await clearSelection()
+        // await page.waitForTimeout(100)
+        await page.mouse.click(midpoint1_2.x, midpoint1_2.y)
+        // await page.waitForTimeout(100)
+        await page.mouse.click(midpoint4_5.x, midpoint4_5.y)
+        // await page.waitForTimeout(100)
 
-  test('sketch solve tool hotkeys equip tools and update the sketch', async ({
-    page,
-    context,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-  }) => {
-    await test.step('Set up the app and enter sketch solve mode', async () => {
-      await context.addInitScript(() => {
-        localStorage.setItem('persistCode', '')
+        // Click the parallel tool
+        // await page.waitForTimeout(100)
+        await selectSketchSolveConstraintFromDropdown(page, 'Parallel')
+
+        await editor.expectEditor.toContain('parallel([line1, line3])')
       })
 
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled()
+      await test.step('Create a circle in sketch solve mode and verify code updates', async () => {
+        await toolbar.circleBtn.click()
+        await expect(toolbar.circleBtn).toHaveAttribute('aria-pressed', 'true')
 
-      await toolbar.startSketchOnDefaultPlane('Top plane')
-      await editor.expectEditor.toContain('sketch(on = XY) {')
-      await toolbar.expectToolbarMode.toBe('sketchSolve')
-      await scene.clickNoWhere()
-    })
+        let previousCode = await editor.getCurrentCode()
+        const [circleCenterClick] = scene.makeMouseHelpers(0.75, 0.65, {
+          format: 'ratio',
+        })
+        const [circleRadiusClick] = scene.makeMouseHelpers(0.85, 0.78, {
+          format: 'ratio',
+        })
 
-    await test.step('Equip the line tool with its keybinding and draw a line', async () => {
-      await page.keyboard.press('l')
-      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
+        await circleCenterClick()
+        previousCode = await waitForCodeChange(page, previousCode)
+        await circleRadiusClick()
+        await waitForCodeChange(page, previousCode)
 
-      let previousCode = await editor.getCurrentCode()
+        await editor.expectEditor.toContain('circle(start = [')
+        await expect(pointHandles).toHaveCount(11)
+      })
+    }
+  )
+
+  test(
+    'sketch solve tool hotkeys equip tools and update the sketch',
+    { tag: '@web' },
+    async ({ page, context, homePage, scene, editor, toolbar }) => {
+      await test.step('Set up the app and enter sketch solve mode', async () => {
+        await context.addInitScript(() => {
+          localStorage.setItem('persistCode', '')
+        })
+
+        await page.setBodyDimensions({ width: 1200, height: 500 })
+        await homePage.goToModelingScene()
+        await scene.settled()
+
+        await toolbar.startSketchOnDefaultPlane('Top plane')
+        await editor.expectEditor.toContain('sketch(on = XY) {')
+        await toolbar.expectToolbarMode.toBe('sketchSolve')
+        await scene.clickNoWhere()
+      })
+
+      await test.step('Equip the line tool with its keybinding and draw a line', async () => {
+        await page.keyboard.press('l')
+        await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
+
+        let previousCode = await editor.getCurrentCode()
+        const [lineStart] = scene.makeMouseHelpers(0.35, 0.45, {
+          format: 'ratio',
+        })
+        const [lineEnd] = scene.makeMouseHelpers(0.55, 0.45, {
+          format: 'ratio',
+        })
+
+        await lineStart()
+        previousCode = await waitForCodeChange(page, previousCode)
+        await lineEnd()
+        await waitForCodeChange(page, previousCode)
+
+        await editor.expectEditor.toContain('line(start = [')
+      })
+
+      await test.step('Equip the circle tool with its keybinding and draw a circle', async () => {
+        await page.keyboard.press('c')
+        await expect(toolbar.circleBtn).toHaveAttribute('aria-pressed', 'true')
+        await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'false')
+
+        let previousCode = await editor.getCurrentCode()
+        const [circleCenter] = scene.makeMouseHelpers(0.7, 0.55, {
+          format: 'ratio',
+        })
+        const [circleRadius] = scene.makeMouseHelpers(0.78, 0.62, {
+          format: 'ratio',
+        })
+
+        await circleCenter()
+        previousCode = await waitForCodeChange(page, previousCode)
+        await circleRadius()
+        await waitForCodeChange(page, previousCode)
+
+        await editor.expectEditor.toContain('circle(start = [')
+      })
+
+      await test.step('Equip the center arc tool with its keybinding and draw an arc', async () => {
+        await page.keyboard.press('a')
+        await expect(page.getByTestId('center-arc')).toHaveAttribute(
+          'aria-pressed',
+          'true'
+        )
+
+        let previousCode = await editor.getCurrentCode()
+        const [arcCenter] = scene.makeMouseHelpers(0.25, 0.7, {
+          format: 'ratio',
+        })
+        const [arcStart] = scene.makeMouseHelpers(0.35, 0.7, {
+          format: 'ratio',
+        })
+        const [arcEnd] = scene.makeMouseHelpers(0.31, 0.62, {
+          format: 'ratio',
+        })
+
+        await arcCenter()
+        await arcStart()
+        previousCode = await waitForCodeChange(page, previousCode)
+        await arcEnd()
+        await waitForCodeChange(page, previousCode)
+
+        await editor.expectEditor.toContain('arc(start = [')
+      })
+
+      await test.step('Pick hovered tools with P and unequip over empty space', async () => {
+        const [, moveToLine] = scene.makeMouseHelpers(0.45, 0.45, {
+          format: 'ratio',
+        })
+        const [, moveToCircle] = scene.makeMouseHelpers(0.78, 0.62, {
+          format: 'ratio',
+        })
+        const [, moveToArc] = scene.makeMouseHelpers(0.35, 0.7, {
+          format: 'ratio',
+        })
+        const [, moveToEmptySpace] = scene.makeMouseHelpers(0.1, 0.85, {
+          format: 'ratio',
+        })
+        const getPlanePointerKey = () =>
+          page.evaluate(() => {
+            const point =
+              window.app.singletons.kclManager.sceneInfra.getPlaneIntersectPoint()
+            return point?.twoD ? `${point.twoD.x}:${point.twoD.y}` : null
+          })
+        const moveAndWaitForScenePointer = async (
+          move: () => Promise<unknown>
+        ) => {
+          const previousPointer = await getPlanePointerKey()
+          await move()
+          await expect.poll(getPlanePointerKey).not.toBe(previousPointer)
+        }
+
+        await moveAndWaitForScenePointer(moveToEmptySpace)
+        await page.keyboard.press('p')
+        await expect(page.getByTestId('center-arc')).toHaveAttribute(
+          'aria-pressed',
+          'false'
+        )
+
+        await moveAndWaitForScenePointer(moveToLine)
+        await page.keyboard.press('p')
+        await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
+
+        await moveAndWaitForScenePointer(moveToEmptySpace)
+        await page.keyboard.press('p')
+        await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'false')
+
+        await moveAndWaitForScenePointer(moveToCircle)
+        await page.keyboard.press('p')
+        await expect(toolbar.circleBtn).toHaveAttribute('aria-pressed', 'true')
+
+        await moveAndWaitForScenePointer(moveToEmptySpace)
+        await page.keyboard.press('p')
+        await expect(toolbar.circleBtn).toHaveAttribute('aria-pressed', 'false')
+
+        await moveAndWaitForScenePointer(moveToArc)
+        await page.keyboard.press('p')
+        await expect(page.getByTestId('center-arc')).toHaveAttribute(
+          'aria-pressed',
+          'true'
+        )
+
+        await moveAndWaitForScenePointer(moveToEmptySpace)
+        await page.keyboard.press('p')
+        await expect(page.getByTestId('center-arc')).toHaveAttribute(
+          'aria-pressed',
+          'false'
+        )
+      })
+    }
+  )
+
+  test(
+    'horizontal and vertical hotkeys constrain the draft line while drawing',
+    { tag: '@web' },
+    async ({ page, context, homePage, scene, editor, toolbar }) => {
+      await test.step('Set up the app and enter sketch solve mode', async () => {
+        await context.addInitScript(() => {
+          localStorage.setItem('persistCode', '')
+        })
+
+        await page.setBodyDimensions({ width: 1200, height: 500 })
+        await homePage.goToModelingScene()
+        await scene.settled()
+
+        await toolbar.startSketchOnDefaultPlane('Top plane')
+        await editor.expectEditor.toContain('sketch(on = XY) {')
+        await toolbar.expectToolbarMode.toBe('sketchSolve')
+        await scene.clickNoWhere()
+      })
+
       const [lineStart] = scene.makeMouseHelpers(0.35, 0.45, {
         format: 'ratio',
       })
-      const [lineEnd] = scene.makeMouseHelpers(0.55, 0.45, {
-        format: 'ratio',
-      })
-
-      await lineStart()
-      previousCode = await waitForCodeChange(page, previousCode)
-      await lineEnd()
-      await waitForCodeChange(page, previousCode)
-
-      await editor.expectEditor.toContain('line(start = [')
-    })
-
-    await test.step('Equip the circle tool with its keybinding and draw a circle', async () => {
-      await page.keyboard.press('c')
-      await expect(toolbar.circleBtn).toHaveAttribute('aria-pressed', 'true')
-      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'false')
-
-      let previousCode = await editor.getCurrentCode()
-      const [circleCenter] = scene.makeMouseHelpers(0.7, 0.55, {
-        format: 'ratio',
-      })
-      const [circleRadius] = scene.makeMouseHelpers(0.78, 0.62, {
-        format: 'ratio',
-      })
-
-      await circleCenter()
-      previousCode = await waitForCodeChange(page, previousCode)
-      await circleRadius()
-      await waitForCodeChange(page, previousCode)
-
-      await editor.expectEditor.toContain('circle(start = [')
-    })
-
-    await test.step('Equip the center arc tool with its keybinding and draw an arc', async () => {
-      await page.keyboard.press('a')
-      await expect(page.getByTestId('center-arc')).toHaveAttribute(
-        'aria-pressed',
-        'true'
-      )
-
-      let previousCode = await editor.getCurrentCode()
-      const [arcCenter] = scene.makeMouseHelpers(0.25, 0.7, {
-        format: 'ratio',
-      })
-      const [arcStart] = scene.makeMouseHelpers(0.35, 0.7, {
-        format: 'ratio',
-      })
-      const [arcEnd] = scene.makeMouseHelpers(0.31, 0.62, {
-        format: 'ratio',
-      })
-
-      await arcCenter()
-      await arcStart()
-      previousCode = await waitForCodeChange(page, previousCode)
-      await arcEnd()
-      await waitForCodeChange(page, previousCode)
-
-      await editor.expectEditor.toContain('arc(start = [')
-    })
-
-    await test.step('Pick hovered tools with P and unequip over empty space', async () => {
-      const [, moveToLine] = scene.makeMouseHelpers(0.45, 0.45, {
-        format: 'ratio',
-      })
-      const [, moveToCircle] = scene.makeMouseHelpers(0.78, 0.62, {
-        format: 'ratio',
-      })
-      const [, moveToArc] = scene.makeMouseHelpers(0.35, 0.7, {
-        format: 'ratio',
-      })
-      const [, moveToEmptySpace] = scene.makeMouseHelpers(0.1, 0.85, {
-        format: 'ratio',
-      })
-      const getPlanePointerKey = () =>
-        page.evaluate(() => {
-          const point =
-            window.app.singletons.kclManager.sceneInfra.getPlaneIntersectPoint()
-          return point?.twoD ? `${point.twoD.x}:${point.twoD.y}` : null
-        })
-      const moveAndWaitForScenePointer = async (
-        move: () => Promise<unknown>
-      ) => {
-        const previousPointer = await getPlanePointerKey()
-        await move()
-        await expect.poll(getPlanePointerKey).not.toBe(previousPointer)
-      }
-
-      await moveAndWaitForScenePointer(moveToEmptySpace)
-      await page.keyboard.press('p')
-      await expect(page.getByTestId('center-arc')).toHaveAttribute(
-        'aria-pressed',
-        'false'
-      )
-
-      await moveAndWaitForScenePointer(moveToLine)
-      await page.keyboard.press('p')
-      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
-
-      await moveAndWaitForScenePointer(moveToEmptySpace)
-      await page.keyboard.press('p')
-      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'false')
-
-      await moveAndWaitForScenePointer(moveToCircle)
-      await page.keyboard.press('p')
-      await expect(toolbar.circleBtn).toHaveAttribute('aria-pressed', 'true')
-
-      await moveAndWaitForScenePointer(moveToEmptySpace)
-      await page.keyboard.press('p')
-      await expect(toolbar.circleBtn).toHaveAttribute('aria-pressed', 'false')
-
-      await moveAndWaitForScenePointer(moveToArc)
-      await page.keyboard.press('p')
-      await expect(page.getByTestId('center-arc')).toHaveAttribute(
-        'aria-pressed',
-        'true'
-      )
-
-      await moveAndWaitForScenePointer(moveToEmptySpace)
-      await page.keyboard.press('p')
-      await expect(page.getByTestId('center-arc')).toHaveAttribute(
-        'aria-pressed',
-        'false'
-      )
-    })
-  })
-
-  test('horizontal and vertical hotkeys constrain the draft line while drawing', async ({
-    page,
-    context,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-  }) => {
-    await test.step('Set up the app and enter sketch solve mode', async () => {
-      await context.addInitScript(() => {
-        localStorage.setItem('persistCode', '')
-      })
-
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled()
-
-      await toolbar.startSketchOnDefaultPlane('Top plane')
-      await editor.expectEditor.toContain('sketch(on = XY) {')
-      await toolbar.expectToolbarMode.toBe('sketchSolve')
-      await scene.clickNoWhere()
-    })
-
-    const [lineStart] = scene.makeMouseHelpers(0.35, 0.45, {
-      format: 'ratio',
-    })
-    const [line1EndClick, moveToLine1End] = scene.makeMouseHelpers(0.55, 0.6, {
-      format: 'ratio',
-    })
-    const [line2EndClick, moveToLine2End] = scene.makeMouseHelpers(0.75, 0.4, {
-      format: 'ratio',
-    })
-
-    await test.step('Draw a draft line and constrain it vertically with the hotkey', async () => {
-      await page.keyboard.press('l')
-      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
-
-      let previousCode = await editor.getCurrentCode()
-      await lineStart()
-      previousCode = await waitForCodeChange(page, previousCode)
-      await moveToLine1End()
-      previousCode = await waitForCodeChange(page, previousCode)
-
-      await page.keyboard.press('v')
-      await editor.expectEditor.toContain('vertical(line1)')
-
-      // The line tool must stay equipped so drawing can continue
-      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
-
-      previousCode = await editor.getCurrentCode()
-      await line1EndClick()
-      await waitForCodeChange(page, previousCode)
-      await editor.expectEditor.toContain('vertical(line1)')
-    })
-
-    await test.step('Constrain the chained draft line horizontally with the hotkey', async () => {
-      let previousCode = await editor.getCurrentCode()
-      await moveToLine2End()
-      previousCode = await waitForCodeChange(page, previousCode)
-
-      await page.keyboard.press('h')
-      await editor.expectEditor.toContain('horizontal(line2)')
-      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
-
-      previousCode = await editor.getCurrentCode()
-      await line2EndClick()
-      await waitForCodeChange(page, previousCode)
-    })
-
-    await test.step('Finish drawing and assert both constraints remain', async () => {
-      await page.keyboard.press('Escape')
-      await page.keyboard.press('Escape')
-      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'false')
-
-      await editor.expectEditor.toContain('vertical(line1)')
-      await editor.expectEditor.toContain('horizontal(line2)')
-    })
-  })
-
-  test('unequipping line tool should not drop committed segments from the scene', async ({
-    page,
-    context,
-    homePage,
-    scene,
-    cmdBar,
-    editor,
-    toolbar,
-  }) => {
-    const INITIAL_CODE = ''
-    const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
-    const getLineCount = (code: string) => (code.match(/line\(/g) ?? []).length
-
-    await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
-      await context.addInitScript(
-        async ({ code }) => {
-          localStorage.setItem('persistCode', code)
-        },
-        {
-          code: INITIAL_CODE,
-        }
-      )
-
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled()
-    })
-
-    await test.step('Start a new sketch and equip line tool', async () => {
-      await toolbar.startSketchOnDefaultPlane('Top plane')
-      await editor.expectEditor.toContain('sketch(on = XY) {')
-      await toolbar.lineBtn.click()
-      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
-    })
-
-    await test.step('Draw first line and assert code plus scene', async () => {
-      let previousCode = await editor.getCurrentCode()
-      const [line1Start] = scene.makeMouseHelpers(0.3, 0.4, {
-        format: 'ratio',
-      })
-      const [line1End] = scene.makeMouseHelpers(0.3, 0.8, {
-        format: 'ratio',
-      })
-
-      await line1Start()
-      previousCode = await waitForCodeChange(page, previousCode)
-      await line1End()
-      const codeAfterLine1 = await waitForCodeChange(page, previousCode)
-
-      expect(getLineCount(codeAfterLine1)).toBe(1)
-      await expect(pointHandles).toHaveCount(2)
-    })
-
-    await test.step('Click once to add second line and assert committed code plus scene', async () => {
-      let previousCode = await editor.getCurrentCode()
-      const [line2Click, moveToDraftLineEnd] = scene.makeMouseHelpers(
-        0.8,
-        0.3,
+      const [line1EndClick, moveToLine1End] = scene.makeMouseHelpers(
+        0.55,
+        0.6,
         {
           format: 'ratio',
         }
       )
-      const [, moveDraftLine] = scene.makeMouseHelpers(0.7, 0.55, {
-        format: 'ratio',
+      const [line2EndClick, moveToLine2End] = scene.makeMouseHelpers(
+        0.75,
+        0.4,
+        {
+          format: 'ratio',
+        }
+      )
+
+      await test.step('Draw a draft line and constrain it vertically with the hotkey', async () => {
+        await page.keyboard.press('l')
+        await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
+
+        let previousCode = await editor.getCurrentCode()
+        await lineStart()
+        previousCode = await waitForCodeChange(page, previousCode)
+        await moveToLine1End()
+        previousCode = await waitForCodeChange(page, previousCode)
+
+        await page.keyboard.press('v')
+        await editor.expectEditor.toContain('vertical(line1)')
+
+        // The line tool must stay equipped so drawing can continue
+        await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
+
+        previousCode = await editor.getCurrentCode()
+        await line1EndClick()
+        await waitForCodeChange(page, previousCode)
+        await editor.expectEditor.toContain('vertical(line1)')
       })
 
-      await moveToDraftLineEnd()
-      await line2Click()
-      const codeAfterLine2 = await waitForCodeChange(page, previousCode)
+      await test.step('Constrain the chained draft line horizontally with the hotkey', async () => {
+        let previousCode = await editor.getCurrentCode()
+        await moveToLine2End()
+        previousCode = await waitForCodeChange(page, previousCode)
 
-      expect(getLineCount(codeAfterLine2)).toBe(2)
-      await expect(pointHandles).toHaveCount(4)
+        await page.keyboard.press('h')
+        await editor.expectEditor.toContain('horizontal(line2)')
+        await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
 
-      await moveDraftLine()
-      const codeWithDraftLine = await waitForCodeChange(page, codeAfterLine2)
-      expect(getLineCount(codeWithDraftLine)).toBe(3)
-      await expect(pointHandles).toHaveCount(6)
-    })
+        previousCode = await editor.getCurrentCode()
+        await line2EndClick()
+        await waitForCodeChange(page, previousCode)
+      })
 
-    await test.step('Unequip line tool and assert committed code plus scene remain', async () => {
-      await toolbar.lineBtn.click()
-      await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'false')
+      await test.step('Finish drawing and assert both constraints remain', async () => {
+        await page.keyboard.press('Escape')
+        await page.keyboard.press('Escape')
+        await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'false')
 
-      const codeAfterUnequip = await editor.getCurrentCode()
-      expect(getLineCount(codeAfterUnequip)).toBe(2)
-      await expect(pointHandles).toHaveCount(4)
-    })
-  })
+        await editor.expectEditor.toContain('vertical(line1)')
+        await editor.expectEditor.toContain('horizontal(line2)')
+      })
+    }
+  )
+
+  test(
+    'unequipping line tool should not drop committed segments from the scene',
+    { tag: '@web' },
+    async ({ page, context, homePage, scene, cmdBar, editor, toolbar }) => {
+      const INITIAL_CODE = ''
+      const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
+      const getLineCount = (code: string) =>
+        (code.match(/line\(/g) ?? []).length
+
+      await test.step('Set up the app with initial code and enable sketch solve mode', async () => {
+        await context.addInitScript(
+          async ({ code }) => {
+            localStorage.setItem('persistCode', code)
+          },
+          {
+            code: INITIAL_CODE,
+          }
+        )
+
+        await page.setBodyDimensions({ width: 1200, height: 500 })
+        await homePage.goToModelingScene()
+        await scene.settled()
+      })
+
+      await test.step('Start a new sketch and equip line tool', async () => {
+        await toolbar.startSketchOnDefaultPlane('Top plane')
+        await editor.expectEditor.toContain('sketch(on = XY) {')
+        await toolbar.lineBtn.click()
+        await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
+      })
+
+      await test.step('Draw first line and assert code plus scene', async () => {
+        let previousCode = await editor.getCurrentCode()
+        const [line1Start] = scene.makeMouseHelpers(0.3, 0.4, {
+          format: 'ratio',
+        })
+        const [line1End] = scene.makeMouseHelpers(0.3, 0.8, {
+          format: 'ratio',
+        })
+
+        await line1Start()
+        previousCode = await waitForCodeChange(page, previousCode)
+        await line1End()
+        const codeAfterLine1 = await waitForCodeChange(page, previousCode)
+
+        expect(getLineCount(codeAfterLine1)).toBe(1)
+        await expect(pointHandles).toHaveCount(2)
+      })
+
+      await test.step('Click once to add second line and assert committed code plus scene', async () => {
+        let previousCode = await editor.getCurrentCode()
+        const [line2Click, moveToDraftLineEnd] = scene.makeMouseHelpers(
+          0.8,
+          0.3,
+          {
+            format: 'ratio',
+          }
+        )
+        const [, moveDraftLine] = scene.makeMouseHelpers(0.7, 0.55, {
+          format: 'ratio',
+        })
+
+        await moveToDraftLineEnd()
+        await line2Click()
+        const codeAfterLine2 = await waitForCodeChange(page, previousCode)
+
+        expect(getLineCount(codeAfterLine2)).toBe(2)
+        await expect(pointHandles).toHaveCount(4)
+
+        await moveDraftLine()
+        const codeWithDraftLine = await waitForCodeChange(page, codeAfterLine2)
+        expect(getLineCount(codeWithDraftLine)).toBe(3)
+        await expect(pointHandles).toHaveCount(6)
+      })
+
+      await test.step('Unequip line tool and assert committed code plus scene remain', async () => {
+        await toolbar.lineBtn.click()
+        await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'false')
+
+        const codeAfterUnequip = await editor.getCurrentCode()
+        expect(getLineCount(codeAfterUnequip)).toBe(2)
+        await expect(pointHandles).toHaveCount(4)
+      })
+    }
+  )
 
   test('undo still works after mixing point-click edits with direct kcl edits in sketch solve mode', async ({
     page,
@@ -749,7 +744,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     cmdBar,
     editor,
     toolbar,
-    tronApp,
   }) => {
     const INITIAL_CODE = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var -11.38mm, var 3.66mm], end = [var -11.5mm, var 0.43mm])
@@ -1267,7 +1261,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     cmdBar,
     editor,
     toolbar,
-    tronApp,
   }) => {
     const pointHandles = page.locator('[data-handle="sketch-point-handle"]')
     const INITIAL_CODE = ''
