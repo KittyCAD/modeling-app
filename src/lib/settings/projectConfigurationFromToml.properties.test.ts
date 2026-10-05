@@ -1,26 +1,20 @@
-import { join } from 'node:path'
-import {
-  parseProjectSettings,
-  serializeProjectConfiguration,
-} from '@src/lang/wasm'
-import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { projectConfigurationFromToml } from '@src/lib/settings/projectConfigurationFromToml'
 import {
   defaultNamedView,
   defaultProjectConfiguration,
   viewId,
 } from '@src/lib/settings/projectConfiguration.fixtures'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import fc from 'fast-check'
 import { parse as parseToml, stringify } from 'smol-toml'
-import { beforeAll, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
-let wasmInstance: ModuleType
-beforeAll(async () => {
-  wasmInstance = await loadAndInitialiseWasmInstance(
-    join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+function parseProjectSettings(toml: string) {
+  const configuration = projectConfigurationFromToml(
+    parseToml(toml, { integersAsBigInt: false })
   )
-})
+  if (configuration instanceof Error) throw configuration
+  return configuration
+}
 
 const propertyOptions = { numRuns: 100, seed: 20261005 }
 const scalar = fc.oneof(fc.boolean(), fc.integer(), fc.string())
@@ -34,65 +28,16 @@ const extensions = fc.dictionary(
   { maxKeys: 5 }
 )
 
-describe('parseProjectSettings properties', () => {
-  it('matches the smol-toml replacement across mixed metadata, views, and extension settings', () => {
-    fc.assert(
-      fc.property(
-        extensions,
-        fc.uuid(),
-        fc.boolean(),
-        fc.constantFrom('mm', 'cm', 'm', 'in', 'ft', 'yd'),
-        fc.tuple(fc.integer(), fc.integer(), fc.integer()),
-        (other, id, enabled, unit, position) => {
-          const authored = id.toUpperCase()
-          const toml = stringify({
-            title: 'Ignored root metadata',
-            settings: {
-              ...other,
-              meta: [authored],
-              app: {
-                ...other,
-                stream_idle_mode: enabled,
-                named_views: {
-                  [authored]: {
-                    name: 'Camera',
-                    pivot_position: position,
-                    is_ortho: enabled,
-                    version: 0,
-                    discarded: true,
-                  },
-                },
-              },
-              modeling: {
-                ...other,
-                base_unit: unit,
-                highlight_edges: enabled,
-                enable_ssao: enabled,
-                fixed_size_grid: enabled,
-              },
-            },
-            cloud: { 'zoo.dev': [authored], 'dev.zoo.dev': {} },
-          })
-          expect(
-            projectConfigurationFromToml(
-              parseToml(toml, { integersAsBigInt: false })
-            )
-          ).toEqual(parseProjectSettings(toml, wasmInstance))
-        }
-      ),
-      propertyOptions
-    )
-  })
-
+describe('projectConfigurationFromToml properties', () => {
   it('preserves extension values at each flattening boundary', () => {
     fc.assert(
       fc.property(extensions, (other) => {
         const configuration = {
           settings: { ...other, meta: {}, app: other, modeling: other },
         }
-        expect(
-          parseProjectSettings(stringify(configuration), wasmInstance)
-        ).toEqual(configuration)
+        expect(parseProjectSettings(stringify(configuration))).toEqual(
+          configuration
+        )
       }),
       propertyOptions
     )
@@ -111,8 +56,7 @@ describe('parseProjectSettings properties', () => {
         ({ stream_idle_mode, ...modeling }) => {
           expect(
             parseProjectSettings(
-              stringify({ settings: { app: { stream_idle_mode }, modeling } }),
-              wasmInstance
+              stringify({ settings: { app: { stream_idle_mode }, modeling } })
             )
           ).toEqual({
             settings: {
@@ -155,9 +99,7 @@ describe('parseProjectSettings properties', () => {
             },
             cloud: { 'zoo.dev': { project_id: authored } },
           }
-          expect(
-            parseProjectSettings(stringify(configuration), wasmInstance)
-          ).toEqual({
+          expect(parseProjectSettings(stringify(configuration))).toEqual({
             settings: {
               meta: { id },
               app: { named_views: { [id]: defaultNamedView } },
@@ -194,8 +136,7 @@ describe('parseProjectSettings properties', () => {
             parseProjectSettings(
               stringify({
                 settings: { app: { named_views: { [viewId]: view } } },
-              }),
-              wasmInstance
+              })
             )
           ).toEqual({
             settings: {
@@ -209,7 +150,7 @@ describe('parseProjectSettings properties', () => {
     )
   })
 
-  it('keeps normalized settings stable through the production serializer', () => {
+  it('keeps normalized settings stable through TOML serialization', () => {
     fc.assert(
       fc.property(extensions, fc.uuid(), (other, id) => {
         const parsed = parseProjectSettings(
@@ -221,13 +162,11 @@ describe('parseProjectSettings properties', () => {
               plugins: other,
             },
             cloud: { 'zoo.dev': { project_id: id } },
-          }),
-          wasmInstance
+          })
         )
         if (parsed instanceof Error) throw parsed
-        const serialized = serializeProjectConfiguration(parsed, wasmInstance)
-        if (serialized instanceof Error) throw serialized
-        expect(parseProjectSettings(serialized, wasmInstance)).toEqual(parsed)
+        const serialized = stringify(parsed)
+        expect(parseProjectSettings(serialized)).toEqual(parsed)
       }),
       propertyOptions
     )

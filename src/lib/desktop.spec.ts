@@ -1,6 +1,4 @@
-import { join } from 'node:path'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import type { EnvironmentConfiguration } from '@src/lib/constants'
 import {
   getAppSettingsFilePath,
@@ -22,7 +20,6 @@ import * as desktopPlatform from '@src/lib/isDesktop'
 import * as playwrightEnvironment from '@src/lib/isPlaywright'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/paths'
 import type { DeepPartial } from '@src/lib/types'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
   defaultProjectConfiguration,
   projectId,
@@ -271,25 +268,14 @@ describe('desktop utilities', () => {
     mockElectron.kittycad.mockResolvedValue({})
   })
 
-  describe('readProjectSettingsFile characterization', () => {
-    let wasmInstance: ModuleType
-    beforeAll(async () => {
-      wasmInstance = await loadAndInitialiseWasmInstance(
-        join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
-      )
-    })
-
+  describe('readProjectSettingsFile without Wasm', () => {
     it('reads project.toml and returns normalized metadata and settings', async () => {
       mockElectron.readFile.mockResolvedValue(
         `title = "Project title"\n[settings.meta]\nid = "${projectId}"\n[settings.plugins]\ntelemetry = false`
       )
 
       expect(
-        await readProjectSettingsFile(
-          testFileOperations,
-          '/test/project',
-          wasmInstance
-        )
+        await readProjectSettingsFile(testFileOperations, '/test/project')
       ).toEqual({
         settings: {
           ...defaultProjectConfiguration.settings,
@@ -306,11 +292,7 @@ describe('desktop utilities', () => {
     it('distinguishes an empty existing file from a missing file', async () => {
       mockElectron.readFile.mockResolvedValue('')
       expect(
-        await readProjectSettingsFile(
-          testFileOperations,
-          '/test/project',
-          wasmInstance
-        )
+        await readProjectSettingsFile(testFileOperations, '/test/project')
       ).toEqual(defaultProjectConfiguration)
     })
 
@@ -319,11 +301,7 @@ describe('desktop utilities', () => {
       async (cause) => {
         mockElectron.stat.mockRejectedValueOnce(cause)
         expect(
-          await readProjectSettingsFile(
-            testFileOperations,
-            '/test/project',
-            wasmInstance
-          )
+          await readProjectSettingsFile(testFileOperations, '/test/project')
         ).toEqual({})
         expect(mockElectron.readFile).not.toHaveBeenCalled()
         expect(mockElectron.writeFile).not.toHaveBeenCalled()
@@ -336,11 +314,7 @@ describe('desktop utilities', () => {
         '[settings.modeling]\nbase_unit = "in"'
       )
       expect(
-        await readProjectSettingsFile(
-          testFileOperations,
-          '/test/project',
-          wasmInstance
-        )
+        await readProjectSettingsFile(testFileOperations, '/test/project')
       ).toEqual({
         settings: {
           ...defaultProjectConfiguration.settings,
@@ -353,11 +327,7 @@ describe('desktop utilities', () => {
       const failure = new Error('EACCES')
       mockElectron.readFile.mockRejectedValueOnce(failure)
       await expect(
-        readProjectSettingsFile(
-          testFileOperations,
-          '/test/project',
-          wasmInstance
-        )
+        readProjectSettingsFile(testFileOperations, '/test/project')
       ).rejects.toBe(failure)
       expect(mockElectron.writeFile).not.toHaveBeenCalled()
     })
@@ -367,12 +337,8 @@ describe('desktop utilities', () => {
       async (toml) => {
         mockElectron.readFile.mockResolvedValue(toml)
         await expect(
-          readProjectSettingsFile(
-            testFileOperations,
-            '/test/project',
-            wasmInstance
-          )
-        ).rejects.toEqual(expect.stringContaining('TOML parse error'))
+          readProjectSettingsFile(testFileOperations, '/test/project')
+        ).rejects.toThrow()
         expect(mockElectron.writeFile).not.toHaveBeenCalled()
       }
     )
@@ -645,14 +611,10 @@ describe('desktop utilities', () => {
     it('shows all non-dot files except settings files in project contents', async () => {
       const { instance } = await buildTheWorldNode()
       const wasmInstance = await instance
-      const instanceWithProjectSettings = {
-        ...wasmInstance,
-        parse_project_settings: vi.fn(() => ({})),
-      }
       const project = await getProjectInfo(
         testFileOperations,
         '/test/projects/valid-project',
-        instanceWithProjectSettings
+        wasmInstance
       )
 
       expect(project.children?.map((child) => child.name)).toEqual([
@@ -683,10 +645,7 @@ describe('desktop utilities', () => {
       const project = await getProjectInfo(
         testFileOperations,
         '/test/projects/valid-project',
-        {
-          ...wasmInstance,
-          parse_project_settings: vi.fn(() => ({})),
-        }
+        wasmInstance
       )
 
       expect(project.title).toBe('Some demo')

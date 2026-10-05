@@ -1022,14 +1022,12 @@ export async function loadAndValidateSettings(
 
   settingsNext = setSettingsAtLevel(settingsNext, 'user', appSettings)
 
-  // Project settings still use the Rust parser. App-only settings do not wait
-  // for Wasm initialization.
+  // Reading project settings does not require Wasm. Initialize it only when
+  // a missing project ID requires serializing and writing project.toml.
   if (projectPath) {
-    const wasmInstance = await initPromise
     let projectSettings = await readProjectSettingsFile(
       fileOperations,
-      projectPath,
-      wasmInstance
+      projectPath
     )
 
     if (err(projectSettings)) {
@@ -1041,6 +1039,7 @@ export async function loadAndValidateSettings(
       projectSettings.settings.meta.id === uuidNIL
     ) {
       projectSettings = setProjectConfigurationId(projectSettings, v4())
+      const wasmInstance = await initPromise
       const projectTomlString = serializeProjectConfiguration(
         projectSettings,
         wasmInstance
@@ -1173,8 +1172,7 @@ export async function saveSettings(
   const jsProjectSettings = getChangedSettingsAtLevel(allSettings, 'project')
   const existingProjectSettings = await readProjectSettingsFile(
     fileOperations,
-    projectPath,
-    wasmInstance
+    projectPath
   )
   if (err(existingProjectSettings)) {
     return

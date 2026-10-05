@@ -5,7 +5,6 @@ import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfigu
 import type { JsonValue } from '@rust/kcl-lib/bindings/serde_json/JsonValue'
 import env, { getEnvironmentNameFromEnv } from '@src/env'
 import { newKclFile } from '@src/lang/project'
-import { parseProjectSettings } from '@src/lang/wasm'
 import { getAppFolderName as getAppFolderNameFromMetadata } from '@src/lib/appFolderName'
 import type { EnvironmentConfiguration } from '@src/lib/constants'
 import {
@@ -50,6 +49,7 @@ import {
   setProjectTitleInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
 import { appConfigurationFromToml } from '@src/lib/settings/appConfigurationFromToml'
+import { projectConfigurationFromToml } from '@src/lib/settings/projectConfigurationFromToml'
 import { err, isErr } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { getInVariableCase, isArray } from '@src/lib/utils'
@@ -952,8 +952,7 @@ export const getInitialDefaultDir = async () => {
 
 export const readProjectSettingsFile = async (
   fileOperations: FileOperationsRegistryService,
-  projectPath: string,
-  wasmInstance: ModuleType
+  projectPath: string
 ): Promise<DeepPartial<ProjectConfiguration>> => {
   const settingsPath = await getProjectSettingsFilePath(projectPath)
 
@@ -969,8 +968,10 @@ export const readProjectSettingsFile = async (
   const configToml = textDecoder.decode(
     await fileOperations.readFile(settingsPath)
   )
-  const configObj = parseProjectSettings(configToml, wasmInstance)
-  if (err(configObj)) {
+  const configObj = projectConfigurationFromToml(
+    parseToml(configToml, { integersAsBigInt: false })
+  )
+  if (isErr(configObj)) {
     return Promise.reject(configObj)
   }
   return configObj
