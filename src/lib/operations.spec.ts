@@ -1090,6 +1090,25 @@ describe('operations.test.ts', () => {
   })
 
   describe('GDT edit flow', () => {
+    it('edits a distance with automatic plane and no tolerance', async () => {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      const result = await enterEditFlow({
+        operation: stdlib('gdt::distance'),
+        code: 'gdt::distance(from = first, to = second)',
+        artifactGraph: new Map(),
+        rustContext,
+      })
+      if (isErr(result)) throw result
+      if (result.type !== 'Find and select command')
+        throw new Error('Expected edit flow')
+      expect(result.data.argDefaultValues).toMatchObject({
+        framePlane: 'Automatic',
+      })
+      expect(result.data.argDefaultValues).not.toHaveProperty(
+        'tolerance',
+        expect.anything()
+      )
+    })
     it.each(['gdt::straightness', 'gdt::distance'])(
       'recovers mixed UUID, tagged, and Face API edges in order for %s',
       async (operationName) => {
