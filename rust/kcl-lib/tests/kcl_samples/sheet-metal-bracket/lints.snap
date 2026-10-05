@@ -14,7 +14,7 @@ description: Lints sheet-metal-bracket.kcl
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
       10687,
-      11036,
+      11040,
       0
     ],
     "overridden": false,
