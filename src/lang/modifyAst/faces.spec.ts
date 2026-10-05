@@ -875,7 +875,7 @@ fillet001 = fillet(
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
-        `${bracket}surface001 = deleteFace(finalBracket, faces = bracketProfileRegion.tags.line6)`
+        `${bracket}surface001 = deleteFace(finalBracket, faces = bracketProfileRegion.tags.line5)`
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     }, 15_000)

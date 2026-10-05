@@ -26,9 +26,9 @@ portBoreSketch = sketch(on = XY) {
 
   horizontal(portRadiusGuide)
   distance([
-  portRadiusGuide.start,
-  portRadiusGuide.end
-]) == portDiameter / 2 - wallThickness
+    portRadiusGuide.start,
+    portRadiusGuide.end
+  ]) == portDiameter / 2 - wallThickness
 }
 
 portBoreRegion = region(segments = [portBoreSketch.portBore])
@@ -130,37 +130,37 @@ bodyProfile = sketch(on = XY) {
   horizontal(mainInnerRun)
 
   distance([
-  frontAxisGuide.start,
-  frontAxisGuide.end
-]) == portHeight
+    frontAxisGuide.start,
+    frontAxisGuide.end
+  ]) == portHeight
   distance([endCapGuide.start, endCapGuide.end]) == portCount * portSpacing
   distance([
-  frontInnerRadiusGuide.start,
-  frontInnerRadiusGuide.end
-]) == bodyDiameter / 2 - wallThickness
+    frontInnerRadiusGuide.start,
+    frontInnerRadiusGuide.end
+  ]) == bodyDiameter / 2 - wallThickness
   distance([frontWall.start, frontWall.end]) == wallThickness
   distance([frontOuterRun.start, frontOuterRun.end]) == beadDepth
   distance([beadSpanGuide.start, beadSpanGuide.end]) == beadRadius * 2
   distance([
-  beadRadiusGuide.start,
-  beadRadiusGuide.end
-]) == beadRadius
+    beadRadiusGuide.start,
+    beadRadiusGuide.end
+  ]) == beadRadius
   distance([
-  outerTopRadiusGuide.start,
-  outerTopRadiusGuide.end
-]) == bodyDiameter / 2
+    outerTopRadiusGuide.start,
+    outerTopRadiusGuide.end
+  ]) == bodyDiameter / 2
   distance([
-  outerSideRadiusGuide.start,
-  outerSideRadiusGuide.end
-]) == bodyDiameter / 2
+    outerSideRadiusGuide.start,
+    outerSideRadiusGuide.end
+  ]) == bodyDiameter / 2
   distance([
-  innerTopRadiusGuide.start,
-  innerTopRadiusGuide.end
-]) == bodyDiameter / 2 - wallThickness
+    innerTopRadiusGuide.start,
+    innerTopRadiusGuide.end
+  ]) == bodyDiameter / 2 - wallThickness
   distance([
-  innerSideRadiusGuide.start,
-  innerSideRadiusGuide.end
-]) == bodyDiameter / 2 - wallThickness
+    innerSideRadiusGuide.start,
+    innerSideRadiusGuide.end
+  ]) == bodyDiameter / 2 - wallThickness
 }
 
 bodyRegion = region(segments = [
@@ -192,9 +192,9 @@ bodyCutSketch = sketch(on = YZ) {
 
   horizontal(bodyCutRadiusGuide)
   distance([
-  bodyCutRadiusGuide.start,
-  bodyCutRadiusGuide.end
-]) == bodyDiameter / 2
+    bodyCutRadiusGuide.start,
+    bodyCutRadiusGuide.end
+  ]) == bodyDiameter / 2
 }
 
 bodyCutRegion = region(segments = [bodyCutSketch.bodyCutCircle])
@@ -240,9 +240,9 @@ portProfile = sketch(on = YZ) {
   distance([upperWall.start, upperWall.end]) == beadDepth
   distance([beadSpanGuide.start, beadSpanGuide.end]) == beadRadius * 2
   distance([
-  beadRadiusGuide.start,
-  beadRadiusGuide.end
-]) == beadRadius
+    beadRadiusGuide.start,
+    beadRadiusGuide.end
+  ]) == beadRadius
 }
 
 portRegion = region(point = [portDiameter / 4, portHeight / 2], sketch = portProfile)

@@ -164,9 +164,9 @@ lidSketch = sketch(on = lidPlane) {
   horizontalDistance([line1.start, holeRectBottom.start]) == innerOffset
   verticalDistance([line1.start, holeRectBottom.start]) == innerOffset
   distance([
-  holeRectBottom.start,
-  holeRectBottom.end
-]) == holeSpanX
+    holeRectBottom.start,
+    holeRectBottom.end
+  ]) == holeSpanX
   distance([holeRectRight.start, holeRectRight.end]) == holeSpanY
 
   holeGuideFrontLeft = line(start = [var 13mm, var 13mm], end = [var 17mm, var 13mm], construction = true)
@@ -176,9 +176,9 @@ lidSketch = sketch(on = lidPlane) {
   ])
   horizontal(holeGuideFrontLeft)
   distance([
-  holeGuideFrontLeft.start,
-  holeGuideFrontLeft.end
-]) == holeDia
+    holeGuideFrontLeft.start,
+    holeGuideFrontLeft.end
+  ]) == holeDia
   holeFrontLeft = circle(start = [var 17mm, var 13mm], center = [var 13mm, var 13mm])
   coincident([
     holeFrontLeft.center,
@@ -196,9 +196,9 @@ lidSketch = sketch(on = lidPlane) {
   ])
   horizontal(holeGuideFrontRight)
   distance([
-  holeGuideFrontRight.start,
-  holeGuideFrontRight.end
-]) == holeDia
+    holeGuideFrontRight.start,
+    holeGuideFrontRight.end
+  ]) == holeDia
   holeFrontRight = circle(start = [var 116mm, var 13mm], center = [var 112mm, var 13mm])
   coincident([
     holeFrontRight.center,
@@ -216,9 +216,9 @@ lidSketch = sketch(on = lidPlane) {
   ])
   horizontal(holeGuideBackRight)
   distance([
-  holeGuideBackRight.start,
-  holeGuideBackRight.end
-]) == holeDia
+    holeGuideBackRight.start,
+    holeGuideBackRight.end
+  ]) == holeDia
   holeBackRight = circle(start = [var 116mm, var 162mm], center = [var 112mm, var 162mm])
   coincident([
     holeBackRight.center,
@@ -236,9 +236,9 @@ lidSketch = sketch(on = lidPlane) {
   ])
   horizontal(holeGuideBackLeft)
   distance([
-  holeGuideBackLeft.start,
-  holeGuideBackLeft.end
-]) == holeDia
+    holeGuideBackLeft.start,
+    holeGuideBackLeft.end
+  ]) == holeDia
   holeBackLeft = circle(start = [var 17mm, var 162mm], center = [var 13mm, var 162mm])
   coincident([
     holeBackLeft.center,
@@ -333,9 +333,9 @@ lidLipSketch = sketch(on = faceOf(lidPlate, face = END)) {
   horizontalDistance([line1.start, holeRectBottom.start]) == lidLipHoleOffset
   verticalDistance([line1.start, holeRectBottom.start]) == lidLipHoleOffset
   distance([
-  holeRectBottom.start,
-  holeRectBottom.end
-]) == holeSpanX
+    holeRectBottom.start,
+    holeRectBottom.end
+  ]) == holeSpanX
   distance([holeRectRight.start, holeRectRight.end]) == holeSpanY
 
   holeGuideFrontLeft = line(start = [var 163mm, var 13mm], end = [var 170mm, var 13mm], construction = true)
@@ -345,9 +345,9 @@ lidLipSketch = sketch(on = faceOf(lidPlate, face = END)) {
   ])
   horizontal(holeGuideFrontLeft)
   distance([
-  holeGuideFrontLeft.start,
-  holeGuideFrontLeft.end
-]) == lidLipClearanceRadius
+    holeGuideFrontLeft.start,
+    holeGuideFrontLeft.end
+  ]) == lidLipClearanceRadius
   holeFrontLeft = circle(start = [var 170mm, var 13mm], center = [var 163mm, var 13mm])
   coincident([
     holeFrontLeft.center,
@@ -365,9 +365,9 @@ lidLipSketch = sketch(on = faceOf(lidPlate, face = END)) {
   ])
   horizontal(holeGuideFrontRight)
   distance([
-  holeGuideFrontRight.start,
-  holeGuideFrontRight.end
-]) == lidLipClearanceRadius
+    holeGuideFrontRight.start,
+    holeGuideFrontRight.end
+  ]) == lidLipClearanceRadius
   holeFrontRight = circle(start = [var 269mm, var 13mm], center = [var 262mm, var 13mm])
   coincident([
     holeFrontRight.center,
@@ -385,9 +385,9 @@ lidLipSketch = sketch(on = faceOf(lidPlate, face = END)) {
   ])
   horizontal(holeGuideBackRight)
   distance([
-  holeGuideBackRight.start,
-  holeGuideBackRight.end
-]) == lidLipClearanceRadius
+    holeGuideBackRight.start,
+    holeGuideBackRight.end
+  ]) == lidLipClearanceRadius
   holeBackRight = circle(start = [var 269mm, var 162mm], center = [var 262mm, var 162mm])
   coincident([
     holeBackRight.center,
@@ -405,9 +405,9 @@ lidLipSketch = sketch(on = faceOf(lidPlate, face = END)) {
   ])
   horizontal(holeGuideBackLeft)
   distance([
-  holeGuideBackLeft.start,
-  holeGuideBackLeft.end
-]) == lidLipClearanceRadius
+    holeGuideBackLeft.start,
+    holeGuideBackLeft.end
+  ]) == lidLipClearanceRadius
   holeBackLeft = circle(start = [var 170mm, var 162mm], center = [var 163mm, var 162mm])
   coincident([
     holeBackLeft.center,

@@ -750,7 +750,7 @@ export fn ellipse(
 /// ```
 /// ``` kcl, sketchSolve
 /// // Examples showing extrude with a positive/negative draft.
-/// @settings(experimentalFeatures = allow, kclVersion = 2.0)
+/// @settings(experimentalFeatures = allow, kclVersion = 3.0)
 ///
 /// sketch001 = sketch(on = XY) {
 ///   line1 = line(start = [var -3.39mm, var 2.51mm], end = [var -4.52mm, var 0.96mm])
@@ -828,7 +828,7 @@ export fn ellipse(
 /// extrude([originalSketch.line1, originalSketch.line2], length = -1, bodyType = SURFACE)
 /// ```
 /// ```kcl,sketchSolve
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// // The direction parameter can apply to sketches, segments, or edges
 /// // Directions can be specified by an axis, a sketch segment, or a body's edge.
@@ -884,7 +884,7 @@ export fn ellipse(
 /// extrude003 = extrude(sketch003.arc1, length = 5, bodyType = SURFACE, direction = [1, -1, 1])
 /// ```
 /// ```kcl,sketchSolve
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// // Extruding edges can infer a direction or accept a custom direction
 /// sketch001 = sketch(on = XY) {
@@ -1391,7 +1391,7 @@ export fn getPreviousAdjacentEdge(
 /// Get the shared edge between two faces.
 ///
 /// ```kcl,sketchSolve
-/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
+/// @settings(defaultLengthUnit = mm, kclVersion = 3.0)
 ///
 /// scale = 20mm
 /// partSketch = sketch(on = XY) {
@@ -1556,7 +1556,7 @@ export fn polygon(
 /// swept along the same path.
 ///
 /// ```kcl,sketchSolve
-/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
+/// @settings(defaultLengthUnit = mm, kclVersion = 3.0)
 ///
 /// sweepPath = sketch(on = XZ) {
 ///   line1 = line(start = [var 0.05mm, var 0.05mm], end = [var 0.05mm, var 7.05mm])
@@ -2050,7 +2050,7 @@ export fn sweep(
 /// ```
 /// ```kcl,sketchSolve
 /// // Demonstrates surface lofting of segments from multiple sketch blocks.
-/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
+/// @settings(defaultLengthUnit = mm, kclVersion = 3.0)
 ///
 /// sketch002 = sketch(on = XY) {
 ///   arc1 = arc(start = [var -2.02mm, var -3.05mm], end = [var 2.03mm, var -3.01mm], center = [var 0.01mm, var -3.05mm])
@@ -2108,7 +2108,7 @@ export fn loft(
 /// ```kcl
 /// // Example of pattern using a named axis.
 ///
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// exampleSketch = sketch(on = XZ) {
 ///   circle1 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
@@ -2130,7 +2130,7 @@ export fn loft(
 /// ```kcl
 /// // Example of pattern using a raw axis.
 ///
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// exampleSketch = sketch(on = XZ) {
 ///   circle1 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
@@ -3467,7 +3467,7 @@ export fn faceOf(
 /// to a different consuming operation.
 ///
 /// ```kcl,sketchSolve
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// // `region` traces counterclockwise by default.
 /// triangle = sketch(on = XY) {
@@ -3486,7 +3486,7 @@ export fn faceOf(
 /// ```
 ///
 /// ```kcl,sketchSolve
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// // Set `direction = CW` when the segments trace the boundary clockwise.
 /// trapezoid = sketch(on = XY) {

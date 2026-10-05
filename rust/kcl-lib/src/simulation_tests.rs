@@ -676,7 +676,12 @@ async fn execute_test(test: &Test) {
             panic!("Couldn't parse KclVersion from config: {version}");
         };
         let mut run = test.clone();
-        run.output_dir = test.output_dir.join(format!("kcl-{version}"));
+        // Drop prerelease suffixes (e.g. "3.0-preview" -> "3.0") for on-disk paths.
+        let dir_version = kcl_version
+            .as_str()
+            .strip_suffix("-preview")
+            .unwrap_or(kcl_version.as_str());
+        run.output_dir = test.output_dir.join(format!("kcl-{dir_version}"));
         std::fs::create_dir_all(&run.output_dir).unwrap();
         execute_once(&run, Some(kcl_version)).await;
     }
@@ -10095,6 +10100,48 @@ mod fillets_referencing_other_fillets {
 }
 mod hex_fillet {
     const TEST_NAME: &str = "hex_fillet";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME).await
+    }
+}
+mod kcl_v3_stable_execution {
+    const TEST_NAME: &str = "kcl_v3_stable_execution";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME).await
+    }
+}
+mod subtract_inherits_tool_face_tags {
+    const TEST_NAME: &str = "subtract_inherits_tool_face_tags";
 
     /// Test parsing KCL.
     #[test]

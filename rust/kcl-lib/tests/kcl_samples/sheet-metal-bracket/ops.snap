@@ -11614,7 +11614,7 @@ description: Operations executed sheet-metal-bracket.kcl
                     "value": [
                       {
                         "type": "TagIdentifier",
-                        "value": "arc2",
+                        "value": "line21",
                         "artifact_id": "[uuid]"
                       },
                       {
@@ -11634,7 +11634,7 @@ description: Operations executed sheet-metal-bracket.kcl
                     "value": [
                       {
                         "type": "TagIdentifier",
-                        "value": "line11",
+                        "value": "line10",
                         "artifact_id": "[uuid]"
                       },
                       {
@@ -11654,7 +11654,7 @@ description: Operations executed sheet-metal-bracket.kcl
                     "value": [
                       {
                         "type": "TagIdentifier",
-                        "value": "line11",
+                        "value": "line10",
                         "artifact_id": "[uuid]"
                       },
                       {
@@ -11674,7 +11674,7 @@ description: Operations executed sheet-metal-bracket.kcl
                     "value": [
                       {
                         "type": "TagIdentifier",
-                        "value": "arc2",
+                        "value": "line21",
                         "artifact_id": "[uuid]"
                       },
                       {

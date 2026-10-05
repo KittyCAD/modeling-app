@@ -2,7 +2,7 @@
 // Sketch-solve reconstruction with matching feature order
 // Categories: Mechanical Components; Parametric
 
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 // model parameters
 halfBracketWidth = 20
@@ -77,8 +77,8 @@ insideBendFillet = fillet(
   edges = [
     {
       sideFaces = [
-        outlineRegion.tags.line5,
-        outlineRegion.tags.line4
+        outlineRegion.tags.line4,
+        outlineRegion.tags.line3
       ]
     }
   ],
@@ -91,7 +91,7 @@ outsideBendFillet = fillet(
     {
       sideFaces = [
         outlineRegion.tags.line1,
-        outlineRegion.tags.line2
+        outlineRegion.tags.line6
       ]
     }
   ],
@@ -99,21 +99,33 @@ outsideBendFillet = fillet(
 
 freeEndCornerFillets = fillet(
   outsideBendFillet,
+  radius = halfBracketWidth,
   edges = [
     {
-      sideFaces = [outlineRegion.tags.line3, capStart]
+      sideFaces = [
+        outlineRegion.tags.line2,
+        outsideBendFillet.faces.capStart
+      ]
     },
     {
-      sideFaces = [outlineRegion.tags.line3, capEnd]
+      sideFaces = [
+        outlineRegion.tags.line2,
+        outsideBendFillet.faces.capEnd
+      ]
     },
     {
-      sideFaces = [outlineRegion.tags.line6, capStart]
+      sideFaces = [
+        outlineRegion.tags.line5,
+        outsideBendFillet.faces.capStart
+      ]
     },
     {
-      sideFaces = [outlineRegion.tags.line6, capEnd]
+      sideFaces = [
+        outlineRegion.tags.line5,
+        outsideBendFillet.faces.capEnd
+      ]
     }
   ],
-  radius = halfBracketWidth,
 )
 
 // Step 4: Countersunk tab hole via subtractive feature
@@ -149,9 +161,9 @@ tabHoleSketch = sketch(on = tabHolePlane) {
   ])
   horizontal(countersinkGuide)
   horizontalDistance([
-  countersinkGuide.start,
-  countersinkGuide.end
-]) == countersinkOuterDiameter / 2
+    countersinkGuide.start,
+    countersinkGuide.end
+  ]) == countersinkOuterDiameter / 2
 
   coincident([
     fastenerCircle.center,
@@ -262,9 +274,9 @@ slotProfile = sketch(on = XY) {
   vertical(rightBottomGuide)
 
   horizontalDistance([
-  slotCenterline.start,
-  slotCenterline.end
-]) == slotOverallLength
+    slotCenterline.start,
+    slotCenterline.end
+  ]) == slotOverallLength
   radius(arc2) == slotWidth / 2
   radius(arc4) == slotWidth / 2
   coincident([

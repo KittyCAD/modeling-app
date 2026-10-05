@@ -139,9 +139,9 @@ slotProfile = sketch(on = XY) {
   vertical(rightBottomGuide)
 
   horizontalDistance([
-  slotCenterline.start,
-  slotCenterline.end
-]) == wideHoleLength - wideHoleWidth
+    slotCenterline.start,
+    slotCenterline.end
+  ]) == wideHoleLength - wideHoleWidth
   radius(arc2) == wideHoleWidth / 2
   radius(arc4) == wideHoleWidth / 2
   coincident([
@@ -215,9 +215,9 @@ boltHeadProfile = sketch(on = XY) {
   ])
   horizontal(boltHeadRadiusGuide)
   horizontalDistance([
-  boltHeadRadiusGuide.start,
-  boltHeadRadiusGuide.end
-]) == boltHeadRadius
+    boltHeadRadiusGuide.start,
+    boltHeadRadiusGuide.end
+  ]) == boltHeadRadius
 }
 
 boltHeadRegion = region(
@@ -325,9 +325,9 @@ nutProfile = sketch(on = faceOf(clampPlateBody, face = START)) {
   coincident([nutCircle.start, nutRadiusGuide.end])
   horizontal(nutRadiusGuide)
   horizontalDistance([
-  nutRadiusGuide.start,
-  nutRadiusGuide.end
-]) == nutRadius
+    nutRadiusGuide.start,
+    nutRadiusGuide.end
+  ]) == nutRadius
 }
 
 nutRegion = region(segments = [nutProfile.line1, nutProfile.line2], direction = CW)

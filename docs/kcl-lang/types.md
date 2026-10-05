@@ -17,7 +17,9 @@ Constants are defined with a name and a value, like so:
 myBool = false
 ```
 
-Currently you cannot redeclare a constant.
+- A constant cannot be redeclared in the same scope.
+- In KCL 3.0, each `if` branch has its own scope, so a constant declared there
+  can use the same name as a constant in an outer scope.
 
 
 ## Objects
@@ -38,7 +40,7 @@ these objects have type `ImportedGeometry`, which is distinct from `Solid`: ther
 is no access to their internal components, and no conversion between the two
 types.
 
-```
+```text
 The input argument of `subtract` requires one or more `Solid`s (`[Solid; 1+]`),
 but found an array of `ImportedGeometry`
 ```
@@ -61,7 +63,7 @@ The syntax for declaring a tag is `$myTag`. Tags are used for bodies (such as ex
 **Example: Referencing sketch segments and tagging cap faces**
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -2.17mm, var -0.91mm], end = [var 3.01mm, var -1.57mm])

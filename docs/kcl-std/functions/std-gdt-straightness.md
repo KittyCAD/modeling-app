@@ -53,7 +53,7 @@ a face normal may appear like an edge.
 ### Examples
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 blockSketch = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -81,7 +81,7 @@ gdt::straightness(edges = [blockRegion.tags.edge2], tolerance = 0.05mm)
 ![Rendered example of gdt::straightness 0](/kcl-test-outputs/serial_test_example_fn_std-gdt-straightness0.png)
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 blockProfile = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -112,7 +112,7 @@ gdt::straightness(
 ![Rendered example of gdt::straightness 1](/kcl-test-outputs/serial_test_example_fn_std-gdt-straightness1.png)
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 blockProfile = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])

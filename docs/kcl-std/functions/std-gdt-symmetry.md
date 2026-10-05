@@ -62,7 +62,7 @@ condition (MMC) or least material condition (LMC) modifiers.
 ### Examples
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 latchProfile = sketch(on = XZ) {
   bottom = line(start = [var -20mm, var -10mm], end = [var 20mm, var -10mm])
@@ -117,7 +117,7 @@ gdt::symmetry(
 ![Rendered example of gdt::symmetry 0](/kcl-test-outputs/serial_test_example_fn_std-gdt-symmetry0.png)
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 latchProfile = sketch(on = XZ) {
   bottom = line(start = [var -20mm, var -10mm], end = [var 20mm, var -10mm])

@@ -55,7 +55,7 @@ Cylindricity is a form tolerance, so it does not reference datums.
 ### Examples
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 cylinderSketch = sketch(on = XY) {
   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
@@ -75,7 +75,7 @@ gdt::cylindricity(
 ![Rendered example of gdt::cylindricity 0](/kcl-test-outputs/serial_test_example_fn_std-gdt-cylindricity0.png)
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 cylinderSketch = sketch(on = XY) {
   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
@@ -92,7 +92,7 @@ gdt::cylindricity(edges = [cylinderRegion.tags.perimeter], tolerance = 0.05mm, f
 ![Rendered example of gdt::cylindricity 1](/kcl-test-outputs/serial_test_example_fn_std-gdt-cylindricity1.png)
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 cylinderSketch = sketch(on = XY) {
   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
