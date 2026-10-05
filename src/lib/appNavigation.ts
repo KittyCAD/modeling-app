@@ -15,6 +15,9 @@ import type { ParsedAppNavigationIntent } from '@src/registry/contracts/appUrl'
 export function createAppNavigationService(
   contributions: readonly AppNavigationIntentContribution[]
 ): AppNavigationService {
+  const primaryIntentStarted = signal<
+    { intent: AppNavigationIntent<unknown, unknown> } | undefined
+  >(undefined)
   const activeAdditionalIntent = signal<ParsedAppNavigationIntent | undefined>(
     undefined
   )
@@ -31,6 +34,9 @@ export function createAppNavigationService(
     intent: AppNavigationIntent<Input, Output>,
     input: Input
   ): Promise<Output> => {
+    if (intent.placement === 'primary') {
+      primaryIntentStarted.value = { intent }
+    }
     if (duplicateIntentIds.has(intent.id)) {
       return Promise.reject(
         new Error(
@@ -54,6 +60,7 @@ export function createAppNavigationService(
   }
 
   return {
+    primaryIntentStarted,
     activeAdditionalIntent,
     dispatch,
     dismissAdditionalIntent: () => {

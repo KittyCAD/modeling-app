@@ -1,5 +1,9 @@
 import type { App } from '@src/lib/app'
-import { initializeApplication } from '@src/lib/initializeApplication'
+import {
+  initializeApplication,
+  restoreApplicationDestination,
+} from '@src/lib/initializeApplication'
+import { appLaunchService } from '@src/registry/contracts/appLaunch'
 import { appNavigationService } from '@src/registry/contracts/appNavigation'
 import { startSignInIntent } from '@src/registry/contracts/auth'
 import { showHomeIntent } from '@src/registry/contracts/homeProjects'
@@ -12,19 +16,22 @@ const mocks = vi.hoisted(() => ({
   formatUrl: vi.fn(),
   navigate: vi.fn(),
   dispatch: vi.fn(async () => undefined),
+  accept: vi.fn(),
 }))
 
 function fakeApp(): App {
   return {
     registry: {
       get: (service: unknown) =>
-        service === appNavigationService
-          ? { dispatch: mocks.dispatch }
-          : {
-              readInitialUrl: mocks.readInitialUrl,
-              formatUrl: mocks.formatUrl,
-              navigate: mocks.navigate,
-            },
+        service === appLaunchService
+          ? { accept: mocks.accept }
+          : service === appNavigationService
+            ? { dispatch: mocks.dispatch }
+            : {
+                readInitialUrl: mocks.readInitialUrl,
+                formatUrl: mocks.formatUrl,
+                navigate: mocks.navigate,
+              },
     },
   } as unknown as App
 }
@@ -34,6 +41,68 @@ beforeEach(() => {
 })
 
 describe('initializeApplication', () => {
+  it('hands off launch work without blocking React on command readiness', async () => {
+    const pending = Promise.withResolvers<undefined>()
+    mocks.accept.mockReturnValueOnce(pending.promise)
+    const search =
+      '?cmd=set-layout&groupId=application&layoutId=zookeeper&ttc-prompt=make+a+gear&pool=alpha'
+    mocks.readInitialUrl.mockReturnValue({
+      type: 'launch',
+      destination: { type: 'home' },
+      search,
+      hash: '',
+    })
+    await initializeApplication(fakeApp())
+    expect(mocks.accept).toHaveBeenCalledExactlyOnceWith({
+      destination: { type: 'home' },
+      urlState: { search, hash: '' },
+      request: {
+        genericCommand: {
+          name: 'set-layout',
+          groupId: 'application',
+          argDefaultValues: { layoutId: 'zookeeper' },
+        },
+        zookeeperPrompt: 'make a gear',
+        askOpenDesktop: false,
+      },
+      remainingSearch: '?pool=alpha',
+    })
+    expect(mocks.dispatch).not.toHaveBeenCalled()
+    expect(mocks.navigate).not.toHaveBeenCalled()
+    pending.resolve(undefined)
+  })
+
+  it('uses owned startup dispatch and stops before later effects on cancellation', async () => {
+    const abort = new AbortController()
+    const dispatch = vi.fn(async () => {
+      abort.abort()
+      return undefined as never
+    })
+    await expect(
+      restoreApplicationDestination(
+        fakeApp(),
+        {
+          type: 'launch',
+          destination: { type: 'home' },
+          additionalIntents: [{ intent: openSettingsIntent, input: {} }],
+          search: '?pool=alpha',
+          hash: '',
+        },
+        { dispatch, signal: abort.signal, projectUrl: true }
+      )
+    ).rejects.toMatchObject({ name: 'AbortError' })
+    expect(dispatch).toHaveBeenCalledOnce()
+    expect(dispatch).toHaveBeenCalledWith(showHomeIntent, {
+      startup: {
+        additionalIntents: [{ intent: openSettingsIntent, input: {} }],
+        search: '?pool=alpha',
+        hash: '',
+      },
+    })
+    expect(mocks.dispatch).not.toHaveBeenCalled()
+    expect(mocks.navigate).not.toHaveBeenCalled()
+  })
+
   it('dispatches the initial project intent without React Router', async () => {
     mocks.readInitialUrl.mockReturnValue({
       type: 'launch',
@@ -53,7 +122,7 @@ describe('initializeApplication', () => {
     })
   })
 
-  it('leaves the deferred open-in-desktop index intent untouched', async () => {
+  it('retains the desktop choice before restoring its destination', async () => {
     mocks.readInitialUrl.mockReturnValue({
       type: 'launch',
       destination: { type: 'index' },
@@ -66,6 +135,9 @@ describe('initializeApplication', () => {
       usesHashRouter: false,
     })
 
+    expect(mocks.accept).toHaveBeenCalledWith(
+      expect.objectContaining({ request: { askOpenDesktop: true } })
+    )
     expect(mocks.dispatch).not.toHaveBeenCalled()
     expect(mocks.navigate).not.toHaveBeenCalled()
   })

@@ -15,6 +15,8 @@ import type { AppUrlState } from '@src/registry/contracts/appUrl'
  */
 export interface OpenProjectRequest {
   target: string
+  /** Cancellation owned by an application workflow, independent of the router. */
+  signal?: AbortSignal
   /** Parsed URL-owned state, present only while restoring cold startup. */
   startup?: AppUrlState
 }

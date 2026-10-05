@@ -28,6 +28,7 @@ import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
 import type { SystemIORegistryService } from '@src/registry/contracts/systemIO'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
+import type { ZookeeperPromptSeed } from '@src/registry/contracts/zookeeperPrompt'
 import { NIL as uuidNIL } from 'uuid'
 import type { SnapshotFrom, Subscription } from 'xstate'
 
@@ -55,9 +56,12 @@ export interface ZookeeperSessionController {
   readonly isClearingChat: ReadonlySignal<boolean>
   readonly isResumingInterruptedTurn: ReadonlySignal<boolean>
   readonly projectPath: string
+  readonly promptSeed: ReadonlySignal<ZookeeperPromptSeed | undefined>
   readonly queue: ReadonlySignal<readonly QueuedMessage[]>
   readonly showManualConnect: ReadonlySignal<boolean>
   cancel(): void
+  seedPrompt(prompt: string): void
+  consumePromptSeed(seed: ZookeeperPromptSeed): void
   checkBillingAccess(): void
   clearConversation(): Promise<void>
   dispose(): Promise<void>
@@ -78,6 +82,12 @@ type ZookeeperSnapshot = SnapshotFrom<ZookeeperManagerActor>
 class SessionController implements ZookeeperSessionController {
   readonly actor: ZookeeperManagerActor
   readonly projectPath: string
+
+  private readonly promptSeedSignal = signal<ZookeeperPromptSeed | undefined>(
+    undefined
+  )
+  readonly promptSeed: ReadonlySignal<ZookeeperPromptSeed | undefined> =
+    this.promptSeedSignal
 
   private readonly queueSignal = signal<QueuedMessage[]>([])
   readonly queue: ReadonlySignal<readonly QueuedMessage[]> = this.queueSignal
@@ -178,6 +188,18 @@ class SessionController implements ZookeeperSessionController {
     })
 
     this.handleSnapshot(this.actor.getSnapshot())
+  }
+
+  seedPrompt(prompt: string) {
+    if (this.active && prompt.trim()) {
+      this.promptSeedSignal.value = { prompt }
+    }
+  }
+
+  consumePromptSeed(seed: ZookeeperPromptSeed) {
+    if (this.promptSeedSignal.peek() === seed) {
+      this.promptSeedSignal.value = undefined
+    }
   }
 
   updateAuthToken(apiToken: string) {
@@ -394,6 +416,7 @@ class SessionController implements ZookeeperSessionController {
     }
 
     this.active = false
+    this.promptSeedSignal.value = undefined
     this.clearOperationGeneration += 1
     this.continueCheckGeneration += 1
     this.clearReconnectTimer()

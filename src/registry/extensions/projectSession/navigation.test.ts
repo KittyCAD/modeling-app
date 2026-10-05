@@ -1,6 +1,5 @@
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { createAppNavigationService } from '@src/lib/appNavigation'
-import { PATHS } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import {
   type ProjectNavigationDependencies,
@@ -215,6 +214,46 @@ function navigationHarness(
 }
 
 describe('project.open navigation contribution', () => {
+  test('caller cancellation prevents an in-flight open from publishing', async () => {
+    const prepared = Promise.withResolvers<undefined>()
+    const controller = new AbortController()
+    const { navigation, dependencies } = navigationHarness({
+      resolveProjectOpen: async () => {
+        await prepared.promise
+        return resolvedProject
+      },
+    })
+    const opening = navigation.dispatch(openProjectIntent, {
+      target: '/projects/bracket',
+      signal: controller.signal,
+    })
+    controller.abort()
+    prepared.resolve(undefined)
+
+    await expect(opening).rejects.toMatchObject({ name: 'AbortError' })
+    expect(dependencies.openResolvedProject).not.toHaveBeenCalled()
+    expect(dependencies.projectOpened).not.toHaveBeenCalled()
+  })
+
+  test('waits for URL projection before completing an open', async () => {
+    const projection = Promise.withResolvers<undefined>()
+    const { navigation, dependencies } = navigationHarness({
+      projectOpened: vi.fn(() => projection.promise),
+    })
+    const finished = vi.fn()
+    const opening = navigation
+      .dispatch(openProjectIntent, { target: '/projects/bracket' })
+      .then(finished)
+    await vi.waitFor(() =>
+      expect(dependencies.projectOpened).toHaveBeenCalledOnce()
+    )
+    expect(finished).not.toHaveBeenCalled()
+
+    projection.resolve(undefined)
+    await opening
+    expect(finished).toHaveBeenCalledOnce()
+  })
+
   test('opens a project before projecting its location', async () => {
     const { dependencies, navigation } = navigationHarness()
     const request = { target: '/projects/bracket' }

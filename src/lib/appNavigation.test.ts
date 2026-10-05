@@ -6,6 +6,38 @@ import {
 import { describe, expect, test, vi } from 'vitest'
 
 describe('appNavigation', () => {
+  test('notifies each primary intent start before its handler finishes', async () => {
+    const finished = Promise.withResolvers<undefined>()
+    const intent = defineAppNavigationIntent<undefined, undefined>(
+      'project.open'
+    )
+    const additionalIntent = defineAppNavigationIntent<undefined, undefined>(
+      'settings.open',
+      { placement: 'additional' }
+    )
+    const navigation = createAppNavigationService([
+      defineAppNavigationIntentContribution(intent, () => finished.promise),
+      defineAppNavigationIntentContribution(
+        additionalIntent,
+        async () => undefined
+      ),
+    ])
+
+    const first = navigation.dispatch(intent, undefined)
+    const started = navigation.primaryIntentStarted.value
+    expect(started).toEqual({ intent })
+    const second = navigation.dispatch(intent, undefined)
+    expect(navigation.primaryIntentStarted.value).toEqual({ intent })
+    expect(navigation.primaryIntentStarted.value).not.toBe(started)
+
+    const latestPrimary = navigation.primaryIntentStarted.value
+    await navigation.dispatch(additionalIntent, undefined)
+    expect(navigation.primaryIntentStarted.value).toBe(latestPrimary)
+
+    finished.resolve(undefined)
+    await Promise.all([first, second])
+  })
+
   test('dispatches a capability-contributed intent from the startup catalog', async () => {
     const openSettingsIntent = defineAppNavigationIntent<
       { tab: string },

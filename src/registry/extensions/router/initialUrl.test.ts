@@ -95,16 +95,16 @@ describe('parseInitialUrl', () => {
     })
   })
 
-  it('normalizes the legacy virtual browser project to Home', () => {
+  it('preserves launch parameters when normalizing the legacy browser project', () => {
     expect(
       parseInitialUrl(
-        'https://app.zoo.dev/file/%2Fbrowser%2Fmain.kcl?pool=discarded',
+        'https://app.zoo.dev/file/%2Fbrowser%2Fmain.kcl?cmd=set-layout&groupId=application&ttc-prompt=Cube&pool=alpha',
         { navigationIntents, usesHashRouter: false }
       )
     ).toEqual({
       type: 'launch',
       destination: { type: 'home' },
-      search: '',
+      search: '?cmd=set-layout&groupId=application&ttc-prompt=Cube&pool=alpha',
       hash: '',
       shouldProjectUrl: true,
     })

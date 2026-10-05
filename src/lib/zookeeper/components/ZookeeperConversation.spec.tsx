@@ -49,10 +49,15 @@ vi.mock('@src/lib/screenshot', async (importOriginal) => {
 })
 
 import { Registry } from '@kittycad/registry'
+import { signal } from '@preact/signals-core'
+import type { ZookeeperPromptSeed } from '@src/registry/contracts/zookeeperPrompt'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ExchangeCard } from '@src/components/ExchangeCard'
 import { MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY } from '@src/components/MakeathonAnnouncement'
-import { ZookeeperConversation } from '@src/lib/zookeeper/components/ZookeeperConversation'
+import {
+  ZookeeperConversation,
+  ZookeeperConversationInput,
+} from '@src/lib/zookeeper/components/ZookeeperConversation'
 import { takeViewportScreenshot } from '@src/lib/screenshot'
 import type * as ScreenshotModule from '@src/lib/screenshot'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
@@ -118,6 +123,57 @@ describe('ZookeeperConversation', () => {
   beforeEach(() => {
     configureTestRegistry()
     window.localStorage.removeItem(MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY)
+  })
+
+  test('consumes a prompt once, preserves drafts, and does not replay it after remount', () => {
+    const promptSeed = signal<ZookeeperPromptSeed | undefined>({
+      prompt: 'make a gear',
+    })
+    const onProcess = vi.fn()
+    const consume = vi.fn((seed: ZookeeperPromptSeed) => {
+      if (promptSeed.peek() === seed) promptSeed.value = undefined
+    })
+    const Input = () => {
+      useSignals()
+      return (
+        <ZookeeperConversationInput
+          onProcess={onProcess}
+          onCancel={() => {}}
+          hasPromptCompleted={true}
+          needsReconnect={false}
+          hasAlreadySentPrompts={false}
+          isProcessing={false}
+          queue={[]}
+          onRemoveFromQueue={() => {}}
+          promptSeed={promptSeed.value}
+          onPromptSeedConsumed={consume}
+        />
+      )
+    }
+    const first = render(<Input />)
+    const input = screen.getByTestId('ml-ephant-conversation-input')
+    expect(input).toHaveValue('make a gear')
+    expect(promptSeed.value).toBeUndefined()
+    expect(consume).toHaveBeenCalledOnce()
+    expect(onProcess).not.toHaveBeenCalled()
+
+    fireEvent.change(input, { target: { value: 'my unfinished draft' } })
+    act(() => {
+      promptSeed.value = { prompt: 'incoming prompt' }
+    })
+    expect(input).toHaveValue('my unfinished draft')
+    expect(promptSeed.value).toBeUndefined()
+
+    first.unmount()
+    render(<Input />)
+    expect(screen.getByTestId('ml-ephant-conversation-input')).toHaveValue('')
+    act(() => {
+      promptSeed.value = { prompt: 'make a gear' }
+    })
+    expect(screen.getByTestId('ml-ephant-conversation-input')).toHaveValue(
+      'make a gear'
+    )
+    expect(promptSeed.value).toBeUndefined()
   })
 
   test('shows recovery actions after conversation loading gives up', () => {

@@ -53,6 +53,10 @@ export function defineAppNavigationIntentContribution<Input, Output>(
  * this service only provides typed dispatch and additional-intent presentation.
  */
 export interface AppNavigationService {
+  /** A fresh notification when a primary intent starts, before its asynchronous work. */
+  readonly primaryIntentStarted: ReadonlySignal<
+    { intent: AppNavigationIntent<unknown, unknown> } | undefined
+  >
   /** The additional application intent currently presented over a destination. */
   activeAdditionalIntent: ReadonlySignal<ParsedAppNavigationIntent | undefined>
   dispatch: <Input, Output>(

@@ -24,6 +24,7 @@ import {
   type ZookeeperAttachmentFetchState,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import type { ZookeeperPromptSeed } from '@src/registry/contracts/zookeeperPrompt'
 import {
   activateZoodleRuntimeExtension,
   deactivateZoodleRuntimeExtension,
@@ -69,6 +70,8 @@ export interface ZookeeperConversationProps {
   userAvatarSrc?: string
   showMakeathonAnnouncement?: boolean
   defaultPrompt?: string
+  promptSeed?: ZookeeperPromptSeed
+  onPromptSeedConsumed?: (seed: ZookeeperPromptSeed) => void
   initialMlCopilotMode?: MlCopilotModeId // resolved from settings/server metadata
   onMlCopilotModeChange?: (mode: MlCopilotModeId | undefined) => void
   isProcessing: boolean
@@ -273,6 +276,8 @@ interface ZookeeperConversationInputProps {
   disabled?: boolean
   needsReconnect: boolean
   defaultPrompt?: string
+  promptSeed?: ZookeeperPromptSeed
+  onPromptSeedConsumed?: (seed: ZookeeperPromptSeed) => void
   hasAlreadySentPrompts: boolean
   initialMlCopilotMode?: MlCopilotModeId
   onMlCopilotModeChange?: (mode: MlCopilotModeId | undefined) => void
@@ -312,6 +317,14 @@ export const ZookeeperConversationInput = (
 
   // Without this the cursor ends up at the start of the text
   useEffect(() => setValue(props.defaultPrompt || ''), [props.defaultPrompt])
+
+  const { promptSeed, onPromptSeedConsumed } = props
+  useEffect(() => {
+    if (!promptSeed) return
+    // A launch prompt must not replace a draft the user has already written.
+    setValue((draft) => draft || promptSeed.prompt)
+    onPromptSeedConsumed?.(promptSeed)
+  }, [promptSeed, onPromptSeedConsumed])
 
   // A user pick is local to the current project/chat scope. When that scope
   // changes, resume following the resolved setting/server default.
@@ -841,6 +854,8 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
               onMlCopilotModeChange={props.onMlCopilotModeChange}
               onCancel={props.onCancel}
               defaultPrompt={props.defaultPrompt}
+              promptSeed={props.promptSeed}
+              onPromptSeedConsumed={props.onPromptSeedConsumed}
               hasAlreadySentPrompts={hasMessages}
               isProcessing={props.isProcessing}
               queue={props.queue}

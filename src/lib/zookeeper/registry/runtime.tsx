@@ -2,6 +2,7 @@ import {
   defineRegistryItemFactory,
   defineRuntimeRegistryItem,
   provide,
+  provideService,
 } from '@kittycad/registry'
 import {
   computed,
@@ -48,6 +49,7 @@ import {
   type SystemIORegistryService,
   systemIOService,
 } from '@src/registry/contracts/systemIO'
+import { zookeeperPromptService } from '@src/registry/contracts/zookeeperPrompt'
 import { lazy, Suspense } from 'react'
 import env, { getEnvironmentNameFromEnv } from '@src/env'
 
@@ -143,6 +145,7 @@ export function createZookeeperRuntime(
   )
   let activation: ZookeeperActivation | undefined
   let disposed = false
+  let pendingPrompt: { projectPath: string; prompt: string } | undefined
   let stopObserver: (() => void) | undefined
   let waitingForDisposal: Promise<void> | undefined
   let controllerLoadRetry: ReturnType<typeof setTimeout> | undefined
@@ -221,6 +224,9 @@ export function createZookeeperRuntime(
     const project = currentZdsProject.value
     const projectRef = project?.projectIORefSignal?.value
     const projectPath = projectRef?.path
+    if (pendingPrompt && pendingPrompt.projectPath !== projectPath) {
+      pendingPrompt = undefined
+    }
     const settingsProjectPath =
       settings?.actor.getSnapshot().context.currentProject?.path
     const settingsProjectId = settings?.current.value.meta.id.current
@@ -241,6 +247,7 @@ export function createZookeeperRuntime(
       kclManager.path === executingFile?.path
     const apiToken = auth?.token.value ?? ''
     const isLoggedIn = auth?.isLoggedIn.value ?? false
+    if (!isLoggedIn) pendingPrompt = undefined
 
     if (
       activation &&
@@ -321,6 +328,10 @@ export function createZookeeperRuntime(
           return
         }
         next.controller = controller
+        if (pendingPrompt?.projectPath === next.projectPath) {
+          controller.seedPrompt(pendingPrompt.prompt)
+          pendingPrompt = undefined
+        }
         session.value = controller
       })
       .catch((error: unknown) => {
@@ -346,11 +357,29 @@ export function createZookeeperRuntime(
   return {
     currentProject,
     session,
+    seedPrompt(projectPath: string, prompt: string): boolean {
+      if (
+        disposed ||
+        !prompt.trim() ||
+        !services.auth.peek()?.isLoggedIn.peek() ||
+        currentProject.peek()?.path !== projectPath
+      ) {
+        return false
+      }
+      const controller = session.peek()
+      if (controller?.projectPath === projectPath) {
+        controller.seedPrompt(prompt)
+      } else {
+        pendingPrompt = { projectPath, prompt }
+      }
+      return true
+    },
     dispose() {
       if (runtimeDisposal) {
         return runtimeDisposal
       }
       disposed = true
+      pendingPrompt = undefined
       stopObserver?.()
       clearTimeout(controllerLoadRetry)
       deactivate()
@@ -457,6 +486,7 @@ export const zookeeperRuntimeRegistryItem = defineRegistryItemFactory((ctx) => {
     item: defineRuntimeRegistryItem({
       id: 'zookeeper.runtime',
       provides: [provide(layoutAreaLibraryValueSpec, areaLibrary)],
+      providesServices: [provideService(zookeeperPromptService, runtime)],
       dispose: () => runtime.dispose(),
     }),
   }
