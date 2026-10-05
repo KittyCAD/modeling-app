@@ -3584,9 +3584,9 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
     })
   })
 
-  test('converts region intersection responses to engine region selections', async () => {
+  test.each(['segments', 'point'])('selects region via %s', async (mode) => {
     const { instance } = await buildTheWorldAndNoEngineConnection()
-    const ast = assertParse('', instance)
+    const ast = assertParse('@settings(defaultLengthUnit = in)', instance)
     const pathToNode = [['body', '']] as any
     const codeRef = {
       range: [0, 0, 0] as SourceRange,
@@ -3633,7 +3633,10 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
     }
     const engineCommandManager = {
       sendSceneCommand: vi.fn(async (event: any) => {
-        if (event.cmd.type === 'region_get_resolvable_intersection_info') {
+        if (
+          mode === 'segments' &&
+          event.cmd.type === 'region_get_resolvable_intersection_info'
+        ) {
           return {
             resp: {
               type: 'modeling',
@@ -3646,13 +3649,45 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
             },
           }
         }
-        return undefined
+        if (event.cmd.type === 'region_get_query_point') {
+          return {
+            resp: {
+              type: 'modeling',
+              data: {
+                modeling_response: {
+                  type: 'region_get_query_point',
+                  data: { query_point: { x: 25.4, y: -50.8 } },
+                },
+              },
+            },
+          }
+        }
+        if (event.cmd.type === 'entity_get_parent_id') {
+          return {
+            resp: {
+              type: 'modeling',
+              data: {
+                modeling_response: {
+                  type: 'entity_get_parent_id',
+                  data: { entity_id: sketchPath.id },
+                },
+              },
+            },
+          }
+        }
+        return {
+          resp: {
+            type: 'modeling',
+            data: { modeling_response: { type: 'empty' } },
+          },
+        }
       }),
     }
 
     await expect(
       getEventForQueryEntityTypeWithPoint(
         {
+          entity_id: 'region-1',
           reference: {
             type: 'region',
             region_id: 'region-1',
@@ -3672,8 +3707,10 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
         selection: {
           type: 'engineRegion',
           id: 'region-1',
-          resolvableIntersectionInfo: regionInfo,
           sketchId: 'sketch-1',
+          ...(mode === 'segments'
+            ? { resolvableIntersectionInfo: regionInfo }
+            : { point: { x: 1, y: -2 } }),
         },
       },
     })

@@ -53,7 +53,7 @@ import type {
   EngineSceneStreamLayer,
 } from '@src/registry/contracts/engineScene'
 import type { MouseEventHandler } from 'react'
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { use, useCallback, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 
 const TIME_TO_CONNECT = 30_000
@@ -75,11 +75,19 @@ interface ConnectionStreamProps {
 }
 
 export const ConnectionStream = (props: ConnectionStreamProps) => {
-  const { settings, project, commands, userFeatures, fileOperations } = useApp()
+  const {
+    settings,
+    project,
+    wasmPromise,
+    commands,
+    userFeatures,
+    fileOperations,
+  } = useApp()
   const hasLegacySketchMode = userFeatures.useHas(
     LEGACY_SKETCH_MODE_FEATURE_FLAG,
     false
   )
+  const wasmInstance = use(wasmPromise)
   const { kclManager } = useSingletons()
   const engineCommandManager = kclManager.engineCommandManager
   const sceneInfra = kclManager.sceneInfra
@@ -265,7 +273,9 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
               const regionSelection = await getEngineRegionSelectionFromEntity(
                 entityId,
                 kclManager.artifactGraph,
-                engineCommandManager
+                kclManager.ast,
+                engineCommandManager,
+                wasmInstance
               )
 
               if (regionSelection?.sketchId) {
