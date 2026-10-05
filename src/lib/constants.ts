@@ -31,7 +31,6 @@ export const FILE_EXT = '.kcl'
 export const EDITABLE_TEXT_FILE_EXTENSIONS = ['.md', '.txt'] as const
 export const EXPERIMENTAL_POINT_AND_CLICK_FLAG: Feature =
   'sketch_experimental_features'
-export const KCL_CEK_EXECUTOR_FEATURE_FLAG: Feature = 'kcl_cek_executor'
 export const KCL_NEW_LEXER_PARSER_FEATURE_FLAG: Feature = 'kcl_new_lexer_parser'
 /** Gates named view changes to ZDS UI */
 export const NAMED_VIEWS_UI_FEATURE_FLAG: Feature = 'named_views_ui'
