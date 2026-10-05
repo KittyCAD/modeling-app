@@ -244,12 +244,9 @@ describe('LSP runtime feature flags', () => {
     await flushMicrotasks()
     expect(mocks.workers).toHaveLength(1)
 
-    features.update(
-      UserFeaturesState.Ready,
-      new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG])
-    )
+    features.update(UserFeaturesState.Ready, new Set([]))
     await flushMicrotasks()
-    expect(mocks.workers).toHaveLength(1)
+    expect(mocks.workers).toHaveLength(2)
 
     features.update(
       UserFeaturesState.Ready,
