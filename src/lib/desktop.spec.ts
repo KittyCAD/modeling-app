@@ -1,8 +1,7 @@
-import { join } from 'node:path'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import type { EnvironmentConfiguration } from '@src/lib/constants'
 import {
+  getAppSettingsFilePath,
   getEnvironmentConfigurationPath,
   getEnvironmentFilePath,
   getDefaultKclFileForDir,
@@ -20,7 +19,6 @@ import * as desktopPlatform from '@src/lib/isDesktop'
 import * as playwrightEnvironment from '@src/lib/isPlaywright'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/paths'
 import type { DeepPartial } from '@src/lib/types'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import { buildTheWorldNode } from '@src/unitTestUtils'
 import {
@@ -190,6 +188,9 @@ describe('desktop utilities', () => {
     mockElectron.path.join.mockImplementation((...parts: string[]) =>
       webSafeJoin(parts)
     )
+    mockElectron.path.resolve.mockImplementation((...parts: string[]) =>
+      webSafeJoin(parts)
+    )
     mockElectron.path.basename.mockImplementation((path: string) =>
       // The tests is hard coded to / so webSafe is defaulted to /
       webSafePathSplit(path).pop()
@@ -262,19 +263,8 @@ describe('desktop utilities', () => {
     mockElectron.kittycad.mockResolvedValue({})
   })
 
-  describe('readAppSettingsFile with the real settings parser', () => {
-    let wasmInstance: ModuleType
-
-    beforeAll(async () => {
-      wasmInstance = await loadAndInitialiseWasmInstance(
-        join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
-      )
-    })
-
+  describe('readAppSettingsFile without Wasm', () => {
     beforeEach(() => {
-      mockElectron.path.resolve.mockImplementation((...parts: string[]) =>
-        webSafeJoin(parts)
-      )
       mockElectron.getPath.mockImplementation(async (name: string) =>
         name === 'documents' ? '/documents' : '/appData'
       )
@@ -285,9 +275,7 @@ describe('desktop utilities', () => {
         '[settings.project]\ndirectory = "/my/projects"\n[settings.plugins]\ntelemetry = false\n'
       )
 
-      expect(
-        await readAppSettingsFile(testFileOperations, wasmInstance)
-      ).toEqual({
+      expect(await readAppSettingsFile(testFileOperations)).toEqual({
         settings: {
           project: { directory: '/my/projects' },
           plugins: { telemetry: false },
@@ -306,9 +294,7 @@ describe('desktop utilities', () => {
       async (toml) => {
         mockElectron.readFile.mockResolvedValue(toml)
 
-        expect(
-          await readAppSettingsFile(testFileOperations, wasmInstance)
-        ).toEqual({
+        expect(await readAppSettingsFile(testFileOperations)).toEqual({
           settings: {
             project: {
               ...(toml ? { default_project_name: 'custom' } : {}),
@@ -325,9 +311,7 @@ describe('desktop utilities', () => {
         '[[settings.app.libraries]]\ntitle = "Projects"\npath = "/library/projects"\ntype = "directory"\n'
       )
 
-      expect(
-        await readAppSettingsFile(testFileOperations, wasmInstance)
-      ).toEqual({
+      expect(await readAppSettingsFile(testFileOperations)).toEqual({
         settings: {
           app: {
             libraries: [
@@ -349,21 +333,11 @@ describe('desktop utilities', () => {
       'falls back to defaults for parser failures without rewriting %j',
       async (toml) => {
         mockElectron.readFile.mockResolvedValue(toml)
-        const defaultAppSettings = vi.fn(() =>
-          wasmInstance.default_app_settings()
-        )
-
-        expect(
-          await readAppSettingsFile(testFileOperations, {
-            ...wasmInstance,
-            default_app_settings: defaultAppSettings,
-          })
-        ).toEqual({
+        expect(await readAppSettingsFile(testFileOperations)).toEqual({
           settings: {
             project: { directory: '/documents/zoo-design-studio-projects' },
           },
         })
-        expect(defaultAppSettings).toHaveBeenCalledOnce()
         expect(mockElectron.writeFile).not.toHaveBeenCalled()
       }
     )
@@ -371,9 +345,7 @@ describe('desktop utilities', () => {
     it('uses defaults when the settings file does not exist', async () => {
       mockElectron.stat.mockRejectedValueOnce(new Error('ENOENT'))
 
-      expect(
-        await readAppSettingsFile(testFileOperations, wasmInstance)
-      ).toEqual({
+      expect(await readAppSettingsFile(testFileOperations)).toEqual({
         settings: {
           project: { directory: '/documents/zoo-design-studio-projects' },
         },
@@ -400,9 +372,7 @@ describe('desktop utilities', () => {
           '[settings.plugins]\ntelemetry = false\n[settings.project]\ndirectory = "/seed/projects"'
         )
 
-        expect(
-          await readAppSettingsFile(testFileOperations, wasmInstance)
-        ).toEqual({
+        expect(await readAppSettingsFile(testFileOperations)).toEqual({
           settings: {
             project: { directory: '/my/projects' },
             plugins: { telemetry: false },
@@ -416,9 +386,7 @@ describe('desktop utilities', () => {
         )
         const getItem = vi.spyOn(globalThis.localStorage, 'getItem')
 
-        expect(
-          await readAppSettingsFile(testFileOperations, wasmInstance)
-        ).toEqual({
+        expect(await readAppSettingsFile(testFileOperations)).toEqual({
           settings: { project: { directory: '/my/projects' }, plugins: {} },
         })
         expect(getItem).not.toHaveBeenCalled()
@@ -433,20 +401,24 @@ describe('desktop utilities', () => {
       ])('ignores absent or non-object plugin seeds: %j', async (seed) => {
         vi.spyOn(globalThis.localStorage, 'getItem').mockReturnValue(seed)
 
-        expect(
-          await readAppSettingsFile(testFileOperations, wasmInstance)
-        ).toEqual({ settings: { project: { directory: '/my/projects' } } })
+        expect(await readAppSettingsFile(testFileOperations)).toEqual({
+          settings: { project: { directory: '/my/projects' } },
+        })
       })
 
-      it('rejects a malformed seed rather than using the persisted-file fallback', async () => {
-        vi.spyOn(globalThis.localStorage, 'getItem').mockReturnValue(
-          'broken = ['
-        )
+      it.each([
+        'broken = [',
+        '[settings.app.appearance]\ntheme = "unknown"\n[settings.plugins]\ntelemetry = false',
+      ])(
+        'rejects an invalid seed rather than using the persisted-file fallback: %j',
+        async (seed) => {
+          vi.spyOn(globalThis.localStorage, 'getItem').mockReturnValue(seed)
 
-        await expect(
-          readAppSettingsFile(testFileOperations, wasmInstance)
-        ).rejects.toEqual(expect.stringContaining('TOML parse error'))
-      })
+          await expect(
+            readAppSettingsFile(testFileOperations)
+          ).rejects.toThrow()
+        }
+      )
     })
   })
 
@@ -560,7 +532,6 @@ describe('desktop utilities', () => {
       const wasmInstance = await instance
       const instanceWithProjectSettings = {
         ...wasmInstance,
-        parse_app_settings: vi.fn(() => ({})),
         parse_project_settings: vi.fn(() => ({})),
       }
       const project = await getProjectInfo(
@@ -599,7 +570,6 @@ describe('desktop utilities', () => {
         '/test/projects/valid-project',
         {
           ...wasmInstance,
-          parse_app_settings: vi.fn(() => ({})),
           parse_project_settings: vi.fn(() => ({})),
         }
       )
@@ -610,8 +580,9 @@ describe('desktop utilities', () => {
     })
 
     it('shows config and dot files when app settings enable all files', async () => {
+      const settingsPath = await getAppSettingsFilePath()
       mockElectron.readFile.mockImplementation(async (path: string) => {
-        if (path === '/appData/settings.toml') {
+        if (path === settingsPath) {
           return '[settings.app]\nshow_all_files = true\n'
         }
         if (path === '/test/projects/valid-project/.gitignore') {
@@ -623,16 +594,10 @@ describe('desktop utilities', () => {
 
       const { instance } = await buildTheWorldNode()
       const wasmInstance = await instance
-      const instanceWithAppSettings = {
-        ...wasmInstance,
-        parse_app_settings: vi.fn(() => ({
-          settings: { app: { show_all_files: true } },
-        })),
-      }
       const project = await getProjectInfo(
         testFileOperations,
         '/test/projects/valid-project',
-        instanceWithAppSettings
+        wasmInstance
       )
 
       expect(project.children?.map((child) => child.name)).toEqual([

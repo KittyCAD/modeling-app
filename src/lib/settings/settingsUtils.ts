@@ -985,14 +985,8 @@ export async function loadAndValidateSettings(
     extensionSettings = {},
     projectPath,
   } = options
-  // Make sure we have wasm initialized.
-  const wasmInstance = await initPromise
-
   // Load the app settings from the file system or localStorage.
-  const appSettingsPayload = await readAppSettingsFile(
-    fileOperations,
-    wasmInstance
-  )
+  const appSettingsPayload = await readAppSettingsFile(fileOperations)
 
   if (err(appSettingsPayload)) {
     return Promise.reject(appSettingsPayload)
@@ -1028,8 +1022,10 @@ export async function loadAndValidateSettings(
 
   settingsNext = setSettingsAtLevel(settingsNext, 'user', appSettings)
 
-  // Load the project settings if they exist
+  // Project settings still use the Rust parser. App-only settings do not wait
+  // for Wasm initialization.
   if (projectPath) {
+    const wasmInstance = await initPromise
     let projectSettings = await readProjectSettingsFile(
       fileOperations,
       projectPath,
