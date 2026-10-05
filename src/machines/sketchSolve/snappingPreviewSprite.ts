@@ -239,8 +239,8 @@ function getBadgeTypeForSnappingTarget(
     case 'circle':
     case 'line':
     case 'point':
-    case 'origin':
-    case 'grid':
+    case ORIGIN_TARGET:
+    case GRID_TARGET:
     default:
       return 'Coincident'
   }

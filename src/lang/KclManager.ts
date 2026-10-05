@@ -118,7 +118,7 @@ import {
   addLineHighlightEvent,
 } from '@src/editor/highlightextension'
 
-import { type Signal, computed, signal, effect } from '@preact/signals-core'
+import { type Signal, computed, signal } from '@preact/signals-core'
 import type {
   ApiFile,
   SceneGraphDelta,
@@ -942,30 +942,7 @@ export class KclManager extends File {
     this._ast.value = ast
     this.dispatchUpdateAst(ast)
   }
-  /**
-   * Paths that are dependencies of the currently-executing editor's file, which should trigger a
-   * re-execution if they have out-of-band edits made to them.
-   */
   livePathsToWatch = signal<string[]>([])
-  private _watchSymbol = Symbol()
-  unwatchDependencyReexecution = effect(() => {
-    const reexecute = () => {
-      this.executeCode().catch(reportRejection)
-    }
-    for (const depFile of this.livePathsToWatch.value) {
-      window.electron?.watchFileOn(
-        depFile,
-        this._watchSymbol.toString(),
-        reexecute
-      )
-    }
-    // Stop watching on unsubscribe
-    return () => {
-      for (const depFile of this.livePathsToWatch.value) {
-        window.electron?.watchFileOff(depFile, this._watchSymbol.toString())
-      }
-    }
-  })
 
   private _execState = signal<ExecState>(emptyExecState())
   /**
@@ -1192,6 +1169,7 @@ export class KclManager extends File {
     code: string
     diskCode: string
   } | null = null
+  public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
   public zookeeperManagerMachineBulkManipulatingFileSystem = false
   /**
    * Zookeeper needs to record history against the editor state captured before
@@ -2367,7 +2345,6 @@ export class KclManager extends File {
     this.settingsSubscription?.unsubscribe()
     this.disposeGlobalHistorySubscription?.()
     this.flushRecoverySnapshot()
-    this.unwatchDependencyReexecution()
     this.unwatch()
   }
 
@@ -2622,9 +2599,6 @@ export class KclManager extends File {
         callbacks: this.createExecutionCallbacks(currentExecutionId),
       })
 
-      // All the files that are imported and not the file path of
-      // this editor itself are "live paths" that we should watch
-      // on disk to re-execute if they change out-of-band.
       const livePathsToWatch = Object.values(execState.filenames)
         .filter((file) => {
           return file?.type === 'Local'
@@ -2632,7 +2606,6 @@ export class KclManager extends File {
         .map((file) => {
           return file.value
         })
-        .filter((file) => file !== this.path)
       this.livePathsToWatch.value = livePathsToWatch
 
       // Program was not interrupted, setup the scene
@@ -4071,6 +4044,7 @@ export class KclManager extends File {
       return
     }
 
+    this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
     this.unwatch()
 
     try {
