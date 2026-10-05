@@ -8,6 +8,7 @@ import {
   getProjectInfo,
   listProjects,
   readAppSettingsFile,
+  readProjectSettingsFile,
   readEnvironmentConfigurationFile,
   readEnvironmentConfigurationToken,
   readEnvironmentFile,
@@ -19,6 +20,10 @@ import * as desktopPlatform from '@src/lib/isDesktop'
 import * as playwrightEnvironment from '@src/lib/isPlaywright'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/paths'
 import type { DeepPartial } from '@src/lib/types'
+import {
+  defaultProjectConfiguration,
+  projectId,
+} from '@src/lib/settings/projectConfiguration.fixtures'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import { buildTheWorldNode } from '@src/unitTestUtils'
 import {
@@ -261,6 +266,82 @@ describe('desktop utilities', () => {
     mockElectron.writeFile.mockResolvedValue(undefined)
     mockElectron.getPath.mockResolvedValue('/appData')
     mockElectron.kittycad.mockResolvedValue({})
+  })
+
+  describe('readProjectSettingsFile without Wasm', () => {
+    it('reads project.toml and returns normalized metadata and settings', async () => {
+      mockElectron.readFile.mockResolvedValue(
+        `title = "Project title"\n[settings.meta]\nid = "${projectId}"\n[settings.plugins]\ntelemetry = false`
+      )
+
+      expect(
+        await readProjectSettingsFile(testFileOperations, '/test/project')
+      ).toEqual({
+        settings: {
+          ...defaultProjectConfiguration.settings,
+          meta: { id: projectId },
+          plugins: { telemetry: false },
+        },
+      })
+      expect(mockElectron.readFile).toHaveBeenCalledWith(
+        '/test/project/project.toml'
+      )
+      expect(mockElectron.writeFile).not.toHaveBeenCalled()
+    })
+
+    it('distinguishes an empty existing file from a missing file', async () => {
+      mockElectron.readFile.mockResolvedValue('')
+      expect(
+        await readProjectSettingsFile(testFileOperations, '/test/project')
+      ).toEqual(defaultProjectConfiguration)
+    })
+
+    it.each(['ENOENT', 'ENOENT: missing project.toml', { code: 'ENOENT' }])(
+      'returns an empty configuration without reading for missing-file errors: %j',
+      async (cause) => {
+        mockElectron.stat.mockRejectedValueOnce(cause)
+        expect(
+          await readProjectSettingsFile(testFileOperations, '/test/project')
+        ).toEqual({})
+        expect(mockElectron.readFile).not.toHaveBeenCalled()
+        expect(mockElectron.writeFile).not.toHaveBeenCalled()
+      }
+    )
+
+    it('still tries reading after a stat failure that is not a missing-file error', async () => {
+      mockElectron.stat.mockRejectedValueOnce(new Error('EACCES'))
+      mockElectron.readFile.mockResolvedValue(
+        '[settings.modeling]\nbase_unit = "in"'
+      )
+      expect(
+        await readProjectSettingsFile(testFileOperations, '/test/project')
+      ).toEqual({
+        settings: {
+          ...defaultProjectConfiguration.settings,
+          modeling: { base_unit: 'in' },
+        },
+      })
+    })
+
+    it('propagates read errors without rewriting the file', async () => {
+      const failure = new Error('EACCES')
+      mockElectron.readFile.mockRejectedValueOnce(failure)
+      await expect(
+        readProjectSettingsFile(testFileOperations, '/test/project')
+      ).rejects.toBe(failure)
+      expect(mockElectron.writeFile).not.toHaveBeenCalled()
+    })
+
+    it.each(['broken = [', '[settings.meta]\nid = "invalid"'])(
+      'rejects invalid settings without a fallback or rewrite: %j',
+      async (toml) => {
+        mockElectron.readFile.mockResolvedValue(toml)
+        await expect(
+          readProjectSettingsFile(testFileOperations, '/test/project')
+        ).rejects.toThrow()
+        expect(mockElectron.writeFile).not.toHaveBeenCalled()
+      }
+    )
   })
 
   describe('readAppSettingsFile without Wasm', () => {
@@ -530,14 +611,10 @@ describe('desktop utilities', () => {
     it('shows all non-dot files except settings files in project contents', async () => {
       const { instance } = await buildTheWorldNode()
       const wasmInstance = await instance
-      const instanceWithProjectSettings = {
-        ...wasmInstance,
-        parse_project_settings: vi.fn(() => ({})),
-      }
       const project = await getProjectInfo(
         testFileOperations,
         '/test/projects/valid-project',
-        instanceWithProjectSettings
+        wasmInstance
       )
 
       expect(project.children?.map((child) => child.name)).toEqual([
@@ -568,10 +645,7 @@ describe('desktop utilities', () => {
       const project = await getProjectInfo(
         testFileOperations,
         '/test/projects/valid-project',
-        {
-          ...wasmInstance,
-          parse_project_settings: vi.fn(() => ({})),
-        }
+        wasmInstance
       )
 
       expect(project.title).toBe('Some demo')

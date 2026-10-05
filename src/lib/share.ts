@@ -151,7 +151,6 @@ export async function getCurrentProjectPublicationDetails({
     const localProjectId = await getCloudProjectIdForEnvironment(
       fileOperations,
       project.path,
-      wasmInstance,
       environmentName
     )
     if (err(localProjectId)) {
@@ -217,7 +216,6 @@ async function ensureCurrentProjectUploaded(
     (await getCloudProjectIdForEnvironment(
       args.fileOperations,
       project.path,
-      args.wasmInstance,
       environmentName
     ))
   if (err(existingProjectId)) {
@@ -358,14 +356,12 @@ async function buildProjectUploadFiles({
 async function getCloudProjectIdForEnvironment(
   fileOperations: FileOperationsRegistryService,
   projectPath: string,
-  wasmInstance: ModuleType,
   environmentName: string
 ): Promise<string | undefined | Error> {
   try {
     const projectSettings = await readProjectSettingsFile(
       fileOperations,
-      projectPath,
-      wasmInstance
+      projectPath
     )
     const cloud = projectSettings.cloud ?? {}
     return cloud[environmentName]?.project_id

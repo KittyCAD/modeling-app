@@ -34,8 +34,7 @@ export async function getProjectTomlContents({
 
   const projectSettings = await readProjectSettingsFile(
     fileOperations,
-    projectPath,
-    wasmInstance
+    projectPath
   )
   const serialized = serializeProjectConfiguration(
     projectSettings,

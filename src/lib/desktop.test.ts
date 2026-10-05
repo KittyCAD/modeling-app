@@ -4,10 +4,15 @@ import {
   createNewProjectDirectory,
   overwriteProjectTomlWithNewSettings,
   readAppSettingsFile,
+  readProjectSettingsFile,
 } from '@src/lib/desktop'
 import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
+import {
+  defaultProjectConfiguration,
+  projectId,
+} from '@src/lib/settings/projectConfiguration.fixtures'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
@@ -34,7 +39,7 @@ beforeAll(async () => {
 const createTempDirectoryPath = () =>
   fsZds.join(tmpdir(), `create-project-${crypto.randomUUID()}`)
 
-describe('app settings without Wasm', () => {
+describe('settings without Wasm', () => {
   afterEach(() => {
     vi.restoreAllMocks()
   })
@@ -81,6 +86,40 @@ describe('app settings without Wasm', () => {
     )
 
     expect(settings.settings.app.theme.current).toBe('dark')
+  })
+
+  it('reads project metadata using only the file service and project path', async () => {
+    const files = settingsFiles(`[settings.meta]\nid = "${projectId}"`)
+
+    expect(await readProjectSettingsFile(files, '/project')).toEqual({
+      settings: {
+        ...defaultProjectConfiguration.settings,
+        meta: { id: projectId },
+      },
+    })
+    expect(files.readFile).toHaveBeenCalledWith('/project/project.toml')
+  })
+
+  it('loads settings for a project with an existing ID without waiting for Wasm', async () => {
+    vi.spyOn(fsZds, 'getPath').mockResolvedValue('/settings-test')
+    const files: FileOperationsRegistryService = {
+      ...settingsFiles(''),
+      readFile: vi.fn(async (path: string) =>
+        new TextEncoder().encode(
+          path.endsWith('/project.toml')
+            ? `[settings.meta]\nid = "${projectId}"\n[settings.modeling]\nbase_unit = "cm"`
+            : '[settings.app.appearance]\ntheme = "dark"'
+        )
+      ),
+      writeFile: vi.fn(),
+    }
+    const pendingWasm = new Promise<ModuleType>(() => {})
+
+    const result = await loadAndValidateSettings(files, pendingWasm, '/project')
+
+    expect(result.settings.app.theme.current).toBe('dark')
+    expect(result.settings.modeling.defaultUnit.current).toBe('cm')
+    expect(files.writeFile).not.toHaveBeenCalled()
   })
 })
 
