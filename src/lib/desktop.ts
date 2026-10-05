@@ -59,6 +59,7 @@ import { getInVariableCase, isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import { IS_STAGING, IS_STAGING_OR_DEBUG } from '@src/routes/utils'
+import { parse as parseToml } from 'smol-toml'
 
 const textDecoder = new TextDecoder()
 
