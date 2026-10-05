@@ -121,7 +121,6 @@ export function createZdsPlugin({
       provide(settingsValueSpec, {
         [activationSetting.category]: {
           [activationSetting.settingName]: defineBooleanExtensionSetting({
-            id: `${activationSetting.category}.${activationSetting.settingName}`,
             defaultValue: enabledByDefault,
             title: activationSetting.title,
             description: activationSetting.description,

@@ -42,7 +42,6 @@ function createCoreSettings() {
        * The overall appearance of the app: light, dark, or system
        */
       theme: new Setting<Themes>({
-        id: 'app.theme',
         hideOnLevel: 'project',
         defaultValue: Themes.System,
         description: 'The overall appearance of the app.',
@@ -63,7 +62,6 @@ function createCoreSettings() {
         },
       }),
       machineApi: new Setting<boolean>({
-        id: 'app.machineApi',
         defaultValue: false,
         hideOnLevel: 'project',
         hideOnPlatform: 'web',
@@ -78,7 +76,6 @@ function createCoreSettings() {
        * Zookeeper reasoning mode
        */
       zookeeperMode: new Setting<string | undefined>({
-        id: 'app.zookeeperMode',
         defaultValue: undefined,
         hideOnPlatform: 'both',
         validate: (v) =>
@@ -89,7 +86,6 @@ function createCoreSettings() {
        * Stream resource saving behavior toggle
        */
       streamIdleMode: new Setting<number | undefined>({
-        id: 'app.streamIdleMode',
         defaultValue: 1 * MS_IN_MINUTE,
         hideOnLevel: 'project',
         hideOnPlatform: 'both',
@@ -129,7 +125,6 @@ function createCoreSettings() {
         },
       }),
       allowOrbitInSketchMode: new Setting<boolean>({
-        id: 'app.allowOrbitInSketchMode',
         /** Unhide this once we make sketch mode unbreakable */
         hideOnPlatform: 'both',
         defaultValue: false,
@@ -137,7 +132,6 @@ function createCoreSettings() {
         validate: (v) => typeof v === 'boolean',
       }),
       onboardingStatus: new Setting<OnboardingStatus>({
-        id: 'app.onboardingStatus',
         defaultValue: '',
         // TODO: this could be better but we don't have a TS side real enum
         // for this yet
@@ -145,7 +139,6 @@ function createCoreSettings() {
         hideOnPlatform: 'both',
       }),
       projectDirectory: new Setting<string>({
-        id: 'app.projectDirectory',
         defaultValue: '', // gets set async in settingsUtils.ts
         description: 'The directory to save and load projects from.',
         hideOnLevel: 'project',
@@ -154,13 +147,11 @@ function createCoreSettings() {
           typeof v === 'string' && (v.length > 0 || !isDesktop()),
       }),
       namedViews: new Setting<{ [key in string]: NamedView }>({
-        id: 'app.namedViews',
         defaultValue: {},
         validate: (_v) => true,
         hideOnLevel: 'user',
       }),
       showAllFiles: new Setting<boolean>({
-        id: 'app.showAllFiles',
         defaultValue: false,
         hideOnLevel: 'project',
         description:
@@ -180,7 +171,6 @@ function createCoreSettings() {
        * various states of the app to aid in development
        */
       showPanel: new Setting<boolean>({
-        id: 'debug.showPanel',
         defaultValue: false,
         description: 'Whether to show the debug panel, a development tool.',
         validate: (v) => typeof v === 'boolean',
@@ -192,7 +182,6 @@ function createCoreSettings() {
        * Whether to show the current modeling machine state in the status bar.
        */
       showModelingMachineState: new Setting<boolean>({
-        id: 'debug.showModelingMachineState',
         defaultValue: false,
         description:
           'Whether to show the current modeling machine state in the status bar.',
@@ -210,7 +199,6 @@ function createCoreSettings() {
        * The default unit to use in modeling dimensions
        */
       defaultUnit: new Setting<BaseUnit>({
-        id: 'modeling.defaultUnit',
         defaultValue: DEFAULT_DEFAULT_LENGTH_UNIT,
         description:
           'Set the default length unit setting value to give any new files.',
@@ -232,7 +220,6 @@ function createCoreSettings() {
         },
       }),
       enableSSAO: new Setting<boolean>({
-        id: 'modeling.enableSSAO',
         defaultValue: true,
         description:
           'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.',
@@ -240,7 +227,6 @@ function createCoreSettings() {
         hideOnPlatform: 'both', //for now
       }),
       backfaceColor: new Setting<string>({
-        id: 'modeling.backfaceColor',
         defaultValue: DEFAULT_BACKFACE_COLOR,
         description: 'Default backface color for surfaces.',
         hideOnLevel: 'project',
@@ -281,7 +267,6 @@ function createCoreSettings() {
        * The controls for how to navigate the 3D view
        */
       mouseControls: new Setting<CameraSystem>({
-        id: 'modeling.mouseControls',
         defaultValue: 'Zoo',
         description: 'The controls for how to navigate the 3D view.',
         validate: (v) => cameraSystems.includes(v),
@@ -342,7 +327,6 @@ function createCoreSettings() {
        *
        */
       enableTouchControls: new Setting<boolean>({
-        id: 'modeling.enableTouchControls',
         defaultValue: true,
         hideOnLevel: 'project',
         description:
@@ -358,7 +342,6 @@ function createCoreSettings() {
        * Playwright can set it to false for regression testing.
        */
       useSketchSolveMode: new Setting<boolean>({
-        id: 'modeling.useSketchSolveMode',
         hideOnLevel: 'project',
         hideOnPlatform: 'both',
         defaultValue: true,
@@ -373,7 +356,6 @@ function createCoreSettings() {
        * Projection method applied to the 3D view, perspective or orthographic
        */
       cameraProjection: new Setting<CameraProjectionType>({
-        id: 'modeling.cameraProjection',
         defaultValue: 'orthographic',
         hideOnLevel: 'project',
         description:
@@ -404,7 +386,6 @@ function createCoreSettings() {
        * What methodology to use for orbiting the camera
        */
       cameraOrbit: new Setting<CameraOrbitType>({
-        id: 'modeling.cameraOrbit',
         defaultValue: 'spherical',
         hideOnLevel: 'project',
         description: 'What methodology to use for orbiting the camera.',
@@ -429,7 +410,6 @@ function createCoreSettings() {
        * Which type of orientation gizmo to use
        */
       gizmoType: new Setting<'cube' | 'axis'>({
-        id: 'modeling.gizmoType',
         defaultValue: 'cube',
         hideOnLevel: 'project',
         description: 'Which type of orientation gizmo to use.',
@@ -454,7 +434,6 @@ function createCoreSettings() {
        * Whether to highlight edges of 3D objects
        */
       highlightEdges: new Setting<boolean>({
-        id: 'modeling.highlightEdges',
         defaultValue: true,
         description: 'Whether to highlight edges of 3D objects.',
         validate: (v) => typeof v === 'boolean',
@@ -467,7 +446,6 @@ function createCoreSettings() {
        * Whether to show a scale grid in the 3D modeling view
        */
       showScaleGrid: new Setting<boolean>({
-        id: 'modeling.showScaleGrid',
         defaultValue: false,
         description: 'Whether to show a scale grid in the 3D modeling view.',
         validate: (v) => typeof v === 'boolean',
@@ -477,7 +455,6 @@ function createCoreSettings() {
         hideOnLevel: 'project',
       }),
       showSketchGrid: new Setting<boolean>({
-        id: 'modeling.showSketchGrid',
         defaultValue: false,
         description: 'Whether to show a grid while sketching.',
         validate: (v) => typeof v === 'boolean',
@@ -486,7 +463,6 @@ function createCoreSettings() {
         },
       }),
       fixedSizeGrid: new Setting<boolean>({
-        id: 'modeling.fixedSizeGrid',
         defaultValue: true,
         description:
           'When enabled, the grid will use a fixed size based on your selected units rather than automatically scaling with zoom level.',
@@ -496,7 +472,6 @@ function createCoreSettings() {
         },
       }),
       majorGridSpacing: new Setting<number>({
-        id: 'modeling.majorGridSpacing',
         defaultValue: 1,
         description:
           'The space between major grid lines, specified in the current unit.',
@@ -507,7 +482,6 @@ function createCoreSettings() {
         },
       }),
       minorGridsPerMajor: new Setting<number>({
-        id: 'modeling.minorGridsPerMajor',
         defaultValue: 4,
         description: 'Number of minor grid lines per major grid line.',
         validate: (v) => typeof v === 'number',
@@ -518,7 +492,6 @@ function createCoreSettings() {
         },
       }),
       snapToGrid: new Setting<boolean>({
-        id: 'modeling.snapToGrid',
         defaultValue: false,
         description:
           'Snap the cursor to the unit grid when drawing lines, arcs, and other segment-based tools.',
@@ -528,7 +501,6 @@ function createCoreSettings() {
         },
       }),
       snapsPerMinor: new Setting<number>({
-        id: 'modeling.snapsPerMinor',
         defaultValue: 1,
         description:
           'Number of snaps between minor grid lines. 1 means snapping to every minor grid line.',
@@ -580,7 +552,6 @@ function createCoreSettings() {
        * Whether to wrap text in the editor or overflow with scroll
        */
       textWrapping: new Setting<boolean>({
-        id: 'textEditor.textWrapping',
         hideOnLevel: 'project',
         defaultValue: true,
         description:
@@ -594,7 +565,6 @@ function createCoreSettings() {
        * Whether to make the cursor blink in the editor
        */
       blinkingCursor: new Setting<boolean>({
-        id: 'textEditor.blinkingCursor',
         hideOnLevel: 'project',
         defaultValue: true,
         description: 'Whether to make the cursor blink in the editor.',
@@ -616,7 +586,6 @@ function createCoreSettings() {
        * The default project name to use when creating a new project
        */
       defaultProjectName: new Setting<string>({
-        id: 'projects.defaultProjectName',
         defaultValue: DEFAULT_PROJECT_NAME,
         description:
           'The default project name to use when creating a new project.',
@@ -658,7 +627,6 @@ function createCoreSettings() {
        * Whether to include settings in the command bar
        */
       includeSettings: new Setting<boolean>({
-        id: 'commandBar.includeSettings',
         defaultValue: true,
         description: 'Whether to include settings in the command bar.',
         validate: (v) => typeof v === 'boolean',
@@ -676,7 +644,6 @@ function createCoreSettings() {
      */
     layout: {
       configs: new Setting<LayoutsWithMetadata>({
-        id: 'layout.configs',
         defaultValue: {},
         hideOnLevel: 'project',
         hideOnPlatform: 'both',
@@ -703,7 +670,6 @@ function createCoreSettings() {
      */
     meta: {
       id: new Setting<string>({
-        id: 'meta.id',
         hideOnLevel: 'user',
         defaultValue: uuidNIL,
         description: 'The unique project identifier.',

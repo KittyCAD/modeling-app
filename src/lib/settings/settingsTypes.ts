@@ -95,7 +95,6 @@ export interface SettingComponentProps<T = unknown> {
 }
 
 export interface SettingProps<T = unknown> {
-  id: string
   /**
    * The default value of the setting, used if no user or project value is set
    */

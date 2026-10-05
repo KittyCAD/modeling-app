@@ -22,7 +22,6 @@ export const projectLibrariesSettingsContribution: ExtensionSettingsContribution
       libraries: {
         createSetting: () =>
           new Setting<ProjectLibrarySetting[]>({
-            id: 'app.libraries',
             defaultValue: [],
             description: 'Project libraries shown on the home page.',
             hideOnLevel: 'project',

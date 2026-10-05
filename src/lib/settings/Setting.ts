@@ -19,7 +19,6 @@ export class Setting<T = unknown> {
   public hideWithoutFeatureOnPlatform: SettingProps<T>['hideWithoutFeatureOnPlatform']
   public commandConfig: SettingProps<T>['commandConfig']
   public Component: SettingProps<T>['Component']
-  public id: string
   public description?: string
   private validate: (v: T) => boolean
   public readonly isEnabled: (c: SettingsType) => boolean
@@ -40,7 +39,6 @@ export class Setting<T = unknown> {
   }
 
   constructor(props: SettingProps<T>) {
-    this.id = props.id
     this._default = signal(props.defaultValue)
     this.validate = props.validate
     this.isEnabled = props.isEnabled || (() => true)

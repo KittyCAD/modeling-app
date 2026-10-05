@@ -45,7 +45,6 @@ import { describe, expect, it } from 'vitest'
 const pluginExtensionSettings = {
   plugins: {
     telemetry: defineBooleanExtensionSetting({
-      id: 'plugins.telemetry',
       defaultValue: true,
       description: 'Whether the telemetry plugin is enabled.',
       hideOnLevel: 'project',
