@@ -34,7 +34,6 @@ import { settingsValueSpec } from '@src/registry/contracts/settings'
 import type { LoaderFunction } from 'react-router-dom'
 import { redirect } from 'react-router-dom'
 import { waitFor } from 'xstate'
-import { markOnce } from '@src/lib/performance'
 
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
 
@@ -82,7 +81,6 @@ export const baseLoader =
 export const fileLoader =
   ({ app }: { app: App }): LoaderFunction =>
   async (routerData): Promise<FileLoaderData | Response> => {
-    markOnce('code/willLoadFile')
     const assertCurrent = app.beginFileRouteLoad(routerData.request.signal)
     const {
       settings: { actor: settingsActor },
@@ -288,6 +286,5 @@ export const fileLoader =
 export const homeLoader =
   ({ app }: { app: App }): LoaderFunction =>
   async (): Promise<HomeLoaderData | Response> => {
-    markOnce('code/willLoadHome')
     return loadHomeProjects(app)
   }

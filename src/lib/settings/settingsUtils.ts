@@ -55,7 +55,6 @@ import type { ProjectLibrarySettingDefaultPolicy } from '@src/registry/contracts
 import { resolveProjectLibrarySettingDefaults } from '@src/registry/contracts/projectLibraries'
 import decamelize from 'decamelize'
 import { NIL as uuidNIL, v4 } from 'uuid'
-import type { SnapshotFrom } from 'xstate'
 
 const INITIALISM_MAPPING: Record<string, string> = {
   api: 'API',
@@ -1435,30 +1434,4 @@ function hiddenWithoutFeature(
   const platformFeature =
     setting.hideWithoutFeatureOnPlatform?.[desktop ? 'desktop' : 'web']
   return !!platformFeature && !hasFeature?.(platformFeature)
-}
-
-/** Watch for out-of-band file changes on a path when the settings actor isn't busy */
-export function watchSettingsFileWhileIdle(
-  actor: SettingsActorType,
-  path: string
-) {
-  if (path.trim().length === 0) {
-    return new Error('Empty settings file path will not be watched')
-  }
-
-  const key = Symbol()
-  const reloadSettingsInMemory = () => actor.send({ type: 'reload.settings' })
-  const toggleWatchWhenIdle = (snapshot: SnapshotFrom<SettingsActorType>) => {
-    if (snapshot.value !== 'idle') {
-      return window.electron?.watchFileOff(path, key.toString())
-    } else {
-      return window.electron?.watchFileOn(
-        path,
-        key.toString(),
-        reloadSettingsInMemory
-      )
-    }
-  }
-
-  return actor.subscribe(toggleWatchWhenIdle)
 }
