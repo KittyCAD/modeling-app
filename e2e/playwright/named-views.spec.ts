@@ -2,18 +2,50 @@ import { join } from 'path'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import * as fsp from 'fs/promises'
 
-import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
-
 import {
   createProject,
-  perProjectSettingsToToml,
   runningOnWindows,
   tomlToPerProjectSettings,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-// Helper function to determine if the file path on disk exists
-// Specifically this is used to check if project.toml exists on disk
+const PROJECT_NAME = 'named-views'
+
+/**
+ * A camera the `Create named view` command saved to `project.toml` before
+ * named views moved into KCL. It is the app's default three-quarter view.
+ */
+const LEGACY_PROJECT_TOML = `title = "${PROJECT_NAME}"
+default_file = "main.kcl"
+
+[settings]
+modeling = { }
+
+[settings.app.named_views.0656fb1a-9640-473e-b334-591dc70c0138]
+eye_offset = 20.907703
+fov_y = 45
+is_ortho = false
+name = "uuid1"
+ortho_scale_enabled = true
+ortho_scale_factor = 1.6
+pivot_position = [ 0, 0, 0 ]
+pivot_rotation = [ 0.4247082, 0.1759199, 0.33985114, 0.8204732 ]
+version = 1
+world_coord_system = "right_handed_up_z"
+`
+
+/** `view::named()` exists from KCL 3.0 on. */
+const KCL_V3_MAIN = `@settings(kclVersion = "3.0-preview")
+
+width = 10
+`
+
+/** Files older than KCL 3.0 keep their named views in `project.toml`. */
+const KCL_V2_MAIN = `@settings(kclVersion = 2.0)
+
+width = 10
+`
+
 const fileExists = async (path: string) => {
   return !!(await fsp
     .stat(path)
@@ -21,281 +53,215 @@ const fileExists = async (path: string) => {
     .catch((_) => false))
 }
 
-// Here are a few uuids.
-// When created named views rust will auto generate uuids and they will
-// never match the snapshots. Overwrite them in memory to these
-// values to have them match the snapshots.
-const uuid1: string = '0656fb1a-9640-473e-b334-591dc70c0138'
-const uuid2: string = 'c810cf04-c6cc-4a4a-8b11-17bf445dcab7'
-const uuid3: string = 'cfecbfee-48a6-4561-b96d-ffbe5678bb7d'
+function projectPaths(projectDir: string) {
+  return {
+    mainKcl: join(projectDir, PROJECT_NAME, 'main.kcl'),
+    projectToml: join(projectDir, PROJECT_NAME, PROJECT_SETTINGS_FILE_NAME),
+  }
+}
 
-// Look up the named view by name and then rewrite it with the same uuid each time
-const nameToUuid: Map<string, string> = new Map()
-nameToUuid.set('uuid1', uuid1)
-nameToUuid.set('uuid2', uuid2)
-nameToUuid.set('uuid3', uuid3)
+/** The named views `project.toml` holds, or none when it does not exist. */
+async function legacyNamedViewNames(projectToml: string): Promise<string[]> {
+  if (!(await fileExists(projectToml))) {
+    return []
+  }
+  const settings = tomlToPerProjectSettings(
+    await fsp.readFile(projectToml, 'utf-8')
+  )
+  return Object.values(settings.settings?.app?.named_views ?? {}).map(
+    (view) => view?.name ?? ''
+  )
+}
 
-/**
- * Given the project.toml string, overwrite the named views to be the constant uuid
- * values to match the snapshots. The uuids are randomly generated
- */
-function tomlStringMakeTestDataNotAsFragile(toml: string): string {
-  const settings = tomlToPerProjectSettings(toml)
-  delete settings.settings?.meta
-  const namedViews = settings.settings?.app?.named_views
-  if (namedViews) {
-    const entries = Object.values(namedViews)
-      .flatMap((value) => {
-        if (!value) {
-          return []
-        }
-        const staticUuid = nameToUuid.get(value.name)
-        return staticUuid ? [{ staticUuid, value }] : []
-      })
-      .toSorted((left, right) =>
-        left.staticUuid.localeCompare(right.staticUuid)
+function writeProject(mainKcl: string, projectToml?: string) {
+  return async (dir: string) => {
+    const projectDir = join(dir, PROJECT_NAME)
+    await fsp.mkdir(projectDir, { recursive: true })
+    await fsp.writeFile(join(projectDir, 'main.kcl'), mainKcl, 'utf-8')
+    if (projectToml !== undefined) {
+      await fsp.writeFile(
+        join(projectDir, PROJECT_SETTINGS_FILE_NAME),
+        projectToml,
+        'utf-8'
       )
-    const remappedNamedViews: { [key: string]: NamedView } = {}
-    entries.forEach(({ staticUuid, value }) => {
-      remappedNamedViews[staticUuid] = value
-    })
-    if (settings && settings.settings && settings.settings.app) {
-      settings.settings.app.named_views = remappedNamedViews
     }
   }
-  return perProjectSettingsToToml(settings)
 }
 
 test.describe('Named view tests', { tag: '@desktop' }, () => {
-  test.fail(runningOnWindows(), 'Windows line endings break snapshot matching')
-  test('Verify named view gets created', async ({
+  test.fail(runningOnWindows(), 'Windows line endings break file matching')
+
+  test('Create named view writes a KCL named view', async ({
     cmdBar,
     scene,
     page,
   }, testInfo) => {
-    const projectName = 'named-views'
-    const myNamedView = 'uuid1'
-
-    // Create and load project
-    await createProject({ name: projectName, page })
-    await scene.settled()
-
-    // Create named view
-    const projectDirName = testInfo.outputPath('electron-test-projects-dir')
-    await cmdBar.openCmdBar()
-    await cmdBar.chooseCommand('create named view')
-    await cmdBar.argumentInput.fill(myNamedView)
-    await cmdBar.progressCmdBar(false)
-
-    // Generate paths for the project.toml
-    const tempProjectSettingsFilePath = join(
-      projectDirName,
-      projectName,
-      PROJECT_SETTINGS_FILE_NAME
+    const { mainKcl, projectToml } = projectPaths(
+      testInfo.outputPath('electron-test-projects-dir')
     )
 
-    const toastMessage = page.getByText('Named view uuid1 created.')
-    await expect(toastMessage).toBeInViewport()
+    await createProject({ name: PROJECT_NAME, page })
+    await scene.settled()
 
-    // Expect project.toml to be generated on disk since a named view was created
+    await cmdBar.openCmdBar()
+    await cmdBar.chooseCommand('create named view')
+    await cmdBar.argumentInput.fill('uuid1')
+    await cmdBar.progressCmdBar(false)
+    await expect(page.getByText('Named view uuid1 created.')).toBeInViewport()
+
     await expect(async () => {
-      let exists = await fileExists(tempProjectSettingsFilePath)
-      expect(exists).toBe(true)
+      const code = await fsp.readFile(mainKcl, 'utf-8')
+      expect(code).toContain('view::named(\n  "uuid1",')
+      expect(code).toContain('camera = view::directed(')
+      expect(code).toContain('baseline = view::Visibility::Show,')
     }).toPass()
-
-    await expect(async () => {
-      // Read project.toml into memory
-      let tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
-
-      // Rewrite the uuids in the named views to match snapshot otherwise they will be randomly generated from rust and break
-      tomlString = tomlStringMakeTestDataNotAsFragile(tomlString)
-
-      // Write the entire tomlString to a snapshot.
-      // There are many key/value pairs to check this is a safer match.
-      expect(tomlString).toMatchSnapshot('verify-named-view-gets-created.toml')
-    }).toPass()
+    expect(await legacyNamedViewNames(projectToml)).toEqual([])
   })
-  test('Verify named view gets deleted', async ({
+
+  test('Create named view numbers a name the file already uses', async ({
     cmdBar,
     scene,
     page,
-  }, testInfo) => {
-    const projectName = 'named-views'
-    const myNamedView1 = 'uuid1'
-
-    // Create project and go into the project
-    await createProject({ name: projectName, page })
+  }) => {
+    await createProject({ name: PROJECT_NAME, page })
     await scene.settled()
 
-    // Create a new named view
-    await cmdBar.openCmdBar()
-    await cmdBar.chooseCommand('create named view')
-    await cmdBar.argumentInput.fill(myNamedView1)
-    await cmdBar.progressCmdBar(false)
-
-    let toastMessage = page.getByText('Named view uuid1 created.')
-    await expect(toastMessage).toBeInViewport()
-
-    // Generate file paths for project.toml
-    const projectDirName = testInfo.outputPath('electron-test-projects-dir')
-    const tempProjectSettingsFilePath = join(
-      projectDirName,
-      projectName,
-      PROJECT_SETTINGS_FILE_NAME
-    )
-
-    // Except the project.toml to be written to disk since a named view was created
-    await expect(async () => {
-      let exists = await fileExists(tempProjectSettingsFilePath)
-      expect(exists).toBe(true)
-    }).toPass()
-
-    await expect(async () => {
-      // Read project.toml into memory
-      let tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
-      // Rewrite the uuids in the named views to match snapshot otherwise they will be randomly generated from rust and break
-      tomlString = tomlStringMakeTestDataNotAsFragile(tomlString)
-
-      // Write the entire tomlString to a snapshot.
-      // There are many key/value pairs to check this is a safer match.
-      expect(tomlString).toMatchSnapshot('verify-named-view-gets-created.toml')
-    }).toPass()
-
-    // Delete a named view
-    await cmdBar.openCmdBar()
-    await cmdBar.chooseCommand('delete named view')
-    cmdBar.selectOption({ name: myNamedView1 })
-    await cmdBar.progressCmdBar(false)
-
-    toastMessage = page.getByText('Named view uuid1 removed.')
-    await expect(toastMessage).toBeInViewport()
-
-    await expect(async () => {
-      // Read project.toml into memory again since we deleted a named view
-      let tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
-      // Rewrite the uuids in the named views to match snapshot otherwise they will be randomly generated from rust and break
-      tomlString = tomlStringMakeTestDataNotAsFragile(tomlString)
-
-      // Write the entire tomlString to a snapshot.
-      // There are many key/value pairs to check this is a safer match.
-      expect(tomlString).toMatchSnapshot('verify-named-view-gets-deleted.toml')
-    }).toPass()
+    for (const expected of ['uuid1', 'uuid1 (2)']) {
+      await cmdBar.openCmdBar()
+      await cmdBar.chooseCommand('create named view')
+      await cmdBar.argumentInput.fill('uuid1')
+      await cmdBar.progressCmdBar(false)
+      await expect(
+        page.getByText(`Named view ${expected} created.`)
+      ).toBeInViewport()
+      await scene.settled()
+    }
   })
-  test('Verify named view gets loaded', async ({
+
+  test('Load named view moves to a KCL named view', async ({
     cmdBar,
     scene,
     page,
-  }, testInfo) => {
-    const projectName = 'named-views'
-    const myNamedView = 'uuid1'
-
-    // Create project and go into the project
-    await createProject({ name: projectName, page })
+  }) => {
+    await createProject({ name: PROJECT_NAME, page })
     await scene.settled()
 
-    // Create a new named view
     await cmdBar.openCmdBar()
     await cmdBar.chooseCommand('create named view')
-    await cmdBar.argumentInput.fill(myNamedView)
+    await cmdBar.argumentInput.fill('uuid1')
     await cmdBar.progressCmdBar(false)
+    await expect(page.getByText('Named view uuid1 created.')).toBeInViewport()
+    await scene.settled()
 
-    let toastMessage = page.getByText('Named view uuid1 created.')
-    await expect(toastMessage).toBeInViewport()
-
-    // Generate file paths for project.toml
-    const projectDirName = testInfo.outputPath('electron-test-projects-dir')
-    const tempProjectSettingsFilePath = join(
-      projectDirName,
-      projectName,
-      PROJECT_SETTINGS_FILE_NAME
-    )
-
-    // Except the project.toml to be written to disk since a named view was created
-    await expect(async () => {
-      let exists = await fileExists(tempProjectSettingsFilePath)
-      expect(exists).toBe(true)
-    }).toPass()
-
-    await expect(async () => {
-      // Read project.toml into memory
-      let tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
-      // Rewrite the uuids in the named views to match snapshot otherwise they will be randomly generated from rust and break
-      tomlString = tomlStringMakeTestDataNotAsFragile(tomlString)
-
-      // Write the entire tomlString to a snapshot.
-      // There are many key/value pairs to check this is a safer match.
-      expect(tomlString).toMatchSnapshot('verify-named-view-gets-created.toml')
-    }).toPass()
-
-    // Create a load a named view
     await cmdBar.openCmdBar()
     await cmdBar.chooseCommand('load named view')
-    await cmdBar.argumentInput.fill(myNamedView)
-    await cmdBar.progressCmdBar(false)
-
-    // Check the toast appeared
-    await expect(
-      page.getByText(`Named view ${myNamedView} loaded.`)
-    ).toBeVisible()
+    await cmdBar.selectOption({ name: 'uuid1' }).click()
+    await expect(page.getByText('Named view uuid1 loaded.')).toBeVisible()
   })
-  test('Verify two named views get created', async ({
+
+  test('Delete named view removes the KCL named view', async ({
     cmdBar,
     scene,
     page,
   }, testInfo) => {
-    const projectName = 'named-views'
-    const myNamedView1 = 'uuid1'
-    const myNamedView2 = 'uuid2'
-
-    // Create and load project
-    await createProject({ name: projectName, page })
-    await scene.settled()
-
-    // Create named view
-    const projectDirName = testInfo.outputPath('electron-test-projects-dir')
-    await cmdBar.openCmdBar()
-    await cmdBar.chooseCommand('create named view')
-    await cmdBar.argumentInput.fill(myNamedView1)
-    await cmdBar.progressCmdBar(false)
-
-    let toastMessage = page.getByText('Named view uuid1 created.')
-    await expect(toastMessage).toBeInViewport()
-
-    await scene.moveCameraTo({ x: 608, y: 0, z: 0 }, { x: 0, y: 0, z: 0 })
-    await page.waitForTimeout(2500)
-
-    await cmdBar.openCmdBar()
-    await cmdBar.chooseCommand('create named view')
-    await cmdBar.argumentInput.fill(myNamedView2)
-    await cmdBar.progressCmdBar(false)
-
-    toastMessage = page.getByText('Named view uuid2 created.')
-    await expect(toastMessage).toBeInViewport()
-
-    // Generate paths for the project.toml
-    const tempProjectSettingsFilePath = join(
-      projectDirName,
-      projectName,
-      PROJECT_SETTINGS_FILE_NAME
+    const { mainKcl } = projectPaths(
+      testInfo.outputPath('electron-test-projects-dir')
     )
 
-    // Expect project.toml to be generated on disk since a named view was created
+    await createProject({ name: PROJECT_NAME, page })
+    await scene.settled()
+
+    await cmdBar.openCmdBar()
+    await cmdBar.chooseCommand('create named view')
+    await cmdBar.argumentInput.fill('uuid1')
+    await cmdBar.progressCmdBar(false)
+    await expect(page.getByText('Named view uuid1 created.')).toBeInViewport()
     await expect(async () => {
-      let exists = await fileExists(tempProjectSettingsFilePath)
-      expect(exists).toBe(true)
+      expect(await fsp.readFile(mainKcl, 'utf-8')).toContain('"uuid1"')
     }).toPass()
+    await scene.settled()
+
+    await cmdBar.openCmdBar()
+    await cmdBar.chooseCommand('delete named view')
+    await cmdBar.selectOption({ name: 'uuid1' }).click()
+    await expect(page.getByText('Named view uuid1 removed.')).toBeInViewport()
 
     await expect(async () => {
-      // Read project.toml into memory
-      let tomlString = await fsp.readFile(tempProjectSettingsFilePath, 'utf-8')
-      // Rewrite the uuids in the named views to match snapshot otherwise they will be randomly generated from rust and break
-      tomlString = tomlStringMakeTestDataNotAsFragile(tomlString)
+      expect(await fsp.readFile(mainKcl, 'utf-8')).not.toContain('view::named')
+    }).toPass()
+  })
 
-      // Write the entire tomlString to a snapshot.
-      // There are many key/value pairs to check this is a safer match.
-      expect(tomlString).toMatchSnapshot(
-        'verify-two-named-view-gets-created.toml'
+  test('Opening a project moves project.toml named views into main.kcl', async ({
+    homePage,
+    scene,
+    page,
+    folderSetupFn,
+  }, testInfo) => {
+    const { mainKcl, projectToml } = projectPaths(
+      testInfo.outputPath('electron-test-projects-dir')
+    )
+
+    await folderSetupFn(writeProject(KCL_V3_MAIN, LEGACY_PROJECT_TOML))
+    await homePage.openProject(PROJECT_NAME)
+    await scene.settled()
+
+    await expect(
+      page.getByText(
+        'Moved named view "uuid1" from project.toml into main.kcl.'
       )
+    ).toBeVisible()
+
+    await expect(async () => {
+      const code = await fsp.readFile(mainKcl, 'utf-8')
+      expect(code).toContain('width = 10')
+      // The saved camera looks at the origin from front, right, and above.
+      expect(code).toContain(`view::named(
+  "uuid1",
+  camera = view::directed(
+    [-0.5774, 0.5774, -0.5774],
+    up = [-0.4082, 0.4082, 0.8165],
+    target = [0mm, 0mm, 0mm],
+    distance = 20.9077mm,
+    projection = view::Projection::Perspective,
+  ),
+  baseline = view::Visibility::Show,
+)`)
+      expect(await legacyNamedViewNames(projectToml)).toEqual([])
     }).toPass()
+  })
+
+  test('Files older than KCL 3.0 keep named views in project.toml', async ({
+    homePage,
+    cmdBar,
+    scene,
+    page,
+    folderSetupFn,
+  }, testInfo) => {
+    const { mainKcl, projectToml } = projectPaths(
+      testInfo.outputPath('electron-test-projects-dir')
+    )
+
+    await folderSetupFn(writeProject(KCL_V2_MAIN, LEGACY_PROJECT_TOML))
+    await homePage.openProject(PROJECT_NAME)
+    await scene.settled()
+
+    await cmdBar.openCmdBar()
+    await cmdBar.chooseCommand('create named view')
+    await cmdBar.argumentInput.fill('uuid2')
+    await cmdBar.progressCmdBar(false)
+    await expect(page.getByText('Named view uuid2 created.')).toBeInViewport()
+
+    await expect(async () => {
+      expect((await legacyNamedViewNames(projectToml)).sort()).toEqual([
+        'uuid1',
+        'uuid2',
+      ])
+    }).toPass()
+    expect(await fsp.readFile(mainKcl, 'utf-8')).toBe(KCL_V2_MAIN)
+
+    await cmdBar.openCmdBar()
+    await cmdBar.chooseCommand('load named view')
+    await cmdBar.selectOption({ name: 'uuid1' }).click()
+    await expect(page.getByText('Named view uuid1 loaded.')).toBeVisible()
   })
 })

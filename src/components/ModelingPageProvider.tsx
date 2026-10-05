@@ -18,7 +18,9 @@ import { createStandardViewsCommands } from '@src/lib/commandBarConfigs/standard
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import { kclCommands } from '@src/lib/kclCommands'
+import { migrateProjectTomlNamedViews } from '@src/lib/namedViewsMigration'
 import { markOnce } from '@src/lib/performance'
+import { reportRejection } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
 import { FILE_AND_CODE_EDITOR_COMMAND_SCOPES } from '@src/registry/contracts/commands'
@@ -77,7 +79,7 @@ export const ModelingPageProvider = ({
       createNamedViewCommand,
       deleteNamedViewCommand,
       loadNamedViewCommand,
-    } = createNamedViewsCommand(kclManager.engineCommandManager, settingsActor)
+    } = createNamedViewsCommand(kclManager, settingsActor)
 
     const {
       topViewCommand,
@@ -117,6 +119,19 @@ export const ModelingPageProvider = ({
       })
     }
   }, [commands, settingsActor, kclManager])
+
+  // Named views saved in project.toml move into main.kcl once it is open and
+  // can hold them. Re-run whenever the program or the setting changes.
+  const ast = kclManager.astSignal.value
+  const legacyNamedViews = settingsValues.app.namedViews.current
+  useEffect(() => {
+    if (Object.keys(legacyNamedViews).length === 0) {
+      return
+    }
+    migrateProjectTomlNamedViews({ kclManager, settingsActor }).catch(
+      reportRejection
+    )
+  }, [ast, legacyNamedViews, kclManager, settingsActor])
 
   useEffect(() => {
     markOnce('code/didLoadFile')
