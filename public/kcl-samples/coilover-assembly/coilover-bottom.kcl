@@ -23,8 +23,10 @@ region001 = region(segments = [retainerPlateProfile.circle1])
 retainerPlateExtrude = extrude(region001, length = retainerPlateLength, tagStart = $capStart001)
   |> chamfer(
        length = retainerPlateChamfer,
-       tags = [
-         getCommonEdge(faces = [region001.tags.circle1, capStart001])
+       edges = [
+         {
+           sideFaces = [region001.tags.circle1, capStart001]
+         }
        ],
      )
 
@@ -64,8 +66,10 @@ region003 = region(segments = [lowerMountProfile.circle1])
 lowerMountExtrude = extrude(region003, length = lowerMountLength, tagEnd = $capEnd001)
   |> chamfer(
        length = lowerMountChamfer,
-       tags = [
-         getCommonEdge(faces = [region003.tags.circle1, capEnd001])
+       edges = [
+         {
+           sideFaces = [region003.tags.circle1, capEnd001]
+         }
        ],
      )
 
@@ -93,14 +97,18 @@ eyeEndExtrude = extrude(
 )
   |> fillet(
        radius = eyeEndTipFillet,
-       tags = [
-         getCommonEdge(faces = [region004.tags.circle1, capEnd002])
+       edges = [
+         {
+           sideFaces = [region004.tags.circle1, capEnd002]
+         }
        ],
      )
   |> fillet(
        radius = eyeEndRootFillet,
-       tags = [
-         getCommonEdge(faces = [region004.tags.circle1, capStart002])
+       edges = [
+         {
+           sideFaces = [region004.tags.circle1, capStart002]
+         }
        ],
      )
 

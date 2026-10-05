@@ -5570,7 +5570,58 @@ description: Result of parsing propeller.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "tags",
+                  "name": "radius",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "left": {
+                    "abs_path": false,
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "name": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "hubThickness",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
+                    "start": 0,
+                    "type": "Name",
+                    "type": "Name"
+                  },
+                  "moduleId": 0,
+                  "operator": "/",
+                  "right": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "raw": "6",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 6.0,
+                      "suffix": "None"
+                    }
+                  },
+                  "start": 0,
+                  "type": "BinaryExpression",
+                  "type": "BinaryExpression"
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "commentStart": 0,
+                  "end": 0,
+                  "moduleId": 0,
+                  "name": "edges",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -5578,18 +5629,25 @@ description: Result of parsing propeller.kcl
                   "commentStart": 0,
                   "elements": [
                     {
-                      "arguments": [
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "properties": [
                         {
-                          "type": "LabeledArg",
-                          "label": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "key": {
                             "commentStart": 0,
                             "end": 0,
                             "moduleId": 0,
-                            "name": "faces",
+                            "name": "sideFaces",
                             "start": 0,
                             "type": "Identifier"
                           },
-                          "arg": {
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "ObjectProperty",
+                          "value": {
                             "commentStart": 0,
                             "elements": [
                               {
@@ -5691,44 +5749,30 @@ description: Result of parsing propeller.kcl
                           }
                         }
                       ],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "getCommonEdge",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
+                      "start": 0,
+                      "type": "ObjectExpression",
+                      "type": "ObjectExpression"
+                    },
+                    {
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": null
-                    },
-                    {
-                      "arguments": [
+                      "properties": [
                         {
-                          "type": "LabeledArg",
-                          "label": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "key": {
                             "commentStart": 0,
                             "end": 0,
                             "moduleId": 0,
-                            "name": "faces",
+                            "name": "sideFaces",
                             "start": 0,
                             "type": "Identifier"
                           },
-                          "arg": {
+                          "moduleId": 0,
+                          "start": 0,
+                          "type": "ObjectProperty",
+                          "value": {
                             "commentStart": 0,
                             "elements": [
                               {
@@ -5830,30 +5874,9 @@ description: Result of parsing propeller.kcl
                           }
                         }
                       ],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "getCommonEdge",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
                       "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": null
+                      "type": "ObjectExpression",
+                      "type": "ObjectExpression"
                     }
                   ],
                   "end": 0,
@@ -5861,57 +5884,6 @@ description: Result of parsing propeller.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "radius",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "left": {
-                    "abs_path": false,
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "name": "hubThickness",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "path": [],
-                    "start": 0,
-                    "type": "Name",
-                    "type": "Name"
-                  },
-                  "moduleId": 0,
-                  "operator": "/",
-                  "right": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "raw": "6",
-                    "start": 0,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 6.0,
-                      "suffix": "None"
-                    }
-                  },
-                  "start": 0,
-                  "type": "BinaryExpression",
-                  "type": "BinaryExpression"
                 }
               }
             ],
