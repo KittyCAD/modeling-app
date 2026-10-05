@@ -222,8 +222,8 @@ async fn inner_involute_circular(
     args: Args,
 ) -> Result<Sketch, KclError> {
     let id = exec_state.next_uuid();
-    let angle_deg = angle.to_degrees(exec_state, args.source_range);
-    let angle_rad = angle.to_radians(exec_state, args.source_range);
+    let angle_deg = angle.unwrap_to_degrees(exec_state, args.source_range);
+    let angle_rad = angle.unwrap_to_radians(exec_state, args.source_range);
 
     let longer_args_dot_source_range = args.source_range;
     let start_radius = get_radius_labelled(
@@ -248,8 +248,8 @@ async fn inner_involute_circular(
                 mcmd::ExtendPath::builder()
                     .path(sketch.id.into())
                     .segment(PathSegment::CircularInvolute {
-                        start_radius: LengthUnit(start_radius.to_mm()),
-                        end_radius: LengthUnit(end_radius.to_mm()),
+                        start_radius: LengthUnit(start_radius.unwrap_to_mm()),
+                        end_radius: LengthUnit(end_radius.unwrap_to_mm()),
                         angle: Angle::from_degrees(angle_deg),
                         reverse: reverse.unwrap_or_default(),
                     })
@@ -260,8 +260,8 @@ async fn inner_involute_circular(
 
     let from = sketch.current_pen_position()?;
 
-    let start_radius = start_radius.to_length_units(from.units);
-    let end_radius = end_radius.to_length_units(from.units);
+    let start_radius = start_radius.unwrap_to_length_units(from.units);
+    let end_radius = end_radius.unwrap_to_length_units(from.units);
 
     let mut end: KPoint3d<f64> = Default::default(); // ADAM: TODO impl this below.
     let theta = f64::sqrt(end_radius * end_radius - start_radius * start_radius) / start_radius;
@@ -637,7 +637,7 @@ async fn inner_angled_line_length(
     args: Args,
 ) -> Result<Sketch, KclError> {
     let from = sketch.current_pen_position()?;
-    let length = length.to_length_units(from.units);
+    let length = length.unwrap_to_length_units(from.units);
 
     //double check me on this one - mike
     let delta: [f64; 2] = [
@@ -753,7 +753,7 @@ async fn inner_angled_line_to_x(
         )));
     }
 
-    let x_component = x_to.to_length_units(from.units) - from.x;
+    let x_component = x_to.unwrap_to_length_units(from.units) - from.x;
     let y_component = x_component * libm::tan(angle_degrees.to_radians());
     let y_to = from.y + y_component;
 
@@ -827,7 +827,7 @@ async fn inner_angled_line_to_y(
         )));
     }
 
-    let y_component = y_to.to_length_units(from.units) - from.y;
+    let y_component = y_to.unwrap_to_length_units(from.units) - from.y;
     let x_component = y_component / libm::tan(angle_degrees.to_radians());
     let x_to = from.x + x_component;
 
@@ -878,8 +878,8 @@ pub async fn inner_angled_line_that_intersects(
             point_to_len_unit(path.get_from(), from.units),
             point_to_len_unit(path.get_to(), from.units),
         ],
-        offset.map(|t| t.to_length_units(from.units)).unwrap_or_default(),
-        angle.to_degrees(exec_state, args.source_range),
+        offset.map(|t| t.unwrap_to_length_units(from.units)).unwrap_or_default(),
+        angle.unwrap_to_degrees(exec_state, args.source_range),
         from.ignore_units(),
     );
     let to = [
@@ -1026,7 +1026,7 @@ async fn inner_start_sketch_on(
                 let plane_of = inner_plane_of(*solid, tag, exec_state, args).await?;
 
                 // plane_of info axis units are Some(UnitLength::Millimeters), see inner_plane_of and PlaneInfo
-                let offset = normal_offset.map_or(0.0, |x| x.to_mm());
+                let offset = normal_offset.map_or(0.0, |x| x.unwrap_to_mm());
                 let (x_axis, y_axis, normal_offset) = match align_axis {
                     Axis2dOrEdgeReference::Axis { direction, origin: _ } => {
                         if (direction[0].n - 1.0).abs() < f64::EPSILON {
@@ -1569,13 +1569,13 @@ pub async fn absolute_arc(
                     .path(sketch.id.into())
                     .segment(PathSegment::ArcTo {
                         end: kcmc::shared::Point3d {
-                            x: LengthUnit(end_absolute[0].to_mm()),
-                            y: LengthUnit(end_absolute[1].to_mm()),
+                            x: LengthUnit(end_absolute[0].unwrap_to_mm()),
+                            y: LengthUnit(end_absolute[1].unwrap_to_mm()),
                             z: LengthUnit(0.0),
                         },
                         interior: kcmc::shared::Point3d {
-                            x: LengthUnit(interior_absolute[0].to_mm()),
-                            y: LengthUnit(interior_absolute[1].to_mm()),
+                            x: LengthUnit(interior_absolute[0].unwrap_to_mm()),
+                            y: LengthUnit(interior_absolute[1].unwrap_to_mm()),
                             z: LengthUnit(0.0),
                         },
                         relative: false,
@@ -1632,9 +1632,9 @@ pub async fn relative_arc(
     ctx: &ExecutorContext,
     source_range: SourceRange,
 ) -> Result<Sketch, KclError> {
-    let a_start = Angle::from_degrees(angle_start.to_degrees(exec_state, source_range));
-    let a_end = Angle::from_degrees(angle_end.to_degrees(exec_state, source_range));
-    let radius = radius.to_length_units(from.units);
+    let a_start = Angle::from_degrees(angle_start.unwrap_to_degrees(exec_state, source_range));
+    let a_end = Angle::from_degrees(angle_end.unwrap_to_degrees(exec_state, source_range));
+    let radius = radius.unwrap_to_length_units(from.units);
     let (center, end) = arc_center_and_end(from.ignore_units(), a_start, a_end, radius);
     if a_start == a_end {
         return Err(KclError::new_type(KclErrorDetails::new(
@@ -1795,7 +1795,7 @@ async fn inner_tangential_arc_radius_angle(
     let (center, to, ccw) = match data {
         TangentialArcData::RadiusAndOffset { radius, offset } => {
             // KCL stdlib types use degrees.
-            let offset = Angle::from_degrees(offset.to_degrees(exec_state, args.source_range));
+            let offset = Angle::from_degrees(offset.unwrap_to_degrees(exec_state, args.source_range));
 
             // Calculate the end point from the angle and radius.
             // atan2 outputs radians.
@@ -1821,7 +1821,7 @@ async fn inner_tangential_arc_radius_angle(
                 from.ignore_units(),
                 start_angle,
                 end_angle,
-                radius.to_length_units(from.units),
+                radius.unwrap_to_length_units(from.units),
             );
 
             exec_state
@@ -1831,7 +1831,7 @@ async fn inner_tangential_arc_radius_angle(
                         mcmd::ExtendPath::builder()
                             .path(sketch.id.into())
                             .segment(PathSegment::TangentialArc {
-                                radius: LengthUnit(radius.to_mm()),
+                                radius: LengthUnit(radius.unwrap_to_mm()),
                                 offset,
                             })
                             .build(),
@@ -2026,17 +2026,17 @@ async fn inner_bezier_curve(
         (Some(control1), Some(control2), Some(end), None, None, None) => {
             let delta = end.clone();
             let to = [
-                from.x + end[0].to_length_units(from.units),
-                from.y + end[1].to_length_units(from.units),
+                from.x + end[0].unwrap_to_length_units(from.units),
+                from.y + end[1].unwrap_to_length_units(from.units),
             ];
             // Calculate absolute control points
             let control1_abs = [
-                from.x + control1[0].to_length_units(from.units),
-                from.y + control1[1].to_length_units(from.units),
+                from.x + control1[0].unwrap_to_length_units(from.units),
+                from.y + control1[1].unwrap_to_length_units(from.units),
             ];
             let control2_abs = [
-                from.x + control2[0].to_length_units(from.units),
-                from.y + control2[1].to_length_units(from.units),
+                from.x + control2[0].unwrap_to_length_units(from.units),
+                from.y + control2[1].unwrap_to_length_units(from.units),
             ];
 
             exec_state
@@ -2059,9 +2059,12 @@ async fn inner_bezier_curve(
         }
         // Absolute
         (None, None, None, Some(control1), Some(control2), Some(end)) => {
-            let to = [end[0].to_length_units(from.units), end[1].to_length_units(from.units)];
-            let control1_abs = control1.clone().map(|v| v.to_length_units(from.units));
-            let control2_abs = control2.clone().map(|v| v.to_length_units(from.units));
+            let to = [
+                end[0].unwrap_to_length_units(from.units),
+                end[1].unwrap_to_length_units(from.units),
+            ];
+            let control1_abs = control1.clone().map(|v| v.unwrap_to_length_units(from.units));
+            let control2_abs = control2.clone().map(|v| v.unwrap_to_length_units(from.units));
             exec_state
                 .batch_modeling_cmd(
                     ModelingCmdMeta::from_args_id(exec_state, &args, id),
@@ -2313,14 +2316,15 @@ pub(crate) async fn inner_elliptic(
             },
         ],
     };
-    let start_angle = Angle::from_degrees(angle_start.to_degrees(exec_state, args.source_range));
-    let end_angle = Angle::from_degrees(angle_end.to_degrees(exec_state, args.source_range));
-    let major_axis_magnitude = (major_axis[0].to_length_units(from.units) * major_axis[0].to_length_units(from.units)
-        + major_axis[1].to_length_units(from.units) * major_axis[1].to_length_units(from.units))
+    let start_angle = Angle::from_degrees(angle_start.unwrap_to_degrees(exec_state, args.source_range));
+    let end_angle = Angle::from_degrees(angle_end.unwrap_to_degrees(exec_state, args.source_range));
+    let major_axis_magnitude = (major_axis[0].unwrap_to_length_units(from.units)
+        * major_axis[0].unwrap_to_length_units(from.units)
+        + major_axis[1].unwrap_to_length_units(from.units) * major_axis[1].unwrap_to_length_units(from.units))
     .sqrt();
     let to = [
         major_axis_magnitude * libm::cos(end_angle.to_radians()),
-        minor_radius.to_length_units(from.units) * libm::sin(end_angle.to_radians()),
+        minor_radius.unwrap_to_length_units(from.units) * libm::sin(end_angle.to_radians()),
     ];
     let loops_back_to_start = does_segment_close_sketch(to, sketch.start.from);
     let major_axis_angle = libm::atan2(major_axis[1].n, major_axis[0].n);
@@ -2330,7 +2334,7 @@ pub(crate) async fn inner_elliptic(
         center_u[1] + to[0] * libm::sin(major_axis_angle) + to[1] * libm::cos(major_axis_angle),
     ];
 
-    let axis = major_axis.map(|x| x.to_mm());
+    let axis = major_axis.map(|x| x.unwrap_to_mm());
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
@@ -2340,7 +2344,7 @@ pub(crate) async fn inner_elliptic(
                     .segment(PathSegment::Ellipse {
                         center: KPoint2d::from(untyped_point_to_mm(center_u, from.units)).map(LengthUnit),
                         major_axis: axis.map(LengthUnit).into(),
-                        minor_radius: LengthUnit(minor_radius.to_mm()),
+                        minor_radius: LengthUnit(minor_radius.unwrap_to_mm()),
                         start_angle,
                         end_angle,
                     })
@@ -2353,7 +2357,7 @@ pub(crate) async fn inner_elliptic(
         ccw: start_angle < end_angle,
         center: center_u,
         major_axis: axis,
-        minor_radius: minor_radius.to_mm(),
+        minor_radius: minor_radius.unwrap_to_mm(),
         base: BasePath {
             from: from.ignore_units(),
             to: point,
@@ -2497,8 +2501,8 @@ pub(crate) async fn inner_hyperbolic(
     };
     let loops_back_to_start = does_segment_close_sketch(end, sketch.start.from);
 
-    let semi_major_u = semi_major.to_length_units(from.units);
-    let semi_minor_u = semi_minor.to_length_units(from.units);
+    let semi_major_u = semi_major.unwrap_to_length_units(from.units);
+    let semi_minor_u = semi_minor.unwrap_to_length_units(from.units);
 
     let start_tangent = hyperbolic_tangent(from, semi_major_u, semi_minor_u);
     let end_tangent = hyperbolic_tangent(end_point, semi_major_u, semi_minor_u);

@@ -298,7 +298,10 @@ async fn inner_sweep(
                 .trajectory(trajectory)
                 .sectional(sectional.unwrap_or(false))
                 .tolerance(LengthUnit(
-                    tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
+                    tolerance
+                        .as_ref()
+                        .map(|t| t.unwrap_to_mm())
+                        .unwrap_or(DEFAULT_TOLERANCE_MM),
                 ))
                 .maybe_relative_to(profile_transform.relative_to())
                 .maybe_orient_profile_perpendicular(profile_transform.orient_profile_perpendicular())

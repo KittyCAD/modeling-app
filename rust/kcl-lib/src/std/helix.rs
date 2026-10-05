@@ -151,7 +151,7 @@ async fn inner_helix(
                 .is_clockwise(!helix_result.ccw)
                 .revolutions(revolutions)
                 .start_angle(Angle::from_degrees(angle_start))
-                .length(LengthUnit(length.to_mm()))
+                .length(LengthUnit(length.unwrap_to_mm()))
                 .build()
         } else {
             mcmd::EntityMakeHelix::builder()
@@ -183,20 +183,20 @@ async fn inner_helix(
                         ModelingCmdMeta::from_args_id(exec_state, &args, id),
                         ModelingCmd::from(
                             mcmd::EntityMakeHelixFromParams::builder()
-                                .radius(LengthUnit(radius.to_mm()))
+                                .radius(LengthUnit(radius.unwrap_to_mm()))
                                 .is_clockwise(!helix_result.ccw)
-                                .length(LengthUnit(length.to_mm()))
+                                .length(LengthUnit(length.unwrap_to_mm()))
                                 .revolutions(revolutions)
                                 .start_angle(Angle::from_degrees(angle_start))
                                 .axis(Point3d {
-                                    x: direction[0].to_mm(),
-                                    y: direction[1].to_mm(),
-                                    z: direction[2].to_mm(),
+                                    x: direction[0].unwrap_to_mm(),
+                                    y: direction[1].unwrap_to_mm(),
+                                    z: direction[2].unwrap_to_mm(),
                                 })
                                 .center(Point3d {
-                                    x: LengthUnit(origin[0].to_mm()),
-                                    y: LengthUnit(origin[1].to_mm()),
-                                    z: LengthUnit(origin[2].to_mm()),
+                                    x: LengthUnit(origin[0].unwrap_to_mm()),
+                                    y: LengthUnit(origin[1].unwrap_to_mm()),
+                                    z: LengthUnit(origin[2].unwrap_to_mm()),
                                 })
                                 .build(),
                         ),
@@ -215,16 +215,16 @@ async fn inner_helix(
                 // For backwards compatibility, use edge_id directly instead of querying for EdgeReference
                 let cmd = if let Some(length) = length {
                     mcmd::EntityMakeHelixFromEdge::builder()
-                        .radius(LengthUnit(radius.to_mm()))
+                        .radius(LengthUnit(radius.unwrap_to_mm()))
                         .is_clockwise(!helix_result.ccw)
                         .revolutions(revolutions)
                         .start_angle(Angle::from_degrees(angle_start))
                         .edge_id(edge_id)
-                        .length(LengthUnit(length.to_mm()))
+                        .length(LengthUnit(length.unwrap_to_mm()))
                         .build()
                 } else {
                     mcmd::EntityMakeHelixFromEdge::builder()
-                        .radius(LengthUnit(radius.to_mm()))
+                        .radius(LengthUnit(radius.unwrap_to_mm()))
                         .is_clockwise(!helix_result.ccw)
                         .revolutions(revolutions)
                         .start_angle(Angle::from_degrees(angle_start))
@@ -242,16 +242,16 @@ async fn inner_helix(
                 // New API: use EdgeReference directly
                 let cmd = if let Some(length) = length {
                     mcmd::EntityMakeHelixFromEdge::builder()
-                        .radius(LengthUnit(radius.to_mm()))
+                        .radius(LengthUnit(radius.unwrap_to_mm()))
                         .is_clockwise(!helix_result.ccw)
                         .revolutions(revolutions)
                         .start_angle(Angle::from_degrees(angle_start))
                         .edge_reference(edge_ref.clone())
-                        .length(LengthUnit(length.to_mm()))
+                        .length(LengthUnit(length.unwrap_to_mm()))
                         .build()
                 } else {
                     mcmd::EntityMakeHelixFromEdge::builder()
-                        .radius(LengthUnit(radius.to_mm()))
+                        .radius(LengthUnit(radius.unwrap_to_mm()))
                         .is_clockwise(!helix_result.ccw)
                         .revolutions(revolutions)
                         .start_angle(Angle::from_degrees(angle_start))
