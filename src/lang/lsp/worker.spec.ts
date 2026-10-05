@@ -1,7 +1,4 @@
-import {
-  KCL_CEK_EXECUTOR_FEATURE_FLAG,
-  KCL_NEW_LEXER_PARSER_FEATURE_FLAG,
-} from '@src/lib/constants'
+import { KCL_NEW_LEXER_PARSER_FEATURE_FLAG } from '@src/lib/constants'
 import { kclRuntimeFlagsFromUserFeatures } from '@src/lib/kclRuntimeFlags'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
@@ -79,11 +76,9 @@ describe('KCL LSP worker initialization', () => {
     }
     const kclRuntimeFlags = kclRuntimeFlagsFromUserFeatures({
       has: (featureFlagId, defaultValue) =>
-        featureFlagId === KCL_CEK_EXECUTOR_FEATURE_FLAG
-          ? true
-          : featureFlagId === KCL_NEW_LEXER_PARSER_FEATURE_FLAG
-            ? false
-            : defaultValue,
+        featureFlagId === KCL_NEW_LEXER_PARSER_FEATURE_FLAG
+          ? false
+          : defaultValue,
     })
 
     workerGlobal.onmessage(
