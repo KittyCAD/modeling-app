@@ -60,6 +60,7 @@ export function addHelix({
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   wasmInstance: ModuleType
+  mode?: 'Axis' | 'Edge' | 'Cylinder'
   axis?: string
   cylinder?: Selections
   edge?: Selections

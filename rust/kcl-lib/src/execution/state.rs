@@ -2109,6 +2109,7 @@ mod tests {
     fn kcl_version_serializes_as_canonical_setting_value() {
         assert_eq!(serde_json::to_string(&KclVersion::V1).unwrap(), r#""1.0""#);
         assert_eq!(serde_json::to_string(&KclVersion::V2).unwrap(), r#""2.0""#);
+        assert_eq!(serde_json::to_string(&KclVersion::V3).unwrap(), r#""3.0""#);
         assert_eq!(
             serde_json::to_string(&KclVersion::V3Preview).unwrap(),
             r#""3.0-preview""#

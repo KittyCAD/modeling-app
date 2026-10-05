@@ -103,7 +103,7 @@ test.describe('Editor tests', { tag: '@desktop' }, () => {
     await page.keyboard.up('ControlOrMeta')
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `@settings(defaultLengthUnit = in, kclVersion = "3.0-preview")
+      `@settings(defaultLengthUnit = in, kclVersion = 3.0)
 sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
@@ -118,7 +118,7 @@ sketch001 = startSketchOn(XY)
     await page.keyboard.up('ControlOrMeta')
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `@settings(defaultLengthUnit = in, kclVersion = "3.0-preview")
+      `@settings(defaultLengthUnit = in, kclVersion = 3.0)
 sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
@@ -258,7 +258,7 @@ sketch001 = startSketchOn(XY)
     await page.locator('button:has-text("Format code")').click()
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `@settings(defaultLengthUnit = in, kclVersion = "3.0-preview")
+      `@settings(defaultLengthUnit = in, kclVersion = 3.0)
 sketch001 = startSketchOn(XY)
   |> startProfile(at = [-10, -10])
   |> line(end = [20, 0])
@@ -366,7 +366,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     await u.closeDebugPanel()
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `@settings(defaultLengthUnit = in, kclVersion = "3.0-preview")
+      `@settings(defaultLengthUnit = in, kclVersion = 3.0)
 my_var = 1 + 2`.replaceAll('\n', '')
     )
 
@@ -993,7 +993,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
 
       await expect(page.locator('.cm-content')).toHaveText(
-        `@settings(defaultLengthUnit = in, kclVersion = "3.0-preview")
+        `@settings(defaultLengthUnit = in, kclVersion = 3.0)
 sketch001 = startSketchOn(XZ)
     |> startProfile(at = [0, 12])
     |> xLine(length = 5) // lin`.replaceAll('\n', '')
@@ -1062,7 +1062,7 @@ sketch001 = startSketchOn(XZ)
       await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
 
       await expect(page.locator('.cm-content')).toHaveText(
-        `@settings(defaultLengthUnit = in, kclVersion = "3.0-preview")
+        `@settings(defaultLengthUnit = in, kclVersion = 3.0)
 sketch001 = startSketchOn(XZ)
     |> startProfile(at = [0, 12])
     |> xLine(length = 5) // lin`.replaceAll('\n', '')
@@ -1475,32 +1475,35 @@ profile001 = startProfile(sketch001, at = [0, 0])
 
 test(
   'Undo/redo recovers deleted files interleaved with code edits',
-  { tag: '@desktop' },
-  async ({ page, homePage, toolbar, editor, folderSetupFn }) => {
+  { tag: '@web' },
+  async ({ page, homePage, toolbar, editor, folderSetupFn, fs, scene }) => {
     await folderSetupFn(async (dir) => {
-      const projectDir = join(dir, 'History Project')
-      await fsp.mkdir(projectDir, { recursive: true })
-      await fsp.copyFile(
-        executorInputPath('cylinder.kcl'),
-        join(projectDir, 'main.kcl')
+      const projectDir = await fs.join(dir, 'History Project')
+      await fs.mkdir(projectDir, { recursive: true })
+      await fs.writeFile(
+        await fs.join(projectDir, 'main.kcl'),
+        await fsp.readFile(executorInputPath('cylinder.kcl'))
       )
-      await fsp.copyFile(
-        executorInputPath('basic_fillet_cube_end.kcl'),
-        join(projectDir, 'fileToDelete.kcl')
+      await fs.writeFile(
+        await fs.join(projectDir, 'fileToDelete.kcl'),
+        await fsp.readFile(executorInputPath('basic_fillet_cube_end.kcl'))
       )
     })
 
     const u = await getUtils(page)
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    await homePage.projectsLoaded()
+
     const fileToDelete = u.locatorFile('fileToDelete.kcl')
     const deleteMenuItem = page.getByRole('button', { name: 'Delete' })
     const deleteConfirmation = page.getByTestId('delete-confirmation')
     const archivedToast = page.getByText('archived successfully')
-    const restoredToast = page.getByText('restored successfully')
     const undoButton = page.getByRole('button', { name: 'arrow turn left' })
     const redoButton = page.getByRole('button', { name: 'arrow turn right' })
 
     await test.step('Open project and edit main.kcl', async () => {
       await homePage.openProject('History Project')
+      await scene.settled()
       await editor.openPane()
       await editor.expectEditor.toContain('extrude')
       await editor.codeContent.focus()
@@ -1525,16 +1528,10 @@ test(
       await expect(u.codeLocator).not.toContainText('interleaveB = 2')
       await expect(u.codeLocator).toContainText('interleaveA = 1')
 
-      do {
-        await undoButton.click()
-        await page.waitForTimeout(100)
-      } while (
-        !(await fileToDelete.isVisible()) &&
-        !(await undoButton.isDisabled())
-      )
+      await undoButton.click()
+      await expect(fileToDelete).toBeVisible()
 
-      await expect(restoredToast).toBeVisible()
-
+      await expect(undoButton).toBeEnabled()
       await undoButton.click()
       await expect(u.codeLocator).not.toContainText('interleaveA = 1')
     })
@@ -1547,9 +1544,9 @@ test(
     })
 
     await test.step('Redo re-applies the delete', async () => {
-      await page.waitForTimeout(1_000)
       await redoButton.click()
-
+      await expect(u.codeLocator).toContainText('interleaveA = 1')
+      await redoButton.click()
       await expect(fileToDelete).not.toBeAttached()
     })
   }

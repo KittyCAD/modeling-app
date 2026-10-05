@@ -43,8 +43,6 @@ const settingsSwitchTab = (page: Page) => async (tab: 'user' | 'proj') => {
       await projectSettingsTab.click()
       await expect(projectIdInput).toBeVisible()
       break
-    default:
-      const _: never = tab
   }
 }
 

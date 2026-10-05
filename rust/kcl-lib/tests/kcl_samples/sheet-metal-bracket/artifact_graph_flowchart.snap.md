@@ -348,7 +348,7 @@ flowchart LR
   190["SweepEdge Adjacent"]
   191["CompositeSolid Subtract<br>[10637, 10681, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 31 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  192["EdgeCut Fillet<br>[10687, 11036, 0]"]
+  192["EdgeCut Fillet<br>[10687, 11040, 0]"]
     %% [ProgramBodyItem { index: 31 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
   193["SketchBlock<br>[1307, 5145, 0]"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit]
@@ -625,7 +625,7 @@ flowchart LR
   19 <--x 41
   20 <--x 42
   21 <--x 43
-  22 <--x 44
+  23 <--x 44
   24 --- 25
   24 --- 26
   24 --- 27

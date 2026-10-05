@@ -30,7 +30,7 @@ specific error message. `fail` never returns a value.
 ### Examples
 
 ```kcl
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 fn positive(@value: number): number {
   return if value > 0 {

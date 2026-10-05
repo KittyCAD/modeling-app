@@ -113,10 +113,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 983,
-            "end": 988,
+            "commentStart": 1001,
+            "end": 1006,
             "moduleId": 0,
-            "start": 983,
+            "start": 1001,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -127,10 +127,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1054,
-            "end": 1059,
+            "commentStart": 1072,
+            "end": 1077,
             "moduleId": 0,
-            "start": 1054,
+            "start": 1072,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -141,10 +141,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1171,
-            "end": 1176,
+            "commentStart": 1189,
+            "end": 1194,
             "moduleId": 0,
-            "start": 1171,
+            "start": 1189,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -155,10 +155,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1297,
-            "end": 1302,
+            "commentStart": 1315,
+            "end": 1320,
             "moduleId": 0,
-            "start": 1297,
+            "start": 1315,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -169,10 +169,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1418,
-            "end": 1423,
+            "commentStart": 1436,
+            "end": 1441,
             "moduleId": 0,
-            "start": 1418,
+            "start": 1436,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -183,10 +183,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1532,
-            "end": 1537,
+            "commentStart": 1550,
+            "end": 1555,
             "moduleId": 0,
-            "start": 1532,
+            "start": 1550,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -197,10 +197,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2325,
-            "end": 2337,
+            "commentStart": 2343,
+            "end": 2355,
             "moduleId": 0,
-            "start": 2325,
+            "start": 2343,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -211,10 +211,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2350,
-            "end": 2360,
+            "commentStart": 2368,
+            "end": 2378,
             "moduleId": 0,
-            "start": 2350,
+            "start": 2368,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -246,10 +246,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
               -0.000000000000002412191995757565
             ],
             "tag": {
-              "commentStart": 983,
-              "end": 988,
+              "commentStart": 1001,
+              "end": 1006,
               "moduleId": 0,
-              "start": 983,
+              "start": 1001,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -270,10 +270,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
               -0.0000000000000003755578414039189
             ],
             "tag": {
-              "commentStart": 1054,
-              "end": 1059,
+              "commentStart": 1072,
+              "end": 1077,
               "moduleId": 0,
-              "start": 1054,
+              "start": 1072,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -294,10 +294,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
               113.70280711509491
             ],
             "tag": {
-              "commentStart": 1171,
-              "end": 1176,
+              "commentStart": 1189,
+              "end": 1194,
               "moduleId": 0,
-              "start": 1171,
+              "start": 1189,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -318,10 +318,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
               112.6767466851179
             ],
             "tag": {
-              "commentStart": 1297,
-              "end": 1302,
+              "commentStart": 1315,
+              "end": 1320,
               "moduleId": 0,
-              "start": 1297,
+              "start": 1315,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -342,10 +342,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
               2.9999999999999996
             ],
             "tag": {
-              "commentStart": 1418,
-              "end": 1423,
+              "commentStart": 1436,
+              "end": 1441,
               "moduleId": 0,
-              "start": 1418,
+              "start": 1436,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -366,10 +366,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
               2.9999999999999987
             ],
             "tag": {
-              "commentStart": 1532,
-              "end": 1537,
+              "commentStart": 1550,
+              "end": 1555,
               "moduleId": 0,
-              "start": 1532,
+              "start": 1550,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -487,10 +487,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 983,
-            "end": 988,
+            "commentStart": 1001,
+            "end": 1006,
             "moduleId": 0,
-            "start": 983,
+            "start": 1001,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -501,10 +501,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1054,
-            "end": 1059,
+            "commentStart": 1072,
+            "end": 1077,
             "moduleId": 0,
-            "start": 1054,
+            "start": 1072,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -515,10 +515,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1171,
-            "end": 1176,
+            "commentStart": 1189,
+            "end": 1194,
             "moduleId": 0,
-            "start": 1171,
+            "start": 1189,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -529,10 +529,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1297,
-            "end": 1302,
+            "commentStart": 1315,
+            "end": 1320,
             "moduleId": 0,
-            "start": 1297,
+            "start": 1315,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -543,10 +543,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1418,
-            "end": 1423,
+            "commentStart": 1436,
+            "end": 1441,
             "moduleId": 0,
-            "start": 1418,
+            "start": 1436,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -557,10 +557,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1532,
-            "end": 1537,
+            "commentStart": 1550,
+            "end": 1555,
             "moduleId": 0,
-            "start": 1532,
+            "start": 1550,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -571,10 +571,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2325,
-            "end": 2337,
+            "commentStart": 2343,
+            "end": 2355,
             "moduleId": 0,
-            "start": 2325,
+            "start": 2343,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -585,10 +585,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2350,
-            "end": 2360,
+            "commentStart": 2368,
+            "end": 2378,
             "moduleId": 0,
-            "start": 2350,
+            "start": 2368,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -620,10 +620,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
               -0.000000000000002412191995757565
             ],
             "tag": {
-              "commentStart": 983,
-              "end": 988,
+              "commentStart": 1001,
+              "end": 1006,
               "moduleId": 0,
-              "start": 983,
+              "start": 1001,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -644,10 +644,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
               -0.0000000000000003755578414039189
             ],
             "tag": {
-              "commentStart": 1054,
-              "end": 1059,
+              "commentStart": 1072,
+              "end": 1077,
               "moduleId": 0,
-              "start": 1054,
+              "start": 1072,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -668,10 +668,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
               113.70280711509491
             ],
             "tag": {
-              "commentStart": 1171,
-              "end": 1176,
+              "commentStart": 1189,
+              "end": 1194,
               "moduleId": 0,
-              "start": 1171,
+              "start": 1189,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -692,10 +692,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
               112.6767466851179
             ],
             "tag": {
-              "commentStart": 1297,
-              "end": 1302,
+              "commentStart": 1315,
+              "end": 1320,
               "moduleId": 0,
-              "start": 1297,
+              "start": 1315,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -716,10 +716,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
               2.9999999999999996
             ],
             "tag": {
-              "commentStart": 1418,
-              "end": 1423,
+              "commentStart": 1436,
+              "end": 1441,
               "moduleId": 0,
-              "start": 1418,
+              "start": 1436,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -740,10 +740,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
               2.9999999999999987
             ],
             "tag": {
-              "commentStart": 1532,
-              "end": 1537,
+              "commentStart": 1550,
+              "end": 1555,
               "moduleId": 0,
-              "start": 1532,
+              "start": 1550,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -861,10 +861,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 983,
-            "end": 988,
+            "commentStart": 1001,
+            "end": 1006,
             "moduleId": 0,
-            "start": 983,
+            "start": 1001,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -875,10 +875,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1054,
-            "end": 1059,
+            "commentStart": 1072,
+            "end": 1077,
             "moduleId": 0,
-            "start": 1054,
+            "start": 1072,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -889,10 +889,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1171,
-            "end": 1176,
+            "commentStart": 1189,
+            "end": 1194,
             "moduleId": 0,
-            "start": 1171,
+            "start": 1189,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -903,10 +903,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1297,
-            "end": 1302,
+            "commentStart": 1315,
+            "end": 1320,
             "moduleId": 0,
-            "start": 1297,
+            "start": 1315,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -917,10 +917,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1418,
-            "end": 1423,
+            "commentStart": 1436,
+            "end": 1441,
             "moduleId": 0,
-            "start": 1418,
+            "start": 1436,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -931,10 +931,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 1532,
-            "end": 1537,
+            "commentStart": 1550,
+            "end": 1555,
             "moduleId": 0,
-            "start": 1532,
+            "start": 1550,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -945,10 +945,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2325,
-            "end": 2337,
+            "commentStart": 2343,
+            "end": 2355,
             "moduleId": 0,
-            "start": 2325,
+            "start": 2343,
             "type": "TagDeclarator",
             "value": "capStart001"
           },
@@ -959,10 +959,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2350,
-            "end": 2360,
+            "commentStart": 2368,
+            "end": 2378,
             "moduleId": 0,
-            "start": 2350,
+            "start": 2368,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -994,10 +994,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
               -0.000000000000002412191995757565
             ],
             "tag": {
-              "commentStart": 983,
-              "end": 988,
+              "commentStart": 1001,
+              "end": 1006,
               "moduleId": 0,
-              "start": 983,
+              "start": 1001,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1018,10 +1018,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
               -0.0000000000000003755578414039189
             ],
             "tag": {
-              "commentStart": 1054,
-              "end": 1059,
+              "commentStart": 1072,
+              "end": 1077,
               "moduleId": 0,
-              "start": 1054,
+              "start": 1072,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1042,10 +1042,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
               113.70280711509491
             ],
             "tag": {
-              "commentStart": 1171,
-              "end": 1176,
+              "commentStart": 1189,
+              "end": 1194,
               "moduleId": 0,
-              "start": 1171,
+              "start": 1189,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1066,10 +1066,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
               112.6767466851179
             ],
             "tag": {
-              "commentStart": 1297,
-              "end": 1302,
+              "commentStart": 1315,
+              "end": 1320,
               "moduleId": 0,
-              "start": 1297,
+              "start": 1315,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1090,10 +1090,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
               2.9999999999999996
             ],
             "tag": {
-              "commentStart": 1418,
-              "end": 1423,
+              "commentStart": 1436,
+              "end": 1441,
               "moduleId": 0,
-              "start": 1418,
+              "start": 1436,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -1114,10 +1114,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
               2.9999999999999987
             ],
             "tag": {
-              "commentStart": 1532,
-              "end": 1537,
+              "commentStart": 1550,
+              "end": 1555,
               "moduleId": 0,
-              "start": 1532,
+              "start": 1550,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -2077,10 +2077,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
                     -0.000000000000002412191995757565
                   ],
                   "tag": {
-                    "commentStart": 983,
-                    "end": 988,
+                    "commentStart": 1001,
+                    "end": 1006,
                     "moduleId": 0,
-                    "start": 983,
+                    "start": 1001,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -2101,10 +2101,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
                     -0.0000000000000003755578414039189
                   ],
                   "tag": {
-                    "commentStart": 1054,
-                    "end": 1059,
+                    "commentStart": 1072,
+                    "end": 1077,
                     "moduleId": 0,
-                    "start": 1054,
+                    "start": 1072,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -2125,10 +2125,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
                     113.70280711509491
                   ],
                   "tag": {
-                    "commentStart": 1171,
-                    "end": 1176,
+                    "commentStart": 1189,
+                    "end": 1194,
                     "moduleId": 0,
-                    "start": 1171,
+                    "start": 1189,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -2149,10 +2149,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
                     112.6767466851179
                   ],
                   "tag": {
-                    "commentStart": 1297,
-                    "end": 1302,
+                    "commentStart": 1315,
+                    "end": 1320,
                     "moduleId": 0,
-                    "start": 1297,
+                    "start": 1315,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -2173,10 +2173,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
                     2.9999999999999996
                   ],
                   "tag": {
-                    "commentStart": 1418,
-                    "end": 1423,
+                    "commentStart": 1436,
+                    "end": 1441,
                     "moduleId": 0,
-                    "start": 1418,
+                    "start": 1436,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -2197,10 +2197,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
                     2.9999999999999987
                   ],
                   "tag": {
-                    "commentStart": 1532,
-                    "end": 1537,
+                    "commentStart": 1550,
+                    "end": 1555,
                     "moduleId": 0,
-                    "start": 1532,
+                    "start": 1550,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -2313,10 +2313,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
             -0.000000000000002412191995757565
           ],
           "tag": {
-            "commentStart": 983,
-            "end": 988,
+            "commentStart": 1001,
+            "end": 1006,
             "moduleId": 0,
-            "start": 983,
+            "start": 1001,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2337,10 +2337,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
             -0.0000000000000003755578414039189
           ],
           "tag": {
-            "commentStart": 1054,
-            "end": 1059,
+            "commentStart": 1072,
+            "end": 1077,
             "moduleId": 0,
-            "start": 1054,
+            "start": 1072,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2361,10 +2361,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
             113.70280711509491
           ],
           "tag": {
-            "commentStart": 1171,
-            "end": 1176,
+            "commentStart": 1189,
+            "end": 1194,
             "moduleId": 0,
-            "start": 1171,
+            "start": 1189,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2385,10 +2385,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
             112.6767466851179
           ],
           "tag": {
-            "commentStart": 1297,
-            "end": 1302,
+            "commentStart": 1315,
+            "end": 1320,
             "moduleId": 0,
-            "start": 1297,
+            "start": 1315,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2409,10 +2409,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
             2.9999999999999996
           ],
           "tag": {
-            "commentStart": 1418,
-            "end": 1423,
+            "commentStart": 1436,
+            "end": 1441,
             "moduleId": 0,
-            "start": 1418,
+            "start": 1436,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -2433,10 +2433,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
             2.9999999999999987
           ],
           "tag": {
-            "commentStart": 1532,
-            "end": 1537,
+            "commentStart": 1550,
+            "end": 1555,
             "moduleId": 0,
-            "start": 1532,
+            "start": 1550,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -2568,10 +2568,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2466,
-            "end": 2471,
+            "commentStart": 2484,
+            "end": 2489,
             "moduleId": 0,
-            "start": 2466,
+            "start": 2484,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2582,10 +2582,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2544,
-            "end": 2549,
+            "commentStart": 2562,
+            "end": 2567,
             "moduleId": 0,
-            "start": 2544,
+            "start": 2562,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2596,10 +2596,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 2666,
-            "end": 2671,
+            "commentStart": 2684,
+            "end": 2689,
             "moduleId": 0,
-            "start": 2666,
+            "start": 2684,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2621,10 +2621,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
               2.9999999999956772
             ],
             "tag": {
-              "commentStart": 2466,
-              "end": 2471,
+              "commentStart": 2484,
+              "end": 2489,
               "moduleId": 0,
-              "start": 2466,
+              "start": 2484,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -2645,10 +2645,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
               2.999999999991355
             ],
             "tag": {
-              "commentStart": 2544,
-              "end": 2549,
+              "commentStart": 2562,
+              "end": 2567,
               "moduleId": 0,
-              "start": 2544,
+              "start": 2562,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -2669,10 +2669,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
               44.21216129180205
             ],
             "tag": {
-              "commentStart": 2666,
-              "end": 2671,
+              "commentStart": 2684,
+              "end": 2689,
               "moduleId": 0,
-              "start": 2666,
+              "start": 2684,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -3173,10 +3173,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
                     2.9999999999956772
                   ],
                   "tag": {
-                    "commentStart": 2466,
-                    "end": 2471,
+                    "commentStart": 2484,
+                    "end": 2489,
                     "moduleId": 0,
-                    "start": 2466,
+                    "start": 2484,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -3197,10 +3197,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
                     2.999999999991355
                   ],
                   "tag": {
-                    "commentStart": 2544,
-                    "end": 2549,
+                    "commentStart": 2562,
+                    "end": 2567,
                     "moduleId": 0,
-                    "start": 2544,
+                    "start": 2562,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -3221,10 +3221,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
                     44.21216129180205
                   ],
                   "tag": {
-                    "commentStart": 2666,
-                    "end": 2671,
+                    "commentStart": 2684,
+                    "end": 2689,
                     "moduleId": 0,
-                    "start": 2666,
+                    "start": 2684,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -3325,10 +3325,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
             2.9999999999956772
           ],
           "tag": {
-            "commentStart": 2466,
-            "end": 2471,
+            "commentStart": 2484,
+            "end": 2489,
             "moduleId": 0,
-            "start": 2466,
+            "start": 2484,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3349,10 +3349,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
             2.999999999991355
           ],
           "tag": {
-            "commentStart": 2544,
-            "end": 2549,
+            "commentStart": 2562,
+            "end": 2567,
             "moduleId": 0,
-            "start": 2544,
+            "start": 2562,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -3373,10 +3373,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
             44.21216129180205
           ],
           "tag": {
-            "commentStart": 2666,
-            "end": 2671,
+            "commentStart": 2684,
+            "end": 2689,
             "moduleId": 0,
-            "start": 2666,
+            "start": 2684,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -3517,10 +3517,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3539,
-            "end": 3543,
+            "commentStart": 3557,
+            "end": 3561,
             "moduleId": 0,
-            "start": 3539,
+            "start": 3557,
             "type": "TagDeclarator",
             "value": "hole"
           },
@@ -3548,10 +3548,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
             ],
             "radius": 2.0,
             "tag": {
-              "commentStart": 3539,
-              "end": 3543,
+              "commentStart": 3557,
+              "end": 3561,
               "moduleId": 0,
-              "start": 3539,
+              "start": 3557,
               "type": "TagDeclarator",
               "value": "hole"
             },
@@ -3644,10 +3644,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3539,
-                "end": 3543,
+                "commentStart": 3557,
+                "end": 3561,
                 "moduleId": 0,
-                "start": 3539,
+                "start": 3557,
                 "type": "TagDeclarator",
                 "value": "hole"
               },
@@ -3675,10 +3675,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
                 ],
                 "radius": 2.0,
                 "tag": {
-                  "commentStart": 3539,
-                  "end": 3543,
+                  "commentStart": 3557,
+                  "end": 3561,
                   "moduleId": 0,
-                  "start": 3539,
+                  "start": 3557,
                   "type": "TagDeclarator",
                   "value": "hole"
                 },
@@ -3768,10 +3768,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3539,
-                "end": 3543,
+                "commentStart": 3557,
+                "end": 3561,
                 "moduleId": 0,
-                "start": 3539,
+                "start": 3557,
                 "type": "TagDeclarator",
                 "value": "hole"
               },
@@ -3799,10 +3799,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
                 ],
                 "radius": 2.0,
                 "tag": {
-                  "commentStart": 3539,
-                  "end": 3543,
+                  "commentStart": 3557,
+                  "end": 3561,
                   "moduleId": 0,
-                  "start": 3539,
+                  "start": 3557,
                   "type": "TagDeclarator",
                   "value": "hole"
                 },
@@ -3897,10 +3897,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3539,
-                "end": 3543,
+                "commentStart": 3557,
+                "end": 3561,
                 "moduleId": 0,
-                "start": 3539,
+                "start": 3557,
                 "type": "TagDeclarator",
                 "value": "hole"
               },
@@ -3928,10 +3928,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
                 ],
                 "radius": 2.0,
                 "tag": {
-                  "commentStart": 3539,
-                  "end": 3543,
+                  "commentStart": 3557,
+                  "end": 3561,
                   "moduleId": 0,
-                  "start": 3539,
+                  "start": 3557,
                   "type": "TagDeclarator",
                   "value": "hole"
                 },
@@ -4021,10 +4021,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3539,
-                "end": 3543,
+                "commentStart": 3557,
+                "end": 3561,
                 "moduleId": 0,
-                "start": 3539,
+                "start": 3557,
                 "type": "TagDeclarator",
                 "value": "hole"
               },
@@ -4052,10 +4052,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
                 ],
                 "radius": 2.0,
                 "tag": {
-                  "commentStart": 3539,
-                  "end": 3543,
+                  "commentStart": 3557,
+                  "end": 3561,
                   "moduleId": 0,
-                  "start": 3539,
+                  "start": 3557,
                   "type": "TagDeclarator",
                   "value": "hole"
                 },
@@ -4145,10 +4145,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3539,
-                "end": 3543,
+                "commentStart": 3557,
+                "end": 3561,
                 "moduleId": 0,
-                "start": 3539,
+                "start": 3557,
                 "type": "TagDeclarator",
                 "value": "hole"
               },
@@ -4176,10 +4176,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
                 ],
                 "radius": 2.0,
                 "tag": {
-                  "commentStart": 3539,
-                  "end": 3543,
+                  "commentStart": 3557,
+                  "end": 3561,
                   "moduleId": 0,
-                  "start": 3539,
+                  "start": 3557,
                   "type": "TagDeclarator",
                   "value": "hole"
                 },
@@ -4269,10 +4269,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 3539,
-                "end": 3543,
+                "commentStart": 3557,
+                "end": 3561,
                 "moduleId": 0,
-                "start": 3539,
+                "start": 3557,
                 "type": "TagDeclarator",
                 "value": "hole"
               },
@@ -4300,10 +4300,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
                 ],
                 "radius": 2.0,
                 "tag": {
-                  "commentStart": 3539,
-                  "end": 3543,
+                  "commentStart": 3557,
+                  "end": 3561,
                   "moduleId": 0,
-                  "start": 3539,
+                  "start": 3557,
                   "type": "TagDeclarator",
                   "value": "hole"
                 },
@@ -4559,10 +4559,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
                   ],
                   "radius": 2.0,
                   "tag": {
-                    "commentStart": 3539,
-                    "end": 3543,
+                    "commentStart": 3557,
+                    "end": 3561,
                     "moduleId": 0,
-                    "start": 3539,
+                    "start": 3557,
                     "type": "TagDeclarator",
                     "value": "hole"
                   },
@@ -4672,10 +4672,10 @@ description: Variables in memory after executing field-monitor-stand.kcl
           ],
           "radius": 2.0,
           "tag": {
-            "commentStart": 3539,
-            "end": 3543,
+            "commentStart": 3557,
+            "end": 3561,
             "moduleId": 0,
-            "start": 3539,
+            "start": 3557,
             "type": "TagDeclarator",
             "value": "hole"
           },

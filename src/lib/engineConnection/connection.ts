@@ -249,6 +249,15 @@ export class Connection extends EventTarget {
         case 'ice_server_info':
           callback('auth success')
           return
+        case 'debug':
+        case 'modeling':
+        case 'trickle_ice':
+        case 'export':
+        case 'sdp_answer':
+        case 'modeling_batch':
+        case 'metrics_request':
+        case 'reconnect':
+          break
       }
       if (!this.handleMessage) {
         console.warn('unable to process message, handleMessage is missing')

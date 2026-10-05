@@ -64,7 +64,7 @@ resolve. A `target` is a point, so its coordinates may be negative.
 ### Examples
 
 ```kcl
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 overheadView = view::directed([0, 1, -2])
 
