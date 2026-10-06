@@ -65,6 +65,13 @@ use crate::std::axis_or_reference::Point3dOrEdgeReference;
 use crate::std::edge::{self};
 use crate::std::solver::create_segments_in_engine;
 
+fn must_be_lengths_err(source_range: crate::SourceRange) -> KclError {
+    KclError::new_type(KclErrorDetails::new(
+        "The components of `direction` must be lengths, e.g. `[0, 0, 1]` or `[1mm, 0mm, 1in]`".to_owned(),
+        vec![source_range],
+    ))
+}
+
 /// Extrudes by a given amount.
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch_values: Vec<KclValue> = args.get_unlabeled_kw_arg(
@@ -135,6 +142,11 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                     ))
                 })?
             };
+            if let Point3dOrEdgeReference::Point(point) = &inner
+                && !point.iter().all(|component| component.is_length_compatible())
+            {
+                return Err(must_be_lengths_err(args.source_range));
+            }
             Some(inner)
         }
     };
@@ -450,7 +462,12 @@ async fn inner_extrude(
 
     // Extrude the element(s).
     let mut solids = Vec::new();
-    let tolerance = LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM));
+    let tolerance = LengthUnit(
+        tolerance
+            .as_ref()
+            .map(|t| t.unwrap_to_mm())
+            .unwrap_or(DEFAULT_TOLERANCE_MM),
+    );
 
     let extrude_method = match method.as_deref() {
         Some("new" | "NEW") => ExtrudeMethod::New,
@@ -512,7 +529,7 @@ async fn inner_extrude(
         )));
     }
 
-    let bidirection = bidirectional_length.map(|l| LengthUnit(l.to_mm()));
+    let bidirection = bidirectional_length.map(|l| LengthUnit(l.unwrap_to_mm()));
 
     let opposite = match (symmetric, bidirection) {
         (Some(true), _) => Opposite::Symmetric,
@@ -573,11 +590,11 @@ async fn inner_extrude(
         ) {
             (Some(angle), angle_step, center, Some(length), None, None) => {
                 let center = center.clone().map(point_to_mm).map(Point2d::from).unwrap_or_default();
-                let total_rotation_angle = Angle::from_degrees(angle.to_degrees(exec_state, args.source_range));
+                let total_rotation_angle = Angle::from_degrees(angle.unwrap_to_degrees(exec_state, args.source_range));
                 let angle_step_size = Angle::from_degrees(
                     angle_step
                         .clone()
-                        .map(|a| a.to_degrees(exec_state, args.source_range))
+                        .map(|a| a.unwrap_to_degrees(exec_state, args.source_range))
                         .unwrap_or(15.0),
                 );
                 ModelingCmd::from(
@@ -592,7 +609,7 @@ async fn inner_extrude(
                                 })?
                                 .into(),
                         )
-                        .distance(LengthUnit(length.to_mm()))
+                        .distance(LengthUnit(length.unwrap_to_mm()))
                         .center_2d(center)
                         .total_rotation_angle(total_rotation_angle)
                         .angle_step_size(angle_step_size)
@@ -605,12 +622,12 @@ async fn inner_extrude(
                 mcmd::Extrude::builder()
                     .maybe_target(sketch_or_face_id.map(Into::into))
                     .maybe_target_reference(target_reference.clone())
-                    .distance(LengthUnit(length.to_mm()))
+                    .distance(LengthUnit(length.unwrap_to_mm()))
                     .opposite(opposite.clone())
                     .maybe_draft_angle(
                         draft_angle
                             .clone()
-                            .map(|a| Angle::from_degrees(a.to_degrees(exec_state, args.source_range))),
+                            .map(|a| Angle::from_degrees(a.unwrap_to_degrees(exec_state, args.source_range))),
                     )
                     .extrude_method(extrude_method)
                     .body_type(body_type)
@@ -619,13 +636,24 @@ async fn inner_extrude(
             ),
             (None, None, None, Some(length), None, Some(dir)) => {
                 let direction3d = match dir {
-                    Point3dOrEdgeReference::Point(p) => Some(DirectionType::Axis {
-                        direction: KPoint3d {
-                            x: p[0].n,
-                            y: p[1].n,
-                            z: p[2].n,
-                        },
-                    }),
+                    Point3dOrEdgeReference::Point(p) => {
+                        // Only the direction matters, so use the file's unit: a direction that
+                        // doesn't mix units is sent with the same numbers as it was written.
+                        let units = exec_state.length_unit();
+                        Some(DirectionType::Axis {
+                            direction: KPoint3d {
+                                x: p[0]
+                                    .to_length_units(units)
+                                    .ok_or(must_be_lengths_err(args.source_range))?,
+                                y: p[1]
+                                    .to_length_units(units)
+                                    .ok_or(must_be_lengths_err(args.source_range))?,
+                                z: p[2]
+                                    .to_length_units(units)
+                                    .ok_or(must_be_lengths_err(args.source_range))?,
+                            },
+                        })
+                    }
                     Point3dOrEdgeReference::Edge(edge) => {
                         let edge_id = match edge {
                             crate::std::fillet::EdgeReference::Uuid(uuid) => *uuid,
@@ -653,12 +681,12 @@ async fn inner_extrude(
                     mcmd::Extrude::builder()
                         .maybe_target(sketch_or_face_id.map(Into::into))
                         .maybe_target_reference(target_reference.clone())
-                        .distance(LengthUnit(length.to_mm()))
+                        .distance(LengthUnit(length.unwrap_to_mm()))
                         .opposite(opposite.clone())
                         .maybe_draft_angle(
                             draft_angle
                                 .clone()
-                                .map(|a| Angle::from_degrees(a.to_degrees(exec_state, args.source_range))),
+                                .map(|a| Angle::from_degrees(a.unwrap_to_degrees(exec_state, args.source_range))),
                         )
                         .extrude_method(extrude_method)
                         .body_type(body_type)
@@ -674,9 +702,9 @@ async fn inner_extrude(
                         .target(concrete_target()?.into())
                         .reference(ExtrudeReference::Point {
                             point: KPoint3d {
-                                x: LengthUnit(point[0].to_mm()),
-                                y: LengthUnit(point[1].to_mm()),
-                                z: LengthUnit(point[2].to_mm()),
+                                x: LengthUnit(point[0].unwrap_to_mm()),
+                                y: LengthUnit(point[1].unwrap_to_mm()),
+                                z: LengthUnit(point[2].unwrap_to_mm()),
                             },
                         })
                         .extrude_method(extrude_method)
@@ -688,14 +716,14 @@ async fn inner_extrude(
                         .target(concrete_target()?.into())
                         .reference(ExtrudeReference::Axis {
                             axis: KPoint3d {
-                                x: direction[0].to_mm(),
-                                y: direction[1].to_mm(),
-                                z: direction[2].to_mm(),
+                                x: direction[0].unwrap_to_mm(),
+                                y: direction[1].unwrap_to_mm(),
+                                z: direction[2].unwrap_to_mm(),
                             },
                             point: KPoint3d {
-                                x: LengthUnit(origin[0].to_mm()),
-                                y: LengthUnit(origin[1].to_mm()),
-                                z: LengthUnit(origin[2].to_mm()),
+                                x: LengthUnit(origin[0].unwrap_to_mm()),
+                                y: LengthUnit(origin[1].unwrap_to_mm()),
+                                z: LengthUnit(origin[2].unwrap_to_mm()),
                             },
                         })
                         .extrude_method(extrude_method)
@@ -1651,6 +1679,64 @@ extrude(profile001, length = 1, bidirectionalLength = -1)
             .expect("expected an extrude command");
 
         assert_eq!(extrude.opposite, Opposite::Other(LengthUnit(-1.0)));
+    }
+
+    fn extrude_direction_code(default_unit: &str, direction: &str) -> String {
+        format!(
+            r#"@settings(kclVersion = 2.0, defaultLengthUnit = {default_unit})
+profile = sketch(on = XY) {{
+  circle1 = circle(center = [10mm, 0mm], start = [11mm, 0mm])
+}}
+extrude(profile.circle1, length = 1, direction = {direction}, bodyType = SURFACE)"#
+        )
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn extrude_converts_direction_to_the_file_units() {
+        // https://github.com/KittyCAD/modeling-app/issues/14343
+        // Each component is converted to the file's unit before the direction is sent to the engine.
+        let cases = [
+            ("mm", "[-1, 0, 1ft]", [-1.0, 0.0, 304.8]),
+            ("mm", "[-1mm, 0mm, 304.8mm]", [-1.0, 0.0, 304.8]),
+            ("mm", "[-1, 0, 1]", [-1.0, 0.0, 1.0]),
+            ("in", "[-1mm, 0, 1ft]", [-1.0 / 25.4, 0.0, 12.0]),
+            ("in", "[-1, 0, 1]", [-1.0, 0.0, 1.0]),
+        ];
+
+        for (default_unit, direction, expected) in cases {
+            let code = extrude_direction_code(default_unit, direction);
+            let result = parse_execute(&code).await.unwrap();
+            let direction = result
+                .root_module_artifact_commands()
+                .iter()
+                .find_map(|artifact_command| match &artifact_command.command {
+                    ModelingCmd::Extrude(extrude) => extrude.direction,
+                    _ => None,
+                })
+                .expect("expected an extrude command with a direction");
+            let DirectionType::Axis { direction } = direction else {
+                panic!("expected an axis direction, got {direction:?} for:\n{code}");
+            };
+            let actual = [direction.x, direction.y, direction.z];
+            assert!(
+                actual.iter().zip(expected).all(|(a, e)| (a - e).abs() < 1e-9),
+                "expected {expected:?}, got {actual:?} for:\n{code}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn extrude_rejects_direction_that_is_not_lengths() {
+        for direction in ["[0, 0, 1deg]", "[0, 0, 1mm + 1deg]", "[0, 0, 1_]"] {
+            let code = extrude_direction_code("mm", direction);
+            let err = parse_execute(&code).await.unwrap_err();
+            assert!(matches!(&err, KclError::Type { .. }), "{err:?} for:\n{code}");
+            let message = err.message();
+            assert!(
+                message.contains("The components of `direction` must be lengths"),
+                "{message} for:\n{code}"
+            );
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]

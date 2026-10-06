@@ -58,7 +58,7 @@ const GDT_DOT_LEADER_REFERENCE_ENGINE_SCALE: f64 = 0.5;
 const GDT_FONT_SCALE_1_HEIGHT_MM: f64 = 8.0;
 
 fn gdt_font_scale(font_size: Option<&TyF64>, args: &Args) -> Result<f32, KclError> {
-    let requested_height_mm = font_size.map(TyF64::to_mm).unwrap_or(DEFAULT_GDT_FONT_SIZE_MM);
+    let requested_height_mm = font_size.map(TyF64::unwrap_to_mm).unwrap_or(DEFAULT_GDT_FONT_SIZE_MM);
     if requested_height_mm <= 0.0 {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "fontSize must be greater than 0.".to_owned(),
@@ -393,8 +393,8 @@ async fn inner_datum(
         .plane_id(frame_plane.id)
         .offset(if let Some(offset) = &frame_position {
             KPoint2d {
-                x: offset[0].to_mm(),
-                y: offset[1].to_mm(),
+                x: offset[0].unwrap_to_mm(),
+                y: offset[1].unwrap_to_mm(),
             }
         } else {
             KPoint2d { x: 100.0, y: 100.0 }
@@ -477,8 +477,8 @@ async fn inner_note(
         .plane_id(frame_plane.id)
         .offset(if let Some(offset) = &frame_position {
             KPoint2d {
-                x: offset[0].to_mm(),
-                y: offset[1].to_mm(),
+                x: offset[0].unwrap_to_mm(),
+                y: offset[1].unwrap_to_mm(),
             }
         } else {
             KPoint2d { x: 100.0, y: 100.0 }
@@ -1110,7 +1110,7 @@ async fn create_basic_distance_annotation(
                 .tolerance(
                     tolerance
                         .as_ref()
-                        .map(|tol| tol.to_length_units(display_units))
+                        .map(|tol| tol.unwrap_to_length_units(display_units))
                         .unwrap_or_default(),
                 )
                 .build(),
@@ -1118,8 +1118,8 @@ async fn create_basic_distance_annotation(
         .plane_id(frame_plane_id)
         .offset(if let Some(offset) = frame_position {
             KPoint2d {
-                x: offset[0].to_mm(),
-                y: offset[1].to_mm(),
+                x: offset[0].unwrap_to_mm(),
+                y: offset[1].unwrap_to_mm(),
             }
         } else {
             KPoint2d { x: 100.0, y: 100.0 }
@@ -1559,7 +1559,7 @@ async fn create_feature_control_annotation(
     let control_frame = gdt_control_frame(
         symbol,
         diameter_symbol,
-        tolerance.to_length_units(display_units),
+        tolerance.unwrap_to_length_units(display_units),
         datums,
     );
     let feature_control = AnnotationFeatureControl::builder()
@@ -1571,8 +1571,8 @@ async fn create_feature_control_annotation(
         .plane_id(frame_plane_id)
         .offset(if let Some(offset) = frame_position {
             KPoint2d {
-                x: offset[0].to_mm(),
-                y: offset[1].to_mm(),
+                x: offset[0].unwrap_to_mm(),
+                y: offset[1].unwrap_to_mm(),
             }
         } else {
             KPoint2d { x: 100.0, y: 100.0 }
@@ -1668,8 +1668,8 @@ async fn create_annotation(
         .plane_id(frame_plane_id)
         .offset(if let Some(offset) = frame_position {
             KPoint2d {
-                x: offset[0].to_mm(),
-                y: offset[1].to_mm(),
+                x: offset[0].unwrap_to_mm(),
+                y: offset[1].unwrap_to_mm(),
             }
         } else {
             KPoint2d { x: 100.0, y: 100.0 }

@@ -1,4 +1,5 @@
 import type { EntityType } from '@kittycad/lib'
+import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
@@ -924,12 +925,17 @@ export class KclManager extends File {
 
   /** The Abstract Syntax Tree generated from parsing the KCL code */
   private _ast = signal<Node<Program>>(createEmptyAst())
+  /** Effective language version from the last safeParse; null until parsed or on failure. */
+  private _kclProgramVersion = signal<KclVersion | null>(null)
   _lastAst: Node<Program> = createEmptyAst()
   get ast() {
     return this._ast.value
   }
   get astSignal() {
     return this._ast
+  }
+  get kclProgramVersionSignal() {
+    return this._kclProgramVersion
   }
   get lastGoodAst() {
     return this._lastAst
@@ -2394,6 +2400,7 @@ export class KclManager extends File {
   }
 
   clearAst() {
+    this._kclProgramVersion.value = null
     this.ast = {
       type: 'Program',
       body: [],
@@ -2524,6 +2531,7 @@ export class KclManager extends File {
     this._astParseFailed = false
 
     if (err(result)) {
+      this._kclProgramVersion.value = null
       const kclError: KCLError = result as KCLError
       this.diagnostics = kclErrorsToDiagnostics([kclError], code)
       this._astParseFailed = true
@@ -2538,6 +2546,9 @@ export class KclManager extends File {
     // If we decouple safeParse from execution we need to move this application logic.
     this.errors = []
     this.logs = []
+    this._kclProgramVersion.value = resultIsOk(result)
+      ? result.kclVersion
+      : null
 
     this.addDiagnostics(compilationIssuesToDiagnostics(result.errors, code))
     this.addDiagnostics(compilationIssuesToDiagnostics(result.warnings, code))

@@ -342,6 +342,17 @@ pub fn kcl_language_version(program_json: &str) -> Result<JsValue, String> {
     JsValue::from_serde(&version).map_err(|e| e.to_string())
 }
 
+/// Check argument availability using the same version rules as the executor.
+#[wasm_bindgen]
+pub fn is_kcl_version_available(
+    version: &str,
+    added_in: Option<String>,
+    removed_in: Option<String>,
+) -> Result<bool, String> {
+    let version = version.parse::<KclVersion>().map_err(|e| e.to_string())?;
+    kcl_lib::is_kcl_version_available(version, added_in.as_deref(), removed_in.as_deref()).map_err(|e| e.to_string())
+}
+
 /// Takes a kcl string and Meta settings and changes the meta settings in the kcl string.
 #[wasm_bindgen]
 pub fn change_default_units(code: &str, len_str: &str) -> Result<String, String> {
