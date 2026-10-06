@@ -1888,6 +1888,8 @@ export async function getEventForQueryEntityTypeWithPoint(
     ? (artifactGraph.get(clickEntityId) ??
       getPatternArtifactForCopyId(clickEntityId, artifactGraph))
     : undefined
+  // Edge + topology_fallback: keep graph SelectionV2 (with engineTopologyFallback) for fillet/chamfer.
+  // Otherwise region selection wins and we never attach engine topology data (e.g. shell inner edges).
   const engineTopologyFallbackEarly =
     engineTopologyFallbackFromReference(reference)
   let engineTopologyFallbackResolved = engineTopologyFallbackEarly
@@ -1914,21 +1916,43 @@ export async function getEventForQueryEntityTypeWithPoint(
       }
     }
   }
+  const skipRegionSelectionForTopologyEdge =
+    entityRef.type === 'edge' && engineTopologyFallbackResolved !== undefined
+
+  // Try segment references first, then the point fallback below.
   if (entityRef.type === 'region') {
-    let regionSelection = await getEngineRegionSelectionFromSegments(
+    const regionSelection = await getEngineRegionSelectionFromSegments(
       entityRef.region_id,
       artifactGraph,
       engineCommandManager
     )
-    if (!regionSelection && !artifactByEventId) {
-      regionSelection = await getEngineRegionSelectionFromPoint(
-        entityRef.region_id,
-        artifactGraph,
-        ast,
-        engineCommandManager,
-        wasmInstance
-      )
+    if (regionSelection) {
+      return {
+        type: 'Set selection',
+        data: {
+          selectionType: 'engineRegionSelection',
+          selection: regionSelection,
+        },
+      }
     }
+  }
+
+  // Region IDs come from reference.region_id; the query response has no
+  // separate entity_id for the point fallback.
+  const regionEntityId =
+    entityRef.type === 'region' ? entityRef.region_id : clickEntityId
+  if (
+    !artifactByEventId &&
+    regionEntityId &&
+    !skipRegionSelectionForTopologyEdge
+  ) {
+    const regionSelection = await getEngineRegionSelectionFromPoint(
+      regionEntityId,
+      artifactGraph,
+      ast,
+      engineCommandManager,
+      wasmInstance
+    )
     if (regionSelection) {
       return {
         type: 'Set selection',

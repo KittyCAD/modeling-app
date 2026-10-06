@@ -3551,41 +3551,6 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
     })
   })
 
-  test('keeps an unmapped face selection without querying a region point', async () => {
-    const { instance } = await buildTheWorldAndNoEngineConnection()
-    const ast = assertParse('', instance)
-    const reference = { type: 'face' as const, face_id: 'face-1' }
-    const engineCommandManager = {
-      sendSceneCommand: vi.fn(async (event: any) => {
-        expect(event.cmd.type).not.toBe('region_get_query_point')
-        return {
-          resp: {
-            type: 'modeling',
-            data: { modeling_response: { type: 'empty' } },
-          },
-        }
-      }),
-    }
-
-    await expect(
-      getEventForQueryEntityTypeWithPoint(
-        { entity_id: reference.face_id, reference },
-        {
-          engineCommandManager: engineCommandManager as any,
-          kclManager: { ast, artifactGraph: new Map() } as any,
-          rustContext: { defaultPlanes: null } as any,
-          wasmInstance: instance,
-        }
-      )
-    ).resolves.toMatchObject({
-      type: 'Set selection',
-      data: {
-        selectionType: 'singleCodeCursor',
-        selection: { entityRef: reference, engineEntityId: reference.face_id },
-      },
-    })
-  })
-
   test('labels a standalone 3D curve using its helix artifact', () => {
     const selection: Selections = {
       graphSelections: [{ entityRef: { type: 'helix', helix_id: 'helix-1' } }],
