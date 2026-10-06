@@ -258,15 +258,17 @@ async function getResolvableIntersectionInfoForRegion(
   regionId: ArtifactId,
   engineCommandManager: ConnectionManager
 ): Promise<RegionGetResolvableIntersectionInfo | null> {
-  const response = await engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'region_get_resolvable_intersection_info',
-      region_id: regionId,
-    },
-  })
-  if (!isModelingResponse(response)) return null
+  const response = await engineCommandManager
+    .sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'region_get_resolvable_intersection_info',
+        region_id: regionId,
+      },
+    })
+    .catch(() => null)
+  if (!response || !isModelingResponse(response)) return null
   const regionInfoResponse = response.resp.data.modeling_response
   if (regionInfoResponse.type !== 'region_get_resolvable_intersection_info') {
     return null
@@ -1720,9 +1722,6 @@ export async function getEventForQueryEntityTypeWithPoint(
   // Engine may return reference under data (e.g. { type, data: { reference } }) or at top level (e.g. { type, reference })
   const data = getQueryEntityTypeWithPointEventData(engineEvent)
   const { ast, artifactGraph } = kclManager
-  // The SDK declares only reference; the app also accepts an optional entity_id.
-  // Region responses use reference.region_id, so clickEntityId may be undefined.
-  const clickEntityId = data?.entity_id
   const reference = data?.reference
   if (!reference) {
     // No reference - clear selection (clicked in empty space)
@@ -1778,31 +1777,38 @@ export async function getEventForQueryEntityTypeWithPoint(
     }
   }
 
-  if (clickEntityId && engineCommandManager) {
-    const primitiveSel = await getPrimitiveSelectionForEntity(
-      clickEntityId,
-      engineCommandManager,
-      artifactGraph
+  if (entityRef.type === 'region') {
+    let regionSelection = await getEngineRegionSelectionFromSegments(
+      entityRef.region_id,
+      artifactGraph,
+      engineCommandManager
     )
-    if (
-      primitiveSel &&
-      (primitiveSel.primitiveType === 'edge' ||
-        String(primitiveSel.primitiveType).toLowerCase() === 'edge')
-    ) {
+    if (!regionSelection) {
+      regionSelection = await getEngineRegionSelectionFromPoint(
+        entityRef.region_id,
+        artifactGraph,
+        ast,
+        engineCommandManager,
+        wasmInstance
+      )
+    }
+    if (regionSelection) {
       return {
         type: 'Set selection',
         data: {
-          selectionType: 'enginePrimitiveSelection',
-          selection: primitiveSel,
+          selectionType: 'engineRegionSelection',
+          selection: regionSelection,
         },
       }
     }
   }
 
+  let engineTopologyFallback = engineTopologyFallbackFromReference(reference)
   if (
     entityRef.type === 'edge' &&
     entityRef.side_faces.length === 0 &&
-    (!entityRef.end_faces || entityRef.end_faces.length === 0)
+    (!entityRef.end_faces || entityRef.end_faces.length === 0) &&
+    !engineTopologyFallback
   ) {
     return {
       type: 'Set selection',
@@ -1886,16 +1892,7 @@ export async function getEventForQueryEntityTypeWithPoint(
     }
   }
 
-  const artifactByEventId = clickEntityId
-    ? (artifactGraph.get(clickEntityId) ??
-      getPatternArtifactForCopyId(clickEntityId, artifactGraph))
-    : undefined
-  // Edge + topology_fallback: keep graph SelectionV2 (with engineTopologyFallback) for fillet/chamfer.
-  // Otherwise region selection wins and we never attach engine topology data (e.g. shell inner edges).
-  const engineTopologyFallbackEarly =
-    engineTopologyFallbackFromReference(reference)
-  let engineTopologyFallbackResolved = engineTopologyFallbackEarly
-  if (engineTopologyFallbackEarly && engineCommandManager) {
+  if (engineTopologyFallback && engineCommandManager) {
     // Faces need their direct engine parent so primitive-index KCL can resolve
     // the owning solid. Edge references instead walk to an artifact-graph body.
     const resolvedParentId =
@@ -1905,67 +1902,19 @@ export async function getEventForQueryEntityTypeWithPoint(
             engineCommandManager
           )
         : await resolveSweepParentEntityIdForEdge(
-            engineTopologyFallbackEarly.parentId,
+            engineTopologyFallback.parentId,
             engineCommandManager,
             artifactGraph
           )
     if (resolvedParentId) {
-      if (resolvedParentId !== engineTopologyFallbackEarly.parentId) {
-        engineTopologyFallbackResolved = {
+      if (resolvedParentId !== engineTopologyFallback.parentId) {
+        engineTopologyFallback = {
           parentId: resolvedParentId,
-          primitiveIndex: engineTopologyFallbackEarly.primitiveIndex,
+          primitiveIndex: engineTopologyFallback.primitiveIndex,
         }
       }
     }
   }
-  const skipRegionSelectionForTopologyEdge =
-    entityRef.type === 'edge' && engineTopologyFallbackResolved !== undefined
-
-  // Try segment references first, then the point fallback below.
-  if (entityRef.type === 'region') {
-    const regionSelection = await getEngineRegionSelectionFromSegments(
-      entityRef.region_id,
-      artifactGraph,
-      engineCommandManager
-    )
-    if (regionSelection) {
-      return {
-        type: 'Set selection',
-        data: {
-          selectionType: 'engineRegionSelection',
-          selection: regionSelection,
-        },
-      }
-    }
-  }
-
-  // Region IDs come from reference.region_id; the query response has no
-  // separate entity_id for the point fallback.
-  const regionEntityId =
-    entityRef.type === 'region' ? entityRef.region_id : clickEntityId
-  if (
-    !artifactByEventId &&
-    regionEntityId &&
-    !skipRegionSelectionForTopologyEdge
-  ) {
-    const regionSelection = await getEngineRegionSelectionFromPoint(
-      regionEntityId,
-      artifactGraph,
-      ast,
-      engineCommandManager,
-      wasmInstance
-    )
-    if (regionSelection) {
-      return {
-        type: 'Set selection',
-        data: {
-          selectionType: 'engineRegionSelection',
-          selection: regionSelection,
-        },
-      }
-    }
-  }
-
   // For edges, vertices, solid2d_edge, and segment, use getCodeRefsFromEntityReference to handle references
   let codeRefs: any[] | undefined
   if (
@@ -1991,9 +1940,6 @@ export async function getEventForQueryEntityTypeWithPoint(
     }
   }
 
-  // Prefer engine primitive index for solid edge picks when the API supports it.
-  // The artifact graph often lacks wall/cap entries for shell/boolean edges, but
-  // entity_get_primitive_index + parent id still drives fillet/chamfer edgeId codemods.
   const patternArtifact = entityId
     ? getPatternArtifactForCopyId(entityId, artifactGraph)
     : undefined
@@ -2010,10 +1956,7 @@ export async function getEventForQueryEntityTypeWithPoint(
           patternIndex: patternCopyIndex,
         }
       : {}),
-    ...(clickEntityId ? { engineEntityId: clickEntityId } : {}),
-    ...(engineTopologyFallbackResolved
-      ? { engineTopologyFallback: engineTopologyFallbackResolved }
-      : {}),
+    ...(engineTopologyFallback ? { engineTopologyFallback } : {}),
   }
 
   return {
@@ -2556,12 +2499,12 @@ function getQueryEntityTypeWithPointData(
 }
 
 type QueryEntityTypeWithPointEvent =
-  | (QueryEntityTypeWithPoint & { entity_id?: string })
-  | { data: QueryEntityTypeWithPoint & { entity_id?: string } }
+  | QueryEntityTypeWithPoint
+  | { data: QueryEntityTypeWithPoint }
 
 function getQueryEntityTypeWithPointEventData(
   engineEvent: QueryEntityTypeWithPointEvent | undefined
-): (QueryEntityTypeWithPoint & { entity_id?: string }) | undefined {
+): QueryEntityTypeWithPoint | undefined {
   if (!engineEvent) return undefined
   if ('data' in engineEvent) return engineEvent.data
   return engineEvent
