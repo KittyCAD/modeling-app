@@ -212,7 +212,7 @@ export interface components {
       after_prompt_id?: components['schemas']['Uuid'] | null
       /** @description Most recent client acknowledgement. */
       application: components['schemas']['KclMigrationApplication']
-      /** @description Customer conversation, not the worker's sponsored conversation. */
+      /** @description Conversation that owns this entry. */
       conversation_id: components['schemas']['Uuid']
       /**
        * Format: date-time
@@ -223,12 +223,10 @@ export interface components {
       detail: string
       /** @description Migration request ID. Use the status command to retrieve a candidate explicitly. */
       operation_id: components['schemas']['Uuid']
-      /** @description Source project identity. */
-      project_id: string
+      /** @description Persisted Copilot prompt, when this migration has a conversation transcript. */
+      prompt_id?: components['schemas']['Uuid'] | null
       /** @description Conversion outcome. Success alone does not mean files were applied. */
       status: components['schemas']['KclMigrationStatus']
-      /** @description Accepted migration target. */
-      target: components['schemas']['KclMigrationTarget']
     }
     /** @description A revision-fenced acknowledgement from the client that owns the project files. */
     KclMigrationApplication: {

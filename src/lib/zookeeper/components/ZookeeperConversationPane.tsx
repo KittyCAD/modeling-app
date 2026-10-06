@@ -172,9 +172,49 @@ export const ZookeeperConversationPane = (props: {
     isClearingChat ||
     isResumingInterruptedTurn ||
     controller.queue.value.length > 0
+  const replayRevision = props.migrationHistory?.replayRevision.value ?? 0
+  const reportingMigration =
+    props.migrationHistory?.reportingApplication.value ?? false
+  const replayedMigrationRevision = useRef(0)
+  useEffect(() => {
+    if (
+      replayRevision !== replayedMigrationRevision.current &&
+      !chatBusy &&
+      !props.migrationController?.busy &&
+      !reportingMigration
+    ) {
+      replayedMigrationRevision.current = replayRevision
+      controller.reconnect()
+    }
+  }, [
+    replayRevision,
+    chatBusy,
+    props.migrationController?.busy,
+    reportingMigration,
+    controller,
+  ])
+  const persistedPromptIds = new Set(
+    conversation?.exchanges.flatMap((exchange) =>
+      exchange.responses.flatMap((response) =>
+        'end_of_stream' in response && response.end_of_stream.id
+          ? [response.end_of_stream.id]
+          : []
+      )
+    ) ?? []
+  )
+  const persistedOperations = new Set(
+    props.migrationHistory?.entries.value
+      .filter(
+        (entry) => entry.prompt_id && persistedPromptIds.has(entry.prompt_id)
+      )
+      .map((entry) => entry.operation_id) ?? []
+  )
   const turns =
     props.migrationTurns?.filter(
-      (turn) => !turn.conversationId || turn.conversationId === conversationId
+      (turn) =>
+        (!turn.conversationId || turn.conversationId === conversationId) &&
+        (turn.controller.busy ||
+          !persistedOperations.has(turn.controller.operationId.value ?? ''))
     ) ?? []
   const activeIds = new Set(
     turns.map((turn) => turn.controller.operationId.value)
@@ -234,6 +274,7 @@ export const ZookeeperConversationPane = (props: {
             content: (
               <KclMigrationHistoryEntry
                 entry={entry}
+                transcriptPresent={persistedOperations.has(entry.operation_id)}
                 userAvatar={props.userAvatarSrc}
               />
             ),
@@ -262,8 +303,13 @@ export const ZookeeperConversationPane = (props: {
           conversation?.exchanges.length ?? 0
         )}
         onProcess={(prompt, mode, attachments) => {
-          if (!props.migrationController?.busy)
+          if (!props.migrationController?.busy && !reportingMigration) {
+            if (replayedMigrationRevision.current !== replayRevision) {
+              replayedMigrationRevision.current = replayRevision
+              controller.reconnect()
+            }
             controller.sendOrQueue(prompt, mode, attachments)
+          }
         }}
         onClickClearChat={() => {
           setIsConfirmingClearChat(true)
@@ -292,6 +338,7 @@ export const ZookeeperConversationPane = (props: {
           else controller.cancel()
         }}
         disabled={
+          reportingMigration ||
           props.migrationController?.busy ||
           needsReconnect ||
           isClearingChat ||

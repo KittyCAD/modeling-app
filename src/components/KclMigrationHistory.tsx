@@ -6,10 +6,14 @@ import type { MigrationHistoryEntry } from '@src/lib/kclMigration/protocol'
 export function KclMigrationHistoryEntry({
   entry,
   userAvatar,
+  transcriptPresent = false,
 }: {
   entry: MigrationHistoryEntry
   userAvatar?: string
+  transcriptPresent?: boolean
 }) {
+  if (transcriptPresent && entry.status !== 'succeeded') return null
+
   const outcome = {
     running: 'Migration was still running when history was loaded.',
     succeeded: 'Conversion succeeded.',
@@ -24,21 +28,23 @@ export function KclMigrationHistoryEntry({
       aria-label="Past KCL migration"
       className="flex min-w-0 flex-col gap-2 px-4 py-2 text-sm"
     >
-      <ChatBubble
-        side="right"
-        userAvatar={<AvatarUser src={userAvatar} />}
-        className="py-2"
-      >
-        Migrate this project to KCL 3 preview.
-      </ChatBubble>
+      {!transcriptPresent && (
+        <ChatBubble
+          side="right"
+          userAvatar={<AvatarUser src={userAvatar} />}
+          className="py-2"
+        >
+          Migrate this project to KCL 3 preview.
+        </ChatBubble>
+      )}
       <ChatBubble
         side="left"
         wfull
         userAvatar={<div className="h-7 w-7 avatar bg-img-mel" />}
         className="py-3 whitespace-normal"
       >
-        <p>{outcome}</p>
-        {entry.detail && <p>{entry.detail}</p>}
+        {!transcriptPresent && <p>{outcome}</p>}
+        {!transcriptPresent && entry.detail && <p>{entry.detail}</p>}
         {entry.status === 'succeeded' && (
           <p>
             {entry.application.status === 'not_applied'

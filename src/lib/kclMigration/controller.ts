@@ -136,6 +136,7 @@ export class MigrationController {
             this.phase.value = this.cancelled ? 'cancelling' : 'running'
             return
           }
+          this.conversation?.completed()
           this.detail.value = operation.result?.detail ?? ''
           if (operation.result?.conversion_not_started === true) {
             this.detail.value +=

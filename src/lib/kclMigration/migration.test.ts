@@ -42,6 +42,7 @@ describe('project migration', () => {
     const states: string[] = []
     await fixture.controller.start(true, {
       id: 'existing-conversation',
+      completed: () => {},
       reportApplication: (id, status) => {
         expect(id).toBe(fixture.request.request_id)
         expect(fixture.controller.phase.value).toBe('applying')

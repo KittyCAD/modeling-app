@@ -145,8 +145,6 @@ function isHistoryEntry(value: unknown): value is MigrationHistoryEntry {
     typeof value.conversation_id === 'string' &&
     (value.after_prompt_id == null ||
       typeof value.after_prompt_id === 'string') &&
-    typeof value.project_id === 'string' &&
-    value.target === MIGRATION_TARGET &&
     typeof value.created_at === 'string' &&
     Number.isFinite(Date.parse(value.created_at)) &&
     typeof value.status === 'string' &&

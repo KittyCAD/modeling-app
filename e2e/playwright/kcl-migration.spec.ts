@@ -151,8 +151,6 @@ test.describe(
           const entry: MigrationHistoryEntry = {
             operation_id: request.request_id,
             conversation_id: conversationId,
-            project_id: request.project_snapshot.project_id,
-            target: request.target,
             status: 'running',
             created_at: new Date().toISOString(),
             detail: '',
