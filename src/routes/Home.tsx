@@ -24,7 +24,7 @@ import {
   autoUpdateReadySignal,
 } from '@src/lib/autoUpdate'
 import { BillingTransition } from '@src/lib/billing'
-import { useApp } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
 import { removeDragPreviewElement, setDragPreview } from '@src/lib/dragPreview'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
@@ -291,6 +291,7 @@ const Home = () => {
   const app = useApp()
   const { auth, billing, commands, settings, registry } = app
   const keymap = registry.optional(keymapService)
+  const { kclManager } = useSingletons()
   const settingsActor = settings.actor
   useQueryParamEffects()
 
@@ -556,9 +557,11 @@ const Home = () => {
   }
   useMenuListener(cb)
 
+  // Cancel all KCL executions while on the home page
   useEffect(() => {
     markOnce('code/didLoadHome')
-  }, [])
+    kclManager.cancelAllExecutions()
+  }, [kclManager])
 
   useHotkeys('backspace', (e) => {
     e.preventDefault()
