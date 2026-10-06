@@ -1919,13 +1919,21 @@ export async function getEventForQueryEntityTypeWithPoint(
   const skipRegionSelectionForTopologyEdge =
     entityRef.type === 'edge' && engineTopologyFallbackResolved !== undefined
 
-  // Try segment references first, then the point fallback below.
   if (entityRef.type === 'region') {
-    const regionSelection = await getEngineRegionSelectionFromSegments(
+    let regionSelection = await getEngineRegionSelectionFromSegments(
       entityRef.region_id,
       artifactGraph,
       engineCommandManager
     )
+    if (!regionSelection && !artifactByEventId) {
+      regionSelection = await getEngineRegionSelectionFromPoint(
+        entityRef.region_id,
+        artifactGraph,
+        ast,
+        engineCommandManager,
+        wasmInstance
+      )
+    }
     if (regionSelection) {
       return {
         type: 'Set selection',
@@ -1937,16 +1945,15 @@ export async function getEventForQueryEntityTypeWithPoint(
     }
   }
 
-  // The engine can return a region reference without a separate entity_id.
-  const regionEntityId =
-    entityRef.type === 'region' ? entityRef.region_id : clickEntityId
+  // Preserve the point lookup for non-region references missing from the graph.
   if (
+    entityRef.type !== 'region' &&
     !artifactByEventId &&
-    regionEntityId &&
+    clickEntityId &&
     !skipRegionSelectionForTopologyEdge
   ) {
     const regionSelection = await getEngineRegionSelectionFromPoint(
-      regionEntityId,
+      clickEntityId,
       artifactGraph,
       ast,
       engineCommandManager,
