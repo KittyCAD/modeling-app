@@ -32,8 +32,6 @@ export function migrationProject(
   const paths = {
     join: (...parts: string[]) => fsZds.join(...parts),
     relative: (from: string, to: string) => fsZds.relative(from, to),
-    resolve: (...parts: string[]) => fsZds.resolve(...parts),
-    extname: (path: string) => fsZds.extname(path),
   }
   const isCurrent = () =>
     app.project === project &&

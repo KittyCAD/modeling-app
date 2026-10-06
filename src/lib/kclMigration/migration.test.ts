@@ -1,4 +1,4 @@
-import { mkdir, readFile, symlink, writeFile } from 'node:fs/promises'
+import { mkdir, readdir, readFile, symlink, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import {
   MigrationRecoveryError,
@@ -194,6 +194,19 @@ describe('project migration', () => {
       new Uint8Array(8 * 1024 * 1024)
     )
     await expect(fixture.project.capture()).rejects.toThrow('8 MiB')
+  })
+
+  it('preserves distinct filenames that differ only by case', async ({
+    skip,
+  }) => {
+    await writeFile(path.join(fixture.root, 'Main.kcl'), 'upper = 1\n')
+    const names = await readdir(fixture.root)
+    if (!names.includes('main.kcl') || !names.includes('Main.kcl')) {
+      skip()
+    }
+    const { files } = await fixture.project.capture()
+    expect(new TextDecoder().decode(files.get('main.kcl'))).toBe(sourceCode)
+    expect(new TextDecoder().decode(files.get('Main.kcl'))).toBe('upper = 1\n')
   })
 
   it('rejects linked files and directories rather than uploading files outside the project', async () => {

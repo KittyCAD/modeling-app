@@ -10,10 +10,7 @@ export type SnapshotIO = Pick<
   FileOperationsRegistryService,
   'readDirectory' | 'readFile' | 'stat'
 >
-export type ProjectPaths = Pick<
-  IZooDesignStudioFS,
-  'join' | 'relative' | 'resolve' | 'extname'
->
+export type ProjectPaths = Pick<IZooDesignStudioFS, 'join' | 'relative'>
 
 export function validProjectPath(path: string): boolean {
   return (
@@ -57,7 +54,6 @@ export async function readProjectFiles(
     )
   }
   const files: ProjectFiles = new Map()
-  const names = new Set<string>()
   let bytes = 0
   let entries = 0
   async function visit(directory: string): Promise<void> {
@@ -67,12 +63,11 @@ export async function readProjectFiles(
       if (directory === root && name === PROJECT_IMAGE_NAME) continue
       const absolute = paths.join(directory, name)
       const relative = paths.relative(root, absolute).replaceAll('\\', '/')
-      if (!validProjectPath(relative) || names.has(relative.toLowerCase())) {
+      if (!validProjectPath(relative)) {
         return Promise.reject(
-          new Error(`Unsupported or ambiguous project path: ${relative}`)
+          new Error(`Unsupported project path: ${relative}`)
         )
       }
-      names.add(relative.toLowerCase())
       entries += 1
       if (entries > MAX_FILES * 4) {
         return Promise.reject(
