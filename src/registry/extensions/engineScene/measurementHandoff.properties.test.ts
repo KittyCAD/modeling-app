@@ -106,6 +106,11 @@ describe('selection-to-measurement representation properties', () => {
           edgeCutEdgeIds: [],
           pathIds: [],
           cmdId: 'command',
+          faceCodeRef: {
+            range: [0, 0, 0],
+            pathToNode: [],
+            nodePath: { steps: [] },
+          },
         }
         const selection = { ...edgeReference(edge, true), artifact: locator }
         expect(handoff.getMeasurementEntities(selections([selection]))).toEqual(

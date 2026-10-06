@@ -1,5 +1,6 @@
 import type {
   DistanceType,
+  ModelingCmd,
   Point3d,
   UnitArea,
   UnitLength,
@@ -8,6 +9,8 @@ import type {
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import { engineIdForArtifact } from '@src/lang/std/kclNamedViews'
 import type { ArtifactGraph } from '@src/lang/wasm'
+import { getModelingData } from '@src/lib/engineConnection/utils'
+import { getEngineTopologyFallbackNormalized } from '@src/lib/primitiveBodySelection'
 import {
   isDefaultPlaneSelection,
   isEnginePrimitiveSelection,
@@ -292,6 +295,84 @@ export function getMeasurementEntities(
       }
     ),
   ])
+}
+
+/**
+ * Resolve reference-only topology before choosing a measurement operation.
+ * A failed row fails the whole set: dropping it could turn distance into length.
+ */
+export async function resolveMeasurementEntities(
+  selectionRanges: Selections,
+  artifactGraph: ArtifactGraph,
+  sendModelingCommand: (cmd: ModelingCmd) => Promise<unknown>
+): Promise<MeasurementEntity[] | Error> {
+  const resolvedGraphSelections: Selection[] = []
+  for (const selection of selectionRanges.graphSelections) {
+    if (
+      selection.entityRef?.type !== 'edge' ||
+      getEntitiesForGraphSelection(selection, artifactGraph).length > 0
+    ) {
+      if (selection.entityRef?.type === 'vertex' && !selection.engineEntityId) {
+        return new Error(
+          'Unable to resolve the selected vertex for measurement.'
+        )
+      }
+      resolvedGraphSelections.push(selection)
+      continue
+    }
+    const topology = getEngineTopologyFallbackNormalized(selection)
+    if (
+      !topology ||
+      !Number.isInteger(topology.primitiveIndex) ||
+      topology.primitiveIndex < 0 ||
+      topology.primitiveIndex > 0xffffffff
+    ) {
+      return new Error('Unable to resolve the selected edge for measurement.')
+    }
+    const objectId = getBodyEntityIdForSelection(
+      {
+        artifact: artifactGraph.get(topology.parentId),
+        engineEntityId: topology.parentId,
+      },
+      artifactGraph
+    )
+    if (!objectId)
+      return new Error('Unable to resolve the selected edge for measurement.')
+    try {
+      const result = getModelingData(
+        await sendModelingCommand({
+          type: 'solid3d_get_edge_uuid',
+          object_id: objectId,
+          edge_index: topology.primitiveIndex,
+        }),
+        'solid3d_get_edge_uuid',
+        'Unable to resolve the selected edge for measurement.'
+      )
+      if (result.type === 'error') return result.error
+      const data = result.data
+      if (
+        !data ||
+        typeof data !== 'object' ||
+        !('edge_id' in data) ||
+        typeof data.edge_id !== 'string' ||
+        data.edge_id.length === 0
+      ) {
+        return new Error('Unable to resolve the selected edge for measurement.')
+      }
+      resolvedGraphSelections.push({
+        ...selection,
+        engineEntityId: data.edge_id,
+      })
+    } catch (error) {
+      return error instanceof Error
+        ? error
+        : new Error('Unable to resolve the selected edge for measurement.')
+    }
+  }
+  return getMeasurementEntities(
+    { ...selectionRanges, graphSelections: resolvedGraphSelections },
+    artifactGraph
+  )
 }
 
 export function graphSelectionsReferenceCurrentArtifacts(
