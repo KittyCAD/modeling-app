@@ -1,9 +1,8 @@
-import fs from 'fs'
-import path from 'path'
 import type { CmdBarSerialised } from '@e2e/playwright/fixtures/cmdBarFixture'
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { LEGACY_SKETCH_MODE_FEATURE_FLAG } from '@src/lib/constants'
+import fs from 'fs'
+import path from 'path'
 
 const bracket = fs.readFileSync(
   path.resolve('public', 'kcl-samples', 'bracket', 'main.kcl'),
@@ -11,9 +10,6 @@ const bracket = fs.readFileSync(
 )
 
 test.describe('Testing selections', { tag: '@desktop' }, () => {
-  // Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
-  test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
-
   test("Extrude button should be disabled if there's no extrudable geometry when nothing is selected", async ({
     page,
     editor,
@@ -236,7 +232,7 @@ part001 = startSketchOn(XZ)
     ).not.toBeDisabled()
     await expect(
       page.getByRole('button', { name: 'Edit Sketch' })
-    ).not.toBeDisabled()
+    ).toBeDisabled()
 
     await page.getByText(selectionsSnippets.editOnly).click()
     // expect extrude button to be enabled, since we don't guard
@@ -244,7 +240,7 @@ part001 = startSketchOn(XZ)
     await expect(page.getByRole('button', { name: 'Extrude' })).toBeEnabled()
     await expect(
       page.getByRole('button', { name: 'Edit Sketch' })
-    ).not.toBeDisabled()
+    ).toBeDisabled()
 
     await page
       .getByText(selectionsSnippets.extrudeAndEditBlockedInFunction)
@@ -255,104 +251,6 @@ part001 = startSketchOn(XZ)
     await expect(
       page.getByRole('button', { name: 'Edit Sketch' })
     ).not.toBeVisible()
-  })
-
-  test('Deselecting line tool should mean nothing happens on click', async ({
-    context,
-    page,
-    homePage,
-    toolbar,
-  }) => {
-    /**
-     * If the line tool is clicked when the state is 'No Points' it will exit Sketch mode.
-     * This is the same exact workflow as pressing ESC.
-     *
-     * To continue to test this workflow, we now enter sketch mode and place a single point before exiting the line tool.
-     */
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, 'sketch001 = startSketchOn(XZ)')
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-
-    await homePage.goToModelingScene()
-
-    await expect(toolbar.startSketchBtn).not.toBeDisabled()
-    await expect(toolbar.startSketchBtn).toBeVisible()
-
-    const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
-    await op.dblclick()
-    await toolbar.waitUntilSketchingReady()
-    await toolbar.closeFeatureTreePane()
-    if (
-      (await page
-        .getByRole('button', { name: 'line Line', exact: true })
-        .getAttribute('aria-pressed')) !== 'true'
-    ) {
-      await page.keyboard.press('l')
-    }
-    await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
-
-    await expect(page.locator('.cm-content')).toContainText(
-      'sketch001 = startSketchOn(XZ)'
-    )
-
-    await page.waitForTimeout(600)
-
-    const firstClickCoords = { x: 650, y: 200 } as const
-    // Place a point because the line tool will exit if no points are pressed
-    await page.mouse.click(firstClickCoords.x, firstClickCoords.y)
-    await page.waitForTimeout(600)
-
-    // Code before exiting the tool
-    let previousCodeContent = (
-      await page.locator('.cm-content').innerText()
-    ).replace(/\s+/g, '')
-
-    // deselect the line tool by clicking it
-    await page.getByRole('button', { name: 'line Line', exact: true }).click()
-
-    await page.mouse.click(700, 200)
-    await page.waitForTimeout(100)
-    await page.mouse.click(700, 250)
-    await page.waitForTimeout(100)
-    await page.mouse.click(750, 200)
-    await page.waitForTimeout(100)
-
-    await expect
-      .poll(async () => {
-        let str = await page.locator('.cm-content').innerText()
-        str = str.replace(/\s+/g, '')
-        return str
-      })
-      .toBe(previousCodeContent)
-
-    // select line tool again
-    await page.getByRole('button', { name: 'line Line', exact: true }).click()
-
-    // Click to continue profile
-    await page.mouse.click(firstClickCoords.x, firstClickCoords.y)
-    await page.waitForTimeout(100)
-
-    // line tool should work as expected again
-    await page.mouse.click(700, 200)
-    await expect(page.locator('.cm-content')).not.toHaveText(
-      previousCodeContent
-    )
-    previousCodeContent = await page.locator('.cm-content').innerText()
-
-    await page.waitForTimeout(100)
-    await page.mouse.click(700, 300)
-    await expect(page.locator('.cm-content')).not.toHaveText(
-      previousCodeContent
-    )
-    previousCodeContent = await page.locator('.cm-content').innerText()
-
-    await page.waitForTimeout(100)
-    await page.mouse.click(750, 300)
-    await expect(page.locator('.cm-content')).not.toHaveText(
-      previousCodeContent
-    )
-    previousCodeContent = await page.locator('.cm-content').innerText()
   })
 
   test('"View KCL source code" right click menu in scene', async ({

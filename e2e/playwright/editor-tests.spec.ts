@@ -1,62 +1,14 @@
-import { join } from 'path'
-import { uuidv4 } from '@src/lib/utils'
-import fsp from 'fs/promises'
-
-import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
 import {
-  TEST_COLORS,
   executorInputPath,
   getUtils,
+  TEST_COLORS,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
-import { LEGACY_SKETCH_MODE_FEATURE_FLAG } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
-
-// Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
-test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
-
-type MainAxisTestFixtures = Pick<Fixtures, 'homePage' | 'toolbar' | 'scene'> & {
-  page: Page
-}
-
-async function runMainAxisSelectionTest(
-  plane: 'XZ' | '-XZ',
-  { page, homePage, toolbar, scene }: MainAxisTestFixtures
-) {
-  const persistCode = `sketch002 = startSketchOn(${plane})
-profile002 = startProfile(sketch002, at = [-1.0, 0])
-  |> xLine(length = 2.0)`
-
-  await page.addInitScript(async (code) => {
-    localStorage.setItem('persistCode', code)
-  }, persistCode)
-
-  const width = 1200
-  const height = 800
-  const viewportSize = { width, height }
-  await page.setBodyDimensions(viewportSize)
-
-  await homePage.goToModelingScene()
-
-  const u = await getUtils(page)
-  await u.waitForPageLoad()
-
-  await toolbar.editSketch(0)
-
-  await page.waitForTimeout(1000)
-  await toolbar.closePane(DefaultLayoutPaneID.Code)
-
-  await page.waitForTimeout(1000)
-
-  const clickCoords = await scene.convertPagePositionToStream(0.6, 0.5, 'ratio')
-  await page.mouse.click(clickCoords.x, clickCoords.y)
-
-  await page.waitForTimeout(1000)
-
-  const element = page.locator('[data-overlay-index="1"]')
-  await expect(element).toHaveAttribute('data-overlay-visible', 'true')
-}
+import { uuidv4 } from '@src/lib/utils'
+import fsp from 'fs/promises'
+import { join } from 'path'
 
 /** Press arrow down until the given label is selected. */
 async function selectCompletionOption(page: Page, label: string) {
@@ -1166,82 +1118,6 @@ sketch001 = startSketchOn(XZ)
   |> close()`)
   })
 
-  test('Can undo a sketch modification with ctrl+z', async ({
-    page,
-    homePage,
-    editor,
-    scene,
-    cmdBar,
-    toolbar,
-  }) => {
-    const ogCode = `sketch001 = startSketchOn(XZ)
-profile001 = startProfile(sketch001, at = [0, 0])
-  |> xLine(length = 10)
-  |> yLine(length = 10)
-  |> xLine(length = -10)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()`
-    await page.addInitScript(async (code) => {
-      localStorage.setItem('persistCode', code)
-    }, ogCode)
-
-    await homePage.goToModelingScene()
-    await scene.settled()
-
-    let prevContent = await editor.getCurrentCode()
-    await toolbar.editSketch()
-
-    // first sketch modification
-    await editor.selectText(
-      'line(endAbsolute = [profileStartX(%), profileStartY(%)])'
-    )
-    await editor.closePane()
-    await page.keyboard.press('Delete')
-    await editor.expectEditor.not.toContain(prevContent)
-    prevContent = await editor.getCurrentCode()
-
-    // second sketch modification
-    await editor.selectText('xLine(length = -10)')
-    await editor.closePane()
-    await page.keyboard.press('Delete')
-    await editor.expectEditor.not.toContain(prevContent)
-
-    // expect the code to have changed
-    await editor.expectEditor.toContain(
-      `sketch001 = startSketchOn(XZ)
-profile001 = startProfile(sketch001, at = [0, 0])
-  |> xLine(length = 10)
-  |> yLine(length = 10)
-  |> close()`,
-      { shouldNormalise: true }
-    )
-
-    // Hit undo
-    await page.keyboard.down('Control')
-    await page.keyboard.press('KeyZ')
-    await page.keyboard.up('Control')
-
-    await editor.openPane()
-    await editor.expectEditor.toContain(
-      `sketch001 = startSketchOn(XZ)
-profile001 = startProfile(sketch001, at = [0, 0])
-  |> xLine(length = 10)
-  |> yLine(length = 10)
-  |> xLine(length = -10)
-  |> close()`,
-      { shouldNormalise: true }
-    )
-
-    // Hit undo again.
-    await editor.closePane()
-    await page.keyboard.down('Control')
-    await page.keyboard.press('KeyZ')
-    await page.keyboard.up('Control')
-
-    await editor.openPane()
-    await editor.expectEditor.toContain(ogCode, { shouldNormalise: true })
-  })
-
   test(`Can import a local OBJ file`, async ({
     page,
     scene,
@@ -1328,34 +1204,6 @@ profile001 = startProfile(sketch001, at = [0, 0])
     await test.step(`Verify center rectangle panning`, async () => {
       await toolbar.selectCenterRectangle()
       await middleMousePan(800, 200, 900, 300)
-    })
-  })
-
-  test('Can select lines on the main axis (XZ)', async ({
-    page,
-    homePage,
-    toolbar,
-    scene,
-  }) => {
-    await runMainAxisSelectionTest('XZ', {
-      page,
-      homePage,
-      toolbar,
-      scene,
-    })
-  })
-
-  test('Can select lines on the main axis (-XZ)', async ({
-    page,
-    homePage,
-    toolbar,
-    scene,
-  }) => {
-    await runMainAxisSelectionTest('-XZ', {
-      page,
-      homePage,
-      toolbar,
-      scene,
     })
   })
 

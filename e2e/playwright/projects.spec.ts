@@ -1,16 +1,4 @@
-import nodeFsSync from 'fs'
-import path from 'path'
-import {
-  DEFAULT_PROJECT_KCL_FILE,
-  LEGACY_SKETCH_MODE_FEATURE_FLAG,
-  PROJECT_IMAGE_NAME,
-  REGEXP_UUIDV4,
-} from '@src/lib/constants'
-import nodeFs from 'fs/promises'
-import type { Page } from '@playwright/test'
-import { PNG } from 'pngjs'
-import { NIL as uuidNIL } from 'uuid'
-
+import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import {
   closeOnboardingModalIfPresent,
   createProject,
@@ -21,13 +9,20 @@ import {
   runningOnWindows,
   tomlToPerProjectSettings,
 } from '@e2e/playwright/test-utils'
-import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import type { Page } from '@playwright/test'
+import {
+  DEFAULT_PROJECT_KCL_FILE,
+  PROJECT_IMAGE_NAME,
+  REGEXP_UUIDV4,
+} from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
-
-// Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
-test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
+import nodeFsSync from 'fs'
+import nodeFs from 'fs/promises'
+import path from 'path'
+import { PNG } from 'pngjs'
+import { NIL as uuidNIL } from 'uuid'
 
 type ProjectCardContextMenuAction = 'rename' | 'delete'
 
@@ -1909,79 +1904,6 @@ test(
         diagnostics: [],
         highlightedCode: '',
       })
-    })
-  }
-)
-
-test(
-  'segment position changes persist after dragging and reopening project',
-  { tag: ['@desktop'] },
-  async ({
-    scene,
-    cmdBar,
-    context,
-    page,
-    editor,
-    toolbar,
-    fs,
-    folderSetupFn,
-  }) => {
-    const projectName = 'segment-drag-test'
-
-    await folderSetupFn(async (dir) => {
-      const projectDir = path.join(dir, projectName)
-      await fs.mkdir(projectDir, { recursive: true })
-      await fs.writeFile(
-        path.join(projectDir, 'main.kcl'),
-        new TextEncoder().encode(`sketch001 = startSketchOn(XZ)
-profile001 = startProfile(sketch001, at = [0, 0])
-  |> line(end = [0, 6])
-  |> line(end = [10, 0])
-  |> line(end = [-8, -5])
-`)
-      )
-    })
-    const u = await getUtils(page)
-
-    await test.step('Opening the project and entering sketch mode', async () => {
-      await expect(page.getByText(projectName)).toBeVisible()
-      await page.getByText(projectName).click()
-      await scene.settled()
-
-      // go to sketch mode
-      await (await toolbar.getFeatureTreeOperation('Sketch', 0)).dblclick()
-    })
-
-    const lineToChange = 'line(end = [-8, -5])'
-    const lineToStay = 'line(end = [10, 0])'
-
-    await test.step('Dragging the line endpoint to modify it', async () => {
-      // Get the last line's endpoint position
-      const lineEnd = await u.getBoundingBox('[data-overlay-index="3"]')
-
-      await page.mouse.move(lineEnd.x, lineEnd.y - 5)
-      await page.mouse.down()
-      await page.mouse.move(lineEnd.x + 80, lineEnd.y)
-      await page.mouse.up()
-
-      await editor.expectEditor.not.toContain(lineToChange)
-      await editor.expectEditor.toContain(lineToStay)
-
-      // Exit sketch mode
-      await page.keyboard.press('Shift+Escape')
-      await scene.settled()
-    })
-
-    await test.step('Going back to dashboard', async () => {
-      await page.getByTestId('app-logo').click()
-    })
-
-    await test.step('Reopening the project and verifying changes are saved', async () => {
-      await page.getByText(projectName).click()
-
-      // Check if new line coordinates were saved
-      await editor.expectEditor.not.toContain(lineToChange)
-      await editor.expectEditor.toContain(lineToStay)
     })
   }
 )
