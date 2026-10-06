@@ -31,6 +31,7 @@ describe('cloud sync transaction outcomes', () => {
         appendOutboxEntry({
           projectPath: metadata.localProjectPath,
           kind: 'upsert',
+          targetPath: `${metadata.localProjectPath}/main.kcl`,
           createdAt: '2026-10-06T00:00:00.000Z',
         }),
     ],
@@ -55,7 +56,9 @@ describe('cloud sync transaction outcomes', () => {
     'closes the database after an aborted %s transaction',
     async (_, run) => {
       const close = vi.spyOn(IDBDatabase.prototype, 'close')
-      const openCursor = IDBObjectStore.prototype.openCursor
+      // The replacement calls the original method with its object-store receiver.
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    const openCursor = IDBObjectStore.prototype.openCursor
       vi.spyOn(IDBObjectStore.prototype, 'openCursor').mockImplementation(
         function (
           this: IDBObjectStore,
