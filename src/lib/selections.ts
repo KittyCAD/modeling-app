@@ -1888,8 +1888,6 @@ export async function getEventForQueryEntityTypeWithPoint(
     ? (artifactGraph.get(clickEntityId) ??
       getPatternArtifactForCopyId(clickEntityId, artifactGraph))
     : undefined
-  // Edge + topology_fallback: keep graph SelectionV2 (with engineTopologyFallback) for fillet/chamfer.
-  // Otherwise region selection wins and we never attach engine topology data (e.g. shell inner edges).
   const engineTopologyFallbackEarly =
     engineTopologyFallbackFromReference(reference)
   let engineTopologyFallbackResolved = engineTopologyFallbackEarly
@@ -1916,9 +1914,6 @@ export async function getEventForQueryEntityTypeWithPoint(
       }
     }
   }
-  const skipRegionSelectionForTopologyEdge =
-    entityRef.type === 'edge' && engineTopologyFallbackResolved !== undefined
-
   if (entityRef.type === 'region') {
     let regionSelection = await getEngineRegionSelectionFromSegments(
       entityRef.region_id,
@@ -1934,31 +1929,6 @@ export async function getEventForQueryEntityTypeWithPoint(
         wasmInstance
       )
     }
-    if (regionSelection) {
-      return {
-        type: 'Set selection',
-        data: {
-          selectionType: 'engineRegionSelection',
-          selection: regionSelection,
-        },
-      }
-    }
-  }
-
-  // Preserve the point lookup for non-region references missing from the graph.
-  if (
-    entityRef.type !== 'region' &&
-    !artifactByEventId &&
-    clickEntityId &&
-    !skipRegionSelectionForTopologyEdge
-  ) {
-    const regionSelection = await getEngineRegionSelectionFromPoint(
-      clickEntityId,
-      artifactGraph,
-      ast,
-      engineCommandManager,
-      wasmInstance
-    )
     if (regionSelection) {
       return {
         type: 'Set selection',
