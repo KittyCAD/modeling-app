@@ -14,7 +14,10 @@ import {
 } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
 import type { SubmitByPressOrBlur } from '@src/lib/types'
-import type { ProjectExplorerRowContextMenuItem } from '@src/registry/contracts/projectExplorer'
+import type {
+  ProjectExplorerRowContextMenuItem,
+  ProjectExplorerRowContextMenuItemContext,
+} from '@src/registry/contracts/projectExplorer'
 import type { ReactNode } from 'react'
 export {
   addPlaceHoldersForNewFileAndFolder,
@@ -94,6 +97,7 @@ export interface FileExplorerRowContextMenuProps {
   onPaste: () => void
   isCopying: boolean
   rowContextMenuItems: readonly ProjectExplorerRowContextMenuItem[]
+  rowContextMenuContext?: Omit<ProjectExplorerRowContextMenuItemContext, 'row'>
 }
 
 export function isPathWithinFileExplorerEntry(

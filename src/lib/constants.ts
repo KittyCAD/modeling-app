@@ -31,8 +31,6 @@ export const FILE_EXT = '.kcl'
 export const EDITABLE_TEXT_FILE_EXTENSIONS = ['.md', '.txt'] as const
 export const EXPERIMENTAL_POINT_AND_CLICK_FLAG: Feature =
   'sketch_experimental_features'
-export const SEGMENTS_BASED_REGIONS_FEATURE_FLAG: Feature =
-  'segments_based_regions'
 /** Gates named view changes to ZDS UI */
 export const NAMED_VIEWS_UI_FEATURE_FLAG: Feature = 'named_views_ui'
 /** Allows legacy sketches to be edited using point-and-click */
