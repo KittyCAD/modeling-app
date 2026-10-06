@@ -4,7 +4,7 @@ import { ConnectionStream } from '@src/components/ConnectionStream'
 import { BodiesPane } from '@src/components/layout/areas/BodiesPane'
 import { DebugPane } from '@src/components/layout/areas/DebugPane'
 import { FeatureTreePane } from '@src/components/layout/areas/FeatureTreePane'
-import { KclEditorPane } from '@src/components/layout/areas/KclEditorPane'
+import { EditorPane } from '@src/components/layout/areas/EditorPane'
 import { KclNamedViewsPane } from '@src/components/layout/areas/KclNamedViewsPane'
 import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
 import { MemoryPane } from '@src/components/layout/areas/MemoryPane'
@@ -118,7 +118,7 @@ export const useDefaultAreaLibrary = () => {
         codeEditor: {
           hide: () => false,
           shortcut: 'Shift + C',
-          Component: KclEditorPane,
+          Component: EditorPane,
           useNotifications() {
             const value = kclManager.diagnosticsSignal.value.filter(
               (diagnostic) => diagnostic.severity === 'error'

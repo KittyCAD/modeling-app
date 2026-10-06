@@ -183,6 +183,7 @@ export const ProjectExplorer = ({
   onRowClicked,
   onRowDoubleClicked,
   onRowEnter,
+  onOpenAsText,
   readOnly,
   canNavigate,
   overrideApplicationProjectDirectory,
@@ -197,6 +198,7 @@ export const ProjectExplorer = ({
   onRowClicked: (row: FileExplorerEntry, domIndex: number) => void
   onRowDoubleClicked?: (row: FileExplorerEntry, domIndex: number) => void
   onRowEnter: (row: FileExplorerEntry, domIndex: number) => void
+  onOpenAsText?: (path: string) => void
   readOnly: boolean
   canNavigate: boolean
   overrideApplicationProjectDirectory?: string
@@ -236,12 +238,25 @@ export const ProjectExplorer = ({
           })
         },
       },
+      {
+        id: 'open-as-text',
+        label: 'Open as Text',
+        dataTestId: 'context-menu-open-as-text',
+        isVisible: ({ row }) =>
+          !readOnly &&
+          !!onOpenAsText &&
+          !row.isFolder &&
+          !row.isFake &&
+          !row.path.toLowerCase().endsWith(FILE_EXT),
+        onSelect: ({ row }) => onOpenAsText?.(row.path),
+      },
       ...extensionRowContextMenuItems,
     ],
     [
       commands,
       extensionRowContextMenuItems,
       file,
+      onOpenAsText,
       project.path,
       readOnly,
       wasmInstance,
