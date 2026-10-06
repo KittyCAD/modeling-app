@@ -301,14 +301,13 @@ export const commandBarMachine = setup({
     }),
     'Set current argument': assign({
       currentArgument: ({ context, event }) => {
-        switch (event.type) {
-          case 'Edit argument':
-            return event.data.arg
-          case 'Change current argument':
-            return Object.values(event.data)[0]
-          default:
-            return context.currentArgument
+        if (event.type === 'Edit argument') {
+          return event.data.arg
         }
+        if (event.type === 'Change current argument') {
+          return Object.values(event.data)[0]
+        }
+        return context.currentArgument
       },
     }),
     'Clear argument data': assign({

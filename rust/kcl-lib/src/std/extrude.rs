@@ -460,7 +460,12 @@ async fn inner_extrude(
 
     // Extrude the element(s).
     let mut solids = Vec::new();
-    let tolerance = LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM));
+    let tolerance = LengthUnit(
+        tolerance
+            .as_ref()
+            .map(|t| t.unwrap_to_mm())
+            .unwrap_or(DEFAULT_TOLERANCE_MM),
+    );
 
     let extrude_method = match method.as_deref() {
         Some("new" | "NEW") => ExtrudeMethod::New,
@@ -522,7 +527,7 @@ async fn inner_extrude(
         )));
     }
 
-    let bidirection = bidirectional_length.map(|l| LengthUnit(l.to_mm()));
+    let bidirection = bidirectional_length.map(|l| LengthUnit(l.unwrap_to_mm()));
 
     let opposite = match (symmetric, bidirection) {
         (Some(true), _) => Opposite::Symmetric,
@@ -583,11 +588,11 @@ async fn inner_extrude(
         ) {
             (Some(angle), angle_step, center, Some(length), None, None) => {
                 let center = center.clone().map(point_to_mm).map(Point2d::from).unwrap_or_default();
-                let total_rotation_angle = Angle::from_degrees(angle.to_degrees(exec_state, args.source_range));
+                let total_rotation_angle = Angle::from_degrees(angle.unwrap_to_degrees(exec_state, args.source_range));
                 let angle_step_size = Angle::from_degrees(
                     angle_step
                         .clone()
-                        .map(|a| a.to_degrees(exec_state, args.source_range))
+                        .map(|a| a.unwrap_to_degrees(exec_state, args.source_range))
                         .unwrap_or(15.0),
                 );
                 ModelingCmd::from(
@@ -602,7 +607,7 @@ async fn inner_extrude(
                                 })?
                                 .into(),
                         )
-                        .distance(LengthUnit(length.to_mm()))
+                        .distance(LengthUnit(length.unwrap_to_mm()))
                         .center_2d(center)
                         .total_rotation_angle(total_rotation_angle)
                         .angle_step_size(angle_step_size)
@@ -615,12 +620,12 @@ async fn inner_extrude(
                 mcmd::Extrude::builder()
                     .maybe_target(sketch_or_face_id.map(Into::into))
                     .maybe_target_reference(target_reference.clone())
-                    .distance(LengthUnit(length.to_mm()))
+                    .distance(LengthUnit(length.unwrap_to_mm()))
                     .opposite(opposite.clone())
                     .maybe_draft_angle(
                         draft_angle
                             .clone()
-                            .map(|a| Angle::from_degrees(a.to_degrees(exec_state, args.source_range))),
+                            .map(|a| Angle::from_degrees(a.unwrap_to_degrees(exec_state, args.source_range))),
                     )
                     .extrude_method(extrude_method)
                     .body_type(body_type)
@@ -668,12 +673,12 @@ async fn inner_extrude(
                     mcmd::Extrude::builder()
                         .maybe_target(sketch_or_face_id.map(Into::into))
                         .maybe_target_reference(target_reference.clone())
-                        .distance(LengthUnit(length.to_mm()))
+                        .distance(LengthUnit(length.unwrap_to_mm()))
                         .opposite(opposite.clone())
                         .maybe_draft_angle(
                             draft_angle
                                 .clone()
-                                .map(|a| Angle::from_degrees(a.to_degrees(exec_state, args.source_range))),
+                                .map(|a| Angle::from_degrees(a.unwrap_to_degrees(exec_state, args.source_range))),
                         )
                         .extrude_method(extrude_method)
                         .body_type(body_type)
@@ -689,9 +694,9 @@ async fn inner_extrude(
                         .target(concrete_target()?.into())
                         .reference(ExtrudeReference::Point {
                             point: KPoint3d {
-                                x: LengthUnit(point[0].to_mm()),
-                                y: LengthUnit(point[1].to_mm()),
-                                z: LengthUnit(point[2].to_mm()),
+                                x: LengthUnit(point[0].unwrap_to_mm()),
+                                y: LengthUnit(point[1].unwrap_to_mm()),
+                                z: LengthUnit(point[2].unwrap_to_mm()),
                             },
                         })
                         .extrude_method(extrude_method)
@@ -703,14 +708,14 @@ async fn inner_extrude(
                         .target(concrete_target()?.into())
                         .reference(ExtrudeReference::Axis {
                             axis: KPoint3d {
-                                x: direction[0].to_mm(),
-                                y: direction[1].to_mm(),
-                                z: direction[2].to_mm(),
+                                x: direction[0].unwrap_to_mm(),
+                                y: direction[1].unwrap_to_mm(),
+                                z: direction[2].unwrap_to_mm(),
                             },
                             point: KPoint3d {
-                                x: LengthUnit(origin[0].to_mm()),
-                                y: LengthUnit(origin[1].to_mm()),
-                                z: LengthUnit(origin[2].to_mm()),
+                                x: LengthUnit(origin[0].unwrap_to_mm()),
+                                y: LengthUnit(origin[1].unwrap_to_mm()),
+                                z: LengthUnit(origin[2].unwrap_to_mm()),
                             },
                         })
                         .extrude_method(extrude_method)

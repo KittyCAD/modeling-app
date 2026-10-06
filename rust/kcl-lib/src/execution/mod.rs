@@ -1465,6 +1465,8 @@ impl ExecutorContext {
         Ok(())
     }
 
+    /// Clear the KCL-lib internal cache and clear the entire engine scene.
+    /// This cache is shared across all executors.
     pub async fn bust_cache_and_reset_scene(&self) -> Result<ExecOutcome, KclErrorWithOutputs> {
         cache::bust_cache().await;
 
@@ -1475,6 +1477,12 @@ impl ExecutorContext {
         let outcome = self.run_with_caching(crate::Program::empty()).await?;
 
         Ok(outcome)
+    }
+
+    /// Clear the KCL-lib internal cache.
+    /// This cache is shared across all executors.
+    pub async fn bust_cache(&self) {
+        cache::bust_cache().await;
     }
 
     async fn prepare_mem(&self, exec_state: &mut ExecState) -> Result<(), KclErrorWithOutputs> {

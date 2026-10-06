@@ -2529,6 +2529,13 @@ function getEngineEntityIdForSelection(
         return entityRef.edge_id
       case 'segment':
         return entityRef.segment_id
+      case 'helix':
+        return entityRef.helix_id
+      case 'region':
+        return entityRef.region_id
+      case 'edge':
+      case 'vertex':
+        break
     }
   }
 
