@@ -59,9 +59,11 @@ async function withStoreUncategorized<T>(
     const transaction = db.transaction(storeName, mode)
     const store = transaction.objectStore(storeName)
     let callbackResult: IDBRequest<T> | T
+    let result: T
 
     transaction.oncomplete = () => {
       db.close()
+      resolve(result)
     }
     transaction.onerror = () => {
       db.close()
@@ -85,15 +87,14 @@ async function withStoreUncategorized<T>(
       typeof callbackResult === 'object' &&
       'onsuccess' in callbackResult
     ) {
-      callbackResult.onsuccess = () => resolve(callbackResult.result)
+      callbackResult.onsuccess = () => {
+        result = callbackResult.result
+      }
       callbackResult.onerror = () => reject(callbackResult.error)
       return
     }
 
-    transaction.oncomplete = () => {
-      db.close()
-      resolve(callbackResult)
-    }
+    result = callbackResult
   })
 }
 
