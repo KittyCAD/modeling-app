@@ -21,7 +21,7 @@ import {
   setup,
   token,
 } from '@e2e/playwright/test-utils'
-import type { Page } from '@playwright/test'
+import type { BrowserContext, Page, Route } from '@playwright/test'
 import type { CreatedRemoteProject } from '@src/lib/cloudSync/types'
 import JSZip from 'jszip'
 
@@ -46,6 +46,177 @@ async function expectCloudSyncHomeReady(page: Page) {
   await expect(
     page.getByRole('heading', { name: /^(Project Libraries|Personal Cloud)$/ })
   ).toBeVisible({ timeout: CLOUD_SYNC_E2E_TIMEOUT })
+}
+
+for (const resolution of ['local', 'cloud'] as const) {
+  test(
+    `refreshes open web editors after resolving an offline conflict with ${resolution} data`,
+    { tag: ['@web'] },
+    async ({ browser, browserName, baseURL, context, page }, testInfo) => {
+      test.skip(
+        browserName === 'webkit',
+        'Playwright WebKit cannot provide two isolated OPFS replicas.'
+      )
+      const secondContext = await browser.newContext({ baseURL })
+      const secondPage = await secondContext.newPage()
+      const projectName = 'cloud-editor-refresh'
+      const projectPath = `${PROJECT_DIR}/${projectName}`
+      const baseCode = '@settings(kclVersion = "2.0")\nvalue = 1\n'
+      const localCode = baseCode.replace('value = 1', 'value = 3')
+      const cloudCode = baseCode.replace('value = 1', 'value = 2')
+      let revision = 1
+      const remoteProject: CloudProject = {
+        id: 'e7637633-61a1-4e76-a177-39f16ab29e4a',
+        title: 'Cloud editor refresh',
+        revision: String(revision),
+        files: {
+          'main.kcl': baseCode,
+          'project.toml': projectToml(
+            'Cloud editor refresh',
+            'e7637633-61a1-4e76-a177-39f16ab29e4a'
+          ),
+        },
+      }
+      const remoteArchives = new Map([
+        [remoteProject.id, await zipProject(remoteProject.files)],
+      ])
+
+      async function openClient(
+        clientContext: BrowserContext,
+        clientPage: Page
+      ) {
+        await routeCloudProjects(clientContext, {
+          remoteProjects: [remoteProject],
+          remoteArchives,
+          updateProject: async ({ url, postData }) => {
+            const boundary = postData.slice(2, postData.indexOf('\r\n'))
+            const formData = await new Response(postData, {
+              headers: {
+                'content-type': `multipart/form-data; boundary=${boundary}`,
+              },
+            }).formData()
+            const files = { ...remoteProject.files }
+            for (const [path, file] of formData.entries()) {
+              if (path !== 'body' && typeof file !== 'string')
+                files[path] = await file.text()
+            }
+            const archive = await zipProject(files)
+            if (
+              new URL(url).searchParams.get('expected_revision') !==
+              remoteProject.revision
+            ) {
+              return {
+                status: 409,
+                body: { message: 'Cloud revision changed.' },
+              }
+            }
+            remoteProject.files = files
+            remoteProject.revision = String(++revision)
+            remoteArchives.set(remoteProject.id, archive)
+            return { status: 200, body: cloudProjectResponse(remoteProject) }
+          },
+        })
+        await setup(clientContext, clientPage, testInfo, [], {
+          cloudSyncEnabled: true,
+        })
+        await clientPage.goto('/home')
+        await expectCloudSyncHomeReady(clientPage)
+        await seedCloudSyncState(clientPage, {
+          projects: [{ projectName, files: remoteProject.files }],
+          metadata: [
+            {
+              projectName,
+              remoteProjectId: remoteProject.id,
+              remoteRevision: remoteProject.revision,
+              baseFiles: remoteProject.files,
+            },
+          ],
+        })
+        await clientPage.reload()
+        await expectCloudSyncHomeReady(clientPage)
+        await openHomeProject(clientPage, remoteProject.title)
+        const editor = new EditorFixture(clientPage)
+        await editor.openPane()
+        await editor.expectEditor.toContain('value = 1')
+        await expect
+          .poll(() => readCloudSyncProjectMetadata(clientPage, projectPath), {
+            timeout: CLOUD_SYNC_E2E_TIMEOUT,
+          })
+          .toMatchObject({ pendingCount: 0, conflict: undefined })
+        return editor
+      }
+
+      const blockOfflineRequests = (route: Route) =>
+        route.abort('internetdisconnected')
+      try {
+        const firstEditor = await openClient(context, page)
+        const secondEditor = await openClient(secondContext, secondPage)
+        await context.route('**/user/projects**', blockOfflineRequests)
+        await context.setOffline(true)
+        await firstEditor.replaceCodeByTyping(baseCode, localCode)
+        // Persist editor changes without depending on a live geometry engine.
+        expect(
+          await page.evaluate(() =>
+            window.app.singletons.kclManager.flushWriteToFile()
+          )
+        ).toBe(true)
+        await secondEditor.replaceCodeByTyping(baseCode, cloudCode)
+        expect(
+          await secondPage.evaluate(() =>
+            window.app.singletons.kclManager.flushWriteToFile()
+          )
+        ).toBe(true)
+        await expect
+          .poll(() => remoteProject.files['main.kcl'], {
+            timeout: CLOUD_SYNC_E2E_TIMEOUT,
+          })
+          .toBe(cloudCode)
+        await expect
+          .poll(() => readCloudSyncProjectMetadata(secondPage, projectPath), {
+            timeout: CLOUD_SYNC_E2E_TIMEOUT,
+          })
+          .toMatchObject({ pendingCount: 0, conflict: undefined })
+
+        await context.unroute('**/user/projects**', blockOfflineRequests)
+        await context.setOffline(false)
+        await expect(
+          page.getByTestId('project-sidebar-cloud-conflict-badge')
+        ).toBeVisible({ timeout: CLOUD_SYNC_E2E_TIMEOUT })
+        await page.getByTestId('project-sidebar-toggle').click()
+        await page
+          .getByTestId('project-sidebar-inspect-cloud-conflicts')
+          .click()
+        await page.getByTestId(`use-${resolution}-data`).click()
+        await expect(page.getByTestId('cloud-conflict-dialog')).toHaveCount(0)
+
+        await secondPage.getByTestId('project-sidebar-toggle').click()
+        await secondPage
+          .getByTestId('project-sidebar-cloud-sync-status')
+          .click()
+        const chosenCode = resolution === 'local' ? localCode : cloudCode
+        for (const clientPage of [page, secondPage]) {
+          await expect
+            .poll(() => readCloudSyncProjectMetadata(clientPage, projectPath), {
+              timeout: CLOUD_SYNC_E2E_TIMEOUT,
+            })
+            .toMatchObject({
+              remoteRevision: remoteProject.revision,
+              pendingCount: 0,
+              conflict: undefined,
+            })
+          await new EditorFixture(clientPage).expectEditor.toContain(
+            chosenCode.trimEnd(),
+            { shouldNormalise: true, timeout: CLOUD_SYNC_E2E_TIMEOUT }
+          )
+          await expectProjectFileRoute(clientPage)
+        }
+      } finally {
+        await context.unroute('**/user/projects**', blockOfflineRequests)
+        await context.setOffline(false)
+        await secondContext.close()
+      }
+    }
+  )
 }
 
 test(

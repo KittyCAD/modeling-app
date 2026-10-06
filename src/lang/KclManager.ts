@@ -2225,6 +2225,8 @@ export class KclManager extends File {
 
     // TODO: remove all this once the app can handle an undefined currently-executing editor
     await providedEditor.flushWriteToFile({ suppressConflictToast: true })
+    // Invalidate pending reads even when the next file has identical text.
+    providedEditor._documentVersion += 1
     providedEditor.flushRecoverySnapshot()
     providedEditor.editorStatesByPath.set(
       providedEditor.path,
@@ -2335,6 +2337,8 @@ export class KclManager extends File {
 
   /** Clean up listeners, watchers, etc */
   public close() {
+    // Invalidate pending document work before this editor can be reused.
+    this._documentVersion += 1
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
     this.settingsSubscription?.unsubscribe()
