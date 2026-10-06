@@ -286,10 +286,13 @@ async fn inner_fillet(
                     .version(edge_cut_version)
                     .tangent_chain(tangent_chain)
                     .tolerance(LengthUnit(
-                        tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
+                        tolerance
+                            .as_ref()
+                            .map(|t| t.unwrap_to_mm())
+                            .unwrap_or(DEFAULT_TOLERANCE_MM),
                     ))
                     .cut_type(CutTypeV2::Fillet {
-                        radius: LengthUnit(radius.to_mm()),
+                        radius: LengthUnit(radius.unwrap_to_mm()),
                         second_length: None,
                     })
                     .build(),
@@ -368,14 +371,14 @@ async fn inner_fillet_with_engine_refs(
                     .object_id(solid.id)
                     .edges_references(edge_references.clone())
                     .cut_type(CutTypeV2::Fillet {
-                        radius: LengthUnit(params.radius.to_mm()),
+                        radius: LengthUnit(params.radius.unwrap_to_mm()),
                         second_length: None,
                     })
                     .tolerance(LengthUnit(
                         params
                             .tolerance
                             .as_ref()
-                            .map(|t| t.to_mm())
+                            .map(|t| t.unwrap_to_mm())
                             .unwrap_or(DEFAULT_TOLERANCE_MM),
                     ))
                     .strategy(Default::default())

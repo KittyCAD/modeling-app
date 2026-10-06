@@ -27,19 +27,24 @@ pub enum RuntimeFlag {
 /// Fields missing from a deserialized payload become [`RuntimeFlag::Unset`],
 /// so a sender built before a flag existed falls back to Rust-side defaults
 /// instead of failing to parse.
+///
+/// `use_new_parser` is a placeholder while the new parser is being implemented:
+///
+/// - It has no corresponding Admin portal flag yet.
+/// - It defaults to [`RuntimeFlag::Off`] when omitted.
+/// - The current parser does not read it.
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[serde(default)]
 #[ts(export)]
 pub struct KclRuntimeFlags {
-    #[serde(default)]
-    pub use_cek_executor: RuntimeFlag,
-    #[serde(default)]
     pub use_new_lexer_parser: RuntimeFlag,
+    pub use_new_parser: RuntimeFlag,
 }
 
 impl KclRuntimeFlags {
     pub const DEFAULT: Self = Self {
-        use_cek_executor: RuntimeFlag::Unset,
         use_new_lexer_parser: RuntimeFlag::Unset,
+        use_new_parser: RuntimeFlag::Off,
     };
 }
 
@@ -100,20 +105,28 @@ mod tests {
     use super::*;
 
     #[test]
-    fn deserializing_empty_flags_defaults_to_unset() {
+    fn deserializing_empty_flags_preserves_rust_defaults() {
         let flags: KclRuntimeFlags = serde_json::from_str("{}").unwrap();
-        assert_eq!(flags, KclRuntimeFlags::DEFAULT);
+        assert_eq!(flags.use_new_lexer_parser, RuntimeFlag::Unset);
+        assert_eq!(flags.use_new_parser, RuntimeFlag::Off);
     }
 
     #[test]
-    fn deserializing_partial_flags_defaults_missing_fields_to_unset() {
+    fn deserializing_old_payload_defaults_new_parser_to_off() {
         let flags: KclRuntimeFlags = serde_json::from_str(r#"{"use_new_lexer_parser":"On"}"#).unwrap();
         assert_eq!(
             flags,
             KclRuntimeFlags {
-                use_cek_executor: RuntimeFlag::Unset,
                 use_new_lexer_parser: RuntimeFlag::On,
+                use_new_parser: RuntimeFlag::Off,
             }
         );
+    }
+
+    #[test]
+    fn deserializing_explicit_parser_flag_preserves_its_value() {
+        let flags: KclRuntimeFlags = serde_json::from_str(r#"{"use_new_parser":"On"}"#).unwrap();
+        assert_eq!(flags.use_new_lexer_parser, RuntimeFlag::Unset);
+        assert_eq!(flags.use_new_parser, RuntimeFlag::On);
     }
 }

@@ -283,17 +283,19 @@ pub async fn new_kcl_session_impl(
     // If you can't even connect to the engine, just raise an exception.
     // So it's fine to use ? here.
     let (ctx, mut state) = new_context_state(
-        path,
-        mock,
-        highlight_edges,
-        false,
-        video_res_width,
-        video_res_height,
         program
             .language_version()
             .map_err(|err| into_miette_for_parse(&filename, &code, err))?,
-        token,
-        base_url,
+        crate::ContextParams {
+            current_file: path,
+            mock,
+            highlight_edges,
+            geometry_only: false,
+            video_res_width,
+            video_res_height,
+            token,
+            base_url,
+        },
     )
     .await
     .map_err(to_py_exception)?;

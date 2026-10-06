@@ -236,9 +236,9 @@ async fn inner_translate(
     };
 
     let translation = shared::Point3d {
-        x: LengthUnit(x.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
-        y: LengthUnit(y.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
-        z: LengthUnit(z.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
+        x: LengthUnit(x.as_ref().map(|t| t.unwrap_to_mm()).unwrap_or_default()),
+        y: LengthUnit(y.as_ref().map(|t| t.unwrap_to_mm()).unwrap_or_default()),
+        z: LengthUnit(z.as_ref().map(|t| t.unwrap_to_mm()).unwrap_or_default()),
     };
     let mut objects = objects.clone();
     for object_id in objects.ids(&args.ctx).await? {
@@ -349,7 +349,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         // should be significant, not the magnitude.
         axis.map(|a| [a[0].n, a[1].n, a[2].n]),
         // The origin is a point in space, so the engine needs it in mm.
-        origin.map(|a| [a[0].to_mm(), a[1].to_mm(), a[2].to_mm()]),
+        origin.map(|a| [a[0].unwrap_to_mm(), a[1].unwrap_to_mm(), a[2].unwrap_to_mm()]),
         angle.map(|t| t.n),
         global,
         exec_state,
