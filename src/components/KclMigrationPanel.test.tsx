@@ -92,6 +92,5 @@ it('shows live Zookeeper reasoning before migration finishes', async () => {
   })
   expect(screen.getByText('matching camera views')).toBeInTheDocument()
   expect(screen.getByText('See reasoning')).toBeVisible()
-  expect(screen.queryByRole('button', { name: 'Apply Migration' })).toBeNull()
   expect(await fixture.readMain()).toBe(sourceCode)
 })

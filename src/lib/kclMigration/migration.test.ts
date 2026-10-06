@@ -39,10 +39,7 @@ async function startRunning() {
 
 describe('project migration', () => {
   it('streams progress only for this attempt without applying candidate edits', async () => {
-    await fixture.controller.start()
-    await vi.waitFor(() =>
-      expect(fixture.controller.phase.value).toBe('running')
-    )
+    await startRunning()
     expect(fixture.frames).toContainEqual({
       type: 'start',
       request: fixture.request,
@@ -90,45 +87,15 @@ describe('project migration', () => {
     )
     expect(fixture.controller.progress.value).toHaveLength(1)
     expect(await fixture.readMain()).toBe(targetCode)
-  })
-
-  it('clears previous progress when starting a new attempt', async () => {
     await fixture.controller.start()
-    await vi.waitFor(() =>
-      expect(fixture.controller.phase.value).toBe('running')
-    )
-    fixture.sendMessage({
-      type: 'progress',
-      operation_id: fixture.request.request_id,
-      message: { info: { text: 'Checking the source.' } },
-    })
-    await vi.waitFor(() =>
-      expect(fixture.controller.progress.value).toHaveLength(1)
-    )
-    const operation = successfulOperation(fixture.request)
-    fixture.send({
-      ...operation,
-      status: 'cancelled',
-      result: { status: 'cancelled', detail: 'Cancelled', files: {} },
-    })
-    await vi.waitFor(() =>
-      expect(fixture.controller.phase.value).toBe('cancelled')
-    )
-    await fixture.controller.start()
-    await vi.waitFor(() =>
-      expect(fixture.controller.phase.value).toBe('running')
-    )
-    expect(fixture.controller.progress.value).toEqual([])
-    expect(fixture.controller.progressText.value).toBe('')
+    expect(fixture.controller.phase.value).toBe('applied')
+    expect(fixture.frames.filter((f) => f.type === 'start')).toHaveLength(1)
   })
 
   it.each([true, false, undefined])(
     'reports quota exemption only with confirmed evidence (%s)',
     async (conversionNotStarted) => {
-      await fixture.controller.start()
-      await vi.waitFor(() =>
-        expect(fixture.controller.phase.value).toBe('running')
-      )
+      await startRunning()
       fixture.send({
         ...successfulOperation(fixture.request),
         status: 'failed',
@@ -262,10 +229,7 @@ describe('project migration', () => {
   )
 
   it('cancels and discards a success that races cancellation', async () => {
-    await fixture.controller.start()
-    await vi.waitFor(() =>
-      expect(fixture.controller.phase.value).toBe('running')
-    )
+    await startRunning()
     fixture.controller.cancel()
     await vi.waitFor(() =>
       expect(fixture.frames.some((f) => f.type === 'cancel')).toBe(true)
@@ -278,10 +242,7 @@ describe('project migration', () => {
   })
 
   it('queries status after disconnect without starting another operation', async () => {
-    await fixture.controller.start()
-    await vi.waitFor(() =>
-      expect(fixture.controller.phase.value).toBe('running')
-    )
+    await startRunning()
     fixture.disconnect()
     await vi.waitFor(() =>
       expect(fixture.controller.phase.value).toBe('disconnected')
@@ -303,22 +264,21 @@ describe('project migration', () => {
     const pending = new Promise<typeof snapshot>((resolve) => {
       finish = resolve
     })
-    let captures = 0
     const controller = new MigrationController(
       {
         ...fixture.project,
-        capture: () => (++captures === 1 ? pending : Promise.resolve(snapshot)),
+        capture: () => pending,
       },
       () => 'token'
     )
     try {
       const old = controller.start()
       controller.cancel()
-      await controller.start()
-      await vi.waitFor(() => expect(controller.phase.value).toBe('running'))
+      await startRunning()
       const requestId = fixture.request.request_id
       finish(snapshot)
       await old
+      expect(controller.phase.value).toBe('cancelled')
       expect(fixture.frames.filter((f) => f.type === 'start')).toHaveLength(1)
       expect(fixture.request.request_id).toBe(requestId)
     } finally {
@@ -326,11 +286,8 @@ describe('project migration', () => {
     }
   })
 
-  it('rejects a result for another snapshot and never applies after leaving the project', async () => {
-    await fixture.controller.start()
-    await vi.waitFor(() =>
-      expect(fixture.controller.phase.value).toBe('running')
-    )
+  it('rejects a result for another snapshot', async () => {
+    await startRunning()
     const operation = successfulOperation(fixture.request)
     operation.project_snapshot = {
       ...operation.project_snapshot,
@@ -343,6 +300,9 @@ describe('project migration', () => {
     expect(fixture.controller.detail.value).toContain(
       'different project or attempt'
     )
+  })
+
+  it('never applies after leaving the project', async () => {
     await startRunning()
     fixture.leaveProject()
     fixture.controller.dispose()
@@ -360,10 +320,7 @@ describe('project migration', () => {
   it.each(terminalFailures)(
     'keeps original files for a %s result',
     async (status) => {
-      await fixture.controller.start()
-      await vi.waitFor(() =>
-        expect(fixture.controller.phase.value).toBe('running')
-      )
+      await startRunning()
       fixture.send({
         ...successfulOperation(fixture.request),
         status,
@@ -379,14 +336,15 @@ describe('project migration', () => {
         )
       )
       expect(await fixture.readMain()).toBe(sourceCode)
+      const phase = fixture.controller.phase.value
+      await fixture.controller.start()
+      expect(fixture.controller.phase.value).toBe(phase)
+      expect(fixture.frames.filter((f) => f.type === 'start')).toHaveLength(1)
     }
   )
 
   it('requires complete validation and refuses missing files or altered binary assets', async () => {
-    await fixture.controller.start()
-    await vi.waitFor(() =>
-      expect(fixture.controller.phase.value).toBe('running')
-    )
+    await startRunning()
     const operation = successfulOperation(fixture.request)
     if (!operation.result?.validation)
       throw new Error('Missing test validation')

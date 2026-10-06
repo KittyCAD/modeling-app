@@ -51,7 +51,7 @@ export class MigrationController {
   readonly progressText = signal('')
   private original: MigrationSnapshot | undefined
   private request: MigrationRequest | undefined
-  private abort = new AbortController()
+  private readonly abort = new AbortController()
   private connection: MigrationConnection | undefined
   private disposed = false
   private cancelled = false
@@ -79,25 +79,11 @@ export class MigrationController {
   private current = () => !this.disposed && this.project.isCurrent()
 
   async start(): Promise<void> {
-    if (
-      !this.current() ||
-      !['idle', 'failed', 'cancelled'].includes(this.phase.value)
-    )
-      return
-    this.abort.abort()
-    this.abort = new AbortController()
-    const owner = this.abort
-    this.original = undefined
-    this.request = undefined
-    this.cancelled = false
-    this.detail.value = ''
-    this.progress.value = []
-    this.progressText.value = ''
+    if (!this.current() || this.phase.value !== 'idle') return
     this.phase.value = 'capturing'
     try {
       const original = await this.project.capture()
-      if (!this.current() || owner !== this.abort || owner.signal.aborted)
-        return
+      if (!this.current() || this.abort.signal.aborted) return
       this.original = original
       this.request = {
         request_id: crypto.randomUUID(),
@@ -114,23 +100,21 @@ export class MigrationController {
       }
       await this.connect(false)
     } catch (error: unknown) {
-      if (owner === this.abort) this.fail(error)
+      this.fail(error)
     }
   }
 
   private async connect(statusOnly: boolean): Promise<void> {
     if (!this.request || !this.current()) return
     this.phase.value = 'connecting'
-    const owner = this.abort
     try {
       const connection = await connectMigration({
         request: this.request,
         token: this.token(),
-        signal: owner.signal,
+        signal: this.abort.signal,
         statusOnly,
         onProgress: (message) => {
-          if (!this.current() || owner !== this.abort || owner.signal.aborted)
-            return
+          if (!this.current() || this.abort.signal.aborted) return
           if ('delta' in message) this.progressText.value += message.delta.delta
           else
             this.progress.value = [
@@ -141,8 +125,7 @@ export class MigrationController {
             ]
         },
         onOperation: (operation) => {
-          if (!this.current() || owner !== this.abort || owner.signal.aborted)
-            return
+          if (!this.current() || this.abort.signal.aborted) return
           if (operation.status === 'running') {
             this.phase.value = this.cancelled ? 'cancelling' : 'running'
             return
@@ -165,25 +148,21 @@ export class MigrationController {
             this.phase.value = 'failed'
           }
         },
-        onError: (error) => {
-          if (owner === this.abort) this.fail(error)
-        },
+        onError: (error) => this.fail(error),
         onDisconnect: () => {
-          if (!this.current() || owner !== this.abort) return
+          if (!this.current()) return
           this.phase.value = 'disconnected'
           this.detail.value =
             'The connection closed. Check the final status before starting another attempt. Disconnected migrations do not resume.'
         },
       })
-      if (!this.current() || owner !== this.abort || owner.signal.aborted)
-        connection.close()
+      if (!this.current() || this.abort.signal.aborted) connection.close()
       else {
         this.connection = connection
         if (this.cancelled) connection.cancel()
       }
     } catch (error: unknown) {
-      if (owner === this.abort && this.current() && !owner.signal.aborted)
-        this.fail(error)
+      this.fail(error)
     }
   }
 

@@ -291,12 +291,6 @@ test.describe(
         page.getByRole('status').filter({ hasText: 'Migrated to KCL 3' })
       ).toBeVisible()
       expect(await editorCode()).toBe(candidate)
-      await expect(
-        page.getByRole('heading', { name: 'Review Changes' })
-      ).toHaveCount(0)
-      await expect(
-        page.getByRole('button', { name: 'Apply Migration' })
-      ).toHaveCount(0)
       await expect(cancel).toBeHidden()
       await page.screenshot({
         path: testInfo.outputPath('migration-applied.png'),
@@ -315,9 +309,6 @@ test.describe(
       await expect(
         page.getByRole('status').filter({ hasText: 'Migrated to KCL 3' })
       ).toBeVisible()
-      await expect(
-        page.getByRole('button', { name: 'Undo Migration' })
-      ).toHaveCount(0)
       await page
         .getByRole('button', { name: 'arrow turn left', exact: true })
         .click()

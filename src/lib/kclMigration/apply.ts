@@ -8,10 +8,7 @@ import {
 } from '@src/lib/kclMigration/snapshot'
 
 export class MigrationRecoveryError extends Error {
-  constructor(
-    readonly failures: readonly string[],
-    cause: unknown
-  ) {
+  constructor(failures: readonly string[], cause: unknown) {
     super(
       `Migration could not restore these files: ${failures.join(', ')}. Review these files before continuing.`,
       { cause }
