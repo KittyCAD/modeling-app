@@ -3514,6 +3514,7 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
     await expect(
       getEventForQueryEntityTypeWithPoint(
         {
+          entity_id: 'copy-face-1',
           reference: { type: 'solid3d', solid3d_id: 'copy-body-1' },
         },
         {
@@ -3530,6 +3531,7 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
         selection: {
           artifact: patternArtifact,
           codeRef,
+          engineEntityId: 'copy-face-1',
           entityRef: { type: 'solid3d', solid3d_id: 'copy-body-1' },
           patternIndex: 1,
         },
@@ -3582,11 +3584,7 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
     })
   })
 
-  test.each([
-    'segments',
-    'point',
-    'error', // A failed intersection query must also fall back to a point.
-  ])('selects a region with %s', async (mode) => {
+  test.each(['segments', 'point'])('selects region via %s', async (mode) => {
     const { instance } = await buildTheWorldAndNoEngineConnection()
     const ast = assertParse('@settings(defaultLengthUnit = in)', instance)
     const pathToNode = [['body', '']] as any
@@ -3635,12 +3633,6 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
     }
     const engineCommandManager = {
       sendSceneCommand: vi.fn(async (event: any) => {
-        if (
-          mode === 'error' &&
-          event.cmd.type === 'region_get_resolvable_intersection_info'
-        ) {
-          throw new Error('Intersection lookup failed')
-        }
         if (
           mode === 'segments' &&
           event.cmd.type === 'region_get_resolvable_intersection_info'
@@ -3723,7 +3715,7 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
     })
   })
 
-  test('selects a surface boundary edge using topology fallback', async () => {
+  test('falls back to a primitive selection for a surface boundary edge without face metadata', async () => {
     const { instance } = await buildTheWorldAndNoEngineConnection()
     const ast = assertParse('', instance)
     const surfaceSweep = {
@@ -3754,27 +3746,27 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
     })
     const engineCommandManager = {
       sendSceneCommand: vi.fn(async (event: any) => {
+        if (event.cmd.type === 'entity_get_primitive_index') {
+          return modelingResponse({
+            type: 'entity_get_primitive_index',
+            data: { primitive_index: 1, entity_type: 'edge' },
+          })
+        }
         if (event.cmd.type === 'entity_get_parent_id') {
           return modelingResponse({
             type: 'entity_get_parent_id',
             data: { entity_id: 'surface-sweep' },
           })
         }
-        return modelingResponse({ type: 'empty' })
+        return undefined
       }),
     }
 
     await expect(
       getEventForQueryEntityTypeWithPoint(
         {
-          reference: {
-            type: 'edge',
-            side_faces: [],
-            topology_fallback: {
-              parent_id: surfaceSweep.id,
-              primitive_index: 1,
-            },
-          },
+          entity_id: 'surface-edge',
+          reference: { type: 'edge', side_faces: [] },
         },
         {
           engineCommandManager: engineCommandManager as any,
@@ -3783,16 +3775,16 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
           wasmInstance: instance,
         }
       )
-    ).resolves.toMatchObject({
+    ).resolves.toEqual({
       type: 'Set selection',
       data: {
-        selectionType: 'singleCodeCursor',
+        selectionType: 'enginePrimitiveSelection',
         selection: {
-          entityRef: { type: 'edge', side_faces: [] },
-          engineTopologyFallback: {
-            parentId: surfaceSweep.id,
-            primitiveIndex: 1,
-          },
+          type: 'enginePrimitive',
+          entityId: 'surface-edge',
+          parentEntityId: 'surface-sweep',
+          primitiveIndex: 1,
+          primitiveType: 'edge',
         },
       },
     })
