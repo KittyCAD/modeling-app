@@ -23,6 +23,8 @@ describe('cloud sync transaction outcomes', () => {
 
   it('rejects a metadata write that aborts after its request succeeds', async () => {
     let aborted!: Promise<void>
+    // The replacement calls the original method with its object-store receiver.
+    // eslint-disable-next-line @typescript-eslint/unbound-method
     const put = IDBObjectStore.prototype.put
     vi.spyOn(IDBObjectStore.prototype, 'put').mockImplementation(function (
       this: IDBObjectStore,
