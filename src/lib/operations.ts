@@ -2,12 +2,12 @@ import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type {
   OpArg,
-  OpKclValue,
   Operation,
+  OpKclValue,
 } from '@rust/kcl-lib/bindings/Operation'
 import type { CustomIconName } from '@src/components/CustomIcon'
-import type { KclManager } from '@src/lang/KclManager'
 import { toUtf16 } from '@src/lang/errors'
+import type { KclManager } from '@src/lang/KclManager'
 import { updateModelingState } from '@src/lang/modelingWorkflows'
 import {
   deleteTermFromUnlabeledArgumentArray,
@@ -16,6 +16,7 @@ import {
 import {
   retrieveEdgeSelectionsFromEdgeRefs,
   retrieveEdgeSelectionsFromOpArgs,
+  retrieveEdgeSelectionsFromSingleEdgeRef,
 } from '@src/lang/modifyAst/edges'
 import {
   retrieveFaceSelectionsFromOpArgs,
@@ -25,13 +26,14 @@ import {
   retrieveNonDefaultPlaneSelectionFromOpArg,
 } from '@src/lang/modifyAst/faces'
 import {
-  SWEEP_CONSTANTS,
-  SWEEP_MODULE,
-  type SweepRelativeTo,
   retrieveAxisOrEdgeSelectionsFromOpArg,
   retrieveBodyTypeFromOpArg,
   retrieveTagDeclaratorFromOpArg,
+  SWEEP_CONSTANTS,
+  SWEEP_MODULE,
+  type SweepRelativeTo,
 } from '@src/lang/modifyAst/sweeps'
+import type { StdLibCallOp } from '@src/lang/queryAst'
 import {
   artifactToEntityRef,
   findOperationArtifact,
@@ -39,7 +41,6 @@ import {
   getVariableNameFromNodePath,
   retrieveSelectionsFromOpArg,
 } from '@src/lang/queryAst'
-import type { StdLibCallOp } from '@src/lang/queryAst'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
@@ -66,6 +67,8 @@ import {
   KCL_PRELUDE_EXTRUDE_METHOD_NEW,
   type KclPreludeBodyType,
   type KclPreludeExtrudeMethod,
+  LEGACY_SKETCH_MODE_FEATURE_FLAG,
+  LEGACY_SKETCH_MODE_REMOVED_MESSAGE,
 } from '@src/lib/constants'
 import { getStringValue, stringToKclExpression } from '@src/lib/kclHelpers'
 import { isDefaultPlaneStr } from '@src/lib/planes'
@@ -107,21 +110,32 @@ interface StdLibCallInfo {
   supportsScale?: boolean
 }
 
+function hasLegacySketchMode(): boolean {
+  return (
+    window.app?.userFeatures.has(LEGACY_SKETCH_MODE_FEATURE_FLAG, false) ??
+    false
+  )
+}
+
+function emptySelections(): Selections {
+  return { graphSelections: [], otherSelections: [] }
+}
+
+function selectionResultOrEmpty(result: Selections | Error): Selections {
+  return isErr(result) ? emptySelections() : result
+}
+
 function retrieveUnlabeledSelectionsForEdit(
   operation: StdLibCallOp,
   artifactGraph: ArtifactGraph
 ): Selections {
   if (!operation.unlabeledArg) {
-    return { graphSelections: [], otherSelections: [] }
+    return emptySelections()
   }
 
-  const selections = retrieveSelectionsFromOpArg(
-    operation.unlabeledArg,
-    artifactGraph
+  return selectionResultOrEmpty(
+    retrieveSelectionsFromOpArg(operation.unlabeledArg, artifactGraph)
   )
-  return isErr(selections)
-    ? { graphSelections: [], otherSelections: [] }
-    : selections
 }
 
 // Helper functions for argument extraction
@@ -219,10 +233,6 @@ function extractFaceSelections(
     }
   }
 
-  if (graphSelections.length === 0) {
-    return { error: 'No valid face selections found in TagIdentifier objects' }
-  }
-
   return graphSelections
 }
 
@@ -246,6 +256,12 @@ function extractDistanceTargetSelections(
 ): Selection[] | { error: string } {
   const value = targetArg.value
 
+  if (value.type === 'Object') {
+    return selectionResultOrEmpty(
+      retrieveEdgeSelectionsFromSingleEdgeRef(targetArg, artifactGraph)
+    ).graphSelections
+  }
+
   if (value.type === 'Uuid') {
     return retrieveEdgeSelectionsFromOpArgs(null, targetArg, artifactGraph)
       .graphSelections
@@ -261,7 +277,7 @@ function extractDistanceTargetSelections(
   }
 
   const faceSelections = extractFaceSelections(artifactGraph, targetArg)
-  if (!('error' in faceSelections)) {
+  if (Array.isArray(faceSelections) && faceSelections.length > 0) {
     return faceSelections
   }
 
@@ -274,7 +290,47 @@ function extractDistanceTargetSelections(
     return edgeSelections
   }
 
-  return { error: 'Missing or invalid distance target argument' }
+  return []
+}
+
+function retrieveFaceAndEdgeSelectionsForEdit(
+  artifactGraph: ArtifactGraph,
+  facesArg?: OpArg,
+  edgesArg?: OpArg
+): Selections {
+  const faceSelections = facesArg?.sourceRange
+    ? extractFaceSelections(artifactGraph, facesArg)
+    : []
+  const graphSelections: Selection[] = Array.isArray(faceSelections)
+    ? faceSelections.map((selection) =>
+        selection.artifact
+          ? {
+              entityRef: artifactToEntityRef(
+                selection.artifact.type,
+                selection.artifact.id
+              ),
+              codeRef: selection.codeRef,
+            }
+          : { codeRef: selection.codeRef }
+      )
+    : []
+
+  if (edgesArg?.sourceRange) {
+    const edgeValues =
+      edgesArg.value.type === 'Array' ? edgesArg.value.value : [edgesArg.value]
+    for (const value of edgeValues) {
+      const edgeArg = { ...edgesArg, value }
+      const edges =
+        value.type === 'Object'
+          ? selectionResultOrEmpty(
+              retrieveEdgeSelectionsFromSingleEdgeRef(edgeArg, artifactGraph)
+            )
+          : retrieveEdgeSelectionsFromOpArgs(null, edgeArg, artifactGraph)
+      graphSelections.push(...edges.graphSelections)
+    }
+  }
+
+  return { graphSelections, otherSelections: [] }
 }
 
 function extractBooleanArgument(operation: StdLibCallOp, name: string) {
@@ -439,10 +495,10 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
       operation.labeledArgs.direction,
       artifactGraph
     )
-    if (err(axisEdgeSelection) || !axisEdgeSelection.edge) {
-      return { reason: 'Missing or invalid direction edge selection' }
-    }
-    direction = axisEdgeSelection.edge
+    direction =
+      isErr(axisEdgeSelection) || !axisEdgeSelection.edge
+        ? emptySelections()
+        : axisEdgeSelection.edge
   }
 
   // symmetric argument from a string to boolean
@@ -760,10 +816,6 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
   }
 
   // 1. Map the current edge arguments back into selections for the edit flow.
-  if (!operation.unlabeledArg) {
-    return { reason: `Couldn't retrieve operation arguments` }
-  }
-
   let selection: Selections | Error
 
   const buildSelectionFromArtifact = (): Selections | null => {
@@ -793,19 +845,14 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
     selection = retrieveEdgeSelectionsFromEdgeRefs(edgesArg, artifactGraph)
   } else if (operation.labeledArgs?.tags) {
     selection = retrieveEdgeSelectionsFromOpArgs(
-      operation.unlabeledArg,
+      operation.unlabeledArg ?? null,
       operation.labeledArgs.tags,
       artifactGraph,
       code
     )
   } else {
     const fromArtifact = buildSelectionFromArtifact()
-    if (fromArtifact) selection = fromArtifact
-    else {
-      return {
-        reason: `Couldn't retrieve operation arguments (missing tags or edges)`,
-      }
-    }
+    selection = fromArtifact ?? emptySelections()
   }
 
   if (err(selection)) {
@@ -931,10 +978,6 @@ const prepareToEditChamfer: PrepareToEditCallback = async ({
   }
 
   // 1. Map the current edge arguments back into selections for the edit flow.
-  if (!operation.unlabeledArg) {
-    return { reason: `Couldn't retrieve operation arguments` }
-  }
-
   let selection: Selections | Error
   const edgesArg =
     operation.labeledArgs?.edges ?? operation.labeledArgs?.edgeRefs
@@ -942,15 +985,13 @@ const prepareToEditChamfer: PrepareToEditCallback = async ({
     selection = retrieveEdgeSelectionsFromEdgeRefs(edgesArg, artifactGraph)
   } else if (operation.labeledArgs?.tags) {
     selection = retrieveEdgeSelectionsFromOpArgs(
-      operation.unlabeledArg,
+      operation.unlabeledArg ?? null,
       operation.labeledArgs.tags,
       artifactGraph,
       code
     )
   } else {
-    return {
-      reason: `Couldn't retrieve operation arguments (missing tags or edges)`,
-    }
+    selection = emptySelections()
   }
   if (err(selection)) return { reason: selection.message }
 
@@ -1343,6 +1384,31 @@ const prepareToEditRingGear: PrepareToEditCallback = async ({
   }
 }
 
+/** Gather the existing Clone arguments for the command-bar edit flow. */
+const prepareToEditClone: PrepareToEditCallback = async ({
+  operation,
+  artifactGraph,
+}) => {
+  const baseCommand = {
+    name: 'Clone',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall' || operation.name !== 'clone') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const objects = retrieveUnlabeledSelectionsForEdit(operation, artifactGraph)
+  const argDefaultValues: ModelingCommandSchema['Clone'] = {
+    objects,
+    variableName: KCL_DEFAULT_CONSTANT_PREFIXES.CLONE,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
 const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
   operation,
   rustContext,
@@ -1442,17 +1508,11 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
   const sketches = retrieveUnlabeledSelectionsForEdit(operation, artifactGraph)
 
   // 2. Prepare labeled arguments
-  if (!operation.labeledArgs.path) {
-    return { reason: "Couldn't retrieve path argument" }
-  }
-
-  const path = retrieveSelectionsFromOpArg(
-    operation.labeledArgs.path,
-    artifactGraph
-  )
-  if (err(path)) {
-    return { reason: "Couldn't retrieve path argument" }
-  }
+  const path = operation.labeledArgs.path
+    ? selectionResultOrEmpty(
+        retrieveSelectionsFromOpArg(operation.labeledArgs.path, artifactGraph)
+      )
+    : emptySelections()
 
   // optional arguments
   let sectional: boolean | undefined
@@ -2213,6 +2273,57 @@ const prepareToEditGdtFlatness: PrepareToEditCallback = async ({
   }
 }
 
+const prepareToEditGdtStraightness: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  artifactGraph,
+  code,
+}) => {
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const objects = retrieveFaceAndEdgeSelectionsForEdit(
+    artifactGraph,
+    operation.labeledArgs?.faces,
+    operation.labeledArgs?.edges
+  )
+  const tolerance = await extractKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if ('error' in tolerance) {
+    return { reason: tolerance.error }
+  }
+  const optionalArgs = await Promise.all([
+    extractKclArgument(code, operation, 'precision', rustContext),
+    extractKclArgument(code, operation, 'framePosition', rustContext, true),
+    extractKclArgument(code, operation, 'leaderScale', rustContext),
+    extractKclArgument(code, operation, 'fontSize', rustContext),
+  ])
+  const [precision, framePosition, leaderScale, fontSize] = optionalArgs.map(
+    (argument) => ('error' in argument ? undefined : argument)
+  )
+
+  const argDefaultValues: ModelingCommandSchema['GDT Straightness'] = {
+    objects,
+    tolerance,
+    precision,
+    framePosition,
+    framePlane: extractStringArgument(code, operation, 'framePlane'),
+    leaderScale,
+    fontSize,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+  return {
+    name: 'GDT Straightness',
+    groupId: 'modeling',
+    argDefaultValues,
+  }
+}
+
 const prepareToEditGdtDatum: PrepareToEditCallback = async ({
   operation,
   rustContext,
@@ -2509,8 +2620,11 @@ const prepareToEditGdtDistance: PrepareToEditCallback = async ({
   const edgesArg = operation.labeledArgs?.['edges']
   if (edgesArg?.sourceRange) {
     graphSelections.push(
-      ...retrieveEdgeSelectionsFromOpArgs(null, edgesArg, artifactGraph)
-        .graphSelections
+      ...retrieveFaceAndEdgeSelectionsForEdit(
+        artifactGraph,
+        undefined,
+        edgesArg
+      ).graphSelections
     )
   }
 
@@ -2976,6 +3090,11 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     icon: 'gdtFlatness',
     prepareToEdit: prepareToEditGdtFlatness,
   },
+  'gdt::straightness': {
+    label: 'Straightness',
+    icon: 'gdtStraightness',
+    prepareToEdit: prepareToEditGdtStraightness,
+  },
   'gdt::position': {
     label: 'Position',
     icon: 'gdtPosition',
@@ -3300,6 +3419,9 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Sketch',
     icon: 'sketch',
     async prepareToEdit({ operation, artifact, artifactGraph }) {
+      if (!hasLegacySketchMode()) {
+        return { reason: LEGACY_SKETCH_MODE_REMOVED_MESSAGE }
+      }
       const resolvedArtifact =
         artifact ??
         (operation.type === 'StdLibCall'
@@ -3340,8 +3462,13 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   clone: {
     label: 'Clone',
     icon: 'clone',
+    prepareToEdit: prepareToEditClone,
     supportsAppearance: true,
     supportsTransform: true,
+  },
+  'view::named': {
+    label: 'Named View',
+    icon: 'namedView',
   },
 }
 
@@ -3907,9 +4034,9 @@ async function prepareToEditTranslate({
   const objects = retrieveUnlabeledSelectionsForEdit(operation, artifactGraph)
 
   // 2. Convert the x y z arguments from a string to a KCL expression
-  let x: KclCommandValue | undefined = undefined
-  let y: KclCommandValue | undefined = undefined
-  let z: KclCommandValue | undefined = undefined
+  let x: KclCommandValue | undefined
+  let y: KclCommandValue | undefined
+  let z: KclCommandValue | undefined
   let global: boolean | undefined
   if (operation.labeledArgs.x) {
     const result = await stringToKclExpression(
@@ -4006,10 +4133,10 @@ async function prepareToEditScale({
   const objects = retrieveUnlabeledSelectionsForEdit(operation, artifactGraph)
 
   // 2. Convert the x y z arguments from a string to a KCL expression
-  let x: KclCommandValue | undefined = undefined
-  let y: KclCommandValue | undefined = undefined
-  let z: KclCommandValue | undefined = undefined
-  let factor: KclCommandValue | undefined = undefined
+  let x: KclCommandValue | undefined
+  let y: KclCommandValue | undefined
+  let z: KclCommandValue | undefined
+  let factor: KclCommandValue | undefined
   let global: boolean | undefined
   if (operation.labeledArgs.x) {
     const res = await extractKclArgument(code, operation, 'x', rustContext)
@@ -4081,9 +4208,9 @@ async function prepareToEditRotate({
   const objects = retrieveUnlabeledSelectionsForEdit(operation, artifactGraph)
 
   // 2. Convert the x y z arguments from a string to a KCL expression
-  let roll: KclCommandValue | undefined = undefined
-  let pitch: KclCommandValue | undefined = undefined
-  let yaw: KclCommandValue | undefined = undefined
+  let roll: KclCommandValue | undefined
+  let pitch: KclCommandValue | undefined
+  let yaw: KclCommandValue | undefined
   let global: boolean | undefined
   if (operation.labeledArgs.roll) {
     const result = await stringToKclExpression(
@@ -4246,6 +4373,39 @@ async function prepareToEditAppearance({
 
 export type HideOperation = Operation & { type: 'StdLibCall'; name: 'hide' }
 
+function artifactIdsInOpValue(value: OpKclValue): string[] {
+  switch (value.type) {
+    case 'Plane':
+    case 'Face':
+    case 'Segment':
+    case 'GdtAnnotation':
+    case 'ImportedGeometry':
+      return [value.artifact_id]
+    case 'Sketch':
+    case 'Solid':
+    case 'Helix':
+      return [value.value.artifactId]
+    case 'Array':
+      return value.value.flatMap(artifactIdsInOpValue)
+    case 'TagIdentifier':
+    case 'TagDeclarator':
+    case 'Object':
+    case 'Uuid':
+    case 'Bool':
+    case 'Number':
+    case 'String':
+    case 'Enum':
+    case 'SketchVar':
+    case 'CameraView':
+    case 'Function':
+    case 'Module':
+    case 'Type':
+    case 'KclNone':
+    case 'BoundedEdge':
+      return []
+  }
+}
+
 function getHideOperationArtifactIds(op: Operation): string[] {
   if (!(op.type === 'StdLibCall' && op.name === 'hide')) {
     return []
@@ -4256,16 +4416,7 @@ function getHideOperationArtifactIds(op: Operation): string[] {
     return []
   }
 
-  const values = value.type === 'Array' ? value.value : [value]
-  return values.flatMap((value) =>
-    'value' in value &&
-    typeof value.value === 'object' &&
-    value.value !== null &&
-    'artifactId' in value.value &&
-    typeof value.value.artifactId === 'string'
-      ? [value.value.artifactId]
-      : []
-  )
+  return artifactIdsInOpValue(value)
 }
 
 /** Returns every artifact id used in the program as an argument to `hide()`. */

@@ -28,6 +28,7 @@ import type {
   WallArtifact,
 } from '@src/lang/wasm'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
+
 /** Shape needed to recover a sweep edge's source segment. */
 type SweepEdgeLike = { segId: string; sweepId?: string }
 /**
@@ -36,6 +37,7 @@ type SweepEdgeLike = { segId: string; sweepId?: string }
  * source-range context initially and defer artifact lookup to the next step.
  */
 export type ResolvedGraphSelection = { codeRef: CodeRef; artifact?: Artifact }
+
 import { err } from '@src/lib/trap'
 
 export type { Artifact, ArtifactId, SegmentArtifact } from '@src/lang/wasm'
@@ -507,6 +509,7 @@ export function getMergedSweepBodyArtifact(
     if (face?.type !== 'cap' && face?.type !== 'wall') return current
     const parentSweep = artifactGraph.get(face.sweepId)
     if (parentSweep?.type !== 'sweep') return current
+    if (parentSweep.id === current.id) return current
     current = parentSweep
   }
 
@@ -1018,7 +1021,7 @@ export function getPathsFromArtifact({
     { keys: plane.pathIds, types: ['path'] },
     artifactGraph
   )
-  let nodePaths = [...paths.values()]
+  const nodePaths = [...paths.values()]
     .map((path) => path.codeRef.pathToNode)
     .sort((a, b) => Number(a[1][0]) - Number(b[1][0]))
   return onlyConsecutivePaths(nodePaths, sketchPathToNode, ast)
