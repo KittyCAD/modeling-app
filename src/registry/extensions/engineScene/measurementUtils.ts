@@ -167,6 +167,53 @@ function getEntitiesForGraphSelection(
   artifactGraph?: ArtifactGraph
 ): MeasurementEntity[] {
   const artifact = selection.artifact
+  // Face API artifacts may describe lineage (an adjacent face or source
+  // sketch), rather than the entity the user actually selected.
+  const reference = selection.entityRef
+  if (reference) {
+    switch (reference.type) {
+      case 'edge': {
+        const id =
+          selection.engineEntityId ??
+          (artifact &&
+          (artifact.type === 'primitiveEdge' ||
+            artifact.type === 'sweepEdge' ||
+            artifact.type === 'edgeCutEdge')
+            ? artifact.id
+            : undefined)
+        return id ? [{ id, kind: 'edge' }] : []
+      }
+      case 'face':
+        return [{ id: reference.face_id, kind: 'face' }]
+      case 'solid2d_edge':
+        return [{ id: reference.edge_id, kind: 'edge' }]
+      case 'segment':
+        return [{ id: reference.segment_id, kind: 'edge' }]
+      case 'solid3d': {
+        const id = getBodyEntityIdForSelection(
+          {
+            ...selection,
+            artifact: artifactGraph?.get(reference.solid3d_id) ?? artifact,
+            engineEntityId: selection.engineEntityId ?? reference.solid3d_id,
+          },
+          artifactGraph
+        )
+        return id ? [{ id, kind: 'body' }] : []
+      }
+      case 'plane':
+        return [{ id: reference.plane_id, kind: 'other' }]
+      case 'solid2d':
+        return [{ id: reference.solid2d_id, kind: 'other' }]
+      case 'region':
+        return [{ id: reference.region_id, kind: 'other' }]
+      case 'helix':
+        return [{ id: reference.helix_id, kind: 'other' }]
+      case 'vertex':
+        return selection.engineEntityId
+          ? [{ id: selection.engineEntityId, kind: 'other' }]
+          : []
+    }
+  }
   const kind = getMeasurementKindForArtifact(selection.artifact)
   if (
     kind === 'body' ||
