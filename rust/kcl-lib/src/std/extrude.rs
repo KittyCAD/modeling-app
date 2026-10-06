@@ -55,10 +55,8 @@ use crate::execution::TagEngineInfo;
 use crate::execution::TagIdentifier;
 use crate::execution::annotations;
 use crate::execution::types::ArrayLen;
-use crate::execution::types::NumericType;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
-use crate::execution::types::UnitType;
 use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
@@ -66,6 +64,13 @@ use crate::std::axis_or_reference::Point3dAxis3dOrGeometryReference;
 use crate::std::axis_or_reference::Point3dOrEdgeReference;
 use crate::std::edge::{self};
 use crate::std::solver::create_segments_in_engine;
+
+fn must_be_lengths_err(source_range: crate::SourceRange) -> KclError {
+    KclError::new_type(KclErrorDetails::new(
+        "The components of `direction` must be lengths, e.g. `[0, 0, 1]` or `[1mm, 0mm, 1in]`".to_owned(),
+        vec![source_range],
+    ))
+}
 
 /// Extrudes by a given amount.
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -138,12 +143,9 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                 })?
             };
             if let Point3dOrEdgeReference::Point(point) = &inner
-                && !point.iter().all(is_length)
+                && !point.iter().all(|component| component.is_length_compatible())
             {
-                return Err(KclError::new_type(KclErrorDetails::new(
-                    "The components of `direction` must be lengths, e.g. `[0, 0, 1]` or `[1mm, 0mm, 1in]`".to_owned(),
-                    vec![args.source_range],
-                )));
+                return Err(must_be_lengths_err(args.source_range));
             }
             Some(inner)
         }
@@ -640,9 +642,15 @@ async fn inner_extrude(
                         let units = exec_state.length_unit();
                         Some(DirectionType::Axis {
                             direction: KPoint3d {
-                                x: p[0].to_length_units(units),
-                                y: p[1].to_length_units(units),
-                                z: p[2].to_length_units(units),
+                                x: p[0]
+                                    .to_length_units(units)
+                                    .ok_or(must_be_lengths_err(args.source_range))?,
+                                y: p[1]
+                                    .to_length_units(units)
+                                    .ok_or(must_be_lengths_err(args.source_range))?,
+                                z: p[2]
+                                    .to_length_units(units)
+                                    .ok_or(must_be_lengths_err(args.source_range))?,
                             },
                         })
                     }
@@ -1592,14 +1600,6 @@ fn fake_extrude_surface(exec_state: &mut ExecState, path: &Path) -> Option<Extru
         },
     });
     Some(extrude_surface)
-}
-
-/// Can `n` be converted with `TyF64::to_length_units`? True for lengths and for numbers that use the file's default units.
-fn is_length(n: &TyF64) -> bool {
-    matches!(
-        n.ty,
-        NumericType::Default { .. } | NumericType::Known(UnitType::Length(_))
-    )
 }
 
 #[cfg(test)]
