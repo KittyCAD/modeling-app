@@ -326,7 +326,7 @@ async function getSketchIdForEngineRegionEntity(
   return sketch?.id ?? null
 }
 
-export async function getEngineRegionSelectionFromEntity(
+export async function getEngineRegionSelectionFromPoint(
   regionEntityId: string,
   artifactGraph: ArtifactGraph,
   ast: Node<Program>,
@@ -1919,6 +1919,7 @@ export async function getEventForQueryEntityTypeWithPoint(
   const skipRegionSelectionForTopologyEdge =
     entityRef.type === 'edge' && engineTopologyFallbackResolved !== undefined
 
+  // Try segment references first, then the point fallback below.
   if (entityRef.type === 'region') {
     const regionSelection = await getEngineRegionSelectionFromSegments(
       entityRef.region_id,
@@ -1936,6 +1937,7 @@ export async function getEventForQueryEntityTypeWithPoint(
     }
   }
 
+  // The engine can return a region reference without a separate entity_id.
   const regionEntityId =
     entityRef.type === 'region' ? entityRef.region_id : clickEntityId
   if (
@@ -1943,7 +1945,7 @@ export async function getEventForQueryEntityTypeWithPoint(
     regionEntityId &&
     !skipRegionSelectionForTopologyEdge
   ) {
-    const regionSelection = await getEngineRegionSelectionFromEntity(
+    const regionSelection = await getEngineRegionSelectionFromPoint(
       regionEntityId,
       artifactGraph,
       ast,

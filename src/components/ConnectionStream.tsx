@@ -41,7 +41,7 @@ import { EngineDebugger } from '@src/lib/debugger'
 import { prepareEditCommand } from '@src/lib/featureTree'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import {
-  getEngineRegionSelectionFromEntity,
+  getEngineRegionSelectionFromPoint,
   normalizeEntityReference,
   sendQueryEntityTypeWithPoint,
 } from '@src/lib/selections'
@@ -270,7 +270,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
             }
 
             if (!directArtifact) {
-              const regionSelection = await getEngineRegionSelectionFromEntity(
+              const regionSelection = await getEngineRegionSelectionFromPoint(
                 entityId,
                 kclManager.artifactGraph,
                 kclManager.ast,
