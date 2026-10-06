@@ -7,10 +7,12 @@ on:
   pull_request:
     paths:
       - public/kcl-samples/**
+      - sample-sync/**
       - .github/workflows/kcl-sample-sync.yml
       - scripts/sync_kcl_samples.py
       - scripts/check_kcl_sample_ids.py
       - scripts/tests/test_sync_kcl_samples.py
+      - scripts/kcl-sample-sync-state.mjs
   workflow_dispatch:
     inputs:
       target:
@@ -27,7 +29,7 @@ on:
         default: false
         type: boolean
       bootstrap_state:
-        description: Restore the initial checkpoint from the environment secret (first CI run only)
+        description: Migrate an existing checkpoint secret into a state PR (once only)
         default: false
         type: boolean
       initialize_state:
@@ -37,7 +39,7 @@ on:
 
 permissions:
   contents: read
-  actions: read
+  pull-requests: read
 
 jobs:
   validate:
@@ -114,41 +116,41 @@ jobs:
             fi
           fi
           echo "apply=$APPLY" >> "$GITHUB_OUTPUT"
-      - name: Find this environment's latest checkpoint
+      - name: Restore this environment's committed checkpoint
         if: steps.mode.outputs.apply == 'true'
         id: checkpoint
         uses: actions/github-script@v8
         env:
-          ARTIFACT_NAME: kcl-sample-sync-state-${{ matrix.target }}
+          TARGET: ${{ matrix.target }}
+          INITIALIZE_STATE: ${{ inputs.initialize_state }}
+          BOOTSTRAP_STATE: ${{ inputs.bootstrap_state }}
+          BOOTSTRAP_CONTENT: ${{ secrets.KCL_SAMPLE_SYNC_BOOTSTRAP_STATE }}
         with:
           script: |
-            const artifacts = await github.paginate(github.rest.actions.listArtifactsForRepo, {
-              ...context.repo, name: process.env.ARTIFACT_NAME, per_page: 100
+            const fs = require('node:fs');
+            const { restoreCheckpoint } = await import(`${process.env.GITHUB_WORKSPACE}/scripts/kcl-sample-sync-state.mjs`);
+            const checkpoint = await restoreCheckpoint({
+              github, repo: context.repo, target: process.env.TARGET,
+              initialize: process.env.INITIALIZE_STATE === 'true',
+              bootstrap: process.env.BOOTSTRAP_STATE === 'true' ? process.env.BOOTSTRAP_CONTENT : undefined,
             });
-            const latest = artifacts.filter(a => !a.expired && a.workflow_run?.head_branch === 'main')
-              .sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))[0];
-            if (latest) core.setOutput('run_id', String(latest.workflow_run.id));
-      - name: Restore checkpoint
-        if: steps.mode.outputs.apply == 'true' && steps.checkpoint.outputs.run_id != ''
-        env:
-          GH_TOKEN: ${{ github.token }}
-          STATE_RUN_ID: ${{ steps.checkpoint.outputs.run_id }}
-          ARTIFACT_NAME: kcl-sample-sync-state-${{ matrix.target }}
-        run: gh run download "$STATE_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "$ARTIFACT_NAME" --dir checkpoint
-      - name: Bootstrap checkpoint from the environment secret
-        if: steps.mode.outputs.apply == 'true' && steps.checkpoint.outputs.run_id == '' && inputs.bootstrap_state
-        env:
-          BOOTSTRAP_STATE: ${{ secrets.KCL_SAMPLE_SYNC_BOOTSTRAP_STATE }}
-        run: |
-          python - <<'PY'
-          import json, os
-          from pathlib import Path
-          data = json.loads(os.environ['BOOTSTRAP_STATE'])
-          directory = Path('checkpoint')
-          directory.mkdir(exist_ok=True)
-          (directory / 'sample-sync-state.json').write_text(json.dumps(data))
-          PY
+            fs.mkdirSync('checkpoint', { recursive: true });
+            fs.writeFileSync('checkpoint/baseline.json', JSON.stringify(checkpoint));
+            if (checkpoint.content !== null) {
+              fs.writeFileSync('checkpoint/sample-sync-state.json', checkpoint.content);
+            } else {
+              fs.rmSync('checkpoint/sample-sync-state.json', { force: true });
+            }
+      - name: Check credentials for the checkpoint PR
+        if: steps.mode.outputs.apply == 'true'
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
+          private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
       - name: Sync selected samples
+        id: sync
         env:
           ZOO_API_TOKEN: ${{ secrets.ZOO_SAMPLE_SYNC_TOKEN }}
           API_URL: ${{ vars.KCL_SAMPLE_SYNC_API_URL }}
@@ -170,11 +172,44 @@ jobs:
             fi
           fi
           python scripts/sync_kcl_samples.py "${args[@]}"
-      - name: Save this environment's checkpoint after partial failures too
-        if: always() && steps.mode.outputs.apply == 'true'
-        uses: actions/upload-artifact@v7
+      - name: Get a fresh token for the checkpoint PR
+        if: always() && steps.mode.outputs.apply == 'true' && steps.checkpoint.outcome == 'success' && steps.sync.outcome != 'skipped'
+        id: checkpoint-token
+        uses: actions/create-github-app-token@v3
         with:
-          name: kcl-sample-sync-state-${{ matrix.target }}
-          path: checkpoint/sample-sync-state.json
-          if-no-files-found: ignore
-          retention-days: 90
+          app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
+          private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+      - name: Propose this environment's checkpoint after partial failures too
+        if: always() && steps.mode.outputs.apply == 'true' && steps.checkpoint.outcome == 'success' && steps.sync.outcome != 'skipped'
+        uses: actions/github-script@v8
+        env:
+          TARGET: ${{ matrix.target }}
+          SYNC_SUCCEEDED: ${{ steps.sync.outcome == 'success' }}
+        with:
+          github-token: ${{ steps.checkpoint-token.outputs.token || github.token }}
+          script: |
+            const fs = require('node:fs');
+            const { proposeCheckpoint, STATE_BRANCH, statePath } = await import(`${process.env.GITHUB_WORKSPACE}/scripts/kcl-sample-sync-state.mjs`);
+            const filename = 'checkpoint/sample-sync-state.json';
+            const content = fs.existsSync(filename) ? fs.readFileSync(filename, 'utf8') : null;
+            try {
+              const url = await proposeCheckpoint({
+                github, repo: context.repo, target: process.env.TARGET,
+                sourceSha: context.sha,
+                runId: context.runId, runAttempt: process.env.GITHUB_RUN_ATTEMPT,
+                runUrl: `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+                checkpoint: JSON.parse(fs.readFileSync('checkpoint/baseline.json', 'utf8')),
+                content, syncSucceeded: process.env.SYNC_SUCCEEDED === 'true',
+              });
+              if (url) core.info(`Checkpoint PR: ${url}`);
+            } catch (error) {
+              // State contains IDs, revisions, hashes, and paths, never API tokens.
+              await core.summary
+                .addHeading('Sample sync checkpoint PR could not be created')
+                .addRaw(`Recover this checkpoint into ${STATE_BRANCH}:${statePath(process.env.TARGET)} through a PR before another upload.\n`)
+                .addCodeBlock(content ?? '{}', 'json')
+                .write();
+              throw error;
+            }

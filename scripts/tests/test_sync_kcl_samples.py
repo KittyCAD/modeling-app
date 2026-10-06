@@ -7,6 +7,7 @@ import tempfile
 import sys
 import threading
 import unittest
+from unittest.mock import Mock
 
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -30,9 +31,14 @@ class FakeApi:
         self.fail_review = False
         self.submissions = []
         self.status = "draft"
+        self.remote_projects = []
+        self.lose_create_response = False
 
     def categories(self):
         return [{"display_name": "Tools", "id": "22222222-2222-4222-8222-222222222222"}]
+
+    def projects(self):
+        return self.remote_projects
 
     def request(self, method, path, body=None, files=None):
         if path == "/user":
@@ -48,6 +54,10 @@ class FakeApi:
         if self.fail:
             raise RuntimeError("HTTP 500")
         self.writes.append((method, path, dict(body), dict(files)))
+        if method == "POST":
+            self.remote_projects.append({"id": PROJECT_ID})
+            if self.lose_create_response:
+                raise RuntimeError("Create response lost")
         return {"id": PROJECT_ID, "revision": self.revision}
 
 
@@ -150,6 +160,56 @@ class SampleSyncTests(unittest.TestCase):
             sync.sync(self.root, self.state, self.api, initialize=True)
         self.assertEqual(self.api.writes, [])
 
+    def test_initialize_refuses_account_with_existing_projects(self):
+        self.api.remote_projects = [{"id": PROJECT_ID}]
+        with self.assertRaisesRegex(ValueError, "Untracked cloud projects: " + PROJECT_ID):
+            sync.sync(self.root, self.state, self.api, initialize=True)
+        self.assertFalse(self.state.exists())
+        self.assertEqual(self.api.writes, [])
+        self.assertEqual(self.api.submissions, [])
+
+    def test_stale_checkpoint_blocks_writes_even_for_selected_sample(self):
+        sync.sync(self.root, self.state, self.api, initialize=True)
+        self.api.remote_projects.append({"id": "33333333-3333-4333-8333-333333333333"})
+        before = self.state.read_bytes()
+        (self.root / "gauge/main.kcl").write_text("changed")
+        with self.assertRaisesRegex(ValueError, "Untracked cloud projects"):
+            sync.sync(self.root, self.state, self.api, selected={"gauge"})
+        self.assertEqual(self.state.read_bytes(), before)
+        self.assertEqual(len(self.api.writes), 1)
+        self.assertEqual(len(self.api.submissions), 1)
+
+    def test_lost_create_response_does_not_create_duplicate_on_retry(self):
+        self.api.lose_create_response = True
+        with self.assertRaisesRegex(RuntimeError, "Create response lost"):
+            sync.sync(self.root, self.state, self.api, initialize=True)
+        self.assertEqual(json.loads(self.state.read_text())["samples"], {})
+        self.api.lose_create_response = False
+        with self.assertRaisesRegex(ValueError, "Untracked cloud projects: " + PROJECT_ID):
+            sync.sync(self.root, self.state, self.api)
+        self.assertEqual(len(self.api.writes), 1)
+        self.assertEqual(self.api.submissions, [])
+
+    def test_missing_remote_project_blocks_unchanged_skip(self):
+        sync.sync(self.root, self.state, self.api, initialize=True)
+        self.api.remote_projects.clear()
+        before = self.state.read_bytes()
+        with self.assertRaisesRegex(ValueError, "Checkpoint cloud projects missing"):
+            sync.sync(self.root, self.state, self.api)
+        self.assertEqual(self.state.read_bytes(), before)
+        self.assertEqual(len(self.api.writes), 1)
+
+    def test_multiple_sample_uuids_cannot_share_cloud_project(self):
+        sync.sync(self.root, self.state, self.api, initialize=True)
+        state = json.loads(self.state.read_text())
+        state["samples"]["44444444-4444-4444-8444-444444444444"] = dict(state["samples"][SAMPLE_ID])
+        self.state.write_text(json.dumps(state))
+        before = self.state.read_bytes()
+        with self.assertRaisesRegex(ValueError, "mapped to multiple sample UUIDs"):
+            sync.sync(self.root, self.state, self.api)
+        self.assertEqual(self.state.read_bytes(), before)
+        self.assertEqual(len(self.api.writes), 1)
+
     def test_metadata_and_preview_changes_are_not_skipped(self):
         sync.sync(self.root, self.state, self.api, initialize=True)
         self.sample["title"] = "New title"
@@ -217,6 +277,50 @@ class SampleSyncTests(unittest.TestCase):
         self.assertIn(b"cube()", data)
         self.assertTrue(content_type.startswith("multipart/form-data; boundary="))
 
+    def test_project_inventory_reads_all_pages(self):
+        api = sync.Api("https://example.test", "test-token")
+        first = {"id": PROJECT_ID}
+        second = {"id": "33333333-3333-4333-8333-333333333333"}
+        api.request = Mock(side_effect=[
+            {"items": [first], "next_page": "a/b+c"},
+            {"items": [first, second], "next_page": None},
+        ])
+        self.assertEqual(api.projects(), [first, second])
+        self.assertEqual(api.request.call_args_list[1].args, ("GET", "/user/projects?page_token=a%2Fb%2Bc"))
+
+    def test_project_inventory_accepts_legacy_array(self):
+        api = sync.Api("https://example.test", "test-token")
+        api.request = Mock(return_value=[{"id": PROJECT_ID}])
+        self.assertEqual(api.projects(), [{"id": PROJECT_ID}])
+        api.request.assert_called_once_with("GET", "/user/projects")
+
+    def test_project_inventory_rejects_incomplete_or_invalid_pages(self):
+        for page in [{}, {"items": []}, {"items": [], "next_page": ""},
+                     {"items": [{"id": "bad-id"}], "next_page": None},
+                     {"items": [{}], "next_page": None}, {"items": None, "next_page": None}]:
+            with self.subTest(page=page):
+                api = sync.Api("https://example.test", "test-token")
+                api.request = Mock(return_value=page)
+                with self.assertRaises(ValueError):
+                    api.projects()
+
+    def test_project_inventory_rejects_repeated_cursor(self):
+        api = sync.Api("https://example.test", "test-token")
+        api.request = Mock(return_value={"items": [], "next_page": "same-page"})
+        with self.assertRaisesRegex(ValueError, "pagination cursor"):
+            api.projects()
+        self.assertEqual(api.request.call_count, 2)
+
+    def test_inventory_failure_blocks_writes_and_preserves_checkpoint(self):
+        sync.sync(self.root, self.state, self.api, initialize=True)
+        before = self.state.read_bytes()
+        (self.root / "gauge/main.kcl").write_text("changed")
+        self.api.projects = Mock(side_effect=RuntimeError("Inventory unavailable"))
+        with self.assertRaisesRegex(RuntimeError, "Inventory unavailable"):
+            sync.sync(self.root, self.state, self.api)
+        self.assertEqual(self.state.read_bytes(), before)
+        self.assertEqual(len(self.api.writes), 1)
+
     def test_real_http_upload_then_update_uses_flattened_project_response(self):
         writes = []
 
@@ -235,6 +339,8 @@ class SampleSyncTests(unittest.TestCase):
                     self.reply({"id": "owner-1"})
                 elif self.path == "/projects/categories":
                     self.reply([{"display_name": "Tools", "id": "category-1"}])
+                elif self.path == "/user/projects":
+                    self.reply([{"id": PROJECT_ID}] if writes else [])
                 else:
                     self.reply({"id": PROJECT_ID, "revision": "r1", "publication_status": "draft"})
 

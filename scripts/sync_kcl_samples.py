@@ -59,6 +59,54 @@ class Api:
             path = "/projects/categories?page_token=" + urllib.parse.quote(token, safe="") if token else None
         return result
 
+    def projects(self):
+        result = {}
+        seen_tokens = set()
+        path = "/user/projects"
+        while path:
+            page = self.request("GET", path)
+            # Older APIs return the complete inventory as an array.
+            if isinstance(page, list):
+                items = page
+            elif isinstance(page, dict) and isinstance(page.get("items"), list):
+                items = page["items"]
+            else:
+                raise ValueError("Invalid cloud project inventory")
+            for project in items:
+                if not isinstance(project, dict) or not isinstance(project.get("id"), str):
+                    raise ValueError("Invalid cloud project inventory")
+                result[str(uuid.UUID(project["id"]))] = project
+            if isinstance(page, list):
+                return items
+            token = page.get("next_page")
+            if token is None and "next_page" in page:
+                return list(result.values())
+            if not isinstance(token, str) or not token.strip() or token in seen_tokens:
+                raise ValueError("Invalid cloud project pagination cursor")
+            seen_tokens.add(token)
+            path = "/user/projects?page_token=" + urllib.parse.quote(token, safe="")
+
+
+def validate_cloud_project_ids(api, state):
+    owners = {}
+    for sample_id, previous in state["samples"].items():
+        project_id = str(uuid.UUID(previous["project_id"]))
+        if project_id in owners:
+            raise ValueError(f"Cloud project {project_id} is mapped to multiple sample UUIDs")
+        owners[project_id] = sample_id
+    # Check the entire account, even when syncing just one sample. An old
+    # bootstrap or a lost create response can omit a successful earlier upload.
+    remote_ids = {str(uuid.UUID(project["id"])) for project in api.projects()}
+    untracked = remote_ids - owners.keys()
+    if untracked:
+        raise ValueError("Untracked cloud projects: " + ", ".join(sorted(untracked))
+                         + "; restore or reconcile the checkpoint before uploading. "
+                         "--initialize-state requires an empty dedicated sample account")
+    missing = owners.keys() - remote_ids
+    if missing:
+        raise ValueError("Checkpoint cloud projects missing from this account: " + ", ".join(sorted(missing))
+                         + "; resolve the mapping before uploading")
+
 
 def multipart(body, files):
     boundary = "sample-sync-" + uuid.uuid4().hex
@@ -187,6 +235,7 @@ def sync(root, state_path, api=None, selected=None, initialize=False, category_m
             migrated[identities[slug]] = {**previous, "slug": slug}
         state["samples"] = migrated
         state["version"] = 2
+    validate_cloud_project_ids(api, state)
     categories = {c["display_name"].strip().casefold(): c["id"] for c in api.categories()}
     categories.update({k.strip().casefold(): v for k, v in (category_map or {}).items()})
     desired = []
