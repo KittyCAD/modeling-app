@@ -12,6 +12,7 @@ export function useSketchModeMenuEnableDisable(
   overallState: NetworkHealthState,
   isExecuting: boolean,
   isStreamReady: boolean,
+  isStreamAcceptingInput: boolean,
   menus: { menuLabel: MenuLabels; commandName?: string; groupId?: string }[]
 ) {
   const { commands } = useApp()
@@ -30,7 +31,8 @@ export function useSketchModeMenuEnableDisable(
       (overallState !== NetworkHealthState.Ok &&
         overallState !== NetworkHealthState.Weak) ||
       isExecuting ||
-      !isStreamReady
+      !isStreamReady ||
+      !isStreamAcceptingInput
 
     // Enable or disable each menu based on the state of the application.
     menus.forEach(({ menuLabel, commandName, groupId }) => {
@@ -70,6 +72,15 @@ export function useSketchModeMenuEnableDisable(
         return
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [currentMode, commandList])
+    // `menus` is declared inline by the only caller, so including it would run
+    // this effect on every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    commandList,
+    currentMode,
+    isExecuting,
+    isStreamAcceptingInput,
+    isStreamReady,
+    overallState,
+  ])
 }

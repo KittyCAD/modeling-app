@@ -25,6 +25,7 @@ describe('useOnPageExit', () => {
       pivot_position: { x: 1.0, y: 1.0, z: 1.0 },
       pivot_rotation: { x: 1.0, y: 1.0, z: 1.0, w: 1.0 },
     }
+    sceneInfra.camControls.captureCameraStateBeforeReconnect()
     expect(callback).toHaveBeenCalledTimes(0)
     // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(engineCommandManager.tearDown).toHaveBeenCalledTimes(0)
@@ -43,5 +44,6 @@ describe('useOnPageExit', () => {
       initiatedBy: 'client',
     })
     expect(sceneInfra.camControls.oldCameraState).toBe(undefined)
+    expect(sceneInfra.camControls.cameraStateBeforeReconnect).toBe(undefined)
   })
 })

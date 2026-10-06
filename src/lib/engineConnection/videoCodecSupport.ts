@@ -7,8 +7,8 @@ import {
 // contract is available before Engine allocation, use API-provided metadata.
 export const ENGINE_SUPPORTED_VIDEO_CODECS = ['video/h264'] as const
 
-const UNSUPPORTED_ENGINE_VIDEO_CODEC_MESSAGE =
-  'Browser does not offer the H.264 video codec required by Engine.'
+export const UNSUPPORTED_ENGINE_VIDEO_CODEC_MESSAGE =
+  'Zoo Design Studio requires H.264 video, but this browser is not offering it. Use Chrome, Edge, Firefox, or Safari. If you are already using one of these browsers, update it to the latest version and reload this page. If Firefox is already up to date, enable OpenH264, restart Firefox, and try again.'
 
 const normalizeCodec = (mimeType: string) => mimeType.trim().toLowerCase()
 
