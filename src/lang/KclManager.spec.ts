@@ -1582,3 +1582,73 @@ describe('KclManager diagnostics', () => {
     expect((reopened as any).hasUnsavedLocalChanges()).toBe(true)
   })
 })
+
+describe('reconnect execution queue', () => {
+  afterEach(() => vi.restoreAllMocks())
+
+  it('releases execution tracking when execution setup throws', async () => {
+    const { kclManager } = createKclManagerTestHarness()
+    const manager = kclManager.engineCommandManager
+    manager.started = true
+    const finish = vi.fn()
+    vi.spyOn(manager, 'trackExecution').mockReturnValue(finish)
+    vi.spyOn(kclManager, 'setSketchSolveDiagnostics').mockImplementation(() => {
+      throw new Error('execution setup failed')
+    })
+    await expect(kclManager.executeAst()).rejects.toThrow(
+      'execution setup failed'
+    )
+    expect(finish).toHaveBeenCalledOnce()
+    manager.started = false
+    kclManager.isExecuting = false
+  })
+
+  it('queues edits without interrupting the running execution', async () => {
+    const { kclManager } = createKclManagerTestHarness()
+    const manager = kclManager.engineCommandManager
+    manager.started = true
+    vi.spyOn(manager, 'isReconnectPending', 'get').mockReturnValue(true)
+    const reject = vi.spyOn(manager, 'rejectAllModelingCommands')
+    kclManager.isExecuting = true
+    const args = { ast: createEmptyAst() }
+    await kclManager.executeAst(args)
+    expect(kclManager.executeIsStale).toBe(args)
+    expect(manager.executionIsStale).toBe(false)
+    expect(reject).not.toHaveBeenCalled()
+    expect(kclManager.isExecuting).toBe(true)
+    manager.started = false
+    kclManager.executeIsStale = null
+    kclManager.isExecuting = false
+  })
+
+  it('does not start the queued execution while reconnect is pending', () => {
+    const { kclManager } = createKclManagerTestHarness()
+    vi.spyOn(
+      kclManager.engineCommandManager,
+      'isReconnectPending',
+      'get'
+    ).mockReturnValue(true)
+    const execute = vi
+      .spyOn(kclManager, 'executeAst')
+      .mockResolvedValue(undefined)
+    const args = { ast: createEmptyAst() }
+    kclManager.executeIsStale = args
+    kclManager.isExecuting = false
+    expect(execute).not.toHaveBeenCalled()
+    expect(kclManager.executeIsStale).toBe(args)
+    kclManager.executeIsStale = null
+  })
+
+  it('discards queued work before resetting execution during panic cleanup', () => {
+    const { kclManager } = createKclManagerTestHarness()
+    const execute = vi
+      .spyOn(kclManager, 'executeAst')
+      .mockResolvedValue(undefined)
+    kclManager.isExecuting = true
+    kclManager.executeIsStale = { ast: createEmptyAst() }
+    kclManager.executeAstCleanUp()
+    expect(execute).not.toHaveBeenCalled()
+    expect(kclManager.executeIsStale).toBeNull()
+    expect(kclManager.isExecuting).toBe(false)
+  })
+})
