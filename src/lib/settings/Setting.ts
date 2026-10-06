@@ -58,8 +58,9 @@ export class Setting<T = unknown> {
     return this._default.value
   }
   set default(v: T) {
-    // Note: we peek() when we set so that we don't create a reactivity loop.
-    this._default.value = this.validate(v) ? v : this._default.peek()
+    if (this.validate(v)) {
+      this._default.value = v
+    }
   }
   /**
    * The user-level setting. Overrides the default, overridden by the project
@@ -68,8 +69,9 @@ export class Setting<T = unknown> {
     return this._user.value
   }
   set user(v: T | undefined) {
-    this._user.value =
-      v !== undefined ? (this.validate(v) ? v : this._user.peek()) : v
+    if (v === undefined || this.validate(v)) {
+      this._user.value = v
+    }
   }
   /**
    * The project-level setting. Overrides the user and default
@@ -78,8 +80,9 @@ export class Setting<T = unknown> {
     return this._project.value
   }
   set project(v: T | undefined) {
-    this._project.value =
-      v !== undefined ? (this.validate(v) ? v : this._project.peek()) : v
+    if (v === undefined || this.validate(v)) {
+      this._project.value = v
+    }
   }
   /**
    * @param {SettingsLevel} level - The level to get the fallback for
