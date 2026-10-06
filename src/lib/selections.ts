@@ -1720,6 +1720,8 @@ export async function getEventForQueryEntityTypeWithPoint(
   // Engine may return reference under data (e.g. { type, data: { reference } }) or at top level (e.g. { type, reference })
   const data = getQueryEntityTypeWithPointEventData(engineEvent)
   const { ast, artifactGraph } = kclManager
+  // The SDK declares only reference; the app also accepts an optional entity_id.
+  // Region responses use reference.region_id, so clickEntityId may be undefined.
   const clickEntityId = data?.entity_id
   const reference = data?.reference
   if (!reference) {
