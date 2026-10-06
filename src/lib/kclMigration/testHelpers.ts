@@ -18,7 +18,8 @@ import { WebSocketServer, type WebSocket } from 'ws'
 import { vi } from 'vitest'
 
 export const sourceCode = '@settings(kclVersion = 2.0)\nlength = 10mm\n'
-export const targetCode = '@settings(kclVersion = "3.0")\nlength = 10mm\n'
+export const targetCode =
+  '@settings(kclVersion = "3.0-preview")\nlength = 10mm\n'
 
 export function successfulOperation(
   request: MigrationRequest
@@ -38,7 +39,7 @@ export function successfulOperation(
       },
       validation: {
         source_version: '2.0',
-        target: '3.0',
+        target: '3.0-preview',
         runtime_version: '0.3.186',
         rules_revision: 'migration-guide-test',
         summary: 'Physical properties and parameter checks passed.',

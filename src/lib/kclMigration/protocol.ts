@@ -15,7 +15,7 @@ export type MigrationProgress = Extract<
 >['message']
 
 export const MIGRATION_FEATURE = 'zookeeper_kcl_migration'
-export const MIGRATION_TARGET = '3.0'
+export const MIGRATION_TARGET = '3.0-preview'
 export const MAX_FILES = 256
 export const MAX_BYTES = 8 * 1024 * 1024
 

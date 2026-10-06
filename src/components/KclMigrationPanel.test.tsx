@@ -34,7 +34,7 @@ function MigrationView({ chatBusy = false }: { chatBusy?: boolean }) {
   )
 }
 
-it('starts without preview consent, automatically applies a validated result and retains the response', async () => {
+it('starts migration, automatically applies a validated result and retains the response', async () => {
   const view = render(<MigrationView />)
   fireEvent.click(screen.getByRole('button', { name: 'Migrate to KCL 3' }))
   expect(

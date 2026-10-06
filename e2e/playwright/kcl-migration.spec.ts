@@ -53,7 +53,7 @@ const test = base.extend({
 })
 
 const source = '@settings(kclVersion = 2.0)\nlength = 10mm\n'
-const candidate = '@settings(kclVersion = "3.0")\nlength = 11mm\n'
+const candidate = '@settings(kclVersion = "3.0-preview")\nlength = 11mm\n'
 
 test.describe(
   'Sponsored KCL project migration',
@@ -142,7 +142,7 @@ test.describe(
                     },
                     validation: {
                       source_version: '2.0',
-                      target: '3.0',
+                      target: '3.0-preview',
                       runtime_version: '0.3.186',
                       rules_revision: 'test-guide',
                       summary:
