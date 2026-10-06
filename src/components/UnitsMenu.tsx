@@ -120,6 +120,7 @@ export function UnitsMenu() {
                       } else {
                         kclManager.updateCodeEditor(newCode, {
                           shouldExecute: true,
+                          shouldExecuteImmediately: true,
                           shouldResetCamera: true,
                         })
                         toast.success(`Updated per-file units to ${unit}.`)
