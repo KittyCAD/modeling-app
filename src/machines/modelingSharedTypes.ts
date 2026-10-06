@@ -35,6 +35,7 @@ export type DefaultPlaneSelection = {
 
 export type EnginePrimitiveSelection = {
   type: 'enginePrimitive'
+  selectionOrder?: number
   entityId: string
   parentEntityId?: string
   primitiveIndex: number
@@ -83,6 +84,7 @@ export type EngineTopologyFallback = {
 }
 
 export interface Selection {
+  selectionOrder?: number
   entityRef?: EntityReference
   artifact?: Artifact
   codeRef?: CodeRef
@@ -97,7 +99,10 @@ export type Selections = {
   graphSelections: Array<Selection>
 }
 
-export type SetSelections =
+export type SetSelections = {
+  /** Shift state captured before asynchronous viewport selection normalization. */
+  isShiftDown?: boolean
+} & (
   | {
       selectionType: 'singleCodeCursor'
       selection: Selection
@@ -130,6 +135,7 @@ export type SetSelections =
       selectionType: 'mirrorCodeMirrorSelections'
       selection: Selections
     }
+)
 
 export type MouseState =
   | {
