@@ -1,5 +1,5 @@
 import type { MarkedOptions } from '@ts-stack/markdown'
-import { Renderer, escape, unescape } from '@ts-stack/markdown'
+import { Marked, Renderer, escape, unescape } from '@ts-stack/markdown'
 
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 
@@ -10,6 +10,13 @@ export const MARKED_OPTIONS: MarkedOptions = {
   sanitize: true,
   unescape,
   escape,
+}
+
+/** Accessible descriptions need text, not Markdown syntax or link URLs. */
+export function markdownToPlainText(markdown: string): string {
+  const template = document.createElement('template')
+  template.innerHTML = Marked.parse(markdown, MARKED_OPTIONS)
+  return template.content.textContent?.trim() ?? ''
 }
 
 /**

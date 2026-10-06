@@ -13,6 +13,7 @@ vi.mock('@src/lib/openWindow', () => ({
 }))
 
 import { MarkdownText } from '@src/components/MarkdownText'
+import { markdownToPlainText } from '@src/lib/markdown'
 
 const mixedListResponse = `I made the following updates:
 
@@ -39,6 +40,14 @@ const expectedItems = [
 describe('MarkdownText', () => {
   beforeEach(() => {
     mocks.openExternal.mockClear()
+  })
+
+  it('provides plain text for accessible descriptions', () => {
+    expect(
+      markdownToPlainText(
+        'Use [**bounded edges**](/docs/kcl-std/types/std-types-BoundedEdge) with `blend` &amp; fillets.'
+      )
+    ).toBe('Use bounded edges with blend & fillets.')
   })
 
   it('opens relative KCL docs links externally once, including in StrictMode', () => {

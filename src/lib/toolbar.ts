@@ -5,6 +5,8 @@ import {
   getSelectedSketchTarget as getSelectedSketchTargetId,
 } from '@src/lang/queryAst'
 import { useApp } from '@src/lib/boot'
+import type { Command } from '@src/lib/commandTypes'
+import { commandKey } from '@src/lib/commandUtils'
 import {
   EXPERIMENTAL_POINT_AND_CLICK_FLAG,
   LEGACY_SKETCH_MODE_FEATURE_FLAG,
@@ -133,6 +135,16 @@ export type ToolbarItem = {
 }
 
 type ToolbarConfig = Record<ToolbarModeName, ToolbarMode>
+
+export function getToolbarItemDescription(
+  item: Pick<ToolbarItem, 'command' | 'description'>,
+  commands: readonly Command[]
+) {
+  return (
+    commands.find((command) => commandKey(command) === item.command)
+      ?.description ?? item.description
+  )
+}
 
 function filterExperimentalToolbarConfig(
   toolbarConfig: ToolbarConfig,

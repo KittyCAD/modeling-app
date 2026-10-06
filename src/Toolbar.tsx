@@ -5,6 +5,7 @@ import { ActionButtonDropdown } from '@src/components/ActionButtonDropdown'
 import { ActionButtonRecentDropdown } from '@src/components/ActionButtonRecentDropdown'
 import { LegacySketchModeBanner } from '@src/components/Announcements'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { MarkdownText } from '@src/components/MarkdownText'
 import Tooltip, {
   RICH_TOOLTIP_SURFACE_CLASS_NAME,
 } from '@src/components/Tooltip'
@@ -23,6 +24,7 @@ import { useApp, useSingletons } from '@src/lib/boot'
 import { EngineConnectionStateType } from '@src/lib/engineConnection/utils'
 import { type HotkeySequence, hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
+import { markdownToPlainText } from '@src/lib/markdown'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import type {
   ToolbarDropdown,
@@ -34,6 +36,7 @@ import type {
 import {
   getDefaultRecentToolbarItemIds,
   getToolbarDropdownDisplay,
+  getToolbarItemDescription,
   isSketchToolbarTransitioning,
   isToolbarItemResolvedDropdown,
   modelingMachineStateToToolbarModeName,
@@ -80,6 +83,10 @@ const Toolbar_ = memo(
   (props: ToolbarProps) => {
     useSignals()
     const app = useApp()
+    const registeredCommands = useSelector(
+      app.commands.actor,
+      (state) => state.context.commands
+    )
     const keymap = app.registry.get(keymapService)
     const keymapTree = keymap.keymap.value
     const { kclManager } = useSingletons()
@@ -299,7 +306,10 @@ const Toolbar_ = memo(
           title,
           tooltipTitle,
           iconColor,
-          description: maybeIconConfig.description,
+          description: getToolbarItemDescription(
+            maybeIconConfig,
+            registeredCommands
+          ),
           links: maybeIconConfig.links || [],
           isActive: itemIsActive,
           hotkey: getToolbarItemHotkey(maybeIconConfig.command),
@@ -338,6 +348,7 @@ const Toolbar_ = memo(
       showNonVisualConstraints,
       sketchSolveSelectedIdsKey,
       keymapTree,
+      registeredCommands,
     ])
 
     // To remember the last selected item in a standard ActionButtonDropdown
@@ -509,7 +520,9 @@ const Toolbar_ = memo(
                             itemConfig.disabled
                           }
                           name={itemConfig.title}
-                          aria-description={itemConfig.description}
+                          aria-description={markdownToPlainText(
+                            itemConfig.description
+                          )}
                           onClick={(event) => {
                             rememberRecentDropdownItem(
                               maybeIconConfig,
@@ -635,7 +648,9 @@ const Toolbar_ = memo(
                         selectedIcon.disabled
                       }
                       name={selectedIcon.title}
-                      aria-description={selectedIcon.description}
+                      aria-description={markdownToPlainText(
+                        selectedIcon.description
+                      )}
                       onClick={(event) =>
                         selectedIcon.onClick({
                           ...selectedIcon.callbackProps,
@@ -709,7 +724,7 @@ const Toolbar_ = memo(
                   name={itemConfig.title}
                   // aria-description is still in ARIA 1.3 draft.
 
-                  aria-description={itemConfig.description}
+                  aria-description={markdownToPlainText(itemConfig.description)}
                   aria-pressed={itemConfig.isActive}
                   disabled={
                     disableAllButtons ||
@@ -983,7 +998,10 @@ const ToolbarItemTooltipRichContent = memo(
             )
           )}
         </div>
-        <p className="px-2 my-2 text-ch font-sans">{itemConfig.description}</p>
+        <MarkdownText
+          className="px-2 my-2 text-ch font-sans [&_p]:m-0"
+          text={itemConfig.description}
+        />
         {itemConfig.extraInfo && (
           <p className="px-2 my-2 text-ch font-sans">
             <span className="font-semibold">Info: </span>
