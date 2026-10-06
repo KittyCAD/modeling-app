@@ -107,6 +107,14 @@ type SystemDeps = Pick<Singletons, 'kclManager'> & {
   rustContext: RustContext
 }
 
+function isFeatureTreeReadOnly(kclManager: SystemDeps['kclManager']) {
+  return (
+    kclManager.hasParseErrors() ||
+    kclManager.hasEditsSinceLastExecutionSignal.value ||
+    kclManager.isExecuting
+  )
+}
+
 // IMPORTANT: Edit after auto-fix is only correct if auto-fix doesn't change the
 // operations. The migration can change the KCL, and we need to choose the
 // correct operation to edit.
@@ -278,8 +286,7 @@ export const FeatureTreePaneContents = memo(() => {
     : disableModelingForUnrenderedChanges
       ? kclManager.lastSuccessfulCode || kclManager.codeSignal.value
       : kclManager.codeSignal.value
-  const isReadOnlyFeatureTree =
-    hasParseErrors || disableModelingForUnrenderedChanges
+  const isReadOnlyFeatureTree = isFeatureTreeReadOnly(kclManager)
 
   // We filter out operations that are not useful to show in the feature tree
   const operationList = buildOperationTree(
@@ -918,7 +925,17 @@ async function prepareFeatureTreeEditCommand({
   selectOperation: () => Promise<void>
   systemDeps: SystemDeps
 }) {
+  const { kclManager } = systemDeps
+  if (isFeatureTreeReadOnly(kclManager)) return
+  const codeBeforeSelection = kclManager.code
   await selectOperation()
+  // Selection can yield while an editor change invalidates this operation.
+  if (
+    isFeatureTreeReadOnly(kclManager) ||
+    kclManager.code !== codeBeforeSelection
+  ) {
+    return
+  }
 
   let operationToEdit: Operation | undefined = operation
   if (
@@ -937,6 +954,7 @@ async function prepareFeatureTreeEditCommand({
     )
     return
   }
+  if (isFeatureTreeReadOnly(kclManager)) return
 
   const artifactForEdit:
     | NonNullable<ReturnType<typeof getArtifactFromRange>>
@@ -1108,7 +1126,7 @@ const OperationItem = ({
   )
 
   const enterEditFlow = useCallback(() => {
-    if (isModuleOwned) {
+    if (isModuleOwned || isFeatureTreeReadOnly(kclManager)) {
       return
     }
     if (
@@ -1152,6 +1170,7 @@ const OperationItem = ({
     }
   }, [
     isModuleOwned,
+    kclManager,
     item,
     modelingActor,
     commandBarActor,
