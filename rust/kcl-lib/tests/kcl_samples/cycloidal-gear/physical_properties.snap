@@ -18,12 +18,12 @@ description: Physical properties cycloidal-gear.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 6714.575912003084
+    "value": 6714.683235067298
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 26.331933907983164
+    "value": 26.331807956229508
   }
 }

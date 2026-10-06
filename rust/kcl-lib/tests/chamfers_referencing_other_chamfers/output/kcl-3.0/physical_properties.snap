@@ -18,12 +18,12 @@ description: Physical properties chamfers_referencing_other_chamfers.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 105.7680683160811
+    "value": 105.76805268414093
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.007084693054437707
+    "value": 0.007084701413491897
   }
 }
