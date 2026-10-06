@@ -49,7 +49,7 @@ it('starts migration, automatically applies a validated result and retains the r
     fixture.send(successfulOperation(fixture.request))
   })
   await waitFor(() =>
-    expect(screen.getByRole('status')).toHaveTextContent('Migrated to KCL 3')
+    expect(screen.getByRole('status')).toHaveTextContent('Migrated to KCL 3.0')
   )
   expect(await fixture.readMain()).toBe(targetCode)
   expect(screen.queryByRole('button', { name: 'Apply Migration' })).toBeNull()
@@ -60,7 +60,7 @@ it('starts migration, automatically applies a validated result and retains the r
   ).toBeNull()
   view.unmount()
   render(<MigrationView />)
-  expect(screen.getByRole('status')).toHaveTextContent('Migrated to KCL 3')
+  expect(screen.getByRole('status')).toHaveTextContent('Migrated to KCL 3.0')
 })
 
 it('waits for ordinary chat before starting a migration', () => {

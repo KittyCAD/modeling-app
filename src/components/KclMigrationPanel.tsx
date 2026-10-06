@@ -25,9 +25,9 @@ export function KclMigrationStart({
         {({ close }) => (
           <>
             <p>
-              Free project conversion to KCL 3 preview, with up to 20 minutes
-              for conversion and validation. Validated changes apply
-              automatically. Use Undo to restore the previous project.
+              Free project conversion to KCL 3.0, with up to 20 minutes for
+              conversion and validation. Validated changes apply automatically.
+              Use Undo to restore the previous project.
             </p>
             <button
               type="button"
@@ -69,7 +69,7 @@ export function KclMigrationPanel({
         userAvatar={<AvatarUser src={userAvatar} />}
         className="py-2"
       >
-        Migrate this project to KCL 3 preview.
+        Migrate this project to KCL 3.0.
       </ChatBubble>
       {(controller.progress.value.length > 0 ||
         controller.progressText.value) && (

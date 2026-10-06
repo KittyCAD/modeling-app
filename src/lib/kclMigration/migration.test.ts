@@ -181,10 +181,10 @@ describe('project migration', () => {
     await expect(fixture.project.capture()).rejects.toThrow('symbolic links')
   })
 
-  it('requests KCL 3 preview with opt-in, authenticates and applies only after a validated result', async () => {
+  it('requests stable KCL 3.0 without preview opt-in, authenticates and applies only after a validated result', async () => {
     await startRunning()
-    expect(fixture.request.target).toBe('3.0-preview')
-    expect(fixture.request.allow_preview).toBe(true)
+    expect(fixture.request.target).toBe('3.0')
+    expect(fixture.request.allow_preview).toBeUndefined()
     expect(fixture.frames[0]).toEqual({
       type: 'headers',
       headers: { Authorization: 'Bearer test-token' },
