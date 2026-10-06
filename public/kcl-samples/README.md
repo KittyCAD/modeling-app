@@ -18,6 +18,27 @@ KCL samples conform to a set of style guidelines to ensure consistency and reada
 
 4. **Constants:** Define constants at the beginning of your KCL files for any values that might change or need to be reused (e.g., dimensions, angles).
 
+## Project identity
+
+Every sample directory containing KCL must include a `project.toml` with a unique
+UUID under `[settings.meta]`:
+
+```toml
+[settings.meta]
+id = "151d741b-42ea-4e8d-916d-e5ec3dc80ed4"
+```
+
+Generate a fresh ID for a new sample with `python3 -c 'import uuid; print(uuid.uuid4())'`.
+Do not copy another sample's ID or regenerate an existing ID when renaming the
+sample or editing its files. The sync uses this UUID to preserve the associated
+API project ID. CI checks all sample directories, including ones not yet present
+in the generated manifest, for missing files/IDs, invalid TOML/UUIDs, and duplicates.
+Run the check locally with Python 3.11+ from the repository root:
+
+```sh
+python3 scripts/check_kcl_sample_ids.py
+```
+
 ## Snapshot and export
 
 When you submit a PR to add or modify KCL samples, you need to run a few commands to generate the required artifacts. Note: You must have a ZOO_API_TOKEN set in your env for this to work.
@@ -30,8 +51,9 @@ just overwrite-sim-test-sample samplename
 
 ex. `just overwrite-sim-test-sample angle-gauge`
 
-Public previews use GPU engine rendering through the Zoo CLI and are published
-to the documentation and Aquarium. Generate the preview before updating the
+Public previews use GPU engine rendering through the Zoo CLI and are included
+in API sample submissions for Aquarium review. The documentation workflow no
+longer copies samples or their previews into the documentation repository. Generate the preview before updating the
 simulation snapshots for a new sample. CPU regression images stay in
 `rust/kcl-lib/tests/kcl_samples` and are never copied to the public screenshots
 directory.

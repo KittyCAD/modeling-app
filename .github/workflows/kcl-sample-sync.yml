@@ -1,0 +1,180 @@
+name: Sync KCL samples for review
+
+on:
+  push:
+    branches: [main]
+    paths: ['public/kcl-samples/**']
+  pull_request:
+    paths:
+      - public/kcl-samples/**
+      - .github/workflows/kcl-sample-sync.yml
+      - scripts/sync_kcl_samples.py
+      - scripts/check_kcl_sample_ids.py
+      - scripts/tests/test_sync_kcl_samples.py
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Target API environment
+        type: choice
+        options: [development, production]
+        default: development
+      sample:
+        description: Sample slug (use ALL for the entire catalog)
+        default: wing-spar
+        type: string
+      apply:
+        description: Upload and submit for review (otherwise validate offline)
+        default: false
+        type: boolean
+      bootstrap_state:
+        description: Restore the initial checkpoint from the environment secret (first CI run only)
+        default: false
+        type: boolean
+      initialize_state:
+        description: First import into an empty account only; allow starting without a checkpoint
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  validate:
+    runs-on: namespace-profile-ubuntu-2-cores
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Validate sample identities and test sync
+        run: |
+          python scripts/check_kcl_sample_ids.py
+          python -m unittest discover -s scripts/tests -p 'test_*kcl_sample*.py'
+          python scripts/sync_kcl_samples.py --samples-root public/kcl-samples
+
+  targets:
+    if: github.event_name != 'pull_request'
+    runs-on: namespace-profile-ubuntu-2-cores
+    outputs:
+      matrix: ${{ steps.select.outputs.matrix }}
+    steps:
+      - uses: actions/github-script@v8
+        id: select
+        env:
+          TARGET: ${{ inputs.target }}
+        with:
+          script: |
+            const targets = {
+              development: {target: 'development', environment: 'staging'},
+              production: {target: 'production', environment: 'Production'}
+            };
+            const selected = context.eventName === 'workflow_dispatch'
+              ? [targets[process.env.TARGET]] : Object.values(targets);
+            if (selected.some(t => !t)) throw new Error('Unknown sync target');
+            core.setOutput('matrix', JSON.stringify({include: selected}));
+
+  sync:
+    needs: [validate, targets]
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.targets.outputs.matrix) }}
+    environment: ${{ matrix.environment }}
+    concurrency:
+      group: kcl-sample-sync-${{ matrix.target }}
+      cancel-in-progress: false
+    runs-on: namespace-profile-ubuntu-2-cores
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Decide whether to upload
+        id: mode
+        env:
+          APPLY: ${{ (github.event_name == 'push' && vars.KCL_SAMPLE_SYNC_ENABLED == 'true') || (github.event_name == 'workflow_dispatch' && inputs.apply) }}
+          INITIALIZE_STATE: ${{ inputs.initialize_state }}
+          BOOTSTRAP_STATE: ${{ inputs.bootstrap_state }}
+          API_URL: ${{ vars.KCL_SAMPLE_SYNC_API_URL }}
+          EXPECTED_API_URL: ${{ matrix.target == 'development' && 'https://api.dev.zoo.dev' || 'https://api.zoo.dev' }}
+        shell: bash
+        run: |
+          if [[ "$APPLY" == true ]]; then
+            if [[ "$GITHUB_REF" != refs/heads/main ]]; then
+              echo 'Uploads must run from main; other branches can validate offline.' >&2
+              exit 1
+            fi
+            if [[ "$API_URL" != "$EXPECTED_API_URL" ]]; then
+              echo 'The configured API URL does not match the selected environment.' >&2
+              exit 1
+            fi
+            if [[ "$INITIALIZE_STATE" == true && "$BOOTSTRAP_STATE" == true ]]; then
+              echo 'Choose checkpoint bootstrap or an empty initial import, not both.' >&2
+              exit 1
+            fi
+          fi
+          echo "apply=$APPLY" >> "$GITHUB_OUTPUT"
+      - name: Find this environment's latest checkpoint
+        if: steps.mode.outputs.apply == 'true'
+        id: checkpoint
+        uses: actions/github-script@v8
+        env:
+          ARTIFACT_NAME: kcl-sample-sync-state-${{ matrix.target }}
+        with:
+          script: |
+            const artifacts = await github.paginate(github.rest.actions.listArtifactsForRepo, {
+              ...context.repo, name: process.env.ARTIFACT_NAME, per_page: 100
+            });
+            const latest = artifacts.filter(a => !a.expired && a.workflow_run?.head_branch === 'main')
+              .sort((a, b) => Date.parse(b.created_at) - Date.parse(a.created_at))[0];
+            if (latest) core.setOutput('run_id', String(latest.workflow_run.id));
+      - name: Restore checkpoint
+        if: steps.mode.outputs.apply == 'true' && steps.checkpoint.outputs.run_id != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STATE_RUN_ID: ${{ steps.checkpoint.outputs.run_id }}
+          ARTIFACT_NAME: kcl-sample-sync-state-${{ matrix.target }}
+        run: gh run download "$STATE_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "$ARTIFACT_NAME" --dir checkpoint
+      - name: Bootstrap checkpoint from the environment secret
+        if: steps.mode.outputs.apply == 'true' && steps.checkpoint.outputs.run_id == '' && inputs.bootstrap_state
+        env:
+          BOOTSTRAP_STATE: ${{ secrets.KCL_SAMPLE_SYNC_BOOTSTRAP_STATE }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          data = json.loads(os.environ['BOOTSTRAP_STATE'])
+          directory = Path('checkpoint')
+          directory.mkdir(exist_ok=True)
+          (directory / 'sample-sync-state.json').write_text(json.dumps(data))
+          PY
+      - name: Sync selected samples
+        env:
+          ZOO_API_TOKEN: ${{ secrets.ZOO_SAMPLE_SYNC_TOKEN }}
+          API_URL: ${{ vars.KCL_SAMPLE_SYNC_API_URL }}
+          SAMPLE: ${{ inputs.sample || 'ALL' }}
+          APPLY: ${{ steps.mode.outputs.apply }}
+          INITIALIZE_STATE: ${{ inputs.initialize_state }}
+        shell: bash
+        run: |
+          args=(--samples-root public/kcl-samples --state checkpoint/sample-sync-state.json)
+          if [[ "$SAMPLE" == ALL ]]; then
+            args+=(--all)
+          else
+            args+=(--sample "$SAMPLE")
+          fi
+          if [[ "$APPLY" == true ]]; then
+            args+=(--apply --api-url "$API_URL")
+            if [[ "$INITIALIZE_STATE" == true ]]; then
+              args+=(--initialize-state)
+            fi
+          fi
+          python scripts/sync_kcl_samples.py "${args[@]}"
+      - name: Save this environment's checkpoint after partial failures too
+        if: always() && steps.mode.outputs.apply == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: kcl-sample-sync-state-${{ matrix.target }}
+          path: checkpoint/sample-sync-state.json
+          if-no-files-found: ignore
+          retention-days: 90

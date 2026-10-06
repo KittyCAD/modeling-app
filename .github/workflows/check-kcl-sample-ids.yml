@@ -1,0 +1,23 @@
+name: Check KCL sample IDs
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-kcl-sample-ids:
+    runs-on: namespace-profile-ubuntu-2-cores
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Test identity validation
+        run: python -m unittest discover -s scripts/tests -p test_check_kcl_sample_ids.py
+      - name: Require unique project UUIDs for all KCL samples
+        run: python scripts/check_kcl_sample_ids.py
