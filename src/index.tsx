@@ -8,6 +8,7 @@ import '@src/index.css'
 import type { App } from '@src/lib/app'
 import {
   clearAutoUpdateDownloadProgress,
+  clearAutoUpdateReady,
   setAutoUpdateDownloadProgress,
   setAutoUpdateReady,
 } from '@src/lib/autoUpdate'
@@ -94,9 +95,13 @@ function initElectronBehavior(
     setAutoUpdateDownloadProgress(progress)
   })
 
-  electron.onUpdateError(({ error }) => {
+  electron.onUpdateError((error) => {
     clearAutoUpdateDownloadProgress()
+    clearAutoUpdateReady()
     console.error(error)
+    toast.error('App update failed. Check for updates to try again.', {
+      id: 'auto-update-error',
+    })
   })
 
   electron.onUpdateDownloaded(({ version, releaseNotes }) => {
