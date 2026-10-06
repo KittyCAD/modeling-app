@@ -7,7 +7,6 @@ import {
 import { useApp } from '@src/lib/boot'
 import {
   EXPERIMENTAL_POINT_AND_CLICK_FLAG,
-  LEGACY_SKETCH_MODE_FEATURE_FLAG,
   LEGACY_SKETCH_MODE_REMOVED_MESSAGE,
   SKETCH_DEFAULT_PLANE_XY,
   SKETCH_DEFAULT_PLANE_XZ,
@@ -523,10 +522,8 @@ export function buildToolbarConfig(
   commands: ToolbarCommands,
   {
     showExperimentalFeatures = false,
-    hasLegacySketchMode = false,
   }: {
     showExperimentalFeatures?: boolean
-    hasLegacySketchMode?: boolean
   } = {}
 ): ToolbarConfig {
   const splineToolbarItem: ToolbarItem = {
@@ -599,7 +596,7 @@ export function buildToolbarConfig(
               getSelectedSketchTarget(modelingState.context.selectionRanges)
                 ?.id ?? null
 
-            if (isLegacySketchEditRequest(props) && !hasLegacySketchMode) {
+            if (isLegacySketchEditRequest(props)) {
               return
             }
 
@@ -632,11 +629,9 @@ export function buildToolbarConfig(
             getSelectedSketchIconColor(modelingState.context.selectionRanges),
           status: 'available',
           disabled: (_state, _wasmInstance, props) =>
-            Boolean(
-              props && isLegacySketchEditRequest(props) && !hasLegacySketchMode
-            ),
+            Boolean(props && isLegacySketchEditRequest(props)),
           disabledReason: (_state, props) =>
-            props && isLegacySketchEditRequest(props) && !hasLegacySketchMode
+            props && isLegacySketchEditRequest(props)
               ? LEGACY_SKETCH_MODE_REMOVED_MESSAGE
               : undefined,
           title: ({ editorHasFocus, sketchPathId, modelingState }) => {
@@ -2612,18 +2607,13 @@ export const useToolbarConfig = () => {
     EXPERIMENTAL_POINT_AND_CLICK_FLAG,
     false
   )
-  const hasLegacySketchMode = userFeatures.useHas(
-    LEGACY_SKETCH_MODE_FEATURE_FLAG,
-    false
-  )
 
   return useMemo<Record<ToolbarModeName, ToolbarMode>>(
     () =>
       buildToolbarConfig(commands, {
         showExperimentalFeatures,
-        hasLegacySketchMode,
       }),
-    [commands, showExperimentalFeatures, hasLegacySketchMode]
+    [commands, showExperimentalFeatures]
   )
 }
 
