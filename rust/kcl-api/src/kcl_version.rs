@@ -25,6 +25,9 @@ pub enum KclVersion {
     /// KCL v3 released 2026
     #[serde(rename = "3.0")]
     V3,
+    /// WIP for new KCL release.
+    #[serde(rename = "4.0-preview")]
+    V4Preview,
     // When you add a new version, please add it to the error string in KclVersionError's
     // Display and FromStr impls.
 }
@@ -37,6 +40,7 @@ impl KclVersion {
             Self::V2 => "2.0",
             Self::V3Preview => "3.0-preview",
             Self::V3 => "3.0",
+            Self::V4Preview => "4.0-preview",
         }
     }
 }
@@ -48,7 +52,7 @@ impl core::error::Error for KclVersionError {}
 
 impl std::fmt::Display for KclVersionError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Unrecognized version, expected 1.0, 2.0, or 3.0")
+        write!(f, "Unrecognized version, expected 1.0, 2.0, 3.0 or 4.0-preview")
     }
 }
 
@@ -61,6 +65,7 @@ impl FromStr for KclVersion {
             "2" | "2.0" | "2.0.0" => Ok(Self::V2),
             "3-preview" | "3.0-preview" | "3.0.0-preview" => Ok(Self::V3Preview),
             "3" | "3.0" | "3.0.0" => Ok(Self::V3),
+            "4-preview" | "4.0-preview" | "4.0.0-preview" => Ok(Self::V4Preview),
             _other => Err(KclVersionError),
         }
     }
@@ -101,6 +106,7 @@ mod tests {
         assert_eq!(KclVersion::from_str("3"), Ok(KclVersion::V3));
         assert_eq!(KclVersion::from_str("3.0"), Ok(KclVersion::V3));
         assert_eq!(KclVersion::from_str("3.0.0"), Ok(KclVersion::V3));
+        assert_eq!(KclVersion::from_str("4.0-preview"), Ok(KclVersion::V4Preview));
         // No such version.
         KclVersion::from_str("99.123").unwrap_err();
     }
