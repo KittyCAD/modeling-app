@@ -1,10 +1,7 @@
-import type { Feature } from '@kittycad/lib'
 import type { KclRuntimeFlags } from '@rust/kcl-lib/bindings/KclRuntimeFlags'
-import { KCL_NEW_LEXER_PARSER_FEATURE_FLAG } from '@src/lib/constants'
 import {
   kclRuntimeFlagsEqual,
   kclRuntimeFlagsFromUserFeatures,
-  setKclRuntimeFlagsOnWasm,
   waitForSettledKclRuntimeFlags,
 } from '@src/lib/kclRuntimeFlags'
 import {
@@ -13,79 +10,23 @@ import {
 } from '@src/machines/userFeaturesMachine'
 import { describe, expect, it, vi } from 'vitest'
 
-function userFeaturesWith(features: Set<Feature>) {
-  return {
-    has: (featureFlagId: Feature, defaultValue: boolean) =>
-      features.has(featureFlagId) ? true : defaultValue,
-  }
-}
-
 describe('kcl runtime flags', () => {
-  it('maps the enabled new lexer feature to On', () => {
-    expect(
-      kclRuntimeFlagsFromUserFeatures(
-        userFeaturesWith(new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG]))
-      )
-    ).toEqual({
-      use_new_lexer_parser: 'On',
-      use_new_parser: 'Off',
-    })
-  })
-
-  it('maps a missing TS feature to Off', () => {
-    expect(
-      kclRuntimeFlagsFromUserFeatures(userFeaturesWith(new Set()))
-    ).toEqual({
-      use_new_lexer_parser: 'Off',
-      use_new_parser: 'Off',
-    })
-  })
-
   it('keeps the reserved parser flag Off without an API feature lookup', () => {
     const userFeatures = { has: vi.fn().mockReturnValue(true) }
 
     expect(kclRuntimeFlagsFromUserFeatures(userFeatures).use_new_parser).toBe(
       'Off'
     )
-    expect(userFeatures.has).toHaveBeenCalledTimes(1)
-    expect(userFeatures.has).toHaveBeenCalledWith(
-      KCL_NEW_LEXER_PARSER_FEATURE_FLAG,
-      false
-    )
-  })
-
-  it('sets serialized runtime flags on the wasm instance', () => {
-    const wasmInstance = {
-      set_kcl_runtime_flags: vi.fn(),
-    }
-
-    setKclRuntimeFlagsOnWasm(
-      wasmInstance,
-      userFeaturesWith(new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG]))
-    )
-
-    expect(wasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
-      JSON.stringify({
-        use_new_lexer_parser: 'On',
-        use_new_parser: 'Off',
-      })
-    )
+    expect(userFeatures.has).not.toHaveBeenCalled()
   })
 })
 
 describe('kclRuntimeFlagsEqual', () => {
-  it('is true only when both flags match', () => {
+  it('is true for matching runtime payloads', () => {
     const flags: KclRuntimeFlags = {
-      use_new_lexer_parser: 'Off',
       use_new_parser: 'Off',
     }
     expect(kclRuntimeFlagsEqual(flags, { ...flags })).toBe(true)
-    expect(
-      kclRuntimeFlagsEqual(flags, { ...flags, use_new_lexer_parser: 'On' })
-    ).toBe(false)
-    expect(
-      kclRuntimeFlagsEqual(flags, { ...flags, use_new_parser: 'On' })
-    ).toBe(false)
   })
 
   it('compares fields added to the runtime payload', () => {
@@ -93,7 +34,6 @@ describe('kclRuntimeFlagsEqual', () => {
       future_flag: 'Off' | 'On'
     }
     const flags: ExtendedKclRuntimeFlags = {
-      use_new_lexer_parser: 'Off',
       use_new_parser: 'Off',
       future_flag: 'On',
     }
@@ -105,7 +45,6 @@ describe('kclRuntimeFlagsEqual', () => {
     expect(kclRuntimeFlagsEqual(flags, differentFutureFlag)).toBe(false)
     expect(
       kclRuntimeFlagsEqual(flags, {
-        use_new_lexer_parser: 'Off',
         use_new_parser: 'Off',
       })
     ).toBe(false)
@@ -115,7 +54,6 @@ describe('kclRuntimeFlagsEqual', () => {
 describe('waitForSettledKclRuntimeFlags', () => {
   function gatedUserFeatures() {
     let settled = false
-    let featureIds = new Set<Feature>()
     const listeners = new Set<(snapshot: UserFeaturesSettleSnapshot) => void>()
     const snapshot = (): UserFeaturesSettleSnapshot => ({
       matches: (state) => settled && state === UserFeaturesState.Ready,
@@ -123,8 +61,7 @@ describe('waitForSettledKclRuntimeFlags', () => {
     })
     return {
       userFeatures: {
-        has: (featureFlagId: Feature, defaultValue: boolean) =>
-          featureIds.has(featureFlagId) ? true : defaultValue,
+        has: vi.fn().mockReturnValue(false),
         actor: {
           getSnapshot: snapshot,
           subscribe: (
@@ -135,9 +72,8 @@ describe('waitForSettledKclRuntimeFlags', () => {
           },
         },
       },
-      settleWith: (nextFeatureIds: Set<Feature>) => {
+      settle: () => {
         settled = true
-        featureIds = nextFeatureIds
         for (const listener of listeners) {
           listener(snapshot())
         }
@@ -146,17 +82,16 @@ describe('waitForSettledKclRuntimeFlags', () => {
   }
 
   it('returns the current flags when already settled', async () => {
-    const { userFeatures, settleWith } = gatedUserFeatures()
-    settleWith(new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG]))
+    const { userFeatures, settle } = gatedUserFeatures()
+    settle()
 
     expect(await waitForSettledKclRuntimeFlags(userFeatures)).toEqual({
-      use_new_lexer_parser: 'On',
       use_new_parser: 'Off',
     })
   })
 
   it('waits for settlement and returns the post-settle flags', async () => {
-    const { userFeatures, settleWith } = gatedUserFeatures()
+    const { userFeatures, settle } = gatedUserFeatures()
     const resolved = vi.fn()
     const pending = waitForSettledKclRuntimeFlags(userFeatures).then(
       (flags) => {
@@ -168,9 +103,8 @@ describe('waitForSettledKclRuntimeFlags', () => {
     await Promise.resolve()
     expect(resolved).not.toHaveBeenCalled()
 
-    settleWith(new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG]))
+    settle()
     expect(await pending).toEqual({
-      use_new_lexer_parser: 'On',
       use_new_parser: 'Off',
     })
   })

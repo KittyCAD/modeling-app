@@ -121,11 +121,9 @@ use crate::lsp::util::IntoDiagnostic;
 use crate::parsing::PIPE_OPERATOR;
 use crate::parsing::ast::types::Expr;
 use crate::parsing::ast::types::VariableKind;
-use crate::parsing::token::LexerMode;
 use crate::parsing::token::RESERVED_WORDS;
 use crate::parsing::token::TokenStream;
 use crate::parsing::token::adapter;
-use crate::parsing::token::lex;
 
 pub mod custom_notifications;
 mod hover;
@@ -478,27 +476,10 @@ impl crate::lsp::backend::Backend for Backend {
 
         // Lets update the tokens.
         let module_id = ModuleId::default();
-        // Mode-aware lex. The old lexer keeps its exact bail-on-error behavior.
-        // The new lexer always yields a token stream so semantic highlighting
-        // survives a lexical error; any lexical error is carried in `lex_error`
-        // and reported below, after semantic tokens are computed.
-        let (tokens, lex_error) = match LexerMode::resolve() {
-            LexerMode::Old => match lex(&params.text, module_id) {
-                Ok(tokens) => (tokens, None),
-                Err(err) => {
-                    self.add_to_diagnostics(&params, &[err], Replaces::All).await;
-                    self.token_map.remove(&filename);
-                    self.remove_from_ast_maps(&filename);
-                    self.semantic_tokens_map.remove(&filename);
-                    return;
-                }
-            },
-            LexerMode::New => {
-                let result = adapter::lex_with_diagnostics(&params.text, module_id);
-                let lex_error = result.to_lexical_error();
-                (result.tokens, lex_error)
-            }
-        };
+        // Preserve tokens for semantic highlighting when lexing reports an error.
+        let result = adapter::lex_with_diagnostics(&params.text, module_id);
+        let lex_error = result.to_lexical_error();
+        let tokens = result.tokens;
 
         // Get the previous tokens.
         let tokens_changed = match self.token_map.get(&filename) {
@@ -521,10 +502,7 @@ impl crate::lsp::backend::Backend for Backend {
             self.update_semantic_tokens(&tokens, &params).await;
         }
 
-        // With the new lexer a lexical error is surfaced as a diagnostic, but the
-        // token stream and semantic tokens (computed above) are retained so the
-        // editor keeps highlighting. No AST is produced (mirrors the parse-error
-        // path below).
+        // Report lexical errors without producing an AST.
         if let Some(err) = lex_error {
             self.add_to_diagnostics(&params, &[err], Replaces::All).await;
             self.remove_from_ast_maps(&filename);
@@ -1940,7 +1918,7 @@ fn get_signatures_from_stdlib_in_context(
 /// Get KCL keywords
 pub fn get_keywords() -> HashMap<String, CompletionItem> {
     RESERVED_WORDS
-        .keys()
+        .iter()
         .map(|k| (k.to_string(), keyword_to_completion(k.to_string())))
         .collect()
 }

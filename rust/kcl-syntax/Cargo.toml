@@ -12,6 +12,7 @@ logos = { workspace = true }
 
 [dev-dependencies]
 proptest = { workspace = true }
+walkdir = "2.5.0"
 
 [lints]
 workspace = true
