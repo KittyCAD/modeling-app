@@ -2622,13 +2622,12 @@ export class KclManager extends File {
       }
     }
 
-    this.isExecuting = false
-
     // Check the cancellation token for this execution before applying side effects
     if (this._cancelTokens.get(currentExecutionId)) {
       this.endLiveOperationUpdates()
       this._cancelTokens.delete(currentExecutionId)
       markOnce('code/endExecuteAst')
+      this.isExecuting = false
       this.notifyExecutionCompletion('cancelled')
       return
     }
@@ -2644,9 +2643,6 @@ export class KclManager extends File {
 
     this.logs = logs
     this.errors = errors
-    if (!isInterrupted) {
-      this.markCodeAsExecuted(codeThatExecuted)
-    }
     const code = this.code
     // Do not add the errors since the program was interrupted and the error is not a real KCL error
     this.addDiagnostics(
@@ -2693,6 +2689,10 @@ export class KclManager extends File {
 
     this._cancelTokens.delete(currentExecutionId)
     markOnce('code/endExecuteAst')
+    if (!isInterrupted) {
+      this.markCodeAsExecuted(codeThatExecuted)
+    }
+    this.isExecuting = false
     this.notifyExecutionCompletion('completed')
 
     // Update project thumbnail after successful execution
@@ -2776,7 +2776,6 @@ export class KclManager extends File {
     // not race that fetch, or it runs with the flags' defaults. Settled
     // features make this await instant.
     await waitForUserFeaturesSettled(this.systemDeps.userFeatures.actor)
-    this.markCodeAsExecuted(newCode)
     const ast = await this.safeParse(newCode, await this.wasmInstancePromise)
 
     if (!ast) {

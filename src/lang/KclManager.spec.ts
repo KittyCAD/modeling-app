@@ -15,6 +15,7 @@ import {
 } from '@src/editor/plugins/operations'
 import { File, KclManager } from '@src/lang/KclManager'
 import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
+import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const clientErrorMocks = vi.hoisted(() => ({
@@ -142,6 +143,40 @@ afterEach(() => {
 })
 
 describe('KclManager live operation updates', () => {
+  it('keeps feature-tree edits blocked through parsing and operation publication', async () => {
+    const { kclManager } = await buildTheWorldAndNoEngineConnection()
+    await flushPromises()
+    const code = '@settings(kclVersion = 3.0)\nx = 8mm'
+    kclManager.updateCodeEditor(code, {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+    })
+    kclManager.engineCommandManager.started = true
+    const parsing = createDeferred<ReturnType<typeof createEmptyAst>>()
+    const parseSpy = vi
+      .spyOn(kclManager, 'safeParse')
+      .mockReturnValueOnce(parsing.promise)
+    vi.spyOn(kclManager.rustContext, 'execute').mockResolvedValue(
+      emptyExecState()
+    )
+    const publicationSpy = vi
+      .spyOn(liveOperationTestApi(kclManager), 'dispatchUpdateOperations')
+      .mockImplementation(() => {
+        expect(kclManager.isExecuting).toBe(true)
+        expect(kclManager.hasEditsSinceLastExecutionSignal.value).toBe(true)
+      })
+
+    const rendered = kclManager.executeCode(code)
+    await vi.waitFor(() => expect(parseSpy).toHaveBeenCalled())
+    expect(kclManager.hasEditsSinceLastExecutionSignal.value).toBe(true)
+
+    parsing.resolve(createEmptyAst())
+    await rendered
+    expect(publicationSpy).toHaveBeenCalled()
+    expect(kclManager.isExecuting).toBe(false)
+    expect(kclManager.hasEditsSinceLastExecutionSignal.value).toBe(false)
+  })
+
   it('finishes execution when a live UI publication throws', async () => {
     const { kclManager } = createKclManagerTestHarness()
     const liveOperations = liveOperationTestApi(kclManager)
