@@ -3687,7 +3687,6 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
     await expect(
       getEventForQueryEntityTypeWithPoint(
         {
-          entity_id: 'region-1',
           reference: {
             type: 'region',
             region_id: 'region-1',

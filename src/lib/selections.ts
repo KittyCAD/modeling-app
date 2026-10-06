@@ -1936,13 +1936,15 @@ export async function getEventForQueryEntityTypeWithPoint(
     }
   }
 
+  const regionEntityId =
+    entityRef.type === 'region' ? entityRef.region_id : clickEntityId
   if (
     !artifactByEventId &&
-    clickEntityId &&
+    regionEntityId &&
     !skipRegionSelectionForTopologyEdge
   ) {
     const regionSelection = await getEngineRegionSelectionFromEntity(
-      clickEntityId,
+      regionEntityId,
       artifactGraph,
       ast,
       engineCommandManager,

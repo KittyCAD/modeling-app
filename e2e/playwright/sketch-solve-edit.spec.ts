@@ -2145,6 +2145,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
     await test.step('Extrude region by clicking center', async () => {
       await toolbar.extrudeButton.click()
       await clickCenter()
+      await expect(page.getByText('1 region selected')).toBeVisible()
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'sketches',
@@ -2240,11 +2241,35 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await scene.settled()
       await editor.expectEditor.toContain('@settings(defaultLengthUnit = in')
       await editor.expectEditor.toContain('sketch001 = sketch(on = XZ) {')
+
+      // Force the point fallback while leaving the query point from the engine intact.
+      await page.evaluate(() => {
+        const engine = window.engineCommandManager
+        const sendSceneCommand = engine.sendSceneCommand.bind(engine)
+        engine.sendSceneCommand = async (...args) => {
+          const [command] = args
+          if (
+            command.type === 'modeling_cmd_req' &&
+            command.cmd.type === 'region_get_resolvable_intersection_info'
+          ) {
+            return {
+              success: true,
+              request_id: command.cmd_id,
+              resp: {
+                type: 'modeling',
+                data: { modeling_response: { type: 'empty' } },
+              },
+            }
+          }
+          return sendSceneCommand(...args)
+        }
+      })
     })
 
     await test.step('Extrude region by clicking center', async () => {
       await toolbar.extrudeButton.click()
       await clickCenter()
+      await expect(page.getByText('1 region selected')).toBeVisible()
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'sketches',
@@ -2280,11 +2305,11 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await cmdBar.submit()
     })
 
-    await test.step('Expect segment-based region extrusion with inches as the default unit', async () => {
+    await test.step('Expect point fallback extrusion with inches as the default unit', async () => {
       await scene.settled()
       await editor.expectEditor.toContain('hidden001 = hide(sketch001)')
       await editor.expectEditor.toContain(
-        'region(segments = [sketch001.line4, sketch001.line1])'
+        'region(point = [0.0009843in, -0.078248in], sketch = sketch001)'
       )
       await editor.expectEditor.toContain(
         'extrude001 = extrude(region001, length = 5)'
