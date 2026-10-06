@@ -79,7 +79,7 @@ function ProjectMigration({
     return null
   return (
     <KclMigrationStart
-      disabled={chatBusy || !conversationId}
+      disabled={chatBusy}
       onStart={() =>
         migration.start(
           project,
