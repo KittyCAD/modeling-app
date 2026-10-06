@@ -1678,17 +1678,17 @@ description: Artifact commands gingerbread-man.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -45.818689501237955,
-            "y": 476.5302601594443
+            "x": -45.8187967629681,
+            "y": 476.53058320823453
           },
-          "radius": 28.079444903591686,
+          "radius": 28.07916521646701,
           "start": {
             "unit": "degrees",
-            "value": 73.61978436088371
+            "value": 73.61938847939786
           },
           "end": {
             "unit": "degrees",
-            "value": 165.6276229763464
+            "value": 165.6282517546632
           },
           "relative": false
         }
@@ -1701,8 +1701,8 @@ description: Artifact commands gingerbread-man.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -37.900000000001484,
-          "y": 503.46999999999497,
+          "x": -37.9,
+          "y": 503.47,
           "z": 0.0
         }
       }
@@ -1716,17 +1716,17 @@ description: Artifact commands gingerbread-man.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -36.271704867293884,
-            "y": 509.0092379858538
+            "x": -36.27186333003534,
+            "y": 509.00885314385766
           },
-          "radius": 5.773603944087336,
+          "radius": 5.773190033707988,
           "start": {
             "unit": "degrees",
-            "value": -106.38104319104463
+            "value": -106.38061152060203
           },
           "end": {
             "unit": "degrees",
-            "value": 76.35211832678155
+            "value": 76.34871935869936
           },
           "relative": false
         }
@@ -1741,17 +1741,17 @@ description: Artifact commands gingerbread-man.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -45.0259455859442,
-            "y": 472.9607501940229
+            "x": -45.02675863416787,
+            "y": 472.9616476913646
           },
-          "radius": 42.869832895604645,
+          "radius": 42.86832735277678,
           "start": {
             "unit": "degrees",
-            "value": 76.35043175607521
+            "value": 76.34871935869964
           },
           "end": {
             "unit": "degrees",
-            "value": 163.68988394670117
+            "value": 163.69073004123265
           },
           "relative": false
         }
@@ -1766,17 +1766,17 @@ description: Artifact commands gingerbread-man.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -79.724899377528,
-            "y": 483.1105582260992
+            "x": -79.72461823741152,
+            "y": 483.11052619945764
           },
-          "radius": 6.716881090867528,
+          "radius": 6.716686716739609,
           "start": {
             "unit": "degrees",
-            "value": 163.66101111431934
+            "value": 163.661421562524
           },
           "end": {
             "unit": "degrees",
-            "value": 363.3257378556755
+            "value": 363.32572439559647
           },
           "relative": false
         }
@@ -1965,17 +1965,17 @@ description: Artifact commands gingerbread-man.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -39.39026118001429,
-            "y": 111.0500253445964
+            "x": -39.39026128867401,
+            "y": 111.05002535514063
           },
-          "radius": 23.194612009108457,
+          "radius": 23.194611919661234,
           "start": {
             "unit": "degrees",
-            "value": -150.5611387073142
+            "value": -150.56113855270706
           },
           "end": {
             "unit": "degrees",
-            "value": -40.52337526140007
+            "value": -40.523375078326474
           },
           "relative": false
         }
@@ -1990,17 +1990,17 @@ description: Artifact commands gingerbread-man.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -1.8233725839080286,
-            "y": 76.9699627734803
+            "x": -1.8233719751877864,
+            "y": 76.9699627802011
           },
-          "radius": 27.54598617104228,
+          "radius": 27.545986786207315,
           "start": {
             "unit": "degrees",
-            "value": 136.3628723785145
+            "value": 136.3628732586569
           },
           "end": {
             "unit": "degrees",
-            "value": 44.89171747610113
+            "value": 44.89171738718106
           },
           "relative": false
         }
@@ -2015,17 +2015,17 @@ description: Artifact commands gingerbread-man.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 38.297897016301576,
-            "y": 105.83997776275052
+            "x": 38.29789209216753,
+            "y": 105.83997771068718
           },
-          "radius": 22.661283484543855,
+          "radius": 22.66127783713096,
           "start": {
             "unit": "degrees",
-            "value": -155.41265115812644
+            "value": -155.41264591107222
           },
           "end": {
             "unit": "degrees",
-            "value": -23.371993369505976
+            "value": -23.371982989916418
           },
           "relative": false
         }
@@ -2040,17 +2040,17 @@ description: Artifact commands gingerbread-man.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 63.86317684296559,
-            "y": 93.66852718040995
+            "x": 63.8632187409411,
+            "y": 93.66850775589711
           },
-          "radius": 5.728288444751593,
+          "radius": 5.728344434283225,
           "start": {
             "unit": "degrees",
-            "value": 146.25877926647692
+            "value": 146.25884804137863
           },
           "end": {
             "unit": "degrees",
-            "value": -15.994829386302133
+            "value": -15.994741479954438
           },
           "relative": false
         }
@@ -2065,17 +2065,17 @@ description: Artifact commands gingerbread-man.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 43.1188349048048,
-            "y": 99.19915154387414
+            "x": 43.11860540789958,
+            "y": 99.19898441811551
           },
-          "radius": 27.19644843692538,
+          "radius": 27.196727900733805,
           "start": {
             "unit": "degrees",
-            "value": -15.152944457781421
+            "value": -15.15247787769562
           },
           "end": {
             "unit": "degrees",
-            "value": -92.715922624548
+            "value": -92.71545768016387
           },
           "relative": false
         }
@@ -2090,17 +2090,17 @@ description: Artifact commands gingerbread-man.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 43.7826322512017,
-            "y": 112.19674359320672
+            "x": 43.783359962658146,
+            "y": 112.19804855211068
           },
-          "radius": 40.21092195355593,
+          "radius": 40.21271798919102,
           "start": {
             "unit": "degrees",
-            "value": -92.7831389478286
+            "value": -92.78408442389019
           },
           "end": {
             "unit": "degrees",
-            "value": -145.46196476431643
+            "value": -145.46167552627932
           },
           "relative": false
         }
@@ -2115,17 +2115,17 @@ description: Artifact commands gingerbread-man.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -1.4003192328737732,
-            "y": 81.09967302386666
+            "x": -1.4003972449130746,
+            "y": 81.09959329414416
           },
-          "radius": 14.639118185551407,
+          "radius": 14.638770913340052,
           "start": {
             "unit": "degrees",
-            "value": 34.536442556319834
+            "value": 34.53832447372062
           },
           "end": {
             "unit": "degrees",
-            "value": 154.46597826959427
+            "value": 154.4655644893719
           },
           "relative": false
         }
@@ -2140,17 +2140,17 @@ description: Artifact commands gingerbread-man.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -33.6616689527503,
-            "y": 96.55946381633822
+            "x": -33.66148931717916,
+            "y": 96.55952152525691
           },
-          "radius": 21.135190164190348,
+          "radius": 21.13536446354187,
           "start": {
             "unit": "degrees",
-            "value": -25.65240269958276
+            "value": -25.65275239065219
           },
           "end": {
             "unit": "degrees",
-            "value": -118.71962513778774
+            "value": -118.71997679432958
           },
           "relative": false
         }
@@ -2165,17 +2165,17 @@ description: Artifact commands gingerbread-man.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -15.286761018932587,
-            "y": 129.68685792351494
+            "x": -15.286740192529056,
+            "y": 129.68683771997462
           },
-          "radius": 59.017214016711705,
+          "radius": 59.017243768698314,
           "start": {
             "unit": "degrees",
-            "value": -118.90986149527133
+            "value": -118.90988847186328
           },
           "end": {
             "unit": "degrees",
-            "value": -149.35854821055307
+            "value": -149.35857711440914
           },
           "relative": false
         }
@@ -2190,17 +2190,17 @@ description: Artifact commands gingerbread-man.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -62.85034891927341,
-            "y": 103.24999770401529
+            "x": -62.85036430380893,
+            "y": 103.24999760115489
           },
-          "radius": 4.856939213918314,
+          "radius": 4.856949466678867,
           "start": {
             "unit": "degrees",
-            "value": -131.4205902372644
+            "value": -131.4205552770716
           },
           "end": {
             "unit": "degrees",
-            "value": -407.8343414972995
+            "value": -407.83420616688574
           },
           "relative": false
         }
@@ -2368,17 +2368,17 @@ description: Artifact commands gingerbread-man.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -209.0730529897642,
-            "y": 183.3730108532243
+            "x": -209.07304872783064,
+            "y": 183.37300664913244
           },
-          "radius": 15.96821657339181,
+          "radius": 15.968221213062089,
           "start": {
             "unit": "degrees",
-            "value": 174.58469236846364
+            "value": 174.584678794234
           },
           "end": {
             "unit": "degrees",
-            "value": 276.23099172635517
+            "value": 276.2309785011451
           },
           "relative": false
         }
@@ -2393,17 +2393,17 @@ description: Artifact commands gingerbread-man.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -205.29894814313505,
-            "y": 150.1686022245595
+            "x": -205.29897143822907,
+            "y": 150.16863318257637
           },
-          "radius": 17.450290821821252,
+          "radius": 17.450248069753496,
           "start": {
             "unit": "degrees",
-            "value": 96.71660571243106
+            "value": 96.71654158686613
           },
           "end": {
             "unit": "degrees",
-            "value": -22.786171547700313
+            "value": -22.78623593193135
           },
           "relative": false
         }
@@ -2418,17 +2418,17 @@ description: Artifact commands gingerbread-man.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -192.66946590060408,
-            "y": 144.86166643948482
+            "x": -192.66921319497106,
+            "y": 144.86193448128017
           },
-          "radius": 3.7511164192862196,
+          "radius": 3.7509109095615405,
           "start": {
             "unit": "degrees",
-            "value": -22.763967962760628
+            "value": -22.769237950207593
           },
           "end": {
             "unit": "degrees",
-            "value": -184.39038595521893
+            "value": -184.38260042767183
           },
           "relative": false
         }
@@ -2443,17 +2443,17 @@ description: Artifact commands gingerbread-man.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -208.60117239093364,
-            "y": 146.08390215561326
+            "x": -208.60212402389493,
+            "y": 146.0830381175191
           },
-          "radius": 12.227404542207562,
+          "radius": 12.228724304449932,
           "start": {
             "unit": "degrees",
-            "value": -4.3859324764810586
+            "value": -4.382600427670976
           },
           "end": {
             "unit": "degrees",
-            "value": 88.72939873668298
+            "value": 88.72503136011305
           },
           "relative": false
         }
@@ -2468,17 +2468,17 @@ description: Artifact commands gingerbread-man.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -207.76012760328672,
-            "y": 183.5301404833517
+            "x": -207.7602940662674,
+            "y": 183.5303237421825
           },
-          "radius": 25.228278265386443,
+          "radius": 25.22802291846444,
           "start": {
             "unit": "degrees",
-            "value": -91.29442889323892
+            "value": -91.29404217710228
           },
           "end": {
             "unit": "degrees",
-            "value": -184.2050594555891
+            "value": -184.2046720824985
           },
           "relative": false
         }
@@ -2493,17 +2493,17 @@ description: Artifact commands gingerbread-man.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -228.94777143833682,
-            "y": 185.08985982530797
+            "x": -228.9477335665877,
+            "y": 185.08985744261494
           },
-          "radius": 3.983303504149712,
+          "radius": 3.9832655539116684,
           "start": {
             "unit": "degrees",
-            "value": 175.82241143511462
+            "value": 175.82241754210693
           },
           "end": {
             "unit": "degrees",
-            "value": -3.0200188725751387
+            "value": -3.0200133548911614
           },
           "relative": false
         }

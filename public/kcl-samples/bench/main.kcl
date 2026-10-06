@@ -107,14 +107,11 @@ dividerProfile = sketch(on = YZ) {
   horizontalDistance([line18.end, line18.start]) == 3.74mm
   verticalDistance([line18.end, line18.start]) == 26.54mm
 
+  // One radius per tangent arc chain avoids conflicting rounded dimensions.
   radius(arc2) == 12.85mm
-  radius(arc3) == 8.20mm
-  radius(arc4) == 29.20mm
   radius(arc8) == 11.53mm
   radius(arc12) == 18.15mm
-  radius(arc13) == 25.88mm
   radius(arc16) == 3.44mm
-  radius(arc19) == 3.11mm
   radius(arc20) == 444mm
 
   horizontalDistance([line1.start, ORIGIN]) == 16.82mm

@@ -7,23 +7,23 @@ description: Physical properties hammer.kcl
     "center": {
       "x": 15.661859926766924,
       "y": 0.0,
-      "z": 167.68833334115158
+      "z": 167.68774465956497
     },
     "dimensions": {
       "x": 131.65371985344976,
       "y": 76.2,
-      "z": 335.40567113206964
+      "z": 335.40684849524285
     },
     "unit": "mm"
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 45429.890502199254
+    "value": 45431.61444795696
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 257.9901420573804
+    "value": 258.0088597683098
   }
 }

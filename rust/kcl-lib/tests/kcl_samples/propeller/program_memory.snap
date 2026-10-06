@@ -259,14 +259,14 @@ description: Variables in memory after executing propeller.kcl
             },
             "ccw": true,
             "center": [
-              4.154527795604477,
-              3.875955087682557
+              4.154527795733377,
+              3.8759550877174327
             ],
             "from": [
-              3.0489331069392986,
-              2.5583586455162908
+              3.0489331069608245,
+              2.5583586455419445
             ],
-            "radius": 1.720000000004028,
+            "radius": 1.720000000080111,
             "tag": {
               "commentStart": 5255,
               "end": 5262,
@@ -276,8 +276,8 @@ description: Variables in memory after executing propeller.kcl
               "value": "rootArc"
             },
             "to": [
-              4.453202661190057,
-              2.1820857524971973
+              4.453202661043528,
+              2.182085752406251
             ],
             "type": "Arc",
             "units": "in"
@@ -289,14 +289,14 @@ description: Variables in memory after executing propeller.kcl
             },
             "ccw": false,
             "center": [
-              37.22226787699814,
-              -183.6607771810847
+              37.22222374032246,
+              -183.6602679165475
             ],
             "from": [
-              4.453202661190057,
-              2.1820857524971973
+              4.453202661043528,
+              2.182085752406251
             ],
-            "radius": 188.7097807175558,
+            "radius": 188.70927152556843,
             "tag": {
               "commentStart": 5492,
               "end": 5499,
@@ -306,8 +306,8 @@ description: Variables in memory after executing propeller.kcl
               "value": "wideArc"
             },
             "to": [
-              37.53012573811913,
-              5.048752419318191
+              37.530125738116226,
+              5.0487524191811985
             ],
             "type": "Arc",
             "units": "in"
@@ -317,16 +317,16 @@ description: Variables in memory after executing propeller.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              37.52090220505797,
-              -0.44957821077709814
+              37.52115498257016,
+              -0.4493038041702535
             ],
             "from": [
-              43.00000000000004,
-              0.010000000000003843
+              37.530125738116226,
+              5.0487524191811985
             ],
-            "radius": 5.498338365211816,
+            "radius": 5.498063541792574,
             "tag": {
               "commentStart": 5727,
               "end": 5733,
@@ -336,8 +336,8 @@ description: Variables in memory after executing propeller.kcl
               "value": "tipArc"
             },
             "to": [
-              37.530125738110414,
-              5.0487524181318415
+              43.000000000004,
+              0.010000000004146525
             ],
             "type": "Arc",
             "units": "in"
@@ -348,8 +348,8 @@ description: Variables in memory after executing propeller.kcl
               "sourceRange": []
             },
             "from": [
-              43.00000000000004,
-              0.010000000000003843
+              43.000000000004,
+              0.010000000004146525
             ],
             "tag": {
               "commentStart": 5955,
@@ -408,8 +408,8 @@ description: Variables in memory after executing propeller.kcl
               "value": "rootEdge"
             },
             "to": [
-              3.048933106939298,
-              2.5583586455162903
+              3.0489331069608245,
+              2.5583586455419445
             ],
             "type": "ToPoint",
             "units": "in"
@@ -448,12 +448,12 @@ description: Variables in memory after executing propeller.kcl
         },
         "start": {
           "from": [
-            3.0489331069392986,
-            2.5583586455162908
+            3.0489331069608245,
+            2.5583586455419445
           ],
           "to": [
-            3.0489331069392986,
-            2.5583586455162908
+            3.0489331069608245,
+            2.5583586455419445
           ],
           "units": "in",
           "tag": null,
@@ -678,14 +678,14 @@ description: Variables in memory after executing propeller.kcl
             },
             "ccw": true,
             "center": [
-              4.154527795604477,
-              3.875955087682557
+              4.154527795733377,
+              3.8759550877174327
             ],
             "from": [
-              3.0489331069392986,
-              2.5583586455162908
+              3.0489331069608245,
+              2.5583586455419445
             ],
-            "radius": 1.720000000004028,
+            "radius": 1.720000000080111,
             "tag": {
               "commentStart": 5255,
               "end": 5262,
@@ -695,8 +695,8 @@ description: Variables in memory after executing propeller.kcl
               "value": "rootArc"
             },
             "to": [
-              4.453202661190057,
-              2.1820857524971973
+              4.453202661043528,
+              2.182085752406251
             ],
             "type": "Arc",
             "units": "in"
@@ -708,14 +708,14 @@ description: Variables in memory after executing propeller.kcl
             },
             "ccw": false,
             "center": [
-              37.22226787699814,
-              -183.6607771810847
+              37.22222374032246,
+              -183.6602679165475
             ],
             "from": [
-              4.453202661190057,
-              2.1820857524971973
+              4.453202661043528,
+              2.182085752406251
             ],
-            "radius": 188.7097807175558,
+            "radius": 188.70927152556843,
             "tag": {
               "commentStart": 5492,
               "end": 5499,
@@ -725,8 +725,8 @@ description: Variables in memory after executing propeller.kcl
               "value": "wideArc"
             },
             "to": [
-              37.53012573811913,
-              5.048752419318191
+              37.530125738116226,
+              5.0487524191811985
             ],
             "type": "Arc",
             "units": "in"
@@ -736,16 +736,16 @@ description: Variables in memory after executing propeller.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              37.52090220505797,
-              -0.44957821077709814
+              37.52115498257016,
+              -0.4493038041702535
             ],
             "from": [
-              43.00000000000004,
-              0.010000000000003843
+              37.530125738116226,
+              5.0487524191811985
             ],
-            "radius": 5.498338365211816,
+            "radius": 5.498063541792574,
             "tag": {
               "commentStart": 5727,
               "end": 5733,
@@ -755,8 +755,8 @@ description: Variables in memory after executing propeller.kcl
               "value": "tipArc"
             },
             "to": [
-              37.530125738110414,
-              5.0487524181318415
+              43.000000000004,
+              0.010000000004146525
             ],
             "type": "Arc",
             "units": "in"
@@ -767,8 +767,8 @@ description: Variables in memory after executing propeller.kcl
               "sourceRange": []
             },
             "from": [
-              43.00000000000004,
-              0.010000000000003843
+              43.000000000004,
+              0.010000000004146525
             ],
             "tag": {
               "commentStart": 5955,
@@ -827,8 +827,8 @@ description: Variables in memory after executing propeller.kcl
               "value": "rootEdge"
             },
             "to": [
-              3.048933106939298,
-              2.5583586455162903
+              3.0489331069608245,
+              2.5583586455419445
             ],
             "type": "ToPoint",
             "units": "in"
@@ -867,12 +867,12 @@ description: Variables in memory after executing propeller.kcl
         },
         "start": {
           "from": [
-            3.0489331069392986,
-            2.5583586455162908
+            3.0489331069608245,
+            2.5583586455419445
           ],
           "to": [
-            3.0489331069392986,
-            2.5583586455162908
+            3.0489331069608245,
+            2.5583586455419445
           ],
           "units": "in",
           "tag": null,
@@ -931,14 +931,14 @@ description: Variables in memory after executing propeller.kcl
           },
           "ccw": true,
           "center": [
-            4.154527795604477,
-            3.875955087682557
+            4.154527795733377,
+            3.8759550877174327
           ],
           "from": [
-            3.0489331069392986,
-            2.5583586455162908
+            3.0489331069608245,
+            2.5583586455419445
           ],
-          "radius": 1.720000000004028,
+          "radius": 1.720000000080111,
           "tag": {
             "commentStart": 5255,
             "end": 5262,
@@ -948,8 +948,8 @@ description: Variables in memory after executing propeller.kcl
             "value": "rootArc"
           },
           "to": [
-            4.453202661190057,
-            2.1820857524971973
+            4.453202661043528,
+            2.182085752406251
           ],
           "type": "Arc",
           "units": "in"
@@ -961,14 +961,14 @@ description: Variables in memory after executing propeller.kcl
           },
           "ccw": false,
           "center": [
-            37.22226787699814,
-            -183.6607771810847
+            37.22222374032246,
+            -183.6602679165475
           ],
           "from": [
-            4.453202661190057,
-            2.1820857524971973
+            4.453202661043528,
+            2.182085752406251
           ],
-          "radius": 188.7097807175558,
+          "radius": 188.70927152556843,
           "tag": {
             "commentStart": 5492,
             "end": 5499,
@@ -978,8 +978,8 @@ description: Variables in memory after executing propeller.kcl
             "value": "wideArc"
           },
           "to": [
-            37.53012573811913,
-            5.048752419318191
+            37.530125738116226,
+            5.0487524191811985
           ],
           "type": "Arc",
           "units": "in"
@@ -989,16 +989,16 @@ description: Variables in memory after executing propeller.kcl
             "id": "[uuid]",
             "sourceRange": []
           },
-          "ccw": true,
+          "ccw": false,
           "center": [
-            37.52090220505797,
-            -0.44957821077709814
+            37.52115498257016,
+            -0.4493038041702535
           ],
           "from": [
-            43.00000000000004,
-            0.010000000000003843
+            37.530125738116226,
+            5.0487524191811985
           ],
-          "radius": 5.498338365211816,
+          "radius": 5.498063541792574,
           "tag": {
             "commentStart": 5727,
             "end": 5733,
@@ -1008,8 +1008,8 @@ description: Variables in memory after executing propeller.kcl
             "value": "tipArc"
           },
           "to": [
-            37.530125738110414,
-            5.0487524181318415
+            43.000000000004,
+            0.010000000004146525
           ],
           "type": "Arc",
           "units": "in"
@@ -1020,8 +1020,8 @@ description: Variables in memory after executing propeller.kcl
             "sourceRange": []
           },
           "from": [
-            43.00000000000004,
-            0.010000000000003843
+            43.000000000004,
+            0.010000000004146525
           ],
           "tag": {
             "commentStart": 5955,
@@ -1080,8 +1080,8 @@ description: Variables in memory after executing propeller.kcl
             "value": "rootEdge"
           },
           "to": [
-            3.048933106939298,
-            2.5583586455162903
+            3.0489331069608245,
+            2.5583586455419445
           ],
           "type": "ToPoint",
           "units": "in"
@@ -1120,12 +1120,12 @@ description: Variables in memory after executing propeller.kcl
       },
       "start": {
         "from": [
-          3.0489331069392986,
-          2.5583586455162908
+          3.0489331069608245,
+          2.5583586455419445
         ],
         "to": [
-          3.0489331069392986,
-          2.5583586455162908
+          3.0489331069608245,
+          2.5583586455419445
         ],
         "units": "in",
         "tag": null,
@@ -1185,14 +1185,14 @@ description: Variables in memory after executing propeller.kcl
                   },
                   "ccw": true,
                   "center": [
-                    4.154527795604477,
-                    3.875955087682557
+                    4.154527795733377,
+                    3.8759550877174327
                   ],
                   "from": [
-                    3.0489331069392986,
-                    2.5583586455162908
+                    3.0489331069608245,
+                    2.5583586455419445
                   ],
-                  "radius": 1.720000000004028,
+                  "radius": 1.720000000080111,
                   "tag": {
                     "commentStart": 5255,
                     "end": 5262,
@@ -1202,8 +1202,8 @@ description: Variables in memory after executing propeller.kcl
                     "value": "rootArc"
                   },
                   "to": [
-                    4.453202661190057,
-                    2.1820857524971973
+                    4.453202661043528,
+                    2.182085752406251
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -1215,14 +1215,14 @@ description: Variables in memory after executing propeller.kcl
                   },
                   "ccw": false,
                   "center": [
-                    37.22226787699814,
-                    -183.6607771810847
+                    37.22222374032246,
+                    -183.6602679165475
                   ],
                   "from": [
-                    4.453202661190057,
-                    2.1820857524971973
+                    4.453202661043528,
+                    2.182085752406251
                   ],
-                  "radius": 188.7097807175558,
+                  "radius": 188.70927152556843,
                   "tag": {
                     "commentStart": 5492,
                     "end": 5499,
@@ -1232,8 +1232,8 @@ description: Variables in memory after executing propeller.kcl
                     "value": "wideArc"
                   },
                   "to": [
-                    37.53012573811913,
-                    5.048752419318191
+                    37.530125738116226,
+                    5.0487524191811985
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -1243,33 +1243,16 @@ description: Variables in memory after executing propeller.kcl
                     "id": "[uuid]",
                     "sourceRange": []
                   },
-                  "from": [
-                    37.53012573811913,
-                    5.048752419318191
-                  ],
-                  "tag": null,
-                  "to": [
-                    43.00000000000004,
-                    0.010000000000003843
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "ccw": true,
+                  "ccw": false,
                   "center": [
-                    37.52090220505797,
-                    -0.44957821077709814
+                    37.52115498257016,
+                    -0.4493038041702535
                   ],
                   "from": [
-                    43.00000000000004,
-                    0.010000000000003843
+                    37.530125738116226,
+                    5.0487524191811985
                   ],
-                  "radius": 5.498338365211816,
+                  "radius": 5.498063541792574,
                   "tag": {
                     "commentStart": 5727,
                     "end": 5733,
@@ -1279,8 +1262,8 @@ description: Variables in memory after executing propeller.kcl
                     "value": "tipArc"
                   },
                   "to": [
-                    37.530125738110414,
-                    5.0487524181318415
+                    43.000000000004,
+                    0.010000000004146525
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -1291,25 +1274,8 @@ description: Variables in memory after executing propeller.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    37.530125738110414,
-                    5.0487524181318415
-                  ],
-                  "tag": null,
-                  "to": [
-                    43.00000000000004,
-                    0.010000000000003843
-                  ],
-                  "type": "ToPoint",
-                  "units": "in"
-                },
-                {
-                  "__geoMeta": {
-                    "id": "[uuid]",
-                    "sourceRange": []
-                  },
-                  "from": [
-                    43.00000000000004,
-                    0.010000000000003843
+                    43.000000000004,
+                    0.010000000004146525
                   ],
                   "tag": {
                     "commentStart": 5955,
@@ -1368,8 +1334,8 @@ description: Variables in memory after executing propeller.kcl
                     "value": "rootEdge"
                   },
                   "to": [
-                    3.048933106939298,
-                    2.5583586455162903
+                    3.0489331069608245,
+                    2.5583586455419445
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -1408,12 +1374,12 @@ description: Variables in memory after executing propeller.kcl
               },
               "start": {
                 "from": [
-                  3.0489331069392986,
-                  2.5583586455162908
+                  3.0489331069608245,
+                  2.5583586455419445
                 ],
                 "to": [
-                  3.0489331069392986,
-                  2.5583586455162908
+                  3.0489331069608245,
+                  2.5583586455419445
                 ],
                 "units": "in",
                 "tag": null,
@@ -1597,7 +1563,7 @@ description: Variables in memory after executing propeller.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 3.0489331069392986,
+                        "n": 3.0489331069608245,
                         "ty": {
                           "type": "Known",
                           "value": {
@@ -1607,7 +1573,7 @@ description: Variables in memory after executing propeller.kcl
                         }
                       },
                       {
-                        "n": 2.5583586455162908,
+                        "n": 2.5583586455419445,
                         "ty": {
                           "type": "Known",
                           "value": {
@@ -1619,7 +1585,7 @@ description: Variables in memory after executing propeller.kcl
                     ],
                     "end": [
                       {
-                        "n": 4.453202661188654,
+                        "n": 4.45320266103823,
                         "ty": {
                           "type": "Known",
                           "value": {
@@ -1629,7 +1595,7 @@ description: Variables in memory after executing propeller.kcl
                         }
                       },
                       {
-                        "n": 2.1820857525051536,
+                        "n": 2.1820857524362975,
                         "ty": {
                           "type": "Known",
                           "value": {
@@ -1641,7 +1607,7 @@ description: Variables in memory after executing propeller.kcl
                     ],
                     "center": [
                       {
-                        "n": 4.154527795604477,
+                        "n": 4.154527795733377,
                         "ty": {
                           "type": "Known",
                           "value": {
@@ -1651,7 +1617,7 @@ description: Variables in memory after executing propeller.kcl
                         }
                       },
                       {
-                        "n": 3.875955087682557,
+                        "n": 3.8759550877174327,
                         "ty": {
                           "type": "Known",
                           "value": {
@@ -1783,7 +1749,7 @@ description: Variables in memory after executing propeller.kcl
                     ],
                     "end": [
                       {
-                        "n": 3.048933106939298,
+                        "n": 3.0489331069608245,
                         "ty": {
                           "type": "Known",
                           "value": {
@@ -1793,7 +1759,7 @@ description: Variables in memory after executing propeller.kcl
                         }
                       },
                       {
-                        "n": 2.5583586455162903,
+                        "n": 2.5583586455419445,
                         "ty": {
                           "type": "Known",
                           "value": {
@@ -1889,7 +1855,7 @@ description: Variables in memory after executing propeller.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 43.00000000000004,
+                        "n": 43.0,
                         "ty": {
                           "type": "Known",
                           "value": {
@@ -1899,7 +1865,7 @@ description: Variables in memory after executing propeller.kcl
                         }
                       },
                       {
-                        "n": 0.010000000000003843,
+                        "n": 0.009999999999999969,
                         "ty": {
                           "type": "Known",
                           "value": {
@@ -1911,7 +1877,7 @@ description: Variables in memory after executing propeller.kcl
                     ],
                     "end": [
                       {
-                        "n": 37.53012573811085,
+                        "n": 37.53012573811226,
                         "ty": {
                           "type": "Known",
                           "value": {
@@ -1921,7 +1887,7 @@ description: Variables in memory after executing propeller.kcl
                         }
                       },
                       {
-                        "n": 5.048752418389949,
+                        "n": 5.048752419177055,
                         "ty": {
                           "type": "Known",
                           "value": {
@@ -1933,7 +1899,7 @@ description: Variables in memory after executing propeller.kcl
                     ],
                     "center": [
                       {
-                        "n": 37.52090220505797,
+                        "n": 37.521154982566195,
                         "ty": {
                           "type": "Known",
                           "value": {
@@ -1943,7 +1909,7 @@ description: Variables in memory after executing propeller.kcl
                         }
                       },
                       {
-                        "n": -0.4495782107770982,
+                        "n": -0.44930380417439697,
                         "ty": {
                           "type": "Known",
                           "value": {
@@ -1996,7 +1962,7 @@ description: Variables in memory after executing propeller.kcl
                     "center_object_id": 102,
                     "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "center_freedom": "Free",
+                    "center_freedom": "Fixed",
                     "construction": false
                   }
                 },
@@ -2053,7 +2019,7 @@ description: Variables in memory after executing propeller.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 43.00000000000004,
+                        "n": 43.0,
                         "ty": {
                           "type": "Known",
                           "value": {
@@ -2063,7 +2029,7 @@ description: Variables in memory after executing propeller.kcl
                         }
                       },
                       {
-                        "n": 0.010000000000003843,
+                        "n": 0.009999999999999969,
                         "ty": {
                           "type": "Known",
                           "value": {
@@ -2181,7 +2147,7 @@ description: Variables in memory after executing propeller.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 37.53012573811218,
+                        "n": 37.53012573811226,
                         "ty": {
                           "type": "Known",
                           "value": {
@@ -2191,7 +2157,7 @@ description: Variables in memory after executing propeller.kcl
                         }
                       },
                       {
-                        "n": 5.04875241916883,
+                        "n": 5.048752419177055,
                         "ty": {
                           "type": "Known",
                           "value": {
@@ -2203,7 +2169,7 @@ description: Variables in memory after executing propeller.kcl
                     ],
                     "end": [
                       {
-                        "n": 4.4532026611834015,
+                        "n": 4.45320266103965,
                         "ty": {
                           "type": "Known",
                           "value": {
@@ -2213,7 +2179,7 @@ description: Variables in memory after executing propeller.kcl
                         }
                       },
                       {
-                        "n": 2.1820857525349444,
+                        "n": 2.1820857524282435,
                         "ty": {
                           "type": "Known",
                           "value": {
@@ -2225,7 +2191,7 @@ description: Variables in memory after executing propeller.kcl
                     ],
                     "center": [
                       {
-                        "n": 37.22226787699149,
+                        "n": 37.22222374031855,
                         "ty": {
                           "type": "Known",
                           "value": {
@@ -2235,7 +2201,7 @@ description: Variables in memory after executing propeller.kcl
                         }
                       },
                       {
-                        "n": -183.66077718104697,
+                        "n": -183.6602679165255,
                         "ty": {
                           "type": "Known",
                           "value": {
@@ -2288,7 +2254,7 @@ description: Variables in memory after executing propeller.kcl
                     "center_object_id": 95,
                     "start_freedom": "Fixed",
                     "end_freedom": "Fixed",
-                    "center_freedom": "Free",
+                    "center_freedom": "Fixed",
                     "construction": false
                   }
                 },
@@ -2428,14 +2394,14 @@ description: Variables in memory after executing propeller.kcl
             },
             "ccw": true,
             "center": [
-              4.154527795604477,
-              3.875955087682557
+              4.154527795733377,
+              3.8759550877174327
             ],
             "from": [
-              3.0489331069392986,
-              2.5583586455162908
+              3.0489331069608245,
+              2.5583586455419445
             ],
-            "radius": 1.720000000004028,
+            "radius": 1.720000000080111,
             "tag": {
               "commentStart": 5255,
               "end": 5262,
@@ -2445,8 +2411,8 @@ description: Variables in memory after executing propeller.kcl
               "value": "rootArc"
             },
             "to": [
-              4.453202661190057,
-              2.1820857524971973
+              4.453202661043528,
+              2.182085752406251
             ],
             "type": "Arc",
             "units": "in"
@@ -2458,14 +2424,14 @@ description: Variables in memory after executing propeller.kcl
             },
             "ccw": false,
             "center": [
-              37.22226787699814,
-              -183.6607771810847
+              37.22222374032246,
+              -183.6602679165475
             ],
             "from": [
-              4.453202661190057,
-              2.1820857524971973
+              4.453202661043528,
+              2.182085752406251
             ],
-            "radius": 188.7097807175558,
+            "radius": 188.70927152556843,
             "tag": {
               "commentStart": 5492,
               "end": 5499,
@@ -2475,8 +2441,8 @@ description: Variables in memory after executing propeller.kcl
               "value": "wideArc"
             },
             "to": [
-              37.53012573811913,
-              5.048752419318191
+              37.530125738116226,
+              5.0487524191811985
             ],
             "type": "Arc",
             "units": "in"
@@ -2486,16 +2452,16 @@ description: Variables in memory after executing propeller.kcl
               "id": "[uuid]",
               "sourceRange": []
             },
-            "ccw": true,
+            "ccw": false,
             "center": [
-              37.52090220505797,
-              -0.44957821077709814
+              37.52115498257016,
+              -0.4493038041702535
             ],
             "from": [
-              43.00000000000004,
-              0.010000000000003843
+              37.530125738116226,
+              5.0487524191811985
             ],
-            "radius": 5.498338365211816,
+            "radius": 5.498063541792574,
             "tag": {
               "commentStart": 5727,
               "end": 5733,
@@ -2505,8 +2471,8 @@ description: Variables in memory after executing propeller.kcl
               "value": "tipArc"
             },
             "to": [
-              37.530125738110414,
-              5.0487524181318415
+              43.000000000004,
+              0.010000000004146525
             ],
             "type": "Arc",
             "units": "in"
@@ -2517,8 +2483,8 @@ description: Variables in memory after executing propeller.kcl
               "sourceRange": []
             },
             "from": [
-              43.00000000000004,
-              0.010000000000003843
+              43.000000000004,
+              0.010000000004146525
             ],
             "tag": {
               "commentStart": 5955,
@@ -2577,8 +2543,8 @@ description: Variables in memory after executing propeller.kcl
               "value": "rootEdge"
             },
             "to": [
-              3.048933106939298,
-              2.5583586455162903
+              3.0489331069608245,
+              2.5583586455419445
             ],
             "type": "ToPoint",
             "units": "in"
@@ -2617,12 +2583,12 @@ description: Variables in memory after executing propeller.kcl
         },
         "start": {
           "from": [
-            3.0489331069392986,
-            2.5583586455162908
+            3.0489331069608245,
+            2.5583586455419445
           ],
           "to": [
-            3.0489331069392986,
-            2.5583586455162908
+            3.0489331069608245,
+            2.5583586455419445
           ],
           "units": "in",
           "tag": null,
@@ -4821,14 +4787,14 @@ description: Variables in memory after executing propeller.kcl
                 },
                 "ccw": true,
                 "center": [
-                  4.154527795604477,
-                  3.875955087682557
+                  4.154527795733377,
+                  3.8759550877174327
                 ],
                 "from": [
-                  3.0489331069392986,
-                  2.5583586455162908
+                  3.0489331069608245,
+                  2.5583586455419445
                 ],
-                "radius": 1.720000000004028,
+                "radius": 1.720000000080111,
                 "tag": {
                   "commentStart": 5255,
                   "end": 5262,
@@ -4838,8 +4804,8 @@ description: Variables in memory after executing propeller.kcl
                   "value": "rootArc"
                 },
                 "to": [
-                  4.453202661190057,
-                  2.1820857524971973
+                  4.453202661043528,
+                  2.182085752406251
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -4851,14 +4817,14 @@ description: Variables in memory after executing propeller.kcl
                 },
                 "ccw": false,
                 "center": [
-                  37.22226787699814,
-                  -183.6607771810847
+                  37.22222374032246,
+                  -183.6602679165475
                 ],
                 "from": [
-                  4.453202661190057,
-                  2.1820857524971973
+                  4.453202661043528,
+                  2.182085752406251
                 ],
-                "radius": 188.7097807175558,
+                "radius": 188.70927152556843,
                 "tag": {
                   "commentStart": 5492,
                   "end": 5499,
@@ -4868,8 +4834,8 @@ description: Variables in memory after executing propeller.kcl
                   "value": "wideArc"
                 },
                 "to": [
-                  37.53012573811913,
-                  5.048752419318191
+                  37.530125738116226,
+                  5.0487524191811985
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -4879,16 +4845,16 @@ description: Variables in memory after executing propeller.kcl
                   "id": "[uuid]",
                   "sourceRange": []
                 },
-                "ccw": true,
+                "ccw": false,
                 "center": [
-                  37.52090220505797,
-                  -0.44957821077709814
+                  37.52115498257016,
+                  -0.4493038041702535
                 ],
                 "from": [
-                  43.00000000000004,
-                  0.010000000000003843
+                  37.530125738116226,
+                  5.0487524191811985
                 ],
-                "radius": 5.498338365211816,
+                "radius": 5.498063541792574,
                 "tag": {
                   "commentStart": 5727,
                   "end": 5733,
@@ -4898,8 +4864,8 @@ description: Variables in memory after executing propeller.kcl
                   "value": "tipArc"
                 },
                 "to": [
-                  37.530125738110414,
-                  5.0487524181318415
+                  43.000000000004,
+                  0.010000000004146525
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -4910,8 +4876,8 @@ description: Variables in memory after executing propeller.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  43.00000000000004,
-                  0.010000000000003843
+                  43.000000000004,
+                  0.010000000004146525
                 ],
                 "tag": {
                   "commentStart": 5955,
@@ -4970,8 +4936,8 @@ description: Variables in memory after executing propeller.kcl
                   "value": "rootEdge"
                 },
                 "to": [
-                  3.048933106939298,
-                  2.5583586455162903
+                  3.0489331069608245,
+                  2.5583586455419445
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -5010,12 +4976,12 @@ description: Variables in memory after executing propeller.kcl
             },
             "start": {
               "from": [
-                3.0489331069392986,
-                2.5583586455162908
+                3.0489331069608245,
+                2.5583586455419445
               ],
               "to": [
-                3.0489331069392986,
-                2.5583586455162908
+                3.0489331069608245,
+                2.5583586455419445
               ],
               "units": "in",
               "tag": null,
@@ -5153,14 +5119,14 @@ description: Variables in memory after executing propeller.kcl
                 },
                 "ccw": true,
                 "center": [
-                  4.154527795604477,
-                  3.875955087682557
+                  4.154527795733377,
+                  3.8759550877174327
                 ],
                 "from": [
-                  3.0489331069392986,
-                  2.5583586455162908
+                  3.0489331069608245,
+                  2.5583586455419445
                 ],
-                "radius": 1.720000000004028,
+                "radius": 1.720000000080111,
                 "tag": {
                   "commentStart": 5255,
                   "end": 5262,
@@ -5170,8 +5136,8 @@ description: Variables in memory after executing propeller.kcl
                   "value": "rootArc"
                 },
                 "to": [
-                  4.453202661190057,
-                  2.1820857524971973
+                  4.453202661043528,
+                  2.182085752406251
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -5183,14 +5149,14 @@ description: Variables in memory after executing propeller.kcl
                 },
                 "ccw": false,
                 "center": [
-                  37.22226787699814,
-                  -183.6607771810847
+                  37.22222374032246,
+                  -183.6602679165475
                 ],
                 "from": [
-                  4.453202661190057,
-                  2.1820857524971973
+                  4.453202661043528,
+                  2.182085752406251
                 ],
-                "radius": 188.7097807175558,
+                "radius": 188.70927152556843,
                 "tag": {
                   "commentStart": 5492,
                   "end": 5499,
@@ -5200,8 +5166,8 @@ description: Variables in memory after executing propeller.kcl
                   "value": "wideArc"
                 },
                 "to": [
-                  37.53012573811913,
-                  5.048752419318191
+                  37.530125738116226,
+                  5.0487524191811985
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -5211,16 +5177,16 @@ description: Variables in memory after executing propeller.kcl
                   "id": "[uuid]",
                   "sourceRange": []
                 },
-                "ccw": true,
+                "ccw": false,
                 "center": [
-                  37.52090220505797,
-                  -0.44957821077709814
+                  37.52115498257016,
+                  -0.4493038041702535
                 ],
                 "from": [
-                  43.00000000000004,
-                  0.010000000000003843
+                  37.530125738116226,
+                  5.0487524191811985
                 ],
-                "radius": 5.498338365211816,
+                "radius": 5.498063541792574,
                 "tag": {
                   "commentStart": 5727,
                   "end": 5733,
@@ -5230,8 +5196,8 @@ description: Variables in memory after executing propeller.kcl
                   "value": "tipArc"
                 },
                 "to": [
-                  37.530125738110414,
-                  5.0487524181318415
+                  43.000000000004,
+                  0.010000000004146525
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -5242,8 +5208,8 @@ description: Variables in memory after executing propeller.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  43.00000000000004,
-                  0.010000000000003843
+                  43.000000000004,
+                  0.010000000004146525
                 ],
                 "tag": {
                   "commentStart": 5955,
@@ -5302,8 +5268,8 @@ description: Variables in memory after executing propeller.kcl
                   "value": "rootEdge"
                 },
                 "to": [
-                  3.048933106939298,
-                  2.5583586455162903
+                  3.0489331069608245,
+                  2.5583586455419445
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -5342,12 +5308,12 @@ description: Variables in memory after executing propeller.kcl
             },
             "start": {
               "from": [
-                3.0489331069392986,
-                2.5583586455162908
+                3.0489331069608245,
+                2.5583586455419445
               ],
               "to": [
-                3.0489331069392986,
-                2.5583586455162908
+                3.0489331069608245,
+                2.5583586455419445
               ],
               "units": "in",
               "tag": null,

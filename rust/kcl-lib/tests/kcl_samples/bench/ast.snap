@@ -11403,154 +11403,9 @@ description: Result of parsing bench.kcl
                     "type": "BinaryExpression"
                   },
                   "moduleId": 0,
-                  "start": 0,
-                  "type": "ExpressionStatement",
-                  "type": "ExpressionStatement"
-                },
-                {
-                  "commentStart": 0,
-                  "end": 0,
-                  "expression": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "left": {
-                      "arguments": [],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "radius",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "arc3",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      }
-                    },
-                    "moduleId": 0,
-                    "operator": "==",
-                    "right": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "raw": "8.20mm",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 8.2,
-                        "suffix": "Mm"
-                      }
-                    },
-                    "start": 0,
-                    "type": "BinaryExpression",
-                    "type": "BinaryExpression"
-                  },
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "ExpressionStatement",
-                  "type": "ExpressionStatement"
-                },
-                {
-                  "commentStart": 0,
-                  "end": 0,
-                  "expression": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "left": {
-                      "arguments": [],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "radius",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "arc4",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      }
-                    },
-                    "moduleId": 0,
-                    "operator": "==",
-                    "right": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "raw": "29.20mm",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 29.2,
-                        "suffix": "Mm"
-                      }
-                    },
-                    "start": 0,
-                    "type": "BinaryExpression",
-                    "type": "BinaryExpression"
-                  },
-                  "moduleId": 0,
+                  "preComments": [
+                    "// One radius per tangent arc chain avoids conflicting rounded dimensions."
+                  ],
                   "start": 0,
                   "type": "ExpressionStatement",
                   "type": "ExpressionStatement"
@@ -11743,80 +11598,6 @@ description: Result of parsing bench.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "arc13",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      }
-                    },
-                    "moduleId": 0,
-                    "operator": "==",
-                    "right": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "raw": "25.88mm",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 25.88,
-                        "suffix": "Mm"
-                      }
-                    },
-                    "start": 0,
-                    "type": "BinaryExpression",
-                    "type": "BinaryExpression"
-                  },
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "ExpressionStatement",
-                  "type": "ExpressionStatement"
-                },
-                {
-                  "commentStart": 0,
-                  "end": 0,
-                  "expression": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "left": {
-                      "arguments": [],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "radius",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
                           "name": "arc16",
                           "start": 0,
                           "type": "Identifier"
@@ -11839,80 +11620,6 @@ description: Result of parsing bench.kcl
                       "type": "Literal",
                       "value": {
                         "value": 3.44,
-                        "suffix": "Mm"
-                      }
-                    },
-                    "start": 0,
-                    "type": "BinaryExpression",
-                    "type": "BinaryExpression"
-                  },
-                  "moduleId": 0,
-                  "start": 0,
-                  "type": "ExpressionStatement",
-                  "type": "ExpressionStatement"
-                },
-                {
-                  "commentStart": 0,
-                  "end": 0,
-                  "expression": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "left": {
-                      "arguments": [],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "radius",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "arc19",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name",
-                        "type": "Name"
-                      }
-                    },
-                    "moduleId": 0,
-                    "operator": "==",
-                    "right": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "raw": "3.11mm",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 3.11,
                         "suffix": "Mm"
                       }
                     },
@@ -14517,6 +14224,30 @@ description: Result of parsing bench.kcl
                       }
                     }
                   ],
+                  "77": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "79": [
+                    {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
                   "81": [
                     {
                       "commentStart": 0,
@@ -14590,30 +14321,6 @@ description: Result of parsing bench.kcl
                     }
                   ],
                   "93": [
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "NonCodeNode",
-                      "value": {
-                        "type": "newLine"
-                      }
-                    }
-                  ],
-                  "95": [
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "NonCodeNode",
-                      "value": {
-                        "type": "newLine"
-                      }
-                    }
-                  ],
-                  "97": [
                     {
                       "commentStart": 0,
                       "end": 0,

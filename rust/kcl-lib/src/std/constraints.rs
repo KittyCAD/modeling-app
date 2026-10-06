@@ -1,7 +1,9 @@
+use ahash::HashSet;
 use anyhow::Result;
 use ezpz::CircleSide;
 use ezpz::Constraint as SolverConstraint;
 use ezpz::LineSide;
+use ezpz::datatypes::Angle;
 use ezpz::datatypes::AngleKind;
 use ezpz::datatypes::inputs::DatumCircle;
 use ezpz::datatypes::inputs::DatumDistance;
@@ -16,6 +18,7 @@ use crate::errors::KclErrorDetails;
 use crate::execution::AbstractSegment;
 use crate::execution::AngleConstraintMode;
 use crate::execution::AngleSector;
+use crate::execution::ArcVars;
 use crate::execution::Artifact;
 use crate::execution::CodeRef;
 use crate::execution::ConstrainableLine2d;
@@ -25,8 +28,10 @@ use crate::execution::ConstraintKey;
 use crate::execution::ConstraintState;
 use crate::execution::ExecState;
 use crate::execution::KclValue;
+use crate::execution::PendingArcArcTangency;
 use crate::execution::SegmentRepr;
 use crate::execution::SketchBlockConstraint;
+use crate::execution::SketchBlockState;
 use crate::execution::SketchConstraint;
 use crate::execution::SketchConstraintKind;
 use crate::execution::SketchVarId;
@@ -246,13 +251,6 @@ struct LineVars {
     end: [SketchVarId; 2],
 }
 
-#[derive(Debug, Clone, Copy)]
-struct ArcVars {
-    center: [SketchVarId; 2],
-    start: [SketchVarId; 2],
-    end: Option<[SketchVarId; 2]>,
-}
-
 fn make_line_arc_tangency_key(line: LineVars, arc: ArcVars) -> ConstraintKey {
     let [a0, a1, a2, a3] = flatten_line_vars(line);
     let [b0, b1, b2, b3, b4, b5] = flatten_arc_vars(arc);
@@ -364,6 +362,375 @@ fn arc_initial_radius(
     range: crate::SourceRange,
 ) -> Result<f64, KclError> {
     points_initial_distance(sketch_vars, arc.center, arc.start, exec_state, range)
+}
+
+fn datum_point_key(point: DatumPoint) -> (ezpz::Id, ezpz::Id) {
+    (point.x_id, point.y_id)
+}
+
+/// Returns whether two points belong to the same cluster of `PointsCoincident`
+/// solver constraints, including constraints connected transitively.
+///
+/// For example, constraints `[1, 2]`, `[2, 3]`, and `[3, 5]` put points
+/// `1`, `2`, `3`, and `5` in the same cluster.
+///
+/// This is similar to `getCoincidentCluster()` in the TypeScript constraint
+/// utilities, but operates on solver point IDs during KCL execution.
+fn points_are_constrained_coincident(
+    point_a: DatumPoint,
+    point_b: DatumPoint,
+    constraints: &[SolverConstraint],
+) -> bool {
+    let target = datum_point_key(point_b);
+    let mut pending = vec![point_a];
+    let mut visited = HashSet::default();
+
+    while let Some(point) = pending.pop() {
+        let point_key = datum_point_key(point);
+        if point_key == target {
+            return true;
+        }
+        if !visited.insert(point_key) {
+            // It was already visited.
+            continue;
+        }
+
+        for constraint in constraints {
+            let SolverConstraint::PointsCoincident(lhs, rhs) = constraint else {
+                continue;
+            };
+            if datum_point_key(*lhs) == point_key {
+                pending.push(*rhs);
+            } else if datum_point_key(*rhs) == point_key {
+                pending.push(*lhs);
+            }
+        }
+    }
+
+    false
+}
+
+fn shared_coincident_arc_endpoints(
+    arc_a: ArcVars,
+    arc_b: ArcVars,
+    constraints: &[SolverConstraint],
+    range: crate::SourceRange,
+) -> Result<Option<(SharedArcEndpoint, SharedArcEndpoint)>, KclError> {
+    let (Some(end_a), Some(end_b)) = (arc_a.end, arc_b.end) else {
+        return Ok(None);
+    };
+    let points_a = [
+        SharedArcEndpoint {
+            point: datum_point(arc_a.start, range)?,
+            kind: ArcEndpointKind::Start,
+        },
+        SharedArcEndpoint {
+            point: datum_point(end_a, range)?,
+            kind: ArcEndpointKind::End,
+        },
+    ];
+    let points_b = [
+        SharedArcEndpoint {
+            point: datum_point(arc_b.start, range)?,
+            kind: ArcEndpointKind::Start,
+        },
+        SharedArcEndpoint {
+            point: datum_point(end_b, range)?,
+            kind: ArcEndpointKind::End,
+        },
+    ];
+
+    for point_a in points_a {
+        for point_b in points_b {
+            if points_are_constrained_coincident(point_a.point, point_b.point, constraints) {
+                return Ok(Some((point_a, point_b)));
+            }
+        }
+    }
+
+    Ok(None)
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ArcEndpointKind {
+    Start,
+    End,
+}
+
+#[derive(Debug, Clone, Copy)]
+struct SharedArcEndpoint {
+    point: DatumPoint,
+    kind: ArcEndpointKind,
+}
+
+fn shared_arc_tangent_angle_degrees(
+    endpoint_a: ArcEndpointKind,
+    direction_a: ArcDirection,
+    endpoint_b: ArcEndpointKind,
+    direction_b: ArcDirection,
+) -> f64 {
+    let endpoint_sign = |endpoint| match endpoint {
+        ArcEndpointKind::Start => -1,
+        ArcEndpointKind::End => 1,
+    };
+    let direction_sign = |direction| match direction {
+        ArcDirection::Ccw => 1,
+        ArcDirection::Cw => -1,
+    };
+
+    let radii_point_the_same_way = -(endpoint_sign(endpoint_a)
+        * endpoint_sign(endpoint_b)
+        * direction_sign(direction_a)
+        * direction_sign(direction_b))
+        == 1;
+    if radii_point_the_same_way { 0.0 } else { 180.0 }
+}
+
+fn shared_arc_tangent_constraint(
+    circular0: ArcVars,
+    circular1: ArcVars,
+    constraints: &[SolverConstraint],
+    range: crate::SourceRange,
+) -> Result<Option<SolverConstraint>, KclError> {
+    let Some((endpoint0, endpoint1)) = shared_coincident_arc_endpoints(circular0, circular1, constraints, range)?
+    else {
+        return Ok(None);
+    };
+    let tangent_angle =
+        shared_arc_tangent_angle_degrees(endpoint0.kind, circular0.direction, endpoint1.kind, circular1.direction);
+
+    // A shared-endpoint arc tangency requires collinear radii. Use the arcs'
+    // declared directions and endpoint roles to select the unique 0- or
+    // 180-degree branch that gives continuous traversal through the join.
+    Ok(Some(SolverConstraint::PointsAtAngle(
+        endpoint0.point,
+        datum_point(circular0.center, range)?,
+        datum_point(circular1.center, range)?,
+        AngleKind::Other(Angle::from_degrees(tangent_angle)),
+    )))
+}
+
+fn lower_general_circular_tangency(
+    sketch_vars: &[KclValue],
+    next_var_id: SketchVarId,
+    circular0: ArcVars,
+    circular1: ArcVars,
+    sketch_id: ObjectId,
+    exec_state: &mut ExecState,
+    range: crate::SourceRange,
+) -> Result<(Vec<KclValue>, Vec<SolverConstraint>), KclError> {
+    let tangency_key = make_arc_arc_tangency_key(circular0, circular1);
+    let tangency_side = match exec_state.constraint_state(sketch_id, &tangency_key) {
+        Some(ConstraintState::Tangency(TangencyMode::CircleCircle(side))) => side,
+        _ => {
+            let side = infer_arc_tangent_side(sketch_vars, circular0, circular1, exec_state, range)?;
+            exec_state.set_constraint_state(
+                sketch_id,
+                tangency_key,
+                ConstraintState::Tangency(TangencyMode::CircleCircle(side)),
+            );
+            side
+        }
+    };
+    let center0 = datum_point(circular0.center, range)?;
+    let start0 = datum_point(circular0.start, range)?;
+    let end0 = circular0.end.map(|end| datum_point(end, range)).transpose()?;
+    let radius0_initial_value = radius_guess(sketch_vars, circular0.center, circular0.start, exec_state, range)?;
+    let center1 = datum_point(circular1.center, range)?;
+    let start1 = datum_point(circular1.start, range)?;
+    let end1 = circular1.end.map(|end| datum_point(end, range)).transpose()?;
+    let radius1_initial_value = radius_guess(sketch_vars, circular1.center, circular1.start, exec_state, range)?;
+    let sketch_var_ty = solver_numeric_type(exec_state);
+
+    let radius0_id = next_var_id;
+    let radius1_id = SketchVarId(next_var_id.0 + 1);
+    let hidden_radius_vars = vec![
+        KclValue::SketchVar {
+            value: Box::new(crate::execution::SketchVar {
+                id: radius0_id,
+                initial_value: radius0_initial_value,
+                ty: sketch_var_ty,
+                // Synthesized hidden radius for tangent(); no source `var` to map back to.
+                node_path: None,
+                meta: vec![],
+            }),
+        },
+        KclValue::SketchVar {
+            value: Box::new(crate::execution::SketchVar {
+                id: radius1_id,
+                initial_value: radius1_initial_value,
+                ty: sketch_var_ty,
+                // Synthesized hidden radius for tangent(); no source `var` to map back to.
+                node_path: None,
+                meta: vec![],
+            }),
+        },
+    ];
+
+    let radius0 = DatumDistance::new(radius0_id.to_constraint_id(range)?);
+    let circle0 = DatumCircle {
+        center: center0,
+        radius: radius0,
+    };
+    let radius1 = DatumDistance::new(radius1_id.to_constraint_id(range)?);
+    let circle1 = DatumCircle {
+        center: center1,
+        radius: radius1,
+    };
+
+    // Tangency decomposition for circular segment/circular segment:
+    // 1) Introduce one hidden radius variable per segment.
+    // 2) Keep each segment's defining points on its corresponding circle.
+    // 3) Apply the native CircleTangentToCircle solver constraint.
+    let mut solver_constraints = vec![SolverConstraint::DistanceVar(start0, center0, radius0)];
+    if let Some(end0) = end0 {
+        solver_constraints.push(SolverConstraint::DistanceVar(end0, center0, radius0));
+    }
+    solver_constraints.push(SolverConstraint::DistanceVar(start1, center1, radius1));
+    if let Some(end1) = end1 {
+        solver_constraints.push(SolverConstraint::DistanceVar(end1, center1, radius1));
+    }
+    solver_constraints.push(SolverConstraint::CircleTangentToCircle(circle0, circle1, tangency_side));
+
+    Ok((hidden_radius_vars, solver_constraints))
+}
+
+pub(crate) fn resolve_pending_arc_arc_tangencies(
+    sketch_state: &mut SketchBlockState,
+    exec_state: &mut ExecState,
+) -> Result<(), KclError> {
+    let pending_tangencies = std::mem::take(&mut sketch_state.pending_arc_arc_tangencies);
+    if pending_tangencies.is_empty() {
+        return Ok(());
+    }
+    let Some(sketch_id) = sketch_state.sketch_id else {
+        let ranges = pending_tangencies.iter().map(|pending| pending.range).collect();
+        return Err(KclError::new_internal(KclErrorDetails::new(
+            "Pending arc tangency has no sketch ID".to_owned(),
+            ranges,
+        )));
+    };
+
+    for pending in pending_tangencies {
+        if let Some(constraint) = shared_arc_tangent_constraint(
+            pending.circular0,
+            pending.circular1,
+            &sketch_state.solver_constraints,
+            pending.range,
+        )? {
+            sketch_state.solver_constraints.push(constraint);
+            continue;
+        }
+
+        let (hidden_radius_vars, solver_constraints) = lower_general_circular_tangency(
+            &sketch_state.sketch_vars,
+            sketch_state.next_sketch_var_id(),
+            pending.circular0,
+            pending.circular1,
+            sketch_id,
+            exec_state,
+            pending.range,
+        )?;
+        sketch_state.sketch_vars.extend(hidden_radius_vars);
+        sketch_state.solver_constraints.extend(solver_constraints);
+    }
+
+    Ok(())
+}
+
+#[cfg(test)]
+mod shared_arc_tangent_angle_tests {
+    use super::*;
+
+    #[test]
+    fn same_arc_directions_select_branch_from_endpoint_roles() {
+        for direction in [ArcDirection::Ccw, ArcDirection::Cw] {
+            assert_eq!(
+                shared_arc_tangent_angle_degrees(ArcEndpointKind::End, direction, ArcEndpointKind::Start, direction,),
+                0.0
+            );
+            assert_eq!(
+                shared_arc_tangent_angle_degrees(ArcEndpointKind::Start, direction, ArcEndpointKind::End, direction,),
+                0.0
+            );
+            assert_eq!(
+                shared_arc_tangent_angle_degrees(ArcEndpointKind::Start, direction, ArcEndpointKind::Start, direction,),
+                180.0
+            );
+            assert_eq!(
+                shared_arc_tangent_angle_degrees(ArcEndpointKind::End, direction, ArcEndpointKind::End, direction,),
+                180.0
+            );
+        }
+    }
+
+    #[test]
+    fn changing_one_arc_direction_selects_the_other_branch() {
+        for (endpoint_a, endpoint_b) in [
+            (ArcEndpointKind::Start, ArcEndpointKind::Start),
+            (ArcEndpointKind::Start, ArcEndpointKind::End),
+            (ArcEndpointKind::End, ArcEndpointKind::Start),
+            (ArcEndpointKind::End, ArcEndpointKind::End),
+        ] {
+            let same_direction =
+                shared_arc_tangent_angle_degrees(endpoint_a, ArcDirection::Ccw, endpoint_b, ArcDirection::Ccw);
+            let different_directions =
+                shared_arc_tangent_angle_degrees(endpoint_a, ArcDirection::Ccw, endpoint_b, ArcDirection::Cw);
+            assert_eq!(different_directions, 180.0 - same_direction);
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn disconnected_arcs_keep_circle_tangent_lowering() {
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new_mock(&ctx, &crate::MockConfig::default());
+        let sketch_var_ty = solver_numeric_type(&exec_state);
+        let sketch_vars = [0.0, 0.0, 10.0, 0.0, 0.0, 10.0, 30.0, 0.0, 20.0, 0.0, 30.0, 10.0]
+            .into_iter()
+            .enumerate()
+            .map(|(index, initial_value)| KclValue::SketchVar {
+                value: Box::new(crate::execution::SketchVar {
+                    id: SketchVarId(index),
+                    initial_value,
+                    ty: sketch_var_ty,
+                    node_path: None,
+                    meta: vec![],
+                }),
+            })
+            .collect();
+        let circular0 = ArcVars {
+            center: [SketchVarId(0), SketchVarId(1)],
+            start: [SketchVarId(2), SketchVarId(3)],
+            end: Some([SketchVarId(4), SketchVarId(5)]),
+            direction: ArcDirection::Ccw,
+        };
+        let circular1 = ArcVars {
+            center: [SketchVarId(6), SketchVarId(7)],
+            start: [SketchVarId(8), SketchVarId(9)],
+            end: Some([SketchVarId(10), SketchVarId(11)]),
+            direction: ArcDirection::Ccw,
+        };
+        let mut sketch_state = SketchBlockState {
+            sketch_vars,
+            sketch_id: Some(ObjectId(0)),
+            pending_arc_arc_tangencies: vec![PendingArcArcTangency {
+                circular0,
+                circular1,
+                range: crate::SourceRange::default(),
+            }],
+            ..Default::default()
+        };
+
+        resolve_pending_arc_arc_tangencies(&mut sketch_state, &mut exec_state).unwrap();
+
+        assert_eq!(sketch_state.sketch_vars.len(), 14);
+        assert!(matches!(
+            sketch_state.solver_constraints.last(),
+            Some(SolverConstraint::CircleTangentToCircle(..))
+        ));
+
+        ctx.close().await;
+    }
 }
 
 fn constrainable_point_from_unsolved_segment(
@@ -4024,7 +4391,13 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                     unsolved.object_id,
                 ))
             }
-            UnsolvedSegmentKind::Arc { center, start, end, .. } => {
+            UnsolvedSegmentKind::Arc {
+                center,
+                start,
+                end,
+                direction,
+                ..
+            } => {
                 let (
                     UnsolvedExpr::Unknown(center_x),
                     UnsolvedExpr::Unknown(center_y),
@@ -4044,6 +4417,7 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                         center: [*center_x, *center_y],
                         start: [*start_x, *start_y],
                         end: Some([*end_x, *end_y]),
+                        direction: *direction,
                     }),
                     unsolved.object_id,
                 ))
@@ -4066,6 +4440,7 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                         center: [*center_x, *center_y],
                         start: [*start_x, *start_y],
                         end: None,
+                        direction: ArcDirection::Ccw,
                     }),
                     unsolved.object_id,
                 ))
@@ -4184,92 +4559,46 @@ pub async fn tangent(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                 .push(SolverConstraint::LineTangentToCircle(line_datum, circle, tangency_side));
         }
         TangentCase::CircularCircular(circular0, circular1) => {
-            let tangency_key = make_arc_arc_tangency_key(circular0, circular1);
-            let tangency_side = match exec_state.constraint_state(sketch_id, &tangency_key) {
-                Some(ConstraintState::Tangency(TangencyMode::CircleCircle(side))) => side,
-                _ => {
-                    let side = infer_arc_tangent_side(&sketch_vars, circular0, circular1, exec_state, range)?;
-                    exec_state.set_constraint_state(
-                        sketch_id,
-                        tangency_key,
-                        ConstraintState::Tangency(TangencyMode::CircleCircle(side)),
-                    );
-                    side
-                }
-            };
-            let center0 = datum_point(circular0.center, range)?;
-            let start0 = datum_point(circular0.start, range)?;
-            let end0 = circular0.end.map(|end| datum_point(end, range)).transpose()?;
-            let radius0_initial_value =
-                radius_guess(&sketch_vars, circular0.center, circular0.start, exec_state, range)?;
-            let center1 = datum_point(circular1.center, range)?;
-            let start1 = datum_point(circular1.start, range)?;
-            let end1 = circular1.end.map(|end| datum_point(end, range)).transpose()?;
-            let radius1_initial_value =
-                radius_guess(&sketch_vars, circular1.center, circular1.start, exec_state, range)?;
-            let Some(sketch_state) = exec_state.sketch_block_mut() else {
-                return Err(KclError::new_semantic(KclErrorDetails::new(
-                    "tangent() can only be used inside a sketch block".to_owned(),
-                    vec![range],
-                )));
-            };
-            let radius0_id = sketch_state.next_sketch_var_id();
-            sketch_state.sketch_vars.push(KclValue::SketchVar {
-                value: Box::new(crate::execution::SketchVar {
-                    id: radius0_id,
-                    initial_value: radius0_initial_value,
-                    ty: sketch_var_ty,
-                    // Synthesized hidden radius for tangent(); no source `var` to map back to.
-                    node_path: None,
-                    meta: vec![],
-                }),
-            });
-            let radius0 = DatumDistance::new(radius0_id.to_constraint_id(range)?);
-            let circle0 = DatumCircle {
-                center: center0,
-                radius: radius0,
-            };
-
-            let radius1_id = sketch_state.next_sketch_var_id();
-            sketch_state.sketch_vars.push(KclValue::SketchVar {
-                value: Box::new(crate::execution::SketchVar {
-                    id: radius1_id,
-                    initial_value: radius1_initial_value,
-                    ty: sketch_var_ty,
-                    // Synthesized hidden radius for tangent(); no source `var` to map back to.
-                    node_path: None,
-                    meta: vec![],
-                }),
-            });
-            let radius1 = DatumDistance::new(radius1_id.to_constraint_id(range)?);
-            let circle1 = DatumCircle {
-                center: center1,
-                radius: radius1,
-            };
-
-            // Tangency decomposition for circular segment/circular segment:
-            // 1) Introduce one hidden radius variable per arc.
-            // 2) Keep each segment's defining points on its corresponding circle.
-            // 3) Apply the native CircleTangentToCircle solver constraint.
-            sketch_state
-                .solver_constraints
-                .push(SolverConstraint::DistanceVar(start0, center0, radius0));
-            if let Some(end0) = end0 {
-                sketch_state
-                    .solver_constraints
-                    .push(SolverConstraint::DistanceVar(end0, center0, radius0));
+            if circular0.end.is_some() && circular1.end.is_some() {
+                let Some(sketch_state) = exec_state.sketch_block_mut() else {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        "tangent() can only be used inside a sketch block".to_owned(),
+                        vec![range],
+                    )));
+                };
+                sketch_state.pending_arc_arc_tangencies.push(PendingArcArcTangency {
+                    circular0,
+                    circular1,
+                    range,
+                });
+            } else {
+                let next_var_id = exec_state
+                    .sketch_block()
+                    .ok_or_else(|| {
+                        KclError::new_semantic(KclErrorDetails::new(
+                            "tangent() can only be used inside a sketch block".to_owned(),
+                            vec![range],
+                        ))
+                    })?
+                    .next_sketch_var_id();
+                let (hidden_radius_vars, solver_constraints) = lower_general_circular_tangency(
+                    &sketch_vars,
+                    next_var_id,
+                    circular0,
+                    circular1,
+                    sketch_id,
+                    exec_state,
+                    range,
+                )?;
+                let Some(sketch_state) = exec_state.sketch_block_mut() else {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        "tangent() can only be used inside a sketch block".to_owned(),
+                        vec![range],
+                    )));
+                };
+                sketch_state.sketch_vars.extend(hidden_radius_vars);
+                sketch_state.solver_constraints.extend(solver_constraints);
             }
-            sketch_state
-                .solver_constraints
-                .push(SolverConstraint::DistanceVar(start1, center1, radius1));
-            if let Some(end1) = end1 {
-                sketch_state
-                    .solver_constraints
-                    .push(SolverConstraint::DistanceVar(end1, center1, radius1));
-            }
-            sketch_state
-                .solver_constraints
-                .push(SolverConstraint::CircleTangentToCircle(circle0, circle1, tangency_side));
         }
     }
 
