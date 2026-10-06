@@ -245,6 +245,16 @@ export class ConnectionManager extends EventTarget {
     }
   }
 
+  private resetReconnectState(): void {
+    this.reconnectingConnection = undefined
+    this.reconnectPreparationFinished = false
+    this.prepareForReconnect = undefined
+    this.reconnectPreparation?.abort()
+    this.reconnectPreparation = undefined
+    this.activeExecutions.clear()
+    this.activeRecoveries.clear()
+  }
+
   private tryReconnectWhenIdle() {
     const connection = this.reconnectingConnection
     if (
@@ -1363,13 +1373,7 @@ export class ConnectionManager extends EventTarget {
     this.removeAllEventListeners()
     this.connection?.disconnectAll()
     this.connection = undefined
-    this.reconnectingConnection = undefined
-    this.reconnectPreparationFinished = false
-    this.prepareForReconnect = undefined
-    this.reconnectPreparation?.abort()
-    this.reconnectPreparation = undefined
-    this.activeExecutions.clear()
-    this.activeRecoveries.clear()
+    this.resetReconnectState()
 
     // It is possible all connections never even started, but we still want
     // to signal to the whole application we are "offline".
