@@ -57,8 +57,8 @@ describe('cloud sync transaction outcomes', () => {
     async (_, run) => {
       const close = vi.spyOn(IDBDatabase.prototype, 'close')
       // The replacement calls the original method with its object-store receiver.
-    // eslint-disable-next-line @typescript-eslint/unbound-method
-    const openCursor = IDBObjectStore.prototype.openCursor
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      const openCursor = IDBObjectStore.prototype.openCursor
       vi.spyOn(IDBObjectStore.prototype, 'openCursor').mockImplementation(
         function (
           this: IDBObjectStore,
