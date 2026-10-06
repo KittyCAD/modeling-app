@@ -20,8 +20,6 @@ const conversationId = 'prior-conversation'
 const entry: MigrationHistoryEntry = {
   operation_id: 'operation',
   conversation_id: conversationId,
-  project_id: 'local:project',
-  target: '3.0-preview',
   created_at: '2026-10-02T12:00:00Z',
   status: 'succeeded',
   detail: 'Conversion passed.',
@@ -101,6 +99,12 @@ it('loads all pages as read-only entries and anchors them to the prior prompt', 
     )
   ).toBe(1)
   expect(migrationHistoryPosition(entry, exchanges)).toBe(0)
+  expect(
+    migrationHistoryPosition(
+      { ...entry, after_prompt_id: 'prompt-1', prompt_id: 'prompt-2' },
+      exchanges
+    )
+  ).toBe(2)
   expect(
     migrationHistoryPosition({ ...entry, after_prompt_id: 'pruned' }, exchanges)
   ).toBe(2)
@@ -201,4 +205,42 @@ it('does not replay acknowledgements into another account or project after reset
   previous.reportApplication(entry.operation_id, 'undone')
   expect(messages).toEqual([])
   expect(history.entries.value).toEqual([])
+})
+
+it('refreshes model replay only after the selected conversation acknowledgement is saved', async () => {
+  let saved = entry.application
+  respond = (message, socket) => {
+    if (message.type === 'history')
+      send(socket, {
+        type: 'history',
+        conversation_id: conversationId,
+        entries: [{ ...entry, application: saved }],
+      })
+    if (message.type === 'application') {
+      saved = {
+        status: message.status,
+        revision: message.expected_revision + 1,
+      }
+      send(socket, {
+        type: 'application',
+        operation_id: message.operation_id,
+        application: {
+          status: message.status,
+          revision: message.expected_revision + 1,
+        },
+      })
+    }
+  }
+  history.select(conversationId)
+  await vi.waitFor(() => expect(history.entries.value).toHaveLength(1))
+  const link = history.link(conversationId)
+  link.completed()
+  expect(history.replayRevision.value).toBe(1)
+  link.reportApplication(entry.operation_id, 'applied')
+  expect(history.reportingApplication.value).toBe(true)
+  await vi.waitFor(() => expect(history.replayRevision.value).toBe(2))
+  expect(history.reportingApplication.value).toBe(false)
+  link.reportApplication(entry.operation_id, 'undone')
+  await vi.waitFor(() => expect(history.replayRevision.value).toBe(3))
+  expect(history.entries.value[0].application.status).toBe('undone')
 })
