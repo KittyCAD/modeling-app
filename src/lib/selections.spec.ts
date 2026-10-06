@@ -3522,7 +3522,6 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
           kclManager: { ast, artifactGraph } as any,
           rustContext: { defaultPlanes: null } as any,
           wasmInstance: instance,
-          useSegmentsBasedRegions: false,
         }
       )
     ).resolves.toEqual({
@@ -3585,9 +3584,9 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
     })
   })
 
-  test('converts region query responses to engine region selections', async () => {
+  test.each(['segments', 'point'])('selects region via %s', async (mode) => {
     const { instance } = await buildTheWorldAndNoEngineConnection()
-    const ast = assertParse('', instance)
+    const ast = assertParse('@settings(defaultLengthUnit = in)', instance)
     const pathToNode = [['body', '']] as any
     const codeRef = {
       range: [0, 0, 0] as SourceRange,
@@ -3612,12 +3611,44 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
       consumed: false,
       sketchBlockId: sketchBlock.id,
     } satisfies Extract<Artifact, { type: 'path' }>
+    const segment = {
+      type: 'segment',
+      id: 'segment-1',
+      pathId: sketchPath.id,
+      edgeIds: [],
+      commonSurfaceIds: [],
+      codeRef,
+    } satisfies Extract<Artifact, { type: 'segment' }>
     const artifactGraph: ArtifactGraph = new Map<string, Artifact>([
       [sketchBlock.id, sketchBlock],
       [sketchPath.id, sketchPath],
+      [segment.id, segment],
     ])
+    const regionInfo = {
+      segment: segment.id,
+      intersection_segment: 'segment-2',
+      intersection_index: 1,
+      intersection_count: 2,
+      curve_clockwise: true,
+    }
     const engineCommandManager = {
       sendSceneCommand: vi.fn(async (event: any) => {
+        if (
+          mode === 'segments' &&
+          event.cmd.type === 'region_get_resolvable_intersection_info'
+        ) {
+          return {
+            resp: {
+              type: 'modeling',
+              data: {
+                modeling_response: {
+                  type: 'region_get_resolvable_intersection_info',
+                  data: regionInfo,
+                },
+              },
+            },
+          }
+        }
         if (event.cmd.type === 'region_get_query_point') {
           return {
             resp: {
@@ -3625,7 +3656,7 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
               data: {
                 modeling_response: {
                   type: 'region_get_query_point',
-                  data: { query_point: { x: 12, y: 34 } },
+                  data: { query_point: { x: 25.4, y: -50.8 } },
                 },
               },
             },
@@ -3638,13 +3669,18 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
               data: {
                 modeling_response: {
                   type: 'entity_get_parent_id',
-                  data: { entity_id: 'path-1' },
+                  data: { entity_id: sketchPath.id },
                 },
               },
             },
           }
         }
-        return undefined
+        return {
+          resp: {
+            type: 'modeling',
+            data: { modeling_response: { type: 'empty' } },
+          },
+        }
       }),
     }
 
@@ -3661,7 +3697,6 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
           kclManager: { ast, artifactGraph } as any,
           rustContext: { defaultPlanes: null } as any,
           wasmInstance: instance,
-          useSegmentsBasedRegions: false,
         }
       )
     ).resolves.toEqual({
@@ -3671,8 +3706,10 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
         selection: {
           type: 'engineRegion',
           id: 'region-1',
-          point: { x: 12, y: 34 },
           sketchId: 'sketch-1',
+          ...(mode === 'segments'
+            ? { resolvableIntersectionInfo: regionInfo }
+            : { point: { x: 1, y: -2 } }),
         },
       },
     })
@@ -3736,7 +3773,6 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
           kclManager: { ast, artifactGraph } as any,
           rustContext: { defaultPlanes: null } as any,
           wasmInstance: instance,
-          useSegmentsBasedRegions: false,
         }
       )
     ).resolves.toEqual({
