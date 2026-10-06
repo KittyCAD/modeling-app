@@ -52,6 +52,7 @@ export default function useStateMachineCommands<
   useSignals()
   const { commands, settings, userFeatures } = useApp()
   const { kclManager } = useSingletons()
+  const kclProgramVersion = kclManager.kclProgramVersionSignal.value
   const showExperimentalCommands = userFeatures.useHas(
     EXPERIMENTAL_POINT_AND_CLICK_FLAG,
     false
@@ -109,6 +110,7 @@ export default function useStateMachineCommands<
     shouldDisableEngineCommands,
     showExperimentalCommands,
     commandBarConfig,
+    kclProgramVersion,
     scopes,
   ])
 }
