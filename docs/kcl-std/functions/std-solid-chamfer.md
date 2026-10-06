@@ -308,8 +308,7 @@ chamfer001 = chamfer(
 @settings(defaultLengthUnit = mm, kclVersion = 3.0)
 
 // Chamfer the top circular edge of an extruded 8 mm shaft.
-// These two shafts show two equivalent edge-selection approaches:
-// `getOppositeEdge` and a tagged end face with `getCommonEdge`.
+// These two shafts show edge selection by a side face and end face.
 
 // Sketch two circles, one on the left, one on the right.
 // We'll use them for shafts below.
@@ -329,12 +328,18 @@ rightRegion = region(segments = [rightShaftSketch.rightCircle])
 // Extrude one circle into a shaft,
 // then use `leftRegion.tags.leftCircle` to reference the original circle
 // at the base of the shaft,
-// then use `getOppositeEdge` to get the opposite circular edge at the *top* of the shaft.
-leftShaft = extrude(leftRegion, length = 20mm)
+// The end face selects the circular edge at the top of the shaft.
+leftShaftBase = extrude(leftRegion, length = 20mm, tagEnd = $leftShaftTop)
+leftShaft = leftShaftBase
   |> chamfer(
        length = 1mm,
-       tags = [
-         getOppositeEdge(leftRegion.tags.leftCircle)
+       edges = [
+         {
+           sideFaces = [
+             leftRegion.tags.leftCircle,
+             leftShaftBase.faces.leftShaftTop
+           ]
+         }
        ],
      )
 
@@ -342,13 +347,19 @@ leftShaft = extrude(leftRegion, length = 20mm)
 rightShaftBase = extrude(rightRegion, length = 20mm, tagEnd = $rightShaftTop)
 
 // After extrusion, the circle identifies the cylindrical side face.
-// `getCommonEdge` selects the top rim shared by that face and the top end face.
-rightTopEdge = getCommonEdge(faces = [
-  rightShaftBase.sketch.tags.rightCircle,
-  rightShaftBase.faces.rightShaftTop
-])
-
-rightShaft = chamfer(rightShaftBase, length = 1mm, tags = [rightTopEdge])
+// Their shared edge is the top rim.
+rightShaft = chamfer(
+  rightShaftBase,
+  length = 1mm,
+  edges = [
+    {
+      sideFaces = [
+        rightRegion.tags.rightCircle,
+        rightShaftBase.faces.rightShaftTop
+      ]
+    }
+  ],
+)
 
 ```
 
