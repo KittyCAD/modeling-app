@@ -13,7 +13,6 @@ import { Mesh } from 'three'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { PlaneName } from '@rust/kcl-lib/bindings/PlaneName'
 
-import type { EntityReference as SdkEntityReference } from '@kittycad/lib'
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import {
   EXTRA_SEGMENT_HANDLE,
@@ -2500,8 +2499,7 @@ function setEngineEntitySelectionV2(
       type: 'modeling_cmd_req',
       cmd: {
         type: 'select_entity',
-        // Remove this cast once @kittycad/lib includes the Helix schema variant.
-        entities: entityReferences as SdkEntityReference[],
+        entities: entityReferences,
       },
       cmd_id: uuidv4(),
     },

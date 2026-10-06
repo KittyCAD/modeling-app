@@ -209,14 +209,15 @@ function cleanupWithSharePages(pages: SharePage[]) {
   return result
 }
 
+const shareLink: ProjectShareLinkResponse = {
+  access_mode: 'anyone_with_link',
+  created_at: eligibleProject.created_at,
+  key: 'shared-project',
+  updated_at: eligibleProject.updated_at,
+  url: 'https://example.test/shared-project',
+}
+
 test('CLI preserves a project whose share link appears after an empty page', () => {
-  const shareLink: ProjectShareLinkResponse = {
-    access_mode: 'anyone_with_link',
-    created_at: eligibleProject.created_at,
-    key: 'shared-project',
-    updated_at: eligibleProject.updated_at,
-    url: 'https://example.test/shared-project',
-  }
   const result = cleanupWithSharePages([
     { body: { items: [], next_page: 'cursor-_=' } },
     {
@@ -246,6 +247,34 @@ test('CLI deletes only after every share-link page is empty and the project is r
   )
 })
 
+test('CLI accepts omitted cursors on initial and later terminal share-link pages', () => {
+  for (const items of [[], [shareLink]]) {
+    for (const initialPages of [
+      [],
+      [{ body: { items: [], next_page: 'cursor-_=' } }],
+    ]) {
+      const result = cleanupWithSharePages([
+        ...initialPages,
+        { body: { items } },
+      ])
+      assert.equal(result.status, 0, result.stderr)
+      if (initialPages.length > 0) {
+        assert.match(result.stdout, /"token":"cursor-_="/)
+      }
+      if (items.length === 0) {
+        assert.match(result.stdout, /1 eligible projects; 1 deleted/)
+        assert.match(
+          result.stdout,
+          /"method":"GET","path":"\/user\/projects\/[^"/]+","token":null},{"method":"DELETE"/
+        )
+      } else {
+        assert.match(result.stdout, /0 eligible projects; 0 deleted/)
+        assert.doesNotMatch(result.stdout, /"method":"DELETE"/)
+      }
+    }
+  }
+})
+
 test('CLI propagates a later-page authorization error without deleting a project', () => {
   const result = cleanupWithSharePages([
     { body: { items: [], next_page: 'cursor-_=' } },
@@ -265,7 +294,7 @@ test('CLI rejects the obsolete bare-array share-links contract without deleting'
 
 test('CLI fails closed on malformed later pages and repeated cursors', () => {
   const malformedPages: SharePage[] = [
-    { body: { items: [] } },
+    { body: { next_page: null } },
     { body: { items: [], next_page: '' } },
     { body: { items: [], next_page: '   ' } },
     { body: { items: [], next_page: 'cursor-_=' } },
