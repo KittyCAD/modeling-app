@@ -1,0 +1,11 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing kcl_v3_stable_execution.kcl
+---
+@settings(kclVersion = 3.0)
+
+profile = sketch(on = XY) {
+  circle(start = [10mm, 0mm], center = [0mm, 0mm])
+}
+
+solid = extrude(region(point = [0mm, 0mm], sketch = profile), length = 5mm)

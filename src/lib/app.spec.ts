@@ -5,9 +5,7 @@ import { File, type KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
 import {
   IS_PLAYWRIGHT_KEY,
-  KCL_CEK_EXECUTOR_FEATURE_FLAG,
   KCL_NEW_LEXER_PARSER_FEATURE_FLAG,
-  OPFS_CLOUD_FEATURE_FLAG,
 } from '@src/lib/constants'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
@@ -198,14 +196,10 @@ function createRuntimeFlagsWasmInstance() {
   }
 }
 
-function expectedRuntimeFlags(
-  useNewLexerParser: 'On' | 'Off',
-  useCekExecutor: 'On' | 'Off'
-) {
+function expectedRuntimeFlags(useNewLexerParser: 'On' | 'Off') {
   return JSON.stringify({
-    enable_z0006_lint: 'Off',
-    use_cek_executor: useCekExecutor,
     use_new_lexer_parser: useNewLexerParser,
+    use_new_parser: 'Off',
   })
 }
 
@@ -259,6 +253,25 @@ function hasDefaultDirectoryLibrarySetting(app: App) {
 }
 
 describe('project system', () => {
+  it('always closes a the last project before opening a new one', async () => {
+    const app = createAppForTest()
+    vi.fn(window.electron?.watchFileOn).mockImplementation(() => {})
+    vi.fn(window.electron?.watchFileOff).mockImplementation(() => {})
+
+    const project1 = await app.openProject(mockProject)
+    const closeFn = vi.spyOn(project1, 'close')
+    const projectPath = 'some-other-one'
+    await app.openProject({
+      ...mockProject,
+      name: 'bracket',
+      path: projectPath,
+      default_file: fsZds.join(projectPath, 'main.kcl'),
+    })
+    expect(closeFn).toHaveBeenCalled()
+
+    app.closeProject()
+    app.dispose()
+  })
   it('uses registry runtime dependencies by default', () => {
     const app = createAppForTest()
 
@@ -313,17 +326,41 @@ describe('project system', () => {
     }
   })
 
+  it('does not resend unchanged engine appearance settings', async () => {
+    const app = createAppForTest()
+    const kclManager = app.singletons.kclManager
+    const engineCommandManager = kclManager.engineCommandManager
+    const previousConnection = engineCommandManager.connection
+
+    try {
+      await app.openProject(mockProject)
+      const updateTheme = vi
+        .spyOn(kclManager, 'updateTheme')
+        .mockResolvedValue(undefined)
+      const setDefaultSystemProperties = vi
+        .spyOn(engineCommandManager, 'setDefaultSystemProperties')
+        .mockResolvedValue(undefined)
+      engineCommandManager.connection = {
+        connected: true,
+      } as typeof engineCommandManager.connection
+
+      app.onSettingsUpdate(app.settings.actor.getSnapshot())
+
+      expect(updateTheme).not.toHaveBeenCalled()
+      expect(setDefaultSystemProperties).not.toHaveBeenCalled()
+    } finally {
+      engineCommandManager.connection = previousConnection
+      app.dispose()
+    }
+  })
+
   it('annotates opened projects with their owning library path', async () => {
     const app = createAppForTest()
 
     try {
       await waitForSettingsIdle(app)
 
-      const library = app.settings
-        .get()
-        .app.libraries.current.find(
-          (entry) => entry.type === DIRECTORY_PROJECT_LIBRARY_TYPE
-        )
+      const library = app.settings.get().app.libraries.current[0]
       expect(library).toBeDefined()
       if (!library) {
         return
@@ -340,7 +377,7 @@ describe('project system', () => {
       expect(openedProject.projectIORefSignal.value).toEqual(
         expect.objectContaining({
           libraryPath: library.path,
-          libraryType: DIRECTORY_PROJECT_LIBRARY_TYPE,
+          libraryType: library.type,
         })
       )
     } finally {
@@ -362,7 +399,7 @@ describe('project system', () => {
       await wasmPromise
 
       expect(wasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
-        expectedRuntimeFlags('Off', 'Off')
+        expectedRuntimeFlags('Off')
       )
     } finally {
       app.dispose()
@@ -386,14 +423,14 @@ describe('project system', () => {
       userFeatures.setFeatureIds(new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG]))
 
       expect(wasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
-        expectedRuntimeFlags('On', 'Off')
+        expectedRuntimeFlags('On')
       )
     } finally {
       app.dispose()
     }
   })
 
-  it('updates the CEK executor runtime flag when the feature is enabled', async () => {
+  it('updates the new lexer runtime flag when the feature is enabled', async () => {
     const userFeatures = createUserFeaturesForTest(new Set())
     const wasmInstance = createRuntimeFlagsWasmInstance()
     const wasmPromise = Promise.resolve(wasmInstance)
@@ -407,10 +444,10 @@ describe('project system', () => {
       await wasmPromise
       wasmInstance.set_kcl_runtime_flags.mockClear()
 
-      userFeatures.setFeatureIds(new Set([KCL_CEK_EXECUTOR_FEATURE_FLAG]))
+      userFeatures.setFeatureIds(new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG]))
 
       expect(wasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
-        expectedRuntimeFlags('Off', 'On')
+        expectedRuntimeFlags('On')
       )
     } finally {
       app.dispose()
@@ -436,7 +473,7 @@ describe('project system', () => {
       await notifyActiveWasmInstance(nextWasmInstance)
 
       expect(nextWasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
-        expectedRuntimeFlags('On', 'Off')
+        expectedRuntimeFlags('On')
       )
     } finally {
       app.dispose()
@@ -447,6 +484,16 @@ describe('project system', () => {
     const previousElectron = window.electron
     const syncActivePlugins = vi.fn().mockResolvedValue(undefined)
     window.electron = {
+      os: {
+        isLinux: true,
+        isMac: false,
+        isWindows: false,
+        name: 'Linux',
+      },
+      packageJson: {
+        name: 'zoo-modeling-app',
+      },
+      getAppTestProperty: vi.fn().mockResolvedValue(undefined),
       pluginIpc: {
         invoke: vi.fn(),
         syncActivePlugins,
@@ -455,7 +502,9 @@ describe('project system', () => {
     const app = createAppForTest()
 
     try {
-      await waitForSettingsIdle(app)
+      await expect
+        .poll(() => syncActivePlugins.mock.calls.length)
+        .toBeGreaterThan(0)
 
       const pluginId = 'code-editor'
       const plugin = app.registry
@@ -488,6 +537,7 @@ describe('project system', () => {
       expect(
         getChangedSettingsAtLevel(app.settings.get(), 'user').plugins
       ).toEqual({
+        'cloud-sync': true,
         [pluginId]: false,
       })
 
@@ -505,17 +555,18 @@ describe('project system', () => {
       expect(pluginToggle.active.value).toBe(true)
       expect(syncActivePlugins.mock.calls.at(-1)?.[0]).toContain(pluginId)
       expect(
-        getChangedSettingsAtLevel(app.settings.get(), 'user').plugins?.[
-          pluginId
-        ]
-      ).toBeUndefined()
+        getChangedSettingsAtLevel(app.settings.get(), 'user').plugins
+      ).toEqual({
+        'cloud-sync': true,
+      })
     } finally {
       app.dispose()
       window.electron = previousElectron
     }
   })
 
-  it('keeps cloud sync disabled by default without the cloud projects feature', async () => {
+  it('lets Playwright keep cloud sync off while Personal Cloud stays available', async () => {
+    localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
     const userFeatures = createUserFeaturesForTest(new Set())
     const app = createAppForTest({
       userFeatures,
@@ -527,93 +578,16 @@ describe('project system', () => {
       expect(getCloudSyncPluginSetting(app)?.current).toBe(false)
       expect(getCloudSyncPluginSetting(app)?.user).toBeUndefined()
       expect(getPluginToggle(app, 'cloud-sync').active.value).toBe(false)
-      expect(hasPersonalCloudLibrarySetting(app)).toBe(false)
-      expect(hasDefaultDirectoryLibrarySetting(app)).toBe(true)
-      expect(app.getCreateProjectLibraryTargets()).not.toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            library: expect.objectContaining({
-              id: PERSONAL_CLOUD_PROJECT_LIBRARY_ID,
-            }),
-          }),
-        ])
-      )
-    } finally {
-      app.dispose()
-    }
-  })
 
-  it('auto-enables cloud sync for feature-flagged users and materializes Personal Cloud', async () => {
-    const userFeatures = createUserFeaturesForTest(
-      new Set([OPFS_CLOUD_FEATURE_FLAG])
-    )
-    const app = createAppForTest({
-      userFeatures,
-    })
-
-    try {
-      await expect
-        .poll(() => ({
-          active: getPluginToggle(app, 'cloud-sync').active.value,
-          current: getCloudSyncPluginSetting(app)?.current,
-          user: getCloudSyncPluginSetting(app)?.user,
-          hasPersonalCloudLibrarySetting: hasPersonalCloudLibrarySetting(app),
-          hasDefaultDirectoryLibrarySetting:
-            hasDefaultDirectoryLibrarySetting(app),
-        }))
-        .toEqual({
-          active: true,
-          current: true,
-          user: true,
-          hasPersonalCloudLibrarySetting: true,
-          hasDefaultDirectoryLibrarySetting: false,
-        })
-
-      // On web, cloud sync is the project storage layer, not an optional
-      // feature: a disable attempt is overridden, the plugin stays active, and
-      // a usable library plus a create target remain (the strand-repro fix).
       app.settings.actor.send({
         type: 'set.plugins.cloud-sync',
         data: {
           level: 'user',
-          value: false,
+          value: true,
         },
         doNotPersist: true,
       } as never)
 
-      await expect
-        .poll(() => ({
-          current: getCloudSyncPluginSetting(app)?.current,
-          active: getPluginToggle(app, 'cloud-sync').active.value,
-          hasPersonalCloudLibrarySetting: hasPersonalCloudLibrarySetting(app),
-          canCreateInPersonalCloud: app
-            .getCreateProjectLibraryTargets()
-            .some(
-              (target) =>
-                target.library.id === PERSONAL_CLOUD_PROJECT_LIBRARY_ID
-            ),
-        }))
-        .toEqual({
-          current: true,
-          active: true,
-          hasPersonalCloudLibrarySetting: true,
-          canCreateInPersonalCloud: true,
-        })
-    } finally {
-      app.dispose()
-    }
-  })
-
-  it('lets Playwright keep cloud sync off while Personal Cloud stays available', async () => {
-    localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
-    const userFeatures = createUserFeaturesForTest(
-      new Set([OPFS_CLOUD_FEATURE_FLAG])
-    )
-    const app = createAppForTest({
-      userFeatures,
-    })
-
-    try {
       await expect
         .poll(() => ({
           active: getPluginToggle(app, 'cloud-sync').active.value,
@@ -684,13 +658,11 @@ describe('project system', () => {
         syncActivePlugins: vi.fn().mockResolvedValue(undefined),
       },
     } as unknown as typeof window.electron
-    const userFeatures = createUserFeaturesForTest(
-      new Set([OPFS_CLOUD_FEATURE_FLAG])
-    )
+    const userFeatures = createUserFeaturesForTest(new Set())
     const app = createAppForTest({ userFeatures })
 
     try {
-      // Cloud sync auto-enables for the flag on desktop too.
+      // Cloud sync auto-enables on desktop too.
       await expect
         .poll(() => ({
           active: getPluginToggle(app, 'cloud-sync').active.value,
@@ -734,18 +706,6 @@ describe('project system', () => {
     })
 
     try {
-      expect(
-        app.registry
-          .get(commandsValueSpec)
-          .some(
-            (command) =>
-              command.groupId === 'projects' &&
-              command.name === 'Create project'
-          )
-      ).toBe(false)
-
-      userFeatures.setFeatureIds(new Set([OPFS_CLOUD_FEATURE_FLAG]))
-
       expect(
         app.registry
           .get(commandsValueSpec)

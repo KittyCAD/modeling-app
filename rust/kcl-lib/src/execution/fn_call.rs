@@ -1658,6 +1658,7 @@ mod test {
                 execution_callbacks: Default::default(),
                 executor_kind: crate::execution::machine::ExecutorKind::resolve(),
                 machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+                configure_engine_render: true,
             };
             let mut exec_state = ExecState::new(&exec_ctxt);
             exec_state.mod_local.stack = Stack::new_for_tests();
@@ -1698,7 +1699,7 @@ msg2 = makeMessage(prefix = 1, suffix = 3)"#;
 
     #[tokio::test(flavor = "multi_thread")]
     async fn never_function_cannot_return_a_value() {
-        let program = r#"@settings(experimentalFeatures = allow)
+        let program = r#"@settings(kclVersion = "3.0-preview")
 fn bad(): never {
   return 42
 }
@@ -1716,7 +1717,7 @@ bad()
 
     #[tokio::test(flavor = "multi_thread")]
     async fn never_function_cannot_fall_through() {
-        let program = r#"@settings(experimentalFeatures = allow)
+        let program = r#"@settings(kclVersion = "3.0-preview")
 fn alsoBad(): never {
   x = 42
 }
@@ -1734,7 +1735,7 @@ alsoBad()
 
     #[tokio::test(flavor = "multi_thread")]
     async fn never_union_function_cannot_return_a_value() {
-        let program = r#"@settings(experimentalFeatures = allow)
+        let program = r#"@settings(kclVersion = "3.0-preview")
 fn bad(): never | never {
   return 42
 }
@@ -1752,7 +1753,7 @@ bad()
 
     #[tokio::test(flavor = "multi_thread")]
     async fn never_union_function_cannot_fall_through() {
-        let program = r#"@settings(experimentalFeatures = allow)
+        let program = r#"@settings(kclVersion = "3.0-preview")
 fn alsoBad(): never | never {
   x = 42
 }
@@ -1770,7 +1771,7 @@ alsoBad()
 
     #[tokio::test(flavor = "multi_thread")]
     async fn never_function_contract_is_path_dependent() {
-        let function = r#"@settings(experimentalFeatures = allow)
+        let function = r#"@settings(kclVersion = "3.0-preview")
 fn failOrReturn(@shouldFail: bool): never {
   return if shouldFail {
     fail("requested failure")
@@ -1798,7 +1799,7 @@ fn failOrReturn(@shouldFail: bool): never {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn never_type_alias_contract_is_path_dependent() {
-        let function = r#"@settings(experimentalFeatures = allow)
+        let function = r#"@settings(kclVersion = "3.0-preview")
 type impossible = never
 fn failOrReturn(@shouldFail: bool): impossible {
   return if shouldFail {
@@ -1827,7 +1828,7 @@ fn failOrReturn(@shouldFail: bool): impossible {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn union_with_never_can_return_a_value_or_fail() {
-        let function = r#"@settings(experimentalFeatures = allow)
+        let function = r#"@settings(kclVersion = "3.0-preview")
 fn stringOrFail(@shouldFail: bool): string | never {
   return if shouldFail {
     fail("requested failure")
@@ -1854,7 +1855,7 @@ fn stringOrFail(@shouldFail: bool): string | never {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn fail_reports_user_defined_message_and_callsite_once() {
-        let program = r#"@settings(experimentalFeatures = allow)
+        let program = r#"@settings(kclVersion = "3.0-preview")
 fail("custom failure")
 "#;
 
@@ -1869,8 +1870,23 @@ fail("custom failure")
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn fail_is_unavailable_before_v3_even_with_experimental_opt_in() {
+        for version in ["1.0", "2.0"] {
+            for opt_in in ["", ", experimentalFeatures = allow"] {
+                let program = format!("@settings(kclVersion = {version}{opt_in})\nfail(\"custom failure\")\n");
+                let err = parse_execute(&program).await.unwrap_err();
+                assert!(
+                    err.message()
+                        .contains("it was added in KCL 3.0, but this program uses KCL"),
+                    "{program}: {err:#?}"
+                );
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn fail_unwinds_through_nested_never_functions_once() {
-        let program = r#"@settings(experimentalFeatures = allow)
+        let program = r#"@settings(kclVersion = "3.0-preview")
 fn inner(): never {
   fail("nested failure")
 }
@@ -1901,7 +1917,7 @@ outer()
 
     #[tokio::test(flavor = "multi_thread")]
     async fn fail_is_valid_in_a_function_with_a_value_return_type() {
-        let function = r#"@settings(experimentalFeatures = allow)
+        let function = r#"@settings(kclVersion = "3.0-preview")
 fn valueOrFail(@shouldFail: bool): number {
   return if shouldFail {
     fail("no value")
@@ -1924,7 +1940,7 @@ fn valueOrFail(@shouldFail: bool): number {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn never_function_with_fail_or_fallthrough_is_path_dependent() {
-        let function = r#"@settings(experimentalFeatures = allow)
+        let function = r#"@settings(kclVersion = "3.0-preview")
 fn failOrFallThrough(@shouldFail: bool): never {
   result = if shouldFail {
     fail("requested failure")
@@ -1952,7 +1968,7 @@ fn failOrFallThrough(@shouldFail: bool): never {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn fail_argument_evaluation_errors_take_precedence() {
-        let program = r#"@settings(experimentalFeatures = allow)
+        let program = r#"@settings(kclVersion = "3.0-preview")
 fn stop(): never {
   fail(missingMessage)
 }
@@ -1970,8 +1986,8 @@ stop()
     #[tokio::test(flavor = "multi_thread")]
     async fn fail_rejects_invalid_message_arguments_before_invocation() {
         for program in [
-            "@settings(experimentalFeatures = allow)\nfail()\n",
-            "@settings(experimentalFeatures = allow)\nfail(42)\n",
+            "@settings(kclVersion = \"3.0-preview\")\nfail()\n",
+            "@settings(kclVersion = \"3.0-preview\")\nfail(42)\n",
         ] {
             let err = parse_execute(program).await.unwrap_err();
             assert!(matches!(&err, KclError::Argument { .. }), "{err:?}");
@@ -2846,6 +2862,7 @@ plane = startSketchOn(XY)
             execution_callbacks: Default::default(),
             executor_kind: crate::execution::machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+            configure_engine_render: true,
         };
         let mut exec_state = ExecState::new(&exec_ctxt);
         exec_state.set_deprecation_version_override(Some("2.0"));

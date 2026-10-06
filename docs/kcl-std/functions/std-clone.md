@@ -524,7 +524,7 @@ outputArray[0]
 </model-viewer>
 
 ```kcl
-@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+@settings(defaultLengthUnit = mm, kclVersion = 3.0)
 
 // Work around #9983 by rotating an untransformed seed before placing it.
 seedSketch = sketch(on = XY) {

@@ -2,7 +2,6 @@ import path, { join } from 'path'
 import {
   KCL_DEFAULT_LENGTH,
   LEGACY_SKETCH_MODE_FEATURE_FLAG,
-  OPFS_CLOUD_FEATURE_FLAG,
 } from '@src/lib/constants'
 import * as fsp from 'fs/promises'
 
@@ -72,30 +71,17 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     })
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'bodyType',
-      currentArgValue: '',
-      headerArguments: {
-        Profiles: '1 profile',
-        Length: '5',
-        BodyType: '',
-      },
-      highlightedHeaderArg: 'bodyType',
-    })
-    await cmdBar.selectOption({ name: 'Solid' }).click()
-    await cmdBar.expectState({
       stage: 'review',
       commandName: 'Extrude',
       headerArguments: {
         Profiles: '1 profile',
         Length: '5',
-        BodyType: 'SOLID',
       },
+      reviewValidationError: undefined,
     })
     await cmdBar.progressCmdBar()
     await expect(page.locator('.cm-activeLine')).toHaveText(
-      `extrude001 = extrude(sketch001, length = ${KCL_DEFAULT_LENGTH}, bodyType = SOLID)`
+      `extrude001 = extrude(sketch001, length = ${KCL_DEFAULT_LENGTH})`
     )
   })
 
@@ -138,13 +124,6 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     // Reopen through the in-app control. The dedicated test below owns the
     // Mod+K coverage and starts from an explicitly focused editor.
     await commandBarButton.click()
-    await expect(cmdSearchBar).toBeVisible()
-    await expect(cmdSearchBar).toBeFocused()
-
-    // The command-palette scope changes the shortcut from "open" to "close".
-    await page.keyboard.press('ControlOrMeta+K')
-    await expect(cmdSearchBar).not.toBeVisible()
-    await page.keyboard.press('ControlOrMeta+K')
     await expect(cmdSearchBar).toBeVisible()
     await expect(cmdSearchBar).toBeFocused()
 
@@ -319,43 +298,29 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     )
     await cmdBar.progressCmdBar()
 
-    // Review step and argument hotkeys
-    await cmdBar.expectState({
-      stage: 'arguments',
-      commandName: 'Extrude',
-      currentArgKey: 'bodyType',
-      currentArgValue: '',
-      headerArguments: {
-        Profiles: '1 profile',
-        Length: '5',
-        BodyType: '',
-      },
-      highlightedHeaderArg: 'bodyType',
-    })
-    await cmdBar.selectOption({ name: 'Solid' }).click()
+    // Closed profiles use KCL's solid default and skip the body type step.
     await cmdBar.expectState({
       stage: 'review',
       commandName: 'Extrude',
       headerArguments: {
         Profiles: '1 profile',
         Length: '5',
-        BodyType: 'SOLID',
       },
+      reviewValidationError: undefined,
     })
     await page.keyboard.press('Meta+Backspace')
 
-    // Assert we're back on the body type step.
+    // Step back returns to the preceding length argument.
     await cmdBar.expectState({
       stage: 'arguments',
       commandName: 'Extrude',
-      currentArgKey: 'bodyType',
-      currentArgValue: '',
+      currentArgKey: 'length',
+      currentArgValue: '5',
       headerArguments: {
         Profiles: '1 profile',
         Length: '5',
-        BodyType: 'SOLID',
       },
-      highlightedHeaderArg: 'bodyType',
+      highlightedHeaderArg: 'length',
     })
 
     await cmdBar.progressCmdBar()
@@ -367,7 +332,6 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
       headerArguments: {
         Profiles: '1 profile',
         Length: '5',
-        BodyType: 'SOLID',
       },
     })
     await cmdBar.clickOptionalArgument('bidirectionalLength')
@@ -379,7 +343,6 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
       headerArguments: {
         Profiles: '1 profile',
         Length: '5',
-        BodyType: 'SOLID',
         BidirectionalLength: '',
       },
       highlightedHeaderArg: 'bidirectionalLength',
@@ -392,7 +355,6 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
       headerArguments: {
         Profiles: '1 profile',
         Length: '5',
-        BodyType: 'SOLID',
         BidirectionalLength: '10',
       },
     })
@@ -407,7 +369,6 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
       headerArguments: {
         Profiles: '1 profile',
         Length: '5',
-        BodyType: 'SOLID',
         BidirectionalLength: '10',
       },
       highlightedHeaderArg: 'bidirectionalLength',
@@ -419,14 +380,13 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
       headerArguments: {
         Profiles: '1 profile',
         Length: '5',
-        BodyType: 'SOLID',
       },
     })
 
     await cmdBar.progressCmdBar()
     await scene.settled()
     await editor.expectEditor.toContain(
-      'extrude001 = extrude(sketch001, length = length001, bodyType = SOLID)'
+      'extrude001 = extrude(sketch001, length = length001)'
     )
   })
 
@@ -849,6 +809,20 @@ export exported = 2`,
     })
   })
 
+  test(
+    'Command palette can be opened via query parameter - web',
+    { tag: '@web' },
+    async ({ page, cmdBar }) => {
+      await page.goto(`${page.url()}/?cmd=app.theme&groupId=settings`)
+      await expect(page).toHaveURL(
+        (url) =>
+          !url.searchParams.has('cmd') && !url.searchParams.has('groupId'),
+        { timeout: 15_000 }
+      )
+      await cmdBar.expectCommandName('Settings · app · theme')
+    }
+  )
+
   test('Step back works on non-required and required arguments and closes', async ({
     page,
     homePage,
@@ -983,22 +957,4 @@ export exported = 2`,
     await cmdBar.stepBack()
     await cmdBar.expectState({ stage: 'commandBarClosed' })
   })
-})
-
-test.describe('Command bar tests', () => {
-  test.use({ userFeatures: [OPFS_CLOUD_FEATURE_FLAG] })
-
-  test(
-    'Command palette can be opened via query parameter - web',
-    { tag: '@web' },
-    async ({ page, cmdBar }) => {
-      await page.goto(`${page.url()}/?cmd=app.theme&groupId=settings`)
-      await expect(page).toHaveURL(
-        (url) =>
-          !url.searchParams.has('cmd') && !url.searchParams.has('groupId'),
-        { timeout: 15_000 }
-      )
-      await cmdBar.expectCommandName('Settings · app · theme')
-    }
-  )
 })

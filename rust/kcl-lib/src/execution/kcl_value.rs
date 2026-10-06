@@ -522,6 +522,8 @@ impl EnumTypeId {
 pub struct EnumTypeDef {
     id: EnumTypeId,
     variants: Vec<String>,
+    // The declaration's annotation must remain available through type aliases.
+    experimental: bool,
 }
 
 /// Two variants of one enum declared under the same name, e.g.
@@ -547,8 +549,11 @@ impl EnumTypeDef {
     /// collapsing duplicates would deny the user a diagnostic naming the variant
     /// they typed twice.
     ///
+    /// `experimental` records the declaration's annotation for variant uses
+    /// reached through type aliases.
+    ///
     /// Reports the earliest repeat when a declaration contains several.
-    pub fn new(id: EnumTypeId, variants: Vec<String>) -> Result<Self, DuplicateVariant> {
+    pub fn new(id: EnumTypeId, variants: Vec<String>, experimental: bool) -> Result<Self, DuplicateVariant> {
         for (duplicate_index, variant) in variants.iter().enumerate() {
             if let Some(first_index) = variants[..duplicate_index].iter().position(|v| v == variant) {
                 return Err(DuplicateVariant {
@@ -559,7 +564,11 @@ impl EnumTypeDef {
             }
         }
 
-        Ok(Self { id, variants })
+        Ok(Self {
+            id,
+            variants,
+            experimental,
+        })
     }
 
     pub fn id(&self) -> &EnumTypeId {
@@ -568,6 +577,10 @@ impl EnumTypeDef {
 
     pub fn variants(&self) -> &[String] {
         &self.variants
+    }
+
+    pub fn is_experimental(&self) -> bool {
+        self.experimental
     }
 
     pub fn has_variant(&self, name: &str) -> bool {
@@ -1564,6 +1577,7 @@ mod tests {
             EnumTypeDef::new(
                 EnumTypeId::new(ModuleId::default(), "Color"),
                 vec!["Red".to_owned(), "Green".to_owned()],
+                false,
             )
             .unwrap(),
         )
@@ -1632,6 +1646,7 @@ mod tests {
         let def = EnumTypeDef::new(
             EnumTypeId::new(ModuleId::default(), "Color"),
             vec!["Red".to_owned(), "Green".to_owned()],
+            false,
         )
         .unwrap();
 
@@ -1645,6 +1660,7 @@ mod tests {
             EnumTypeDef::new(
                 EnumTypeId::new(ModuleId::from_usize(1), "Color"),
                 vec!["Red".to_owned(), "Green".to_owned()],
+                false,
             )
             .unwrap()
             .id()
@@ -1656,6 +1672,7 @@ mod tests {
         let err = EnumTypeDef::new(
             EnumTypeId::new(ModuleId::default(), "Color"),
             vec!["Red".to_owned(), "Green".to_owned(), "Red".to_owned()],
+            false,
         )
         .unwrap_err();
 
@@ -1682,6 +1699,7 @@ mod tests {
                 "Green".to_owned(),
                 "Red".to_owned(),
             ],
+            false,
         )
         .unwrap_err();
 

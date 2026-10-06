@@ -1961,6 +1961,12 @@ impl SketchApi for FrontendState {
 }
 
 impl FrontendState {
+    /// Evaluate an input expression using the current model's settings and cached variables.
+    pub async fn evaluate_expression(&self, ctx: &ExecutorContext, mut program: Program) -> ExecResult<ExecOutcome> {
+        program.ast.inner_attrs.clone_from(&self.program.ast.inner_attrs);
+        ctx.run_mock(&program, &MockConfig::default()).await
+    }
+
     pub async fn hack_set_program(&mut self, ctx: &ExecutorContext, program: Program) -> ExecResult<SetProgramOutcome> {
         self.program = program.clone();
 
@@ -13906,11 +13912,11 @@ sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   line2 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 4mm])
   angleDimension(
-  lines = [line1, line2],
-  sector = 1,
-  inverse = true,
-  labelPosition = [-0.73mm, 0.75mm],
-) == 270deg
+    lines = [line1, line2],
+    sector = 1,
+    inverse = true,
+    labelPosition = [-0.73mm, 0.75mm],
+  ) == 270deg
 }
 "
         );

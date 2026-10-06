@@ -136,11 +136,15 @@ E2E_MODE ?= none
 endif
 
 .PHONY: test
-test: test-unit test-integration test-e2e-web
+test: test-unit test-properties test-integration test-e2e-web
 
 .PHONY: test-unit
 test-unit: install ## Run the unit tests
 	npm run test:unit
+
+.PHONY: test-properties
+test-properties: install
+	npm run test:properties
 
 .PHONY: test-integration
 test-integration: install public/kcl_wasm_lib_bg.wasm ## Run the integration tests

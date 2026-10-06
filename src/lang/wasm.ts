@@ -53,6 +53,7 @@ import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import { distance2d } from '@src/lib/utils2d'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 
 export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
 export type {
@@ -751,9 +752,6 @@ function numericSuffixToUnitLength(suffix: NumericSuffix): UnitLength | null {
     case 'Unknown':
       return null
     default:
-      // this is more of a type completeness check
-      // rather then something we expect to hit at runtime
-      const _exhaustiveCheck: never = suffix
       return null
   }
 }
@@ -776,7 +774,6 @@ function unitLengthToNumericSuffix(unit: UnitLength): NumericSuffix {
     case 'yd':
       return 'Yd'
     default:
-      const _exhaustiveCheck: never = unit
       return 'Mm'
   }
 }
@@ -1054,8 +1051,6 @@ export function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
       case 'SketchVar':
         // TODO: sketch-api: implement initial.
         break
-      default:
-        const _exhaustiveCheck: never = step
     }
   }
   return pathToNode
@@ -1149,7 +1144,7 @@ export function changeDefaultUnits(
  */
 export function changeKclVersion(
   kcl: string,
-  version: string | null,
+  version: KclVersion | null,
   wasmInstance: ModuleType
 ): string | Error {
   try {

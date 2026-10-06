@@ -44,6 +44,27 @@ cube1 = extrude(region001, length = 2)
 cube2 = clone(cube1)
   |> translate(x = 5)`
 
+export function getClonedSweepCapAndSecondWall(artifactGraph: ArtifactGraph) {
+  const clonedSweep = [...artifactGraph.values()].find(
+    (artifact): artifact is Extract<Artifact, { type: 'sweep' }> =>
+      artifact.type === 'sweep' && artifact.sourceSweepId !== undefined
+  )
+  if (!clonedSweep) return null
+
+  const faces = clonedSweep.surfaceIds
+    .map((surfaceId) => artifactGraph.get(surfaceId))
+    .filter((artifact): artifact is Artifact => artifact !== undefined)
+  const endCap = faces.find(
+    (artifact): artifact is Extract<Artifact, { type: 'cap' }> =>
+      artifact.type === 'cap' && artifact.subType === 'end'
+  )
+  const walls = faces.filter(
+    (artifact): artifact is Extract<Artifact, { type: 'wall' }> =>
+      artifact.type === 'wall'
+  )
+
+  return endCap && walls ? { clonedSweep, endCap, walls } : null
+}
 export async function enginelessExecutor(
   ast: Node<Program>,
   rustContext: RustContext,

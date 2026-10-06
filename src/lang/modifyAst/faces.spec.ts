@@ -875,7 +875,7 @@ fillet001 = fillet(
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
-        `${bracket}surface001 = deleteFace(finalBracket, faces = bracketProfileRegion.tags.line6)`
+        `${bracket}surface001 = deleteFace(finalBracket, faces = bracketProfileRegion.tags.line5)`
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     }, 15_000)
@@ -1998,6 +1998,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
         instanceInThisFile
       )
       expect(result?.type).toEqual('edgeCut')
+      expect(result?.subType).toEqual('base')
       expect(result?.tagName).toEqual('seg01')
     })
 
@@ -2017,6 +2018,7 @@ plane001 = offsetPlane(planeOf(extrude001, face = seg01), offset = 20)`)
         instanceInThisFile
       )
       expect(result?.type).toEqual('edgeCut')
+      expect(result?.subType).toEqual('base')
       expect(result?.tagName).toEqual('seg01')
     })
   })

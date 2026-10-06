@@ -12,6 +12,7 @@ use std::sync::Arc;
 use std::sync::Mutex;
 
 use anyhow::Result;
+use kcl_api::KclVersion;
 pub use kcl_api::ast::ItemVisibility;
 use parse_display::Display;
 use parse_display::FromStr;
@@ -489,27 +490,32 @@ impl CodeBlock for Node<Program> {
     }
 }
 
-fn kcl_version_expr(kcl_version: &str) -> Result<Expr, KclError> {
-    let version = kcl_version.parse::<crate::KclVersion>()?;
-    let (value, raw) = match version {
-        crate::KclVersion::V1 | crate::KclVersion::V2 => {
-            let value = kcl_version.parse::<f64>().map_err(|_| {
-                KclError::new_semantic(crate::errors::KclErrorDetails::new(
-                    format!("Unexpected numeric KCL version value: `{kcl_version}`"),
-                    vec![],
-                ))
-            })?;
-            (
-                LiteralValue::Number {
-                    value,
-                    suffix: NumericSuffix::None,
-                },
-                kcl_version.to_owned(),
-            )
-        }
+fn kcl_version_expr(kcl_version: KclVersion) -> Result<Expr, KclError> {
+    let (value, raw) = match kcl_version {
+        crate::KclVersion::V1 => (
+            LiteralValue::Number {
+                value: 1.0,
+                suffix: NumericSuffix::None,
+            },
+            "1.0".to_owned(),
+        ),
+        crate::KclVersion::V2 => (
+            LiteralValue::Number {
+                value: 2.0,
+                suffix: NumericSuffix::None,
+            },
+            "2.0".to_owned(),
+        ),
         crate::KclVersion::V3Preview => (
-            LiteralValue::String(version.as_str().to_owned()),
-            format!("\"{}\"", version.as_str()),
+            LiteralValue::String(kcl_version.as_str().to_owned()),
+            format!("\"{}\"", kcl_version.as_str()),
+        ),
+        crate::KclVersion::V3 => (
+            LiteralValue::Number {
+                value: 3.0,
+                suffix: NumericSuffix::None,
+            },
+            "3.0".to_owned(),
         ),
     };
 
@@ -661,7 +667,7 @@ impl Node<Program> {
     }
 
     /// Return a new program with the KCL version changed.
-    pub fn change_kcl_version(&self, kcl_version: Option<String>) -> Result<Self, KclError> {
+    pub fn change_kcl_version(&self, kcl_version: Option<KclVersion>) -> Result<Self, KclError> {
         let mut new_program = self.clone();
         new_program.set_kcl_version(kcl_version)?;
 
@@ -669,14 +675,14 @@ impl Node<Program> {
     }
 
     /// Set the KCL version in place.
-    pub(crate) fn set_kcl_version(&mut self, kcl_version: Option<String>) -> Result<(), KclError> {
+    pub(crate) fn set_kcl_version(&mut self, kcl_version: Option<KclVersion>) -> Result<(), KclError> {
         let mut found = false;
-        for node in &mut self.inner_attrs {
+        // We don't currently support removing the kclVersion.
+        let kcl_version = kcl_version.unwrap_or_default();
+        for node in self.inner_attrs.iter_mut().rev() {
             if node.name() == Some(annotations::SETTINGS) {
-                if let Some(version) = &kcl_version {
-                    node.inner
-                        .add_or_update(annotations::SETTINGS_VERSION, kcl_version_expr(version)?);
-                }
+                node.inner
+                    .add_or_update(annotations::SETTINGS_VERSION, kcl_version_expr(kcl_version)?);
                 // Previous source range no longer makes sense, but we want to
                 // preserve other things like comments.
                 node.reset_source();
@@ -687,11 +693,9 @@ impl Node<Program> {
 
         if !found {
             let mut settings = Annotation::new(annotations::SETTINGS);
-            if let Some(version) = &kcl_version {
-                settings
-                    .inner
-                    .add_or_update(annotations::SETTINGS_VERSION, kcl_version_expr(version)?);
-            }
+            settings
+                .inner
+                .add_or_update(annotations::SETTINGS_VERSION, kcl_version_expr(kcl_version)?);
 
             self.inner_attrs.push(settings);
         }
@@ -5005,7 +5009,7 @@ cylinder = startSketchOn(-XZ)
     #[test]
     fn test_parse_never_type() {
         let program = parse(
-            "@settings(experimentalFeatures = allow)\n\
+            "@settings(kclVersion = \"3.0-preview\")\n\
              fn stop(@impossible: never): never { return impossible }\n\
              type impossible = never\n\
              type neverReturns = fn(): never\n\
@@ -5447,7 +5451,7 @@ startSketchOn(XY)
         assert!(result.is_none());
 
         // Edit the ast.
-        let new_program = program.change_kcl_version(Some("2.0".to_owned())).unwrap();
+        let new_program = program.change_kcl_version(Some(KclVersion::V2)).unwrap();
 
         let result = new_program.meta_settings().unwrap();
         assert!(result.is_some());
@@ -5474,7 +5478,7 @@ startSketchOn(XY)"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
         // Edit the ast.
-        let new_program = program.change_kcl_version(Some("2.0".to_owned())).unwrap();
+        let new_program = program.change_kcl_version(Some(KclVersion::V2)).unwrap();
 
         let result = new_program.meta_settings().unwrap();
         assert!(result.is_some());
@@ -5490,6 +5494,47 @@ startSketchOn(XY)"#;
             r#"@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 startSketchOn(XY)
+"#
+        );
+    }
+
+    #[test]
+    fn test_set_kcl_version_none_resets_existing_version_to_default() {
+        let mut program = parse(
+            r#"@settings(defaultLengthUnit = in, kclVersion = "3.0-preview")
+
+x = 1
+"#,
+        );
+
+        program.set_kcl_version(None).unwrap();
+
+        let meta_settings = program.meta_settings().unwrap().unwrap();
+        assert_eq!(meta_settings.kcl_version, KclVersion::default());
+        assert_eq!(meta_settings.default_length_units, UnitLength::Inches);
+        assert_eq!(
+            program.recast_top(&Default::default(), 0),
+            r#"@settings(defaultLengthUnit = in, kclVersion = 1.0)
+
+x = 1
+"#
+        );
+    }
+
+    #[test]
+    fn test_set_kcl_version_none_adds_default_version() {
+        let mut program = parse("x = 1");
+        assert!(program.meta_settings().unwrap().is_none());
+
+        program.set_kcl_version(None).unwrap();
+
+        let meta_settings = program.meta_settings().unwrap().unwrap();
+        assert_eq!(meta_settings.kcl_version, KclVersion::default());
+        assert_eq!(
+            program.recast_top(&Default::default(), 0),
+            r#"@settings(kclVersion = 1.0)
+
+x = 1
 "#
         );
     }
@@ -5524,7 +5569,7 @@ startSketchOn(XY)"#,
     async fn test_change_kcl_version_writes_preview_as_string() {
         let program = crate::parsing::top_level_parse("startSketchOn(XY)").unwrap();
 
-        let new_program = program.change_kcl_version(Some("3.0-preview".to_owned())).unwrap();
+        let new_program = program.change_kcl_version(Some(KclVersion::V3Preview)).unwrap();
 
         assert_eq!(
             new_program.recast_top(&Default::default(), 0),
@@ -5533,6 +5578,31 @@ startSketchOn(XY)"#,
 startSketchOn(XY)
 "#
         );
+    }
+
+    #[test]
+    fn test_change_kcl_version_writes_stable_version_as_number() {
+        for (source, expected) in [
+            ("x = 1\n", "@settings(kclVersion = 3.0)\n\nx = 1\n"),
+            (
+                "@settings(defaultLengthUnit = in)\nx = 1\n",
+                "@settings(defaultLengthUnit = in, kclVersion = 3.0)\n\nx = 1\n",
+            ),
+            (
+                "@settings(defaultLengthUnit = in, kclVersion = \"3.0-preview\")\nx = 1\n",
+                "@settings(defaultLengthUnit = in, kclVersion = 3.0)\n\nx = 1\n",
+            ),
+        ] {
+            let program = crate::Program::parse_no_errs(source).unwrap();
+            let changed = program.change_kcl_version(Some(KclVersion::V3)).unwrap();
+
+            assert_eq!(changed.kcl_version, KclVersion::V3);
+            assert_eq!(changed.language_version().unwrap(), KclVersion::V3);
+            assert_eq!(changed.recast(), expected, "{source}");
+
+            let reparsed = crate::Program::parse_no_errs(&changed.recast()).unwrap();
+            assert_eq!(reparsed.language_version().unwrap(), KclVersion::V3);
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]

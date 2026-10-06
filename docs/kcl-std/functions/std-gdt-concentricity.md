@@ -58,7 +58,7 @@ where appropriate. ISO standards use the name coaxiality for this concept.
 ### Examples
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 datumSketch = sketch(on = XY) {
   diameter = line(start = [var -6mm, var 0mm], end = [var 6mm, var 0mm])
@@ -67,7 +67,13 @@ datumSketch = sketch(on = XY) {
   coincident([diameter.start, perimeter.end])
 }
 
-datumCylinder = extrude(region(point = [0mm, 1mm], sketch = datumSketch), length = 10mm)
+datumCylinder = extrude(
+  region(segments = [
+    datumSketch.diameter,
+    datumSketch.perimeter
+  ]),
+  length = 10mm,
+)
 
 controlledSketch = sketch(on = XY) {
   diameter = line(start = [var -3mm, var 0mm], end = [var 3mm, var 0mm])
@@ -76,7 +82,13 @@ controlledSketch = sketch(on = XY) {
   coincident([diameter.end, perimeter.end])
 }
 
-controlledCylinder = extrude(region(point = [0mm, -1mm], sketch = controlledSketch), length = 10mm)
+controlledCylinder = extrude(
+  region(segments = [
+    controlledSketch.diameter,
+    controlledSketch.perimeter
+  ]),
+  length = 10mm,
+)
 
 gdt::datum(
   face = datumCylinder.sketch.tags.perimeter,
@@ -100,19 +112,19 @@ gdt::concentricity(
 ![Rendered example of gdt::concentricity 0](/kcl-test-outputs/serial_test_example_fn_std-gdt-concentricity0.png)
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 datumSketch = sketch(on = XY) {
   perimeter = circle(start = [var 6mm, var 0mm], center = [var 0mm, var 0mm])
 }
 
-datumCylinder = extrude(region(point = datumSketch.perimeter.center, sketch = datumSketch), length = 10mm)
+datumCylinder = extrude(region(segments = [datumSketch.perimeter]), length = 10mm)
 
 controlledSketch = sketch(on = XY) {
   perimeter = circle(start = [var 3mm, var 0mm], center = [var 0mm, var 0mm])
 }
 
-controlledCylinder = extrude(region(point = controlledSketch.perimeter.center, sketch = controlledSketch), length = 10mm, tagEnd = $top)
+controlledCylinder = extrude(region(segments = [controlledSketch.perimeter]), length = 10mm, tagEnd = $top)
 topEdge = {
   sideFaces = [
     controlledCylinder.sketch.tags.perimeter,

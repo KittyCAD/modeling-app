@@ -47,7 +47,7 @@ This is part of model-based definition (MBD).
 ### Examples
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 startSketchOn(XY)
   |> startProfile(at = [0, 0])
@@ -72,7 +72,7 @@ gdt::distance(
 ![Rendered example of gdt::distance 0](/kcl-test-outputs/serial_test_example_fn_std-gdt-distance0.png)
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 blockProfile = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -89,7 +89,7 @@ blockProfile = sketch(on = XY) {
   vertical(edge4)
 }
 
-block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 4mm, tagEnd = $top)
 lengthEdge = {
   sideFaces = [block.sketch.tags.edge1, top]
 }
@@ -106,7 +106,7 @@ gdt::distance(
 ![Rendered example of gdt::distance 1](/kcl-test-outputs/serial_test_example_fn_std-gdt-distance1.png)
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 // Example of a distance annotation with no tolerance.
 

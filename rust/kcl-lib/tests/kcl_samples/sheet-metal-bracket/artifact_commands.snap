@@ -602,7 +602,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "segment": "[uuid]",
         "intersection_segment": "[uuid]",
         "intersection_index": -1,
-        "curve_clockwise": false
+        "curve_clockwise": false,
+        "version": "V1"
       }
     },
     {
@@ -1082,7 +1083,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "query_point": {
           "x": -83.5119,
           "y": -54.1555
-        }
+        },
+        "version": "V1"
       }
     },
     {
@@ -1094,7 +1096,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "query_point": {
           "x": -91.277,
           "y": 44.9144
-        }
+        },
+        "version": "V1"
       }
     },
     {
@@ -1106,7 +1109,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "query_point": {
           "x": -21.77,
           "y": 35.021
-        }
+        },
+        "version": "V1"
       }
     },
     {
@@ -1118,7 +1122,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "query_point": {
           "x": -21.3146,
           "y": -35.6573
-        }
+        },
+        "version": "V1"
       }
     },
     {
@@ -1130,7 +1135,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "query_point": {
           "x": 20.724,
           "y": -37.2099
-        }
+        },
+        "version": "V1"
       }
     },
     {
@@ -1142,7 +1148,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "query_point": {
           "x": 22.5716,
           "y": 34.2714
-        }
+        },
+        "version": "V1"
       }
     },
     {
@@ -1154,7 +1161,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "query_point": {
           "x": 85.2549,
           "y": 45.6035
-        }
+        },
+        "version": "V1"
       }
     },
     {
@@ -1166,7 +1174,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "query_point": {
           "x": 82.8907,
           "y": -52.8442
-        }
+        },
+        "version": "V1"
       }
     },
     {
@@ -1178,7 +1187,8 @@ description: Artifact commands sheet-metal-bracket.kcl
         "query_point": {
           "x": 0.0,
           "y": 0.0
-        }
+        },
+        "version": "V1"
       }
     },
     {

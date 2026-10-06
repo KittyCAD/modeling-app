@@ -155,13 +155,13 @@ trimProfile = sketch(on = XY) {
   vertical(line4)
 
   verticalDistance([
-  startHeightGuide.start,
-  startHeightGuide.end
-]) == -hubSpacing / 4
+    startHeightGuide.start,
+    startHeightGuide.end
+  ]) == -hubSpacing / 4
   horizontalDistance([
-  startOffsetGuide.start,
-  startOffsetGuide.end
-]) == rotorBore / 2
+    startOffsetGuide.start,
+    startOffsetGuide.end
+  ]) == rotorBore / 2
   distance([line1.start, line1.end]) == lugSpacing / 3
   angleDimension(lines = [startOffsetGuide, line1], sector = 1, labelPosition = [2.17in, -0.69in]) == 10deg
   distance([line2.start, line2.end]) == hubSpacing * 1.5
@@ -206,13 +206,13 @@ mountingFlangeProfile = sketch(on = flangePlane) {
   horizontal(outerRadiusGuide)
   horizontal(centerBoreRadiusGuide)
   distance([
-  outerRadiusGuide.start,
-  outerRadiusGuide.end
-]) == flangeOuterRadius
+    outerRadiusGuide.start,
+    outerRadiusGuide.end
+  ]) == flangeOuterRadius
   distance([
-  centerBoreRadiusGuide.start,
-  centerBoreRadiusGuide.end
-]) == flangeBoreRadius
+    centerBoreRadiusGuide.start,
+    centerBoreRadiusGuide.end
+  ]) == flangeBoreRadius
   radius(outerCircle) == flangeOuterRadius
   radius(centerBoreCircle) == flangeBoreRadius
 }
@@ -339,9 +339,9 @@ boltHeadProfile = sketch(on = faceOf(mountingFlange, face = START)) {
   horizontal(boltHeadRadiusGuide)
   horizontalDistance([centerGuide.start, centerGuide.end]) == -lugSpacing / 2
   horizontalDistance([
-  boltHeadRadiusGuide.start,
-  boltHeadRadiusGuide.end
-]) == lugThreadDiameter / 1.25
+    boltHeadRadiusGuide.start,
+    boltHeadRadiusGuide.end
+  ]) == lugThreadDiameter / 1.25
 }
 
 boltHeadRegion = region(segments = [

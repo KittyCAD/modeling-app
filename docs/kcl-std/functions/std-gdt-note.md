@@ -39,7 +39,7 @@ and is placed directly on a plane. By default it lives on the world `XY` plane, 
 ### Examples
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 // A note on the default world (XY) plane.
 blockProfile = sketch(on = XY) {
@@ -56,7 +56,7 @@ blockProfile = sketch(on = XY) {
   horizontal(edge3)
   vertical(edge4)
 }
-block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm)
+block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 4mm)
 
 gdt::note(note = "Note on XY", framePosition = [12mm, 8mm])
 
@@ -66,7 +66,7 @@ gdt::note(note = "Note on XY", framePosition = [12mm, 8mm])
 ![Rendered example of gdt::note 0](/kcl-test-outputs/serial_test_example_fn_std-gdt-note0.png)
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 // A note on a user-defined plane.
 blockProfile = sketch(on = XY) {
@@ -83,7 +83,7 @@ blockProfile = sketch(on = XY) {
   horizontal(edge3)
   vertical(edge4)
 }
-block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm)
+block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 4mm)
 
 notePlane = offsetPlane(XZ, offset = 12mm)
 gdt::note(note = "Note on custom Plane", framePlane = notePlane, framePosition = [12mm, 8mm])

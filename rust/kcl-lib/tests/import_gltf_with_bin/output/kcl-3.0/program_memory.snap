@@ -1,0 +1,18 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing import_gltf_with_bin.kcl
+---
+{
+  "__mod_cube": {
+    "type": "Module",
+    "value": 1
+  },
+  "model": {
+    "type": "ImportedGeometry",
+    "id": "[uuid]",
+    "value": [
+      "cube.gltf",
+      "cube.bin"
+    ]
+  }
+}

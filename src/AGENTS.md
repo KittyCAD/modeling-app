@@ -32,6 +32,11 @@ This file applies to TypeScript and React development under `src/`. It supplemen
 - Preserve deliberate test import ordering. Some tests call `vi.mock(...)` before importing the component under test because the mocked modules have import-time side effects.
 - Prefer local, boring fixes over new abstractions. Add helpers only when they remove real duplication or match an existing local pattern.
 
+## Documentation
+
+- For every application change, check [KittyCAD/documentation](https://github.com/KittyCAD/documentation) for affected user-facing documentation and update it as needed, including workflows, settings, examples, screenshots, and links. Use a local checkout when available.
+- Read that repository's `AGENTS.md` before editing. Some documentation is generated or mirrored; update its authoritative upstream source rather than the downstream copy.
+
 ## Reviewing code
 
 - Treat KCL, engine behavior, generated artifacts, selections, constraints, and API changes as compatibility-sensitive. Ask whether old KCL, samples, or customer-like projects could now produce different geometry, no geometry, or subtly wrong geometry. Breaking changes need versioning, migration behavior, a feature flag, or clear rollout notes.
@@ -80,6 +85,7 @@ After reviewing, tell the human what should be smoke tested and whether the PR's
 - Use property-based testing with `fast-check` for unit-testable logic with many possible permutations.
 - Component tests should prefer user-visible queries (`screen.getByRole`, `screen.getByText`) when practical. `data-testid` is fine for controls or generated content without a stable accessible label.
 - Keep mocks narrow and reset state in `beforeEach` or `afterEach` when tests touch localStorage, timers, singleton modules, or machine actors.
+- For e2e tests (Playwright), prefer writing a `@web`-tagged test unless it is specifically covering `@desktop` functionality.
 
 ## Common verification
 

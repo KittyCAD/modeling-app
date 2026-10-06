@@ -158,7 +158,8 @@ description: Artifact commands named_views_baseline_show.kcl
         "query_point": {
           "x": 20.0,
           "y": 10.0
-        }
+        },
+        "version": "V1"
       }
     },
     {
@@ -210,15 +211,6 @@ description: Artifact commands named_views_baseline_show.kcl
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
       }
@@ -377,7 +369,8 @@ description: Artifact commands named_views_baseline_show.kcl
         "query_point": {
           "x": 55.0,
           "y": 5.0
-        }
+        },
+        "version": "V1"
       }
     },
     {
@@ -429,15 +422,6 @@ description: Artifact commands named_views_baseline_show.kcl
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
       }

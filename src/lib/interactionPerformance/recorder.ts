@@ -155,20 +155,34 @@ export class InteractionRecorder {
   private capture = (event: Event) => {
     if (!event.isTrusted) return
     const target = event.composedPath().find((node) => node instanceof Element)
-    const control =
-      target instanceof Element ? target.closest('[data-interaction-id]') : null
+    // Both builds use the same selectors and pre-action state, independent of
+    // measurement annotations added or removed by the application revision.
+    const matchingDefinitions =
+      target instanceof Element
+        ? [...this.definitions.values()].filter((definition) =>
+            definition.matchesTarget(target)
+          )
+        : []
     // A control's primary action does not describe its context menu or middle
     // click. Keep those inputs in discovery without claiming that action ran.
     const id =
-      event.type === 'click'
-        ? (control?.getAttribute('data-interaction-id') ?? null)
+      event.type === 'click' && matchingDefinitions.length === 1
+        ? matchingDefinitions[0].id
         : null
+    const timestamps =
+      event instanceof PointerEvent
+        ? (this.pointerTimestamps.get(event.pointerId) ?? [])
+        : []
+    if (event instanceof PointerEvent)
+      this.pointerTimestamps.delete(event.pointerId)
     const sample: InteractionSample = {
       sequence: ++this.sequence,
       id,
       targetTag:
         target instanceof Element ? target.tagName.toLowerCase() : 'unknown',
-      startTime: event.timeStamp,
+      // Include pointerdown work even when Event Timing arrives after capture
+      // stops. This response span also includes time holding the button down.
+      startTime: timestamps[0] ?? event.timeStamp,
       renderOpportunityMs: null,
       outcomeMs: null,
       eventTiming: null,
@@ -180,16 +194,10 @@ export class InteractionRecorder {
       this.droppedSamples++
     }
     this.samples.push(sample)
-    const timestamps =
-      event instanceof PointerEvent
-        ? (this.pointerTimestamps.get(event.pointerId) ?? [])
-        : []
-    if (event instanceof PointerEvent)
-      this.pointerTimestamps.delete(event.pointerId)
     // The click entry may be filtered out when it is fast, even though its
     // pointerdown blocked for hundreds of milliseconds. Join using captured
     // input timestamps as well as the browser's interaction ID.
-    for (const timestamp of [...timestamps, sample.startTime]) {
+    for (const timestamp of [...timestamps, event.timeStamp]) {
       this.samplesByTimestamp.set(timestamp, sample)
       const interactionId = this.interactionByTimestamp.get(timestamp)
       if (interactionId !== undefined) this.attachTiming(interactionId, sample)

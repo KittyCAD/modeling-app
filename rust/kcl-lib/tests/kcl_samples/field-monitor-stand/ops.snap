@@ -3761,7 +3761,7 @@ description: Operations executed field-monitor-stand.kcl
                     "value": [
                       {
                         "type": "TagIdentifier",
-                        "value": "line4",
+                        "value": "line3",
                         "artifact_id": "[uuid]"
                       },
                       {
@@ -3781,7 +3781,7 @@ description: Operations executed field-monitor-stand.kcl
                     "value": [
                       {
                         "type": "TagIdentifier",
-                        "value": "line4",
+                        "value": "line3",
                         "artifact_id": "[uuid]"
                       },
                       {
@@ -3801,7 +3801,7 @@ description: Operations executed field-monitor-stand.kcl
                     "value": [
                       {
                         "type": "TagIdentifier",
-                        "value": "line2",
+                        "value": "line6",
                         "artifact_id": "[uuid]"
                       },
                       {
@@ -3821,7 +3821,7 @@ description: Operations executed field-monitor-stand.kcl
                     "value": [
                       {
                         "type": "TagIdentifier",
-                        "value": "line2",
+                        "value": "line6",
                         "artifact_id": "[uuid]"
                       },
                       {

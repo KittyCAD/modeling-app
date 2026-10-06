@@ -1,51 +1,59 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[700, 1084, 0]<br>Consumed: false"]
+    2["Path<br>[712, 1096, 0]<br>Consumed: false"]
       %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    3["Segment<br>[730, 796, 0]"]
+    3["Segment<br>[742, 808, 0]"]
       %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    4["Segment<br>[913, 978, 0]"]
+    4["Segment<br>[925, 990, 0]"]
       %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   end
   subgraph path5 [Path]
-    5["Path Region<br>[1099, 1151, 0]<br>Consumed: true"]
+    5["Path Region<br>[1111, 1152, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    6["Segment<br>[1099, 1151, 0]"]
+    6["Segment<br>[1111, 1152, 0]"]
+      %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+    7["Segment<br>[1111, 1152, 0]"]
       %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   end
-  1["Plane<br>[700, 1084, 0]"]
+  1["Plane<br>[712, 1096, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  7["Sweep Extrusion<br>[1180, 1222, 0]<br>Consumed: false"]
+  8["Sweep Extrusion<br>[1181, 1223, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  8[Wall]
+  9[Wall]
     %% face_code_ref=Missing NodePath
-  9["Cap Start"]
+  10[Wall]
     %% face_code_ref=Missing NodePath
-  10["Cap End"]
+  11["Cap Start"]
     %% face_code_ref=Missing NodePath
-  11["SketchBlock<br>[700, 1084, 0]"]
+  12["Cap End"]
+    %% face_code_ref=Missing NodePath
+  13["SketchBlock<br>[712, 1096, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  12["SketchBlockConstraint Coincident<br>[799, 835, 0]"]
+  14["SketchBlockConstraint Coincident<br>[811, 847, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 1 }, ExpressionStatementExpr]
-  13["SketchBlockConstraint Distance<br>[838, 900, 0]"]
+  15["SketchBlockConstraint Distance<br>[850, 912, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 2 }, ExpressionStatementExpr]
-  14["SketchBlockConstraint Coincident<br>[981, 1017, 0]"]
+  16["SketchBlockConstraint Coincident<br>[993, 1029, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 4 }, ExpressionStatementExpr]
-  15["SketchBlockConstraint Distance<br>[1020, 1082, 0]"]
+  17["SketchBlockConstraint Distance<br>[1032, 1094, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 5 }, ExpressionStatementExpr]
   1 --- 2
   1 <--x 5
-  1 <--x 11
+  1 <--x 13
   2 --- 3
   2 --- 4
   2 <--x 5
-  11 --- 2
+  13 --- 2
   3 <--x 6
-  5 <--x 6
-  5 ---- 7
-  6 --- 8
-  7 --- 8
+  4 <--x 7
+  5 --- 6
+  5 --- 7
+  5 ---- 8
+  6 --- 10
   7 --- 9
-  7 --- 10
+  8 --- 9
+  8 --- 10
+  8 --- 11
+  8 --- 12
 ```

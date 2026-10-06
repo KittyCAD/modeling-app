@@ -1,12 +1,11 @@
 import type { CmdBarSerialised } from '@e2e/playwright/fixtures/cmdBarFixture'
-import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
-import { settingsToToml } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 /**
  * Test KCL code - creates a scene with solid3d, surface, and split edges
  */
-const testCode = `sketch001 = startSketchOn(YZ)
+const testCode = `@settings(kclVersion = "3.0-preview")
+sketch001 = startSketchOn(YZ)
     profile001 = startProfile(sketch001, at = [-21.99, 8.01])
     |> angledLine(angle = 0deg, length = 8.96, tag = $rectangleSegmentA001)
     |> angledLine(angle = segAng(rectangleSegmentA001) - 90deg, length = 9.8)
@@ -54,12 +53,14 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     page,
     toolbar,
     editor,
+    homePage,
   }) => {
     await context.addInitScript((code) => {
       localStorage.setItem('persistCode', code)
     }, testCode)
 
-    await scene.settled(cmdBar)
+    await homePage.goToModelingScene()
+    await scene.settled()
     await scene.waitForExecutionDoneAfter(() =>
       editor.replaceCode('', testCode)
     )
@@ -72,7 +73,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     )
 
     await test.step('First revolve: profile and edge using ratio clicks', async () => {
-      const [clickProfile] = scene.makeMouseHelpers(0.49, 0.79, {
+      const [clickProfile] = scene.makeMouseHelpers(0.4671, 0.75, {
         format: 'ratio',
       })
       const [clickEdge, mv] = scene.makeMouseHelpers(0.0625, 0.422, {
@@ -95,14 +96,15 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
 
       await toolbar.revolveButton.click()
       await cmdBar.expectState(state)
-      await scene.settled(cmdBar)
+      await scene.settled()
 
+      await toolbar.expectSelection('No selection')
       await clickProfile()
+      await toolbar.expectSelection('1 profile')
 
       // Update state after profile selection
       state.currentArgKey = 'axisOrEdge'
       state.headerArguments.Profiles = '1 profile'
-      state.headerArguments.BodyType = ''
       state.highlightedHeaderArg = 'axisOrEdge'
       await cmdBar.progressCmdBar()
       await cmdBar.expectState(state)
@@ -116,8 +118,10 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       await cmdBar.expectState(state)
 
       // select edge
+      await toolbar.expectSelection('1 profile')
       await mv()
       await clickEdge()
+      await toolbar.expectSelection('1 edge')
 
       // Update state after edge selection
       state.currentArgKey = 'angle'
@@ -127,19 +131,11 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       await cmdBar.progressCmdBar()
       await cmdBar.expectState(state)
 
-      // Move to review stage
-      state.currentArgKey = 'bodyType'
-      state.currentArgValue = ''
-      state.highlightedHeaderArg = 'bodyType'
-      state.headerArguments.Angle = '360deg'
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState(state)
-
-      // Move to review stage
+      // Closed profiles use the default solid body type and go directly to review.
       state.currentArgKey = ''
       state.currentArgValue = ''
       state.highlightedHeaderArg = ''
-      state.headerArguments.BodyType = 'SURFACE'
+      state.headerArguments.Angle = '360deg'
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         commandName: state.commandName,
@@ -154,7 +150,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       await editor.expectEditor.toContain(`revolve`)
       await editor.expectEditor.toContain(`sideFaces = [seg01]`)
       await editor.expectEditor.toContain(
-        `endFaces = [seg02, rectangleSegmentA002]`
+        `endFaces = [rectangleSegmentA002, seg02]`
       )
       await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
     })
@@ -190,14 +186,16 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       // Click revolve tool again
       await toolbar.revolveButton.click()
       await cmdBar.expectState(state)
-      await scene.settled(cmdBar)
+      await scene.settled()
 
+      await toolbar.expectSelection('1 edge')
       await clickProfile2()
+      await toolbar.expectSelection('1 profile')
+      await page.waitForTimeout(500)
 
       // Update state after profile selection
       state.currentArgKey = 'axisOrEdge'
       state.headerArguments.Profiles = '1 profile'
-      state.headerArguments.BodyType = ''
       state.highlightedHeaderArg = 'axisOrEdge'
       await cmdBar.progressCmdBar()
       await cmdBar.expectState(state)
@@ -211,7 +209,9 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       await cmdBar.expectState(state)
 
       // Click edge using ratio clicks
+      await toolbar.expectSelection('1 profile')
       await clickEdge2()
+      await toolbar.expectSelection('1 edge')
 
       // Update state after edge selection
       state.currentArgKey = 'angle'
@@ -221,19 +221,11 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       await cmdBar.progressCmdBar()
       await cmdBar.expectState(state)
 
-      // Move to review stage
-      state.currentArgKey = 'bodyType'
-      state.currentArgValue = ''
-      state.highlightedHeaderArg = 'bodyType'
-      state.headerArguments.Angle = '360deg'
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState(state)
-
-      // Move to review stage
+      // Closed profiles use the default solid body type and go directly to review.
       state.currentArgKey = ''
       state.currentArgValue = ''
       state.highlightedHeaderArg = ''
-      state.headerArguments.BodyType = 'SURFACE'
+      state.headerArguments.Angle = '360deg'
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         commandName: state.commandName,
@@ -274,6 +266,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     page,
     toolbar,
     editor,
+    homePage,
   }) => {
     const [clickEdge] = scene.makeMouseHelpers(0.1709, 0.4864, {
       format: 'ratio',
@@ -282,7 +275,8 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       localStorage.setItem('persistCode', code)
     }, testCode)
 
-    await scene.settled(cmdBar)
+    await homePage.goToModelingScene()
+    await scene.settled()
     await scene.waitForExecutionDoneAfter(() =>
       editor.replaceCode('', testCode)
     )
@@ -350,7 +344,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     cmdBar,
     editor,
     toolbar,
-    tronApp,
+    homePage,
   }) => {
     const code = `@settings(defaultLengthUnit = mm)
 
@@ -366,33 +360,17 @@ surface001 = extrude(
 )
 hide(sketch001)`
 
-    const settings = {
-      ...TEST_SETTINGS,
-      modeling: {
-        ...TEST_SETTINGS.modeling,
-        use_sketch_solve_mode: true,
-      },
-    }
-    if (tronApp) {
-      await tronApp.cleanProjectDir({
-        modeling: {
-          use_sketch_solve_mode: true,
-        },
-      })
-    }
     await context.addInitScript(
-      ({ initialCode, settingsKey, settingsToml }) => {
+      ({ initialCode }) => {
         localStorage.setItem('persistCode', initialCode)
-        localStorage.setItem(settingsKey, settingsToml)
       },
       {
         initialCode: code,
-        settingsKey: TEST_SETTINGS_KEY,
-        settingsToml: settingsToToml({ settings }),
       }
     )
     await page.setBodyDimensions({ width: 1200, height: 800 })
-    await scene.settled(cmdBar)
+    await homePage.goToModelingScene()
+    await scene.settled()
     await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
     await editor.expectEditor.toContain('surface001 = extrude')
     await editor.closePane()

@@ -156,7 +156,6 @@ export function kclErrorsToDiagnostics(
               name = item.fnName ?? '(import)'
               break
             default:
-              const _exhaustiveCheck: never = item.kind
               name = '(unknown)'
               break
           }

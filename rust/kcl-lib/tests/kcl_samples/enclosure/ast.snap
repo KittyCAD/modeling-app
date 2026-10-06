@@ -2700,437 +2700,437 @@ description: Result of parsing enclosure.kcl
                                         "commentStart": 0,
                                         "end": 0,
                                         "moduleId": 0,
-                                        "name": "line1",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    },
-                                    "start": 0,
-                                    "type": "MemberExpression",
-                                    "type": "MemberExpression"
-                                  },
-                                  {
-                                    "commentStart": 0,
-                                    "computed": false,
-                                    "end": 0,
-                                    "moduleId": 0,
-                                    "object": {
-                                      "commentStart": 0,
-                                      "computed": false,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "object": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "moduleId": 0,
-                                          "name": "baseRegion",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      },
-                                      "property": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "moduleId": 0,
-                                          "name": "tags",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      },
-                                      "start": 0,
-                                      "type": "MemberExpression",
-                                      "type": "MemberExpression"
-                                    },
-                                    "property": {
-                                      "abs_path": false,
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "name": {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": "line3",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    },
-                                    "start": 0,
-                                    "type": "MemberExpression",
-                                    "type": "MemberExpression"
-                                  }
-                                ],
-                                "end": 0,
-                                "moduleId": 0,
-                                "start": 0,
-                                "type": "ArrayExpression",
-                                "type": "ArrayExpression"
-                              }
-                            }
-                          ],
-                          "start": 0,
-                          "type": "ObjectExpression",
-                          "type": "ObjectExpression"
-                        },
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "properties": [
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "key": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "sideFaces",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "moduleId": 0,
-                              "start": 0,
-                              "type": "ObjectProperty",
-                              "value": {
-                                "commentStart": 0,
-                                "elements": [
-                                  {
-                                    "commentStart": 0,
-                                    "computed": false,
-                                    "end": 0,
-                                    "moduleId": 0,
-                                    "object": {
-                                      "commentStart": 0,
-                                      "computed": false,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "object": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "moduleId": 0,
-                                          "name": "baseRegion",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      },
-                                      "property": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "moduleId": 0,
-                                          "name": "tags",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      },
-                                      "start": 0,
-                                      "type": "MemberExpression",
-                                      "type": "MemberExpression"
-                                    },
-                                    "property": {
-                                      "abs_path": false,
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "name": {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": "line3",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    },
-                                    "start": 0,
-                                    "type": "MemberExpression",
-                                    "type": "MemberExpression"
-                                  },
-                                  {
-                                    "commentStart": 0,
-                                    "computed": false,
-                                    "end": 0,
-                                    "moduleId": 0,
-                                    "object": {
-                                      "commentStart": 0,
-                                      "computed": false,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "object": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "moduleId": 0,
-                                          "name": "baseRegion",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      },
-                                      "property": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "moduleId": 0,
-                                          "name": "tags",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      },
-                                      "start": 0,
-                                      "type": "MemberExpression",
-                                      "type": "MemberExpression"
-                                    },
-                                    "property": {
-                                      "abs_path": false,
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "name": {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": "line4",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    },
-                                    "start": 0,
-                                    "type": "MemberExpression",
-                                    "type": "MemberExpression"
-                                  }
-                                ],
-                                "end": 0,
-                                "moduleId": 0,
-                                "start": 0,
-                                "type": "ArrayExpression",
-                                "type": "ArrayExpression"
-                              }
-                            }
-                          ],
-                          "start": 0,
-                          "type": "ObjectExpression",
-                          "type": "ObjectExpression"
-                        },
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "properties": [
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "key": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "sideFaces",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "moduleId": 0,
-                              "start": 0,
-                              "type": "ObjectProperty",
-                              "value": {
-                                "commentStart": 0,
-                                "elements": [
-                                  {
-                                    "commentStart": 0,
-                                    "computed": false,
-                                    "end": 0,
-                                    "moduleId": 0,
-                                    "object": {
-                                      "commentStart": 0,
-                                      "computed": false,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "object": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "moduleId": 0,
-                                          "name": "baseRegion",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      },
-                                      "property": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "moduleId": 0,
-                                          "name": "tags",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      },
-                                      "start": 0,
-                                      "type": "MemberExpression",
-                                      "type": "MemberExpression"
-                                    },
-                                    "property": {
-                                      "abs_path": false,
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "name": {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": "line4",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    },
-                                    "start": 0,
-                                    "type": "MemberExpression",
-                                    "type": "MemberExpression"
-                                  },
-                                  {
-                                    "commentStart": 0,
-                                    "computed": false,
-                                    "end": 0,
-                                    "moduleId": 0,
-                                    "object": {
-                                      "commentStart": 0,
-                                      "computed": false,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "object": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "moduleId": 0,
-                                          "name": "baseRegion",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      },
-                                      "property": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "moduleId": 0,
-                                          "name": "tags",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      },
-                                      "start": 0,
-                                      "type": "MemberExpression",
-                                      "type": "MemberExpression"
-                                    },
-                                    "property": {
-                                      "abs_path": false,
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "name": {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
                                         "name": "line2",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  },
+                                  {
+                                    "commentStart": 0,
+                                    "computed": false,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "object": {
+                                      "commentStart": 0,
+                                      "computed": false,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "object": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "baseRegion",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "property": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "tags",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "start": 0,
+                                      "type": "MemberExpression",
+                                      "type": "MemberExpression"
+                                    },
+                                    "property": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "line3",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  }
+                                ],
+                                "end": 0,
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              }
+                            }
+                          ],
+                          "start": 0,
+                          "type": "ObjectExpression",
+                          "type": "ObjectExpression"
+                        },
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "properties": [
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "key": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "sideFaces",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "ObjectProperty",
+                              "value": {
+                                "commentStart": 0,
+                                "elements": [
+                                  {
+                                    "commentStart": 0,
+                                    "computed": false,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "object": {
+                                      "commentStart": 0,
+                                      "computed": false,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "object": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "baseRegion",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "property": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "tags",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "start": 0,
+                                      "type": "MemberExpression",
+                                      "type": "MemberExpression"
+                                    },
+                                    "property": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "line3",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  },
+                                  {
+                                    "commentStart": 0,
+                                    "computed": false,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "object": {
+                                      "commentStart": 0,
+                                      "computed": false,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "object": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "baseRegion",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "property": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "tags",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "start": 0,
+                                      "type": "MemberExpression",
+                                      "type": "MemberExpression"
+                                    },
+                                    "property": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "line4",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  }
+                                ],
+                                "end": 0,
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              }
+                            }
+                          ],
+                          "start": 0,
+                          "type": "ObjectExpression",
+                          "type": "ObjectExpression"
+                        },
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "properties": [
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "key": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "sideFaces",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "ObjectProperty",
+                              "value": {
+                                "commentStart": 0,
+                                "elements": [
+                                  {
+                                    "commentStart": 0,
+                                    "computed": false,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "object": {
+                                      "commentStart": 0,
+                                      "computed": false,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "object": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "baseRegion",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "property": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "tags",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "start": 0,
+                                      "type": "MemberExpression",
+                                      "type": "MemberExpression"
+                                    },
+                                    "property": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "line4",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  },
+                                  {
+                                    "commentStart": 0,
+                                    "computed": false,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "object": {
+                                      "commentStart": 0,
+                                      "computed": false,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "object": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "baseRegion",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "property": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "tags",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "start": 0,
+                                      "type": "MemberExpression",
+                                      "type": "MemberExpression"
+                                    },
+                                    "property": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "line1",
                                         "start": 0,
                                         "type": "Identifier"
                                       },
@@ -6010,7 +6010,7 @@ description: Result of parsing enclosure.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -6019,21 +6019,10 @@ description: Result of parsing enclosure.kcl
                   "elements": [
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "0mm",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.0,
-                        "suffix": "Mm"
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "left": {
+                      "object": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
@@ -6042,7 +6031,7 @@ description: Result of parsing enclosure.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "holeDia",
+                          "name": "pillarSketch",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -6051,51 +6040,27 @@ description: Result of parsing enclosure.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "moduleId": 0,
-                      "operator": "+",
-                      "right": {
+                      "property": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
-                        "left": {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "wallThickness",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
                         "moduleId": 0,
-                        "operator": "/",
-                        "right": {
+                        "name": {
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "raw": "2",
+                          "name": "outerCircle",
                           "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 2.0,
-                            "suffix": "None"
-                          }
+                          "type": "Identifier"
                         },
+                        "path": [],
                         "start": 0,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 0,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -6103,35 +6068,6 @@ description: Result of parsing enclosure.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "sketch",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "pillarSketch",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
                 }
               }
             ],
@@ -15299,7 +15235,7 @@ description: Result of parsing enclosure.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -15308,8 +15244,10 @@ description: Result of parsing enclosure.kcl
                   "elements": [
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
-                      "left": {
+                      "moduleId": 0,
+                      "object": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
@@ -15318,7 +15256,7 @@ description: Result of parsing enclosure.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "width",
+                          "name": "lidSketch",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -15327,29 +15265,34 @@ description: Result of parsing enclosure.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "moduleId": 0,
-                      "operator": "/",
-                      "right": {
+                      "property": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "2",
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "line1",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 2.0,
-                          "suffix": "None"
-                        }
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 0,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     },
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
-                      "left": {
+                      "moduleId": 0,
+                      "object": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
@@ -15358,7 +15301,7 @@ description: Result of parsing enclosure.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "length",
+                          "name": "lidSketch",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -15367,24 +15310,27 @@ description: Result of parsing enclosure.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "moduleId": 0,
-                      "operator": "/",
-                      "right": {
+                      "property": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "2",
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "line2",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 2.0,
-                          "suffix": "None"
-                        }
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 0,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -15392,35 +15338,6 @@ description: Result of parsing enclosure.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "sketch",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "lidSketch",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
                 }
               }
             ],
@@ -15875,437 +15792,437 @@ description: Result of parsing enclosure.kcl
                                         "commentStart": 0,
                                         "end": 0,
                                         "moduleId": 0,
-                                        "name": "line1",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    },
-                                    "start": 0,
-                                    "type": "MemberExpression",
-                                    "type": "MemberExpression"
-                                  },
-                                  {
-                                    "commentStart": 0,
-                                    "computed": false,
-                                    "end": 0,
-                                    "moduleId": 0,
-                                    "object": {
-                                      "commentStart": 0,
-                                      "computed": false,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "object": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "moduleId": 0,
-                                          "name": "lidRegion",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      },
-                                      "property": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "moduleId": 0,
-                                          "name": "tags",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      },
-                                      "start": 0,
-                                      "type": "MemberExpression",
-                                      "type": "MemberExpression"
-                                    },
-                                    "property": {
-                                      "abs_path": false,
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "name": {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": "line3",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    },
-                                    "start": 0,
-                                    "type": "MemberExpression",
-                                    "type": "MemberExpression"
-                                  }
-                                ],
-                                "end": 0,
-                                "moduleId": 0,
-                                "start": 0,
-                                "type": "ArrayExpression",
-                                "type": "ArrayExpression"
-                              }
-                            }
-                          ],
-                          "start": 0,
-                          "type": "ObjectExpression",
-                          "type": "ObjectExpression"
-                        },
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "properties": [
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "key": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "sideFaces",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "moduleId": 0,
-                              "start": 0,
-                              "type": "ObjectProperty",
-                              "value": {
-                                "commentStart": 0,
-                                "elements": [
-                                  {
-                                    "commentStart": 0,
-                                    "computed": false,
-                                    "end": 0,
-                                    "moduleId": 0,
-                                    "object": {
-                                      "commentStart": 0,
-                                      "computed": false,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "object": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "moduleId": 0,
-                                          "name": "lidRegion",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      },
-                                      "property": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "moduleId": 0,
-                                          "name": "tags",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      },
-                                      "start": 0,
-                                      "type": "MemberExpression",
-                                      "type": "MemberExpression"
-                                    },
-                                    "property": {
-                                      "abs_path": false,
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "name": {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": "line3",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    },
-                                    "start": 0,
-                                    "type": "MemberExpression",
-                                    "type": "MemberExpression"
-                                  },
-                                  {
-                                    "commentStart": 0,
-                                    "computed": false,
-                                    "end": 0,
-                                    "moduleId": 0,
-                                    "object": {
-                                      "commentStart": 0,
-                                      "computed": false,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "object": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "moduleId": 0,
-                                          "name": "lidRegion",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      },
-                                      "property": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "moduleId": 0,
-                                          "name": "tags",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      },
-                                      "start": 0,
-                                      "type": "MemberExpression",
-                                      "type": "MemberExpression"
-                                    },
-                                    "property": {
-                                      "abs_path": false,
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "name": {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": "line4",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    },
-                                    "start": 0,
-                                    "type": "MemberExpression",
-                                    "type": "MemberExpression"
-                                  }
-                                ],
-                                "end": 0,
-                                "moduleId": 0,
-                                "start": 0,
-                                "type": "ArrayExpression",
-                                "type": "ArrayExpression"
-                              }
-                            }
-                          ],
-                          "start": 0,
-                          "type": "ObjectExpression",
-                          "type": "ObjectExpression"
-                        },
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "properties": [
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "key": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "sideFaces",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "moduleId": 0,
-                              "start": 0,
-                              "type": "ObjectProperty",
-                              "value": {
-                                "commentStart": 0,
-                                "elements": [
-                                  {
-                                    "commentStart": 0,
-                                    "computed": false,
-                                    "end": 0,
-                                    "moduleId": 0,
-                                    "object": {
-                                      "commentStart": 0,
-                                      "computed": false,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "object": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "moduleId": 0,
-                                          "name": "lidRegion",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      },
-                                      "property": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "moduleId": 0,
-                                          "name": "tags",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      },
-                                      "start": 0,
-                                      "type": "MemberExpression",
-                                      "type": "MemberExpression"
-                                    },
-                                    "property": {
-                                      "abs_path": false,
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "name": {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": "line4",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    },
-                                    "start": 0,
-                                    "type": "MemberExpression",
-                                    "type": "MemberExpression"
-                                  },
-                                  {
-                                    "commentStart": 0,
-                                    "computed": false,
-                                    "end": 0,
-                                    "moduleId": 0,
-                                    "object": {
-                                      "commentStart": 0,
-                                      "computed": false,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "object": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "moduleId": 0,
-                                          "name": "lidRegion",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      },
-                                      "property": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "moduleId": 0,
-                                          "name": "tags",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      },
-                                      "start": 0,
-                                      "type": "MemberExpression",
-                                      "type": "MemberExpression"
-                                    },
-                                    "property": {
-                                      "abs_path": false,
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "name": {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
                                         "name": "line2",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  },
+                                  {
+                                    "commentStart": 0,
+                                    "computed": false,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "object": {
+                                      "commentStart": 0,
+                                      "computed": false,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "object": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "lidRegion",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "property": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "tags",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "start": 0,
+                                      "type": "MemberExpression",
+                                      "type": "MemberExpression"
+                                    },
+                                    "property": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "line3",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  }
+                                ],
+                                "end": 0,
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              }
+                            }
+                          ],
+                          "start": 0,
+                          "type": "ObjectExpression",
+                          "type": "ObjectExpression"
+                        },
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "properties": [
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "key": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "sideFaces",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "ObjectProperty",
+                              "value": {
+                                "commentStart": 0,
+                                "elements": [
+                                  {
+                                    "commentStart": 0,
+                                    "computed": false,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "object": {
+                                      "commentStart": 0,
+                                      "computed": false,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "object": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "lidRegion",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "property": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "tags",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "start": 0,
+                                      "type": "MemberExpression",
+                                      "type": "MemberExpression"
+                                    },
+                                    "property": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "line3",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  },
+                                  {
+                                    "commentStart": 0,
+                                    "computed": false,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "object": {
+                                      "commentStart": 0,
+                                      "computed": false,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "object": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "lidRegion",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "property": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "tags",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "start": 0,
+                                      "type": "MemberExpression",
+                                      "type": "MemberExpression"
+                                    },
+                                    "property": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "line4",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  }
+                                ],
+                                "end": 0,
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              }
+                            }
+                          ],
+                          "start": 0,
+                          "type": "ObjectExpression",
+                          "type": "ObjectExpression"
+                        },
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "properties": [
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "key": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "sideFaces",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "ObjectProperty",
+                              "value": {
+                                "commentStart": 0,
+                                "elements": [
+                                  {
+                                    "commentStart": 0,
+                                    "computed": false,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "object": {
+                                      "commentStart": 0,
+                                      "computed": false,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "object": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "lidRegion",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "property": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "tags",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "start": 0,
+                                      "type": "MemberExpression",
+                                      "type": "MemberExpression"
+                                    },
+                                    "property": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "line4",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  },
+                                  {
+                                    "commentStart": 0,
+                                    "computed": false,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "object": {
+                                      "commentStart": 0,
+                                      "computed": false,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "object": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "lidRegion",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "property": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "tags",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "start": 0,
+                                      "type": "MemberExpression",
+                                      "type": "MemberExpression"
+                                    },
+                                    "property": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "line1",
                                         "start": 0,
                                         "type": "Identifier"
                                       },
@@ -24897,7 +24814,7 @@ description: Result of parsing enclosure.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -24906,8 +24823,10 @@ description: Result of parsing enclosure.kcl
                   "elements": [
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
-                      "left": {
+                      "moduleId": 0,
+                      "object": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
@@ -24916,7 +24835,7 @@ description: Result of parsing enclosure.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "lidOffsetX",
+                          "name": "lidLipSketch",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -24925,56 +24844,34 @@ description: Result of parsing enclosure.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "moduleId": 0,
-                      "operator": "+",
-                      "right": {
+                      "property": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
-                        "left": {
-                          "abs_path": false,
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "width",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "path": [],
-                          "start": 0,
-                          "type": "Name",
-                          "type": "Name"
-                        },
                         "moduleId": 0,
-                        "operator": "/",
-                        "right": {
+                        "name": {
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "raw": "2",
+                          "name": "line1",
                           "start": 0,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 2.0,
-                            "suffix": "None"
-                          }
+                          "type": "Identifier"
                         },
+                        "path": [],
                         "start": 0,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 0,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     },
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
-                      "left": {
+                      "moduleId": 0,
+                      "object": {
                         "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
@@ -24983,7 +24880,7 @@ description: Result of parsing enclosure.kcl
                           "commentStart": 0,
                           "end": 0,
                           "moduleId": 0,
-                          "name": "length",
+                          "name": "lidLipSketch",
                           "start": 0,
                           "type": "Identifier"
                         },
@@ -24992,24 +24889,27 @@ description: Result of parsing enclosure.kcl
                         "type": "Name",
                         "type": "Name"
                       },
-                      "moduleId": 0,
-                      "operator": "/",
-                      "right": {
+                      "property": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "2",
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "line2",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 2.0,
-                          "suffix": "None"
-                        }
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "start": 0,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -25017,35 +24917,6 @@ description: Result of parsing enclosure.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "sketch",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "lidLipSketch",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
                 }
               }
             ],
@@ -25500,437 +25371,437 @@ description: Result of parsing enclosure.kcl
                                         "commentStart": 0,
                                         "end": 0,
                                         "moduleId": 0,
-                                        "name": "line1",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    },
-                                    "start": 0,
-                                    "type": "MemberExpression",
-                                    "type": "MemberExpression"
-                                  },
-                                  {
-                                    "commentStart": 0,
-                                    "computed": false,
-                                    "end": 0,
-                                    "moduleId": 0,
-                                    "object": {
-                                      "commentStart": 0,
-                                      "computed": false,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "object": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "moduleId": 0,
-                                          "name": "lidLipRegion",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      },
-                                      "property": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "moduleId": 0,
-                                          "name": "tags",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      },
-                                      "start": 0,
-                                      "type": "MemberExpression",
-                                      "type": "MemberExpression"
-                                    },
-                                    "property": {
-                                      "abs_path": false,
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "name": {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": "line3",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    },
-                                    "start": 0,
-                                    "type": "MemberExpression",
-                                    "type": "MemberExpression"
-                                  }
-                                ],
-                                "end": 0,
-                                "moduleId": 0,
-                                "start": 0,
-                                "type": "ArrayExpression",
-                                "type": "ArrayExpression"
-                              }
-                            }
-                          ],
-                          "start": 0,
-                          "type": "ObjectExpression",
-                          "type": "ObjectExpression"
-                        },
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "properties": [
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "key": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "sideFaces",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "moduleId": 0,
-                              "start": 0,
-                              "type": "ObjectProperty",
-                              "value": {
-                                "commentStart": 0,
-                                "elements": [
-                                  {
-                                    "commentStart": 0,
-                                    "computed": false,
-                                    "end": 0,
-                                    "moduleId": 0,
-                                    "object": {
-                                      "commentStart": 0,
-                                      "computed": false,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "object": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "moduleId": 0,
-                                          "name": "lidLipRegion",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      },
-                                      "property": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "moduleId": 0,
-                                          "name": "tags",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      },
-                                      "start": 0,
-                                      "type": "MemberExpression",
-                                      "type": "MemberExpression"
-                                    },
-                                    "property": {
-                                      "abs_path": false,
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "name": {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": "line3",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    },
-                                    "start": 0,
-                                    "type": "MemberExpression",
-                                    "type": "MemberExpression"
-                                  },
-                                  {
-                                    "commentStart": 0,
-                                    "computed": false,
-                                    "end": 0,
-                                    "moduleId": 0,
-                                    "object": {
-                                      "commentStart": 0,
-                                      "computed": false,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "object": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "moduleId": 0,
-                                          "name": "lidLipRegion",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      },
-                                      "property": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "moduleId": 0,
-                                          "name": "tags",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      },
-                                      "start": 0,
-                                      "type": "MemberExpression",
-                                      "type": "MemberExpression"
-                                    },
-                                    "property": {
-                                      "abs_path": false,
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "name": {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": "line4",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    },
-                                    "start": 0,
-                                    "type": "MemberExpression",
-                                    "type": "MemberExpression"
-                                  }
-                                ],
-                                "end": 0,
-                                "moduleId": 0,
-                                "start": 0,
-                                "type": "ArrayExpression",
-                                "type": "ArrayExpression"
-                              }
-                            }
-                          ],
-                          "start": 0,
-                          "type": "ObjectExpression",
-                          "type": "ObjectExpression"
-                        },
-                        {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "properties": [
-                            {
-                              "commentStart": 0,
-                              "end": 0,
-                              "key": {
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": "sideFaces",
-                                "start": 0,
-                                "type": "Identifier"
-                              },
-                              "moduleId": 0,
-                              "start": 0,
-                              "type": "ObjectProperty",
-                              "value": {
-                                "commentStart": 0,
-                                "elements": [
-                                  {
-                                    "commentStart": 0,
-                                    "computed": false,
-                                    "end": 0,
-                                    "moduleId": 0,
-                                    "object": {
-                                      "commentStart": 0,
-                                      "computed": false,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "object": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "moduleId": 0,
-                                          "name": "lidLipRegion",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      },
-                                      "property": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "moduleId": 0,
-                                          "name": "tags",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      },
-                                      "start": 0,
-                                      "type": "MemberExpression",
-                                      "type": "MemberExpression"
-                                    },
-                                    "property": {
-                                      "abs_path": false,
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "name": {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": "line4",
-                                        "start": 0,
-                                        "type": "Identifier"
-                                      },
-                                      "path": [],
-                                      "start": 0,
-                                      "type": "Name",
-                                      "type": "Name"
-                                    },
-                                    "start": 0,
-                                    "type": "MemberExpression",
-                                    "type": "MemberExpression"
-                                  },
-                                  {
-                                    "commentStart": 0,
-                                    "computed": false,
-                                    "end": 0,
-                                    "moduleId": 0,
-                                    "object": {
-                                      "commentStart": 0,
-                                      "computed": false,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "object": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "moduleId": 0,
-                                          "name": "lidLipRegion",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      },
-                                      "property": {
-                                        "abs_path": false,
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
-                                        "name": {
-                                          "commentStart": 0,
-                                          "end": 0,
-                                          "moduleId": 0,
-                                          "name": "tags",
-                                          "start": 0,
-                                          "type": "Identifier"
-                                        },
-                                        "path": [],
-                                        "start": 0,
-                                        "type": "Name",
-                                        "type": "Name"
-                                      },
-                                      "start": 0,
-                                      "type": "MemberExpression",
-                                      "type": "MemberExpression"
-                                    },
-                                    "property": {
-                                      "abs_path": false,
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "name": {
-                                        "commentStart": 0,
-                                        "end": 0,
-                                        "moduleId": 0,
                                         "name": "line2",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  },
+                                  {
+                                    "commentStart": 0,
+                                    "computed": false,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "object": {
+                                      "commentStart": 0,
+                                      "computed": false,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "object": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "lidLipRegion",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "property": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "tags",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "start": 0,
+                                      "type": "MemberExpression",
+                                      "type": "MemberExpression"
+                                    },
+                                    "property": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "line3",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  }
+                                ],
+                                "end": 0,
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              }
+                            }
+                          ],
+                          "start": 0,
+                          "type": "ObjectExpression",
+                          "type": "ObjectExpression"
+                        },
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "properties": [
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "key": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "sideFaces",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "ObjectProperty",
+                              "value": {
+                                "commentStart": 0,
+                                "elements": [
+                                  {
+                                    "commentStart": 0,
+                                    "computed": false,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "object": {
+                                      "commentStart": 0,
+                                      "computed": false,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "object": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "lidLipRegion",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "property": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "tags",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "start": 0,
+                                      "type": "MemberExpression",
+                                      "type": "MemberExpression"
+                                    },
+                                    "property": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "line3",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  },
+                                  {
+                                    "commentStart": 0,
+                                    "computed": false,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "object": {
+                                      "commentStart": 0,
+                                      "computed": false,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "object": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "lidLipRegion",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "property": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "tags",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "start": 0,
+                                      "type": "MemberExpression",
+                                      "type": "MemberExpression"
+                                    },
+                                    "property": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "line4",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  }
+                                ],
+                                "end": 0,
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              }
+                            }
+                          ],
+                          "start": 0,
+                          "type": "ObjectExpression",
+                          "type": "ObjectExpression"
+                        },
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "properties": [
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "key": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "sideFaces",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "ObjectProperty",
+                              "value": {
+                                "commentStart": 0,
+                                "elements": [
+                                  {
+                                    "commentStart": 0,
+                                    "computed": false,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "object": {
+                                      "commentStart": 0,
+                                      "computed": false,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "object": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "lidLipRegion",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "property": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "tags",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "start": 0,
+                                      "type": "MemberExpression",
+                                      "type": "MemberExpression"
+                                    },
+                                    "property": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "line4",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  },
+                                  {
+                                    "commentStart": 0,
+                                    "computed": false,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "object": {
+                                      "commentStart": 0,
+                                      "computed": false,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "object": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "lidLipRegion",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "property": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "tags",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "start": 0,
+                                      "type": "MemberExpression",
+                                      "type": "MemberExpression"
+                                    },
+                                    "property": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "line1",
                                         "start": 0,
                                         "type": "Identifier"
                                       },
@@ -26117,6 +25988,34 @@ description: Result of parsing enclosure.kcl
               "start": 0,
               "type": "Name",
               "type": "Name"
+            }
+          },
+          {
+            "commentStart": 0,
+            "end": 0,
+            "key": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "name": "kclVersion",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "moduleId": 0,
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "commentStart": 0,
+              "end": 0,
+              "moduleId": 0,
+              "raw": "2.0",
+              "start": 0,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
             }
           }
         ],

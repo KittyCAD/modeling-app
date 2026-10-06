@@ -14,7 +14,6 @@ import type { Configuration } from '@src/lang/wasm'
 import {
   COOKIE_NAME_PREFIX,
   IS_PLAYWRIGHT_KEY,
-  OPFS_CLOUD_FEATURE_FLAG,
   SIDEBAR_BUTTON_SUFFIX,
   TOKEN_PERSIST_KEY,
   VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM,
@@ -51,7 +50,6 @@ import {
 import { test } from '@e2e/playwright/zoo-test'
 import { createLayoutWithMetadata } from '@src/lib/layout'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
-import { PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE } from '@src/lib/projectLibraries'
 
 export const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
 
@@ -1012,19 +1010,6 @@ export async function mockClientErrorReports(context: BrowserContext) {
       body: JSON.stringify({}),
     })
   })
-}
-
-// Temporary function to confirm the feature flag is enabled
-export async function expectCloudFeatureEnabled(page: Page) {
-  await page.goto('/')
-  await expect(
-    page,
-    `'${OPFS_CLOUD_FEATURE_FLAG}' feature not enabled: / did not redirect to /home`
-  ).toHaveURL(/\/home$/)
-  await expect(
-    page.getByText(PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE, { exact: true }),
-    `'${OPFS_CLOUD_FEATURE_FLAG}' feature not enabled: "${PERSONAL_CLOUD_PROJECT_LIBRARY_TITLE}" not visible`
-  ).toBeVisible()
 }
 
 // settingsOverrides may need to be augmented to take more generic items,

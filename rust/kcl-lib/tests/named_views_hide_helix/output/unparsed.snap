@@ -39,6 +39,7 @@ boxVisible = extrude(region(point = [30, 5], sketch = anchorSketch), length = 10
 
 hide(helixHidden)
 
+@(added_in = "3.0")
 helixView = view::named(
   "Outer helix",
   camera = view::oriented(view::Orientation::Isometric),

@@ -137,38 +137,10 @@ describe('project command config', () => {
     expect(isCommandVisibleInSearch(importCommand, true)).toBe(false)
   })
 
-  it('keeps project directory mutation commands disabled by default on web', () => {
-    const commands = createProjectCommands({
-      systemIOActor: createSystemIOActor(),
-      enableProjectDirectoryCommands: false,
-    })
-
-    expect(commands.map((command) => command.name)).toEqual([
-      'Import file from URL',
-    ])
-  })
-
-  it('enables project directory mutation commands for supported runtimes', () => {
-    const commands = createProjectCommands({
-      systemIOActor: createSystemIOActor(),
-      enableProjectDirectoryCommands: true,
-    })
-
-    expect(commands.map((command) => command.name)).toEqual([
-      'Open project',
-      'Create project',
-      'Move project',
-      'Delete project',
-      'Rename project',
-      'Import file from URL',
-    ])
-  })
-
   it('creates project directories from project titles', () => {
     const systemIOActor = createSystemIOActor()
     const commands = createProjectCommands({
       systemIOActor,
-      enableProjectDirectoryCommands: true,
     })
     const createCommand = commands.find(
       (command) => command.name === 'Create project'
@@ -195,7 +167,6 @@ describe('project command config', () => {
     }
     const commands = createProjectCommands({
       systemIOActor,
-      enableProjectDirectoryCommands: true,
       getCreateProjectLibraryTargets: () => [
         {
           library,
@@ -228,7 +199,6 @@ describe('project command config', () => {
     }
     const commands = createProjectCommands({
       systemIOActor,
-      enableProjectDirectoryCommands: true,
       getCreateProjectLibraryTargets: () => [
         {
           library,
@@ -262,7 +232,6 @@ describe('project command config', () => {
   it('defaults create project to the current library context', () => {
     const commands = createProjectCommands({
       systemIOActor: createSystemIOActor(),
-      enableProjectDirectoryCommands: true,
       getCurrentProjectLibraryId: () => 'client-projects',
       getCreateProjectLibraryTargets: () => [
         {
@@ -305,7 +274,6 @@ describe('project command config', () => {
   it('shows a prepopulated library picker when creating into multiple libraries', () => {
     const commands = createProjectCommands({
       systemIOActor: createSystemIOActor(),
-      enableProjectDirectoryCommands: true,
       getCreateProjectLibraryTargets: () => [
         {
           library: createLibrary('default-projects', 'Default Projects'),
@@ -359,7 +327,6 @@ describe('project command config', () => {
     ])
     const commands = createProjectCommands({
       systemIOActor,
-      enableProjectDirectoryCommands: true,
     })
 
     const openCommand = commands.find(
@@ -404,7 +371,6 @@ describe('project command config', () => {
     ])
     const commands = createProjectCommands({
       systemIOActor,
-      enableProjectDirectoryCommands: true,
     })
     const renameCommand = commands.find(
       (command) => command.name === 'Rename project'
@@ -454,7 +420,6 @@ describe('project command config', () => {
           title: 'Default Project',
         }),
       ]),
-      enableProjectDirectoryCommands: true,
       getCurrentProjectDirectoryName: () => 'bracket',
       getHomeProjectActions: () => createHomeProjectActions(),
       getHomeProjectEntries: () => [homeProject],
@@ -492,6 +457,90 @@ describe('project command config', () => {
     ])
   })
 
+  it.each([
+    { commandName: 'Open project', argName: 'name' },
+    { commandName: 'Rename project', argName: 'oldName' },
+    { commandName: 'Delete project', argName: 'name' },
+    { commandName: 'Move project', argName: 'project' },
+  ])(
+    'disambiguates projects across libraries in $commandName',
+    ({ commandName, argName }) => {
+      const libraries = [
+        createLibrary('local', 'Local Projects'),
+        createLibrary('client', 'Client Projects'),
+        createLibrary('shared', 'Shared Projects'),
+        createLibrary('cloud', 'Personal Cloud', 'cloud'),
+      ]
+      const localProject = createHomeProject({
+        id: 'local:/projects/bracket',
+        title: 'Bracket',
+        localProjectName: 'bracket',
+        localProjectPath: '/projects/bracket',
+        libraryIds: ['local'],
+      })
+      const clientProject = createHomeProject({
+        id: 'local:/client-projects/bracket',
+        title: 'Bracket',
+        localProjectName: 'bracket',
+        localProjectPath: '/client-projects/bracket',
+        libraryIds: ['client', 'shared'],
+      })
+      const cloudProject: HomeProjectEntry = {
+        id: 'remote:bracket',
+        name: 'bracket',
+        title: 'Bracket',
+        source: 'remote',
+        status: 'cloud-only',
+        remoteProjectId: 'bracket',
+        libraryIds: ['cloud'],
+        readWriteAccess: true,
+      }
+      const commands = createProjectCommands({
+        systemIOActor: createSystemIOActor(),
+        getCurrentProjectDirectoryName: () => 'bracket',
+        getCurrentProjectPath: () => clientProject.localProjectPath,
+        getProjectLibraries: () => libraries,
+        getHomeProjectActions: () =>
+          createHomeProjectActions({
+            canMoveToLibrary: () => true,
+          }),
+        getHomeProjectEntries: () => [
+          localProject,
+          clientProject,
+          cloudProject,
+        ],
+      })
+      const command = commands.find((command) => command.name === commandName)
+      if (!command) throw new Error(`${commandName} is missing`)
+
+      expect(projectOptions(command, argName)).toEqual([
+        {
+          name: 'Bracket',
+          description: 'Local Projects',
+          value: localProject.id,
+          isCurrent: false,
+        },
+        {
+          name: 'Bracket',
+          description: 'Client Projects, Shared Projects',
+          value: clientProject.id,
+          isCurrent: true,
+        },
+        {
+          name: 'Bracket',
+          description: 'Personal Cloud',
+          value: cloudProject.id,
+          isCurrent: false,
+        },
+      ])
+
+      libraries[0].title = 'Renamed Library'
+      expect(projectOptions(command, argName)[0].description).toBe(
+        'Renamed Library'
+      )
+    }
+  )
+
   it('opens, renames, and deletes home project entries through project actions', async () => {
     const systemIOActor = createSystemIOActor()
     const homeProject = createHomeProject({
@@ -504,7 +553,6 @@ describe('project command config', () => {
     const homeProjectActions = createHomeProjectActions()
     const commands = createProjectCommands({
       systemIOActor,
-      enableProjectDirectoryCommands: true,
       getHomeProjectActions: () => homeProjectActions,
       getHomeProjectEntries: () => [homeProject],
     })
@@ -562,7 +610,6 @@ describe('project command config', () => {
     } satisfies HomeProjectEntry
     const commands = createProjectCommands({
       systemIOActor: createSystemIOActor(),
-      enableProjectDirectoryCommands: true,
       getHomeProjectActions: () => createHomeProjectActions(),
       getHomeProjectEntries: () => [homeProject],
     })
@@ -619,7 +666,6 @@ describe('project command config', () => {
     })
     const commands = createProjectCommands({
       systemIOActor,
-      enableProjectDirectoryCommands: true,
       getHomeProjectActions: () => homeProjectActions,
       getHomeProjectEntries: () => [homeProject],
     })
@@ -724,7 +770,6 @@ describe('project command config', () => {
     })
     const commands = createProjectCommands({
       systemIOActor: createSystemIOActor(),
-      enableProjectDirectoryCommands: true,
       getHomeProjectActions: () => createHomeProjectActions(),
       getHomeProjectEntries: () => [homeProject],
     })
@@ -759,7 +804,6 @@ describe('project command config', () => {
     ])
     const commands = createProjectCommands({
       systemIOActor,
-      enableProjectDirectoryCommands: true,
       getCurrentProjectDirectoryName: () => 'bracket-directory',
     })
     const renameCommand = commands.find(

@@ -989,26 +989,6 @@ description: Variables in memory after executing named_views_hide_helix.kcl
       "units": "mm"
     }
   },
-  "helixView": {
-    "type": "NamedView",
-    "value": {
-      "artifactId": "[uuid]",
-      "name": "Outer helix",
-      "camera": {
-        "look": {
-          "type": "oriented",
-          "orientation": "Isometric"
-        },
-        "target": null,
-        "distance": null,
-        "projection": "Orthographic"
-      },
-      "baseline": "Show",
-      "exceptIds": [
-        "[uuid]"
-      ]
-    }
-  },
   "helixVisible": {
     "type": "Helix",
     "value": {

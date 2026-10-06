@@ -55,13 +55,13 @@ crashBoxProfile = sketch(on = XY) {
   horizontalDistance([bottomEdge.start, bottomEdge.end]) == crashBoxOuterWidth
   verticalDistance([leftEdge.end, leftEdge.start]) == crashBoxOuterWidth
   verticalDistance([
-  verticalCenterGuide.end,
-  verticalCenterGuide.start
-]) == crashBoxOuterWidth / 2
+    verticalCenterGuide.end,
+    verticalCenterGuide.start
+  ]) == crashBoxOuterWidth / 2
   horizontalDistance([
-  horizontalCenterGuide.start,
-  horizontalCenterGuide.end
-]) == crashBoxOuterWidth / 2
+    horizontalCenterGuide.start,
+    horizontalCenterGuide.end
+  ]) == crashBoxOuterWidth / 2
 }
 
 crashBoxRegion = region(segments = [
@@ -70,7 +70,7 @@ crashBoxRegion = region(segments = [
 ])
 
 // Create a solid crash box from the square profile
-crashBoxSolid = extrude(crashBoxRegion, length = crashBoxExtrudeLength, tagEnd = $capEnd002)
+crashBoxSolid = extrude(crashBoxRegion, length = crashBoxExtrudeLength)
 
 // Optional exterior edge softening
 crashBoxOuterCornerFillets = fillet(
@@ -79,26 +79,26 @@ crashBoxOuterCornerFillets = fillet(
   edges = [
     {
       sideFaces = [
-        crashBoxRegion.tags.rightEdge,
+        crashBoxRegion.tags.leftEdge,
         crashBoxRegion.tags.bottomEdge
       ]
     },
     {
       sideFaces = [
-        crashBoxRegion.tags.topEdge,
-        crashBoxRegion.tags.bottomEdge
+        crashBoxRegion.tags.bottomEdge,
+        crashBoxRegion.tags.rightEdge
       ]
     },
     {
       sideFaces = [
         crashBoxRegion.tags.topEdge,
-        crashBoxRegion.tags.leftEdge
+        crashBoxRegion.tags.rightEdge
       ]
     },
     {
       sideFaces = [
         crashBoxRegion.tags.leftEdge,
-        crashBoxRegion.tags.rightEdge
+        crashBoxRegion.tags.topEdge
       ]
     }
   ],
@@ -154,10 +154,16 @@ beamEndFillets = fillet(
   radius = 80,
   edges = [
     {
-      sideFaces = [beamRegion.tags.leftEdge, capEnd001]
+      sideFaces = [
+        beamRegion.tags.bottomEdge,
+        beamSolid.faces.capEnd001
+      ]
     },
     {
-      sideFaces = [beamRegion.tags.leftEdge, capStart001]
+      sideFaces = [
+        beamSolid.faces.capStart001,
+        beamRegion.tags.bottomEdge
+      ]
     }
   ],
 )

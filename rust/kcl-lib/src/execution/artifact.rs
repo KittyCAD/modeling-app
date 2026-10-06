@@ -149,7 +149,7 @@ fn artifact_camera_view(camera: &CameraView) -> ArtifactCameraView {
         target: camera.target().copied().map(artifact_point3d),
         // The value already stores millimeters; this reads the number in the
         // unit the wire model documents rather than trusting the tag.
-        distance: camera.distance().map(|distance| distance.to_mm()),
+        distance: camera.distance().map(|distance| distance.unwrap_to_mm()),
         projection: artifact_projection(camera.projection()),
     }
 }

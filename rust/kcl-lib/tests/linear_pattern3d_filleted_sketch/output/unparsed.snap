@@ -1,0 +1,24 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing linear_pattern3d_filleted_sketch.kcl
+---
+fn cube(pos, scale) {
+  sg = startSketchOn(XY)
+    |> startProfile(at = pos)
+    |> line(end = [0, scale])
+    |> line(end = [scale, 0])
+    |> line(end = [0, -scale])
+
+  return sg
+}
+part001 = cube(pos = [0, 0], scale = 20)
+  |> close(tag = $line1)
+  |> extrude(length = 20)
+  |> fillet(radius = 10, tags = [getOppositeEdge(line1)])
+
+pattn1 = patternLinear3d(
+  part001,
+  axis = [1, 0, 0],
+  instances = 4,
+  distance = 40,
+)

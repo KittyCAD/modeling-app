@@ -566,6 +566,40 @@ describe('operations.test.ts', () => {
     )
   }
 
+  describe('tangent chain edit flow', () => {
+    it.each(['fillet', 'chamfer'])(
+      'restores evaluated booleans for %s',
+      async (name) => {
+        const { rustContext } = await buildTheWorldAndNoEngineConnection()
+        const dimension = name === 'fillet' ? 'radius' : 'length'
+        const code = `@settings(kclVersion = 3.0)\nchain = false\npart = ${name}(body, ${dimension} = 7, tangentChain = chain)`
+        const operation = stdlib(name)
+        if (operation.type !== 'StdLibCall')
+          throw new Error('Expected stdlib call')
+        operation.labeledArgs[dimension] = {
+          value: { type: 'Number', value: 7, ty: { type: 'Any' } },
+          sourceRange: rangeOfText(code, '7'),
+        }
+        for (const value of [false, true]) {
+          operation.labeledArgs.tangentChain = {
+            value: { type: 'Bool', value },
+            sourceRange: rangeOfText(code, 'chain'),
+          }
+          const result = await enterEditFlow({
+            operation,
+            code,
+            artifactGraph: new Map(),
+            rustContext,
+          })
+          if (isErr(result)) throw result
+          if (result.type !== 'Find and select command')
+            throw new Error('Expected edit flow')
+          expect(result.data.argDefaultValues?.tangentChain).toBe(value)
+        }
+      }
+    )
+  })
+
   describe('Extrude edit flow', () => {
     it('continues when selections cannot be retrieved', async () => {
       const { rustContext } = await buildTheWorldAndNoEngineConnection()

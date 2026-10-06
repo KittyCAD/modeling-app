@@ -1,5 +1,5 @@
 /**
- * Mock AST execution without sending commands to the engine.
+ * Mock AST execution and input expression evaluation without sending commands to the engine.
  * Extracted from langHelpers to avoid circular dependency: kclHelpers -> langHelpers -> edges -> faces -> kclHelpers.
  */
 
@@ -113,6 +113,28 @@ export async function executeAstMock({
       callbacks
     )
 
+    await rustContext.waitForAllEngineModelingCommands()
+    return {
+      logs: [],
+      errors: [],
+      execState,
+      isInterrupted: false,
+    }
+  } catch (e: unknown) {
+    return handleExecuteError(e)
+  }
+}
+
+/** Evaluate a temporary input program using the current model's settings and variables. */
+export async function evaluateExpression({
+  ast,
+  rustContext,
+}: {
+  ast: Node<Program>
+  rustContext: RustContext
+}): Promise<ExecutionResultMock> {
+  try {
+    const execState = await rustContext.evaluateExpression(ast)
     await rustContext.waitForAllEngineModelingCommands()
     return {
       logs: [],

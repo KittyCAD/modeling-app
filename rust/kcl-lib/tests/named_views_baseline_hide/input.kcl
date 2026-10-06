@@ -4,7 +4,7 @@
 // leave hide_ids empty. The list names two objects of different kinds, a solid
 // and the sketch region it was extruded from, because each kind carries its
 // artifact id differently.
-@settings(experimentalFeatures = allow)
+@settings(kclVersion = "3.0-preview")
 
 plateSketch = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 40mm, var 0mm])

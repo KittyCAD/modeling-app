@@ -135,7 +135,7 @@ test.describe(
         })
         await page.setBodyDimensions({ width: 1000, height: 500 })
         await homePage.openProject(projectName)
-        await scene.settled(cmdBar)
+        await scene.settled()
       })
 
       await test.step('Import kcl as first part as module', async () => {
@@ -153,7 +153,7 @@ test.describe(
           `,
           { shouldNormalise: true }
         )
-        await scene.settled(cmdBar)
+        await scene.settled()
       })
 
       await test.step('Import a second part with the same name and expect error', async () => {
@@ -191,7 +191,7 @@ test.describe(
           `,
           { shouldNormalise: true }
         )
-        await scene.settled(cmdBar)
+        await scene.settled()
       })
 
       await test.step('Import a second time and expect error', async () => {
@@ -266,7 +266,7 @@ test.describe(
         })
         await page.setBodyDimensions({ width: 1200, height: 800 })
         await homePage.openProject(projectName)
-        await scene.settled(cmdBar)
+        await scene.settled()
         await toolbar.closePane(DefaultLayoutPaneID.Code)
       })
 
@@ -285,7 +285,7 @@ test.describe(
           `,
           { shouldNormalise: true }
         )
-        await scene.settled(cmdBar)
+        await scene.settled()
       })
 
       await test.step('Set translate on module', async () => {
@@ -326,7 +326,7 @@ test.describe(
           commandName: 'Translate',
         })
         await cmdBar.submit()
-        await scene.settled(cmdBar)
+        await scene.settled()
         await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
         await toolbar.openPane(DefaultLayoutPaneID.Code)
         await editor.expectEditor.toContain(`translate(bracket, x = 1)`, {
@@ -367,7 +367,7 @@ test.describe(
           commandName: 'Translate',
         })
         await cmdBar.submit()
-        await scene.settled(cmdBar)
+        await scene.settled()
         await editor.expectEditor.toContain(
           `translate(bracket, x = 1, y = 2)`,
           {
@@ -414,7 +414,7 @@ test.describe(
           commandName: 'Scale',
         })
         await cmdBar.submit()
-        await scene.settled(cmdBar)
+        await scene.settled()
         await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
         await toolbar.openPane(DefaultLayoutPaneID.Code)
         await editor.expectEditor.toContain(
@@ -504,7 +504,7 @@ test.describe(
           commandName: 'Rotate',
         })
         await cmdBar.submit()
-        await scene.settled(cmdBar)
+        await scene.settled()
         await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
         await toolbar.openPane(DefaultLayoutPaneID.Code)
         await editor.expectEditor.toContain(
@@ -551,7 +551,7 @@ test.describe(
           commandName: 'Rotate',
         })
         await cmdBar.submit()
-        await scene.settled(cmdBar)
+        await scene.settled()
         await editor.expectEditor.toContain(
           `rotate(bracket, axis = Z, angle = 0.2)`,
           {
@@ -564,17 +564,17 @@ test.describe(
         await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
         await toolbar.openFeatureTreeOperationContextMenu('Rotate', 0)
         await page.getByTestId('context-menu-delete').click()
-        await scene.settled(cmdBar)
+        await scene.settled()
         await toolbar.openFeatureTreeOperationContextMenu('Scale', 0)
         await page.getByTestId('context-menu-delete').click()
-        await scene.settled(cmdBar)
+        await scene.settled()
         await toolbar.openFeatureTreeOperationContextMenu('Translate', 0)
         await page.getByTestId('context-menu-delete').click()
-        await scene.settled(cmdBar)
+        await scene.settled()
         await selectBracket()
         await page.keyboard.press('Delete')
-        await scene.settled(cmdBar)
-        await scene.settled(cmdBar)
+        await scene.settled()
+        await scene.settled()
         await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
 
         // Expect empty editor and scene
@@ -612,7 +612,7 @@ test.describe(
       })
       await page.setBodyDimensions({ width: 1200, height: 800 })
       await homePage.openProject(projectName)
-      await scene.settled(cmdBar)
+      await scene.settled()
       await toolbar.closePane(DefaultLayoutPaneID.Code)
 
       await insertPartIntoAssembly(
@@ -630,7 +630,7 @@ test.describe(
         `,
         { shouldNormalise: true }
       )
-      await scene.settled(cmdBar)
+      await scene.settled()
       await toolbar.closePane(DefaultLayoutPaneID.Code)
 
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
@@ -698,6 +698,7 @@ test.describe(
             const bracketDir = path.join(dir, projectName)
             await fsp.mkdir(bracketDir, { recursive: true })
             await Promise.all([
+              fsp.mkdir(path.join(bracketDir, 'folder.prt')),
               fsp.copyFile(
                 testsInputPath('cube.step'),
                 path.join(bracketDir, 'cube.step')
@@ -710,7 +711,7 @@ test.describe(
             ])
           })
           await homePage.openProject(projectName)
-          await scene.settled(cmdBar)
+          await scene.settled()
         })
 
         await test.step('Import step part as module', async () => {
@@ -730,22 +731,42 @@ test.describe(
             { shouldNormalise: true }
           )
           await toolbar.closePane(DefaultLayoutPaneID.Code)
-          await scene.settled(cmdBar)
+          await scene.settled()
 
           await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
         })
 
-        await test.step('Import second foreign part by clicking', async () => {
+        await test.step('Import second foreign part from the context menu', async () => {
           await toolbar.openPane(DefaultLayoutPaneID.Files)
           await toolbar.expectFileTreeState([
+            'folder.prt',
             complexPlmFileName,
             'cube.step',
             'main.kcl',
           ])
-          await toolbar.openFile(complexPlmFileName)
+          const importPrompt = page.getByText('Import into my current file')
+          const importAction = page.getByRole('button', {
+            name: 'Import in current file',
+            exact: true,
+          })
+          const folder = page.getByRole('treeitem', {
+            name: 'folder.prt',
+            exact: true,
+          })
+          await folder.click()
+          await expect(folder).toHaveAttribute('aria-expanded', 'true')
+          await expect(importPrompt).not.toBeVisible()
+          await folder.click({ button: 'right' })
+          await expect(page.getByTestId('context-menu-rename')).toBeVisible()
+          await expect(importAction).not.toBeVisible()
+          await page.keyboard.press('Escape')
 
-          // Go through the ToastInsert prompt
-          await page.getByText('Import into my current file').click()
+          await toolbar.openFile(complexPlmFileName)
+          await expect(importPrompt).not.toBeVisible()
+          await page
+            .getByRole('treeitem', { name: complexPlmFileName, exact: true })
+            .click({ button: 'right' })
+          await importAction.click()
 
           // Check getPathFilenameInVariableCase output
           const parsedValueFromFile =
@@ -770,7 +791,7 @@ test.describe(
         `,
             { shouldNormalise: true }
           )
-          await scene.settled(cmdBar)
+          await scene.settled()
 
           await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
         })
@@ -830,7 +851,7 @@ foreign
           })
           await page.setBodyDimensions({ width: 1000, height: 500 })
           await homePage.openProject(projectName)
-          await scene.settled(cmdBar)
+          await scene.settled()
           await toolbar.closePane(DefaultLayoutPaneID.Code)
         })
 
@@ -845,7 +866,7 @@ foreign
                   `\n  |> appearance(color = "#ff0000")`
                 )
               })
-              await scene.settled(cmdBar)
+              await scene.settled()
               await toolbar.closePane(DefaultLayoutPaneID.Code)
             },
             300
@@ -864,7 +885,7 @@ foreign
                 path.join(dir, projectName, 'foreign.step')
               )
             })
-            await scene.settled(cmdBar)
+            await scene.settled()
             await toolbar.closePane(DefaultLayoutPaneID.Code)
           })
         })
@@ -903,7 +924,7 @@ foreign
         })
         await page.setBodyDimensions({ width: 1000, height: 500 })
         await homePage.openProject(projectName)
-        await scene.settled(cmdBar)
+        await scene.settled()
         await toolbar.closePane(DefaultLayoutPaneID.Code)
       })
 

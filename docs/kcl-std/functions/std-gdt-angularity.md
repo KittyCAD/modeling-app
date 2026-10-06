@@ -53,7 +53,7 @@ omitting both is an error.
 ### Examples
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 basicAngle = 30deg
 thickness = 3.5mm
@@ -92,9 +92,9 @@ stampedProfile = sketch(on = XY) {
   distance([flangeEnd.start, flangeEnd.end]) == thickness
   distance([innerFlange.start, innerFlange.end]) == flangeLength - bendStartX
   distance([
-  controlledSurface.start,
-  controlledSurface.end
-]) == legLength
+    controlledSurface.start,
+    controlledSurface.end
+  ]) == legLength
   distance([tabEnd.start, tabEnd.end]) == thickness
   distance([outerSurface.start, outerSurface.end]) == legLength
   parallel([controlledSurface, outerSurface])
@@ -102,7 +102,13 @@ stampedProfile = sketch(on = XY) {
   angle([datumFace, controlledSurface]) == basicAngle
 }
 
-stampedPart = extrude(region(point = [12mm, 2mm], sketch = stampedProfile), length = 0.8mm)
+stampedPart = extrude(
+  region(segments = [
+    stampedProfile.datumFace,
+    stampedProfile.flangeEnd
+  ]),
+  length = 0.8mm,
+)
 
 gdt::datum(
   face = stampedPart.sketch.tags.datumFace,
@@ -128,7 +134,7 @@ gdt::angularity(
 ![Rendered example of gdt::angularity 0](/kcl-test-outputs/serial_test_example_fn_std-gdt-angularity0.png)
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 basicAngle = 30deg
 thickness = 3.5mm
@@ -167,9 +173,9 @@ stampedProfile = sketch(on = XY) {
   distance([flangeEnd.start, flangeEnd.end]) == thickness
   distance([innerFlange.start, innerFlange.end]) == flangeLength - bendStartX
   distance([
-  controlledSurface.start,
-  controlledSurface.end
-]) == legLength
+    controlledSurface.start,
+    controlledSurface.end
+  ]) == legLength
   distance([tabEnd.start, tabEnd.end]) == thickness
   distance([outerSurface.start, outerSurface.end]) == legLength
   parallel([controlledSurface, outerSurface])
@@ -177,7 +183,10 @@ stampedProfile = sketch(on = XY) {
   angle([datumFace, controlledSurface]) == basicAngle
 }
 
-stampedRegion = region(point = [12mm, 2mm], sketch = stampedProfile)
+stampedRegion = region(segments = [
+  stampedProfile.datumFace,
+  stampedProfile.flangeEnd
+])
 hide(stampedProfile)
 stampedPart = extrude(stampedRegion, length = 0.8mm)
 

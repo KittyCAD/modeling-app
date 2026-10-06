@@ -1,9 +1,9 @@
 // Curtain Wall Anchor Plate
 // A structural steel L-plate used to anchor curtain wall systems to concrete slabs, with elongated holes for adjustability and bolts with nuts and base plates for secure fastening
-// Categories: Construction
+// Categories: Architecture & Construction; Mechanical Components
 
 // Set units in millimeters (mm)
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 // Define parameters
 slabPlateBaseLength = 300
@@ -76,7 +76,7 @@ insideBendFillRegion = fillet(
   edges = [
     {
       sideFaces = [
-        anchorPlateRegion.tags.line5,
+        anchorPlateRegion.tags.line3,
         anchorPlateRegion.tags.line4
       ]
     }
@@ -84,13 +84,13 @@ insideBendFillRegion = fillet(
 )
 
 anchorPlateOutsideFillet = fillet(
-  anchorPlateBody,
+  insideBendFillRegion,
   radius = outsideBendRadius,
   edges = [
     {
       sideFaces = [
-        anchorPlateRegion.tags.line1,
-        anchorPlateRegion.tags.line2
+        anchorPlateRegion.tags.line6,
+        anchorPlateRegion.tags.line1
       ]
     }
   ],
@@ -139,9 +139,9 @@ slotProfile = sketch(on = XY) {
   vertical(rightBottomGuide)
 
   horizontalDistance([
-  slotCenterline.start,
-  slotCenterline.end
-]) == wideHoleLength - wideHoleWidth
+    slotCenterline.start,
+    slotCenterline.end
+  ]) == wideHoleLength - wideHoleWidth
   radius(arc2) == wideHoleWidth / 2
   radius(arc4) == wideHoleWidth / 2
   coincident([
@@ -215,9 +215,9 @@ boltHeadProfile = sketch(on = XY) {
   ])
   horizontal(boltHeadRadiusGuide)
   horizontalDistance([
-  boltHeadRadiusGuide.start,
-  boltHeadRadiusGuide.end
-]) == boltHeadRadius
+    boltHeadRadiusGuide.start,
+    boltHeadRadiusGuide.end
+  ]) == boltHeadRadius
 }
 
 boltHeadRegion = region(
@@ -325,9 +325,9 @@ nutProfile = sketch(on = faceOf(clampPlateBody, face = START)) {
   coincident([nutCircle.start, nutRadiusGuide.end])
   horizontal(nutRadiusGuide)
   horizontalDistance([
-  nutRadiusGuide.start,
-  nutRadiusGuide.end
-]) == nutRadius
+    nutRadiusGuide.start,
+    nutRadiusGuide.end
+  ]) == nutRadius
 }
 
 nutRegion = region(segments = [nutProfile.line1, nutProfile.line2], direction = CW)

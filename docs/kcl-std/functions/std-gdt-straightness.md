@@ -53,7 +53,7 @@ a face normal may appear like an edge.
 ### Examples
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 blockSketch = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -70,7 +70,7 @@ blockSketch = sketch(on = XY) {
   vertical(edge4)
 }
 
-blockRegion = region(point = [5mm, 3mm], sketch = blockSketch)
+blockRegion = region(segments = [blockSketch.edge1, blockSketch.edge2])
 hide(blockSketch)
 block = extrude(blockRegion, length = 10mm)
 gdt::straightness(edges = [blockRegion.tags.edge2], tolerance = 0.05mm)
@@ -81,7 +81,7 @@ gdt::straightness(edges = [blockRegion.tags.edge2], tolerance = 0.05mm)
 ![Rendered example of gdt::straightness 0](/kcl-test-outputs/serial_test_example_fn_std-gdt-straightness0.png)
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 blockProfile = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -98,7 +98,7 @@ blockProfile = sketch(on = XY) {
   vertical(edge4)
 }
 
-block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 4mm, tagEnd = $top)
 gdt::straightness(
   faces = [top],
   tolerance = 0.02mm,
@@ -112,7 +112,7 @@ gdt::straightness(
 ![Rendered example of gdt::straightness 1](/kcl-test-outputs/serial_test_example_fn_std-gdt-straightness1.png)
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 blockProfile = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -129,7 +129,7 @@ blockProfile = sketch(on = XY) {
   vertical(edge4)
 }
 
-block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 4mm, tagEnd = $top)
 sideEdge = {
   sideFaces = [block.sketch.tags.edge1, top]
 }

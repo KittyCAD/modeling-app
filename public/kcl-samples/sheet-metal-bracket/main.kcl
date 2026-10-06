@@ -3,7 +3,7 @@
 // Categories: Mechanical Components; Industrial & Manufacturing
 
 // Set units
-@settings(defaultLengthUnit = in, kclVersion = 1.0)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 // Input bolt pattern dimensions to mount the bracket
 mountingBoltDiameter = 1 / 4
@@ -236,16 +236,16 @@ solid001 = subtract(bracketProfile, tools = extrude001)
        radius = flangeLength / 3,
        edges = [
          {
-           sideFaces = [region0011.tags.arc2, capEnd001]
+           sideFaces = [region0011.tags.line21, capEnd001]
          },
          {
-           sideFaces = [region0011.tags.line11, capEnd001]
+           sideFaces = [region0011.tags.line10, capEnd001]
          },
          {
-           sideFaces = [region0011.tags.line11, capStart001]
+           sideFaces = [region0011.tags.line10, capStart001]
          },
          {
-           sideFaces = [region0011.tags.arc2, capStart001]
+           sideFaces = [region0011.tags.line21, capStart001]
          }
        ],
      )

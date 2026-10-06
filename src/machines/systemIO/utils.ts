@@ -3,6 +3,7 @@ import type { ExecState } from '@src/lang/wasm'
 import type { App } from '@src/lib/app'
 import { FILE_EXT, PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
+import { FileNotFound } from '@src/lib/fileSystem/fileOperations'
 import fsZds from '@src/lib/fs-zds'
 import {
   appendGitignoreForDirectoryWithFs,
@@ -399,9 +400,24 @@ export const collectProjectFiles = async (args: {
         const relativePath = (
           fsZds.relative(basePath, absolutePathToFileNameWithExtension) ?? ''
         ).replace(/\\/g, '/')
-        const isDirectory =
-          (await args.fileOperations.stat(absolutePathToFileNameWithExtension))
-            .kind === 'directory'
+        let isDirectory: boolean
+        try {
+          isDirectory =
+            (
+              await args.fileOperations.stat(
+                absolutePathToFileNameWithExtension
+              )
+            ).kind === 'directory'
+        } catch (error) {
+          // Directory entries can disappear while a project is being collected.
+          if (
+            error instanceof FileNotFound &&
+            args.skipUnreadableFiles !== false
+          ) {
+            continue
+          }
+          return Promise.reject(error)
+        }
 
         if (
           isPathIgnoredByGitignore(gitignoreStack, relativePath, isDirectory)

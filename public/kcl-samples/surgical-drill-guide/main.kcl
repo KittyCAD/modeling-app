@@ -52,9 +52,9 @@ handleProfile = sketch(on = YZ) {
   tangent([returnEdge, heelArc])
   equalLength([base, topFace])
   distance([
-  arcCenterGuide.start,
-  arcCenterGuide.end
-]) == stockThickness + bendRadius
+    arcCenterGuide.start,
+    arcCenterGuide.end
+  ]) == stockThickness + bendRadius
   radius(frontBend) == bendRadius
   horizontalDistance([base.start, base.end]) == handleLength
   verticalDistance([frontFace.start, frontFace.end]) == stockThickness
@@ -208,13 +208,13 @@ grip01Sketch = sketch(on = offsetPlane(XZ, offset = firstBitAxisOffset + 16)) {
   horizontal(innerRadiusGuide)
   distance([centerGuide.start, centerGuide.end]) == firstBitAxisY
   horizontalDistance([
-  outerRadiusGuide.start,
-  outerRadiusGuide.end
-]) == gripOuterRadius
+    outerRadiusGuide.start,
+    outerRadiusGuide.end
+  ]) == gripOuterRadius
   horizontalDistance([
-  innerRadiusGuide.start,
-  innerRadiusGuide.end
-]) == bitSize01
+    innerRadiusGuide.start,
+    innerRadiusGuide.end
+  ]) == bitSize01
 }
 grip01Region = region(segments = [grip01Sketch.outerCircle])
 hide(grip01Sketch)
@@ -336,13 +336,13 @@ grip02Sketch = sketch(on = offsetPlane(XY, offset = -3)) {
   horizontal(innerRadiusGuide)
   distance([centerGuide.start, centerGuide.end]) == handleLength
   horizontalDistance([
-  outerRadiusGuide.start,
-  outerRadiusGuide.end
-]) == gripOuterRadius
+    outerRadiusGuide.start,
+    outerRadiusGuide.end
+  ]) == gripOuterRadius
   horizontalDistance([
-  innerRadiusGuide.start,
-  innerRadiusGuide.end
-]) == bitSize02
+    innerRadiusGuide.start,
+    innerRadiusGuide.end
+  ]) == bitSize02
 }
 grip02Region = region(segments = [grip02Sketch.outerCircle])
 hide(grip02Sketch)

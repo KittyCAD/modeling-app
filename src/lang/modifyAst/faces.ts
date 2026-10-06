@@ -17,13 +17,9 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
-import {
-  modifyAstWithTagForCapFace,
-  mutateAstWithTagForSketchSegment,
-} from '@src/lang/modifyAst/tagManagement'
+import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import {
   artifactToEntityRef,
-  getRegionTagExprFromSegmentId,
   getSelectedPlaneAsNode,
   getVariableExprsFromSelection,
   resolveToCodeRef,
@@ -36,10 +32,7 @@ import {
   getCapForPathId,
   getFaceCodeRef,
 } from '@src/lang/std/artifactGraph'
-import {
-  addTagToEdgeCutSelector,
-  addTagToSingletonEdgeCut,
-} from '@src/lang/std/sketchTaggingHelpers'
+import { addTagToSingletonEdgeCut } from '@src/lang/std/sketchTaggingHelpers'
 import {
   type Artifact,
   type ArtifactGraph,
@@ -50,6 +43,10 @@ import {
   type VariableMap,
   formatNumberValue,
 } from '@src/lang/wasm'
+import {
+  modelingStdLibCall,
+  modelingStdLibCommandName,
+} from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
@@ -141,10 +138,14 @@ export function addShell({
     }
   }
 
-  const call = createCallExpressionStdLibKw('shell', solidsExpr, [
-    ...(facesExpr ? [createLabeledArg('faces', facesExpr)] : []),
-    createLabeledArg('thickness', valueOrVariable(thickness)),
-  ])
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Shell'),
+    solidsExpr,
+    [
+      ...(facesExpr ? [createLabeledArg('faces', facesExpr)] : []),
+      createLabeledArg('thickness', valueOrVariable(thickness)),
+    ]
+  )
 
   // Insert variables for labeled arguments if provided
   if ('variableName' in thickness && thickness.variableName) {
@@ -195,7 +196,11 @@ export function addDeleteFace({
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   if (mNodeToEdit) {
-    const call = createCallExpressionStdLibKw('deleteFace', null, [])
+    const call = createCallExpressionStdLibKw(
+      modelingStdLibCommandName('Delete Face'),
+      null,
+      []
+    )
     const pathToNode = setCallInAst({
       ast: modifiedAst,
       call,
@@ -271,9 +276,11 @@ export function addDeleteFace({
     return new Error("Couldn't retrieve face from selection")
   }
 
-  const call = createCallExpressionStdLibKw('deleteFace', solidsExpr, [
-    createLabeledArg('faces', facesExpr),
-  ])
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Delete Face'),
+    solidsExpr,
+    [createLabeledArg('faces', facesExpr)]
+  )
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
@@ -411,6 +418,7 @@ export function addHole({
 
   // Extra args for createCallExpressionStdLibKw as we're calling functions from a module
   const nonCodeMeta = undefined
+  const holeCall = modelingStdLibCall('Hole')
   const modulePath = [createIdentifier('hole')]
 
   // Prep the big label args
@@ -507,7 +515,7 @@ export function addHole({
   if (err(cutAtExpr)) return cutAtExpr
 
   const call = createCallExpressionStdLibKw(
-    'hole',
+    holeCall.name,
     solidsExpr,
     [
       ...(facesExpr ? [createLabeledArg('face', facesExpr)] : []),
@@ -941,9 +949,11 @@ export function addOffsetPlane({
     }
   }
 
-  const call = createCallExpressionStdLibKw('offsetPlane', planeExpr, [
-    createLabeledArg('offset', valueOrVariable(offset)),
-  ])
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Offset plane'),
+    planeExpr,
+    [createLabeledArg('offset', valueOrVariable(offset))]
+  )
 
   // Insert variables for labeled arguments if provided
   if ('variableName' in offset && offset.variableName) {
@@ -1131,103 +1141,21 @@ export function getFacesExprsFromSelection(
       if (err(capForPath)) return []
       artifact = capForPath
     }
-    if (artifact.type === 'cap') {
-      // Add tagEnd/tagStart to the extrude and use that tag instead of END/START
-      const tagResult = modifyAstWithTagForCapFace(
+    if (isFaceArtifact(artifact)) {
+      const result = modifyAstWithTagsForSelection(
         modifiedAst,
-        artifact,
+        { ...resolved, artifact },
         artifactGraph,
         wasmInstance
       )
-      if (err(tagResult)) {
-        console.warn('Failed to add cap tag to extrude', tagResult)
+      if (err(result)) {
+        console.warn('Failed to generate face reference', result)
         return []
       }
-      modifiedAst = tagResult.modifiedAst
-      return [createLocalName(tagResult.tag)]
-    } else if (artifact.type === 'wall' || artifact.type === 'edgeCut') {
-      let targetArtifact: Artifact | undefined
-      if (artifact.type === 'wall') {
-        const key = artifact.segId
-        const segmentArtifact = getArtifactOfTypes(
-          { key, types: ['segment'] },
-          artifactGraph
-        )
-        if (err(segmentArtifact) || segmentArtifact.type !== 'segment') {
-          console.warn('No segment found for face', v2Sel)
-          return []
-        }
-
-        const regionTagExpr = getRegionTagExprFromSegmentId(
-          modifiedAst,
-          segmentArtifact.id,
-          artifactGraph,
-          wasmInstance
-        )
-        if (regionTagExpr) {
-          return [regionTagExpr]
-        }
-
-        if (segmentArtifact.originalSegId) {
-          const originalSegmentArtifact = getArtifactOfTypes(
-            { key: segmentArtifact.originalSegId, types: ['segment'] },
-            artifactGraph
-          )
-          targetArtifact = err(originalSegmentArtifact)
-            ? segmentArtifact
-            : originalSegmentArtifact
-        } else {
-          targetArtifact = segmentArtifact
-        }
-      } else {
-        targetArtifact = artifact
-      }
-
-      const codeRef =
-        targetArtifact && 'codeRef' in targetArtifact
-          ? targetArtifact.codeRef
-          : undefined
-      if (!codeRef) {
-        console.warn('No codeRef for target artifact')
-        return []
-      }
-      const tagResult =
-        targetArtifact?.type === 'edgeCut'
-          ? targetArtifact.sourceSelectorIndex != null
-            ? addTagToEdgeCutSelector(
-                {
-                  node: modifiedAst,
-                  pathToNode: codeRef.pathToNode,
-                  wasmInstance,
-                },
-                targetArtifact.sourceSelectorIndex,
-                wasmInstance
-              )
-            : addTagToSingletonEdgeCut(
-                {
-                  node: modifiedAst,
-                  pathToNode: codeRef.pathToNode,
-                  wasmInstance,
-                },
-                wasmInstance
-              )
-          : mutateAstWithTagForSketchSegment(
-              modifiedAst,
-              codeRef.pathToNode,
-              wasmInstance
-            )
-      if (err(tagResult)) {
-        console.warn(
-          'Failed to mutate ast with tag for sketch segment',
-          tagResult
-        )
-        return []
-      }
-
-      modifiedAst = tagResult.modifiedAst
-      return [createLocalName(tagResult.tag)]
+      modifiedAst = result.modifiedAst
+      return result.exprs
     } else {
-      console.warn('Face was not a cap or wall or chamfer', v2Sel)
+      console.warn('Face was not a cap, wall, or edge cut', v2Sel)
       return []
     }
   })

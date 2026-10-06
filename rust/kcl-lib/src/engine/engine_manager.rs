@@ -5,6 +5,7 @@ use std::sync::atomic::Ordering::Relaxed;
 use anyhow::Result;
 pub use engine_transport::EngineTransport;
 use indexmap::IndexMap;
+use kcmc::KclVersion;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kcmc::shared::Color;
@@ -85,6 +86,9 @@ pub struct EngineManager {
     /// If the server sends session data, it'll be copied to here.
     session_data: Arc<RwLock<Option<ModelingSessionData>>>,
 
+    /// Request ID returned by the HTTP request that upgraded to this WebSocket.
+    websocket_upgrade_request_id: Option<String>,
+
     #[builder(default)]
     stats: EngineStats,
 
@@ -101,6 +105,7 @@ impl std::fmt::Debug for EngineManager {
             .field("ids_of_async_commands", &self.ids_of_async_commands)
             .field("default_planes", &self.default_planes)
             .field("session_data", &self.session_data)
+            .field("websocket_upgrade_request_id", &self.websocket_upgrade_request_id)
             .field("stats", &self.stats)
             .field("async_tasks", &self.async_tasks)
             .finish()
@@ -127,6 +132,7 @@ impl EngineManager {
             ids_of_async_commands,
             default_planes: Default::default(),
             session_data,
+            websocket_upgrade_request_id: None,
             stats: Default::default(),
             async_tasks: Default::default(),
         }
@@ -160,7 +166,7 @@ impl EngineManager {
             Arc::clone(&session_data),
             Arc::clone(&pending_errors),
             Arc::clone(&socket_health),
-            request_id,
+            request_id.clone(),
         )
         .await;
 
@@ -172,6 +178,7 @@ impl EngineManager {
             ids_of_async_commands,
             default_planes: Default::default(),
             session_data,
+            websocket_upgrade_request_id: request_id,
             stats: Default::default(),
             async_tasks: Default::default(),
         }
@@ -195,6 +202,7 @@ impl EngineManager {
             ids_of_async_commands,
             default_planes: Default::default(),
             session_data,
+            websocket_upgrade_request_id: None,
             stats: Default::default(),
             async_tasks: Default::default(),
         }
@@ -215,18 +223,29 @@ impl EngineManager {
         batch_context: &EngineBatchContext,
         id_generator: &mut IdGenerator,
         source_range: SourceRange,
+        kcl_version: Option<KclVersion>,
         geometry_only: bool,
     ) -> Result<(), crate::errors::KclError> {
         // Clear any batched commands leftover from previous scenes.
         self.clear_queues(batch_context).await;
 
-        self.batch_modeling_cmd(
-            batch_context,
-            id_generator.next_uuid(),
-            source_range,
-            &ModelingCmd::SceneClearAll(mcmd::SceneClearAll::default()),
-        )
-        .await?;
+        if let Some(kcl_version) = kcl_version {
+            self.batch_modeling_cmd(
+                batch_context,
+                id_generator.next_uuid(),
+                source_range,
+                &ModelingCmd::SetKclVersion(mcmd::SetKclVersion::builder().kcl_version(kcl_version).build()),
+            )
+            .await?;
+        } else {
+            self.batch_modeling_cmd(
+                batch_context,
+                id_generator.next_uuid(),
+                source_range,
+                &ModelingCmd::SceneClearAll(mcmd::SceneClearAll::default()),
+            )
+            .await?;
+        }
 
         // Flush the batch queue, so clear is run right away.
         // Otherwise the hooks below won't work.
@@ -958,6 +977,11 @@ impl EngineManager {
 
     pub async fn get_session_data(&self) -> Option<ModelingSessionData> {
         self.session_data.read().await.clone()
+    }
+
+    /// Request ID returned by the HTTP request that upgraded to this WebSocket.
+    pub fn websocket_upgrade_request_id(&self) -> Option<&str> {
+        self.websocket_upgrade_request_id.as_deref()
     }
 
     pub async fn close(&self) {
