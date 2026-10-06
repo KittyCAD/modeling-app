@@ -185,6 +185,24 @@ export default class RustContext {
         JSON.stringify(settings),
         usePrevMemory
       )
+      const outcome = execStateFromRust(result)
+      this.setDefaultPlanes(outcome.defaultPlanes)
+      return outcome
+    } catch (e: any) {
+      const err = errFromErrWithOutputs(e)
+      this.setDefaultPlanes(err.defaultPlanes)
+      return Promise.reject(err)
+    }
+  }
+
+  /** Evaluate an input expression with the current Rust model's settings. */
+  async evaluateExpression(node: Node<Program>): Promise<ExecState> {
+    const instance = await this._checkContextInstance()
+    try {
+      const result = await instance.evaluateExpression(
+        JSON.stringify(node),
+        JSON.stringify(jsAppSettings(this.settingsActor))
+      )
       return execStateFromRust(result)
     } catch (e: any) {
       return Promise.reject(errFromErrWithOutputs(e))

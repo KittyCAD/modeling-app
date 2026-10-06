@@ -211,6 +211,8 @@ export class CmdBarFixture {
       commandName: commandName || '',
     }
   }
+  getState = async (): Promise<CmdBarSerialised> => this._serialiseCmdBar()
+
   expectState = async (expected: CmdBarSerialised) => {
     if (expected.stage === 'review') {
       await this.cmdBarLoadingCheckingArguments.waitFor({ state: 'hidden' })
@@ -227,7 +229,7 @@ export class CmdBarFixture {
    * and assumes we are past the `pickCommand` step.
    */
   progressCmdBar = async (shouldUseKeyboard = false) => {
-    await this.page.waitForTimeout(2000)
+    await this.page.waitForTimeout(100)
     if (shouldUseKeyboard) {
       await this.page.keyboard.press('Enter')
       return

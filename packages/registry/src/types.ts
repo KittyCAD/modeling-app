@@ -115,6 +115,7 @@ export interface RuntimeRegistryItemHandle<TModel = unknown> {
 export interface RegistryItemFactory<TModel = unknown> {
   (ctx: RegistryItemContext): RuntimeRegistryItemHandle<TModel>
   readonly itemKey?: RegistryItemKey
+  readonly dependencies?: readonly RegistryItem[]
 }
 
 /**
@@ -149,8 +150,8 @@ export interface ServiceReader {
 }
 
 /**
- * Registry item factories receive a context that lets them read resolved value specs
- * and services lazily.
+ * Registry item factories receive a context that lets them read resolved value
+ * specs and services lazily, after graph construction.
  */
 export interface RegistryItemContext {
   readonly container: RegistryLike

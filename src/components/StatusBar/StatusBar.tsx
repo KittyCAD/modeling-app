@@ -158,6 +158,8 @@ function StatusBarItem(
           )}
         </div>
       )
+    case 'link':
+    case 'externalLink':
     default:
       return (
         <ActionButton

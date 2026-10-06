@@ -446,6 +446,11 @@ export const createOnWebSocketMessage = ({
       case 'reconnect':
         requestReconnect()
         return
+      case 'debug':
+      case 'modeling':
+      case 'export':
+      case 'modeling_batch':
+        break
     }
   }
 

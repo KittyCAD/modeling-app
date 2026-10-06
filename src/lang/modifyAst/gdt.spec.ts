@@ -34,7 +34,6 @@ import {
   createSelectionFromArtifacts,
   enginelessExecutor,
   getCapFromCylinder,
-  getClonedSweepEdges,
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -89,6 +88,40 @@ function getWallsFromBox(artifactGraph: ArtifactGraph, count: number) {
     .filter((a) => a.type === 'wall')
     .slice(0, count)
   return createSelectionFromArtifacts(walls, artifactGraph)
+}
+
+function getSweepCapAndWalls(artifactGraph: ArtifactGraph) {
+  const sweep = [...artifactGraph.values()].find(
+    (artifact): artifact is Extract<Artifact, { type: 'sweep' }> =>
+      artifact.type === 'sweep'
+  )
+  if (!sweep) return null
+
+  const faces = sweep.surfaceIds
+    .map((surfaceId) => artifactGraph.get(surfaceId))
+    .filter((artifact): artifact is Artifact => artifact !== undefined)
+  const endCap = faces.find(
+    (artifact): artifact is Extract<Artifact, { type: 'cap' }> =>
+      artifact.type === 'cap' && artifact.subType === 'end'
+  )
+  const walls = faces.filter(
+    (artifact): artifact is Extract<Artifact, { type: 'wall' }> =>
+      artifact.type === 'wall'
+  )
+
+  return endCap && walls.length > 0 ? { endCap, walls } : null
+}
+
+function selectionFromSideFaces(sideFaceGroups: Artifact[][]): Selections {
+  return {
+    graphSelections: sideFaceGroups.map((sideFaces) => ({
+      entityRef: {
+        type: 'edge' as const,
+        side_faces: sideFaces.map((face) => face.id),
+      },
+    })),
+    otherSelections: [],
+  }
 }
 
 function getEndCapsFromMultipleBodies(artifactGraph: ArtifactGraph) {
@@ -541,10 +574,10 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 
       // Verify the original segment tag is preserved and chamfer gets new tag
       expect(newCode).toContain('tag = $seg01')
-      expect(newCode).toContain('tag = $seg02')
+      expect(newCode).toContain('tag = $chamferFace01')
       // Verify the GDT annotation references the chamfer tag
       expect(newCode).toContain(
-        'gdt::flatness(faces = [seg02], tolerance = 0.1mm)'
+        'gdt::flatness(faces = [chamferFace01], tolerance = 0.1mm)'
       )
       // Verify the original chamfer operation is still there
       expect(newCode).toContain('chamfer(')
@@ -597,11 +630,11 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 
       // Verify GDT annotation was added for fillet
       expect(newCode).toContain('gdt::flatness(')
-      expect(newCode).toContain('faces = [seg02]') // The tagged fillet face
+      expect(newCode).toContain('faces = [filletFace01]')
       expect(newCode).toContain('tolerance = 0.1mm')
 
       // Verify the fillet was tagged properly
-      expect(newCode).toContain('tag = $seg02')
+      expect(newCode).toContain('tag = $filletFace01')
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -713,6 +746,58 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('gdt::straightness(')
       expect(newCode).toContain('faces = [')
       expect(newCode).toContain('edges = [')
+      expect(newCode).toContain('sideFaces = [')
+      expect(newCode).not.toContain('getCommonEdge')
+      expect(newCode).toContain('tolerance = 0.1mm')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add straightness to a point-and-click edge selection using face API syntax', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const edge = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweepEdge'
+      )
+      if (!edge) {
+        throw new Error('Expected a sweep edge')
+      }
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addStraightnessGdt({
+        ast,
+        artifactGraph,
+        objects: {
+          graphSelections: [
+            {
+              entityRef: {
+                type: 'edge',
+                side_faces: edge.commonSurfaceIds ?? [],
+              },
+            },
+          ],
+          otherSelections: [],
+        },
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+
+      expect(newCode).toContain('gdt::straightness(')
+      expect(newCode).toContain('edges = [')
+      expect(newCode).toContain('sideFaces = [')
+      expect(newCode).not.toContain('faces = [')
+      expect(newCode).not.toContain('getCommonEdge')
       expect(newCode).toContain('tolerance = 0.1mm')
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
@@ -1130,47 +1215,6 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
   })
 
   describe('Testing addProfileGdt', () => {
-    it('should reference faces on a cloned body for a selected edge', async () => {
-      const { artifactGraph, ast } = await executeCode(
-        clonedRegionBody,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      const edge = getClonedSweepEdges(artifactGraph).find((artifact) =>
-        artifact.commonSurfaceIds.some(
-          (id) => artifactGraph.get(id)?.type === 'cap'
-        )
-      )
-      if (!edge) throw new Error('Expected a cloned sweep edge')
-
-      const tolerance = await getKclCommandValue(
-        '0.1mm',
-        instanceInThisFile,
-        rustContextInThisFile
-      )
-      const result = addProfileGdt({
-        ast,
-        artifactGraph,
-        objects: createSelectionFromArtifacts([edge], artifactGraph),
-        tolerance,
-        wasmInstance: instanceInThisFile,
-      })
-      if (err(result)) throw result
-
-      const newCode = recast(result.modifiedAst, instanceInThisFile)
-      if (err(newCode)) throw newCode
-      expect(newCode).toContain(`gdt::profileLine(
-  edges = [
-    getCommonEdge(faces = [
-      cube2.sketch.tags.line2,
-      cube2.faces.capEnd001
-    ])
-  ],
-  tolerance = 0.1mm,
-)`)
-      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
-    })
-
     it.each([
       {
         label: 'cap',
@@ -1238,10 +1282,10 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         kclManagerInThisFile
       )
       const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
+        (artifact) => artifact.type === 'segment'
       )
       if (!edge) {
-        throw new Error('Expected a sweep edge')
+        throw new Error('Expected a sketch segment')
       }
 
       const tolerance = await getKclCommandValue(
@@ -1273,9 +1317,9 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 
       expect(newCode).toContain('gdt::profileLine(')
       expect(newCode).not.toContain('gdt::profile(')
-      expect(newCode).toMatch(
-        /edges = \[\s*getCommonEdge\(faces = \[[^\]]+\]\)\s*\]/
-      )
+      expect(newCode).toContain('edges = [')
+      expect(newCode).toContain('sideFaces = [')
+      expect(newCode).not.toContain('getCommonEdge')
       expect(newCode).toContain('datums = ["A", "B"]')
       expect(newCode).toContain('tolerance = 0.1mm')
 
@@ -1383,10 +1427,10 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         (artifact) => artifact.type === 'cap'
       )
       const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
+        (artifact) => artifact.type === 'segment'
       )
       if (!face || !edge) {
-        throw new Error('Expected a cap face and sweep edge')
+        throw new Error('Expected a cap face and sketch segment')
       }
 
       const tolerance = await getKclCommandValue(
@@ -1433,17 +1477,17 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
-      )
-      if (!edge) {
-        throw new Error('Expected a sweep edge')
+      const sweepFaces = getSweepCapAndWalls(artifactGraph)
+      if (!sweepFaces) {
+        throw new Error('Sweep end cap and walls not found')
       }
 
       const result = addDistanceGdt({
         ast,
         artifactGraph,
-        objects: createSelectionFromArtifacts([edge], artifactGraph),
+        objects: selectionFromSideFaces([
+          [sweepFaces.walls[0], sweepFaces.endCap],
+        ]),
         wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
@@ -1467,11 +1511,9 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
-      )
-      if (!edge) {
-        throw new Error('Expected a sweep edge')
+      const sweepFaces = getSweepCapAndWalls(artifactGraph)
+      if (!sweepFaces) {
+        throw new Error('Sweep end cap and walls not found')
       }
 
       const tolerance = await getKclCommandValue(
@@ -1482,7 +1524,9 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = addDistanceGdt({
         ast,
         artifactGraph,
-        objects: createSelectionFromArtifacts([edge], artifactGraph),
+        objects: selectionFromSideFaces([
+          [sweepFaces.walls[0], sweepFaces.endCap],
+        ]),
         tolerance,
         wasmInstance: instanceInThisFile,
       })
@@ -1496,9 +1540,9 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       }
 
       expect(newCode).toContain('gdt::distance(')
-      expect(newCode).toMatch(
-        /edges = \[\s*getCommonEdge\(faces = \[[^\]]+\]\)\s*\]/
-      )
+      expect(newCode).toContain('edges = [')
+      expect(newCode).toContain('sideFaces = [')
+      expect(newCode).not.toContain('getCommonEdge')
       expect(newCode).toContain('tolerance = 0.1mm')
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
@@ -1510,11 +1554,9 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const edges = [...artifactGraph.values()]
-        .filter((artifact) => artifact.type === 'sweepEdge')
-        .slice(0, 3)
-      if (edges.length !== 3) {
-        throw new Error('Expected three sweep edges')
+      const sweepFaces = getSweepCapAndWalls(artifactGraph)
+      if (!sweepFaces || sweepFaces.walls.length < 3) {
+        throw new Error('Expected three sweep walls')
       }
 
       const tolerance = await getKclCommandValue(
@@ -1525,7 +1567,9 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = addDistanceGdt({
         ast,
         artifactGraph,
-        objects: createSelectionFromArtifacts(edges, artifactGraph),
+        objects: selectionFromSideFaces(
+          sweepFaces.walls.slice(0, 3).map((wall) => [wall, sweepFaces.endCap])
+        ),
         tolerance,
         wasmInstance: instanceInThisFile,
       })
@@ -1542,7 +1586,8 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('edges = [')
       expect(newCode).not.toContain('from = ')
       expect(newCode).not.toContain('to = ')
-      expect(newCode.match(/getCommonEdge/g)?.length).toBeGreaterThanOrEqual(3)
+      expect(newCode.match(/sideFaces = \[/g)?.length).toBeGreaterThanOrEqual(3)
+      expect(newCode).not.toContain('getCommonEdge')
       expect(newCode).toContain('tolerance = 0.1mm')
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
@@ -1554,11 +1599,9 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const edges = [...artifactGraph.values()]
-        .filter((artifact) => artifact.type === 'sweepEdge')
-        .slice(0, 2)
-      if (edges.length !== 2) {
-        throw new Error('Expected two sweep edges')
+      const sweepFaces = getSweepCapAndWalls(artifactGraph)
+      if (!sweepFaces || sweepFaces.walls.length < 2) {
+        throw new Error('Expected two sweep walls')
       }
 
       const tolerance = await getKclCommandValue(
@@ -1569,7 +1612,10 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = addDistanceGdt({
         ast,
         artifactGraph,
-        objects: createSelectionFromArtifacts(edges, artifactGraph),
+        objects: selectionFromSideFaces([
+          [sweepFaces.walls[0], sweepFaces.endCap],
+          [sweepFaces.walls[1], sweepFaces.endCap],
+        ]),
         tolerance,
         wasmInstance: instanceInThisFile,
       })
@@ -1583,8 +1629,10 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       }
 
       expect(newCode).toContain('gdt::distance(')
-      expect(newCode).toContain('from = getCommonEdge(')
-      expect(newCode).toContain('to = getCommonEdge(')
+      expect(newCode).toContain('from = {')
+      expect(newCode).toContain('to = {')
+      expect(newCode.match(/sideFaces = \[/g)).toHaveLength(2)
+      expect(newCode).not.toContain('getCommonEdge')
       expect(newCode).toContain('tolerance = 0.1mm')
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
@@ -1640,16 +1688,18 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const face = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'cap' || artifact.type === 'wall'
-      )
-      const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
-      )
-      if (!face || !edge) {
-        throw new Error('Expected a face and sweep edge')
+      const sweepFaces = getSweepCapAndWalls(artifactGraph)
+      if (!sweepFaces || sweepFaces.walls.length < 2) {
+        throw new Error('Expected a face and an edge between two sweep faces')
       }
 
+      const faceSelection = createSelectionFromArtifacts(
+        [sweepFaces.walls[1]],
+        artifactGraph
+      )
+      const edgeSelection = selectionFromSideFaces([
+        [sweepFaces.walls[0], sweepFaces.endCap],
+      ])
       const tolerance = await getKclCommandValue(
         '0.1mm',
         instanceInThisFile,
@@ -1658,7 +1708,13 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       const result = addDistanceGdt({
         ast,
         artifactGraph,
-        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        objects: {
+          graphSelections: [
+            ...faceSelection.graphSelections,
+            ...edgeSelection.graphSelections,
+          ],
+          otherSelections: [],
+        },
         tolerance,
         wasmInstance: instanceInThisFile,
       })
@@ -1673,7 +1729,9 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 
       expect(newCode).toContain('gdt::distance(')
       expect(newCode).toContain('from = ')
-      expect(newCode).toContain('to = getCommonEdge(')
+      expect(newCode).toContain('to = {')
+      expect(newCode).toContain('sideFaces = [')
+      expect(newCode).not.toContain('getCommonEdge')
       expect(newCode).toContain('tolerance = 0.1mm')
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
@@ -1907,10 +1965,10 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         (artifact) => artifact.type === 'cap'
       )
       const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
+        (artifact) => artifact.type === 'segment'
       )
       if (!face || !edge) {
-        throw new Error('Expected a cap face and sweep edge')
+        throw new Error('Expected a cap face and sketch segment')
       }
 
       const tolerance = await getKclCommandValue(
@@ -2188,9 +2246,9 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       // Verify the original segment tag is preserved
       expect(newCode).toContain('xLine(length = 10, tag = $seg01)')
       // Verify the chamfer was tagged properly
-      expect(newCode).toContain('tag = $seg02')
+      expect(newCode).toContain('tag = $chamferFace01')
       // Verify GDT datum annotation was added for chamfer
-      expect(newCode).toContain('gdt::datum(face = seg02, name = "D")')
+      expect(newCode).toContain('gdt::datum(face = chamferFace01, name = "D")')
 
       // Execute to validate runtime consistency
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)

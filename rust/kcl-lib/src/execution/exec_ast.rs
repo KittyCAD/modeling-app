@@ -80,6 +80,7 @@ use crate::execution::sketch_solve::UnsatisfiedDirectionalConstraint;
 use crate::execution::sketch_solve::create_segment_scene_objects;
 use crate::execution::sketch_solve::normalize_to_solver_angle_unit;
 use crate::execution::sketch_solve::normalize_to_solver_distance_unit;
+use crate::execution::sketch_solve::solver_convergence_tolerance;
 use crate::execution::sketch_solve::solver_numeric_type;
 use crate::execution::sketch_solve::substitute_sketch_var_in_segment;
 use crate::execution::sketch_solve::substitute_sketch_vars;
@@ -141,7 +142,6 @@ use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
 use crate::std::shapes::SketchOrSurface;
 use crate::std::sketch::ensure_sketch_plane_in_engine;
-use crate::std::solver::SOLVER_CONVERGENCE_TOLERANCE;
 use crate::std::solver::create_segments_in_engine;
 use crate::std::utils::intersect_lines_2d;
 use crate::std::utils::normalize_rad;
@@ -1888,7 +1888,7 @@ impl ExecutorContext {
                 exec_state.add_path_to_source_id(resolved_path.clone(), id);
                 let source = resolved_path.source(&self.fs, source_range).await?;
                 exec_state.add_id_to_source(id, source.clone());
-                let (parsed, never_type_ranges) = crate::parsing::parse_str_syntax(&source.source, id)?;
+                let (_, parsed, never_type_ranges) = crate::parsing::parse_str_syntax(&source.source, id)?;
                 // Defer validation until module execution or the mock import site.
                 exec_state.global.never_type_ranges.insert(id, never_type_ranges);
                 exec_state.add_module(id, resolved_path.clone(), ModuleRepr::Kcl(parsed, None));
@@ -1926,12 +1926,28 @@ impl ExecutorContext {
                 exec_state.add_path_to_source_id(resolved_path.clone(), id);
                 let source = resolved_path.source(&self.fs, source_range).await?;
                 exec_state.add_id_to_source(id, source.clone());
-                let (parsed, never_type_ranges) = crate::parsing::parse_str_syntax(&source.source, id).unwrap();
-                crate::parsing::validate_never_type_ranges(
+                let (_, parsed, never_type_ranges) = match crate::parsing::parse_str_syntax(&source.source, id) {
+                    Ok(v) => v,
+                    Err(err) => {
+                        let message = format!("Failed to parse source for {resolved_path}; {err})");
+                        debug_assert!(false, "{message}");
+                        return Err(KclError::new_internal(KclErrorDetails::new(
+                            message,
+                            vec![source_range],
+                        )));
+                    }
+                };
+                if let Err(err) = crate::parsing::validate_never_type_ranges(
                     &never_type_ranges,
                     crate::parsing::SyntaxSource::BundledStdlib,
-                )
-                .unwrap();
+                ) {
+                    let message = format!("Failed to validate never type ranges for {resolved_path}; {err})");
+                    debug_assert!(false, "{message}");
+                    return Err(KclError::new_internal(KclErrorDetails::new(
+                        message,
+                        vec![source_range],
+                    )));
+                }
                 exec_state.add_module(id, resolved_path.clone(), ModuleRepr::Kcl(parsed, None));
                 Ok(id)
             }
@@ -3015,7 +3031,7 @@ impl Node<SketchBlock> {
         // Solve constraints.
         let config = ezpz::Config::default()
             .with_max_iterations(50)
-            .with_convergence_tolerance(SOLVER_CONVERGENCE_TOLERANCE);
+            .with_convergence_tolerance(solver_convergence_tolerance(exec_state));
         let solve_result = if exec_state.mod_local.freedom_analysis {
             ezpz::solve_analysis(&constraints, initial_guesses.clone(), config).map(|outcome| {
                 let freedom_analysis = FreedomAnalysis::from_ezpz_analysis(outcome.analysis, constraints.len());
@@ -7855,13 +7871,15 @@ d = b + c
             execution_callbacks: Default::default(),
             executor_kind: ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+            configure_engine_render: true,
         };
         let mut exec_state = ExecState::new(&exec_ctxt);
 
         exec_ctxt
             .run(
                 &crate::Program {
-                    ast: main.clone(),
+                    kcl_version: main.kcl_version,
+                    ast: main.ast.clone(),
                     original_file_contents: "".to_owned(),
                 },
                 &mut exec_state,

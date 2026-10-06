@@ -2,7 +2,7 @@
 name = "kcl-wasm-lib"
 description = "KittyCAD Language wasm bindings"
 license = "MIT"
-version = "0.1.186"
+version = "0.1.190"
 edition = "2024"
 repository = "https://github.com/KittyCAD/modeling-app"
 publish = false
@@ -15,6 +15,7 @@ bench = false
 dhat-heap = ["kcl-lib/dhat-heap"]
 
 [dependencies]
+kcl-api = { path = "../kcl-api" }
 kcl-lib = { path = "../kcl-lib", features = ["artifact-graph"] }
 rayon = { workspace = true }
 serde_json = { workspace = true }

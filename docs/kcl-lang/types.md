@@ -17,7 +17,9 @@ Constants are defined with a name and a value, like so:
 myBool = false
 ```
 
-Currently you cannot redeclare a constant.
+- A constant cannot be redeclared in the same scope.
+- In KCL 3.0, each `if` branch has its own scope, so a constant declared there
+  can use the same name as a constant in an outer scope.
 
 
 ## Objects
@@ -38,7 +40,7 @@ these objects have type `ImportedGeometry`, which is distinct from `Solid`: ther
 is no access to their internal components, and no conversion between the two
 types.
 
-```
+```text
 The input argument of `subtract` requires one or more `Solid`s (`[Solid; 1+]`),
 but found an array of `ImportedGeometry`
 ```
@@ -61,7 +63,7 @@ The syntax for declaring a tag is `$myTag`. Tags are used for bodies (such as ex
 **Example: Referencing sketch segments and tagging cap faces**
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -2.17mm, var -0.91mm], end = [var 3.01mm, var -1.57mm])
@@ -75,7 +77,11 @@ sketch001 = sketch(on = XZ) {
 }
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = 5, tagEnd = $capEnd001)
-fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [region001.tags.line4, capEnd001]), radius = 1)
+fillet001 = fillet(
+  extrude001,
+  edges = [{ sideFaces = [region001.tags.line4, capEnd001] }],
+  radius = 1,
+)
 ```
 
 
@@ -88,8 +94,8 @@ When a function requires declaring a new tag (using the `$` syntax), the argumen
 A tag created using a tag declarator can be used by writing its name without the `$`, e.g., `myTag`.
 Where necessary to disambiguate from tag declarations, we call these tag identifiers.
 
-In the example above we use the tag identifier `capEnd001` to get the edge in common
-using `getCommonEdge(capEnd001)`.
+In the example above we use the tag identifier `capEnd001` in an edge reference object
+to select the edge shared by `region001.tags.line4` and `capEnd001`.
 
 
 Tags can identify an edge or face of a solid. Functions that take a tag identifier as an argument will use either [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge) (for the edge of a solid) or [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace).

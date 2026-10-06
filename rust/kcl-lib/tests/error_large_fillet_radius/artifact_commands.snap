@@ -167,7 +167,8 @@ description: Artifact commands error_large_fillet_radius.kcl
         "query_point": {
           "x": 0.0,
           "y": 0.0025
-        }
+        },
+        "version": "V1"
       }
     },
     {
@@ -248,6 +249,15 @@ description: Artifact commands error_large_fillet_radius.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "solid3d_get_all_edge_faces",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
@@ -271,7 +281,9 @@ description: Artifact commands error_large_fillet_radius.kcl
         },
         "tolerance": 0.0000001,
         "strategy": "automatic",
-        "extra_face_ids": []
+        "extra_face_ids": [],
+        "version": "v2",
+        "tangent_chain": true
       }
     }
   ]
