@@ -37,9 +37,7 @@ import {
   resolveToCodeRef,
   valueOrVariable,
 } from '@src/lang/queryAst'
-import {
-  getArtifactOfTypes,
-} from '@src/lang/std/artifactGraph'
+import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
 import type {
   ArtifactGraph,
   CallExpressionKw,
