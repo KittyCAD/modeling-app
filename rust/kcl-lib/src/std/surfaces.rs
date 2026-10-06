@@ -420,7 +420,10 @@ async fn inner_join(
             .await?;
 
         let body_ids = selection.iter().map(|body| body.id).collect();
-        let tolerance = tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM);
+        let tolerance = tolerance
+            .as_ref()
+            .map(|t| t.unwrap_to_mm())
+            .unwrap_or(DEFAULT_TOLERANCE_MM);
         let cmd = mcmd::Solid3dMultiJoin::builder()
             .object_ids(body_ids)
             .tolerance(LengthUnit(tolerance))

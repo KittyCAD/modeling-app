@@ -2871,7 +2871,7 @@ struct CoincidentPointInput {
 }
 
 fn fixed_points_match(a: &[TyF64; 2], b: &[TyF64; 2]) -> bool {
-    a[0].to_mm() == b[0].to_mm() && a[1].to_mm() == b[1].to_mm()
+    a[0].unwrap_to_mm() == b[0].unwrap_to_mm() && a[1].unwrap_to_mm() == b[1].unwrap_to_mm()
 }
 
 fn ty_f64_to_kcl_value(value: TyF64, source_range: crate::SourceRange) -> KclValue {
@@ -5539,7 +5539,7 @@ fn axis_constraint_points(
         // (or y, whatever is appropriate)
         for point in var_points {
             let solver_point = datum_point([point.0, point.1], args.source_range)?;
-            let fix_point_mm = (fix_point.0.to_mm(), fix_point.1.to_mm());
+            let fix_point_mm = (fix_point.0.unwrap_to_mm(), fix_point.1.unwrap_to_mm());
             solver_constraints.push(kind.constraint_aligning_point_to_constant(solver_point, fix_point_mm));
         }
     } else {

@@ -862,13 +862,7 @@ mod lexer_mode_tests {
     #[test]
     fn runtime_flags_default_to_unset() {
         reset_runtime_lexer_flags();
-        assert_eq!(
-            crate::kcl_runtime_flags(),
-            KclRuntimeFlags {
-                use_new_lexer_parser: RuntimeFlag::Unset,
-                ..Default::default()
-            }
-        );
+        assert_eq!(crate::kcl_runtime_flags().use_new_lexer_parser, RuntimeFlag::Unset);
     }
 
     #[test]

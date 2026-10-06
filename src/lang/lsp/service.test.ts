@@ -1,10 +1,7 @@
 import type { Feature } from '@kittycad/lib'
 import { createLspService } from '@src/lang/lsp/service'
 import type { KclLspEditor } from '@src/lang/lsp/types'
-import {
-  KCL_CEK_EXECUTOR_FEATURE_FLAG,
-  KCL_NEW_LEXER_PARSER_FEATURE_FLAG,
-} from '@src/lib/constants'
+import { KCL_NEW_LEXER_PARSER_FEATURE_FLAG } from '@src/lib/constants'
 import {
   USER_FEATURES_SETTLE_TIMEOUT_MS,
   type UserFeaturesSettleSnapshot,
@@ -199,7 +196,7 @@ describe('LSP runtime feature flags', () => {
     expect(mocks.workers).toHaveLength(0)
     features.update(
       UserFeaturesState.Ready,
-      new Set([KCL_CEK_EXECUTOR_FEATURE_FLAG])
+      new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG])
     )
     await flushMicrotasks()
 
@@ -207,8 +204,8 @@ describe('LSP runtime feature flags', () => {
     expect(initPayload(mocks.workers[0])).toMatchObject({
       token: 'token-a',
       kclRuntimeFlags: {
-        use_cek_executor: 'On',
-        use_new_lexer_parser: 'Off',
+        use_new_lexer_parser: 'On',
+        use_new_parser: 'Off',
       },
     })
   })
@@ -240,32 +237,26 @@ describe('LSP runtime feature flags', () => {
   })
 
   it('restarts once for changed flags and not for unchanged flags', async () => {
-    const features = createUserFeatures(
-      UserFeaturesState.Ready,
-      new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG])
-    )
+    const features = createUserFeatures(UserFeaturesState.Ready)
     attachService({ features })
     await flushMicrotasks()
     expect(mocks.workers).toHaveLength(1)
 
-    features.update(
-      UserFeaturesState.Ready,
-      new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG])
-    )
+    features.update(UserFeaturesState.Ready, new Set())
     await flushMicrotasks()
     expect(mocks.workers).toHaveLength(1)
 
     features.update(
       UserFeaturesState.Ready,
-      new Set([KCL_CEK_EXECUTOR_FEATURE_FLAG])
+      new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG])
     )
     await flushMicrotasks()
     expect(mocks.workers).toHaveLength(2)
     expect(mocks.workers[0].terminate).toHaveBeenCalledTimes(1)
     expect(initPayload(mocks.workers[1])).toMatchObject({
       kclRuntimeFlags: {
-        use_cek_executor: 'On',
-        use_new_lexer_parser: 'Off',
+        use_new_lexer_parser: 'On',
+        use_new_parser: 'Off',
       },
     })
   })
@@ -286,7 +277,7 @@ describe('LSP runtime feature flags', () => {
 
     features.update(
       UserFeaturesState.Ready,
-      new Set([KCL_CEK_EXECUTOR_FEATURE_FLAG])
+      new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG])
     )
     await flushMicrotasks()
     mocks.clients[1].finishInitialize()
@@ -316,7 +307,7 @@ describe('LSP runtime feature flags', () => {
 
     features.update(
       UserFeaturesState.Ready,
-      new Set([KCL_CEK_EXECUTOR_FEATURE_FLAG])
+      new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG])
     )
     await flushMicrotasks()
     mocks.clients[1].finishInitialize()
@@ -337,14 +328,14 @@ describe('LSP runtime feature flags', () => {
     expect(mocks.workers).toHaveLength(1)
     expect(initPayload(mocks.workers[0])).toMatchObject({
       kclRuntimeFlags: {
-        use_cek_executor: 'Off',
         use_new_lexer_parser: 'Off',
+        use_new_parser: 'Off',
       },
     })
 
     features.update(
       UserFeaturesState.Ready,
-      new Set([KCL_CEK_EXECUTOR_FEATURE_FLAG])
+      new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG])
     )
     await flushMicrotasks()
     expect(mocks.workers).toHaveLength(2)
