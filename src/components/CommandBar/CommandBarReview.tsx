@@ -125,19 +125,19 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
   const validationError = reviewValidationError
     ? validationErrorParts(reviewValidationError)
     : undefined
+  const reviewMessage =
+    typeof selectedCommand?.reviewMessage === 'function'
+      ? selectedCommand.reviewMessage(commandBarState.context)
+      : selectedCommand?.reviewMessage
 
   return (
     <CommandBarHeaderFooter
       stepBack={stepBack}
       submitDisabled={!!reviewValidationError}
     >
-      {selectedCommand?.reviewMessage && (
+      {reviewMessage && (
         <>
-          <p className="px-4 py-2 text-sm">
-            {selectedCommand.reviewMessage instanceof Function
-              ? selectedCommand.reviewMessage(commandBarState.context)
-              : selectedCommand.reviewMessage}
-          </p>
+          <p className="px-4 py-2 text-sm">{reviewMessage}</p>
           <CommandBarDivider />
         </>
       )}
