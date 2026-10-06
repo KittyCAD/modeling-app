@@ -44,7 +44,7 @@ export interface ZookeeperConversationProps {
   // Callers can provide a local component today, then swap to a remotely
   // authored source later without changing the conversation layout below.
   welcomeMessage?: ReactNode
-  afterMessages?: ReactNode
+  toolbarActions?: ReactNode
   localExchanges?: { id: string; afterExchange: number; content: ReactNode }[]
   onProcess: (
     request: string,
@@ -175,6 +175,7 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
 }
 
 export interface ZookeeperExtraInputsProps {
+  toolbarActions?: ReactNode
   context?: Extract<ZookeeperManagerPromptContext, { type: 'selections' }>
   mode?: MlCopilotModeId
   onSetMode: (mode: MlCopilotModeId) => void
@@ -253,6 +254,7 @@ export const ZookeeperExtraInputs = (props: ZookeeperExtraInputsProps) => {
             <span>Zoodle</span>
           </Tooltip>
         </button>
+        {props.toolbarActions}
       </div>
     </div>
   )
@@ -292,6 +294,7 @@ const MlCopilotSelectionsContext = (props: {
 }
 
 interface ZookeeperConversationInputProps {
+  toolbarActions?: ReactNode
   contexts: ZookeeperManagerPromptContext[]
   onProcess: ZookeeperConversationProps['onProcess']
   onCancel: ZookeeperConversationProps['onCancel']
@@ -623,6 +626,7 @@ export const ZookeeperConversationInput = (
           data-testid="ml-ephant-composer-actions"
         >
           <ZookeeperExtraInputs
+            toolbarActions={props.toolbarActions}
             context={selectionsContext}
             mode={mode}
             onSetMode={(m) => {
@@ -840,7 +844,6 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
                 props.localExchanges?.map((exchange) => (
                   <Fragment key={exchange.id}>{exchange.content}</Fragment>
                 ))}
-              {props.afterMessages}
             </div>
           </div>
           {props.queue.length > 0 && (
@@ -895,6 +898,7 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
           ) : null}
           <div className="border-t b-4">
             <ZookeeperConversationInput
+              toolbarActions={props.toolbarActions}
               contexts={props.contexts}
               disabled={props.disabled || props.isLoading}
               hasPromptCompleted={props.hasPromptCompleted}

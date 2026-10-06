@@ -1,3 +1,4 @@
+import { Popover } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import {
   AvatarUser,
@@ -7,7 +8,6 @@ import {
 import { Thinking } from '@src/components/Thinking'
 import { MarkdownText } from '@src/components/MarkdownText'
 import type { MigrationController } from '@src/lib/kclMigration/controller'
-import { useState } from 'react'
 
 export function KclMigrationStart({
   disabled,
@@ -16,30 +16,34 @@ export function KclMigrationStart({
   disabled: boolean
   onStart: () => void
 }) {
-  const [open, setOpen] = useState(false)
   return (
-    <div className="px-4 py-2 text-sm">
-      <button type="button" aria-expanded={open} onClick={() => setOpen(!open)}>
+    <Popover className="flex-none">
+      <Popover.Button className="h-7 bg-default flex items-center justify-center rounded-sm m-0 px-2 text-xs whitespace-nowrap">
         Migrate to KCL 3
-      </button>
-      {open && (
-        <div className="my-3 flex flex-col items-start gap-3">
-          <p>
-            Free project conversion to KCL 3 preview, with up to 20 minutes for
-            conversion and validation. Validated changes apply automatically.
-            Use Undo to restore the previous project.
-          </p>
-          <button
-            type="button"
-            className="rounded border border-chalkboard-40 px-3 py-1.5 disabled:opacity-50"
-            disabled={disabled}
-            onClick={onStart}
-          >
-            Start Free Migration
-          </button>
-        </div>
-      )}
-    </div>
+      </Popover.Button>
+      <Popover.Panel className="absolute bottom-full left-0 z-20 mb-2 flex w-72 max-w-full flex-col items-start gap-3 rounded-md border b-4 bg-default p-3 text-sm">
+        {({ close }) => (
+          <>
+            <p>
+              Free project conversion to KCL 3 preview, with up to 20 minutes
+              for conversion and validation. Validated changes apply
+              automatically. Use Undo to restore the previous project.
+            </p>
+            <button
+              type="button"
+              className="rounded border border-chalkboard-40 px-3 py-1.5 disabled:opacity-50"
+              disabled={disabled}
+              onClick={() => {
+                close()
+                onStart()
+              }}
+            >
+              Start Free Migration
+            </button>
+          </>
+        )}
+      </Popover.Panel>
+    </Popover>
   )
 }
 

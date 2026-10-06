@@ -213,7 +213,7 @@ export const ZookeeperConversationPane = (props: {
               : undefined
           ),
         }))}
-        afterMessages={props.migrationContent?.(
+        toolbarActions={props.migrationContent?.(
           chatBusy,
           conversation?.exchanges.length ?? 0
         )}
