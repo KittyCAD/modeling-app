@@ -2,7 +2,6 @@ import path, { join } from 'path'
 import {
   KCL_DEFAULT_LENGTH,
   LEGACY_SKETCH_MODE_FEATURE_FLAG,
-  OPFS_CLOUD_FEATURE_FLAG,
 } from '@src/lib/constants'
 import * as fsp from 'fs/promises'
 
@@ -78,6 +77,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
         Profiles: '1 profile',
         Length: '5',
       },
+      reviewValidationError: undefined,
     })
     await cmdBar.progressCmdBar()
     await expect(page.locator('.cm-activeLine')).toHaveText(
@@ -298,7 +298,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     )
     await cmdBar.progressCmdBar()
 
-    // Review step and argument hotkeys
+    // Closed profiles use KCL's solid default and skip the body type step.
     await cmdBar.expectState({
       stage: 'review',
       commandName: 'Extrude',
@@ -306,13 +306,22 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
         Profiles: '1 profile',
         Length: '5',
       },
+      reviewValidationError: undefined,
     })
     await page.keyboard.press('Meta+Backspace')
 
-    // Assert we're back on the distance step
-    await expect(
-      page.getByRole('button', { name: 'length', exact: false })
-    ).toBeDisabled()
+    // Step back returns to the preceding length argument.
+    await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Extrude',
+      currentArgKey: 'length',
+      currentArgValue: '5',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+      },
+      highlightedHeaderArg: 'length',
+    })
 
     await cmdBar.progressCmdBar()
 
@@ -800,6 +809,20 @@ export exported = 2`,
     })
   })
 
+  test(
+    'Command palette can be opened via query parameter - web',
+    { tag: '@web' },
+    async ({ page, cmdBar }) => {
+      await page.goto(`${page.url()}/?cmd=app.theme&groupId=settings`)
+      await expect(page).toHaveURL(
+        (url) =>
+          !url.searchParams.has('cmd') && !url.searchParams.has('groupId'),
+        { timeout: 15_000 }
+      )
+      await cmdBar.expectCommandName('Settings · app · theme')
+    }
+  )
+
   test('Step back works on non-required and required arguments and closes', async ({
     page,
     homePage,
@@ -934,22 +957,4 @@ export exported = 2`,
     await cmdBar.stepBack()
     await cmdBar.expectState({ stage: 'commandBarClosed' })
   })
-})
-
-test.describe('Command bar tests', () => {
-  test.use({ userFeatures: [OPFS_CLOUD_FEATURE_FLAG] })
-
-  test(
-    'Command palette can be opened via query parameter - web',
-    { tag: '@web' },
-    async ({ page, cmdBar }) => {
-      await page.goto(`${page.url()}/?cmd=app.theme&groupId=settings`)
-      await expect(page).toHaveURL(
-        (url) =>
-          !url.searchParams.has('cmd') && !url.searchParams.has('groupId'),
-        { timeout: 15_000 }
-      )
-      await cmdBar.expectCommandName('Settings · app · theme')
-    }
-  )
 })

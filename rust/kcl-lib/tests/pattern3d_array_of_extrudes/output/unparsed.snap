@@ -1,0 +1,32 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing pattern3d_array_of_extrudes.kcl
+---
+plane001 = startSketchOn(XZ)
+
+sketch001 = plane001
+  |> startProfile(at = [40.82, 240.82])
+  |> line(end = [235.72, -8.16])
+  |> line(end = [13.27, -253.07])
+  |> line(end = [-247.97, -19.39])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = 10)
+
+sketch002 = plane001
+  |> startProfile(at = [47.17, -71.91])
+  |> line(end = [247.96, -4.03])
+  |> line(end = [-17.26, -116.79])
+  |> line(end = [-235.87, 12.66])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(length = 10)
+
+extrudes = [sketch001, sketch002]
+
+pattn1 = patternLinear3d(
+  extrudes,
+  axis = [0, 1, 0],
+  instances = 3,
+  distance = 20,
+)

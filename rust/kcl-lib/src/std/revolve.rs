@@ -89,7 +89,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         tag_start,
         tag_end,
         symmetric,
-        bidirectional_angle.map(|t| t.n),
+        bidirectional_angle,
         body_type,
         exec_state,
         args,
@@ -107,14 +107,14 @@ async fn inner_revolve(
     tag_start: Option<TagNode>,
     tag_end: Option<TagNode>,
     symmetric: Option<bool>,
-    bidirectional_angle: Option<f64>,
+    bidirectional_angle: Option<TyF64>,
     body_type: BodyType,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
     if let Axis2dOrEdgeReference::Axis { direction, .. } = &axis
-        && direction[0].to_mm() == 0.0
-        && direction[1].to_mm() == 0.0
+        && direction[0].unwrap_to_mm() == 0.0
+        && direction[1].unwrap_to_mm() == 0.0
     {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "The axis of revolution cannot be the zero vector.".to_owned(),
@@ -134,6 +134,7 @@ async fn inner_revolve(
         }
     }
 
+    let bidirectional_angle = bidirectional_angle.map(|n| n.unwrap_to_degrees(exec_state, args.source_range));
     if let Some(bidirectional_angle) = bidirectional_angle {
         // Return an error if the angle is zero.
         // We don't use validate() here because we want to return a specific error message that is
@@ -181,7 +182,10 @@ async fn inner_revolve(
     let mut solids = Vec::new();
     for sketch in &sketches {
         let new_solid_id = exec_state.next_uuid();
-        let tolerance = tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM);
+        let tolerance = tolerance
+            .as_ref()
+            .map(|t| t.unwrap_to_mm())
+            .unwrap_or(DEFAULT_TOLERANCE_MM);
 
         let direction = match &axis {
             Axis2dOrEdgeReference::Axis { direction, origin } => {
@@ -193,13 +197,13 @@ async fn inner_revolve(
                                 .angle(angle)
                                 .target(sketch.id.into())
                                 .axis(Point3d {
-                                    x: direction[0].to_mm(),
-                                    y: direction[1].to_mm(),
+                                    x: direction[0].unwrap_to_mm(),
+                                    y: direction[1].unwrap_to_mm(),
                                     z: 0.0,
                                 })
                                 .origin(Point3d {
-                                    x: LengthUnit(origin[0].to_mm()),
-                                    y: LengthUnit(origin[1].to_mm()),
+                                    x: LengthUnit(origin[0].unwrap_to_mm()),
+                                    y: LengthUnit(origin[1].unwrap_to_mm()),
                                     z: LengthUnit(0.0),
                                 })
                                 .tolerance(LengthUnit(tolerance))
@@ -210,7 +214,7 @@ async fn inner_revolve(
                         ),
                     )
                     .await?;
-                glm::DVec2::new(direction[0].to_mm(), direction[1].to_mm())
+                glm::DVec2::new(direction[0].unwrap_to_mm(), direction[1].unwrap_to_mm())
             }
             Axis2dOrEdgeReference::Edge(edge) => {
                 let edge_id = edge.get_engine_id(exec_state, &args)?;
@@ -490,5 +494,108 @@ body = revolve(profile, axis = Y, angle = 90deg)
         ctx.close().await;
 
         outcome.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn revolve_converts_bidirectional_angle_to_degrees() {
+        // https://github.com/KittyCAD/modeling-app/issues/14209
+        // Like `angle`, `bidirectionalAngle` must reach the engine in degrees,
+        // whatever unit it was written in.
+        for (bidirectional_angle, expected_degrees) in [
+            ("2rad", 2.0_f64.to_degrees()),
+            ("30deg", 30.0),
+            ("30", 30.0),
+            ("0.5rad", 0.5_f64.to_degrees()),
+        ] {
+            let code = format!(
+                r#"
+profile = startSketchOn(XZ)
+  |> startProfile(at = [10, 0])
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> close()
+
+body = revolve(profile, axis = Y, angle = 90deg, bidirectionalAngle = {bidirectional_angle})
+"#
+            );
+            let result = crate::execution::parse_execute(&code).await.unwrap();
+            let opposite = result
+                .root_module_artifact_commands()
+                .iter()
+                .find_map(|artifact_command| match &artifact_command.command {
+                    ModelingCmd::Revolve(command) => Some(command.opposite.clone()),
+                    _ => None,
+                })
+                .expect("expected revolve() to send a Revolve command");
+
+            let Opposite::Other(actual) = opposite else {
+                panic!("bidirectionalAngle = {bidirectional_angle}: expected an opposite angle, got {opposite:?}");
+            };
+            assert!(
+                (actual.to_degrees() - expected_degrees).abs() < 1e-9,
+                "bidirectionalAngle = {bidirectional_angle}: expected {expected_degrees} deg, got {} deg",
+                actual.to_degrees()
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn revolve_checks_bidirectional_angle_range_in_degrees() {
+        // 7rad is about 401 degrees, which is out of range. Before the fix it
+        // was read as 7 degrees and accepted.
+        let code = r#"
+profile = startSketchOn(XZ)
+  |> startProfile(at = [10, 0])
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> close()
+
+body = revolve(profile, axis = Y, angle = 90deg, bidirectionalAngle = 7rad)
+"#;
+        let Err(err) = crate::execution::parse_execute(code).await else {
+            panic!("expected bidirectionalAngle = 7rad to be rejected as out of range");
+        };
+        assert!(
+            err.message()
+                .contains("Expected bidirectional angle to be between -360 and 360"),
+            "{err:?}"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn revolve_panic_with_direction_unknown_units() {
+        // Regression test for https://github.com/KittyCAD/modeling-app/issues/14328
+        for code in [
+            // Case with non-length units in direction
+            r#"@settings(kclVersion = 2.0)
+profile = sketch(on = XY) {
+  circle1 = circle(center = [10mm, 0mm], start = [11mm, 0mm])
+}
+body = revolve(region(segments = [profile.circle1]),
+axis = { direction = [0, 1rad], origin = [1mm, 0mm] })
+"#,
+            // Case with non-length units in origin
+            r#"@settings(kclVersion = 2.0)
+profile = sketch(on = XY) {
+  circle1 = circle(center = [10mm, 0mm], start = [11mm, 0mm])
+}
+body = revolve(region(segments = [profile.circle1]),
+axis = { direction = [0, 1], origin = [1mm + 1deg, 0mm] })
+"#,
+        ] {
+            let program = crate::Program::parse_no_errs(code).unwrap();
+            let ctx = ExecutorContext::new_mock(None).await;
+            let outcome = ctx.run_mock(&program, &crate::MockConfig::default()).await;
+            ctx.close().await;
+            let err = outcome.expect_err("This should not have passed").error;
+            let KclError::Type { details } = err else {
+                panic!("Expected Type error, got {err}");
+            };
+            // Error message should be something like
+            // axis must be an Edge, Axis2d, Segment, or an object with 'sideFaces' (edge reference)
+            assert!(details.message.contains("Edge"));
+            assert!(details.message.contains("Axis2d"));
+            assert!(details.message.contains("Segment"));
+        }
     }
 }

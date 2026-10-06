@@ -216,17 +216,39 @@ describe('services', () => {
     const container = new Registry()
     container.configure([stableRuntime, toggleRegistryItem, slot.of()])
 
-    container.get(stableService).open()
+    const stable = container.get(stableService)
+    stable.open()
     await container.get(toggleService).enable()
     expect(container.get(featureSignal)).toEqual(['enabled'])
     expect(container.get(toggleService).active.value).toBe(true)
     expect(container.get(stableService).isOpen.value).toBe(true)
+    expect(container.get(stableService)).toBe(stable)
 
     await container.get(toggleService).disable()
     expect(container.get(featureSignal)).toEqual([])
     expect(container.get(toggleService).active.value).toBe(false)
     expect(container.get(stableService).isOpen.value).toBe(true)
+    expect(container.get(stableService)).toBe(stable)
     expect(runtimeCalls).toHaveBeenCalledTimes(1)
+  })
+
+  it('updates the service when its provider is replaced', () => {
+    const service = defineService<{ name(): string }>('workspace')
+    const slot = new Slot()
+    const container = new Registry()
+    container.configure([
+      slot.of({
+        providesServices: [provideService(service, { name: () => 'a' })],
+      }),
+    ])
+    const original = container.get(service)
+
+    container.reconfigure(slot, [
+      { providesServices: [provideService(service, { name: () => 'b' })] },
+    ])
+
+    expect(container.get(service)).not.toBe(original)
+    expect(container.get(service).name()).toBe('b')
   })
 
   it('installs a plugin as one registry node and preserves its toggle metadata', async () => {

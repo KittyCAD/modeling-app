@@ -120,7 +120,13 @@ pub async fn edge_id(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let edge_index: Option<u32> = args.get_kw_arg_opt("index", &RuntimeType::count(), exec_state)?;
     let closest_to: Option<[TyF64; 3]> = args.get_kw_arg_opt("closestTo", &RuntimeType::point3d(), exec_state)?;
     let closest_to = closest_to
-        .map(|point| [point[0].to_mm(), point[1].to_mm(), point[2].to_mm()])
+        .map(|point| {
+            [
+                point[0].unwrap_to_mm(),
+                point[1].unwrap_to_mm(),
+                point[2].unwrap_to_mm(),
+            ]
+        })
         .map(|[x, y, z]| Point3d { x, y, z });
     match (edge_index, closest_to) {
         (None, None) => Err(KclError::new_semantic(KclErrorDetails::new(
@@ -173,15 +179,14 @@ async fn inner_edge_id(
         };
         let edge_id = inner_resp.edge_id;
 
-        if crate::runtime_flags::z0006_refactor_metadata_enabled()
-            && let Ok(meta) = edge::get_refactor_meta_for_edge(
-                exec_state,
-                edge_id,
-                &args,
-                args.source_range,
-                EdgeRefactorStdlibFn::EdgeId,
-            )
-            .await
+        if let Ok(meta) = edge::get_refactor_meta_for_edge(
+            exec_state,
+            edge_id,
+            &args,
+            args.source_range,
+            EdgeRefactorStdlibFn::EdgeId,
+        )
+        .await
         {
             exec_state.record_edge_refactor_meta(meta);
         }
@@ -238,15 +243,14 @@ async fn inner_edge_id_by_point(
             )));
         };
 
-        if crate::runtime_flags::z0006_refactor_metadata_enabled()
-            && let Ok(meta) = edge::get_refactor_meta_for_edge(
-                exec_state,
-                edge_id,
-                &args,
-                args.source_range,
-                EdgeRefactorStdlibFn::EdgeId,
-            )
-            .await
+        if let Ok(meta) = edge::get_refactor_meta_for_edge(
+            exec_state,
+            edge_id,
+            &args,
+            args.source_range,
+            EdgeRefactorStdlibFn::EdgeId,
+        )
+        .await
         {
             exec_state.record_edge_refactor_meta(meta);
         }

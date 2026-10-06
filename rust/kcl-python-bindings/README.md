@@ -30,6 +30,23 @@ Use `new_kcl_session_code(code)` for a source string. The context manager closes
 the connection on exit, including when the body raises an exception. When managing
 the session yourself, call `await session.close()` when finished.
 
+Both session constructors accept optional `token` and `base_url` keyword
+arguments. Applications that supply credentials per session can pass them
+without changing the process environment:
+
+```python
+async with await kcl.new_kcl_session_code(
+    code,
+    token=api_token,
+    base_url=api_origin,
+) as session:
+    outcome = session.outcome
+```
+
+Omitted values use the client's existing environment defaults (`ZOO_API_TOKEN`
+or `KITTYCAD_API_TOKEN` for the token; `ZOO_HOST` or `KITTYCAD_HOST` for the API
+origin). Mock sessions do not create an API client.
+
 `session.outcome` is an `ExecOutcome` with the same diagnostics, constraint reports,
 and sketch rendering methods returned by `execute()`. Accessing it shares the
 saved result without copying the execution state or running KCL again. Use

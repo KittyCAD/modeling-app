@@ -39,7 +39,9 @@ use crate::execution::Extrudable;
 use crate::execution::ExtrudePlane;
 use crate::execution::ExtrudeSurface;
 use crate::execution::GeoMeta;
+use crate::execution::Geometry;
 use crate::execution::KclValue;
+use crate::execution::Metadata;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::Path;
 use crate::execution::ProfileClosed;
@@ -49,6 +51,8 @@ use crate::execution::Sketch;
 use crate::execution::SketchSurface;
 use crate::execution::Solid;
 use crate::execution::SolidCreator;
+use crate::execution::TagEngineInfo;
+use crate::execution::TagIdentifier;
 use crate::execution::annotations;
 use crate::execution::types::ArrayLen;
 use crate::execution::types::PrimitiveType;
@@ -144,6 +148,20 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let method: Option<String> = args.get_kw_arg_opt("method", &RuntimeType::string(), exec_state)?;
     let hide_seams: Option<bool> = args.get_kw_arg_opt("hideSeams", &RuntimeType::bool(), exec_state)?;
     let body_type: Option<BodyType> = args.get_kw_arg_opt("bodyType", &RuntimeType::string(), exec_state)?;
+    let target_argument_source_range = args
+        .unlabeled_kw_arg_unconverted()
+        .map(|arg| arg.source_range)
+        .unwrap_or(args.source_range);
+    let direct_target_edges = sketch_values
+        .iter()
+        .filter_map(|value| {
+            let KclValue::TagIdentifier(tag) = value else {
+                return None;
+            };
+            Some(tag.clone())
+        })
+        .collect::<Vec<_>>();
+    let extruding_sketch_segments = sketch_values.iter().all(|value| value.clone().into_segment().is_some());
     let sketches = coerce_extrude_targets(
         sketch_values,
         body_type.unwrap_or_default(),
@@ -154,6 +172,10 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         args.source_range,
     )
     .await?;
+
+    if let [tag] = direct_target_edges.as_slice() {
+        edge::record_refactor_meta_for_direct_tag(exec_state, tag, target_argument_source_range, &args).await?;
+    }
 
     let result = inner_extrude(
         sketches,
@@ -172,6 +194,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         method,
         hide_seams,
         body_type,
+        extruding_sketch_segments,
         exec_state,
         args,
     )
@@ -395,6 +418,7 @@ async fn inner_extrude(
     method: Option<String>,
     hide_seams: Option<bool>,
     body_type: Option<BodyType>,
+    extruding_sketch_segments: bool,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
@@ -426,7 +450,12 @@ async fn inner_extrude(
 
     // Extrude the element(s).
     let mut solids = Vec::new();
-    let tolerance = LengthUnit(tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM));
+    let tolerance = LengthUnit(
+        tolerance
+            .as_ref()
+            .map(|t| t.unwrap_to_mm())
+            .unwrap_or(DEFAULT_TOLERANCE_MM),
+    );
 
     let extrude_method = match method.as_deref() {
         Some("new" | "NEW") => ExtrudeMethod::New,
@@ -488,7 +517,7 @@ async fn inner_extrude(
         )));
     }
 
-    let bidirection = bidirectional_length.map(|l| LengthUnit(l.to_mm()));
+    let bidirection = bidirectional_length.map(|l| LengthUnit(l.unwrap_to_mm()));
 
     let opposite = match (symmetric, bidirection) {
         (Some(true), _) => Opposite::Symmetric,
@@ -497,6 +526,16 @@ async fn inner_extrude(
         (None, Some(length)) => Opposite::Other(length),
         (Some(false), Some(length)) => Opposite::Other(length),
     };
+
+    if let Some(Point3dOrEdgeReference::Edge(direction_edge)) = &direction {
+        let edge_id = direction_edge.get_engine_id(exec_state, &args)?;
+        let source_range = args
+            .labeled
+            .get("direction")
+            .map(|arg| arg.source_range)
+            .unwrap_or(args.source_range);
+        edge::record_refactor_meta_for_direct_edge(exec_state, edge_id, source_range, &args).await?;
+    }
 
     for extrudable in &extrudables {
         let is_edge = match extrudable {
@@ -529,16 +568,6 @@ async fn inner_extrude(
                 ))
             })
         };
-        if is_edge
-            && let Some(edge_id) = sketch_or_face_id
-            && let Some(target_source_range) = args.unlabeled_kw_arg_unconverted().map(|arg| arg.source_range)
-            && let Some(pending) = exec_state.pending_edge_refactor_meta(edge_id, target_source_range)
-            && let Ok(meta) =
-                edge::get_refactor_meta_for_edge(exec_state, edge_id, &args, pending.source_range, pending.stdlib_fn)
-                    .await
-        {
-            exec_state.record_edge_refactor_meta(meta);
-        }
         let cmd = match (
             &twist_angle,
             &twist_angle_step,
@@ -549,11 +578,11 @@ async fn inner_extrude(
         ) {
             (Some(angle), angle_step, center, Some(length), None, None) => {
                 let center = center.clone().map(point_to_mm).map(Point2d::from).unwrap_or_default();
-                let total_rotation_angle = Angle::from_degrees(angle.to_degrees(exec_state, args.source_range));
+                let total_rotation_angle = Angle::from_degrees(angle.unwrap_to_degrees(exec_state, args.source_range));
                 let angle_step_size = Angle::from_degrees(
                     angle_step
                         .clone()
-                        .map(|a| a.to_degrees(exec_state, args.source_range))
+                        .map(|a| a.unwrap_to_degrees(exec_state, args.source_range))
                         .unwrap_or(15.0),
                 );
                 ModelingCmd::from(
@@ -568,7 +597,7 @@ async fn inner_extrude(
                                 })?
                                 .into(),
                         )
-                        .distance(LengthUnit(length.to_mm()))
+                        .distance(LengthUnit(length.unwrap_to_mm()))
                         .center_2d(center)
                         .total_rotation_angle(total_rotation_angle)
                         .angle_step_size(angle_step_size)
@@ -581,12 +610,12 @@ async fn inner_extrude(
                 mcmd::Extrude::builder()
                     .maybe_target(sketch_or_face_id.map(Into::into))
                     .maybe_target_reference(target_reference.clone())
-                    .distance(LengthUnit(length.to_mm()))
+                    .distance(LengthUnit(length.unwrap_to_mm()))
                     .opposite(opposite.clone())
                     .maybe_draft_angle(
                         draft_angle
                             .clone()
-                            .map(|a| Angle::from_degrees(a.to_degrees(exec_state, args.source_range))),
+                            .map(|a| Angle::from_degrees(a.unwrap_to_degrees(exec_state, args.source_range))),
                     )
                     .extrude_method(extrude_method)
                     .body_type(body_type)
@@ -594,17 +623,14 @@ async fn inner_extrude(
                     .build(),
             ),
             (None, None, None, Some(length), None, Some(dir)) => {
-                let (direction3d, direction_edge_id) = match dir {
-                    Point3dOrEdgeReference::Point(p) => (
-                        Some(DirectionType::Axis {
-                            direction: KPoint3d {
-                                x: p[0].n,
-                                y: p[1].n,
-                                z: p[2].n,
-                            },
-                        }),
-                        None,
-                    ),
+                let direction3d = match dir {
+                    Point3dOrEdgeReference::Point(p) => Some(DirectionType::Axis {
+                        direction: KPoint3d {
+                            x: p[0].n,
+                            y: p[1].n,
+                            z: p[2].n,
+                        },
+                    }),
                     Point3dOrEdgeReference::Edge(edge) => {
                         let edge_id = match edge {
                             crate::std::fillet::EdgeReference::Uuid(uuid) => *uuid,
@@ -618,24 +644,10 @@ async fn inner_extrude(
                                 }
                             },
                         };
-                        (Some(DirectionType::Edge { id: edge_id }), Some(edge_id))
+                        Some(DirectionType::Edge { id: edge_id })
                     }
-                    Point3dOrEdgeReference::EdgeSpecifier(_) => (None, None),
+                    Point3dOrEdgeReference::EdgeSpecifier(_) => None,
                 };
-                if let Some(edge_id) = direction_edge_id
-                    && let Some(direction_source_range) = args.labeled.get("direction").map(|arg| arg.source_range)
-                    && let Some(pending) = exec_state.pending_edge_refactor_meta(edge_id, direction_source_range)
-                    && let Ok(meta) = edge::get_refactor_meta_for_edge(
-                        exec_state,
-                        edge_id,
-                        &args,
-                        pending.source_range,
-                        pending.stdlib_fn,
-                    )
-                    .await
-                {
-                    exec_state.record_edge_refactor_meta(meta);
-                }
                 let direction_reference = match dir {
                     Point3dOrEdgeReference::EdgeSpecifier(spec) => {
                         Some(edge::resolve_edge_specifier_with_face_tags(spec, None, exec_state, &args).await?)
@@ -646,12 +658,12 @@ async fn inner_extrude(
                     mcmd::Extrude::builder()
                         .maybe_target(sketch_or_face_id.map(Into::into))
                         .maybe_target_reference(target_reference.clone())
-                        .distance(LengthUnit(length.to_mm()))
+                        .distance(LengthUnit(length.unwrap_to_mm()))
                         .opposite(opposite.clone())
                         .maybe_draft_angle(
                             draft_angle
                                 .clone()
-                                .map(|a| Angle::from_degrees(a.to_degrees(exec_state, args.source_range))),
+                                .map(|a| Angle::from_degrees(a.unwrap_to_degrees(exec_state, args.source_range))),
                         )
                         .extrude_method(extrude_method)
                         .body_type(body_type)
@@ -667,9 +679,9 @@ async fn inner_extrude(
                         .target(concrete_target()?.into())
                         .reference(ExtrudeReference::Point {
                             point: KPoint3d {
-                                x: LengthUnit(point[0].to_mm()),
-                                y: LengthUnit(point[1].to_mm()),
-                                z: LengthUnit(point[2].to_mm()),
+                                x: LengthUnit(point[0].unwrap_to_mm()),
+                                y: LengthUnit(point[1].unwrap_to_mm()),
+                                z: LengthUnit(point[2].unwrap_to_mm()),
                             },
                         })
                         .extrude_method(extrude_method)
@@ -681,14 +693,14 @@ async fn inner_extrude(
                         .target(concrete_target()?.into())
                         .reference(ExtrudeReference::Axis {
                             axis: KPoint3d {
-                                x: direction[0].to_mm(),
-                                y: direction[1].to_mm(),
-                                z: direction[2].to_mm(),
+                                x: direction[0].unwrap_to_mm(),
+                                y: direction[1].unwrap_to_mm(),
+                                z: direction[2].unwrap_to_mm(),
                             },
                             point: KPoint3d {
-                                x: LengthUnit(origin[0].to_mm()),
-                                y: LengthUnit(origin[1].to_mm()),
-                                z: LengthUnit(origin[2].to_mm()),
+                                x: LengthUnit(origin[0].unwrap_to_mm()),
+                                y: LengthUnit(origin[1].unwrap_to_mm()),
+                                z: LengthUnit(origin[2].unwrap_to_mm()),
                             },
                         })
                         .extrude_method(extrude_method)
@@ -835,6 +847,7 @@ async fn inner_extrude(
         };
 
         let being_extruded = match extrudable {
+            Extrudable::Sketch(..) if extruding_sketch_segments => BeingExtruded::SketchSegments,
             Extrudable::Sketch(..) => BeingExtruded::Sketch,
             Extrudable::FaceTag(face_tag) => {
                 let face_id = concrete_target()?;
@@ -940,6 +953,7 @@ pub(crate) struct NamedCapTags<'a> {
 #[derive(Debug, Clone, Copy)]
 pub enum BeingExtruded {
     Sketch,
+    SketchSegments,
     Face { face_id: Uuid, solid_id: Uuid },
     Edge,
 }
@@ -1142,11 +1156,11 @@ pub(crate) async fn do_post_extrude<'a>(
             // So we need a new ID, the extrude command ID.
             sketch.id = extrude_cmd_id.into();
         }
-        (ExtrudeMethod::New, BeingExtruded::Sketch) => {
+        (ExtrudeMethod::New, BeingExtruded::Sketch | BeingExtruded::SketchSegments) => {
             // If we are creating a new body we need to preserve its new id.
             // The sketch's ID is already correct here, it should be the ID of the sketch.
         }
-        (ExtrudeMethod::Merge, BeingExtruded::Sketch) => {
+        (ExtrudeMethod::Merge, BeingExtruded::Sketch | BeingExtruded::SketchSegments) => {
             if let SketchSurface::Face(ref face) = sketch.on {
                 // If we're merging into an existing body, then assign the existing body's ID,
                 // because the variable binding for this solid won't be its own object, it's just modifying the original one.
@@ -1347,7 +1361,7 @@ pub(crate) async fn do_post_extrude<'a>(
     let id = sketch.id;
     let topology_id = sketch.original_id;
     let creator = match being_extruded {
-        BeingExtruded::Sketch => SolidCreator::Sketch(sketch),
+        BeingExtruded::Sketch | BeingExtruded::SketchSegments => SolidCreator::Sketch(sketch),
         BeingExtruded::Face { face_id, solid_id } => SolidCreator::Face(CreatorFace {
             face_id,
             solid_id,
@@ -1363,7 +1377,7 @@ pub(crate) async fn do_post_extrude<'a>(
         }
     };
 
-    Ok(Solid {
+    let mut solid = Solid {
         id,
         value_id: extrude_cmd_id.into(),
         topology_id,
@@ -1380,7 +1394,36 @@ pub(crate) async fn do_post_extrude<'a>(
         end_cap_id,
         edge_cuts: vec![],
         pending_edge_cut_ids: vec![],
-    })
+    };
+
+    if matches!(being_extruded, BeingExtruded::SketchSegments) {
+        let geometry = Geometry::Solid(solid.clone());
+        for surface in &solid.value {
+            let Some(tag) = surface.get_tag() else {
+                continue;
+            };
+            solid.faces.insert(
+                tag.name.clone(),
+                TagIdentifier {
+                    value: tag.name.clone(),
+                    info: vec![(
+                        exec_state.stack().current_epoch(),
+                        TagEngineInfo {
+                            id: surface.get_id(),
+                            surface: Some(surface.clone()),
+                            path: None,
+                            geometry: geometry.clone(),
+                        },
+                    )],
+                    meta: vec![Metadata {
+                        source_range: tag.clone().into(),
+                    }],
+                },
+            );
+        }
+    }
+
+    Ok(solid)
 }
 
 #[derive(Debug, Default)]

@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties patterns_circular_basic_2d.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 24.57891899142179,
+      "y": 19.59579910622621,
+      "z": 0.5
+    },
+    "dimensions": {
+      "x": 53.95783798284358,
+      "y": 62.00633987709043,
+      "z": 1.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 487.8158428788526
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 0.16235332387047144
+  }
+}

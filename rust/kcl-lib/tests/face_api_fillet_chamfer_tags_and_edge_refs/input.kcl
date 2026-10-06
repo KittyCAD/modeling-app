@@ -1,5 +1,3 @@
-@settings(experimentalFeatures = allow)
-
 // Simulation test: fillet and chamfer with both tags and edgeRefs.
 // Verifies that when both are provided, it's an error.
 

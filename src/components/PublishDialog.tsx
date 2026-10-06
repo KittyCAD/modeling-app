@@ -8,6 +8,7 @@ import {
 import { ActionButton } from '@src/components/ActionButton'
 import { AquariumStatusDetails } from '@src/components/AquariumStatusBadge'
 import type { ProjectStatus } from '@src/hooks/useProjectStatus'
+import { collectApiList } from '@src/lib/apiPagination'
 import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { fetchWithSessionExpiration } from '@src/lib/sessionExpired'
@@ -109,22 +110,25 @@ export function PublishDialog({
     setCategoriesError(null)
 
     try {
-      const response = await fetchWithSessionExpiration(
-        withAPIBaseURL('/projects/categories'),
-        {
-          cache: 'no-cache',
-          signal,
+      const nextCategories = await collectApiList<ProjectCategoryWithStatus>(
+        '/projects/categories',
+        async (path) => {
+          const response = await fetchWithSessionExpiration(
+            withAPIBaseURL(path),
+            {
+              cache: 'no-cache',
+              signal,
+            }
+          )
+          if (!response.ok) {
+            return Promise.reject(
+              new Error(await getResponseErrorMessage(response))
+            )
+          }
+          return response.json()
         }
       )
-
-      if (!response.ok) {
-        setCategories([])
-        setCategoriesError(await getResponseErrorMessage(response))
-        return
-      }
-
-      const nextCategories =
-        (await response.json()) as ProjectCategoryWithStatus[]
+      if (signal?.aborted) return
       setCategories(
         [...nextCategories].sort((a, b) => a.sort_order - b.sort_order)
       )

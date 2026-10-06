@@ -45,7 +45,7 @@ result into the next call instead of reusing the original base solid.
 ### Examples
 
 ```kcl
-@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+@settings(defaultLengthUnit = mm, kclVersion = 3.0)
 
 baseSketch = sketch(on = XY) {
   bottom = line(start = [var -10mm, var -10mm], end = [var 10mm, var -10mm])
@@ -93,7 +93,7 @@ subtractedPart = subtract([base], tools = [tool])
 </model-viewer>
 
 ```kcl
-@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+@settings(defaultLengthUnit = mm, kclVersion = 3.0)
 
 baseSketch = sketch(on = XY) {
   bottom = line(start = [var -10mm, var -10mm], end = [var 10mm, var -10mm])

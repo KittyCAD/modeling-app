@@ -185,7 +185,10 @@ async fn inner_loft(
                     .section_ids(sketches.iter().map(|group| group.id).collect())
                     .bez_approximate_rational(bez_approximate_rational)
                     .tolerance(LengthUnit(
-                        tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
+                        tolerance
+                            .as_ref()
+                            .map(|t| t.unwrap_to_mm())
+                            .unwrap_or(DEFAULT_TOLERANCE_MM),
                     ))
                     .v_degree(v_degree)
                     .body_type(body_type)
@@ -196,7 +199,10 @@ async fn inner_loft(
                     .section_ids(sketches.iter().map(|group| group.id).collect())
                     .bez_approximate_rational(bez_approximate_rational)
                     .tolerance(LengthUnit(
-                        tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
+                        tolerance
+                            .as_ref()
+                            .map(|t| t.unwrap_to_mm())
+                            .unwrap_or(DEFAULT_TOLERANCE_MM),
                     ))
                     .v_degree(v_degree)
                     .body_type(body_type)

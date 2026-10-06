@@ -29,15 +29,9 @@ export const FILE_EXT = '.kcl'
  * Lowercased, with leading dot. Add extensions here to broaden support.
  */
 export const EDITABLE_TEXT_FILE_EXTENSIONS = ['.md', '.txt'] as const
-export const DEFAULT_KCL_VERSION = '2.0'
 export const EXPERIMENTAL_POINT_AND_CLICK_FLAG: Feature =
   'sketch_experimental_features'
-export const OPFS_CLOUD_FEATURE_FLAG: Feature = 'web_app_file_browser'
-export const SEGMENTS_BASED_REGIONS_FEATURE_FLAG: Feature =
-  'segments_based_regions'
-export const KCL_CEK_EXECUTOR_FEATURE_FLAG: Feature = 'kcl_cek_executor'
 export const KCL_NEW_LEXER_PARSER_FEATURE_FLAG: Feature = 'kcl_new_lexer_parser'
-export const ENABLE_Z0006_LINT_FLAG = 'enable_z0006_lint' as Feature
 /** Gates named view changes to ZDS UI */
 export const NAMED_VIEWS_UI_FEATURE_FLAG: Feature = 'named_views_ui'
 /** Allows legacy sketches to be edited using point-and-click */
@@ -218,6 +212,8 @@ export const EXECUTE_AST_INTERRUPT_ERROR_MESSAGE = JSON.stringify(
 /** The messages that appear for exporting toasts */
 export const EXPORT_TOAST_MESSAGES = {
   START: 'Exporting...',
+  CHOOSE_LOCATION:
+    'Export ready to save. Choose a location in the save dialog.',
   SUCCESS: 'Exported successfully.',
   FAILED: 'Export failed.',
 }
@@ -233,9 +229,6 @@ export const MAKE_TOAST_MESSAGES = {
   ERROR_STARTING_PRINT: 'Error while starting print.',
   SUCCESS: 'Started print successfully.',
 }
-
-/** Toast id for the insert foreign part toast */
-export const INSERT_FOREIGN_TOAST_ID = 'insert-foreign-toast'
 
 /** Toast id for the onboarding */
 export const ONBOARDING_TOAST_ID = 'onboarding-toast'

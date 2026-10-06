@@ -817,156 +817,6 @@ description: Result of parsing socket-head-cap-screw.kcl
                       "commentStart": 0,
                       "end": 0,
                       "moduleId": 0,
-                      "name": "tags",
-                      "start": 0,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "arguments": [
-                        {
-                          "type": "LabeledArg",
-                          "label": {
-                            "commentStart": 0,
-                            "end": 0,
-                            "moduleId": 0,
-                            "name": "faces",
-                            "start": 0,
-                            "type": "Identifier"
-                          },
-                          "arg": {
-                            "commentStart": 0,
-                            "elements": [
-                              {
-                                "commentStart": 0,
-                                "computed": false,
-                                "end": 0,
-                                "moduleId": 0,
-                                "object": {
-                                  "commentStart": 0,
-                                  "computed": false,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "object": {
-                                    "abs_path": false,
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "moduleId": 0,
-                                    "name": {
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "name": "boltProfile",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  },
-                                  "property": {
-                                    "abs_path": false,
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "moduleId": 0,
-                                    "name": {
-                                      "commentStart": 0,
-                                      "end": 0,
-                                      "moduleId": 0,
-                                      "name": "tags",
-                                      "start": 0,
-                                      "type": "Identifier"
-                                    },
-                                    "path": [],
-                                    "start": 0,
-                                    "type": "Name",
-                                    "type": "Name"
-                                  },
-                                  "start": 0,
-                                  "type": "MemberExpression",
-                                  "type": "MemberExpression"
-                                },
-                                "property": {
-                                  "abs_path": false,
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "name": {
-                                    "commentStart": 0,
-                                    "end": 0,
-                                    "moduleId": 0,
-                                    "name": "circle1",
-                                    "start": 0,
-                                    "type": "Identifier"
-                                  },
-                                  "path": [],
-                                  "start": 0,
-                                  "type": "Name",
-                                  "type": "Name"
-                                },
-                                "start": 0,
-                                "type": "MemberExpression",
-                                "type": "MemberExpression"
-                              },
-                              {
-                                "abs_path": false,
-                                "commentStart": 0,
-                                "end": 0,
-                                "moduleId": 0,
-                                "name": {
-                                  "commentStart": 0,
-                                  "end": 0,
-                                  "moduleId": 0,
-                                  "name": "capStart001",
-                                  "start": 0,
-                                  "type": "Identifier"
-                                },
-                                "path": [],
-                                "start": 0,
-                                "type": "Name",
-                                "type": "Name"
-                              }
-                            ],
-                            "end": 0,
-                            "moduleId": 0,
-                            "start": 0,
-                            "type": "ArrayExpression",
-                            "type": "ArrayExpression"
-                          }
-                        }
-                      ],
-                      "callee": {
-                        "abs_path": false,
-                        "commentStart": 0,
-                        "end": 0,
-                        "moduleId": 0,
-                        "name": {
-                          "commentStart": 0,
-                          "end": 0,
-                          "moduleId": 0,
-                          "name": "getCommonEdge",
-                          "start": 0,
-                          "type": "Identifier"
-                        },
-                        "path": [],
-                        "start": 0,
-                        "type": "Name"
-                      },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "start": 0,
-                      "type": "CallExpressionKw",
-                      "type": "CallExpressionKw",
-                      "unlabeled": null
-                    }
-                  },
-                  {
-                    "type": "LabeledArg",
-                    "label": {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
@@ -983,6 +833,152 @@ description: Result of parsing socket-head-cap-screw.kcl
                         "value": 0.02,
                         "suffix": "None"
                       }
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": "edges",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "commentStart": 0,
+                      "elements": [
+                        {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "properties": [
+                            {
+                              "commentStart": 0,
+                              "end": 0,
+                              "key": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "sideFaces",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "moduleId": 0,
+                              "start": 0,
+                              "type": "ObjectProperty",
+                              "value": {
+                                "commentStart": 0,
+                                "elements": [
+                                  {
+                                    "commentStart": 0,
+                                    "computed": false,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "object": {
+                                      "commentStart": 0,
+                                      "computed": false,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "object": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "boltProfile",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "property": {
+                                        "abs_path": false,
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": {
+                                          "commentStart": 0,
+                                          "end": 0,
+                                          "moduleId": 0,
+                                          "name": "tags",
+                                          "start": 0,
+                                          "type": "Identifier"
+                                        },
+                                        "path": [],
+                                        "start": 0,
+                                        "type": "Name",
+                                        "type": "Name"
+                                      },
+                                      "start": 0,
+                                      "type": "MemberExpression",
+                                      "type": "MemberExpression"
+                                    },
+                                    "property": {
+                                      "abs_path": false,
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": {
+                                        "commentStart": 0,
+                                        "end": 0,
+                                        "moduleId": 0,
+                                        "name": "circle1",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
+                                      "start": 0,
+                                      "type": "Name",
+                                      "type": "Name"
+                                    },
+                                    "start": 0,
+                                    "type": "MemberExpression",
+                                    "type": "MemberExpression"
+                                  },
+                                  {
+                                    "abs_path": false,
+                                    "commentStart": 0,
+                                    "end": 0,
+                                    "moduleId": 0,
+                                    "name": {
+                                      "commentStart": 0,
+                                      "end": 0,
+                                      "moduleId": 0,
+                                      "name": "capStart001",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
+                                    "start": 0,
+                                    "type": "Name",
+                                    "type": "Name"
+                                  }
+                                ],
+                                "end": 0,
+                                "moduleId": 0,
+                                "start": 0,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              }
+                            }
+                          ],
+                          "start": 0,
+                          "type": "ObjectExpression",
+                          "type": "ObjectExpression"
+                        }
+                      ],
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
                     }
                   }
                 ],

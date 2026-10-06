@@ -6,19 +6,17 @@ const METADATA = new Map([
   ['data-expect-interaction-ms', 'budgetMs'],
 ])
 
-function definitionReference(context, attribute, field) {
-  const value = attribute?.value
-  if (value?.type !== 'JSXExpressionContainer') return undefined
-  const member = value.expression
-  if (
-    member.type !== 'MemberExpression' ||
-    member.computed ||
-    member.property.type !== 'Identifier' ||
-    member.property.name !== field
-  ) {
-    return undefined
+function findBinding(context, identifier) {
+  let scope = context.sourceCode.getScope(identifier)
+  while (scope) {
+    const binding = scope.set.get(identifier.name)
+    if (binding) return binding
+    scope = scope.upper
   }
-  const definition = member.object
+  return undefined
+}
+
+function registeredReference(context, definition) {
   if (
     definition.type !== 'MemberExpression' ||
     definition.computed ||
@@ -28,21 +26,84 @@ function definitionReference(context, attribute, field) {
     return undefined
   }
 
-  let scope = context.sourceCode.getScope(definition.object)
-  while (scope) {
-    const binding = scope.set.get(definition.object.name)
-    if (binding) {
-      const imported = binding.defs[0]
-      return imported?.type === 'ImportBinding' &&
-        imported.node.type === 'ImportSpecifier' &&
-        imported.node.imported.name === 'interactions' &&
-        imported.parent.source.value === DEFINITIONS_MODULE
-        ? definition.property.name
-        : undefined
+  const imported = findBinding(context, definition.object)?.defs[0]
+  return imported?.type === 'ImportBinding' &&
+    imported.node.type === 'ImportSpecifier' &&
+    imported.node.imported.name === 'interactions' &&
+    imported.parent.source.value === DEFINITIONS_MODULE
+    ? definition.property.name
+    : undefined
+}
+
+function interactionChoice(context, expression) {
+  if (registeredReference(context, expression)) {
+    return { tracked: true, nullable: false }
+  }
+  if (
+    expression.type === 'Identifier' &&
+    expression.name === 'undefined' &&
+    !findBinding(context, expression)?.defs.length
+  ) {
+    return { tracked: false, nullable: true }
+  }
+  if (expression.type === 'ConditionalExpression') {
+    const consequent = interactionChoice(context, expression.consequent)
+    const alternate = interactionChoice(context, expression.alternate)
+    if (consequent && alternate) {
+      return {
+        tracked: consequent.tracked || alternate.tracked,
+        nullable: consequent.nullable || alternate.nullable,
+      }
     }
-    scope = scope.upper
   }
   return undefined
+}
+
+function definitionReference(context, attribute, field) {
+  const value = attribute?.value
+  if (value?.type !== 'JSXExpressionContainer') return undefined
+  const fallback =
+    value.expression.type === 'LogicalExpression' &&
+    value.expression.operator === '??'
+  const expression = fallback ? value.expression.left : value.expression
+  const member =
+    expression.type === 'ChainExpression' ? expression.expression : expression
+  if (
+    member.type !== 'MemberExpression' ||
+    member.computed ||
+    member.property.type !== 'Identifier' ||
+    member.property.name !== field ||
+    (fallback && field !== 'testId')
+  ) {
+    return undefined
+  }
+  const registered = registeredReference(context, member.object)
+  if (registered) return fallback ? undefined : registered
+  if (member.object.type !== 'Identifier') return undefined
+
+  const binding = findBinding(context, member.object)
+  const declaration = binding?.defs[0]
+  if (
+    declaration?.type !== 'Variable' ||
+    declaration.parent.kind !== 'const' ||
+    declaration.node.id.type !== 'Identifier' ||
+    !declaration.node.init ||
+    binding.references.some(
+      (reference) => reference.isWrite() && !reference.init
+    )
+  ) {
+    return undefined
+  }
+  const choice = interactionChoice(context, declaration.node.init)
+  if (
+    !choice?.tracked ||
+    (choice.nullable && !member.optional) ||
+    (fallback && !choice.nullable)
+  ) {
+    return undefined
+  }
+  // Binding identity prevents fields from different conditional choices mixing.
+  return binding
 }
 
 const rule = {
@@ -54,7 +115,7 @@ const rule = {
     },
     messages: {
       definition:
-        'Use interactions.<name>.id from the central interaction definitions for data-interaction-id.',
+        'Use a central interaction definition or an immutable conditional alias for data-interaction-id.',
       metadata:
         'Use {{field}} from the same registered interaction for {{attribute}}.',
       override:

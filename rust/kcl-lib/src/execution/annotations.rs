@@ -349,6 +349,11 @@ impl Default for FnAttrs {
 pub struct VersionConstraint(Vec<u32>);
 
 impl VersionConstraint {
+    /// Construct a major.minor version boundary from numeric components.
+    pub(crate) fn new(major: u32, minor: u32) -> Self {
+        Self(vec![major, minor])
+    }
+
     /// Parse a dotted version string like "1.0" or "2.1.3". Returns `None` for empty
     /// input or any component that doesn't parse as a non-negative integer.
     pub fn parse(s: &str) -> Option<Self> {
@@ -565,6 +570,7 @@ mod tests {
         assert!(version_ge("1.0", &vc("1.0")));
         assert!(version_ge("2.0", &vc("1.0")));
         assert!(version_ge("2.0", &vc("2.0")));
+        assert!(version_ge("3.0", &vc("3.0")));
         assert!(version_ge("10.0", &vc("2.0")));
         assert!(version_ge("2.1", &vc("2.0")));
         assert!(!version_ge("1.0", &vc("2.0")));
@@ -577,6 +583,7 @@ mod tests {
     #[test]
     fn version_ge_supports_prerelease_versions() {
         assert!(version_ge("3.0-preview", &vc("2.0")));
+        assert!(version_ge("3.0-preview", &vc("3.0")));
         assert!(!version_ge("3.0-preview", &vc("4.0")));
     }
 

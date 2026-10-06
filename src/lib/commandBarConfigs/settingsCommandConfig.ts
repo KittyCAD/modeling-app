@@ -8,7 +8,7 @@ import type {
 import { buildCommandArgument } from '@src/lib/createMachineCommand'
 import { isDesktop } from '@src/lib/isDesktop'
 import { getPropertyByPath } from '@src/lib/objectPropertyByPath'
-import type { Setting, SettingsType } from '@src/lib/settings/initialSettings'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type {
   SetEventTypes,
   SettingsLevel,
@@ -21,6 +21,7 @@ import {
 import type { PathValue } from '@src/lib/types'
 import type { settingsMachine } from '@src/machines/settingsMachine'
 import { GLOBAL_COMMAND_SCOPES } from '@src/registry/contracts/commands'
+import type { Setting } from '@src/lib/settings/Setting'
 
 // An array of the paths to all of the settings that have commandConfigs
 export const settingsWithCommandConfigs = (s: SettingsType) =>

@@ -192,7 +192,7 @@ async fn snapshot_endpoint(
     // This is a shitty source range, I don't know what else to use for it though.
     // There's no actual KCL associated with this reset_scene call.
     if let Err(e) = ctxt
-        .send_clear_scene(&mut exec_state, kcl_lib::SourceRange::default())
+        .send_clear_scene(Some(version), &mut exec_state, kcl_lib::SourceRange::default())
         .await
     {
         return kcl_err(e);

@@ -1,5 +1,10 @@
 import env from '@src/env'
 import {
+  CloudSyncError,
+  withCloudSyncFailureContext,
+  withCloudSyncFailureContextSync,
+} from '@src/lib/cloudSync/failureContext'
+import {
   getMimeType,
   prepareProjectFilesForCloudUpload,
   toArrayBuffer,
@@ -16,7 +21,8 @@ import type {
 import { fetchWithSessionExpiration } from '@src/lib/sessionExpired'
 import { isArray } from '@src/lib/utils'
 
-export class CloudApiError extends Error {
+/** HTTP failure returned by the cloud API request boundary. */
+export class CloudApiError extends CloudSyncError {
   status: number
   retryAfterMs?: number
 
@@ -25,7 +31,8 @@ export class CloudApiError extends Error {
     message: string,
     options: { retryAfterMs?: number } = {}
   ) {
-    super(message)
+    super({ stage: 'network', point: 'cloud-api-request' }, message)
+    this.name = 'CloudApiError'
     this.status = status
     this.retryAfterMs = options.retryAfterMs
   }
@@ -56,7 +63,7 @@ function getBaseUrl(config: CloudSyncConfig) {
   )
 }
 
-async function cloudFetch(
+async function cloudFetchUncategorized(
   config: CloudSyncConfig,
   targetPath: string,
   init: RequestInit = {}
@@ -101,13 +108,29 @@ async function cloudFetch(
   return response
 }
 
+function cloudFetch(
+  config: CloudSyncConfig,
+  targetPath: string,
+  init: RequestInit = {}
+) {
+  return withCloudSyncFailureContext(
+    { stage: 'network', point: 'cloud-api-request' },
+    () => cloudFetchUncategorized(config, targetPath, init)
+  )
+}
+
 async function cloudJson<T>(
   config: CloudSyncConfig,
   targetPath: string,
   init: RequestInit = {}
 ): Promise<T> {
-  const response = await cloudFetch(config, targetPath, init)
-  return response.json() as Promise<T>
+  return withCloudSyncFailureContext(
+    { stage: 'network', point: 'parse-cloud-api-response' },
+    async () => {
+      const response = await cloudFetch(config, targetPath, init)
+      return response.json() as Promise<T>
+    }
+  )
 }
 
 function appendExpectedRevisionParam(pathname: string, revision?: Revision) {
@@ -119,8 +142,76 @@ function appendExpectedRevisionParam(pathname: string, revision?: Revision) {
   return `${url.pathname}${url.search}`
 }
 
-export async function listRemoteProjects(config: CloudSyncConfig) {
-  return cloudJson<RemoteProjectSummary[]>(config, '/user/projects')
+function isRemoteProjectSummary(value: unknown): value is RemoteProjectSummary {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'id' in value &&
+    typeof value.id === 'string' &&
+    value.id.trim().length > 0
+  )
+}
+
+export async function listRemoteProjects(
+  config: CloudSyncConfig,
+  beforeRequest: () => Promise<void> = async () => undefined
+): Promise<RemoteProjectSummary[]> {
+  const projects = new Map<string, RemoteProjectSummary>()
+  const seenCursors = new Set<string>()
+  let pageToken: string | undefined
+  let hasMorePages = true
+
+  while (hasMorePages) {
+    await beforeRequest()
+    const targetPath = pageToken
+      ? `/user/projects?${new URLSearchParams({ page_token: pageToken })}`
+      : '/user/projects'
+    const response = await cloudJson<unknown>(config, targetPath)
+    const legacy = isArray(response)
+    const page =
+      !legacy && response && typeof response === 'object'
+        ? (response as { items?: unknown; next_page?: unknown })
+        : undefined
+    const items = legacy ? response : page?.items
+    if (!isArray(items) || !items.every(isRemoteProjectSummary)) {
+      return Promise.reject(
+        new CloudSyncError(
+          { stage: 'network', point: 'parse-cloud-api-response' },
+          'Invalid remote project list.'
+        )
+      )
+    }
+
+    // A legacy array is the complete inventory, including if the API rolls back
+    // between pages. Keep this branch until all supported deployments paginate.
+    if (legacy) {
+      return [...items]
+    }
+    for (const item of items) {
+      projects.set(item.id, item)
+    }
+    if (page?.next_page === null) {
+      hasMorePages = false
+      continue
+    }
+    const cursor = page?.next_page
+    if (
+      typeof cursor !== 'string' ||
+      !cursor.trim() ||
+      seenCursors.has(cursor)
+    ) {
+      return Promise.reject(
+        new CloudSyncError(
+          { stage: 'network', point: 'parse-cloud-api-response' },
+          'Invalid remote project pagination cursor.'
+        )
+      )
+    }
+    seenCursors.add(cursor)
+    pageToken = cursor
+  }
+
+  return [...projects.values()]
 }
 
 export async function getRemoteProject(
@@ -427,7 +518,7 @@ type BuildProjectFormDataOptions = {
   deletedPaths?: string[]
 }
 
-function buildProjectFormData(
+function buildProjectFormDataUncategorized(
   projectPath: string,
   files: ProjectArchiveFile[],
   options?: Revision | BuildProjectFormDataOptions
@@ -460,6 +551,17 @@ function buildProjectFormData(
   }
 
   return formData
+}
+
+function buildProjectFormData(
+  projectPath: string,
+  files: ProjectArchiveFile[],
+  options?: Revision | BuildProjectFormDataOptions
+) {
+  return withCloudSyncFailureContextSync(
+    { stage: 'archive', point: 'prepare-project-upload' },
+    () => buildProjectFormDataUncategorized(projectPath, files, options)
+  )
 }
 
 function getProjectUploadPublicationMetadata(

@@ -40,7 +40,7 @@ way (i.e. scaled differently along each axis).
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `sketches` | [[`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Segment`](/docs/kcl-std/types/std-types-Segment); 1+] | The sketch or set of sketches that should be revolved, or solved sketch segments for a surface revolve. | Yes |
-| `axis` | [`Axis2d`](/docs/kcl-std/types/std-types-Axis2d) or [`Edge`](/docs/kcl-std/types/std-types-Edge) or [`Segment`](/docs/kcl-std/types/std-types-Segment) or [`any`](/docs/kcl-std/types/std-types-any) | Axis of revolution. Can be an Axis2d, an Edge, or a solved Segment. Experimental face API: edge reference objects (e.g. `{ sideFaces = [faceTag1, faceTag2] }`) are not ready for generated or user-facing KCL yet; prefer Axis2d, Edge, or Segment until point-and-click and migration support ships. | Yes |
+| `axis` | [`Axis2d`](/docs/kcl-std/types/std-types-Axis2d) or [`Edge`](/docs/kcl-std/types/std-types-Edge) or [`Segment`](/docs/kcl-std/types/std-types-Segment) or [`any`](/docs/kcl-std/types/std-types-any) | Axis of revolution. Can be an Axis2d, an Edge, a solved Segment, or an edge reference object. Edge reference objects use `sideFaces`, e.g. `{ sideFaces = [faceTag1, faceTag2] }`. | Yes |
 | `angle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | Angle to revolve (in degrees). Default is 360. | No |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
 | `symmetric` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch. | No |
@@ -180,7 +180,7 @@ box = startSketchOn(XY)
   |> line(end = [20, 0])
   |> line(end = [0, -20])
   |> close()
-  |> extrude(length = 20)
+  |> extrude(length = 20, tagEnd = $capEnd001)
 
 sketch001 = startSketchOn(box, face = END)
   |> circle(center = [10, 10], radius = 4)
@@ -209,11 +209,11 @@ box = startSketchOn(XY)
   |> line(end = [20, 0])
   |> line(end = [0, -20], tag = $revolveAxis)
   |> close()
-  |> extrude(length = 20)
+  |> extrude(length = 20, tagEnd = $capEnd001)
 
 sketch001 = startSketchOn(box, face = END)
   |> circle(center = [10, 10], radius = 4)
-  |> revolve(angle = 90deg, axis = getOppositeEdge(revolveAxis))
+  |> revolve(angle = 90deg, axis = { sideFaces = [revolveAxis, capEnd001] })
 
 ```
 
@@ -238,11 +238,11 @@ box = startSketchOn(XY)
   |> line(end = [20, 0])
   |> line(end = [0, -20], tag = $revolveAxis)
   |> close()
-  |> extrude(length = 20)
+  |> extrude(length = 20, tagEnd = $capEnd001)
 
 sketch001 = startSketchOn(box, face = END)
   |> circle(center = [10, 10], radius = 4)
-  |> revolve(angle = 90deg, axis = getOppositeEdge(revolveAxis), tolerance = 0.0001)
+  |> revolve(angle = 90deg, axis = { sideFaces = [revolveAxis, capEnd001] }, tolerance = 0.0001)
 
 ```
 

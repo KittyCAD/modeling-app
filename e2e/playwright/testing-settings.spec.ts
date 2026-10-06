@@ -43,8 +43,6 @@ const settingsSwitchTab = (page: Page) => async (tab: 'user' | 'proj') => {
       await expect(projectSettingsTab).toBeChecked()
       await expect(settingTheme).toHaveCount(0)
       break
-    default:
-      const _: never = tab
   }
 }
 

@@ -29,7 +29,7 @@ export type any
 /// type of a function that always stops evaluation by raising an error. A
 /// function declared to return `never` produces a type error if it returns a
 /// value or reaches the end of its body.
-@(impl = primitive, experimental = true)
+@(impl = primitive, added_in = "3.0")
 export type never
 
 /// The type of the none (aka null) value.

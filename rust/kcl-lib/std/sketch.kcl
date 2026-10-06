@@ -649,7 +649,7 @@ export fn ellipse(
 /// // extrude a circle to a tagged edge (cyan cylinder)
 /// sketch005 = startSketchOn(offsetPlane(YZ, offset = 4))
 /// cylinder3 = circle(sketch005, center = [0.5, 0.5], radius = 0.25)
-///   |> extrude(to = getCommonEdge(faces = [facetag0, facetag1]))
+///   |> extrude(to = { sideFaces = [facetag0, facetag1] })
 ///   |> appearance(color = '#00FFFF')
 ///
 /// // extrude a circle to a plane (magenta cylinder)
@@ -750,7 +750,7 @@ export fn ellipse(
 /// ```
 /// ``` kcl, sketchSolve
 /// // Examples showing extrude with a positive/negative draft.
-/// @settings(experimentalFeatures = allow, kclVersion = 2.0)
+/// @settings(experimentalFeatures = allow, kclVersion = 3.0)
 ///
 /// sketch001 = sketch(on = XY) {
 ///   line1 = line(start = [var -3.39mm, var 2.51mm], end = [var -4.52mm, var 0.96mm])
@@ -828,7 +828,7 @@ export fn ellipse(
 /// extrude([originalSketch.line1, originalSketch.line2], length = -1, bodyType = SURFACE)
 /// ```
 /// ```kcl,sketchSolve
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// // The direction parameter can apply to sketches, segments, or edges
 /// // Directions can be specified by an axis, a sketch segment, or a body's edge.
@@ -884,7 +884,7 @@ export fn ellipse(
 /// extrude003 = extrude(sketch003.arc1, length = 5, bodyType = SURFACE, direction = [1, -1, 1])
 /// ```
 /// ```kcl,sketchSolve
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// // Extruding edges can infer a direction or accept a custom direction
 /// sketch001 = sketch(on = XY) {
@@ -1035,7 +1035,7 @@ export fn extrude(
 ///     |> line(end = [20, 0])
 ///     |> line(end = [0, -20])
 ///     |> close()
-///     |> extrude(length = 20)
+///     |> extrude(length = 20, tagEnd = $capEnd001)
 ///
 /// sketch001 = startSketchOn(box, face = END)
 ///     |> circle( center = [10,10], radius = 4 )
@@ -1052,13 +1052,13 @@ export fn extrude(
 ///     |> line(end = [20, 0])
 ///     |> line(end = [0, -20], tag = $revolveAxis)
 ///     |> close()
-///     |> extrude(length = 20)
+///     |> extrude(length = 20, tagEnd = $capEnd001)
 ///
 /// sketch001 = startSketchOn(box, face = END)
 ///     |> circle( center = [10,10], radius = 4 )
 ///     |> revolve(
 ///         angle = 90deg,
-///         axis = getOppositeEdge(revolveAxis)
+///         axis = { sideFaces = [revolveAxis, capEnd001] }
 ///     )
 /// ```
 ///
@@ -1069,13 +1069,13 @@ export fn extrude(
 ///     |> line(end = [20, 0])
 ///     |> line(end = [0, -20], tag = $revolveAxis)
 ///     |> close()
-///     |> extrude(length = 20)
+///     |> extrude(length = 20, tagEnd = $capEnd001)
 ///
 /// sketch001 = startSketchOn(box, face = END)
 ///     |> circle( center = [10,10], radius = 4 )
 ///     |> revolve(
 ///         angle = 90deg,
-///         axis = getOppositeEdge(revolveAxis),
+///         axis = { sideFaces = [revolveAxis, capEnd001] },
 ///         tolerance = 0.0001
 ///     )
 /// ```
@@ -1240,8 +1240,8 @@ export fn extrude(
 export fn revolve(
   /// The sketch or set of sketches that should be revolved, or solved sketch segments for a surface revolve.
   @sketches: [Sketch | Segment; 1+],
-  /// Axis of revolution. Can be an Axis2d, an Edge, or a solved Segment.
-  /// Experimental face API: edge reference objects (e.g. `{ sideFaces = [faceTag1, faceTag2] }`) are not ready for generated or user-facing KCL yet; prefer Axis2d, Edge, or Segment until point-and-click and migration support ships.
+  /// Axis of revolution. Can be an Axis2d, an Edge, a solved Segment, or an edge reference object.
+  /// Edge reference objects use `sideFaces`, e.g. `{ sideFaces = [faceTag1, faceTag2] }`.
   @(includeInSnippet = true)
   axis: Axis2d | Edge | Segment | any,
   /// Angle to revolve (in degrees). Default is 360.
@@ -1391,7 +1391,7 @@ export fn getPreviousAdjacentEdge(
 /// Get the shared edge between two faces.
 ///
 /// ```kcl,sketchSolve
-/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
+/// @settings(defaultLengthUnit = mm, kclVersion = 3.0)
 ///
 /// scale = 20mm
 /// partSketch = sketch(on = XY) {
@@ -1413,10 +1413,7 @@ export fn getPreviousAdjacentEdge(
 ///      )
 ///
 /// // Select the edge shared by the chamfer and the extrusion's end face.
-/// commonEdge = getCommonEdge(faces = [
-///   part001.faces.chamfer0,
-///   part001.faces.end0,
-/// ])
+/// commonEdge = { sideFaces = [chamfer0, end0] }
 /// ```
 @(impl = std_rust, feature_tree = false)
 export fn getCommonEdge(
@@ -1463,8 +1460,8 @@ export fn getCommonEdge(
 export fn getBoundedEdge(
   /// The solid that the edge belongs to.
   @solid: Solid,
-  /// The edge to bound. This can be a tagged edge or an edge ID from `edgeId(...)`.
-  /// Experimental face API: edge reference objects (e.g. `{ sideFaces = [faceTag1, faceTag2], endFaces = [...], index = 0 }`) are not ready for generated or user-facing KCL yet; prefer tagged edges or `edgeId(...)` until point-and-click and migration support ships.
+  /// The edge to bound. This can be a tagged edge, an edge ID from `edgeId(...)`, or an edge reference object.
+  /// Edge reference objects use `sideFaces`, e.g. `{ sideFaces = [faceTag1, faceTag2], endFaces = [...], index = 0 }`.
   edge: Edge | any,
   /// A lower percentage bound of the edge, must be between 0 and 1 inclusive. Defaults to 0.
   lowerBound?: number(Count),
@@ -1559,7 +1556,7 @@ export fn polygon(
 /// swept along the same path.
 ///
 /// ```kcl,sketchSolve
-/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
+/// @settings(defaultLengthUnit = mm, kclVersion = 3.0)
 ///
 /// sweepPath = sketch(on = XZ) {
 ///   line1 = line(start = [var 0.05mm, var 0.05mm], end = [var 0.05mm, var 7.05mm])
@@ -2053,7 +2050,7 @@ export fn sweep(
 /// ```
 /// ```kcl,sketchSolve
 /// // Demonstrates surface lofting of segments from multiple sketch blocks.
-/// @settings(defaultLengthUnit = mm, kclVersion = 2.0)
+/// @settings(defaultLengthUnit = mm, kclVersion = 3.0)
 ///
 /// sketch002 = sketch(on = XY) {
 ///   arc1 = arc(start = [var -2.02mm, var -3.05mm], end = [var 2.03mm, var -3.01mm], center = [var 0.01mm, var -3.05mm])
@@ -2111,7 +2108,7 @@ export fn loft(
 /// ```kcl
 /// // Example of pattern using a named axis.
 ///
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// exampleSketch = sketch(on = XZ) {
 ///   circle1 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
@@ -2133,7 +2130,7 @@ export fn loft(
 /// ```kcl
 /// // Example of pattern using a raw axis.
 ///
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// exampleSketch = sketch(on = XZ) {
 ///   circle1 = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
@@ -3470,7 +3467,7 @@ export fn faceOf(
 /// to a different consuming operation.
 ///
 /// ```kcl,sketchSolve
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// // `region` traces counterclockwise by default.
 /// triangle = sketch(on = XY) {
@@ -3489,7 +3486,7 @@ export fn faceOf(
 /// ```
 ///
 /// ```kcl,sketchSolve
-/// @settings(kclVersion = 2.0)
+/// @settings(kclVersion = 3.0)
 ///
 /// // Set `direction = CW` when the segments trace the boundary clockwise.
 /// trapezoid = sketch(on = XY) {

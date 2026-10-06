@@ -873,9 +873,6 @@ const fromDataToComponent = (
           />
         )
       }
-
-      default:
-        const _ex: never = type
     }
   }
 
