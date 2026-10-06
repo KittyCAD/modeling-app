@@ -33,13 +33,13 @@ afterEach(async () => {
 })
 
 async function startRunning() {
-  await fixture.controller.start(true)
+  await fixture.controller.start()
   await vi.waitFor(() => expect(fixture.controller.phase.value).toBe('running'))
 }
 
 describe('project migration', () => {
   it('streams progress only for this attempt without applying candidate edits', async () => {
-    await fixture.controller.start(true)
+    await fixture.controller.start()
     await vi.waitFor(() =>
       expect(fixture.controller.phase.value).toBe('running')
     )
@@ -93,7 +93,7 @@ describe('project migration', () => {
   })
 
   it('clears previous progress when starting a new attempt', async () => {
-    await fixture.controller.start(true)
+    await fixture.controller.start()
     await vi.waitFor(() =>
       expect(fixture.controller.phase.value).toBe('running')
     )
@@ -114,7 +114,7 @@ describe('project migration', () => {
     await vi.waitFor(() =>
       expect(fixture.controller.phase.value).toBe('cancelled')
     )
-    await fixture.controller.start(true)
+    await fixture.controller.start()
     await vi.waitFor(() =>
       expect(fixture.controller.phase.value).toBe('running')
     )
@@ -125,7 +125,7 @@ describe('project migration', () => {
   it.each([true, false, undefined])(
     'reports quota exemption only with confirmed evidence (%s)',
     async (conversionNotStarted) => {
-      await fixture.controller.start(true)
+      await fixture.controller.start()
       await vi.waitFor(() =>
         expect(fixture.controller.phase.value).toBe('running')
       )
@@ -214,10 +214,10 @@ describe('project migration', () => {
     await expect(fixture.project.capture()).rejects.toThrow('symbolic links')
   })
 
-  it('requires consent, authenticates and applies only after a validated result', async () => {
-    await fixture.controller.start(false)
-    expect(fixture.frames).toEqual([])
+  it('requests stable KCL 3, authenticates and applies only after a validated result', async () => {
     await startRunning()
+    expect(fixture.request.target).toBe('3.0')
+    expect(fixture.request.allow_preview ?? false).toBe(false)
     expect(fixture.frames[0]).toEqual({
       type: 'headers',
       headers: { Authorization: 'Bearer test-token' },
@@ -262,7 +262,7 @@ describe('project migration', () => {
   )
 
   it('cancels and discards a success that races cancellation', async () => {
-    await fixture.controller.start(true)
+    await fixture.controller.start()
     await vi.waitFor(() =>
       expect(fixture.controller.phase.value).toBe('running')
     )
@@ -278,7 +278,7 @@ describe('project migration', () => {
   })
 
   it('queries status after disconnect without starting another operation', async () => {
-    await fixture.controller.start(true)
+    await fixture.controller.start()
     await vi.waitFor(() =>
       expect(fixture.controller.phase.value).toBe('running')
     )
@@ -312,9 +312,9 @@ describe('project migration', () => {
       () => 'token'
     )
     try {
-      const old = controller.start(true)
+      const old = controller.start()
       controller.cancel()
-      await controller.start(true)
+      await controller.start()
       await vi.waitFor(() => expect(controller.phase.value).toBe('running'))
       const requestId = fixture.request.request_id
       finish(snapshot)
@@ -327,7 +327,7 @@ describe('project migration', () => {
   })
 
   it('rejects a result for another snapshot and never applies after leaving the project', async () => {
-    await fixture.controller.start(true)
+    await fixture.controller.start()
     await vi.waitFor(() =>
       expect(fixture.controller.phase.value).toBe('running')
     )
@@ -360,7 +360,7 @@ describe('project migration', () => {
   it.each(terminalFailures)(
     'keeps original files for a %s result',
     async (status) => {
-      await fixture.controller.start(true)
+      await fixture.controller.start()
       await vi.waitFor(() =>
         expect(fixture.controller.phase.value).toBe('running')
       )
@@ -383,7 +383,7 @@ describe('project migration', () => {
   )
 
   it('requires complete validation and refuses missing files or altered binary assets', async () => {
-    await fixture.controller.start(true)
+    await fixture.controller.start()
     await vi.waitFor(() =>
       expect(fixture.controller.phase.value).toBe('running')
     )

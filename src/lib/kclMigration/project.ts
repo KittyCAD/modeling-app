@@ -5,6 +5,7 @@ import type { App } from '@src/lib/app'
 import { cloudSyncService } from '@src/lib/cloudSync/registry/contract'
 import fsZds from '@src/lib/fs-zds'
 import { replaceMigrationFiles } from '@src/lib/kclMigration/apply'
+import { MIGRATION_TARGET } from '@src/lib/kclMigration/protocol'
 import { zookeeperEditPatchHistoryEvent } from '@src/lib/zookeeper/editorPlugin'
 import { isErr, reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -96,15 +97,13 @@ export function migrationProject(
           new Error('Migration requires an explicit KCL 2.0 project.')
         )
       }
-      const preview = kclSettings(
-        '@settings(kclVersion = "3.0-preview")\nx = 1',
+      const target = kclSettings(
+        `@settings(kclVersion = "${MIGRATION_TARGET}")\nx = 1`,
         wasm
       )
-      if (isErr(preview) || preview?.kclVersion !== '3.0-preview') {
+      if (isErr(target) || target?.kclVersion !== MIGRATION_TARGET) {
         return Promise.reject(
-          new Error(
-            'Update Zoo Design Studio to a version supporting KCL 3 preview.'
-          )
+          new Error('Update Zoo Design Studio to a version supporting KCL 3.')
         )
       }
       if (!isCurrent() || !equalFiles(files, await currentFiles())) {

@@ -26,7 +26,7 @@ function MigrationView({ chatBusy = false }: { chatBusy?: boolean }) {
     <KclMigrationStart
       disabled={chatBusy}
       onStart={() => {
-        void fixture.controller.start(true)
+        void fixture.controller.start()
       }}
     />
   ) : (
@@ -34,13 +34,13 @@ function MigrationView({ chatBusy = false }: { chatBusy?: boolean }) {
   )
 }
 
-it('asks for consent, automatically applies a validated result and retains the response', async () => {
+it('starts without preview consent, automatically applies a validated result and retains the response', async () => {
   const view = render(<MigrationView />)
   fireEvent.click(screen.getByRole('button', { name: 'Migrate to KCL 3' }))
   expect(
     screen.getByRole('button', { name: 'Start Free Migration' })
-  ).toBeDisabled()
-  fireEvent.click(screen.getByRole('checkbox'))
+  ).toBeEnabled()
+  expect(screen.queryByRole('checkbox')).toBeNull()
   fireEvent.click(screen.getByRole('button', { name: 'Start Free Migration' }))
   await waitFor(() =>
     expect(screen.getByRole('status')).toHaveTextContent('Converting')
@@ -49,9 +49,7 @@ it('asks for consent, automatically applies a validated result and retains the r
     fixture.send(successfulOperation(fixture.request))
   })
   await waitFor(() =>
-    expect(screen.getByRole('status')).toHaveTextContent(
-      'Migrated to KCL 3 preview'
-    )
+    expect(screen.getByRole('status')).toHaveTextContent('Migrated to KCL 3')
   )
   expect(await fixture.readMain()).toBe(targetCode)
   expect(screen.queryByRole('button', { name: 'Apply Migration' })).toBeNull()
@@ -62,22 +60,19 @@ it('asks for consent, automatically applies a validated result and retains the r
   ).toBeNull()
   view.unmount()
   render(<MigrationView />)
-  expect(screen.getByRole('status')).toHaveTextContent(
-    'Migrated to KCL 3 preview'
-  )
+  expect(screen.getByRole('status')).toHaveTextContent('Migrated to KCL 3')
 })
 
 it('waits for ordinary chat before starting a migration', () => {
   render(<MigrationView chatBusy />)
   fireEvent.click(screen.getByRole('button', { name: 'Migrate to KCL 3' }))
-  fireEvent.click(screen.getByRole('checkbox'))
   expect(
     screen.getByRole('button', { name: 'Start Free Migration' })
   ).toBeDisabled()
 })
 
 it('shows live Zookeeper reasoning before migration finishes', async () => {
-  await fixture.controller.start(true)
+  await fixture.controller.start()
   await waitFor(() => expect(fixture.controller.phase.value).toBe('running'))
   render(<MigrationView />)
   await act(async () => {

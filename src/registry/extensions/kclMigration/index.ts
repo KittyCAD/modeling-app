@@ -46,7 +46,7 @@ const migrationSession = defineRegistryItemFactory((ctx) => {
         ...turns.peek(),
         { id: crypto.randomUUID(), afterExchange, controller: attempt },
       ]
-      void attempt.start(true)
+      void attempt.start()
     },
     getOrCreate(project, create) {
       if (project !== projects.peek()?.project.peek()) return undefined

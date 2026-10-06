@@ -53,7 +53,7 @@ const test = base.extend({
 })
 
 const source = '@settings(kclVersion = 2.0)\nlength = 10mm\n'
-const candidate = '@settings(kclVersion = "3.0-preview")\nlength = 11mm\n'
+const candidate = '@settings(kclVersion = "3.0")\nlength = 11mm\n'
 
 test.describe(
   'Sponsored KCL project migration',
@@ -142,7 +142,7 @@ test.describe(
                     },
                     validation: {
                       source_version: '2.0',
-                      target: '3.0-preview',
+                      target: '3.0',
                       runtime_version: '0.3.186',
                       rules_revision: 'test-guide',
                       summary:
@@ -243,8 +243,7 @@ test.describe(
       await expect(migrate).toBeVisible()
       await migrate.click()
       const start = page.getByRole('button', { name: 'Start Free Migration' })
-      await expect(start).toBeDisabled()
-      await page.getByRole('checkbox', { name: /I agree to migrate/ }).check()
+      await expect(start).toBeEnabled()
       await start.click()
       await expect(
         page.getByRole('status').filter({ hasText: 'Converting' })
@@ -263,7 +262,6 @@ test.describe(
       ).toBeVisible()
       await expect(cancel).toBeHidden()
       await migrate.click()
-      await page.getByRole('checkbox', { name: /I agree to migrate/ }).check()
       await start.click()
       await expect(
         page.getByRole('status').filter({ hasText: 'Converting' })
@@ -290,9 +288,7 @@ test.describe(
       await expect.poll(editorCode).toBe(candidate)
       await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
       await expect(
-        page
-          .getByRole('status')
-          .filter({ hasText: 'Migrated to KCL 3 preview' })
+        page.getByRole('status').filter({ hasText: 'Migrated to KCL 3' })
       ).toBeVisible()
       expect(await editorCode()).toBe(candidate)
       await expect(
@@ -317,9 +313,7 @@ test.describe(
       await toolbar.closePane(DefaultLayoutPaneID.Zookeeper)
       await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
       await expect(
-        page
-          .getByRole('status')
-          .filter({ hasText: 'Migrated to KCL 3 preview' })
+        page.getByRole('status').filter({ hasText: 'Migrated to KCL 3' })
       ).toBeVisible()
       await expect(
         page.getByRole('button', { name: 'Undo Migration' })

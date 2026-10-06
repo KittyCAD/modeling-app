@@ -78,9 +78,8 @@ export class MigrationController {
 
   private current = () => !this.disposed && this.project.isCurrent()
 
-  async start(allowPreview: boolean): Promise<void> {
+  async start(): Promise<void> {
     if (
-      !allowPreview ||
       !this.current() ||
       !['idle', 'failed', 'cancelled'].includes(this.phase.value)
     )
@@ -111,7 +110,6 @@ export class MigrationController {
           [...original.files].map(([path, bytes]) => [path, Array.from(bytes)])
         ),
         target: MIGRATION_TARGET,
-        allow_preview: true,
       }
       await this.connect(false)
     } catch (error: unknown) {
@@ -218,7 +216,7 @@ export class MigrationController {
         this.phase.value = 'applied'
         this.detail.value =
           warning ||
-          'Migrated to KCL 3 preview. Use Undo to restore the previous project.'
+          'Migrated to KCL 3. Use Undo to restore the previous project.'
         this.original = undefined
         this.request = undefined
       }

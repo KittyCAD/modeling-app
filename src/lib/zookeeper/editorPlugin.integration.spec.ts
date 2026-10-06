@@ -53,9 +53,9 @@ describe('Zookeeper project history integration', () => {
   it('records a migration as one multi-file edit between ordinary manual edits', async () => {
     const before = '@settings(kclVersion = 2.0)\nwidth = 10mm\n'
     const source = before.replace('10mm', '20mm')
-    const after = source.replace('2.0', '"3.0-preview"')
+    const after = source.replace('2.0', '"3.0"')
     const siblingBefore = '@settings(kclVersion = 2.0)\nheight = 5mm\n'
-    const siblingAfter = siblingBefore.replace('2.0', '"3.0-preview"')
+    const siblingAfter = siblingBefore.replace('2.0', '"3.0"')
     const harness = await createProjectHarness({
       'main.kcl': before,
       'parts/shared.kcl': siblingBefore,

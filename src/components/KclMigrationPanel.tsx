@@ -17,7 +17,6 @@ export function KclMigrationStart({
   onStart: () => void
 }) {
   const [open, setOpen] = useState(false)
-  const [consent, setConsent] = useState(false)
   return (
     <div className="px-4 py-2 text-sm">
       <button type="button" aria-expanded={open} onClick={() => setOpen(!open)}>
@@ -30,22 +29,11 @@ export function KclMigrationStart({
             validation. Validated changes apply automatically. Use Undo to
             restore the previous project.
           </p>
-          <label className="flex items-start gap-2">
-            <input
-              type="checkbox"
-              checked={consent}
-              onChange={(event) => setConsent(event.target.checked)}
-            />
-            I agree to migrate to KCL 3 preview, which may change before the
-            stable release.
-          </label>
           <button
             type="button"
             className="rounded border border-chalkboard-40 px-3 py-1.5 disabled:opacity-50"
-            disabled={disabled || !consent}
-            onClick={() => {
-              if (consent && !disabled) onStart()
-            }}
+            disabled={disabled}
+            onClick={onStart}
           >
             Start Free Migration
           </button>
@@ -77,7 +65,7 @@ export function KclMigrationPanel({
         userAvatar={<AvatarUser src={userAvatar} />}
         className="py-2"
       >
-        Migrate this project to KCL 3 preview.
+        Migrate this project to KCL 3.
       </ChatBubble>
       {(controller.progress.value.length > 0 ||
         controller.progressText.value) && (
