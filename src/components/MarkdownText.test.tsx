@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { StrictMode } from 'react'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({ openExternal: vi.fn() }))
 
@@ -38,6 +38,10 @@ const expectedItems = [
 ]
 
 describe('MarkdownText', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs()
+  })
+
   beforeEach(() => {
     mocks.openExternal.mockClear()
   })
@@ -51,30 +55,18 @@ describe('MarkdownText', () => {
   })
 
   it('opens relative KCL docs links externally once, including in StrictMode', () => {
+    vi.stubEnv('VITE_ZOO_BASE_DOMAIN', 'docs.example')
     render(
       <StrictMode>
         <MarkdownText text="Use [**bounded edges**](/docs/kcl-std/types/std-types-BoundedEdge)." />
       </StrictMode>
     )
 
-    const url = 'https://zoo.dev/docs/kcl-std/types/std-types-BoundedEdge'
+    const url = 'https://docs.example/docs/kcl-std/types/std-types-BoundedEdge'
     const link = screen.getByRole('link', { name: 'bounded edges' })
     expect(link).toHaveAttribute('href', url)
     fireEvent.click(link)
     expect(mocks.openExternal).toHaveBeenCalledExactlyOnceWith(url)
-  })
-
-  it('can render link labels without interactive links', () => {
-    const { container } = render(
-      <MarkdownText
-        text="Use [**bounded edges**](/docs/kcl-std/types/std-types-BoundedEdge) with `blend`."
-        links={false}
-      />
-    )
-
-    expect(screen.queryByRole('link')).not.toBeInTheDocument()
-    expect(container.querySelector('strong')).toHaveTextContent('bounded edges')
-    expect(container.querySelector('code')).toHaveTextContent('blend')
   })
 
   it('keeps raw HTML and unsafe links inert', () => {

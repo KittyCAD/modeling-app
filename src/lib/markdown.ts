@@ -2,6 +2,7 @@ import type { MarkedOptions } from '@ts-stack/markdown'
 import { Marked, Renderer, escape, unescape } from '@ts-stack/markdown'
 
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 export const MARKED_OPTIONS: MarkedOptions = {
   gfm: true,
@@ -56,7 +57,7 @@ export class SafeRenderer extends Renderer {
 
     // KCL docs use site-relative links, not routes within the modeling app.
     if (/^\/docs(?:[/?#]|$)/.test(href)) {
-      href = `https://zoo.dev${href}`
+      href = withSiteBaseURL(href)
     }
 
     let out =

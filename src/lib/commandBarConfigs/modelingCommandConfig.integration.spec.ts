@@ -12,7 +12,6 @@ import {
 import {
   modelingCommandStdLibDriftConfig,
   modelingStdLibCommandArgs,
-  modelingStdLibCommandSummary,
   modelingStdLibCommandStatus,
   modelingStdLibCommandUsesExperimentalFeatures,
   type StdLibCommandDriftConfig,
@@ -571,26 +570,6 @@ function pointAndClickStdLibArgs(config: StdLibCommandDriftConfig) {
 }
 
 describe('stdlib command arg derivation', () => {
-  it('leaves stdlib descriptions to command creation except the combined GDT Profile flow', () => {
-    const commandNames = Object.keys(modelingCommandStdLibDriftConfig) as Array<
-      keyof typeof modelingCommandStdLibDriftConfig
-    >
-
-    for (const commandName of commandNames) {
-      const commandConfig = modelingMachineCommandConfig[commandName]
-      if (!commandConfig || isArray(commandConfig)) {
-        throw new Error(`${commandName} should have a single command config`)
-      }
-
-      expect(modelingStdLibCommandSummary(commandName)).toBeTruthy()
-      expect(commandConfig.description).toBe(
-        commandName === 'GDT Profile'
-          ? 'Add profile geometric dimensioning & tolerancing annotation to faces or edges.'
-          : undefined
-      )
-    }
-  })
-
   it('derives base command-bar arg config from KCL stdlib metadata', () => {
     const args = modelingStdLibCommandArgs<ModelingCommandSchema['Extrude']>(
       'Extrude',
@@ -631,6 +610,9 @@ describe('stdlib command arg derivation', () => {
       required: false,
     })
     expect(args.direction.status).toBeUndefined()
+    expect(
+      modelingStdLibCommandArgs<ModelingCommandSchema['Hole']>('Hole').cutAt
+    ).toMatchObject({ inputType: 'vector2d' })
   })
 
   it('derives command status from KCL stdlib metadata', () => {

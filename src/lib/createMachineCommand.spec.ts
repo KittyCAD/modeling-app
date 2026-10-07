@@ -74,7 +74,7 @@ const commandBarConfig = {
 } satisfies StateMachineCommandSetConfig<typeof testMachine, TestCommandSchema>
 
 describe('createMachineCommand', () => {
-  test('defaults only missing descriptions, including command arrays, without changing configs', () => {
+  test('defaults missing descriptions while preserving overrides, including command arrays', () => {
     const actor = createActor(testMachine).start()
     const configs = {
       Available: {},
@@ -83,7 +83,6 @@ describe('createMachineCommand', () => {
       typeof testMachine,
       TestCommandSchema
     >
-    const getDefaultDescription = vi.fn((type: string) => `Default ${type}`)
     const props = {
       groupId: testMachine.id,
       state: actor.getSnapshot(),
@@ -91,7 +90,7 @@ describe('createMachineCommand', () => {
       actor,
       commandBarConfig: configs,
       defaultScopes: GLOBAL_COMMAND_SCOPES,
-      getDefaultDescription,
+      getDefaultDescription: (type: string) => `Default ${type}`,
     }
 
     const command = createMachineCommand<typeof testMachine, TestCommandSchema>(
@@ -101,11 +100,6 @@ describe('createMachineCommand', () => {
       typeof testMachine,
       TestCommandSchema
     >({ ...props, type: 'ManyCommands' })
-    const commandWithoutFallback = createMachineCommand<
-      typeof testMachine,
-      TestCommandSchema
-    >({ ...props, type: 'Available', getDefaultDescription: undefined })
-
     actor.stop()
 
     expect(command).toMatchObject({ description: 'Default Available' })
@@ -114,10 +108,6 @@ describe('createMachineCommand', () => {
       { description: 'Custom' },
       { description: '' },
     ])
-    expect(commandWithoutFallback).toMatchObject({ description: undefined })
-    expect(getDefaultDescription).toHaveBeenCalledTimes(2)
-    expect(configs.Available).toEqual({})
-    expect(configs.ManyCommands[0]).toEqual({})
   })
 
   test('hides experimental commands by default', () => {

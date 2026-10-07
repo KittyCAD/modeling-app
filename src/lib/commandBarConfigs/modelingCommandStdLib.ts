@@ -615,11 +615,12 @@ export type ModelingStdLibCommandName =
 export function modelingStdLibCommandSummary(
   commandName: string
 ): string | undefined {
-  for (const [name, { stdLibName }] of Object.entries(
+  const configs: Partial<Record<string, StdLibCommandDriftConfig>> =
     modelingCommandStdLibDriftConfig
-  )) {
-    if (name === commandName) return stdLibCommandSummary(stdLibName)
-  }
+  if (!Object.hasOwn(configs, commandName)) return undefined
+
+  const config = configs[commandName]
+  return config ? stdLibCommandSummary(config.stdLibName) : undefined
 }
 
 export function modelingStdLibCommandName<
