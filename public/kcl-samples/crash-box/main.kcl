@@ -55,13 +55,13 @@ crashBoxProfile = sketch(on = XY) {
   horizontalDistance([bottomEdge.start, bottomEdge.end]) == crashBoxOuterWidth
   verticalDistance([leftEdge.end, leftEdge.start]) == crashBoxOuterWidth
   verticalDistance([
-  verticalCenterGuide.end,
-  verticalCenterGuide.start
-]) == crashBoxOuterWidth / 2
+    verticalCenterGuide.end,
+    verticalCenterGuide.start
+  ]) == crashBoxOuterWidth / 2
   horizontalDistance([
-  horizontalCenterGuide.start,
-  horizontalCenterGuide.end
-]) == crashBoxOuterWidth / 2
+    horizontalCenterGuide.start,
+    horizontalCenterGuide.end
+  ]) == crashBoxOuterWidth / 2
 }
 
 crashBoxRegion = region(segments = [
@@ -75,13 +75,33 @@ crashBoxSolid = extrude(crashBoxRegion, length = crashBoxExtrudeLength)
 // Optional exterior edge softening
 crashBoxOuterCornerFillets = fillet(
   crashBoxSolid,
-  tags = [
-    edgeId(crashBoxSolid, closestTo = [-200mm, -200mm, -600mm]),
-    edgeId(crashBoxSolid, closestTo = [200mm, -200mm, -600mm]),
-    edgeId(crashBoxSolid, closestTo = [200mm, 200mm, -600mm]),
-    edgeId(crashBoxSolid, closestTo = [-200mm, 200mm, -600mm])
-  ],
   radius = 60,
+  edges = [
+    {
+      sideFaces = [
+        crashBoxRegion.tags.leftEdge,
+        crashBoxRegion.tags.bottomEdge
+      ]
+    },
+    {
+      sideFaces = [
+        crashBoxRegion.tags.bottomEdge,
+        crashBoxRegion.tags.rightEdge
+      ]
+    },
+    {
+      sideFaces = [
+        crashBoxRegion.tags.topEdge,
+        crashBoxRegion.tags.rightEdge
+      ]
+    },
+    {
+      sideFaces = [
+        crashBoxRegion.tags.leftEdge,
+        crashBoxRegion.tags.topEdge
+      ]
+    }
+  ],
 )
 
 // Shell the crash box from both ends to create a constant wall thickness
@@ -131,11 +151,21 @@ beamSolid = extrude(
 // Ease the beam pocket edges for a better fit
 beamEndFillets = fillet(
   beamSolid,
-  tags = [
-    edgeId(beamSolid, closestTo = [-125mm, 0mm, -300mm]),
-    edgeId(beamSolid, closestTo = [125mm, 0mm, -300mm])
-  ],
   radius = 80,
+  edges = [
+    {
+      sideFaces = [
+        beamRegion.tags.bottomEdge,
+        beamSolid.faces.capEnd001
+      ]
+    },
+    {
+      sideFaces = [
+        beamSolid.faces.capStart001,
+        beamRegion.tags.bottomEdge
+      ]
+    }
+  ],
 )
 hide(beamProfile)
 

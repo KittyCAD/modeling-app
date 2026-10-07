@@ -289,7 +289,7 @@ example = extrude(exampleSketch, length = 1)
 </model-viewer>
 
 ```kcl
-@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+@settings(defaultLengthUnit = mm, kclVersion = 3.0)
 
 sweepPath = sketch(on = XZ) {
   line1 = line(start = [var 0.05mm, var 0.05mm], end = [var 0.05mm, var 7.05mm])

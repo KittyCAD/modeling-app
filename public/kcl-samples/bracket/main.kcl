@@ -3,7 +3,7 @@
 // Categories: Architecture & Construction; Mechanical Components; Parametric
 
 // Set units and enable experimental sketch constraints.
-@settings(defaultLengthUnit = in, kclVersion = 1.0)
+@settings(defaultLengthUnit = in, kclVersion = 2.0)
 
 // Define structural design inputs.
 allowableStress = 35000 // psi
@@ -121,51 +121,67 @@ bracketBlank = extrude(
 // Apply the inside bend radius at the elbow of the bracket.
 bracketWithInsideFillet = fillet(
   bracketBlank,
-  tags = getCommonEdge(faces = [
-    bracketProfileRegion.tags.line6,
-    bracketProfileRegion.tags.line5
-  ]),
   radius = insideBendRadius,
+  edges = [
+    {
+      sideFaces = [
+        bracketProfileRegion.tags.line5,
+        bracketProfileRegion.tags.line4
+      ]
+    }
+  ],
 )
 
 // Apply the outside bend radius around the outer corner.
 bracketWithBendFillets = fillet(
   bracketWithInsideFillet,
-  tags = getCommonEdge(faces = [
-    bracketProfileRegion.tags.line3,
-    bracketProfileRegion.tags.line1
-  ]),
   radius = outsideBendRadius,
+  edges = [
+    {
+      sideFaces = [
+        bracketProfileRegion.tags.line2,
+        bracketProfileRegion.tags.line1
+      ]
+    }
+  ],
 )
 
 // Round the four free outside corners of the extruded bracket.
 bracketWithCornerFillets = fillet(
   bracketWithBendFillets,
-  tags = [
-    getCommonEdge(faces = [
-      bracketProfileRegion.tags.line2,
-      bracketEndFace
-    ]),
-    getCommonEdge(faces = [
-      bracketProfileRegion.tags.line4,
-      bracketEndFace
-    ]),
-    getCommonEdge(faces = [
-      bracketProfileRegion.tags.line4,
-      bracketStartFace
-    ]),
-    getCommonEdge(faces = [
-      bracketProfileRegion.tags.line2,
-      bracketStartFace
-    ])
-  ],
   radius = cornerFilletRadius,
+  edges = [
+    {
+      sideFaces = [
+        bracketProfileRegion.tags.line6,
+        bracketEndFace
+      ]
+    },
+    {
+      sideFaces = [
+        bracketProfileRegion.tags.line3,
+        bracketEndFace
+      ]
+    },
+    {
+      sideFaces = [
+        bracketProfileRegion.tags.line3,
+        bracketStartFace
+      ]
+    },
+    {
+      sideFaces = [
+        bracketProfileRegion.tags.line6,
+        bracketStartFace
+      ]
+    }
+  ],
 )
 
 // Drill the shelf-side mounting holes into the horizontal leg.
 bracketWithShelfMountHoles = hole::holes(
   bracketWithCornerFillets,
-  face = bracketProfileRegion.tags.line5,
+  face = bracketProfileRegion.tags.line4,
   cutsAt = shelfMountHoleCenters,
   holeBottom = hole::flat(),
   holeBody = hole::blind(depth = shelfMountHoleDepth, diameter = shelfMountHoleDiameter),
@@ -175,7 +191,7 @@ bracketWithShelfMountHoles = hole::holes(
 // Drill the wall-side mounting holes into the vertical leg.
 finalBracket = hole::holes(
   bracketWithShelfMountHoles,
-  face = bracketProfileRegion.tags.line6,
+  face = bracketProfileRegion.tags.line5,
   cutsAt = wallMountHoleCenters,
   holeBottom = hole::flat(),
   holeBody = hole::blind(depth = wallMountHoleDepth, diameter = wallMountHoleDiameter),

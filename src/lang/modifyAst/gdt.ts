@@ -52,12 +52,6 @@ function setCallInAst(args: Parameters<typeof setBaseCallInAst>[0]) {
   })
 }
 
-function isProfileEdgeArtifact(
-  artifact: Selections['graphSelections'][number]['artifact']
-): boolean {
-  return artifact?.type === 'segment' || artifact?.type === 'sweepEdge'
-}
-
 function resolveSelectionsForTags(
   selections: Selections,
   artifactGraph: ArtifactGraph,
@@ -335,53 +329,6 @@ function buildGdtFaceAndEdgeExpressions({
     faceExprs,
     edgeExprs: edgeResult.edgeExprs,
   }
-}
-
-function buildLegacyGdtEdgeExpressions({
-  selections,
-  artifactGraph,
-  ast,
-  wasmInstance,
-}: {
-  selections: Selections
-  artifactGraph: ArtifactGraph
-  ast: Node<Program>
-  wasmInstance: ModuleType
-}): Error | { modifiedAst: Node<Program>; edgeExprs: Expr[] } {
-  let modifiedAst = ast
-  const edgeSelections = resolveSelectionsForTags(
-    selections,
-    artifactGraph,
-    isProfileEdgeArtifact
-  )
-  const edgeExprs: Expr[] = []
-
-  for (const edgeSelection of edgeSelections) {
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
-      edgeSelection,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(tagResult)) {
-      console.warn('Failed to add tags for edge selection', tagResult)
-      continue
-    }
-
-    modifiedAst = tagResult.modifiedAst
-    if (tagResult.exprs.length < 2) {
-      console.warn('Edge selection did not resolve to enough faces', tagResult)
-      continue
-    }
-
-    edgeExprs.push(
-      createCallExpressionStdLibKw('getCommonEdge', null, [
-        createLabeledArg('faces', createArrayExpression(tagResult.exprs)),
-      ])
-    )
-  }
-
-  return { modifiedAst, edgeExprs }
 }
 
 /**
@@ -1399,11 +1346,6 @@ export function addDistanceGdt({
   const targets: Array<{ kind: 'face' | 'edge'; expr: Expr }> = mNodeToEdit
     ? [{ kind: 'edge', expr: createLocalName('selection') }]
     : []
-  const resolvedTargets: Array<{
-    kind: 'face' | 'edge'
-    expr: Expr
-    selection: Selection
-  }> = []
   for (const selection of targetSelections) {
     const expressions = buildGdtFaceAndEdgeExpressions({
       selections: { graphSelections: [selection], otherSelections: [] },
@@ -1423,60 +1365,10 @@ export function addDistanceGdt({
       console.warn('No expression could be generated for distance selection')
       continue
     }
-    resolvedTargets.push({
+    targets.push({
       kind: edgeExpr ? 'edge' : 'face',
       expr,
-      selection,
     })
-  }
-
-  for (const target of resolvedTargets) {
-    if (
-      resolvedTargets.length + primitiveEdges.length === 2 &&
-      target.kind === 'edge'
-    ) {
-      const legacyEdgeResult = buildLegacyGdtEdgeExpressions({
-        selections: {
-          graphSelections: [target.selection],
-          otherSelections: [],
-        },
-        artifactGraph,
-        ast: modifiedAst,
-        wasmInstance,
-      })
-      if (err(legacyEdgeResult)) {
-        console.warn('Failed to build distance edge endpoint', legacyEdgeResult)
-        continue
-      }
-      modifiedAst = legacyEdgeResult.modifiedAst
-      for (const expr of legacyEdgeResult.edgeExprs) {
-        targets.push({ kind: 'edge', expr })
-      }
-      // Circular rims can have face references without a profile-edge artifact.
-      // Reuse the resolved faces rather than requiring segment tags.
-      if (
-        legacyEdgeResult.edgeExprs.length === 0 &&
-        target.expr.type === 'ObjectExpression'
-      ) {
-        const faces = target.expr.properties.flatMap((property) =>
-          (property.key.name === 'sideFaces' ||
-            property.key.name === 'endFaces') &&
-          property.value.type === 'ArrayExpression'
-            ? property.value.elements
-            : []
-        )
-        if (faces.length >= 2) {
-          targets.push({
-            kind: 'edge',
-            expr: createCallExpressionStdLibKw('getCommonEdge', null, [
-              createLabeledArg('faces', createArrayExpression(faces)),
-            ]),
-          })
-        }
-      }
-    } else {
-      targets.push({ kind: target.kind, expr: target.expr })
-    }
   }
 
   for (const selection of primitiveEdges) {

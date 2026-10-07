@@ -18,12 +18,12 @@ description: Physical properties flange.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 30493.849178128585
+    "value": 30493.84910127628
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 156.75951111996747
+    "value": 156.7595128335597
   }
 }

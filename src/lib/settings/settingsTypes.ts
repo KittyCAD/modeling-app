@@ -6,9 +6,10 @@ import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjecti
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 
 import type { CommandArgumentConfig } from '@src/lib/commandTypes'
-import type { Setting, SettingsType } from '@src/lib/settings/initialSettings'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type { Themes } from '@src/lib/theme'
 import type { AtLeast, PathValue, Paths } from '@src/lib/types'
+import type { Setting } from '@src/lib/settings/Setting'
 
 export type RgbaColor = {
   r: number

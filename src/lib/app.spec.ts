@@ -3,11 +3,7 @@ import { pluginsValueSpec } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import { File, type KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
-import {
-  IS_PLAYWRIGHT_KEY,
-  KCL_CEK_EXECUTOR_FEATURE_FLAG,
-  KCL_NEW_LEXER_PARSER_FEATURE_FLAG,
-} from '@src/lib/constants'
+import { IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import {
@@ -197,13 +193,9 @@ function createRuntimeFlagsWasmInstance() {
   }
 }
 
-function expectedRuntimeFlags(
-  useNewLexerParser: 'On' | 'Off',
-  useCekExecutor: 'On' | 'Off'
-) {
+function expectedRuntimeFlags() {
   return JSON.stringify({
-    use_cek_executor: useCekExecutor,
-    use_new_lexer_parser: useNewLexerParser,
+    use_new_parser: 'Off',
   })
 }
 
@@ -257,6 +249,25 @@ function hasDefaultDirectoryLibrarySetting(app: App) {
 }
 
 describe('project system', () => {
+  it('always closes a the last project before opening a new one', async () => {
+    const app = createAppForTest()
+    vi.fn(window.electron?.watchFileOn).mockImplementation(() => {})
+    vi.fn(window.electron?.watchFileOff).mockImplementation(() => {})
+
+    const project1 = await app.openProject(mockProject)
+    const closeFn = vi.spyOn(project1, 'close')
+    const projectPath = 'some-other-one'
+    await app.openProject({
+      ...mockProject,
+      name: 'bracket',
+      path: projectPath,
+      default_file: fsZds.join(projectPath, 'main.kcl'),
+    })
+    expect(closeFn).toHaveBeenCalled()
+
+    app.closeProject()
+    app.dispose()
+  })
   it('uses registry runtime dependencies by default', () => {
     const app = createAppForTest()
 
@@ -384,7 +395,7 @@ describe('project system', () => {
       await wasmPromise
 
       expect(wasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
-        expectedRuntimeFlags('Off', 'Off')
+        expectedRuntimeFlags()
       )
     } finally {
       app.dispose()
@@ -405,34 +416,10 @@ describe('project system', () => {
       await wasmPromise
       wasmInstance.set_kcl_runtime_flags.mockClear()
 
-      userFeatures.setFeatureIds(new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG]))
+      userFeatures.setFeatureIds(new Set())
 
       expect(wasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
-        expectedRuntimeFlags('On', 'Off')
-      )
-    } finally {
-      app.dispose()
-    }
-  })
-
-  it('updates the CEK executor runtime flag when the feature is enabled', async () => {
-    const userFeatures = createUserFeaturesForTest(new Set())
-    const wasmInstance = createRuntimeFlagsWasmInstance()
-    const wasmPromise = Promise.resolve(wasmInstance)
-    const app = createAppForTest({
-      userFeatures,
-      wasmPromise,
-      registryOverrides: [createTestWasmRegistryItem(wasmPromise)],
-    })
-
-    try {
-      await wasmPromise
-      wasmInstance.set_kcl_runtime_flags.mockClear()
-
-      userFeatures.setFeatureIds(new Set([KCL_CEK_EXECUTOR_FEATURE_FLAG]))
-
-      expect(wasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
-        expectedRuntimeFlags('Off', 'On')
+        expectedRuntimeFlags()
       )
     } finally {
       app.dispose()
@@ -440,9 +427,7 @@ describe('project system', () => {
   })
 
   it('sets KCL runtime flags on lifecycle-announced wasm instances', async () => {
-    const userFeatures = createUserFeaturesForTest(
-      new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG])
-    )
+    const userFeatures = createUserFeaturesForTest(new Set())
     const initialWasmInstance = createRuntimeFlagsWasmInstance()
     const nextWasmInstance = createRuntimeFlagsWasmInstance()
     const wasmPromise = Promise.resolve(initialWasmInstance)
@@ -458,7 +443,7 @@ describe('project system', () => {
       await notifyActiveWasmInstance(nextWasmInstance)
 
       expect(nextWasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
-        expectedRuntimeFlags('On', 'Off')
+        expectedRuntimeFlags()
       )
     } finally {
       app.dispose()

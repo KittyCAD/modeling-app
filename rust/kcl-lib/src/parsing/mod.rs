@@ -1,8 +1,11 @@
+use kcl_api::KclVersion;
+
 use crate::ModuleId;
 use crate::SourceRange;
 use crate::errors::CompilationIssue;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
+use crate::execution::computed_kcl_version;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Program;
 use crate::parsing::token::TokenStream;
@@ -11,6 +14,7 @@ use crate::parsing::token::TokenType;
 pub(crate) mod ast;
 mod math;
 pub(crate) mod parser;
+mod sketch_reserved_names;
 pub(crate) mod token;
 
 pub const PIPE_SUBSTITUTION_OPERATOR: &str = "%";
@@ -47,10 +51,14 @@ pub(crate) enum SyntaxSource {
 
 /// Parse syntax without deciding whether the `never` type is available.
 /// See :https://github.com/KittyCAD/modeling-app/issues/14158
-pub(crate) fn parse_str_syntax(code: &str, module_id: ModuleId) -> Result<(Node<Program>, Vec<SourceRange>), KclError> {
+pub(crate) fn parse_str_syntax(
+    code: &str,
+    module_id: ModuleId,
+) -> Result<(KclVersion, Node<Program>, Vec<SourceRange>), KclError> {
     let tokens = crate::parsing::token::lex(code, module_id)?;
     let (result, never_type_ranges) = parse_tokens_with_version_policy(tokens, VersionedSyntaxPolicy::Deferred);
-    Ok((result.parse_errs_as_err()?, never_type_ranges))
+    let program = result.parse_errs_as_err()?;
+    Ok((program.kcl_version, program.ast, never_type_ranges))
 }
 
 /// Validate parser-recorded `never` type uses for the source's role and KCL version.
@@ -204,8 +212,8 @@ fn parse_tokens_with_version_policy(
             .map(|range| CompilationIssue::err(range, RESERVED_USE_MESSAGE)),
     );
     reserved_issues.sort_by_key(|issue| issue.source_range.start());
-    let (mut result, never_type_ranges) = parser::run_parser_with_never_ranges(tokens.as_slice());
-    if let Ok((Some(program), issues)) = &mut result.0 {
+    let (mut inner_result, never_type_ranges) = parser::run_parser_with_never_ranges(tokens.as_slice());
+    let kcl_version = if let Ok((Some(program), issues)) = &mut inner_result.0 {
         let version = match policy {
             VersionedSyntaxPolicy::DeclaredVersion => match crate::execution::declared_kcl_version(program) {
                 Ok(Some((version, _))) => Some(version),
@@ -226,8 +234,25 @@ fn parse_tokens_with_version_policy(
                 );
             }
         }
-    }
+        version
+    } else {
+        None
+    };
+    let kcl_version = kcl_version.unwrap_or_default();
+
+    let result = ParseResult(
+        inner_result
+            .0
+            .map(|(program, issues)| (program.map(|ast| ParsedProgram { kcl_version, ast }), issues)),
+    );
     (result, never_type_ranges)
+}
+
+/// A parsed AST and its KCL version.
+#[derive(Debug, Clone)]
+pub struct ParsedProgram {
+    pub kcl_version: KclVersion,
+    pub ast: Node<Program>,
 }
 
 /// Result of parsing.
@@ -235,13 +260,13 @@ fn parse_tokens_with_version_policy(
 /// Will be a KclError if there was a lexing error or some unexpected error during parsing.
 ///   TODO - lexing errors should be included with the parse errors.
 /// Will be Ok otherwise, including if there were parsing errors. Any errors or warnings will
-/// be in the ParseContext. If an AST was produced, then that will be in the Option.
+/// be in the issues vector. If an AST was produced, then that will be in the Option.
 ///
 /// Invariants:
 /// - if there are no errors, then the Option will be Some
-/// - if the Option is None, then there will be at least one error in the ParseContext.
+/// - if the Option is None, then there will be at least one error in the issues vector.
 #[derive(Debug, Clone)]
-pub struct ParseResult(pub Result<(Option<Node<Program>>, Vec<CompilationIssue>), KclError>);
+pub struct ParseResult(pub Result<(Option<ParsedProgram>, Vec<CompilationIssue>), KclError>);
 
 impl ParseResult {
     #[cfg(test)]
@@ -250,7 +275,7 @@ impl ParseResult {
         if self.0.is_err() || self.0.as_ref().unwrap().0.is_none() {
             eprint!("{self:#?}");
         }
-        self.0.unwrap().0.unwrap()
+        self.0.unwrap().0.unwrap().ast
     }
 
     #[cfg(test)]
@@ -268,7 +293,7 @@ impl ParseResult {
     }
 
     /// Treat parsing errors as an Error.
-    pub fn parse_errs_as_err(self) -> Result<Node<Program>, KclError> {
+    pub fn parse_errs_as_err(self) -> Result<ParsedProgram, KclError> {
         let (p, errs) = self.0?;
 
         if let Some(err) = errs.iter().find(|e| e.severity.is_err()) {
@@ -281,27 +306,66 @@ impl ParseResult {
     }
 }
 
-impl From<Result<(Option<Node<Program>>, Vec<CompilationIssue>), KclError>> for ParseResult {
-    fn from(r: Result<(Option<Node<Program>>, Vec<CompilationIssue>), KclError>) -> ParseResult {
-        ParseResult(r)
+#[derive(Debug, Clone)]
+pub(crate) struct InnerParseResult(pub Result<(Option<Node<Program>>, Vec<CompilationIssue>), KclError>);
+
+impl InnerParseResult {
+    #[cfg(test)]
+    #[track_caller]
+    pub fn unwrap(self) -> Node<Program> {
+        if self.0.is_err() || self.0.as_ref().unwrap().0.is_none() {
+            eprint!("{self:#?}");
+        }
+        self.0.unwrap().0.unwrap()
+    }
+
+    #[cfg(test)]
+    #[track_caller]
+    pub fn unwrap_errs(&self) -> impl Iterator<Item = &CompilationIssue> {
+        self.0.as_ref().unwrap().1.iter().filter(|e| e.severity.is_err())
     }
 }
 
-impl From<(Option<Node<Program>>, Vec<CompilationIssue>)> for ParseResult {
-    fn from(p: (Option<Node<Program>>, Vec<CompilationIssue>)) -> ParseResult {
-        ParseResult(Ok(p))
+impl From<Result<(Option<ParsedProgram>, Vec<CompilationIssue>), KclError>> for ParseResult {
+    fn from(r: Result<(Option<ParsedProgram>, Vec<CompilationIssue>), KclError>) -> Self {
+        Self(r)
     }
 }
 
-impl From<Node<Program>> for ParseResult {
-    fn from(p: Node<Program>) -> ParseResult {
-        ParseResult(Ok((Some(p), vec![])))
+impl From<(Option<ParsedProgram>, Vec<CompilationIssue>)> for ParseResult {
+    fn from(p: (Option<ParsedProgram>, Vec<CompilationIssue>)) -> Self {
+        Self(Ok(p))
     }
 }
 
 impl From<KclError> for ParseResult {
-    fn from(e: KclError) -> ParseResult {
-        ParseResult(Err(e))
+    fn from(e: KclError) -> Self {
+        Self(Err(e))
+    }
+}
+
+impl From<Node<Program>> for ParseResult {
+    fn from(ast: Node<Program>) -> Self {
+        let kcl_version = computed_kcl_version(&ast);
+        Self(Ok((Some(ParsedProgram { kcl_version, ast }), vec![])))
+    }
+}
+
+impl From<(Option<Node<Program>>, Vec<CompilationIssue>)> for InnerParseResult {
+    fn from(p: (Option<Node<Program>>, Vec<CompilationIssue>)) -> Self {
+        Self(Ok(p))
+    }
+}
+
+impl From<Node<Program>> for InnerParseResult {
+    fn from(p: Node<Program>) -> Self {
+        Self(Ok((Some(p), vec![])))
+    }
+}
+
+impl From<KclError> for InnerParseResult {
+    fn from(e: KclError) -> Self {
+        Self(Err(e))
     }
 }
 
@@ -349,260 +413,213 @@ pub fn deprecation(s: &str, kind: DeprecationKind) -> Option<&'static str> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::parsing::token::LexerMode;
 
     #[test]
     fn syntax_validation_uses_source_role_and_effective_version() {
-        for mode in [LexerMode::Old, LexerMode::New] {
-            let _guard = LexerMode::override_for_test(mode);
-            let code = "fn stop(): never {}";
-            let (_, ranges) = parse_str_syntax(code, ModuleId::default()).unwrap();
-            let error = validate_never_type_ranges(&ranges, SyntaxSource::UserCode(crate::KclVersion::V2)).unwrap_err();
-            assert_eq!(
-                error.message(),
-                "The `never` type requires KCL 3.0-preview, but this program uses KCL 2.0."
-            );
-            let range = error.source_ranges()[0];
-            let start = code.find("never").unwrap();
-            assert_eq!((range.start(), range.end()), (start, start + "never".len()));
+        let code = "fn stop(): never {}";
+        let (_, _, ranges) = parse_str_syntax(code, ModuleId::default()).unwrap();
+        let error = validate_never_type_ranges(&ranges, SyntaxSource::UserCode(crate::KclVersion::V2)).unwrap_err();
+        assert_eq!(
+            error.message(),
+            "The `never` type requires KCL 3.0-preview, but this program uses KCL 2.0."
+        );
+        let range = error.source_ranges()[0];
+        let start = code.find("never").unwrap();
+        assert_eq!((range.start(), range.end()), (start, start + "never".len()));
 
-            validate_never_type_ranges(&ranges, SyntaxSource::UserCode(crate::KclVersion::V3Preview)).unwrap();
-            validate_never_type_ranges(&ranges, SyntaxSource::BundledStdlib).unwrap();
-            let (_, identifier_ranges) =
-                parse_str_syntax("never = 1\nmessage = \"never\"", ModuleId::default()).unwrap();
-            validate_never_type_ranges(&identifier_ranges, SyntaxSource::UserCode(crate::KclVersion::V2)).unwrap();
-        }
+        validate_never_type_ranges(&ranges, SyntaxSource::UserCode(crate::KclVersion::V3Preview)).unwrap();
+        validate_never_type_ranges(&ranges, SyntaxSource::BundledStdlib).unwrap();
+        let (_, _, identifier_ranges) =
+            parse_str_syntax("never = 1\nmessage = \"never\"", ModuleId::default()).unwrap();
+        validate_never_type_ranges(&identifier_ranges, SyntaxSource::UserCode(crate::KclVersion::V2)).unwrap();
     }
 
     #[test]
     fn use_identifiers_remain_valid_before_v3() {
-        for mode in [LexerMode::Old, LexerMode::New] {
-            let _guard = LexerMode::override_for_test(mode);
-            for version in [None, Some("1.0"), Some("2.0")] {
-                let settings = version.map_or(String::new(), |version| format!("@settings(kclVersion = {version})\n"));
-                let code = format!("{settings}use = 1\nvalue = use\n");
-                assert!(top_level_parse(&code).is_ok(), "{mode:?}: {code}");
-            }
+        for version in [None, Some("1.0"), Some("2.0")] {
+            let settings = version.map_or(String::new(), |version| format!("@settings(kclVersion = {version})\n"));
+            let code = format!("{settings}use = 1\nvalue = use\n");
+            assert!(top_level_parse(&code).is_ok(), "{code}");
         }
     }
 
     #[test]
     fn use_identifiers_are_reserved_in_v3_preview() {
-        for mode in [LexerMode::Old, LexerMode::New] {
-            let _guard = LexerMode::override_for_test(mode);
-            for version in ["3-preview", "3.0-preview", "3.0.0-preview"] {
-                let code = format!("@settings(kclVersion = \"{version}\")\nuse = 1\n");
-                let result = top_level_parse(&code);
-                let errors: Vec<_> = result.unwrap_errs().collect();
-                assert_eq!(errors.len(), 1, "{mode:?}: {code}: {errors:#?}");
-                assert_eq!(
-                    errors[0].source_range,
-                    SourceRange::new(
-                        code.find("use =").unwrap(),
-                        code.find("use =").unwrap() + 3,
-                        ModuleId::default()
-                    )
-                );
-                assert_eq!(
-                    errors[0].message,
-                    "`use` is a reserved keyword in KCL 3.0 and cannot be used as an identifier"
-                );
-            }
+        for version in ["3-preview", "3.0-preview", "3.0.0-preview"] {
+            let code = format!("@settings(kclVersion = \"{version}\")\nuse = 1\n");
+            let result = top_level_parse(&code);
+            let errors: Vec<_> = result.unwrap_errs().collect();
+            assert_eq!(errors.len(), 1, "{code}: {errors:#?}");
+            assert_eq!(
+                errors[0].source_range,
+                SourceRange::new(
+                    code.find("use =").unwrap(),
+                    code.find("use =").unwrap() + 3,
+                    ModuleId::default()
+                )
+            );
+            assert_eq!(
+                errors[0].message,
+                "`use` is a reserved keyword in KCL 3.0 and cannot be used as an identifier"
+            );
         }
     }
 
     #[test]
     fn use_function_name_exception_requires_adjacent_parenthesis() {
-        for mode in [LexerMode::Old, LexerMode::New] {
-            let _guard = LexerMode::override_for_test(mode);
-            let allowed = "@settings(kclVersion = \"3.0-preview\")\nfn use() { return 1 }\nuse()\n";
-            assert!(top_level_parse(allowed).is_ok(), "{mode:?}: {allowed}");
+        let allowed = "@settings(kclVersion = \"3.0-preview\")\nfn use() { return 1 }\nuse()\n";
+        assert!(top_level_parse(allowed).is_ok(), "{allowed}");
 
-            let rejected = "@settings(kclVersion = \"3.0-preview\")\nfn use () { return 1 }\n";
-            assert!(!top_level_parse(rejected).is_ok(), "{mode:?}: {rejected}");
-        }
+        let rejected = "@settings(kclVersion = \"3.0-preview\")\nfn use () { return 1 }\n";
+        assert!(!top_level_parse(rejected).is_ok(), "{rejected}");
     }
 
     #[test]
     fn use_in_settings_keys_is_version_checked() {
-        for mode in [LexerMode::Old, LexerMode::New] {
-            let _guard = LexerMode::override_for_test(mode);
-            assert!(top_level_parse("@settings(use = 1)\n").is_ok());
-            let v3 = "@settings(kclVersion = \"3.0-preview\", use = 1)\n";
-            assert!(!top_level_parse(v3).is_ok(), "{mode:?}: {v3}");
-        }
+        assert!(top_level_parse("@settings(use = 1)\n").is_ok());
+        let v3 = "@settings(kclVersion = \"3.0-preview\", use = 1)\n";
+        assert!(!top_level_parse(v3).is_ok(), "{v3}");
     }
 
     #[test]
     fn use_reservation_uses_last_declared_version() {
-        for mode in [LexerMode::Old, LexerMode::New] {
-            let _guard = LexerMode::override_for_test(mode);
-            let late_v3 = "use = 1\n@settings(kclVersion = \"3.0-preview\")\n";
-            assert!(!top_level_parse(late_v3).is_ok(), "{mode:?}: {late_v3}");
+        let late_v3 = "use = 1\n@settings(kclVersion = \"3.0-preview\")\n";
+        assert!(!top_level_parse(late_v3).is_ok(), "{late_v3}");
 
-            let last_v2 = "@settings(kclVersion = \"3.0-preview\")\n@settings(kclVersion = 2.0)\nuse = 1\n";
-            assert!(top_level_parse(last_v2).is_ok(), "{mode:?}: {last_v2}");
-        }
+        let last_v2 = "@settings(kclVersion = \"3.0-preview\")\n@settings(kclVersion = 2.0)\nuse = 1\n";
+        assert!(top_level_parse(last_v2).is_ok(), "{last_v2}");
     }
 
     #[test]
     fn use_text_in_strings_comments_and_longer_names_is_not_reserved() {
-        for mode in [LexerMode::Old, LexerMode::New] {
-            let _guard = LexerMode::override_for_test(mode);
-            let code = "@settings(kclVersion = \"3.0-preview\")\nuseful = \"use\" // use\n";
-            assert!(top_level_parse(code).is_ok(), "{mode:?}: {code}");
-        }
+        let code = "@settings(kclVersion = \"3.0-preview\")\nuseful = \"use\" // use\n";
+        assert!(top_level_parse(code).is_ok(), "{code}");
     }
 
     #[test]
     fn enum_identifiers_remain_valid_before_v3() {
-        for mode in [LexerMode::Old, LexerMode::New] {
-            let _guard = LexerMode::override_for_test(mode);
-            for version in [None, Some("1.0"), Some("2.0")] {
-                let settings = version.map_or(String::new(), |version| format!("@settings(kclVersion = {version})\n"));
-                for body in [
-                    "enum = 1\nvalue = enum\n",
-                    "fn enum() { return 1 }\n",
-                    "import enum from \"dep.kcl\"\n",
-                ] {
-                    let code = format!("{settings}{body}");
-                    assert!(top_level_parse(&code).is_ok(), "{mode:?}: {code}");
-                }
+        for version in [None, Some("1.0"), Some("2.0")] {
+            let settings = version.map_or(String::new(), |version| format!("@settings(kclVersion = {version})\n"));
+            for body in [
+                "enum = 1\nvalue = enum\n",
+                "fn enum() { return 1 }\n",
+                "import enum from \"dep.kcl\"\n",
+            ] {
+                let code = format!("{settings}{body}");
+                assert!(top_level_parse(&code).is_ok(), "{code}");
             }
         }
     }
 
     #[test]
     fn enum_tag_and_label_identifiers_remain_valid_before_v3() {
-        for mode in [LexerMode::Old, LexerMode::New] {
-            let _guard = LexerMode::override_for_test(mode);
-            for version in [None, Some("1.0"), Some("2.0")] {
-                let settings = version.map_or_else(
-                    || "@settings(experimentalFeatures = allow)\n".to_owned(),
-                    |version| format!("@settings(kclVersion = {version}, experimentalFeatures = allow)\n"),
-                );
-                for body in ["value = $enum\n", "line(end = [1, 0], tag = $enum)\n", "2 as enum\n"] {
-                    let code = format!("{settings}{body}");
-                    assert!(top_level_parse(&code).is_ok(), "{mode:?}: {code}");
-                }
+        for version in [None, Some("1.0"), Some("2.0")] {
+            let settings = version.map_or_else(
+                || "@settings(experimentalFeatures = allow)\n".to_owned(),
+                |version| format!("@settings(kclVersion = {version}, experimentalFeatures = allow)\n"),
+            );
+            for body in ["value = $enum\n", "line(end = [1, 0], tag = $enum)\n", "2 as enum\n"] {
+                let code = format!("{settings}{body}");
+                assert!(top_level_parse(&code).is_ok(), "{code}");
             }
         }
     }
 
     #[test]
     fn enum_is_reserved_in_every_v3_identifier_position() {
-        for mode in [LexerMode::Old, LexerMode::New] {
-            let _guard = LexerMode::override_for_test(mode);
-            for body in [
-                "enum = 1\n",
-                "value = enum\n",
-                "fn enum() { return 1 }\n",
-                "type enum = number\n",
-                "import enum from \"dep.kcl\"\n",
-                "import other as enum from \"dep.kcl\"\n",
-                "import \"dep.kcl\" as enum\n",
-                "@settings(enum = 1)\nvalue = 1\n",
-                "value = $enum\n",
-                "line(end = [1, 0], tag = $enum)\n",
-                "2 as enum\n",
-            ] {
-                let code = format!("@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\n{body}");
-                let result = top_level_parse(&code);
-                let errors: Vec<_> = result.unwrap_errs().collect();
-                assert_eq!(errors.len(), 1, "{mode:?}: {code}: {errors:#?}");
-                let start = code.find("enum").unwrap();
-                assert_eq!(
-                    errors[0].source_range,
-                    SourceRange::new(start, start + "enum".len(), ModuleId::default())
-                );
-                assert_eq!(errors[0].message, RESERVED_ENUM_MESSAGE);
-            }
+        for body in [
+            "enum = 1\n",
+            "value = enum\n",
+            "fn enum() { return 1 }\n",
+            "type enum = number\n",
+            "import enum from \"dep.kcl\"\n",
+            "import other as enum from \"dep.kcl\"\n",
+            "import \"dep.kcl\" as enum\n",
+            "@settings(enum = 1)\nvalue = 1\n",
+            "value = $enum\n",
+            "line(end = [1, 0], tag = $enum)\n",
+            "2 as enum\n",
+        ] {
+            let code = format!("@settings(kclVersion = \"3.0-preview\", experimentalFeatures = allow)\n{body}");
+            let result = top_level_parse(&code);
+            let errors: Vec<_> = result.unwrap_errs().collect();
+            assert_eq!(errors.len(), 1, "{code}: {errors:#?}");
+            let start = code.find("enum").unwrap();
+            assert_eq!(
+                errors[0].source_range,
+                SourceRange::new(start, start + "enum".len(), ModuleId::default())
+            );
+            assert_eq!(errors[0].message, RESERVED_ENUM_MESSAGE);
         }
     }
 
     #[test]
     fn enum_reservation_uses_last_declared_version() {
-        for mode in [LexerMode::Old, LexerMode::New] {
-            let _guard = LexerMode::override_for_test(mode);
-            let late_v3 = "enum = 1\n@settings(kclVersion = \"3.0-preview\")\n";
-            assert!(!top_level_parse(late_v3).is_ok(), "{mode:?}: {late_v3}");
+        let late_v3 = "enum = 1\n@settings(kclVersion = \"3.0-preview\")\n";
+        assert!(!top_level_parse(late_v3).is_ok(), "{late_v3}");
 
-            let last_v2 = "@settings(kclVersion = \"3.0-preview\")\n@settings(kclVersion = 2.0)\nenum = 1\n";
-            assert!(top_level_parse(last_v2).is_ok(), "{mode:?}: {last_v2}");
-        }
+        let last_v2 = "@settings(kclVersion = \"3.0-preview\")\n@settings(kclVersion = 2.0)\nenum = 1\n";
+        assert!(top_level_parse(last_v2).is_ok(), "{last_v2}");
     }
 
     #[test]
     fn enum_text_in_strings_comments_and_longer_names_is_not_reserved() {
-        for mode in [LexerMode::Old, LexerMode::New] {
-            let _guard = LexerMode::override_for_test(mode);
-            let code = "@settings(kclVersion = \"3.0-preview\")\nenumeration = \"enum\" // enum\n";
-            assert!(top_level_parse(code).is_ok(), "{mode:?}: {code}");
-        }
+        let code = "@settings(kclVersion = \"3.0-preview\")\nenumeration = \"enum\" // enum\n";
+        assert!(top_level_parse(code).is_ok(), "{code}");
     }
 
     #[test]
     fn import_modifier_words_are_reserved_in_the_first_import_slot_in_v3() {
-        for mode in [LexerMode::Old, LexerMode::New] {
-            let _guard = LexerMode::override_for_test(mode);
-            for word in ["template", "lazy", "component"] {
-                for version in [None, Some("1.0"), Some("2.0")] {
-                    let settings =
-                        version.map_or(String::new(), |version| format!("@settings(kclVersion = {version})\n"));
-                    let code = format!("{settings}import {word} from \"dep.kcl\"\n");
-                    assert!(top_level_parse(&code).is_ok(), "{mode:?}: {code}");
-                }
+        for word in ["template", "lazy", "component"] {
+            for version in [None, Some("1.0"), Some("2.0")] {
+                let settings = version.map_or(String::new(), |version| format!("@settings(kclVersion = {version})\n"));
+                let code = format!("{settings}import {word} from \"dep.kcl\"\n");
+                assert!(top_level_parse(&code).is_ok(), "{code}");
+            }
 
-                for selector in [word.to_owned(), format!("{word} as alias, other")] {
-                    let code = format!("@settings(kclVersion = \"3.0-preview\")\nimport {selector} from \"dep.kcl\"\n");
-                    let result = top_level_parse(&code);
-                    let errors: Vec<_> = result.unwrap_errs().collect();
-                    assert_eq!(errors.len(), 1, "{mode:?}: {code}: {errors:#?}");
-                    let start = code.find(&format!("import {word}")).unwrap() + "import ".len();
-                    assert_eq!(
-                        errors[0].source_range,
-                        SourceRange::new(start, start + word.len(), ModuleId::default())
-                    );
-                    assert_eq!(
-                        errors[0].message,
-                        format!(
-                            "`{word}` is reserved as an import modifier in KCL 3.0 and cannot be the first imported item"
-                        )
-                    );
-                }
+            for selector in [word.to_owned(), format!("{word} as alias, other")] {
+                let code = format!("@settings(kclVersion = \"3.0-preview\")\nimport {selector} from \"dep.kcl\"\n");
+                let result = top_level_parse(&code);
+                let errors: Vec<_> = result.unwrap_errs().collect();
+                assert_eq!(errors.len(), 1, "{code}: {errors:#?}");
+                let start = code.find(&format!("import {word}")).unwrap() + "import ".len();
+                assert_eq!(
+                    errors[0].source_range,
+                    SourceRange::new(start, start + word.len(), ModuleId::default())
+                );
+                assert_eq!(
+                    errors[0].message,
+                    format!(
+                        "`{word}` is reserved as an import modifier in KCL 3.0 and cannot be the first imported item"
+                    )
+                );
             }
         }
     }
 
     #[test]
     fn import_modifier_words_remain_valid_outside_the_first_import_slot() {
-        for mode in [LexerMode::Old, LexerMode::New] {
-            let _guard = LexerMode::override_for_test(mode);
-            for word in ["template", "lazy", "component"] {
-                for code in [
-                    format!(
-                        "@settings(kclVersion = \"3.0-preview\")\n{word} = \"{word}\" // import {word} from \"dep.kcl\"\n"
-                    ),
-                    format!("@settings(kclVersion = \"3.0-preview\")\nimport other, {word} from \"dep.kcl\"\n"),
-                    format!("@settings(kclVersion = \"3.0-preview\")\nimport \"dep.kcl\" as {word}\n"),
-                ] {
-                    assert!(top_level_parse(&code).is_ok(), "{mode:?}: {code}");
-                }
+        for word in ["template", "lazy", "component"] {
+            for code in [
+                format!(
+                    "@settings(kclVersion = \"3.0-preview\")\n{word} = \"{word}\" // import {word} from \"dep.kcl\"\n"
+                ),
+                format!("@settings(kclVersion = \"3.0-preview\")\nimport other, {word} from \"dep.kcl\"\n"),
+                format!("@settings(kclVersion = \"3.0-preview\")\nimport \"dep.kcl\" as {word}\n"),
+            ] {
+                assert!(top_level_parse(&code).is_ok(), "{code}");
             }
         }
     }
 
     #[test]
     fn import_modifier_reservation_uses_last_declared_version() {
-        for mode in [LexerMode::Old, LexerMode::New] {
-            let _guard = LexerMode::override_for_test(mode);
-            let late_v3 = "import lazy from \"dep.kcl\"\n@settings(kclVersion = \"3.0-preview\")\n";
-            assert!(!top_level_parse(late_v3).is_ok(), "{mode:?}: {late_v3}");
+        let late_v3 = "import lazy from \"dep.kcl\"\n@settings(kclVersion = \"3.0-preview\")\n";
+        assert!(!top_level_parse(late_v3).is_ok(), "{late_v3}");
 
-            let last_v2 =
-                "@settings(kclVersion = \"3.0-preview\")\n@settings(kclVersion = 2.0)\nimport lazy from \"dep.kcl\"\n";
-            assert!(top_level_parse(last_v2).is_ok(), "{mode:?}: {last_v2}");
-        }
+        let last_v2 =
+            "@settings(kclVersion = \"3.0-preview\")\n@settings(kclVersion = 2.0)\nimport lazy from \"dep.kcl\"\n";
+        assert!(top_level_parse(last_v2).is_ok(), "{last_v2}");
     }
 
     macro_rules! parse_and_lex {

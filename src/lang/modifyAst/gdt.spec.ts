@@ -91,6 +91,40 @@ function getWallsFromBox(artifactGraph: ArtifactGraph, count: number) {
   return createSelectionFromArtifacts(walls, artifactGraph)
 }
 
+function getSweepCapAndWalls(artifactGraph: ArtifactGraph) {
+  const sweep = [...artifactGraph.values()].find(
+    (artifact): artifact is Extract<Artifact, { type: 'sweep' }> =>
+      artifact.type === 'sweep'
+  )
+  if (!sweep) return null
+
+  const faces = sweep.surfaceIds
+    .map((surfaceId) => artifactGraph.get(surfaceId))
+    .filter((artifact): artifact is Artifact => artifact !== undefined)
+  const endCap = faces.find(
+    (artifact): artifact is Extract<Artifact, { type: 'cap' }> =>
+      artifact.type === 'cap' && artifact.subType === 'end'
+  )
+  const walls = faces.filter(
+    (artifact): artifact is Extract<Artifact, { type: 'wall' }> =>
+      artifact.type === 'wall'
+  )
+
+  return endCap && walls.length > 0 ? { endCap, walls } : null
+}
+
+function selectionFromSideFaces(sideFaceGroups: Artifact[][]): Selections {
+  return {
+    graphSelections: sideFaceGroups.map((sideFaces) => ({
+      entityRef: {
+        type: 'edge' as const,
+        side_faces: sideFaces.map((face) => face.id),
+      },
+    })),
+    otherSelections: [],
+  }
+}
+
 function getEndCapsFromMultipleBodies(artifactGraph: ArtifactGraph) {
   const endCaps = [...artifactGraph.values()].filter(
     (a) => a.type === 'cap' && a.subType === 'end'
@@ -1497,9 +1531,9 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
           expect(code).toContain('edgeId(plate, index = 1)')
           expect(code).toContain('edgeId(plate, index = 2)')
         } else {
-          expect(code.match(/getCommonEdge\(/g)).toHaveLength(2)
-          expect(code).toContain('from = getCommonEdge(')
-          expect(code).toContain('to = getCommonEdge(')
+          expect(code.match(/sideFaces = \[/g)).toHaveLength(2)
+          expect(code).toContain('from = {')
+          expect(code).toContain('to = {')
         }
         expect(code).not.toContain('tolerance =')
         await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
@@ -1553,17 +1587,17 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
-      )
-      if (!edge) {
-        throw new Error('Expected a sweep edge')
+      const sweepFaces = getSweepCapAndWalls(artifactGraph)
+      if (!sweepFaces) {
+        throw new Error('Sweep end cap and walls not found')
       }
 
       const result = addDistanceGdt({
         ast,
         artifactGraph,
-        objects: createSelectionFromArtifacts([edge], artifactGraph),
+        objects: selectionFromSideFaces([
+          [sweepFaces.walls[0], sweepFaces.endCap],
+        ]),
         wasmInstance: instanceInThisFile,
       })
       if (err(result)) {
@@ -1587,11 +1621,9 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
-      )
-      if (!edge) {
-        throw new Error('Expected a sweep edge')
+      const sweepFaces = getSweepCapAndWalls(artifactGraph)
+      if (!sweepFaces) {
+        throw new Error('Sweep end cap and walls not found')
       }
 
       const tolerance = await getKclCommandValue(
@@ -1602,7 +1634,9 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
       const result = addDistanceGdt({
         ast,
         artifactGraph,
-        objects: createSelectionFromArtifacts([edge], artifactGraph),
+        objects: selectionFromSideFaces([
+          [sweepFaces.walls[0], sweepFaces.endCap],
+        ]),
         tolerance,
         wasmInstance: instanceInThisFile,
       })
@@ -1630,21 +1664,9 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const seenSegmentIds = new Set<string>()
-      const edges = [...artifactGraph.values()]
-        .filter((artifact) => {
-          if (
-            artifact.type !== 'sweepEdge' ||
-            seenSegmentIds.has(artifact.segId)
-          ) {
-            return false
-          }
-          seenSegmentIds.add(artifact.segId)
-          return true
-        })
-        .slice(0, 3)
-      if (edges.length !== 3) {
-        throw new Error('Expected three sweep edges')
+      const sweepFaces = getSweepCapAndWalls(artifactGraph)
+      if (!sweepFaces || sweepFaces.walls.length < 3) {
+        throw new Error('Expected three sweep walls')
       }
 
       const tolerance = await getKclCommandValue(
@@ -1655,7 +1677,9 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
       const result = addDistanceGdt({
         ast,
         artifactGraph,
-        objects: createSelectionFromArtifacts(edges, artifactGraph),
+        objects: selectionFromSideFaces(
+          sweepFaces.walls.slice(0, 3).map((wall) => [wall, sweepFaces.endCap])
+        ),
         tolerance,
         wasmInstance: instanceInThisFile,
       })
@@ -1685,11 +1709,9 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const edges = [...artifactGraph.values()]
-        .filter((artifact) => artifact.type === 'sweepEdge')
-        .slice(0, 2)
-      if (edges.length !== 2) {
-        throw new Error('Expected two sweep edges')
+      const sweepFaces = getSweepCapAndWalls(artifactGraph)
+      if (!sweepFaces || sweepFaces.walls.length < 2) {
+        throw new Error('Expected two sweep walls')
       }
 
       const tolerance = await getKclCommandValue(
@@ -1700,7 +1722,10 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
       const result = addDistanceGdt({
         ast,
         artifactGraph,
-        objects: createSelectionFromArtifacts(edges, artifactGraph),
+        objects: selectionFromSideFaces([
+          [sweepFaces.walls[0], sweepFaces.endCap],
+          [sweepFaces.walls[1], sweepFaces.endCap],
+        ]),
         tolerance,
         wasmInstance: instanceInThisFile,
       })
@@ -1714,8 +1739,10 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
       }
 
       expect(newCode).toContain('gdt::distance(')
-      expect(newCode).toContain('from = getCommonEdge(')
-      expect(newCode).toContain('to = getCommonEdge(')
+      expect(newCode).toContain('from = {')
+      expect(newCode).toContain('to = {')
+      expect(newCode.match(/sideFaces = \[/g)).toHaveLength(2)
+      expect(newCode).not.toContain('getCommonEdge')
       expect(newCode).toContain('tolerance = 0.1mm')
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
@@ -1771,16 +1798,18 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const face = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'cap' || artifact.type === 'wall'
-      )
-      const edge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
-      )
-      if (!face || !edge) {
-        throw new Error('Expected a face and sweep edge')
+      const sweepFaces = getSweepCapAndWalls(artifactGraph)
+      if (!sweepFaces || sweepFaces.walls.length < 2) {
+        throw new Error('Expected a face and an edge between two sweep faces')
       }
 
+      const faceSelection = createSelectionFromArtifacts(
+        [sweepFaces.walls[1]],
+        artifactGraph
+      )
+      const edgeSelection = selectionFromSideFaces([
+        [sweepFaces.walls[0], sweepFaces.endCap],
+      ])
       const tolerance = await getKclCommandValue(
         '0.1mm',
         instanceInThisFile,
@@ -1789,7 +1818,13 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
       const result = addDistanceGdt({
         ast,
         artifactGraph,
-        objects: createSelectionFromArtifacts([face, edge], artifactGraph),
+        objects: {
+          graphSelections: [
+            ...faceSelection.graphSelections,
+            ...edgeSelection.graphSelections,
+          ],
+          otherSelections: [],
+        },
         tolerance,
         wasmInstance: instanceInThisFile,
       })
@@ -1804,7 +1839,9 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
 
       expect(newCode).toContain('gdt::distance(')
       expect(newCode).toContain('from = ')
-      expect(newCode).toContain('to = getCommonEdge(')
+      expect(newCode).toContain('to = {')
+      expect(newCode).toContain('sideFaces = [')
+      expect(newCode).not.toContain('getCommonEdge')
       expect(newCode).toContain('tolerance = 0.1mm')
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)

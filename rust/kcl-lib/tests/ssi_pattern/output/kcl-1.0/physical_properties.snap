@@ -18,12 +18,12 @@ description: Physical properties ssi_pattern.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 8696.771696117266
+    "value": 8696.765713654742
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 14.997458586044528
+    "value": 14.99736526120593
   }
 }

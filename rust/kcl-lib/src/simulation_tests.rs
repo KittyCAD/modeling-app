@@ -3,8 +3,10 @@ use std::panic::AssertUnwindSafe;
 use std::panic::catch_unwind;
 use std::path::Path;
 use std::path::PathBuf;
+use std::str::FromStr;
 
 use indexmap::IndexMap;
+use kcl_api::KclVersion;
 use kittycad_modeling_cmds::ModelingCmd;
 use kittycad_modeling_cmds::each_cmd as mcmd;
 use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
@@ -444,7 +446,7 @@ fn assert_physical_properties_snapshot(test: &Test, actual: serde_json::Value) {
     // Missing, unreadable, or materially different snapshots use Insta's normal
     // failure reporting and update policy, including .snap.new review files.
     assert_snapshot(test, "Physical properties", || {
-        insta::assert_json_snapshot!("physical_properties", actual)
+        insta::assert_json_snapshot!("physical_properties", actual);
     });
 }
 
@@ -670,10 +672,18 @@ async fn execute_test(test: &Test) {
         return;
     }
     for version in &test.kcl_versions {
+        let Ok(kcl_version) = KclVersion::from_str(version.as_str()) else {
+            panic!("Couldn't parse KclVersion from config: {version}");
+        };
         let mut run = test.clone();
-        run.output_dir = test.output_dir.join(format!("kcl-{version}"));
+        // Drop prerelease suffixes (e.g. "3.0-preview" -> "3.0") for on-disk paths.
+        let dir_version = kcl_version
+            .as_str()
+            .strip_suffix("-preview")
+            .unwrap_or(kcl_version.as_str());
+        run.output_dir = test.output_dir.join(format!("kcl-{dir_version}"));
         std::fs::create_dir_all(&run.output_dir).unwrap();
-        execute_once(&run, Some(version.as_str())).await;
+        execute_once(&run, Some(kcl_version)).await;
     }
 }
 
@@ -744,15 +754,15 @@ async fn physical_properties(ctx: &ExecutorContext) -> Option<serde_json::Value>
     }))
 }
 
-async fn execute_once(test: &Test, kcl_version: Option<&str>) {
+async fn execute_once(test: &Test, kcl_version: Option<KclVersion>) {
     let input = test.read();
     let mut ast = crate::Program::parse_no_errs(&input).unwrap();
     let program_to_lint = ast.clone();
     eprintln!("=========");
     eprintln!("Running test {}", test.name);
     if let Some(kcl_version) = kcl_version {
-        eprintln!("\t kclVersion: {kcl_version}");
-        ast = ast.change_kcl_version(Some(kcl_version.to_owned())).unwrap();
+        eprintln!("\t kclVersion: {}", kcl_version.as_str());
+        ast = ast.change_kcl_version(Some(kcl_version)).unwrap();
     }
     if test.input_dir != test.output_dir {
         eprintln!("\tInput dir: {}", test.input_dir.display());
@@ -822,7 +832,7 @@ async fn execute_once(test: &Test, kcl_version: Option<&str>) {
 
             let ok_snap = catch_unwind(AssertUnwindSafe(|| {
                 assert_snapshot(test, "Execution success", || {
-                    insta::assert_json_snapshot!("execution_success", ())
+                    insta::assert_json_snapshot!("execution_success", ());
                 })
             }));
 
@@ -889,7 +899,9 @@ async fn execute_once(test: &Test, kcl_version: Option<&str>) {
                     panic!("Missing lints");
                 }
             } else {
-                assert_snapshot(test, "Lints", || insta::assert_json_snapshot!("lints", lint_findings));
+                assert_snapshot(test, "Lints", || {
+                    insta::assert_json_snapshot!("lints", lint_findings);
+                });
             }
 
             for result in snapshot_results {
@@ -977,14 +989,14 @@ fn common_snapshots(
         assert_snapshot(test, "Variables in memory after executing", || {
             insta::assert_json_snapshot!("program_memory", variables, {
                  ".**.sourceRange" => Vec::new(),
-            })
+            });
         })
     }));
     #[cfg(feature = "snapshot-engine-responses")]
     let responses_result_option = responses.map(|responses| {
         catch_unwind(AssertUnwindSafe(|| {
             assert_snapshot(test, "Root module engine responses", || {
-                insta::assert_json_snapshot!("root_module_engine_responses", responses)
+                insta::assert_json_snapshot!("root_module_engine_responses", responses);
             })
         }))
     });
@@ -10090,6 +10102,48 @@ mod fillets_referencing_other_fillets {
 }
 mod hex_fillet {
     const TEST_NAME: &str = "hex_fillet";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME).await
+    }
+}
+mod kcl_v3_stable_execution {
+    const TEST_NAME: &str = "kcl_v3_stable_execution";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME).await
+    }
+}
+mod subtract_inherits_tool_face_tags {
+    const TEST_NAME: &str = "subtract_inherits_tool_face_tags";
 
     /// Test parsing KCL.
     #[test]
