@@ -9,6 +9,7 @@ use serde::Serializer;
 
 use crate::CompilationIssue;
 use crate::KclError;
+use crate::KclVersion;
 use crate::ModuleId;
 use crate::SourceRange;
 use crate::errors::KclErrorDetails;
@@ -246,23 +247,49 @@ pub(crate) enum ParamUnavailable<'a> {
     Removed(&'a VersionConstraint),
 }
 
+fn param_unavailable_reason<'a>(
+    version: KclVersion,
+    added_in: Option<&'a VersionConstraint>,
+    removed_in: Option<&'a VersionConstraint>,
+) -> Option<ParamUnavailable<'a>> {
+    let version = version.as_str();
+    if let Some(added) = added_in
+        && !annotations::version_ge(version, added)
+    {
+        return Some(ParamUnavailable::NotYetAdded(added));
+    }
+    if let Some(removed) = removed_in
+        && annotations::version_ge(version, removed)
+    {
+        return Some(ParamUnavailable::Removed(removed));
+    }
+    None
+}
+
+/// Whether a parameter is available on this KCL version. `added_in` is inclusive
+/// and `removed_in` is exclusive; preview versions count as their release.
+/// Returns an error for malformed version boundaries.
+pub fn is_kcl_version_available(version: KclVersion, added_in: Option<&str>, removed_in: Option<&str>) -> Result<bool> {
+    let parse = |value: &str| {
+        VersionConstraint::parse(value).ok_or_else(|| {
+            anyhow::anyhow!("Invalid KCL version boundary: `{value}`; expected a dotted integer version")
+        })
+    };
+    let added_in = added_in.map(parse).transpose()?;
+    let removed_in = removed_in.map(parse).transpose()?;
+    Ok(param_unavailable_reason(version, added_in.as_ref(), removed_in.as_ref()).is_none())
+}
+
 impl NamedParam {
     /// Why this parameter cannot be passed on the KCL version governing the
     /// current execution, or `None` if it can. A pre-release version such as
     /// "3.0-preview" counts as the release it precedes.
     pub(crate) fn unavailable_reason(&self, exec_state: &ExecState) -> Option<ParamUnavailable<'_>> {
-        let version = exec_state.kcl_version().as_str();
-        if let Some(added) = &self.added_in
-            && !crate::execution::annotations::version_ge(version, added)
-        {
-            return Some(ParamUnavailable::NotYetAdded(added));
-        }
-        if let Some(removed) = &self.removed_in
-            && crate::execution::annotations::version_ge(version, removed)
-        {
-            return Some(ParamUnavailable::Removed(removed));
-        }
-        None
+        param_unavailable_reason(
+            exec_state.kcl_version(),
+            self.added_in.as_ref(),
+            self.removed_in.as_ref(),
+        )
     }
 
     /// Whether a caller may pass this parameter on the KCL version governing

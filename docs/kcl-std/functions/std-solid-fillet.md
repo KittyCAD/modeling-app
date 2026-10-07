@@ -164,10 +164,14 @@ cornerFillet = fillet(
 )
 topFillet = fillet(
   plate,
-  tags = getCommonEdge(faces = [
-    plateRegion.tags.line1,
-    plate.faces.capEnd001
-  ]),
+  edges = [
+    {
+      sideFaces = [
+        plateRegion.tags.line1,
+        plate.faces.capEnd001
+      ]
+    }
+  ],
   radius = topFilletRadius,
 )
 
@@ -239,10 +243,14 @@ cornerFillet = fillet(
 )
 topFillet = fillet(
   plate,
-  tags = getCommonEdge(faces = [
-    plateRegion.tags.line1,
-    plate.faces.capEnd001
-  ]),
+  edges = [
+    {
+      sideFaces = [
+        plateRegion.tags.line1,
+        plate.faces.capEnd001
+      ]
+    }
+  ],
   radius = topFilletRadius,
   tangentChain = false,
 )
@@ -317,9 +325,19 @@ profile001 = region(segments = [sketch001.seg02, sketch001.seg01], intersectionI
 revolve001 = revolve(profile001, angle = 360deg, axis = X)
   |> fillet(
        radius = 10mm,
-       tags = [
-         getCommonEdge(faces = [seg02, seg01]),
-         getCommonEdge(faces = [seg02, seg03])
+       edges = [
+         {
+           sideFaces = [
+             profile001.tags.seg02,
+             profile001.tags.seg01
+           ]
+         },
+         {
+           sideFaces = [
+             profile001.tags.seg02,
+             profile001.tags.seg03
+           ]
+         }
        ],
      )
   |> rotate(yaw = 70deg, pitch = 10deg)
@@ -396,10 +414,14 @@ revolve001 = revolve(profile001, angle = 360deg, axis = X)
 
 fillet001 = fillet(
   revolve001,
-  tags = getCommonEdge(faces = [
-    profile001.tags.seg02,
-    profile001.tags.seg01
-  ]),
+  edges = [
+    {
+      sideFaces = [
+        profile001.tags.seg02,
+        profile001.tags.seg01
+      ]
+    }
+  ],
   radius = 10,
 )
   |> rotate(yaw = 70deg, pitch = 10deg)

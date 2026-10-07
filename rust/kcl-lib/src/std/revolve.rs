@@ -113,8 +113,8 @@ async fn inner_revolve(
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
     if let Axis2dOrEdgeReference::Axis { direction, .. } = &axis
-        && direction[0].to_mm() == 0.0
-        && direction[1].to_mm() == 0.0
+        && direction[0].unwrap_to_mm() == 0.0
+        && direction[1].unwrap_to_mm() == 0.0
     {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "The axis of revolution cannot be the zero vector.".to_owned(),
@@ -134,7 +134,7 @@ async fn inner_revolve(
         }
     }
 
-    let bidirectional_angle = bidirectional_angle.map(|n| n.to_degrees(exec_state, args.source_range));
+    let bidirectional_angle = bidirectional_angle.map(|n| n.unwrap_to_degrees(exec_state, args.source_range));
     if let Some(bidirectional_angle) = bidirectional_angle {
         // Return an error if the angle is zero.
         // We don't use validate() here because we want to return a specific error message that is
@@ -182,7 +182,10 @@ async fn inner_revolve(
     let mut solids = Vec::new();
     for sketch in &sketches {
         let new_solid_id = exec_state.next_uuid();
-        let tolerance = tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM);
+        let tolerance = tolerance
+            .as_ref()
+            .map(|t| t.unwrap_to_mm())
+            .unwrap_or(DEFAULT_TOLERANCE_MM);
 
         let direction = match &axis {
             Axis2dOrEdgeReference::Axis { direction, origin } => {
@@ -194,13 +197,13 @@ async fn inner_revolve(
                                 .angle(angle)
                                 .target(sketch.id.into())
                                 .axis(Point3d {
-                                    x: direction[0].to_mm(),
-                                    y: direction[1].to_mm(),
+                                    x: direction[0].unwrap_to_mm(),
+                                    y: direction[1].unwrap_to_mm(),
                                     z: 0.0,
                                 })
                                 .origin(Point3d {
-                                    x: LengthUnit(origin[0].to_mm()),
-                                    y: LengthUnit(origin[1].to_mm()),
+                                    x: LengthUnit(origin[0].unwrap_to_mm()),
+                                    y: LengthUnit(origin[1].unwrap_to_mm()),
                                     z: LengthUnit(0.0),
                                 })
                                 .tolerance(LengthUnit(tolerance))
@@ -211,7 +214,7 @@ async fn inner_revolve(
                         ),
                     )
                     .await?;
-                glm::DVec2::new(direction[0].to_mm(), direction[1].to_mm())
+                glm::DVec2::new(direction[0].unwrap_to_mm(), direction[1].unwrap_to_mm())
             }
             Axis2dOrEdgeReference::Edge(edge) => {
                 let edge_id = edge.get_engine_id(exec_state, &args)?;

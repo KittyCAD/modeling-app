@@ -115,10 +115,7 @@ import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, Tagge
 /// )
 /// topFillet = fillet(
 ///   plate,
-///   tags = getCommonEdge(faces = [
-///     plateRegion.tags.line1,
-///     plate.faces.capEnd001
-///   ]),
+///   edges = [{ sideFaces = [plateRegion.tags.line1, plate.faces.capEnd001] }],
 ///   radius = topFilletRadius,
 /// )
 /// ```
@@ -175,10 +172,7 @@ import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, Tagge
 /// )
 /// topFillet = fillet(
 ///   plate,
-///   tags = getCommonEdge(faces = [
-///     plateRegion.tags.line1,
-///     plate.faces.capEnd001
-///   ]),
+///   edges = [{ sideFaces = [plateRegion.tags.line1, plate.faces.capEnd001] }],
 ///   radius = topFilletRadius,
 ///   tangentChain = false
 /// )
@@ -238,9 +232,9 @@ import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, Tagge
 /// revolve001 = revolve(profile001, angle = 360deg, axis = X)
 ///   |> fillet(
 ///        radius = 10mm,
-///        tags = [
-///          getCommonEdge(faces = [seg02, seg01]),
-///          getCommonEdge(faces = [seg02, seg03])
+///        edges = [
+///          { sideFaces = [profile001.tags.seg02, profile001.tags.seg01] },
+///          { sideFaces = [profile001.tags.seg02, profile001.tags.seg03] }
 ///        ],
 ///      )
 ///   |> rotate(yaw = 70deg, pitch = 10deg)
@@ -301,10 +295,7 @@ import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, Tagge
 ///
 /// fillet001 = fillet(
 ///   revolve001,
-///   tags = getCommonEdge(faces = [
-///     profile001.tags.seg02,
-///     profile001.tags.seg01
-///   ]),
+///   edges = [{ sideFaces = [profile001.tags.seg02, profile001.tags.seg01] }],
 ///   radius = 10,
 /// )
 ///   |> rotate(yaw = 70deg, pitch = 10deg)
@@ -604,8 +595,7 @@ export fn fillet(
 /// @settings(defaultLengthUnit = mm, kclVersion = 3.0)
 ///
 /// // Chamfer the top circular edge of an extruded 8 mm shaft.
-/// // These two shafts show two equivalent edge-selection approaches:
-/// // `getOppositeEdge` and a tagged end face with `getCommonEdge`.
+/// // These two shafts show edge selection by a side face and end face.
 ///
 /// // Sketch two circles, one on the left, one on the right.
 /// // We'll use them for shafts below.
@@ -625,26 +615,24 @@ export fn fillet(
 /// // Extrude one circle into a shaft,
 /// // then use `leftRegion.tags.leftCircle` to reference the original circle
 /// // at the base of the shaft,
-/// // then use `getOppositeEdge` to get the opposite circular edge at the *top* of the shaft.
-/// leftShaft = extrude(leftRegion, length = 20mm)
+/// // The end face selects the circular edge at the top of the shaft.
+/// leftShaftBase = extrude(leftRegion, length = 20mm, tagEnd = $leftShaftTop)
+/// leftShaft = leftShaftBase
 ///   |> chamfer(
 ///        length = 1mm,
-///        tags = [
-///          getOppositeEdge(leftRegion.tags.leftCircle)
-///        ],
+///        edges = [{ sideFaces = [leftRegion.tags.leftCircle, leftShaftBase.faces.leftShaftTop] }],
 ///      )
 ///
 /// // Extrude the other circle into a shaft and tag its top end face.
 /// rightShaftBase = extrude(rightRegion, length = 20mm, tagEnd = $rightShaftTop)
 ///
 /// // After extrusion, the circle identifies the cylindrical side face.
-/// // `getCommonEdge` selects the top rim shared by that face and the top end face.
-/// rightTopEdge = getCommonEdge(faces = [
-///   rightShaftBase.sketch.tags.rightCircle,
-///   rightShaftBase.faces.rightShaftTop
-/// ])
-///
-/// rightShaft = chamfer(rightShaftBase, length = 1mm, tags = [rightTopEdge])
+/// // Their shared edge is the top rim.
+/// rightShaft = chamfer(
+///   rightShaftBase,
+///   length = 1mm,
+///   edges = [{ sideFaces = [rightRegion.tags.rightCircle, rightShaftBase.faces.rightShaftTop] }],
+/// )
 /// ```
 /// ```kcl,legacySketch
 /// // Chamfer a mounting plate with KCL 1.0 syntax.

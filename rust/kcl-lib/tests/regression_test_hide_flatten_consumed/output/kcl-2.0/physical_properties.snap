@@ -18,12 +18,12 @@ description: Physical properties regression_test_hide_flatten_consumed.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 22.024155674316148
+    "value": 22.02414154339749
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.005323669139601442
+    "value": 0.005323657866645494
   }
 }

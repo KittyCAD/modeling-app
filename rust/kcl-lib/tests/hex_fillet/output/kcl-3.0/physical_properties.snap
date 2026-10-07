@@ -18,12 +18,12 @@ description: Physical properties hex_fillet.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 114.97437302965264
+    "value": 114.99416288840436
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.040874581314188994
+    "value": 0.04089621112363811
   }
 }

@@ -13,7 +13,6 @@ import { Mesh } from 'three'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { PlaneName } from '@rust/kcl-lib/bindings/PlaneName'
 
-import type { EntityReference as SdkEntityReference } from '@kittycad/lib'
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import {
   EXTRA_SEGMENT_HANDLE,
@@ -326,46 +325,49 @@ async function getSketchIdForEngineRegionEntity(
   return sketch?.id ?? null
 }
 
-export async function getEngineRegionSelectionFromEntity(
+export async function getEngineRegionSelectionFromPoint(
   regionEntityId: string,
   artifactGraph: ArtifactGraph,
   ast: Node<Program>,
   engineCommandManager: ConnectionManager,
-  wasmInstance: ModuleType,
-  useSegmentsBasedRegions = false
+  wasmInstance: ModuleType
 ): Promise<EngineRegionSelection | null> {
-  if (!useSegmentsBasedRegions) {
-    const queryPointMm = await getRegionQueryPointForRegion(
-      regionEntityId,
-      engineCommandManager
-    )
-    if (!queryPointMm) return null
-    const decimals = DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES
-    const settings = getSettingsAnnotation(ast, wasmInstance)
-    const lengthUnit =
-      !isErr(settings) && settings.defaultLengthUnit
-        ? settings.defaultLengthUnit
-        : DEFAULT_DEFAULT_LENGTH_UNIT
-    const point: Point2d = {
-      x: mmToBaseUnit(queryPointMm.x, decimals, lengthUnit),
-      y: mmToBaseUnit(queryPointMm.y, decimals, lengthUnit),
-    }
-
-    const sketchId = await getSketchIdForEngineRegionEntity(
-      regionEntityId,
-      artifactGraph,
-      engineCommandManager
-    )
-    if (!sketchId) return null
-
-    return {
-      type: 'engineRegion',
-      id: regionEntityId,
-      point,
-      sketchId,
-    }
+  const queryPointMm = await getRegionQueryPointForRegion(
+    regionEntityId,
+    engineCommandManager
+  )
+  if (!queryPointMm) return null
+  const decimals = DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES
+  const settings = getSettingsAnnotation(ast, wasmInstance)
+  const lengthUnit =
+    !isErr(settings) && settings.defaultLengthUnit
+      ? settings.defaultLengthUnit
+      : DEFAULT_DEFAULT_LENGTH_UNIT
+  const point: Point2d = {
+    x: mmToBaseUnit(queryPointMm.x, decimals, lengthUnit),
+    y: mmToBaseUnit(queryPointMm.y, decimals, lengthUnit),
   }
 
+  const sketchId = await getSketchIdForEngineRegionEntity(
+    regionEntityId,
+    artifactGraph,
+    engineCommandManager
+  )
+  if (!sketchId) return null
+
+  return {
+    type: 'engineRegion',
+    id: regionEntityId,
+    point,
+    sketchId,
+  }
+}
+
+async function getEngineRegionSelectionFromSegments(
+  regionEntityId: string,
+  artifactGraph: ArtifactGraph,
+  engineCommandManager: ConnectionManager
+): Promise<EngineRegionSelection | null> {
   const regionInfo = await getResolvableIntersectionInfoForRegion(
     regionEntityId,
     engineCommandManager
@@ -1707,13 +1709,11 @@ export async function getEventForQueryEntityTypeWithPoint(
     kclManager,
     rustContext,
     wasmInstance,
-    useSegmentsBasedRegions,
   }: {
     engineCommandManager: ConnectionManager
     kclManager: KclManager
     rustContext: RustContext
     wasmInstance: ModuleType
-    useSegmentsBasedRegions: boolean
   }
 ): Promise<ModelingMachineEvent | null> {
   // Engine may return reference under data (e.g. { type, data: { reference } }) or at top level (e.g. { type, reference })
@@ -1918,14 +1918,12 @@ export async function getEventForQueryEntityTypeWithPoint(
   const skipRegionSelectionForTopologyEdge =
     entityRef.type === 'edge' && engineTopologyFallbackResolved !== undefined
 
+  // Try segment references first, then the point fallback below.
   if (entityRef.type === 'region') {
-    const regionSelection = await getEngineRegionSelectionFromEntity(
+    const regionSelection = await getEngineRegionSelectionFromSegments(
       entityRef.region_id,
       artifactGraph,
-      ast,
-      engineCommandManager,
-      wasmInstance,
-      useSegmentsBasedRegions
+      engineCommandManager
     )
     if (regionSelection) {
       return {
@@ -1938,13 +1936,16 @@ export async function getEventForQueryEntityTypeWithPoint(
     }
   }
 
+  // The engine can return a region reference without a separate entity_id.
+  const regionEntityId =
+    entityRef.type === 'region' ? entityRef.region_id : clickEntityId
   if (
     !artifactByEventId &&
-    clickEntityId &&
+    regionEntityId &&
     !skipRegionSelectionForTopologyEdge
   ) {
-    const regionSelection = await getEngineRegionSelectionFromEntity(
-      clickEntityId,
+    const regionSelection = await getEngineRegionSelectionFromPoint(
+      regionEntityId,
       artifactGraph,
       ast,
       engineCommandManager,
@@ -2498,8 +2499,7 @@ function setEngineEntitySelectionV2(
       type: 'modeling_cmd_req',
       cmd: {
         type: 'select_entity',
-        // Remove this cast once @kittycad/lib includes the Helix schema variant.
-        entities: entityReferences as SdkEntityReference[],
+        entities: entityReferences,
       },
       cmd_id: uuidv4(),
     },
@@ -2512,31 +2512,6 @@ function getEngineEntityIdForSelection(
 ): string | undefined {
   if (selection.engineEntityId) {
     return selection.engineEntityId
-  }
-
-  const entityRef = selection.entityRef
-  if (entityRef) {
-    switch (entityRef.type) {
-      case 'solid3d':
-        return entityRef.solid3d_id
-      case 'solid2d':
-        return entityRef.solid2d_id
-      case 'face':
-        return entityRef.face_id
-      case 'plane':
-        return entityRef.plane_id
-      case 'solid2d_edge':
-        return entityRef.edge_id
-      case 'segment':
-        return entityRef.segment_id
-      case 'helix':
-        return entityRef.helix_id
-      case 'region':
-        return entityRef.region_id
-      case 'edge':
-      case 'vertex':
-        break
-    }
   }
 
   return resolveToCodeRef(selection, artifactGraph)?.artifact?.id

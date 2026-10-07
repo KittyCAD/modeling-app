@@ -100,8 +100,8 @@ test.describe('integrations tests', { tag: ['@desktop'] }, () => {
       await expect(toolbar.startSketchBtn).toBeVisible()
     })
     await test.step('setup for next assertion', async () => {
-      await toolbar.openFile('main.kcl')
-      await page.waitForTimeout(2000)
+      await scene.waitForExecutionDoneAfter(() => toolbar.openFile('main.kcl'))
+      await scene.settled()
       await toolbar.editSketch()
       await toolbar.expectFileTreeState(['main.kcl', fileName])
     })

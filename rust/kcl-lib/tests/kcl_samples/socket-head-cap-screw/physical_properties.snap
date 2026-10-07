@@ -18,12 +18,12 @@ description: Physical properties socket-head-cap-screw.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 677.4186983662389
+    "value": 677.5308023510007
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.710009977436532
+    "value": 0.7102396749336659
   }
 }
