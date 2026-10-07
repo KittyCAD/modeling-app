@@ -1102,6 +1102,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   'Offset plane': {
     icon: 'plane',
+    displayName: 'Offset Plane',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
       modelingCommandCodemods['Offset plane']

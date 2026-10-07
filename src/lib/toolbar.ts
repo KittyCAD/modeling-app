@@ -828,7 +828,6 @@ export function buildToolbarConfig(
           array: [
             modelingCommand('Offset plane', {
               id: 'plane-offset',
-              title: 'Offset Plane',
             }),
             {
               id: 'plane-points',
