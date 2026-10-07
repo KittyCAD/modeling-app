@@ -14,4 +14,4 @@ import type { RuntimeFlag } from "./RuntimeFlag";
  * - It defaults to [`RuntimeFlag::Off`] when omitted.
  * - The current parser does not read it.
  */
-export type KclRuntimeFlags = { use_new_lexer_parser: RuntimeFlag, use_new_parser: RuntimeFlag, };
+export type KclRuntimeFlags = { use_new_parser: RuntimeFlag, };

@@ -1691,10 +1691,7 @@ async fn test_kcl_lsp_semantic_tokens_large_file() {
 
 #[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_new_lexer_retains_semantic_tokens_on_lexical_error() {
-    // With the new lexer a lexical error still yields semantic tokens (so the
-    // editor keeps highlighting) alongside a diagnostic, and produces no AST.
-    // (Uses the process-global test override; race-free under nextest isolation.)
-    let _guard = crate::parsing::token::LexerMode::override_for_test(crate::parsing::token::LexerMode::New);
+    // Lexical errors retain semantic highlighting.
 
     let server = kcl_lsp_server(false).await.unwrap();
 
