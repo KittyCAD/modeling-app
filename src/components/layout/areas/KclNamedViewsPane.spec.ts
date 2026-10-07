@@ -1,4 +1,6 @@
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
+import type { NamedViewCameraSnapshot } from '@src/lang/modifyAst/namedViews'
+import { AreaType, LayoutType } from '@src/lib/layout'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { createElement, Suspense } from 'react'
 import { describe, expect, it, vi } from 'vitest'
@@ -14,6 +16,10 @@ const renderMocks = vi.hoisted(() => {
     wasmInstance,
     activateNamedView: vi.fn(async () => undefined),
     appSend: vi.fn(),
+    captureNamedViewCamera:
+      vi.fn<() => Promise<NamedViewCameraSnapshot | Error>>(),
+    updateNamedViewCamera: vi.fn(() => ({})),
+    updateModelingState: vi.fn(async () => undefined),
     namedViewCameraSummary: vi.fn(() => 'Front Orthographic'),
     prepareNamedViewEditCommand: vi.fn(async () => ({
       type: 'Find and select command',
@@ -25,6 +31,8 @@ const renderMocks = vi.hoisted(() => {
       wasmInstancePromise,
       ast: {},
       code: '',
+      path: '/project/main.kcl',
+      sceneInfra: {},
       execStateSignal: {
         value: { artifactGraph: new Map(), filenames: {} },
       },
@@ -50,6 +58,18 @@ vi.mock('@src/hooks/useReliesOnEngine', () => ({
 vi.mock('@src/lib/kclNamedViewEdit', () => ({
   namedViewCameraSummary: renderMocks.namedViewCameraSummary,
   prepareNamedViewEditCommand: renderMocks.prepareNamedViewEditCommand,
+}))
+
+vi.mock('@src/lib/kclNamedViewCamera', () => ({
+  captureNamedViewCamera: renderMocks.captureNamedViewCamera,
+}))
+
+vi.mock('@src/lang/modifyAst/namedViews', () => ({
+  updateNamedViewCamera: renderMocks.updateNamedViewCamera,
+}))
+
+vi.mock('@src/lang/modelingWorkflows', () => ({
+  updateModelingState: renderMocks.updateModelingState,
 }))
 
 vi.mock('@src/lib/kclNamedViewActivation', async (importOriginal) => ({
@@ -222,6 +242,25 @@ describe('viewRows', () => {
 })
 
 describe('KclNamedViewsPane', () => {
+  function renderPane() {
+    return render(
+      createElement(
+        Suspense,
+        { fallback: createElement('div', null, 'Loading WASM') },
+        createElement(KclNamedViewsPane, {
+          layout: {
+            id: 'named-views',
+            label: 'Named Views',
+            type: LayoutType.Simple,
+            areaType: AreaType.NamedViews,
+          },
+          areaConfig: { hide: () => false },
+          onClose: vi.fn(),
+        })
+      )
+    )
+  }
+
   it('uses promised WASM instead of reading the unsafe synchronous getter', async () => {
     const namedView = view({ name: 'Front', modulePath: { type: 'Main' } })
     renderMocks.kclManager.execStateSignal.value = {
@@ -232,16 +271,7 @@ describe('KclNamedViewsPane', () => {
     }
     renderMocks.namedViewCameraSummary.mockClear()
 
-    render(
-      createElement(
-        Suspense,
-        { fallback: createElement('div', null, 'Loading WASM') },
-        createElement(KclNamedViewsPane, {
-          layout: { id: 'named-views', label: 'Named Views' },
-          onClose: vi.fn(),
-        } as never)
-      )
-    )
+    renderPane()
     expect(await screen.findByText('Front')).toBeInTheDocument()
     expect(renderMocks.namedViewCameraSummary).toHaveBeenCalledWith(
       expect.objectContaining({ wasmInstance: renderMocks.wasmInstance })
@@ -260,16 +290,7 @@ describe('KclNamedViewsPane', () => {
     renderMocks.activateNamedView.mockClear()
     renderMocks.prepareNamedViewEditCommand.mockClear()
 
-    render(
-      createElement(
-        Suspense,
-        { fallback: createElement('div', null, 'Loading WASM') },
-        createElement(KclNamedViewsPane, {
-          layout: { id: 'named-views', label: 'Named Views' },
-          onClose: vi.fn(),
-        } as never)
-      )
-    )
+    renderPane()
 
     const label = await screen.findByText('Front')
     fireEvent.click(label, { detail: 1 })
@@ -299,16 +320,7 @@ describe('KclNamedViewsPane', () => {
     }
     renderMocks.activateNamedView.mockClear()
 
-    render(
-      createElement(
-        Suspense,
-        { fallback: createElement('div', null, 'Loading WASM') },
-        createElement(KclNamedViewsPane, {
-          layout: { id: 'named-views', label: 'Named Views' },
-          onClose: vi.fn(),
-        } as never)
-      )
-    )
+    renderPane()
 
     const label = await screen.findByText('Front')
     fireEvent.click(label)
@@ -321,6 +333,52 @@ describe('KclNamedViewsPane', () => {
     fireEvent.click(label, { metaKey: true })
     expect(renderMocks.activateNamedView).toHaveBeenCalledTimes(1)
   })
+
+  it.each(['unchanged', 'source', 'file'])(
+    'only applies a captured camera to the same source (%s)',
+    async (change) => {
+      const namedView = view({ name: 'Front', modulePath: { type: 'Main' } })
+      renderMocks.kclManager.execStateSignal.value = {
+        artifactGraph: new Map([
+          [namedView.artifact.id, { type: 'namedView', ...namedView.artifact }],
+        ]),
+        filenames: { 0: { type: 'Main' } },
+      }
+      renderMocks.kclManager.code = ''
+      renderMocks.kclManager.path = '/project/main.kcl'
+      renderMocks.updateNamedViewCamera.mockClear()
+      renderMocks.updateModelingState.mockClear()
+      let finishCapture: (camera: NamedViewCameraSnapshot) => void = () => {}
+      renderMocks.captureNamedViewCamera.mockReturnValueOnce(
+        new Promise((resolve) => {
+          finishCapture = resolve
+        })
+      )
+      renderPane()
+
+      const button = await screen.findByRole('button', {
+        name: 'Update from current camera',
+      })
+      fireEvent.click(button)
+      expect(button).toBeDisabled()
+      if (change === 'source') renderMocks.kclManager.code = '// New source'
+      if (change === 'file') renderMocks.kclManager.path = '/project/other.kcl'
+      finishCapture({
+        direction: [0, -1, 0],
+        up: [0, 0, 1],
+        target: [0, 0, 0],
+        distance: 100,
+        projection: 'Orthographic',
+      })
+      await waitFor(() => expect(button).not.toBeDisabled())
+      expect(renderMocks.updateNamedViewCamera).toHaveBeenCalledTimes(
+        change === 'unchanged' ? 1 : 0
+      )
+      expect(renderMocks.updateModelingState).toHaveBeenCalledTimes(
+        change === 'unchanged' ? 1 : 0
+      )
+    }
+  )
 })
 
 describe('nextViewSelection', () => {
