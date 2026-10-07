@@ -18,12 +18,12 @@ description: Physical properties plumbus_fillets.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 5501.385078032328
+    "value": 5501.391896908459
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 18.005138111025847
+    "value": 18.005208389510845
   }
 }
