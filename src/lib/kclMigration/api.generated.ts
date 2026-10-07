@@ -29,8 +29,6 @@ export interface components {
           type: 'cancel'
         }
       | {
-          /** @description Continue before the last entry in the preceding page. */
-          before?: components['schemas']['Uuid'] | null
           conversation_id: components['schemas']['Uuid']
           /** @enum {string} */
           type: 'history'
@@ -117,7 +115,6 @@ export interface components {
       | {
           conversation_id: components['schemas']['Uuid']
           entries: components['schemas']['KclMigrationHistoryEntry'][]
-          next_before?: components['schemas']['Uuid'] | null
           /** @enum {string} */
           type: 'history'
         }
@@ -219,7 +216,7 @@ export interface components {
        * @description Admission time, used for chronological display.
        */
       created_at: string
-      /** @description Bounded outcome summary for display and subsequent model context. */
+      /** @description Outcome summary for display and subsequent model context. */
       detail: string
       /** @description Migration request ID. Use the status command to retrieve a candidate explicitly. */
       operation_id: components['schemas']['Uuid']

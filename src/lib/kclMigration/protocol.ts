@@ -162,14 +162,12 @@ export function parseMigrationMessage(
       value.type === 'history' &&
       typeof value.conversation_id === 'string' &&
       isArray(value.entries) &&
-      value.entries.every(isHistoryEntry) &&
-      (value.next_before == null || typeof value.next_before === 'string')
+      value.entries.every(isHistoryEntry)
     ) {
       return {
         type: 'history',
         conversation_id: value.conversation_id,
         entries: [...value.entries],
-        next_before: value.next_before,
       }
     }
     if (
