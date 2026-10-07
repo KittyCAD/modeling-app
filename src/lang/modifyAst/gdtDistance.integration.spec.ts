@@ -97,6 +97,7 @@ describe('distance edge topology', () => {
       })
       if (result instanceof Error) throw result
       const code = recast(result.modifiedAst, instance)
+      if (code instanceof Error) throw code
       const compactCode = code.replace(/\s+/g, '')
       const tag = capType === 'end' ? 'capEnd002' : 'capStart002'
       expect(compactCode).toContain(

@@ -22,7 +22,7 @@ import {
 } from '@src/lib/constants'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { getDistanceFramePlaneFromKcl } from '@src/lib/gdtDistanceKclPlane'
-import { isArray, roundOff, uuidv4 } from '@src/lib/utils'
+import { baseUnitToMm, isArray, roundOff, uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
@@ -530,6 +530,54 @@ function distanceSetback(bounds: BoundingBox | undefined): number | undefined {
   return getAverageBoundingBoxDimension(bounds.dimensions)
 }
 
+/** All points and bounds must use the same length unit. */
+export function getOutsideDistanceSetback(
+  from: Point3d,
+  to: Point3d,
+  plane: string,
+  bounds: BoundingBox
+): number | undefined {
+  const axes: [Axis, Axis] | undefined =
+    plane === KCL_PLANE_XY
+      ? ['x', 'y']
+      : plane === KCL_PLANE_XZ
+        ? ['x', 'z']
+        : plane === KCL_PLANE_YZ
+          ? ['y', 'z']
+          : undefined
+  if (!axes || !bounds.center) return undefined
+  const [x, y] = axes
+  const dx = to[x] - from[x],
+    dy = to[y] - from[y]
+  const length = Math.hypot(dx, dy)
+  if (!Number.isFinite(length) || length === 0) return undefined
+  // Match the engine's plane-local perpendicular, oriented toward local +Y.
+  const flip = dx < 0 ? -1 : 1
+  const px = (-dy / length) * flip,
+    py = (dx / length) * flip
+  const project = (point: Point3d) =>
+    px * (point[x] - bounds.center[x]) + py * (point[y] - bounds.center[y])
+  const a = project(from),
+    b = project(to)
+  const extent =
+    (Math.abs(px) * bounds.dimensions[x] +
+      Math.abs(py) * bounds.dimensions[y]) /
+    2
+  const margin = distanceSetback(bounds)
+  if (
+    ![a, b, extent].every(Number.isFinite) ||
+    extent < 0 ||
+    margin === undefined
+  )
+    return undefined
+  const sign = a + b < 0 ? -1 : 1
+  const clearance =
+    Math.max(0, extent - Math.min(sign * a, sign * b)) +
+    margin * GDT_FONT_SIZE_TO_BOUNDING_BOX_AVERAGE_RATIO
+  // The engine renders the dimension line at 0.8 * offset.y. Leaders use 1.0.
+  return (sign * Math.ceil((clearance / 0.8) * 10000)) / 10000
+}
+
 function getNormalFromPlanarFace(face: FaceIsPlanar): Point3d | undefined {
   const normal = face.z_axis
   if (
@@ -765,6 +813,150 @@ async function getDistanceGeometryPlane(
   return undefined
 }
 
+async function getOutsideSetbackForSelections({
+  engine,
+  selections,
+  artifactGraph,
+  entityIds,
+  selectionBounds,
+  endpointBounds,
+  modelBounds,
+  plane,
+  outputUnit,
+}: {
+  engine: ConnectionManager
+  selections: Selections | undefined
+  artifactGraph: ArtifactGraph | undefined
+  entityIds: ArtifactId[]
+  selectionBounds: BoundingBox | undefined
+  endpointBounds: Array<BoundingBox | undefined> | undefined
+  modelBounds: BoundingBox | undefined
+  plane: string | KclCommandValue | undefined
+  outputUnit: UnitLength
+}): Promise<number | undefined> {
+  const planeName = typeof plane === 'string' ? plane : plane?.valueText
+  if (
+    !planeName ||
+    ![KCL_PLANE_XY, KCL_PLANE_XZ, KCL_PLANE_YZ].includes(planeName) ||
+    !selectionBounds?.center
+  )
+    return undefined
+  let from: Point3d | undefined, to: Point3d | undefined
+  if (entityIds.length === 2) {
+    const bounds =
+      endpointBounds ??
+      (await Promise.all(
+        entityIds.map((id) =>
+          getBoundingBoxForGdtEntities({
+            engineCommandManager: engine,
+            entityIds: [id],
+            outputUnit,
+          })
+        )
+      ))
+    from = bounds[0]?.center
+    to = bounds[1]?.center
+  } else if (entityIds.length === 1) {
+    const isEdge =
+      selections?.graphSelections.some(
+        (selection) =>
+          selection.entityRef?.type === 'edge' ||
+          selection.artifact?.type === 'segment' ||
+          selection.artifact?.type === 'sweepEdge'
+      ) ||
+      selections?.otherSelections.some(
+        (selection) =>
+          typeof selection === 'object' &&
+          'primitiveType' in selection &&
+          selection.primitiveType === 'edge'
+      )
+    if (!isEdge) return undefined
+    try {
+      const response = await engine.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: { type: 'curve_get_end_points', curve_id: entityIds[0] },
+      })
+      if (
+        isModelingResponse(response) &&
+        response.resp.data.modeling_response.type === 'curve_get_end_points'
+      ) {
+        const { start, end } = response.resp.data.modeling_response.data
+        const scale = baseUnitToMm(outputUnit)
+        from = { x: start.x / scale, y: start.y / scale, z: start.z / scale }
+        to = { x: end.x / scale, y: end.y / scale, z: end.z / scale }
+      }
+    } catch {
+      /* Retain the existing bounds-based fallback when endpoints are unavailable. */
+    }
+  }
+  if (
+    !from ||
+    !to ||
+    getOutsideDistanceSetback(from, to, planeName, selectionBounds) ===
+      undefined
+  )
+    return undefined
+
+  const parents: ArtifactId[] = []
+  for (const id of entityIds) {
+    const selection = selections?.graphSelections.find(
+      (s) => (s.engineEntityId ?? s.artifact?.id) === id
+    )
+    const primitive = selections?.otherSelections.find(
+      (s) => typeof s === 'object' && 'entityId' in s && s.entityId === id
+    )
+    const faces =
+      selection?.entityRef?.type === 'edge'
+        ? selection.entityRef.side_faces.map((faceId) =>
+            artifactGraph?.get(faceId)
+          )
+        : [selection?.artifact]
+    const face = faces.find((a) => a?.type === 'cap' || a?.type === 'wall')
+    let parent =
+      selection?.engineTopologyFallback?.parentId ??
+      (typeof primitive === 'object' && 'parentEntityId' in primitive
+        ? primitive.parentEntityId
+        : undefined) ??
+      (face?.type === 'cap' || face?.type === 'wall' ? face.sweepId : undefined)
+    if (!parent) {
+      try {
+        const response = await engine.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: { type: 'entity_get_parent_id', entity_id: id },
+        })
+        if (
+          isModelingResponse(response) &&
+          response.resp.data.modeling_response.type === 'entity_get_parent_id'
+        )
+          parent = response.resp.data.modeling_response.data.entity_id
+      } catch {
+        /* The scene bounds remain a fallback for unresolved bodies. */
+      }
+    }
+    if (parent) parents.push(parent)
+  }
+  const bodyBounds =
+    parents.length === entityIds.length
+      ? await getBoundingBoxForGdtEntities({
+          engineCommandManager: engine,
+          entityIds: deduplicateArtifactIds(parents),
+          outputUnit,
+        })
+      : undefined
+  const bounds =
+    bodyBounds ??
+    modelBounds ??
+    (await getBoundingBoxForGdtEntities({
+      engineCommandManager: engine,
+      entityIds: [],
+      outputUnit,
+      includeEntireScene: true,
+    }))
+  return bounds && getOutsideDistanceSetback(from, to, planeName, bounds)
+}
+
 export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   data,
   engineCommandManager,
@@ -813,6 +1005,7 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
     }
   }
   let distanceBoundingBox: BoundingBox | undefined
+  let distanceEndpointBounds: Array<BoundingBox | undefined> | undefined
   if (distance && !nextData.framePlane && entityIds.length === 1) {
     distanceBoundingBox = await getBoundingBoxForGdtEntities({
       engineCommandManager,
@@ -843,6 +1036,7 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
         })
       )
     )
+    distanceEndpointBounds = bounds
     const [from, to] = bounds
     if (from?.center && to?.center) {
       const direction = {
@@ -949,11 +1143,12 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   }
 
   let setback = distanceSetback(selectionBoundingBox)
+  let modelBoundingBox: BoundingBox | undefined
   if (
     !nextData.fontSize ||
     (distance && !nextData.framePosition && setback === undefined)
   ) {
-    const modelBoundingBox = await getBoundingBoxForGdtEntities({
+    modelBoundingBox = await getBoundingBoxForGdtEntities({
       engineCommandManager,
       entityIds: [],
       outputUnit,
@@ -977,6 +1172,18 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   }
 
   if (distance && !nextData.framePosition) {
+    setback =
+      (await getOutsideSetbackForSelections({
+        engine: engineCommandManager,
+        selections,
+        artifactGraph,
+        entityIds,
+        selectionBounds: selectionBoundingBox,
+        endpointBounds: distanceEndpointBounds,
+        modelBounds: modelBoundingBox,
+        plane: nextData.framePlane,
+        outputUnit,
+      })) ?? setback
     nextData = {
       ...nextData,
       framePosition: createDistanceFramePositionCommandValue(

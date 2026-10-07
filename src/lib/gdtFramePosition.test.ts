@@ -14,6 +14,7 @@ import {
   getDefaultGdtFramePositionSignsFromNormal,
   getEngineEntityIdsForGdtSelections,
   getExistingGdtFontSize,
+  getOutsideDistanceSetback,
   getPlanarFaceEntityIdsForGdtSelections,
   withDefaultGdtFrameDefaults,
 } from '@src/lib/gdtFramePosition'
@@ -107,6 +108,196 @@ describe('GD&T frame defaults', () => {
       ],
       otherSelections: [],
     }
+
+    it.each(['XY', 'XZ', 'YZ'])(
+      'places the dimension beyond the nearer side of the part in %s',
+      (plane) => {
+        const point = (x: number, y: number) =>
+          plane === 'XY'
+            ? { x, y, z: 0 }
+            : plane === 'XZ'
+              ? { x, y: 0, z: y }
+              : { x: 0, y: x, z: y }
+        const bounds = { center: point(50, 0), dimensions: point(100, 100) }
+        for (const y of [-40, 40]) {
+          const a = point(20, y),
+            b = point(80, y)
+          const offset = getOutsideDistanceSetback(a, b, plane, bounds)
+          expect(offset).toBe(y < 0 ? -21.25 : 21.25)
+          // Both the dimension line (0.8 * offset) and leader ends clear the box.
+          expect(Math.abs(y + 0.8 * (offset ?? 0))).toBeGreaterThan(50)
+          expect(Math.abs(y + (offset ?? 0))).toBeGreaterThan(50)
+          expect(getOutsideDistanceSetback(b, a, plane, bounds)).toBe(offset)
+        }
+      }
+    )
+
+    it('keeps Z-edge placement on the same outside side when endpoints are reversed', () => {
+      const bounds = {
+        center: { x: 0, y: 0, z: 0 },
+        dimensions: { x: 100, y: 0, z: 100 },
+      }
+      const a = { x: -45, y: 0, z: -10 },
+        b = { x: -45, y: 0, z: 10 }
+      expect(getOutsideDistanceSetback(a, b, 'XZ', bounds)).toBe(15)
+      expect(getOutsideDistanceSetback(b, a, 'XZ', bounds)).toBe(-15)
+      expect(a.x - 0.8 * 15).toBeLessThan(-50)
+    })
+
+    it('clears the whole projected box for an oblique measurement', () => {
+      const bounds = {
+        center: { x: 0, y: 0, z: 0 },
+        dimensions: { x: 100, y: 100, z: 0 },
+      }
+      const a = { x: -10, y: -30, z: 0 },
+        b = { x: 10, y: -10, z: 0 }
+      const offset = getOutsideDistanceSetback(a, b, 'XY', bounds)
+      expect(offset).toBeLessThan(0)
+      const featureProjection = (a.y - a.x) / Math.SQRT2
+      expect(featureProjection + 0.8 * (offset ?? 0)).toBeLessThan(
+        -100 / Math.SQRT2
+      )
+    })
+
+    it('uses the translated part center and declines unavailable measurement geometry', () => {
+      const bounds = {
+        center: { x: 500, y: 200, z: 0 },
+        dimensions: { x: 100, y: 100, z: 0 },
+      }
+      const a = { x: 480, y: 160, z: 0 },
+        b = { x: 520, y: 160, z: 0 }
+      expect(getOutsideDistanceSetback(a, b, 'XY', bounds)).toBe(-21.25)
+      expect(getOutsideDistanceSetback(a, a, 'XY', bounds)).toBeUndefined()
+      expect(
+        getOutsideDistanceSetback(a, b, 'customPlane', bounds)
+      ).toBeUndefined()
+    })
+
+    it.each(['mm', 'in', 'ft'] as const)(
+      'writes a simplified outward setback in %s and uses the owning body bounds',
+      async (outputUnit) => {
+        const selections: Selections = {
+          graphSelections: [],
+          otherSelections: ['left', 'right'].map((entityId) => ({
+            type: 'enginePrimitive',
+            primitiveType: 'edge',
+            entityId,
+            primitiveIndex: 0,
+            parentEntityId: 'part',
+          })),
+        }
+        const sendSceneCommand = vi.fn().mockImplementation(async ({ cmd }) => {
+          if (cmd.type !== 'bounding_box') throw new Error('Unexpected command')
+          const id = cmd.entity_ids[0]
+          const center = {
+            x: id === 'left' ? 20 : id === 'right' ? 80 : 50,
+            y: id === 'part' ? 0 : -40,
+            z: 0,
+          }
+          return {
+            success: true,
+            resp: {
+              type: 'modeling',
+              data: {
+                modeling_response: {
+                  type: 'bounding_box',
+                  data: {
+                    center,
+                    dimensions:
+                      id === 'part'
+                        ? { x: 100, y: 100, z: 0 }
+                        : { x: 4, y: 4, z: 0 },
+                  },
+                },
+              },
+            },
+          }
+        })
+        const result = await withDefaultGdtFrameDefaults<
+          ModelingCommandSchema['GDT Distance']
+        >({
+          data: {
+            objects: selections,
+            framePlane: 'XY',
+            fontSize: kclValue('1mm'),
+          },
+          distance: true,
+          outputUnit,
+          engineCommandManager: {
+            sendSceneCommand,
+          } as unknown as ConnectionManager,
+          wasmInstance,
+        })
+        expect(result.framePosition?.valueText).toBe(
+          `[0${outputUnit}, -21.25${outputUnit}]`
+        )
+        expect(sendSceneCommand).toHaveBeenCalledWith(
+          expect.objectContaining({
+            cmd: expect.objectContaining({
+              type: 'bounding_box',
+              entity_ids: ['part'],
+              output_unit: outputUnit,
+            }),
+          })
+        )
+        expect(
+          sendSceneCommand.mock.calls.every(
+            ([{ cmd }]) => cmd.entity_ids.length > 0
+          )
+        ).toBe(true)
+      }
+    )
+
+    it('converts engine endpoints from mm before placing a Z-edge dimension in feet', async () => {
+      const selections: Selections = {
+        graphSelections: [
+          {
+            engineEntityId: 'vertical',
+            entityRef: { type: 'edge', side_faces: [] },
+            engineTopologyFallback: { parentId: 'part', primitiveIndex: 0 },
+          },
+        ],
+        otherSelections: [],
+      }
+      const sendSceneCommand = vi.fn().mockImplementation(async ({ cmd }) => {
+        const response =
+          cmd.type === 'curve_get_end_points'
+            ? {
+                type: cmd.type,
+                data: {
+                  start: { x: -45 * 304.8, y: 0, z: -10 * 304.8 },
+                  end: { x: -45 * 304.8, y: 0, z: 10 * 304.8 },
+                },
+              }
+            : {
+                type: 'bounding_box',
+                data: {
+                  center: { x: 0, y: 0, z: 0 },
+                  dimensions: { x: 100, y: 0, z: 100 },
+                },
+              }
+        return {
+          success: true,
+          resp: { type: 'modeling', data: { modeling_response: response } },
+        }
+      })
+      const result = await withDefaultGdtFrameDefaults<
+        ModelingCommandSchema['GDT Distance']
+      >({
+        data: {
+          objects: selections,
+          framePlane: 'XZ',
+          fontSize: kclValue('1ft'),
+        },
+        distance: true,
+        outputUnit: 'ft',
+        engineCommandManager: {
+          sendSceneCommand,
+        } as unknown as ConnectionManager,
+        wasmInstance,
+      })
+      expect(result.framePosition?.valueText).toBe('[0ft, 15ft]')
+    })
 
     it.each(['mm', 'cm', 'in'] as const)(
       'centers the label and scales its setback with the model in %s',
