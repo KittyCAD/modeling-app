@@ -9,7 +9,7 @@ Find the plane a face lies on. Returns an error if the face doesn't lie on any p
 
 ```kcl
 planeOf(
-  @solid: Solid,
+  @solid: Solid | ImportedGeometry,
   face: TaggedFace | Segment,
 ): Plane
 ```
@@ -20,7 +20,7 @@ planeOf(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solid` | [`Solid`](/docs/kcl-std/types/std-types-Solid) | The solid whose face is being queried. | Yes |
+| `solid` | [`Solid`](/docs/kcl-std/types/std-types-Solid) or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) | The body whose face is being queried. | Yes |
 | `face` | [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) or [`Segment`](/docs/kcl-std/types/std-types-Segment) | Find the plane which this face lies on. | Yes |
 
 ### Returns
