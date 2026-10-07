@@ -1091,6 +1091,54 @@ ${extrudedTriangle}`
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add a fillet call with tangentChain off', async () => {
+      const code = `@settings(kclVersion = 3.0)
+
+${extrudedTriangle}`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const segment = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'segment'
+      )
+      if (!segment) throw new Error('Segment artifact not found')
+      const selection: Selections = {
+        graphSelections: [selectionFromSegmentEdge(segment, artifactGraph)],
+        otherSelections: [],
+      }
+      const radius = (await stringToKclExpression(
+        '1',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addFillet({
+        ast,
+        artifactGraph,
+        selection,
+        radius,
+        tangentChain: false,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+      expect(newCode).toContain(`fillet001 = fillet(
+  extrude001,
+  edges = [
+    {
+      sideFaces = [seg01, extrude001.faces.capEnd001]
+    }
+  ],
+  radius = 1,
+  tangentChain = false,
+)`)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should edit a basic fillet call with a legacy edge tag', async () => {
       const { artifactGraph, ast, operations } = await getAstAndArtifactGraph(
         extrudedTriangleWithFillet,
@@ -1786,6 +1834,56 @@ extrude002 = extrude(profile002, length = 5, tagEnd = $capEnd002)`
       expect(newCode).toMatch(/chamfer001 = chamfer\(\s*extrude001/)
       expect(newCode).toMatch(/chamfer002 = chamfer\(\s*extrude002/)
       expect(newCode).toMatch(/edges = \[\s*{/)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a chamfer call with tangentChain off', async () => {
+      const code = `@settings(kclVersion = 3.0)
+
+${extrudedTriangle}`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweepEdge = [...artifactGraph.values()].find(
+        (a) => a.type === 'sweepEdge'
+      )
+      if (!sweepEdge || sweepEdge.type !== 'sweepEdge') {
+        throw new Error('sweepEdge artifact not found')
+      }
+      const selection: Selections = {
+        graphSelections: [selectionFromSweepEdge(sweepEdge, artifactGraph)],
+        otherSelections: [],
+      }
+      const length = (await stringToKclExpression(
+        '1',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addChamfer({
+        ast,
+        artifactGraph,
+        selection,
+        length,
+        tangentChain: false,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+      expect(newCode).toContain(`chamfer001 = chamfer(
+  extrude001,
+  edges = [
+    {
+      sideFaces = [seg01, extrude001.faces.capEnd001]
+    }
+  ],
+  length = 1,
+  tangentChain = false,
+)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
   })

@@ -166,6 +166,7 @@ function buildCommandArguments<
 
   for (const arg in args) {
     const argConfig = args[arg] as CommandArgumentConfig<S[typeof arg], T>
+    if (argConfig.available?.(state.context) === false) continue
     const newArg = buildCommandArgument(
       argConfig,
       state.context,

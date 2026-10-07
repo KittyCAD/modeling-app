@@ -1,5 +1,5 @@
 import { defineContract, defineValueSpec } from '@kittycad/registry'
-import type { Project } from '@src/lib/project'
+import type { FileEntry, Project } from '@src/lib/project'
 import type { ComponentType, ReactNode } from 'react'
 
 export interface ProjectExplorerRowContextMenuRow {
@@ -11,6 +11,10 @@ export interface ProjectExplorerRowContextMenuRow {
 
 export interface ProjectExplorerRowContextMenuItemContext {
   row: ProjectExplorerRowContextMenuRow
+  /** Explorer state, absent when rendering a standalone file tree. */
+  project?: Project
+  file?: FileEntry
+  readOnly?: boolean
 }
 
 export interface ProjectExplorerRowContextMenuItem {

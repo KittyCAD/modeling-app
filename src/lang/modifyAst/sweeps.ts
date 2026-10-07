@@ -10,6 +10,7 @@ import {
   createTagDeclarator,
 } from '@src/lang/create'
 import { toUtf16 } from '@src/lang/errors'
+import { getKclLanguageVersion } from '@src/lang/kclLanguageVersion'
 import {
   createPoint2dExpression,
   createVariableExpressionsArray,
@@ -46,7 +47,10 @@ import type {
   PathToNode,
   Program,
 } from '@src/lang/wasm'
-import { modelingStdLibCommandName } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
+import {
+  modelingStdLibCommandName,
+  stdLibCommandArgAvailable,
+} from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
   KCL_DEFAULT_CONSTANT_PREFIXES,
@@ -549,7 +553,7 @@ export function addSweep({
       ? [createLabeledArg('relativeTo', createName([SWEEP_MODULE], relativeTo))]
       : []
   // New sweep calls should explicitly use the current recommended behavior:
-  // version = 2, translateProfileToPath = false, and orientProfilePerpendicular = false.
+  // version = 2 (where supported), translateProfileToPath = false, and orientProfilePerpendicular = false.
   // When editing, omit missing args so old sweep code is not silently upgraded.
   const translateProfileToPathExpr =
     translateProfileToPath !== undefined
@@ -592,9 +596,17 @@ export function addSweep({
   const bodyTypeExpr = bodyType
     ? [createLabeledArg('bodyType', createLocalName(bodyType))]
     : []
+  const languageVersion = getKclLanguageVersion(ast, wasmInstance)
+  if (err(languageVersion)) return languageVersion
   const versionExpr = version
     ? [createLabeledArg('version', valueOrVariable(version))]
-    : isEditing
+    : isEditing ||
+        !stdLibCommandArgAvailable(
+          'sweep',
+          'version',
+          languageVersion,
+          wasmInstance
+        )
       ? []
       : [createLabeledArg('version', createLiteral(2, wasmInstance))]
 
