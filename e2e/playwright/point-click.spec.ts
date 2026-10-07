@@ -1108,6 +1108,7 @@ extrude001 = extrude(region001, length = -12)`
       oldValue: string,
       newValue: string
     ) {
+      await scene.settled()
       // await scene.waitForExecutionDoneAfter(async () =>
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       // )

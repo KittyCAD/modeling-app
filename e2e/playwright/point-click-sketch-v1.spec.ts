@@ -1063,6 +1063,7 @@ profile001 = ${circleCode}`
     })
 
     await test.step('Go through the edit flow via feature tree', async () => {
+      await scene.settled()
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const op = await toolbar.getFeatureTreeOperation('Sweep', 0)
       await op.dblclick()
@@ -1110,6 +1111,7 @@ profile001 = ${circleCode}`
     })
 
     await test.step('Delete sweep via feature tree selection', async () => {
+      await scene.settled()
       const sweep = await toolbar.getFeatureTreeOperation('Sweep', 0)
       await sweep.click()
       await page.keyboard.press('Delete')
