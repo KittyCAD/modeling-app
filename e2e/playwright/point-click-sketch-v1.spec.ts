@@ -1505,6 +1505,7 @@ extrude001 = extrude(sketch001, length = 30)`
         commandName: 'Shell',
       })
       await clickOnCap()
+      await toolbar.expectSelection('1 face')
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'arguments',
@@ -3033,6 +3034,7 @@ extrude001 = extrude(sketch001, length = 30)
             highlightedHeaderArg: 'faces',
           })
           await clickOnCap()
+          await toolbar.expectSelection('1 face')
         })
 
         await test.step('Configure tolerance', async () => {
@@ -3489,6 +3491,7 @@ extrude001 = extrude(sketch001, length = 30)
             highlightedHeaderArg: 'faces',
           })
           await clickOnCap()
+          await toolbar.expectSelection('1 face')
         })
 
         await test.step('Configure name', async () => {
@@ -3835,6 +3838,7 @@ extrude001 = extrude(profile001, length = 10)`
         highlightedHeaderArg: 'face',
       })
       await clickOnCap()
+      await toolbar.expectSelection('1 face')
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'arguments',

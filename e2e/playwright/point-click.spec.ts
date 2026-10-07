@@ -2270,6 +2270,7 @@ extrude001 = extrude(profile001, length = 500)`
         commandName: 'Shell',
       })
       await clickOnCap()
+      await toolbar.expectSelection('1 face')
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'arguments',
@@ -2518,6 +2519,7 @@ chamfer001 = chamfer(
     })
     await toolbar.selectSurface('delete-face')
     await clickChamferFace()
+    await toolbar.expectSelection('1 face')
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'review',
@@ -2577,6 +2579,7 @@ hide(sketch001)`
     })
     await toolbar.selectSurface('delete-face')
     await clickChamferFace()
+    await toolbar.expectSelection('1 face')
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'review',
@@ -2638,6 +2641,7 @@ hide(sketch001)`
     })
     await toolbar.selectSurface('delete-face')
     await clickFilletFace()
+    await toolbar.expectSelection('1 face')
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'review',
