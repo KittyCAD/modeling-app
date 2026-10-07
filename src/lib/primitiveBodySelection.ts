@@ -6,13 +6,31 @@ import {
 } from '@src/lang/std/artifactGraph'
 import type { Artifact, ArtifactGraph } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
-import type { Selection } from '@src/machines/modelingSharedTypes'
+import type {
+  EnginePrimitiveSelection,
+  EngineTopologyFallback,
+  Selection,
+} from '@src/machines/modelingSharedTypes'
+
+/** Artifacts whose engine entities own selectable BREP faces and edges. */
+export const TOPOLOGY_BODY_ARTIFACT_TYPES: Artifact['type'][] = [
+  'sweep',
+  'compositeSolid',
+  'pattern',
+  'importedGeometry',
+]
+
+export function getKclBodyIdFromEnginePrimitiveSelection(
+  selection: EnginePrimitiveSelection
+): string | undefined {
+  return selection.kclBodyId ?? selection.parentEntityId
+}
 
 export function getBodySelectionFromPrimitiveParentEntityId(
   parentEntityId: string,
   artifactGraph: ArtifactGraph,
   {
-    bodyArtifactTypes = ['sweep', 'compositeSolid'],
+    bodyArtifactTypes = TOPOLOGY_BODY_ARTIFACT_TYPES,
     codeRefLookup = 'last',
     lookUpPatternCopies = false,
   }: {
@@ -87,10 +105,9 @@ export function getBodySelectionFromPrimitiveParentEntityId(
 }
 
 /** Normalize topology_fallback whether it came from TS (camelCase) or engine JSON (snake_case). */
-export function getEngineTopologyFallbackNormalized(v2: Selection): {
-  parentId: string
-  primitiveIndex: number
-} | null {
+export function getEngineTopologyFallbackNormalized(
+  v2: Selection
+): EngineTopologyFallback | null {
   const raw =
     v2.engineTopologyFallback ??
     (v2 as { engine_topology_fallback?: unknown }).engine_topology_fallback
@@ -111,5 +128,39 @@ export function getEngineTopologyFallbackNormalized(v2: Selection): {
   else if (typeof o.primitive_index === 'string')
     primitiveIndex = parseInt(String(o.primitive_index), 10)
   if (!parentId || !Number.isFinite(primitiveIndex)) return null
-  return { parentId, primitiveIndex }
+  return {
+    ...v2.engineTopologyFallback,
+    parentId,
+    primitiveIndex,
+  }
+}
+
+/** Convert an uncoded SelectionV2 face/edge into the shared primitive codemod input. */
+export function getEnginePrimitiveSelectionFromSelection(
+  selection: Selection
+): EnginePrimitiveSelection | null {
+  const reference = selection.entityRef
+  if (reference?.type !== 'face' && reference?.type !== 'edge') return null
+  const topology = getEngineTopologyFallbackNormalized(selection)
+  if (!topology) return null
+  return {
+    type: 'enginePrimitive',
+    entityId:
+      selection.engineEntityId ??
+      (reference.type === 'face'
+        ? reference.face_id
+        : (selection.artifact?.id ??
+          `${topology.parentId}:edge:${topology.primitiveIndex}`)),
+    parentEntityId: topology.parentId,
+    primitiveIndex: topology.primitiveIndex,
+    primitiveType: reference.type,
+    ...(topology.kclBodyId ? { kclBodyId: topology.kclBodyId } : {}),
+    ...(topology.kclBodyArtifactType
+      ? { kclBodyArtifactType: topology.kclBodyArtifactType }
+      : {}),
+    ...(topology.bodyPath ? { bodyPath: topology.bodyPath } : {}),
+    ...(selection.selectionOrder !== undefined
+      ? { selectionOrder: selection.selectionOrder }
+      : {}),
+  }
 }

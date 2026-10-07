@@ -602,6 +602,77 @@ describe('Transform arguments', () => {
       expect(selectionTypes).not.toContain('importedGeometry')
     }
   })
+
+  it('offers imported BREP topology to supported command paths', () => {
+    const selectionTypesFor = (
+      commandName: keyof ModelingCommandSchema,
+      argName: string
+    ) => {
+      const commandConfig = modelingMachineCommandConfig[commandName]
+      if (!commandConfig || isArray(commandConfig)) {
+        throw new Error(`${commandName} should have a single command config`)
+      }
+      const selectionTypes = (
+        commandConfig.args as unknown as Record<
+          string,
+          { selectionTypes?: string[] } | undefined
+        >
+      )?.[argName]?.selectionTypes
+      if (!selectionTypes) {
+        throw new Error(`${commandName}.${argName} should select geometry`)
+      }
+      return selectionTypes
+    }
+
+    for (const [commandName, argName] of [
+      ['Offset plane', 'plane'],
+      ['Mirror 3D', 'across'],
+      ['Delete Face', 'faces'],
+    ] as const) {
+      const selectionTypes = selectionTypesFor(commandName, argName)
+      expect(selectionTypes).toContain('enginePrimitiveFace')
+      expect(selectionTypes).toContain('primitiveFace')
+    }
+
+    for (const commandName of ['GDT Flatness', 'GDT Datum'] as const) {
+      const selectionTypes = selectionTypesFor(commandName, 'faces')
+      expect(selectionTypes).toContain('enginePrimitiveFace')
+      expect(selectionTypes).toContain('primitiveFace')
+      expect(selectionTypes).not.toContain('enginePrimitiveEdge')
+    }
+
+    for (const commandName of [
+      'GDT Straightness',
+      'GDT Circularity',
+      'GDT Cylindricity',
+      'GDT Position',
+      'GDT Profile',
+      'GDT Distance',
+      'GDT Perpendicularity',
+      'GDT Angularity',
+      'GDT Concentricity',
+      'GDT Symmetry',
+      'GDT Runout',
+      'GDT Parallelism',
+      'GDT Annotation',
+    ] as const) {
+      const selectionTypes = selectionTypesFor(commandName, 'objects')
+      expect(selectionTypes).toEqual(
+        expect.arrayContaining([
+          'enginePrimitiveFace',
+          'enginePrimitiveEdge',
+          'primitiveFace',
+          'primitiveEdge',
+        ])
+      )
+    }
+
+    for (const commandName of ['Fillet', 'Chamfer'] as const) {
+      expect(selectionTypesFor(commandName, 'selection')).toContain(
+        'enginePrimitiveEdge'
+      )
+    }
+  })
 })
 
 const uniqueSorted = (values: string[]) => [...new Set(values)].sort()
