@@ -203,6 +203,8 @@ pub use fs::FileSystem;
 pub use fs::FileSystemHandle;
 pub use fs::in_memory::InMemoryFiles;
 pub use fs::new_file_system_handle;
+#[cfg(feature = "cli")]
+pub use glb_render::*;
 pub use kcl_error;
 pub use kcl_error::SourceRange;
 pub use lsp_types::IntoDiagnostic;
