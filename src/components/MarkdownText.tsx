@@ -9,20 +9,14 @@ import { useEffect, useRef } from 'react'
 export type MarkdownTextProps = {
   text: string
   className?: string
-  /** Disable interactive links inside selectable command options. */
-  links?: boolean
 }
 
-export function MarkdownText({
-  text,
-  className,
-  links = true,
-}: MarkdownTextProps) {
+export function MarkdownText({ text, className }: MarkdownTextProps) {
   const markdownRef = useRef<HTMLSpanElement>(null)
 
   useEffect(() => {
     if (markdownRef.current === null) return
-    return attachSafeLinkHandler(markdownRef.current)
+    attachSafeLinkHandler(markdownRef.current)
   }, [])
 
   return (
@@ -31,7 +25,7 @@ export function MarkdownText({
       className={`parsed-markdown inline-block ${className ?? ''}`}
       dangerouslySetInnerHTML={{
         __html: Marked.parse(text, {
-          renderer: new SafeRenderer(MARKED_OPTIONS, links),
+          renderer: new SafeRenderer(MARKED_OPTIONS),
           ...MARKED_OPTIONS,
         }),
       }}

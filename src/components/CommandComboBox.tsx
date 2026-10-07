@@ -3,7 +3,6 @@ import Fuse from 'fuse.js'
 import { useMemo, useState } from 'react'
 
 import { CustomIcon } from '@src/components/CustomIcon'
-import { MarkdownText } from '@src/components/MarkdownText'
 import { noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
 import {
@@ -124,11 +123,9 @@ function CommandComboBox({
                   {option.displayName || option.name}{' '}
                 </p>
                 {option.description && (
-                  <MarkdownText
-                    text={option.description}
-                    links={false}
-                    className="my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50 [&_p]:my-0"
-                  />
+                  <p className="my-0 text-xs text-chalkboard-60 dark:text-chalkboard-50">
+                    {option.description}
+                  </p>
                 )}
               </div>
               {option.status === 'experimental' && (

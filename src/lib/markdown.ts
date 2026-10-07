@@ -2,7 +2,6 @@ import type { MarkedOptions } from '@ts-stack/markdown'
 import { Marked, Renderer, escape, unescape } from '@ts-stack/markdown'
 
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 export const MARKED_OPTIONS: MarkedOptions = {
   gfm: true,
@@ -13,7 +12,7 @@ export const MARKED_OPTIONS: MarkedOptions = {
   escape,
 }
 
-/** Accessible descriptions need text, not Markdown syntax or link URLs. */
+/** Command descriptions use plain text, not Markdown formatting or link URLs. */
 export function markdownToPlainText(markdown: string): string {
   const template = document.createElement('template')
   template.innerHTML = Marked.parse(markdown, MARKED_OPTIONS)
@@ -25,16 +24,11 @@ export function markdownToPlainText(markdown: string): string {
  * this is specially important for the desktop app.
  */
 export class SafeRenderer extends Renderer {
-  constructor(
-    options: MarkedOptions,
-    private readonly links = true
-  ) {
+  constructor(options: MarkedOptions) {
     super(options)
   }
 
   link(href: string, title: string, text: string): string {
-    if (!this.links) return text
-
     if (this.options.sanitize) {
       let prot: string
 
@@ -53,11 +47,6 @@ export class SafeRenderer extends Renderer {
       ) {
         return text
       }
-    }
-
-    // KCL docs use site-relative links, not routes within the modeling app.
-    if (/^\/docs(?:[/?#]|$)/.test(href)) {
-      href = withSiteBaseURL(href)
     }
 
     let out =
@@ -81,7 +70,7 @@ export class SafeRenderer extends Renderer {
  * and properly fire openExternalBrowserIfDesktop
  */
 export function attachSafeLinkHandler(root: HTMLElement) {
-  const onClick = (e: MouseEvent) => {
+  root.addEventListener('click', (e) => {
     const target = e.target as HTMLElement | null
     if (!target) {
       return
@@ -95,7 +84,5 @@ export function attachSafeLinkHandler(root: HTMLElement) {
     openExternalBrowserIfDesktop(anchor.href)(
       e as unknown as React.MouseEvent<HTMLAnchorElement>
     )
-  }
-  root.addEventListener('click', onClick)
-  return () => root.removeEventListener('click', onClick)
+  })
 }

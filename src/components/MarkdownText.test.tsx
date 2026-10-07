@@ -1,19 +1,7 @@
-import { fireEvent, render, screen } from '@testing-library/react'
-import { StrictMode } from 'react'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-
-const mocks = vi.hoisted(() => ({ openExternal: vi.fn() }))
-
-vi.mock('@src/lib/openWindow', () => ({
-  openExternalBrowserIfDesktop:
-    (url: string) => (e: { preventDefault(): void }) => {
-      e.preventDefault()
-      mocks.openExternal(url)
-    },
-}))
+import { render } from '@testing-library/react'
+import { describe, expect, it } from 'vitest'
 
 import { MarkdownText } from '@src/components/MarkdownText'
-import { markdownToPlainText } from '@src/lib/markdown'
 
 const mixedListResponse = `I made the following updates:
 
@@ -38,49 +26,6 @@ const expectedItems = [
 ]
 
 describe('MarkdownText', () => {
-  afterEach(() => {
-    vi.unstubAllEnvs()
-  })
-
-  beforeEach(() => {
-    mocks.openExternal.mockClear()
-  })
-
-  it('provides plain text for accessible descriptions', () => {
-    expect(
-      markdownToPlainText(
-        'Use [**bounded edges**](/docs/kcl-std/types/std-types-BoundedEdge) with `blend` &amp; fillets.'
-      )
-    ).toBe('Use bounded edges with blend & fillets.')
-  })
-
-  it('opens relative KCL docs links externally once, including in StrictMode', () => {
-    vi.stubEnv('VITE_ZOO_BASE_DOMAIN', 'docs.example')
-    render(
-      <StrictMode>
-        <MarkdownText text="Use [**bounded edges**](/docs/kcl-std/types/std-types-BoundedEdge)." />
-      </StrictMode>
-    )
-
-    const url = 'https://docs.example/docs/kcl-std/types/std-types-BoundedEdge'
-    const link = screen.getByRole('link', { name: 'bounded edges' })
-    expect(link).toHaveAttribute('href', url)
-    fireEvent.click(link)
-    expect(mocks.openExternal).toHaveBeenCalledExactlyOnceWith(url)
-  })
-
-  it('keeps raw HTML and unsafe links inert', () => {
-    const { container } = render(
-      <MarkdownText
-        text={'<img src="x" onerror="alert(1)"> [unsafe](javascript:alert)'}
-      />
-    )
-
-    expect(container.querySelector('img')).toBeNull()
-    expect(screen.queryByRole('link')).not.toBeInTheDocument()
-    expect(screen.getByText(/unsafe/)).toBeInTheDocument()
-  })
-
   it('renders contiguous unordered and ordered items as separate lists', () => {
     const { container } = render(<MarkdownText text={mixedListResponse} />)
 

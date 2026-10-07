@@ -9,6 +9,7 @@ import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import { isKclVersionAvailable } from '@src/lib/kclVersionRange'
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { markdownToPlainText } from '@src/lib/markdown'
 
 export type StdLibCommandDriftConfig = {
   stdLibName: StdLibCommandName
@@ -224,7 +225,9 @@ export function stdLibCommandSummary(
 ): string | undefined {
   const command = STD_LIB_COMMANDS[stdLibName]
   const summary: unknown = 'summary' in command ? command.summary : undefined
-  return typeof summary === 'string' && summary.trim() ? summary : undefined
+  return typeof summary === 'string'
+    ? markdownToPlainText(summary) || undefined
+    : undefined
 }
 
 export const modelingCommandStdLibDriftConfig = {

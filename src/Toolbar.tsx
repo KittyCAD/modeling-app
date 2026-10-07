@@ -5,7 +5,6 @@ import { ActionButtonDropdown } from '@src/components/ActionButtonDropdown'
 import { ActionButtonRecentDropdown } from '@src/components/ActionButtonRecentDropdown'
 import { LegacySketchModeBanner } from '@src/components/Announcements'
 import { CustomIcon } from '@src/components/CustomIcon'
-import { MarkdownText } from '@src/components/MarkdownText'
 import Tooltip, {
   RICH_TOOLTIP_SURFACE_CLASS_NAME,
 } from '@src/components/Tooltip'
@@ -24,7 +23,6 @@ import { useApp, useSingletons } from '@src/lib/boot'
 import { EngineConnectionStateType } from '@src/lib/engineConnection/utils'
 import { type HotkeySequence, hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
-import { markdownToPlainText } from '@src/lib/markdown'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import type {
   ToolbarDropdown,
@@ -520,9 +518,7 @@ const Toolbar_ = memo(
                             itemConfig.disabled
                           }
                           name={itemConfig.title}
-                          aria-description={markdownToPlainText(
-                            itemConfig.description
-                          )}
+                          aria-description={itemConfig.description}
                           onClick={(event) => {
                             rememberRecentDropdownItem(
                               maybeIconConfig,
@@ -648,9 +644,7 @@ const Toolbar_ = memo(
                         selectedIcon.disabled
                       }
                       name={selectedIcon.title}
-                      aria-description={markdownToPlainText(
-                        selectedIcon.description
-                      )}
+                      aria-description={selectedIcon.description}
                       onClick={(event) =>
                         selectedIcon.onClick({
                           ...selectedIcon.callbackProps,
@@ -724,7 +718,7 @@ const Toolbar_ = memo(
                   name={itemConfig.title}
                   // aria-description is still in ARIA 1.3 draft.
 
-                  aria-description={markdownToPlainText(itemConfig.description)}
+                  aria-description={itemConfig.description}
                   aria-pressed={itemConfig.isActive}
                   disabled={
                     disableAllButtons ||
@@ -998,10 +992,7 @@ const ToolbarItemTooltipRichContent = memo(
             )
           )}
         </div>
-        <MarkdownText
-          className="px-2 my-2 text-ch font-sans [&_p]:m-0"
-          text={itemConfig.description}
-        />
+        <p className="px-2 my-2 text-ch font-sans">{itemConfig.description}</p>
         {itemConfig.extraInfo && (
           <p className="px-2 my-2 text-ch font-sans">
             <span className="font-semibold">Info: </span>

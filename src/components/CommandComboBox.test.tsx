@@ -38,25 +38,6 @@ beforeEach(() => {
   globalThis.localStorage.removeItem(COMMAND_PALETTE_USAGE_STORAGE_KEY)
 })
 
-test('renders Markdown descriptions without links interfering with command selection', () => {
-  const blend = {
-    ...command('blend', 'Blend'),
-    description:
-      'Use [**bounded edges**](/docs/kcl-std/types/std-types-BoundedEdge) with `blend`.',
-  }
-  render(<CommandComboBox options={[blend]} />)
-
-  expect(screen.getByRole('option')).toHaveTextContent(
-    'Use bounded edges with blend.'
-  )
-  expect(screen.queryByRole('link')).not.toBeInTheDocument()
-  fireEvent.click(screen.getByText('bounded edges'))
-  expect(mocks.send).toHaveBeenCalledExactlyOnceWith({
-    type: 'Select command',
-    data: { command: blend },
-  })
-})
-
 test('promotes a selected search result after remounting', () => {
   const resetLayout = command('reset-layout', 'Reset layout')
   const resetView = command('reset-view', 'Reset view')
