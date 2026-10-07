@@ -1209,6 +1209,7 @@ extrude001 = extrude(sketch001, length = -12)
       oldValue: string,
       newValue: string
     ) {
+      await scene.settled()
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const operationButton = await toolbar.getFeatureTreeOperation(
         'Fillet',
@@ -1622,6 +1623,7 @@ extrude001 = extrude(sketch001, length = 30)`
         commandName: 'Delete Face',
       })
       await clickOnCap()
+      await toolbar.expectSelection('1 face')
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',

@@ -329,7 +329,7 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
       const bodyToggles = bodiesPane.getByTestId(
         'feature-tree-visibility-toggle'
       )
-      await bodyToggles.first().click()
+      await scene.waitForExecutionDoneAfter(() => bodyToggles.first().click())
     })
 
     await test.step('Verify extrude001 is still hidden via KCL', async () => {
@@ -340,7 +340,9 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
       const helixButton = await toolbar.getFeatureTreeOperation('helix001', 0)
       const helixRow = helixButton.locator('..')
       await helixRow.hover()
-      await helixRow.getByTestId('feature-tree-visibility-toggle').click()
+      await scene.waitForExecutionDoneAfter(() =>
+        helixRow.getByTestId('feature-tree-visibility-toggle').click()
+      )
     })
 
     await test.step('Verify helix001 is hidden via KCL', async () => {
@@ -353,7 +355,7 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
         .locator('..')
         .getByTestId('feature-tree-visibility-toggle')
       await bodyRow.hover()
-      await bodyToggle.click()
+      await scene.waitForExecutionDoneAfter(() => bodyToggle.click())
       await scene.settled()
     })
 
