@@ -1,21 +1,60 @@
-import type { components } from '@src/lib/kclMigration/api.generated'
+import type {
+  KclMigrationClientMessage,
+  KclMigrationOperation,
+  KclMigrationRequest,
+  KclMigrationResult,
+  KclMigrationServerMessage,
+} from '@kittycad/lib'
 import { isArray, isRecord } from '@src/lib/utils'
 
-export type MigrationRequest = components['schemas']['KclMigrationRequest']
-export type MigrationOperation = components['schemas']['KclMigrationOperation']
-export type MigrationResult = components['schemas']['KclMigrationResult']
+export type MigrationOperation = KclMigrationOperation
+export type MigrationResult = KclMigrationResult
+
+// API #4812 additions, until the SDK publishes the conversation contract.
+export interface MigrationRequest extends KclMigrationRequest {
+  conversation_id?: string | null
+}
+
+export type MigrationApplicationStatus = 'applied' | 'undone'
+export interface MigrationApplication {
+  status: MigrationApplicationStatus | 'not_applied'
+  revision: number
+}
+
+export interface MigrationHistoryEntry {
+  operation_id: string
+  conversation_id: string
+  prompt_id?: string | null
+  after_prompt_id?: string | null
+  created_at: string
+  status: MigrationOperation['status']
+  application: MigrationApplication
+  detail: string
+}
+
 export type MigrationClientMessage =
-  components['schemas']['KclMigrationClientMessage']
+  | Exclude<KclMigrationClientMessage, { type: 'start' }>
+  | { type: 'start'; request: MigrationRequest }
+  | { type: 'history'; conversation_id: string }
+  | {
+      type: 'application'
+      operation_id: string
+      status: MigrationApplicationStatus
+      expected_revision: number
+    }
+
 export type MigrationServerMessage =
-  components['schemas']['KclMigrationServerMessage']
-export type MigrationHistoryEntry =
-  components['schemas']['KclMigrationHistoryEntry']
-export type MigrationApplication =
-  components['schemas']['KclMigrationApplication']
-export type MigrationApplicationStatus = Exclude<
-  MigrationApplication['status'],
-  'not_applied'
->
+  | KclMigrationServerMessage
+  | {
+      type: 'history'
+      conversation_id: string
+      entries: MigrationHistoryEntry[]
+    }
+  | {
+      type: 'application'
+      operation_id: string
+      application: MigrationApplication
+    }
 
 export type MigrationProgress = Extract<
   MigrationServerMessage,
@@ -143,6 +182,7 @@ function isHistoryEntry(value: unknown): value is MigrationHistoryEntry {
     isRecord(value) &&
     typeof value.operation_id === 'string' &&
     typeof value.conversation_id === 'string' &&
+    (value.prompt_id == null || typeof value.prompt_id === 'string') &&
     (value.after_prompt_id == null ||
       typeof value.after_prompt_id === 'string') &&
     typeof value.created_at === 'string' &&

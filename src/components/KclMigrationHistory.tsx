@@ -34,7 +34,7 @@ export function KclMigrationHistoryEntry({
           userAvatar={<AvatarUser src={userAvatar} />}
           className="py-2"
         >
-          Migrate this project to KCL 3 preview.
+          Migrate this project to KCL 3.0.
         </ChatBubble>
       )}
       <ChatBubble
