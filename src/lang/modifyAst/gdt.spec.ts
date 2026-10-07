@@ -1,3 +1,4 @@
+import { resolveDistanceSelections } from '@src/lib/gdtDistanceSelections'
 import type { KclManager } from '@src/lang/KclManager'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import {
@@ -1515,26 +1516,27 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
             entityRef: { type: 'edge', side_faces: [cap!.id, wall.id] },
           }))
         }
+        const resolved = await resolveDistanceSelections(
+          objects,
+          artifactGraph,
+          kclManagerInThisFile.engineCommandManager
+        )
+        if (err(resolved)) throw resolved
         const result = addDistanceGdt({
           ast,
           artifactGraph,
-          objects,
+          objects: resolved.selections,
+          edgeFaceSelections: resolved.faces,
           wasmInstance: instanceInThisFile,
         })
         if (err(result)) throw result
         const code = recast(result.modifiedAst, instanceInThisFile)
         if (err(code)) throw code
-        if (route === 'primitive') {
-          expect(code.match(/edgeId\(/g)).toHaveLength(2)
-          expect(code).toContain('from = edge001')
-          expect(code).toContain('to = edge002')
-          expect(code).toContain('edgeId(plate, index = 1)')
-          expect(code).toContain('edgeId(plate, index = 2)')
-        } else {
-          expect(code.match(/sideFaces = \[/g)).toHaveLength(2)
-          expect(code).toContain('from = {')
-          expect(code).toContain('to = {')
-        }
+        expect(code).not.toContain('edgeId(')
+        expect(code).not.toContain('getCommonEdge(')
+        expect(code).toContain('from = {')
+        expect(code).toContain('to = {')
+        expect(code.match(/sideFaces = \[/g)).toHaveLength(2)
         expect(code).not.toContain('tolerance =')
         await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
       }

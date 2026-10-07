@@ -506,6 +506,113 @@ describe('GD&T frame defaults', () => {
       }
     )
 
+    it.each([
+      ['XY', { x: 0, y: 0, z: 1 }],
+      ['XZ', { x: 0, y: 1, z: 0 }],
+      ['YZ', { x: 1, y: 0, z: 0 }],
+    ] as const)(
+      'keeps two hole rims in their common %s face when edge bounds are unavailable',
+      async (plane, normal) => {
+        const sendSceneCommand = vi.fn().mockImplementation(async ({ cmd }) => {
+          if (cmd.type !== 'face_is_planar')
+            throw new Error('Bounds unavailable')
+          return {
+            success: true,
+            resp: {
+              type: 'modeling',
+              data: {
+                modeling_response: {
+                  type: 'face_is_planar',
+                  data: cmd.object_id === 'cap' ? { z_axis: normal } : {},
+                },
+              },
+            },
+          }
+        })
+        const result = await withDefaultGdtFrameDefaults<
+          ModelingCommandSchema['GDT Distance']
+        >({
+          data: {
+            objects: {
+              graphSelections: ['left', 'right'].map((id) => ({
+                engineEntityId: id,
+                entityRef: { type: 'edge', side_faces: ['cap', id + '-wall'] },
+              })),
+              otherSelections: [],
+            },
+            fontSize: kclValue('1mm'),
+          },
+          distance: true,
+          engineCommandManager: {
+            sendSceneCommand,
+          } as unknown as ConnectionManager,
+          wasmInstance,
+        })
+        expect(result.framePlane).toBe(plane)
+      }
+    )
+
+    it.each([true, false])(
+      'retains Z direction with misleading body bounds; endpoints available: %s',
+      async (endpoints) => {
+        const sendSceneCommand = vi.fn().mockImplementation(async ({ cmd }) => {
+          const data =
+            cmd.type === 'curve_get_end_points' && endpoints
+              ? {
+                  type: 'curve_get_end_points',
+                  data: {
+                    start: { x: 20, y: 40, z: -3 },
+                    end: { x: 20, y: 40, z: 7 },
+                  },
+                }
+              : cmd.type === 'face_is_planar'
+                ? {
+                    type: 'face_is_planar',
+                    data: {
+                      z_axis:
+                        cmd.object_id === 'wallX'
+                          ? { x: 1, y: 0, z: 0 }
+                          : { x: 0, y: 1, z: 0 },
+                    },
+                  }
+                : {
+                    type: 'bounding_box',
+                    data: { dimensions: { x: 100, y: 100, z: 10 } },
+                  }
+          return {
+            success: true,
+            resp: { type: 'modeling', data: { modeling_response: data } },
+          }
+        })
+        const result = await withDefaultGdtFrameDefaults<
+          ModelingCommandSchema['GDT Distance']
+        >({
+          data: {
+            objects: {
+              graphSelections: [
+                {
+                  engineEntityId: 'vertical',
+                  entityRef: {
+                    type: 'edge',
+                    side_faces: ['wallX', 'wallY'],
+                    end_faces: ['cap'],
+                  },
+                },
+              ],
+              otherSelections: [],
+            },
+            fontSize: kclValue('1mm'),
+          },
+          distance: true,
+          engineCommandManager: {
+            sendSceneCommand,
+          } as unknown as ConnectionManager,
+          wasmInstance,
+        })
+        expect(result.framePlane).toBe('XZ')
+      }
+    )
+
     it('uses adjacent planar faces for the cap-rim regression in #14251', async () => {
       const sendSceneCommand = vi.fn().mockImplementation(async ({ cmd }) => ({
         success: true,
@@ -516,7 +623,17 @@ describe('GD&T frame defaults', () => {
               cmd.type === 'face_is_planar'
                 ? {
                     type: 'face_is_planar',
-                    data: { z_axis: { x: 0, y: 0, z: 1 } },
+                    data:
+                      cmd.object_id === 'cylindricalWall'
+                        ? {}
+                        : {
+                            z_axis: { x: 0, y: 0, z: 1 },
+                            origin: {
+                              x: 0,
+                              y: 0,
+                              z: cmd.object_id === 'capEnd' ? 3 : 0,
+                            },
+                          },
                   }
                 : {
                     type: 'bounding_box',

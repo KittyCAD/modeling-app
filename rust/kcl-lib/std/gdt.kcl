@@ -1319,11 +1319,11 @@ export fn distance(
   /// If not given, or 0, tolerance will not be shown.
   @(includeInSnippet = true)
   tolerance?: number(Length) = 0mm,
-  /// The face or edge to measure from. Must be used with `to`. The default position is the entity center. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
+  /// The face or edge to measure from. Must be used with `to`. The default position is the entity center. Edges can be specified by their adjacent faces with `{ sideFaces = [...], endFaces = [...], index = 0 }`; `endFaces` and `index` are optional. Point-and-click uses these references instead of deprecated edge lookup calls.
   from?: Face | TaggedFace | Edge | any,
-  /// The face or edge to measure to. Must be used with `from`. The default position is the entity center. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
+  /// The face or edge to measure to. Must be used with `from`. The default position is the entity center. Edges can be specified by their adjacent faces with `{ sideFaces = [...], endFaces = [...], index = 0 }`; `endFaces` and `index` are optional. Point-and-click uses these references instead of deprecated edge lookup calls.
   to?: Face | TaggedFace | Edge | any,
-  /// The edges whose lengths are annotated. Cannot be combined with `from` or `to`. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
+  /// The edges whose lengths are annotated. Cannot be combined with `from` or `to`. Edges can be specified by their adjacent faces with `{ sideFaces = [...], endFaces = [...], index = 0 }`; `endFaces` and `index` are optional. Point-and-click uses these references instead of deprecated edge lookup calls.
   @(includeInSnippet = true)
   edges?: [Edge | any; 1+],
   /// The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`.
@@ -1335,7 +1335,7 @@ export fn distance(
   /// When omitted, the label is centered with a setback equal to the average of the positive dimensions of the measured entities' bounding box, matching the scale used by other GD&T annotations. If the selected bounds are unavailable, the model bounds are used, then `[0mm, 20mm]` as a fallback. Point-and-click writes the calculated position as literal lengths. Explicit positions are preserved, including `[0, 0]`.
   @(snippetArray = ["0mm", "20mm"])
   framePosition?: Point2d,
-  /// The plane in which to display the distance. Handwritten KCL defaults to `XY` when omitted. Point-and-click chooses a standard plane from the measurement direction and selected geometry, using the selected KCL sketch and extrusion as a fallback, and writes it explicitly. For measurements along Z, use `XZ` or `YZ` so the dimension is visible. The distance may be displayed in a plane parallel to the given plane.
+  /// The plane in which to display the distance. Handwritten KCL defaults to `XY` when omitted. Point-and-click uses the common face plane for hole spacing and a plane containing the edge direction for edge lengths, then falls back to selected KCL topology and writes the plane explicitly. For measurements along Z, use `XZ` or `YZ` so the dimension is visible. The distance may be displayed in a plane parallel to the given plane.
   @(includeInSnippet = true)
   framePlane?: Plane,
   /// Scale of the distance arrows. The default is `1.0`. Must be greater than `0`.

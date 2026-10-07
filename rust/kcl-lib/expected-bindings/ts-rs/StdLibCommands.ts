@@ -3058,7 +3058,7 @@ export default {
       {
         "name": "from",
         "ty": "Face | TaggedFace | Edge | any",
-        "docs": "The face or edge to measure from. Must be used with `to`. The default position is the entity center. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.",
+        "docs": "The face or edge to measure from. Must be used with `to`. The default position is the entity center. Edges can be specified by their adjacent faces with `{ sideFaces = [...], endFaces = [...], index = 0 }`; `endFaces` and `index` are optional. Point-and-click uses these references instead of deprecated edge lookup calls.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3070,7 +3070,7 @@ export default {
       {
         "name": "to",
         "ty": "Face | TaggedFace | Edge | any",
-        "docs": "The face or edge to measure to. Must be used with `from`. The default position is the entity center. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.",
+        "docs": "The face or edge to measure to. Must be used with `from`. The default position is the entity center. Edges can be specified by their adjacent faces with `{ sideFaces = [...], endFaces = [...], index = 0 }`; `endFaces` and `index` are optional. Point-and-click uses these references instead of deprecated edge lookup calls.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3082,7 +3082,7 @@ export default {
       {
         "name": "edges",
         "ty": "[Edge | any; 1+]",
-        "docs": "The edges whose lengths are annotated. Cannot be combined with `from` or `to`. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.",
+        "docs": "The edges whose lengths are annotated. Cannot be combined with `from` or `to`. Edges can be specified by their adjacent faces with `{ sideFaces = [...], endFaces = [...], index = 0 }`; `endFaces` and `index` are optional. Point-and-click uses these references instead of deprecated edge lookup calls.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3118,7 +3118,7 @@ export default {
       {
         "name": "framePlane",
         "ty": "Plane",
-        "docs": "The plane in which to display the distance. Handwritten KCL defaults to `XY` when omitted. Point-and-click chooses a standard plane from the measurement direction and selected geometry, using the selected KCL sketch and extrusion as a fallback, and writes it explicitly. For measurements along Z, use `XZ` or `YZ` so the dimension is visible. The distance may be displayed in a plane parallel to the given plane.",
+        "docs": "The plane in which to display the distance. Handwritten KCL defaults to `XY` when omitted. Point-and-click uses the common face plane for hole spacing and a plane containing the edge direction for edge lengths, then falls back to selected KCL topology and writes the plane explicitly. For measurements along Z, use `XZ` or `YZ` so the dimension is visible. The distance may be displayed in a plane parallel to the given plane.",
         "required": false,
         "special": false,
         "experimental": false,

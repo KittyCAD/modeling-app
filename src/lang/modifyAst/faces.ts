@@ -1438,7 +1438,7 @@ export function buildSolidsAndFacesExprs(
 // Adds all the faceId calls needed in the AST so we can refer to them,
 // keeps track of their names as faces,
 // and gathers the corresponding solid expressions.
-function insertFacePrimitiveVariablesAndOffsetPathToNode({
+export function insertFacePrimitiveVariablesAndOffsetPathToNode({
   enginePrimitives,
   modifiedAst,
   artifactGraph,

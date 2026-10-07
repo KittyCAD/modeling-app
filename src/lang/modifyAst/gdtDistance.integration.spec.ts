@@ -1,3 +1,4 @@
+import { enginelessExecutor } from '@src/lib/testHelpers'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import { type ArtifactGraph, assertParse, recast } from '@src/lang/wasm'
@@ -25,7 +26,7 @@ describe('distance edge topology', () => {
   )(
     'generates $measurement on $plane for $route selections with engine bounds $engineBounds',
     async ({ route, engineBounds, plane, measurement }) => {
-      const { instance, kclManager, engineCommandManager } =
+      const { instance, kclManager, engineCommandManager, rustContext } =
         await buildTheWorldAndNoEngineConnection()
       const ast = assertParse(
         `@settings(defaultLengthUnit = mm, kclVersion = 2)
@@ -64,7 +65,17 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
           objects.graphSelections.push({
             entityRef: {
               type: 'edge',
-              side_faces: ['top-face', `hole-wall-${index}`],
+              side_faces:
+                measurement === 'zEdge'
+                  ? ['wallX', 'wallY']
+                  : [
+                      measurement === 'depth'
+                        ? index === 1
+                          ? 'cap-start'
+                          : 'cap-end'
+                        : 'cap',
+                      `hole-rim-${index}-wall`,
+                    ],
             },
             engineEntityId: `hole-rim-${index}`,
             engineTopologyFallback: {
@@ -85,56 +96,98 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
       kclManager.artifactGraph = artifactGraph
       const sceneCommand = vi
         .spyOn(engineCommandManager, 'sendSceneCommand')
-        .mockImplementation(async (command) => ({
-          success: true,
-          request_id: 'test',
-          resp: {
-            type: 'modeling',
-            data: {
-              modeling_response: {
-                type: 'bounding_box',
-                data: {
-                  center:
-                    command.type === 'modeling_cmd_req' &&
-                    command.cmd.type === 'bounding_box' &&
-                    command.cmd.entity_ids[0] === 'hole-rim-1'
-                      ? { x: 0, y: 0, z: 0 }
-                      : {
-                          x:
-                            measurement === 'depth'
-                              ? plane === 'YZ'
-                                ? 3
-                                : 0
-                              : plane === 'YZ'
-                                ? 0
-                                : 12,
-                          y:
-                            measurement === 'depth'
-                              ? plane === 'XZ'
-                                ? 3
-                                : 0
-                              : plane === 'YZ'
-                                ? 12
-                                : 0,
-                          z: measurement === 'depth' && plane === 'XY' ? 3 : 0,
-                        },
-                  dimensions:
-                    measurement === 'zEdge'
-                      ? { x: 0, y: 0, z: 10 }
-                      : route === 'mixed' && measurement === 'holes'
-                        ? { x: 4, y: 4, z: 4 }
-                        : plane === 'XY'
-                          ? { x: 4, y: 4, z: 0 }
-                          : plane === 'XZ'
-                            ? { x: 4, y: 0, z: 4 }
-                            : { x: 0, y: 4, z: 4 },
-                },
+        .mockImplementation(async (command) => {
+          if (command.type !== 'modeling_cmd_req')
+            throw new Error('Unexpected command')
+          const cmd = command.cmd
+          const normal =
+            plane === 'XY'
+              ? { x: 0, y: 0, z: 1 }
+              : plane === 'XZ'
+                ? { x: 0, y: 1, z: 0 }
+                : { x: 1, y: 0, z: 0 }
+          const normalOffset = {
+            x: normal.x * 3,
+            y: normal.y * 3,
+            z: normal.z * 3,
+          }
+          const capId = (id: string) =>
+            measurement === 'depth'
+              ? id === 'hole-rim-1'
+                ? 'cap-start'
+                : 'cap-end'
+              : 'cap'
+          const sideFaces = (id: string) =>
+            measurement === 'zEdge'
+              ? ['wallX', 'wallY']
+              : [capId(id), id + '-wall']
+          let response
+          if (cmd.type === 'solid3d_get_all_edge_faces')
+            response = {
+              type: cmd.type,
+              data: { faces: sideFaces(cmd.edge_id) },
+            }
+          else if (cmd.type === 'entity_get_primitive_index')
+            response = {
+              type: cmd.type,
+              data: {
+                primitive_index: cmd.entity_id.startsWith('cap')
+                  ? 0
+                  : cmd.entity_id.includes('2') || cmd.entity_id === 'wallY'
+                    ? 2
+                    : 1,
+                entity_type: 'face' as const,
               },
-            },
-          },
-        }))
-      if (!engineBounds)
-        sceneCommand.mockRejectedValue(new Error('Bounds unavailable'))
+            }
+          else if (cmd.type === 'entity_get_parent_id')
+            response = { type: cmd.type, data: { entity_id: 'plate-body' } }
+          else if (cmd.type === 'curve_get_end_points')
+            response = {
+              type: cmd.type,
+              data: {
+                start: { x: 0, y: 0, z: 0 },
+                end:
+                  measurement === 'zEdge'
+                    ? { x: 0, y: 0, z: 10 }
+                    : { x: 0, y: 0, z: 0 },
+              },
+            }
+          else if (cmd.type === 'face_is_planar')
+            response = {
+              type: cmd.type,
+              data: cmd.object_id.startsWith('cap')
+                ? {
+                    z_axis: normal,
+                    origin:
+                      cmd.object_id === 'cap-end'
+                        ? normalOffset
+                        : { x: 0, y: 0, z: 0 },
+                  }
+                : {},
+            }
+          else if (cmd.type === 'bounding_box') {
+            if (!engineBounds) throw new Error('Bounds unavailable')
+            response = {
+              type: cmd.type,
+              data: {
+                center:
+                  cmd.entity_ids[0] === 'hole-rim-1'
+                    ? { x: 0, y: 0, z: 0 }
+                    : measurement === 'depth'
+                      ? normalOffset
+                      : plane === 'YZ'
+                        ? { x: 0, y: 12, z: 0 }
+                        : { x: 12, y: 0, z: 0 },
+                dimensions: { x: 100, y: 100, z: 10 },
+              },
+            }
+          } else throw new Error('Unexpected command')
+          return {
+            success: true,
+            request_id: 'test',
+            resp: { type: 'modeling', data: { modeling_response: response } },
+          }
+        })
       const result = await modelingCommandCodemods['GDT Distance'].run({
         ast,
         args: { objects },
@@ -144,13 +197,24 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
       sceneCommand.mockRestore()
       if (result instanceof Error) throw result
       const code = recast(result.modifiedAst, instance)
-      expect(code).toContain('edgeId(plate, index = 1)')
-      if (measurement !== 'zEdge')
-        expect(code).toContain('edgeId(plate, index = 2)')
-      if (measurement === 'zEdge') expect(code).toContain('edges = [edge001]')
-      else expect(code).toContain('from = edge001')
-      if (measurement !== 'zEdge') expect(code).toContain('to = edge002')
-      expect(code).not.toContain('getCommonEdge')
+      const findings = await instance.kcl_lint(
+        JSON.stringify(result.modifiedAst)
+      )
+      expect(
+        findings.filter(
+          (finding: { finding: { code?: string } }) =>
+            finding.finding.code === 'Z0006'
+        )
+      ).toEqual([])
+      expect(code).not.toContain('edgeId(')
+      expect(code).not.toContain('getCommonEdge(')
+      expect(code).toContain('sideFaces = [')
+      expect(code).toContain('faceId(plate, index = ')
+      if (measurement === 'zEdge') expect(code).toContain('edges = [')
+      else {
+        expect(code).toContain('from = {')
+        expect(code).toContain('to = {')
+      }
       expect(code).not.toContain('tolerance =')
       const expectedPlane =
         measurement === 'zEdge'
@@ -161,6 +225,7 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
               : 'XY'
             : plane
       expect(code).toContain(`framePlane = ${expectedPlane}`)
+      await enginelessExecutor(result.modifiedAst, rustContext)
     }
   )
 })

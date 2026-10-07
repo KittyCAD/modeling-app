@@ -424,8 +424,10 @@ function planeContainsDirection(
         ? direction.y
         : direction.x
   return (
+    Math.hypot(direction.x, direction.y, direction.z) > 0 &&
     Math.abs(normal) <=
-    Math.hypot(direction.x, direction.y, direction.z) * AXIS_INFERENCE_TOLERANCE
+      Math.hypot(direction.x, direction.y, direction.z) *
+        AXIS_INFERENCE_TOLERANCE
   )
 }
 
@@ -543,10 +545,10 @@ function getNormalFromPlanarFace(face: FaceIsPlanar): Point3d | undefined {
   return normal
 }
 
-async function getPlanarFaceNormal(
+async function getPlanarFace(
   engineCommandManager: ConnectionManager,
   entityId: ArtifactId
-): Promise<Point3d | undefined> {
+): Promise<FaceIsPlanar | undefined> {
   try {
     const response = await engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
@@ -566,10 +568,18 @@ async function getPlanarFaceNormal(
       return undefined
     }
 
-    return getNormalFromPlanarFace(modelingResponse.data)
+    return modelingResponse.data
   } catch {
     return undefined
   }
+}
+
+async function getPlanarFaceNormal(
+  engine: ConnectionManager,
+  id: ArtifactId
+): Promise<Point3d | undefined> {
+  const face = await getPlanarFace(engine, id)
+  return face && getNormalFromPlanarFace(face)
 }
 
 async function getDefaultGdtFrameDefaultsFromSelectionNormals({
@@ -637,6 +647,124 @@ async function getBoundingBoxForGdtEntities({
   }
 }
 
+async function getDistanceGeometryPlane(
+  engine: ConnectionManager,
+  selections: Selections | undefined,
+  preferredPlane: GdtFramePlane | undefined
+): Promise<GdtFramePlane | undefined> {
+  const edges =
+    selections?.graphSelections.filter(
+      (selection) =>
+        selection.entityRef?.type === 'edge' ||
+        selection.artifact?.type === 'segment' ||
+        selection.artifact?.type === 'sweepEdge'
+    ) ?? []
+  const isSingleEdge =
+    edges.length === 1 &&
+    (selections?.graphSelections.length ?? 0) +
+      (selections?.otherSelections.length ?? 0) ===
+      1
+  if (isSingleEdge) {
+    const id = edges[0].engineEntityId ?? edges[0].artifact?.id
+    if (id) {
+      try {
+        const response = await engine.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: { type: 'curve_get_end_points', curve_id: id },
+        })
+        if (
+          isModelingResponse(response) &&
+          response.resp.data.modeling_response.type === 'curve_get_end_points'
+        ) {
+          const { start, end } = response.resp.data.modeling_response.data
+          const direction = {
+            x: end.x - start.x,
+            y: end.y - start.y,
+            z: end.z - start.z,
+          }
+          const plane = getDistanceFramePlaneFromDirection(direction)
+          if (plane)
+            return preferredPlane &&
+              planeContainsDirection(preferredPlane, direction)
+              ? preferredPlane
+              : plane
+        }
+      } catch {
+        /* Older engines may not expose curve endpoints for every edge. */
+      }
+    }
+  }
+  const sideFaces = edges.map((selection) =>
+    selection.entityRef?.type === 'edge'
+      ? selection.entityRef.side_faces
+      : selection.artifact?.type === 'segment' ||
+          selection.artifact?.type === 'sweepEdge'
+        ? (selection.artifact.commonSurfaceIds ?? [])
+        : []
+  )
+  const commonFaces =
+    edges.length >= 2
+      ? sideFaces[0].filter((id) => sideFaces.every((ids) => ids.includes(id)))
+      : []
+  for (const id of commonFaces) {
+    const normal = await getPlanarFaceNormal(engine, id)
+    const axis = normal && getDominantNormalAxis(normal)
+    if (axis) return getFeaturePlaneForNormalAxis(axis)
+  }
+  // The intersection of two planar side faces gives a straight edge's axis.
+  // Do not use the end faces: they only disambiguate which edge was picked.
+  if (edges.length >= 2) {
+    const planar = await Promise.all(
+      sideFaces.map(async (ids) => {
+        for (const id of ids.filter((id) => !commonFaces.includes(id))) {
+          const face = await getPlanarFace(engine, id)
+          if (face?.origin && getNormalFromPlanarFace(face)) return face
+        }
+        return undefined
+      })
+    )
+    const [a, b] = planar
+    if (a?.origin && b?.origin) {
+      const direction = {
+        x: b.origin.x - a.origin.x,
+        y: b.origin.y - a.origin.y,
+        z: b.origin.z - a.origin.z,
+      }
+      const axis = a.z_axis && getDominantNormalAxis(a.z_axis)
+      const plane = axis && getFeaturePlaneForNormalAxis(axis)
+      return plane && planeContainsDirection(plane, direction)
+        ? plane
+        : getDistanceFramePlaneFromDirection(direction)
+    }
+  }
+  if (isSingleEdge) {
+    const normals: Point3d[] = []
+    for (const id of sideFaces[0]) {
+      const normal = await getPlanarFaceNormal(engine, id)
+      if (normal) normals.push(normal)
+    }
+    for (let i = 0; i < normals.length; i++) {
+      for (let j = i + 1; j < normals.length; j++) {
+        const a = normals[i],
+          b = normals[j]
+        const direction = {
+          x: a.y * b.z - a.z * b.y,
+          y: a.z * b.x - a.x * b.z,
+          z: a.x * b.y - a.y * b.x,
+        }
+        const plane = getDistanceFramePlaneFromDirection(direction)
+        if (plane)
+          return preferredPlane &&
+            planeContainsDirection(preferredPlane, direction)
+            ? preferredPlane
+            : plane
+      }
+    }
+  }
+  return undefined
+}
+
 export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   data,
   engineCommandManager,
@@ -673,6 +801,17 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
     distance && !nextData.framePlane
       ? getDistanceFramePlaneFromKcl(ast, artifactGraph, selections)
       : undefined
+  if (distance && !nextData.framePlane) {
+    const framePlane = await getDistanceGeometryPlane(
+      engineCommandManager,
+      selections,
+      kclFramePlane
+    )
+    if (framePlane) {
+      nextData = { ...nextData, framePlane }
+      hasResolvedFramePlane = true
+    }
+  }
   let distanceBoundingBox: BoundingBox | undefined
   if (distance && !nextData.framePlane && entityIds.length === 1) {
     distanceBoundingBox = await getBoundingBoxForGdtEntities({
@@ -680,9 +819,15 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
       entityIds,
       outputUnit,
     })
+    const dimensions = distanceBoundingBox?.dimensions
+    const isLine =
+      dimensions &&
+      [dimensions.x, dimensions.y, dimensions.z].filter((value) => value > 0)
+        .length === 1
     const framePlane =
-      distanceBoundingBox &&
-      getDistanceFramePlaneFromDirection(distanceBoundingBox.dimensions)
+      !isLine && kclFramePlane
+        ? kclFramePlane
+        : dimensions && getDistanceFramePlaneFromDirection(dimensions)
     if (framePlane) {
       nextData = { ...nextData, framePlane }
       hasResolvedFramePlane = true
@@ -710,7 +855,7 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
       // Circular rims retain their face plane when their centers are
       // separated along an axis shared by more than one standard plane.
       const featurePlane = fromPlane === toPlane ? fromPlane : undefined
-      const preferredPlane = featurePlane ?? kclFramePlane
+      const preferredPlane = kclFramePlane ?? featurePlane
       const framePlane =
         preferredPlane && planeContainsDirection(preferredPlane, direction)
           ? preferredPlane
@@ -730,7 +875,7 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   }
   let framePositionSigns: GdtFramePositionSigns | undefined
   const shouldQueryNormalDefaults =
-    !nextData.framePlane || (!distance && !nextData.framePosition)
+    !distance && (!nextData.framePlane || !nextData.framePosition)
 
   if (shouldQueryNormalDefaults) {
     const defaultsFromNormal =

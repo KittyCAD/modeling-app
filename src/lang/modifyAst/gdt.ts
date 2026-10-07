@@ -7,6 +7,7 @@ import {
   createLabeledArg,
   createLiteral,
   createLocalName,
+  createObjectExpression,
 } from '@src/lang/create'
 import {
   createPoint2dExpression,
@@ -17,10 +18,11 @@ import {
 import {
   createEdgeRefObjectExpression,
   entityReferenceToEdgeRefPayload,
-  getPrimitiveEdgeSelections,
-  insertPrimitiveEdgeVariablesAndOffsetPathToNode,
 } from '@src/lang/modifyAst/edges'
-import { isFaceArtifact } from '@src/lang/modifyAst/faces'
+import {
+  insertFacePrimitiveVariablesAndOffsetPathToNode,
+  isFaceArtifact,
+} from '@src/lang/modifyAst/faces'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import { resolveToCodeRef, traverse, valueOrVariable } from '@src/lang/queryAst'
 import {
@@ -32,7 +34,7 @@ import type { ArtifactGraph, Expr, PathToNode, Program } from '@src/lang/wasm'
 import { modelingStdLibCall } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { err } from '@src/lib/trap'
-import { getEngineTopologyFallbackNormalized } from '@src/lib/selections'
+import type { DistanceFaceSelections } from '@src/lib/gdtDistanceSelections'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
@@ -1281,6 +1283,7 @@ export function addDistanceGdt({
   leaderScale,
   fontSize,
   nodeToEdit,
+  edgeFaceSelections,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
@@ -1293,6 +1296,7 @@ export function addDistanceGdt({
   framePlane?: KclCommandValue | string
   leaderScale?: KclCommandValue
   fontSize?: KclCommandValue
+  edgeFaceSelections?: DistanceFaceSelections
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   let modifiedAst = structuredClone(ast)
@@ -1303,50 +1307,87 @@ export function addDistanceGdt({
       otherSelections: [],
     }
 
-  const primitiveEdges = mNodeToEdit
-    ? []
-    : getPrimitiveEdgeSelections(selections)
-  const topologyEdges = new Set<Selection>()
-  if (!mNodeToEdit) {
-    for (const selection of selections.graphSelections) {
-      if (getEdgeRefPayloadFromSelection(selection) === null) continue
-      const topology = getEngineTopologyFallbackNormalized(selection)
-      if (!topology) continue
-      topologyEdges.add(selection)
-      primitiveEdges.push({
-        type: 'enginePrimitive',
-        primitiveType: 'edge',
-        parentEntityId: topology.parentId,
-        primitiveIndex: topology.primitiveIndex,
-        entityId: selection.engineEntityId ?? '',
-      })
-    }
-  }
+  if (
+    !mNodeToEdit &&
+    selections.otherSelections.some(
+      (selection) =>
+        typeof selection === 'object' &&
+        'type' in selection &&
+        selection.type === 'enginePrimitive' &&
+        selection.primitiveType === 'edge'
+    )
+  )
+    return new Error(
+      'Resolve the adjacent faces of distance edges before generating code.'
+    )
   const targetSelections = mNodeToEdit
     ? []
     : selections.graphSelections.filter(
         (selection) =>
-          !topologyEdges.has(selection) &&
-          (getEdgeRefPayloadFromSelection(selection) !== null ||
-            isFaceArtifact(
-              selection.artifact ??
-                resolveToCodeRef(selection, artifactGraph)?.artifact
-            ))
+          getEdgeRefPayloadFromSelection(selection) !== null ||
+          isFaceArtifact(
+            selection.artifact ??
+              resolveToCodeRef(selection, artifactGraph)?.artifact
+          )
       )
-  if (
-    !mNodeToEdit &&
-    targetSelections.length === 0 &&
-    primitiveEdges.length === 0
-  ) {
-    return new Error(
-      'No valid selections found. Select one edge, or exactly two faces or edges.'
-    )
-  }
+  if (!mNodeToEdit && targetSelections.length === 0)
+    return new Error('No valid distance selections found.')
 
   const targets: Array<{ kind: 'face' | 'edge'; expr: Expr }> = mNodeToEdit
     ? [{ kind: 'edge', expr: createLocalName('selection') }]
     : []
   for (const selection of targetSelections) {
+    const payload = getEdgeRefPayloadFromSelection(selection)
+    if (
+      payload &&
+      [...payload.side_faces, ...(payload.end_faces ?? [])].some((id) =>
+        edgeFaceSelections?.has(id)
+      )
+    ) {
+      const properties: Record<string, Expr> = {}
+      for (const [key, ids] of [
+        ['sideFaces', payload.side_faces],
+        ['endFaces', payload.end_faces ?? []],
+      ] as const) {
+        const exprs: Expr[] = []
+        for (const id of ids) {
+          const primitive = edgeFaceSelections?.get(id)
+          if (primitive) {
+            const result = insertFacePrimitiveVariablesAndOffsetPathToNode({
+              enginePrimitives: [primitive],
+              artifactGraph,
+              modifiedAst,
+              wasmInstance,
+            })
+            if (err(result)) return result
+            exprs.push(...result.faceExprs)
+          } else {
+            const artifact = artifactGraph.get(id)
+            if (!artifact)
+              return new Error(
+                'A selected distance edge face could not be resolved.'
+              )
+            const result = buildGdtFaceAndEdgeExpressions({
+              selections: {
+                graphSelections: [{ artifact }],
+                otherSelections: [],
+              },
+              artifactGraph,
+              ast: modifiedAst,
+              wasmInstance,
+            })
+            if (err(result)) return result
+            modifiedAst = result.modifiedAst
+            exprs.push(...result.faceExprs)
+          }
+        }
+        if (exprs.length) properties[key] = createArrayExpression(exprs)
+      }
+      if (payload.index !== undefined)
+        properties.index = createLiteral(payload.index, wasmInstance)
+      targets.push({ kind: 'edge', expr: createObjectExpression(properties) })
+      continue
+    }
     const expressions = buildGdtFaceAndEdgeExpressions({
       selections: { graphSelections: [selection], otherSelections: [] },
       artifactGraph,
@@ -1369,25 +1410,6 @@ export function addDistanceGdt({
       kind: edgeExpr ? 'edge' : 'face',
       expr,
     })
-  }
-
-  for (const selection of primitiveEdges) {
-    const result = insertPrimitiveEdgeVariablesAndOffsetPathToNode({
-      primitiveEdgeSelections: [selection],
-      bodies: new Map(),
-      modifiedAst,
-      artifactGraph,
-      wasmInstance,
-    })
-    if (err(result)) return result
-    const body = [...result.bodies.values()][0]
-    const expr =
-      body?.tagsExpr.type === 'ArrayExpression'
-        ? body.tagsExpr.elements[0]
-        : body?.tagsExpr
-    if (!expr)
-      return new Error('Could not resolve the selected distance edge in code.')
-    targets.push({ kind: 'edge', expr })
   }
 
   if (targets.length === 0) {

@@ -477,7 +477,7 @@ export const modelingCommandStdLibDriftConfig = {
   'GDT Distance': {
     stdLibName: 'gdt::distance',
     editFlow: true,
-    flowArgOrder: ['objects', 'tolerance'],
+    flowArgOrder: ['objects'],
     omittedStdLibArgs: ['annotationName'],
     argAliases: {
       from: 'objects',

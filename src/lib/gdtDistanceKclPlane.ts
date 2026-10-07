@@ -117,18 +117,18 @@ export function getDistanceFramePlaneFromKcl(
 
   const artifacts: Artifact[] = []
   for (const selection of selections.graphSelections) {
-    if (selection.artifact) artifacts.push(selection.artifact)
+    if (selection.artifact && selection.entityRef?.type !== 'edge')
+      artifacts.push(selection.artifact)
     else {
       const start = artifacts.length
       if (selection.entityRef?.type === 'edge') {
-        for (const id of [
-          ...selection.entityRef.side_faces,
-          ...(selection.entityRef.end_faces ?? []),
-        ]) {
+        for (const id of [...selection.entityRef.side_faces]) {
           const artifact = graph.get(id)
           if (artifact) artifacts.push(artifact)
         }
       }
+      if (artifacts.length === start && selection.artifact)
+        artifacts.push(selection.artifact)
       if (artifacts.length === start && selection.engineTopologyFallback) {
         const body = graph.get(selection.engineTopologyFallback.parentId)
         if (body) artifacts.push(body)
@@ -148,10 +148,14 @@ export function getDistanceFramePlaneFromKcl(
     }
   }
   const planes = artifacts.map((artifact) => sourcePlane(artifact))
+  const caps = artifacts.filter((artifact) => artifact.type === 'cap')
   const plane = planes[0]
   if (!plane || planes.some((candidate) => candidate !== plane))
     return undefined
   if (
+    (caps.length > 0 &&
+      selections.graphSelections.length + selections.otherSelections.length ===
+        1) ||
     artifacts.every(
       (artifact) =>
         artifact.type === 'segment' ||
@@ -159,12 +163,12 @@ export function getDistanceFramePlaneFromKcl(
     )
   )
     return plane
-  const caps = artifacts.filter((artifact) => artifact.type === 'cap')
   // Two rims on the same cap, or two cylindrical walls, are separated in
   // the sketch plane. Opposite caps and extrusion edges span its normal.
   if (
     (caps.length >= 2 && caps.every((cap) => cap.id === caps[0].id)) ||
-    (artifacts.length >= 2 &&
+    (selections.graphSelections.length + selections.otherSelections.length >=
+      2 &&
       artifacts.every((artifact) => artifact.type === 'wall'))
   ) {
     return plane
