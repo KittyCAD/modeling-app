@@ -1,13 +1,9 @@
 import {
   applyModelingCommandDescriptions,
   modelingStdLibCommandArgs,
-  stdLibCommandArgDefaultSource,
   stdLibCommandSummary,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
-import type {
-  HoleCommandArgs,
-  SweepCommandArgs,
-} from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
+import type { HoleCommandArgs } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 import { describe, expect, it } from 'vitest'
 
 describe('stdlib command metadata', () => {
@@ -39,14 +35,6 @@ describe('stdlib command metadata', () => {
     expect(commands['Enter sketch'].description).toBeUndefined()
   })
 
-  it('keeps command argument descriptions and defaults explicit', () => {
-    const args = modelingStdLibCommandArgs<SweepCommandArgs>('Sweep')
-
-    expect(args.version.description).toBeUndefined()
-    expect(args.version).not.toHaveProperty('defaultValue')
-    expect(args.translateProfileToPath).not.toHaveProperty('defaultValue')
-  })
-
   it('recognizes the exact fixed 2D length tuple used by Hole', () => {
     const args = modelingStdLibCommandArgs<HoleCommandArgs>('Hole')
 
@@ -54,12 +42,5 @@ describe('stdlib command metadata', () => {
       inputType: 'vector2d',
       required: true,
     })
-  })
-
-  it('reads literal defaults as KCL source and leaves computed defaults unset', () => {
-    expect(
-      stdLibCommandArgDefaultSource('hole::countersink', 'headClearance')
-    ).toBe('0')
-    expect(stdLibCommandArgDefaultSource('sweep', 'version')).toBeUndefined()
   })
 })

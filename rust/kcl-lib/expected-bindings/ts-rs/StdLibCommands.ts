@@ -222,9 +222,6 @@ export default {
         "docs": "The offset from the intersecting line.",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "0mm"
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -2036,9 +2033,6 @@ export default {
         "docs": "What type of body to produce (solid or surface). Defaults to \"solid\".",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "\"solid\""
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -3101,9 +3095,6 @@ export default {
         "docs": "The acceptable distance tolerance. If not given, or 0, tolerance will not be shown.",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "0mm"
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -5291,9 +5282,6 @@ export default {
         "docs": null,
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "0"
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -6084,9 +6072,6 @@ export default {
         "docs": "If reverse is true, the segment will start from the end of the involute, otherwise it will start from that start.",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "false"
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -6492,9 +6477,6 @@ export default {
         "docs": "Degree of the interpolation. Must be greater than zero. For example, use 2 for quadratic, or 3 for cubic interpolation in the V direction.",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "2"
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -6507,9 +6489,6 @@ export default {
         "docs": "Attempt to approximate rational curves (such as arcs) using a bezier. This will remove banding around interpolations between arcs and non-arcs. It may produce errors in other scenarios. Over time, this field won't be necessary.",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "false"
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -6570,9 +6549,6 @@ export default {
         "docs": "What type of body to produce (solid or surface). Defaults to \"solid\".",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "\"solid\""
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -7139,9 +7115,6 @@ export default {
         "docs": "The arc angle (in degrees) to place the repetitions. Must be greater than 0.",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "360deg"
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -7154,9 +7127,6 @@ export default {
         "docs": "Whether or not to rotate the duplicates as they are copied.",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "true"
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -7169,9 +7139,6 @@ export default {
         "docs": "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid.",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "false"
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -7247,9 +7214,6 @@ export default {
         "docs": "\"The arc angle to place the repetitions. Must be greater than 0.",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "360deg"
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -7262,9 +7226,6 @@ export default {
         "docs": "Whether or not to rotate the duplicates as they are copied.",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "true"
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -7277,9 +7238,6 @@ export default {
         "docs": "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid.",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "false"
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -7355,9 +7313,6 @@ export default {
         "docs": "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid.",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "false"
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -7433,9 +7388,6 @@ export default {
         "docs": "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid.",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "false"
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -7499,9 +7451,6 @@ export default {
         "docs": "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid.",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "false"
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -7565,9 +7514,6 @@ export default {
         "docs": "If the target was sketched on an extrusion, setting this will use the original sketch as the target, not the entire joined solid.",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "false"
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -7721,9 +7667,6 @@ export default {
         "docs": "Whether the polygon is inscribed (true, the default) or circumscribed (false) about a circle with the specified radius.",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "true"
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -8099,9 +8042,6 @@ export default {
         "docs": "`CCW` for counterclockwise, `CW` for clockwise. Default is `CCW`. This is usually only needed when two or more `segments` are provided.",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "\"ccw\""
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -8276,9 +8216,6 @@ export default {
         "docs": "What type of body to produce (solid or surface). Defaults to \"solid\".",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "\"solid\""
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -8378,9 +8315,6 @@ export default {
         "docs": "If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move.",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "false"
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -8447,9 +8381,6 @@ export default {
         "docs": "The dimensionless scale factor for the x axis.",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "1"
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -8462,9 +8393,6 @@ export default {
         "docs": "The dimensionless scale factor for the y axis.",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "1"
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -8477,9 +8405,6 @@ export default {
         "docs": "The dimensionless scale factor for the z axis.",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "1"
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -8492,9 +8417,6 @@ export default {
         "docs": "If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move.",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "false"
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -8942,9 +8864,6 @@ export default {
         "docs": "Use the counterclockwise sweep from the selected sector's end direction to its start direction. For example, a `20deg` sweep with `inverse = false` becomes `340deg` with `inverse = true`.",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "false"
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -9995,9 +9914,6 @@ export default {
         "docs": "Whether to compare using locale-independent full Unicode case folding.",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "false"
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -10337,9 +10253,6 @@ export default {
         "docs": "Use 'translateProfileToPath' and 'orientProfilePerpendicular' instead. What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'.",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "'trajectoryCurve'"
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": true,
@@ -10352,9 +10265,6 @@ export default {
         "docs": "If true, the profile being swept will be moved to the path being swept along, before the sweep starts. If false, the profile stays where it is, and the sweep starts from there. Defaults to false. On KCL 2.0 and earlier, explicitly setting this option, even to false, requires `version = 2`.",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "false"
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -10403,9 +10313,6 @@ export default {
         "docs": "What type of body to produce (solid or surface). Defaults to \"solid\".",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "\"solid\""
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -10610,9 +10517,6 @@ export default {
         "docs": "The amount to move the solid or sketch along the x axis.",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "0"
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -10625,9 +10529,6 @@ export default {
         "docs": "The amount to move the solid or sketch along the y axis.",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "0"
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -10640,9 +10541,6 @@ export default {
         "docs": "The amount to move the solid or sketch along the z axis.",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "0"
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,
@@ -10655,9 +10553,6 @@ export default {
         "docs": "If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move.",
         "required": false,
         "special": false,
-        "defaultValue": {
-          "source": "false"
-        },
         "experimental": false,
         "addedIn": null,
         "deprecated": false,

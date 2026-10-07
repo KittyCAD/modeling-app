@@ -115,17 +115,6 @@ export function stdLibCommandArgAvailable<Name extends StdLibCommandName>(
   return arg !== undefined && isKclVersionAvailable(version, arg, instance)
 }
 
-/** Return a literal default as KCL source, without evaluating or decoding it. */
-export function stdLibCommandArgDefaultSource<Name extends StdLibCommandName>(
-  stdLibName: Name,
-  argName: (typeof STD_LIB_COMMANDS)[Name]['args'][number]['name']
-): string | undefined {
-  const arg = STD_LIB_COMMANDS[stdLibName].args.find(
-    (candidate) => candidate.name === argName
-  )
-  return arg && 'defaultValue' in arg ? arg.defaultValue.source : undefined
-}
-
 const hasExistingEditFlowArgument = (
   context: { argumentsToSubmit: Record<string, unknown> },
   argName: string

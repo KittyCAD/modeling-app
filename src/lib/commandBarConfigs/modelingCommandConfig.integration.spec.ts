@@ -15,7 +15,6 @@ import {
   modelingStdLibCommandStatus,
   modelingStdLibCommandUsesExperimentalFeatures,
   type StdLibCommandDriftConfig,
-  stdLibCommandArgDefaultSource,
   stdLibCommandSummary,
   stdLibCommandStatus,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
@@ -683,15 +682,6 @@ describe('stdlib command arg derivation', () => {
         version: parsedLength('2'),
       })
     ).toBe(false)
-  })
-  it('keeps the product-selected Sweep algorithm when KCL has no literal default', () => {
-    const sweepCommand = modelingMachineCommandConfig.Sweep
-    if (!sweepCommand || isArray(sweepCommand)) {
-      throw new Error('Sweep should have a single command config')
-    }
-
-    expect(stdLibCommandArgDefaultSource('sweep', 'version')).toBeUndefined()
-    expect(sweepCommand.args?.version).toMatchObject({ defaultValue: '2' })
   })
 })
 
