@@ -249,7 +249,7 @@ test.describe(
         page.getByRole('status').filter({ hasText: 'Converting' })
       ).toBeVisible()
       await expect(
-        page.getByText('See reasoning', { exact: true })
+        page.getByRole('button', { name: 'Collapse', exact: true })
       ).toBeVisible()
       await expect(
         page.getByRole('button', { name: 'Cancel Migration' })
@@ -292,6 +292,18 @@ test.describe(
       ).toBeVisible()
       expect(await editorCode()).toBe(candidate)
       await expect(cancel).toBeHidden()
+      const completedMigration = page
+        .getByRole('region', { name: 'KCL migration', exact: true })
+        .filter({ hasText: 'Migrated to KCL 3.0.' })
+      const reasoning = completedMigration.getByRole('button', {
+        name: 'See reasoning',
+      })
+      await expect(reasoning).toHaveAttribute('aria-expanded', 'false')
+      await reasoning.click()
+      await expect(page.getByText('Checking matching views.')).toBeVisible()
+      await completedMigration
+        .getByRole('button', { name: 'Collapse', exact: true })
+        .click()
       await page.screenshot({
         path: testInfo.outputPath('migration-applied.png'),
       })

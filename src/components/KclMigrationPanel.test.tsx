@@ -91,6 +91,22 @@ it('shows live Zookeeper reasoning before migration finishes', async () => {
     )
   })
   expect(screen.getByText('matching camera views')).toBeInTheDocument()
-  expect(screen.getByText('See reasoning')).toBeVisible()
+  fireEvent.click(screen.getByRole('button', { name: 'Collapse' }))
+  expect(screen.queryByText('matching camera views')).not.toBeInTheDocument()
+  fireEvent.click(screen.getByRole('button', { name: 'See reasoning' }))
+  expect(screen.getByText('matching camera views')).toBeVisible()
   expect(await fixture.readMain()).toBe(sourceCode)
+  await act(async () => {
+    fixture.send(successfulOperation(fixture.request))
+  })
+  await waitFor(() =>
+    expect(screen.getByRole('status')).toHaveTextContent('Migrated to KCL 3.0')
+  )
+  expect(screen.getByRole('button', { name: 'See reasoning' })).toHaveAttribute(
+    'aria-expanded',
+    'false'
+  )
+  expect(screen.queryByText('matching camera views')).not.toBeInTheDocument()
+  fireEvent.click(screen.getByRole('button', { name: 'See reasoning' }))
+  expect(screen.getByText('matching camera views')).toBeVisible()
 })

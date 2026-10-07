@@ -3,11 +3,13 @@ import { useSignals } from '@preact/signals-react/runtime'
 import {
   AvatarUser,
   ButtonClearChat,
+  ButtonToggleReasoning,
   ChatBubble,
 } from '@src/components/ExchangeCard'
 import { Thinking } from '@src/components/Thinking'
 import { MarkdownText } from '@src/components/MarkdownText'
 import type { MigrationController } from '@src/lib/kclMigration/controller'
+import { useEffect, useState } from 'react'
 
 export function KclMigrationStart({
   disabled,
@@ -59,6 +61,10 @@ export function KclMigrationPanel({
   useSignals()
   const phase = controller.phase.value
   const busy = controller.busy
+  const [showFullReasoning, setShowFullReasoning] = useState(true)
+  useEffect(() => {
+    if (!busy) setShowFullReasoning(false)
+  }, [busy])
   return (
     <section
       aria-label="KCL migration"
@@ -73,19 +79,26 @@ export function KclMigrationPanel({
       </ChatBubble>
       {(controller.progress.value.length > 0 ||
         controller.progressText.value) && (
-        <details open={busy} className="pl-9">
-          <summary className="cursor-pointer">See reasoning</summary>
-          <div aria-label="Migration reasoning" className="my-3">
-            <Thinking
-              thoughts={controller.progress.value}
-              isDone={!busy}
-              onlyShowImmediateThought={false}
+        <>
+          {showFullReasoning && (
+            <div aria-label="Migration reasoning" className="my-3">
+              <Thinking
+                thoughts={controller.progress.value}
+                isDone={!busy}
+                onlyShowImmediateThought={false}
+              />
+              {controller.progressText.value && (
+                <MarkdownText text={controller.progressText.value} />
+              )}
+            </div>
+          )}
+          <div className="pl-8">
+            <ButtonToggleReasoning
+              expanded={showFullReasoning}
+              onClick={() => setShowFullReasoning(!showFullReasoning)}
             />
-            {controller.progressText.value && (
-              <MarkdownText text={controller.progressText.value} />
-            )}
           </div>
-        </details>
+        </>
       )}
       <ChatBubble
         side="left"
