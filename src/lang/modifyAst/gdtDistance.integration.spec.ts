@@ -1,5 +1,11 @@
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
+import { addDistanceGdt } from '@src/lang/modifyAst/gdt'
+import multiRegionCode from '@src/lang/modifyAst/fixtures/distance-multi-region.kcl?raw'
+import {
+  getSketchSegmentName,
+  getVariableNameFromNodePath,
+} from '@src/lang/queryAst'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import { type ArtifactGraph, assertParse, recast } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -7,6 +13,102 @@ import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { describe, expect, it, vi } from 'vitest'
 
 describe('distance edge topology', () => {
+  it.each(['start', 'end'] as const)(
+    'qualifies each %s cap through its multi-region extrusion output',
+    async (capType) => {
+      const { instance, rustContext } =
+        await buildTheWorldAndNoEngineConnection()
+      const ast = assertParse(
+        multiRegionCode.slice(0, multiRegionCode.indexOf('gdt::distance(')),
+        instance
+      )
+      const { artifactGraph } = await enginelessExecutor(ast, rustContext)
+      const selections: Selections = {
+        graphSelections: [],
+        otherSelections: [],
+      }
+      for (const regionName of ['region003', 'region002']) {
+        const sweep = [...artifactGraph.values()].find((artifact) => {
+          if (artifact.type !== 'sweep' || !artifact.pathId) return false
+          const path = artifactGraph.get(artifact.pathId)
+          return (
+            path?.type === 'path' &&
+            getVariableNameFromNodePath(
+              path.codeRef.pathToNode,
+              ast,
+              instance
+            ) === regionName
+          )
+        })
+        if (sweep?.type !== 'sweep') throw new Error('Missing extrusion output')
+        const path = sweep.pathId && artifactGraph.get(sweep.pathId)
+        if (!path || path.type !== 'path')
+          throw new Error('Missing region segment')
+        // Mock execution retains the real region/sweep lineage but has no
+        // engine face topology. Supply the selected faces of each output.
+        const capId = `${sweep.id}-${capType}`
+        const wallId = `${sweep.id}-wall`
+        const source = [...artifactGraph.values()].find(
+          (a) =>
+            a.type === 'segment' &&
+            a.codeRef.range[0] >= multiRegionCode.indexOf('sketch002 =') &&
+            getSketchSegmentName(ast, a.id, artifactGraph, instance) ===
+              (regionName === 'region003' ? 'circle3' : 'circle1')
+        )
+        if (source?.type !== 'segment') throw new Error('Missing source circle')
+        const segmentId = `${sweep.id}-segment`
+        artifactGraph.set(segmentId, {
+          ...source,
+          id: segmentId,
+          originalSegId: source.id,
+          pathId: path.id,
+          codeRef: path.codeRef,
+        })
+        artifactGraph.set(capId, {
+          type: 'cap',
+          id: capId,
+          subType: capType,
+          sweepId: sweep.id,
+          pathIds: [path.id],
+          edgeCutEdgeIds: [],
+          faceCodeRef: sweep.codeRef,
+          cmdId: sweep.id,
+        })
+        artifactGraph.set(wallId, {
+          type: 'wall',
+          id: wallId,
+          sweepId: sweep.id,
+          segId: segmentId,
+          pathIds: [path.id],
+          edgeCutEdgeIds: [],
+          faceCodeRef: sweep.codeRef,
+          cmdId: sweep.id,
+        })
+        selections.graphSelections.push({
+          entityRef: { type: 'edge', side_faces: [wallId, capId] },
+        })
+      }
+      const result = addDistanceGdt({
+        ast,
+        artifactGraph,
+        objects: selections,
+        framePlane: 'XY',
+        wasmInstance: instance,
+      })
+      if (result instanceof Error) throw result
+      const code = recast(result.modifiedAst, instance)
+      const compactCode = code.replace(/\s+/g, '')
+      const tag = capType === 'end' ? 'capEnd002' : 'capStart002'
+      expect(compactCode).toContain(
+        `sideFaces=[region003.tags.circle3,extrude002[1].faces.${tag}]`
+      )
+      expect(compactCode).toContain(
+        `sideFaces=[region002.tags.circle1,extrude002[0].faces.${tag}]`
+      )
+      expect(code).not.toContain('edgeId(')
+      await enginelessExecutor(result.modifiedAst, rustContext)
+    }
+  )
   it.each(
     (['primitive', 'graph', 'mixed'] as const).flatMap((route) =>
       ['XY', 'XZ', 'YZ'].flatMap((plane) =>

@@ -7,6 +7,7 @@ import {
   createLabeledArg,
   createLiteral,
   createLocalName,
+  createMemberExpression,
   createObjectExpression,
 } from '@src/lang/create'
 import {
@@ -24,11 +25,17 @@ import {
   isFaceArtifact,
 } from '@src/lang/modifyAst/faces'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
-import { resolveToCodeRef, traverse, valueOrVariable } from '@src/lang/queryAst'
+import {
+  getVariableExprsFromSelection,
+  resolveToCodeRef,
+  traverse,
+  valueOrVariable,
+} from '@src/lang/queryAst'
 import {
   type ResolvedGraphSelection,
   getArtifactOfTypes,
   getCapForPathId,
+  getCodeRefsByArtifactId,
 } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, Expr, PathToNode, Program } from '@src/lang/wasm'
 import { modelingStdLibCall } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
@@ -1340,8 +1347,9 @@ export function addDistanceGdt({
     const payload = getEdgeRefPayloadFromSelection(selection)
     if (
       payload &&
-      [...payload.side_faces, ...(payload.end_faces ?? [])].some((id) =>
-        edgeFaceSelections?.has(id)
+      [...payload.side_faces, ...(payload.end_faces ?? [])].some(
+        (id) =>
+          edgeFaceSelections?.has(id) || artifactGraph.get(id)?.type === 'cap'
       )
     ) {
       const properties: Record<string, Expr> = {}
@@ -1367,18 +1375,55 @@ export function addDistanceGdt({
               return new Error(
                 'A selected distance edge face could not be resolved.'
               )
-            const result = buildGdtFaceAndEdgeExpressions({
-              selections: {
-                graphSelections: [{ artifact }],
-                otherSelections: [],
-              },
+            const codeRef = getCodeRefsByArtifactId(id, artifactGraph)?.[0]
+            if (!codeRef)
+              return new Error('Could not resolve the distance face in code.')
+            const result = modifyAstWithTagsForSelection(
+              modifiedAst,
+              { artifact, codeRef },
               artifactGraph,
-              ast: modifiedAst,
-              wasmInstance,
-            })
+              wasmInstance
+            )
             if (err(result)) return result
             modifiedAst = result.modifiedAst
-            exprs.push(...result.faceExprs)
+            if (!result.exprs.length)
+              return new Error(
+                'Could not generate the distance face reference.'
+              )
+            for (const expr of result.exprs) {
+              if (artifact.type !== 'cap' || expr.type !== 'Name') {
+                exprs.push(expr)
+                continue
+              }
+              // Cap tags are reused for every output of a multi-region extrusion.
+              // Resolve the introducing sweep, including its output index, so
+              // both faces in an edge specifier belong to the selected body.
+              const sweep = artifactGraph.get(artifact.sweepId)
+              if (sweep?.type !== 'sweep')
+                return new Error('Could not resolve the distance cap owner.')
+              const owner = getVariableExprsFromSelection(
+                {
+                  graphSelections: [
+                    { artifact: sweep, codeRef: sweep.codeRef },
+                  ],
+                  otherSelections: [],
+                },
+                artifactGraph,
+                modifiedAst,
+                wasmInstance,
+                undefined,
+                { artifactTypeFilter: ['sweep'], lastChildLookup: false }
+              )
+              if (err(owner)) return owner
+              if (owner.exprs.length !== 1)
+                return new Error('Could not resolve the distance cap owner.')
+              exprs.push(
+                createMemberExpression(
+                  createMemberExpression(owner.exprs[0], 'faces'),
+                  expr.name.name
+                )
+              )
+            }
           }
         }
         if (exprs.length) properties[key] = createArrayExpression(exprs)
