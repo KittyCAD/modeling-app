@@ -30,6 +30,7 @@ import {
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
+import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import type RustContext from '@src/lib/rustContext'
 import {
   clonedRegionBody,
@@ -1482,7 +1483,8 @@ holeSketch = sketch(on = XY) {
   leftHole = circle(start = [-3mm, 0mm], center = [-6mm, 0mm])
   rightHole = circle(start = [9mm, 0mm], center = [6mm, 0mm])
 }
-plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
+plateRegion = region(point = [0mm, 10mm], sketch = holeSketch)
+plate = extrude(plateRegion, length = 5mm)`
         const { artifactGraph, ast } = await executeCode(
           twoHoles,
           instanceInThisFile,
@@ -1494,27 +1496,48 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
         expect(bodies).toHaveLength(1)
         const objects: Selections = {
           graphSelections: [],
-          otherSelections: [1, 2].map((primitiveIndex) => ({
-            type: 'enginePrimitive',
-            primitiveType: 'edge',
-            primitiveIndex,
-            parentEntityId: bodies[0].id,
-            entityId: `hole-rim-${primitiveIndex}`,
-          })),
+          otherSelections: [],
         }
+        const cap = [...artifactGraph.values()].find(
+          (artifact) => artifact.type === 'cap' && artifact.subType === 'end'
+        )
+        const walls = [...artifactGraph.values()].filter(
+          (artifact) => artifact.type === 'wall'
+        )
+        expect(cap).toBeDefined()
+        expect(walls).toHaveLength(3)
         if (route === 'face reference') {
-          const cap = [...artifactGraph.values()].find(
-            (artifact) => artifact.type === 'cap' && artifact.subType === 'end'
-          )
-          const walls = [...artifactGraph.values()].filter(
-            (artifact) => artifact.type === 'wall'
-          )
-          expect(cap).toBeDefined()
-          expect(walls).toHaveLength(3)
-          objects.otherSelections = []
           objects.graphSelections = walls.slice(1).map((wall) => ({
             entityRef: { type: 'edge', side_faces: [cap!.id, wall.id] },
           }))
+        } else {
+          for (const wall of walls.slice(1)) {
+            const response =
+              await engineCommandManagerInThisFile.sendSceneCommand({
+                type: 'modeling_cmd_req',
+                cmd_id: crypto.randomUUID(),
+                cmd: {
+                  type: 'solid3d_get_common_edge',
+                  object_id: bodies[0].id,
+                  face_ids: [cap!.id, wall.id],
+                },
+              })
+            if (
+              !isModelingResponse(response) ||
+              response.resp.data.modeling_response.type !==
+                'solid3d_get_common_edge'
+            )
+              throw new Error('Missing hole rim edge')
+            const id = response.resp.data.modeling_response.data.edge
+            if (!id) throw new Error('Missing hole rim edge ID')
+            objects.otherSelections.push({
+              type: 'enginePrimitive',
+              primitiveType: 'edge',
+              primitiveIndex: 0,
+              parentEntityId: bodies[0].id,
+              entityId: id,
+            })
+          }
         }
         const resolved = await resolveDistanceSelections(
           objects,
@@ -1576,7 +1599,7 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
         if (err(result)) throw result
         const code = recast(result.modifiedAst, instanceInThisFile)
         if (err(code)) throw code
-        expect(code).toMatch(/framePosition = \[0mm, [\d.]+mm\]/)
+        expect(code).toMatch(/framePosition = \[0mm, -?[\d.]+mm\]/)
         expect(code).not.toContain('tolerance =')
         expect(code).toContain('fontSize = 2mm')
         await enginelessExecutor(result.modifiedAst, rustContextInThisFile)

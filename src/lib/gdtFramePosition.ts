@@ -813,12 +813,105 @@ async function getDistanceGeometryPlane(
   return undefined
 }
 
+async function getCircularEdgeCenter(
+  engine: ConnectionManager,
+  id: ArtifactId,
+  outputUnit: UnitLength
+): Promise<Point3d | undefined> {
+  try {
+    const type = await engine.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: { type: 'curve_get_type', curve_id: id },
+    })
+    if (
+      !isModelingResponse(type) ||
+      type.resp.data.modeling_response.type !== 'curve_get_type' ||
+      !['arc', 'nurbs'].includes(
+        type.resp.data.modeling_response.data.curve_type
+      )
+    )
+      return undefined
+    const endpoints = await engine.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: { type: 'curve_get_end_points', curve_id: id },
+    })
+    if (
+      !isModelingResponse(endpoints) ||
+      endpoints.resp.data.modeling_response.type !== 'curve_get_end_points'
+    )
+      return undefined
+    const { start, end } = endpoints.resp.data.modeling_response.data
+    if (Math.hypot(start.x - end.x, start.y - end.y, start.z - end.z) > 1e-6)
+      return undefined
+    const response = await engine.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: { type: 'curve_get_control_points', curve_id: id },
+    })
+    if (
+      !isModelingResponse(response) ||
+      response.resp.data.modeling_response.type !== 'curve_get_control_points'
+    )
+      return undefined
+    const points = response.resp.data.modeling_response.data.control_points
+    if (
+      points.length < 4 ||
+      points.some((p) => AXES.some((a) => !Number.isFinite(p[a])))
+    )
+      return undefined
+    // A full circle's control polygon is symmetric about its center. Unlike
+    // its seam vertices, it spans both sides of the circle in world space.
+    const scale = baseUnitToMm(outputUnit)
+    const center = (axis: Axis) =>
+      (Math.min(...points.map((p) => p[axis])) +
+        Math.max(...points.map((p) => p[axis]))) /
+      (2 * scale)
+    const result = { x: center('x'), y: center('y'), z: center('z') }
+    if (type.resp.data.modeling_response.data.curve_type === 'nurbs') {
+      // The engine may expose a circle as its quadratic NURBS form. Check
+      // the four equal, orthogonal radii and tangent corners before using
+      // this center; a closed spline or ellipse must retain its fallback.
+      if (points.length !== 9) return undefined
+      const radii = [0, 2, 4, 6].map((i) => ({
+        x: points[i].x / scale - result.x,
+        y: points[i].y / scale - result.y,
+        z: points[i].z / scale - result.z,
+      }))
+      const radius = Math.hypot(radii[0].x, radii[0].y, radii[0].z)
+      if (!radius) return undefined
+      const tolerance = radius * 1e-6
+      for (let i = 0; i < 4; i++) {
+        const a = radii[i],
+          b = radii[(i + 1) % 4]
+        if (
+          Math.abs(Math.hypot(a.x, a.y, a.z) - radius) > tolerance ||
+          Math.abs(a.x * b.x + a.y * b.y + a.z * b.z) > radius * tolerance ||
+          AXES.some(
+            (axis) =>
+              Math.abs(
+                points[2 * i + 1][axis] / scale -
+                  result[axis] -
+                  a[axis] -
+                  b[axis]
+              ) > tolerance
+          )
+        )
+          return undefined
+      }
+    }
+    return result
+  } catch {
+    return undefined
+  }
+}
+
 async function getOutsideSetbackForSelections({
   engine,
   selections,
   artifactGraph,
   entityIds,
-  selectionBounds,
   endpointBounds,
   modelBounds,
   plane,
@@ -828,7 +921,6 @@ async function getOutsideSetbackForSelections({
   selections: Selections | undefined
   artifactGraph: ArtifactGraph | undefined
   entityIds: ArtifactId[]
-  selectionBounds: BoundingBox | undefined
   endpointBounds: Array<BoundingBox | undefined> | undefined
   modelBounds: BoundingBox | undefined
   plane: string | KclCommandValue | undefined
@@ -837,8 +929,7 @@ async function getOutsideSetbackForSelections({
   const planeName = typeof plane === 'string' ? plane : plane?.valueText
   if (
     !planeName ||
-    ![KCL_PLANE_XY, KCL_PLANE_XZ, KCL_PLANE_YZ].includes(planeName) ||
-    !selectionBounds?.center
+    ![KCL_PLANE_XY, KCL_PLANE_XZ, KCL_PLANE_YZ].includes(planeName)
   )
     return undefined
   let from: Point3d | undefined, to: Point3d | undefined
@@ -854,8 +945,33 @@ async function getOutsideSetbackForSelections({
           })
         )
       ))
-    from = bounds[0]?.center
-    to = bounds[1]?.center
+    const centers = await Promise.all(
+      entityIds.map(async (id, index) => {
+        // Closed circular edges have coincident seam vertices, so their
+        // bounding box center is on the rim, not the annotation's center.
+        const selection = selections?.graphSelections.find(
+          (s) => (s.engineEntityId ?? s.artifact?.id) === id
+        )
+        const isEdge =
+          selection?.entityRef?.type === 'edge' ||
+          selection?.artifact?.type === 'segment' ||
+          selection?.artifact?.type === 'sweepEdge' ||
+          selections?.otherSelections.some(
+            (s) =>
+              typeof s === 'object' &&
+              'entityId' in s &&
+              s.entityId === id &&
+              s.primitiveType === 'edge'
+          )
+        if (isEdge) {
+          const center = await getCircularEdgeCenter(engine, id, outputUnit)
+          if (center) return center
+        }
+        return bounds[index]?.center
+      })
+    )
+    from = centers[0]
+    to = centers[1]
   } else if (entityIds.length === 1) {
     const isEdge =
       selections?.graphSelections.some(
@@ -890,13 +1006,7 @@ async function getOutsideSetbackForSelections({
       /* Retain the existing bounds-based fallback when endpoints are unavailable. */
     }
   }
-  if (
-    !from ||
-    !to ||
-    getOutsideDistanceSetback(from, to, planeName, selectionBounds) ===
-      undefined
-  )
-    return undefined
+  if (!from || !to) return undefined
 
   const parents: ArtifactId[] = []
   for (const id of entityIds) {
@@ -1178,7 +1288,6 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
         selections,
         artifactGraph,
         entityIds,
-        selectionBounds: selectionBoundingBox,
         endpointBounds: distanceEndpointBounds,
         modelBounds: modelBoundingBox,
         plane: nextData.framePlane,

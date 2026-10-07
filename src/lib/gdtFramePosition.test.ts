@@ -242,11 +242,178 @@ describe('GD&T frame defaults', () => {
         )
         expect(
           sendSceneCommand.mock.calls.every(
-            ([{ cmd }]) => cmd.entity_ids.length > 0
+            ([{ cmd }]) =>
+              cmd.type !== 'bounding_box' || cmd.entity_ids.length > 0
           )
         ).toBe(true)
       }
     )
+
+    it.each(
+      ['XY', 'XZ', 'YZ'].flatMap((plane) =>
+        (['mm', 'ft'] as const).flatMap((unit) =>
+          [false, true].flatMap((missingBounds) =>
+            ['arc', 'nurbs'].map((curveType) => ({
+              plane,
+              unit,
+              missingBounds,
+              curveType,
+            }))
+          )
+        )
+      )
+    )(
+      'uses $curveType circle centers rather than rim seams in $plane/$unit (missing bounds: $missingBounds)',
+      async ({ plane, unit, missingBounds, curveType }) => {
+        const scale = unit === 'ft' ? 304.8 : 1
+        const point = (x: number, y: number) =>
+          plane === 'XY'
+            ? { x, y, z: 0 }
+            : plane === 'XZ'
+              ? { x, y: 0, z: y }
+              : { x: 0, y: x, z: y }
+        const selections: Selections = {
+          graphSelections: ['left', 'right'].map((engineEntityId) => ({
+            engineEntityId,
+            entityRef: { type: 'edge', side_faces: [] },
+            engineTopologyFallback: { parentId: 'part', primitiveIndex: 0 },
+          })),
+          otherSelections: [],
+        }
+        const sendSceneCommand = vi.fn().mockImplementation(async ({ cmd }) => {
+          const x = cmd.curve_id === 'left' ? 20 : 80
+          let data
+          switch (cmd.type) {
+            case 'curve_get_type':
+              data = { curve_type: curveType }
+              break
+            case 'curve_get_end_points':
+              // Full circle's seam is above the body center, but its center
+              // is below it. The engine's edge bbox only contains this seam.
+              data = {
+                start: point(x * scale, 10 * scale),
+                end: point(x * scale, 10 * scale),
+              }
+              break
+            case 'curve_get_control_points':
+              data = {
+                control_points: [
+                  [0, 50],
+                  [50, 50],
+                  [50, 0],
+                  [50, -50],
+                  [0, -50],
+                  [-50, -50],
+                  [-50, 0],
+                  [-50, 50],
+                  [0, 50],
+                ].map(([dx, dy]) =>
+                  point((x + dx) * scale, (-40 + dy) * scale)
+                ),
+              }
+              break
+            case 'bounding_box': {
+              const id = cmd.entity_ids[0]
+              if (id !== 'part' && missingBounds)
+                throw new Error('No edge bounds')
+              data =
+                id === 'part' || !id
+                  ? { center: point(50, 0), dimensions: point(100, 100) }
+                  : {
+                      center: point(
+                        id === 'left' ? 20 : id === 'right' ? 80 : 50,
+                        10
+                      ),
+                      dimensions: point(
+                        cmd.entity_ids.length === 2 ? 60 : 0,
+                        0
+                      ),
+                    }
+              break
+            }
+            default:
+              throw new Error('Unexpected command')
+          }
+          return {
+            success: true,
+            resp: {
+              type: 'modeling',
+              data: { modeling_response: { type: cmd.type, data } },
+            },
+          }
+        })
+        const result = await withDefaultGdtFrameDefaults<
+          ModelingCommandSchema['GDT Distance']
+        >({
+          data: {
+            objects: selections,
+            framePlane: plane,
+            fontSize: kclValue(`1${unit}`),
+          },
+          distance: true,
+          outputUnit: unit,
+          engineCommandManager: {
+            sendSceneCommand,
+          } as unknown as ConnectionManager,
+          wasmInstance,
+        })
+        expect(result.framePosition?.valueText).toBe(
+          `[0${unit}, -21.25${unit}]`
+        )
+      }
+    )
+
+    it('places a short Z-edge on the negative side even when its bbox query fails', async () => {
+      const selections: Selections = {
+        graphSelections: [
+          {
+            engineEntityId: 'vertical',
+            entityRef: { type: 'edge', side_faces: [] },
+            engineTopologyFallback: { parentId: 'part', primitiveIndex: 0 },
+          },
+        ],
+        otherSelections: [],
+      }
+      const sendSceneCommand = vi.fn().mockImplementation(async ({ cmd }) => {
+        if (cmd.type === 'bounding_box' && cmd.entity_ids[0] === 'vertical')
+          throw new Error('No edge bounds')
+        const response =
+          cmd.type === 'curve_get_end_points'
+            ? {
+                type: cmd.type,
+                data: {
+                  start: { x: 49, y: 0, z: -1 },
+                  end: { x: 49, y: 0, z: 1 },
+                },
+              }
+            : {
+                type: 'bounding_box',
+                data: {
+                  center: { x: 0, y: 0, z: 0 },
+                  dimensions: { x: 100, y: 0, z: 100 },
+                },
+              }
+        return {
+          success: true,
+          resp: { type: 'modeling', data: { modeling_response: response } },
+        }
+      })
+      const result = await withDefaultGdtFrameDefaults<
+        ModelingCommandSchema['GDT Distance']
+      >({
+        data: {
+          objects: selections,
+          framePlane: 'XZ',
+          fontSize: kclValue('1mm'),
+        },
+        distance: true,
+        engineCommandManager: {
+          sendSceneCommand,
+        } as unknown as ConnectionManager,
+        wasmInstance,
+      })
+      expect(result.framePosition?.valueText).toBe('[0mm, -10mm]')
+    })
 
     it('converts engine endpoints from mm before placing a Z-edge dimension in feet', async () => {
       const selections: Selections = {
@@ -551,7 +718,11 @@ describe('GD&T frame defaults', () => {
             })
           )
         } else {
-          expect(sendSceneCommand).toHaveBeenCalledOnce()
+          expect(
+            sendSceneCommand.mock.calls.filter(
+              ([{ cmd }]) => cmd.type === 'bounding_box'
+            )
+          ).toHaveLength(1)
         }
       }
     )

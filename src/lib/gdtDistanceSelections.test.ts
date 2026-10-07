@@ -16,15 +16,17 @@ function engineWithFaces() {
                 type: cmd.type,
                 data: { faces: ['cap', cmd.edge_id + '-wall'] },
               }
-            : cmd.type === 'entity_get_parent_id'
-              ? { type: cmd.type, data: { entity_id: 'body' } }
-              : {
-                  type: cmd.type,
-                  data: {
-                    entity_type: 'face',
-                    primitive_index: cmd.entity_id === 'cap' ? 0 : 7,
+            : cmd.type === 'solid3d_get_common_edge'
+              ? { type: cmd.type, data: { edge: 'edge' } }
+              : cmd.type === 'entity_get_parent_id'
+                ? { type: cmd.type, data: { entity_id: 'body' } }
+                : {
+                    type: cmd.type,
+                    data: {
+                      entity_type: 'face',
+                      primitive_index: cmd.entity_id === 'cap' ? 0 : 7,
+                    },
                   },
-                },
       },
     },
   }))
@@ -35,6 +37,26 @@ function engineWithFaces() {
 }
 
 describe('distance selection references', () => {
+  it('recovers the edge UUID for geometry queries when only face references were selected', async () => {
+    const { engine } = engineWithFaces()
+    const graph: ArtifactGraph = new Map(
+      ['cap', 'wall'].map((id) => [id, { type: 'cap', id } as Artifact])
+    )
+    const selections: Selections = {
+      graphSelections: [
+        { entityRef: { type: 'edge', side_faces: ['cap', 'wall'] } },
+      ],
+      otherSelections: [],
+    }
+    const result = await resolveDistanceSelections(selections, graph, engine)
+    if (result instanceof Error) throw result
+    expect(result.selections.graphSelections[0]).toEqual({
+      ...selections.graphSelections[0],
+      engineEntityId: 'edge',
+    })
+    expect(selections.graphSelections[0].engineEntityId).toBeUndefined()
+  })
+
   it('resolves primitive edges through adjacent faces, retaining the actual edge IDs for geometry', async () => {
     const { engine } = engineWithFaces()
     const selections: Selections = {

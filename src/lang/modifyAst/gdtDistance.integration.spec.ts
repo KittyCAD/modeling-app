@@ -111,20 +111,21 @@ describe('distance edge topology', () => {
     }
   )
   it.each(
-    (['primitive', 'graph', 'mixed'] as const).flatMap((route) =>
-      ['XY', 'XZ', 'YZ'].flatMap((plane) =>
-        [true, false]
-          .map((engineBounds) => ({
-            route,
-            engineBounds,
-            plane,
-            measurement: 'holes',
-          }))
-          .concat([
-            { route, engineBounds: true, plane, measurement: 'zEdge' },
-            { route, engineBounds: true, plane, measurement: 'depth' },
-          ])
-      )
+    (['primitive', 'graph', 'mixed', 'face reference'] as const).flatMap(
+      (route) =>
+        ['XY', 'XZ', 'YZ'].flatMap((plane) =>
+          [true, false]
+            .map((engineBounds) => ({
+              route,
+              engineBounds,
+              plane,
+              measurement: 'holes',
+            }))
+            .concat([
+              { route, engineBounds: true, plane, measurement: 'zEdge' },
+              { route, engineBounds: true, plane, measurement: 'depth' },
+            ])
+        )
     )
   )(
     'generates $measurement on $plane for $route selections with engine bounds $engineBounds',
@@ -135,8 +136,8 @@ describe('distance edge topology', () => {
         `@settings(defaultLengthUnit = mm, kclVersion = 2)
 holeSketch = sketch(on = ${plane}) {
   outer = circle(start = [20mm, 0mm], center = [0mm, 0mm])
-  leftHole = circle(start = [-3mm, 0mm], center = [-6mm, 0mm])
-  rightHole = circle(start = [9mm, 0mm], center = [6mm, 0mm])
+  leftHole = circle(start = [-6mm, 2mm], center = [-6mm, -1mm])
+  rightHole = circle(start = [6mm, 2mm], center = [6mm, -1mm])
 }
 plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`,
         instance
@@ -164,7 +165,11 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
       ])
       const objects: Selections = { graphSelections: [], otherSelections: [] }
       for (const index of measurement === 'zEdge' ? [1] : [1, 2]) {
-        if (route === 'graph' || (route === 'mixed' && index === 1)) {
+        if (
+          route === 'graph' ||
+          route === 'face reference' ||
+          (route === 'mixed' && index === 1)
+        ) {
           objects.graphSelections.push({
             entityRef: {
               type: 'edge',
@@ -180,7 +185,8 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
                       `hole-rim-${index}-wall`,
                     ],
             },
-            engineEntityId: `hole-rim-${index}`,
+            engineEntityId:
+              route === 'face reference' ? undefined : `hole-rim-${index}`,
             engineTopologyFallback: {
               parentId: 'plate-body',
               primitiveIndex: index,
@@ -214,6 +220,13 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
             y: normal.y * 3,
             z: normal.z * 3,
           }
+          const point = (x: number, y: number) =>
+            plane === 'XY'
+              ? { x, y, z: 0 }
+              : plane === 'XZ'
+                ? { x, y: 0, z: y }
+                : { x: 0, y: x, z: y }
+          const holeX = (id: string) => (id === 'hole-rim-1' ? -6 : 6)
           const capId = (id: string) =>
             measurement === 'depth'
               ? id === 'hole-rim-1'
@@ -244,15 +257,52 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
             }
           else if (cmd.type === 'entity_get_parent_id')
             response = { type: cmd.type, data: { entity_id: 'plate-body' } }
+          else if (cmd.type === 'solid3d_get_common_edge')
+            response = {
+              type: cmd.type,
+              data: {
+                edge:
+                  cmd.face_ids
+                    .find((id) => id.endsWith('-wall'))
+                    ?.replace('-wall', '') ?? 'hole-rim-1',
+              },
+            }
+          else if (cmd.type === 'curve_get_type' && measurement === 'holes')
+            response = { type: cmd.type, data: { curve_type: 'arc' as const } }
+          else if (
+            cmd.type === 'curve_get_control_points' &&
+            measurement === 'holes'
+          )
+            response = {
+              type: cmd.type,
+              data: {
+                control_points: [
+                  [0, 3],
+                  [3, 3],
+                  [3, 0],
+                  [3, -3],
+                  [0, -3],
+                  [-3, -3],
+                  [-3, 0],
+                  [-3, 3],
+                  [0, 3],
+                ].map(([x, y]) => point(holeX(cmd.curve_id) + x, y - 1)),
+              },
+            }
           else if (cmd.type === 'curve_get_end_points')
             response = {
               type: cmd.type,
               data: {
-                start: { x: 0, y: 0, z: 0 },
+                start:
+                  measurement === 'holes'
+                    ? point(holeX(cmd.curve_id), 2)
+                    : { x: 0, y: 0, z: 0 },
                 end:
                   measurement === 'zEdge'
                     ? { x: 0, y: 0, z: 10 }
-                    : { x: 0, y: 0, z: 0 },
+                    : measurement === 'holes'
+                      ? point(holeX(cmd.curve_id), 2)
+                      : { x: 0, y: 0, z: 0 },
               },
             }
           else if (cmd.type === 'face_is_planar')
@@ -269,20 +319,42 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
                 : {},
             }
           else if (cmd.type === 'bounding_box') {
-            if (!engineBounds) throw new Error('Bounds unavailable')
-            response = {
-              type: cmd.type,
-              data: {
-                center:
-                  cmd.entity_ids[0] === 'hole-rim-1'
-                    ? { x: 0, y: 0, z: 0 }
-                    : measurement === 'depth'
-                      ? normalOffset
-                      : plane === 'YZ'
-                        ? { x: 0, y: 12, z: 0 }
-                        : { x: 12, y: 0, z: 0 },
-                dimensions: { x: 100, y: 100, z: 10 },
-              },
+            if (measurement === 'holes') {
+              const id = cmd.entity_ids[0]
+              const body = !id || id === 'plate-body'
+              if (!body && !engineBounds)
+                throw new Error('Edge bounds unavailable')
+              response = {
+                type: cmd.type,
+                data: {
+                  center: body
+                    ? point(0, 0)
+                    : point(cmd.entity_ids.length === 2 ? 0 : holeX(id), 2),
+                  dimensions: body
+                    ? {
+                        x: normal.x ? 5 : 40,
+                        y: normal.y ? 5 : 40,
+                        z: normal.z ? 5 : 40,
+                      }
+                    : point(cmd.entity_ids.length === 2 ? 12 : 0, 0),
+                },
+              }
+            } else {
+              if (!engineBounds) throw new Error('Bounds unavailable')
+              response = {
+                type: cmd.type,
+                data: {
+                  center:
+                    cmd.entity_ids[0] === 'hole-rim-1'
+                      ? { x: 0, y: 0, z: 0 }
+                      : measurement === 'depth'
+                        ? normalOffset
+                        : plane === 'YZ'
+                          ? { x: 0, y: 12, z: 0 }
+                          : { x: 12, y: 0, z: 0 },
+                  dimensions: { x: 100, y: 100, z: 10 },
+                },
+              }
             }
           } else throw new Error('Unexpected command')
           return {
@@ -328,6 +400,8 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
               : 'XY'
             : plane
       expect(code).toContain(`framePlane = ${expectedPlane}`)
+      if (measurement === 'holes')
+        expect(code).toContain('framePosition = [0mm, -26.2292mm]')
       await enginelessExecutor(result.modifiedAst, rustContext)
     }
   )

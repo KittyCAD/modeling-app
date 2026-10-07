@@ -62,8 +62,56 @@ export async function resolveDistanceSelections(
         entityRef: { type: 'edge', side_faces: ids },
       })
     }
-    for (const selection of normalized.graphSelections) {
+    for (const [index, selection] of normalized.graphSelections.entries()) {
       if (selection.entityRef?.type !== 'edge') continue
+      if (
+        !selection.engineEntityId &&
+        !selection.artifact?.id &&
+        selection.entityRef.side_faces.length > 0 &&
+        !selection.entityRef.end_faces?.length &&
+        selection.entityRef.index === undefined
+      ) {
+        // Face references can reach codegen without the clicked edge UUID.
+        // Recover an unambiguous edge for placement queries; retain the face
+        // specifier for KCL. Missing/ambiguous geometry keeps the fallback.
+        try {
+          const parent = await engine.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'entity_get_parent_id',
+              entity_id: selection.entityRef.side_faces[0],
+            },
+          })
+          if (
+            isModelingResponse(parent) &&
+            parent.resp.data.modeling_response.type === 'entity_get_parent_id'
+          ) {
+            const response = await engine.sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: {
+                type: 'solid3d_get_common_edge',
+                object_id: parent.resp.data.modeling_response.data.entity_id,
+                face_ids: selection.entityRef.side_faces,
+              },
+            })
+            if (
+              isModelingResponse(response) &&
+              response.resp.data.modeling_response.type ===
+                'solid3d_get_common_edge' &&
+              response.resp.data.modeling_response.data.edge
+            ) {
+              normalized.graphSelections[index] = {
+                ...selection,
+                engineEntityId: response.resp.data.modeling_response.data.edge,
+              }
+            }
+          }
+        } catch {
+          /* Edge specifiers remain usable even when placement queries fail. */
+        }
+      }
       for (const id of [
         ...selection.entityRef.side_faces,
         ...(selection.entityRef.end_faces ?? []),
