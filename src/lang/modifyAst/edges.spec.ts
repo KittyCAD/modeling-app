@@ -159,10 +159,7 @@ hidden002 = hide(sketch001)`
     }
   }
 
-  function segmentForSweep(
-    sweepId: string,
-    artifactGraph: ArtifactGraph
-  ) {
+  function segmentForSweep(sweepId: string, artifactGraph: ArtifactGraph) {
     for (const artifact of artifactGraph.values()) {
       if (artifact.type !== 'segment') continue
       const path = artifactGraph.get(artifact.pathId)
