@@ -1846,14 +1846,12 @@ ${extrudedTriangle}`
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const sweepEdge = [...artifactGraph.values()].find(
-        (a) => a.type === 'sweepEdge'
+      const segment = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'segment'
       )
-      if (!sweepEdge || sweepEdge.type !== 'sweepEdge') {
-        throw new Error('sweepEdge artifact not found')
-      }
+      if (!segment) throw new Error('Segment artifact not found')
       const selection: Selections = {
-        graphSelections: [selectionFromSweepEdge(sweepEdge, artifactGraph)],
+        graphSelections: [selectionFromSegmentEdge(segment, artifactGraph)],
         otherSelections: [],
       }
       const length = (await stringToKclExpression(
