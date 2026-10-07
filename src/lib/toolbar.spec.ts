@@ -7,6 +7,7 @@ vi.mock('@src/lib/boot', () => ({
 
 import {
   buildToolbarConfig,
+  filterExperimentalToolbarItems,
   getConstraintToolbarToggleEvent,
   getDefaultRecentToolbarItemIds,
   getSketchSolveToolIconMap,
@@ -91,6 +92,63 @@ function getToolbarItems(
     })
   )
 }
+
+describe('plugin toolbar visibility', () => {
+  const available: ToolbarItem = {
+    id: 'plugin.available',
+    title: 'Available action',
+    status: 'available',
+    description: 'A plugin action.',
+    links: [],
+    onClick: vi.fn(),
+  }
+  const experimental: ToolbarItem = {
+    ...available,
+    id: 'plugin.experimental',
+    title: 'Experimental action',
+    status: 'experimental',
+  }
+
+  test('hides experimental plugin actions without changing their registration', () => {
+    const items = Object.freeze([available, experimental])
+
+    expect(filterExperimentalToolbarItems(items, false)).toEqual([available])
+    expect(items).toEqual([available, experimental])
+    expect(filterExperimentalToolbarItems(items, true)).toEqual(items)
+  })
+
+  test('removes experimental dropdown actions and their recent-button defaults', () => {
+    const dropdown: ToolbarDropdown = {
+      id: 'plugin.dropdown',
+      array: [experimental, available],
+      display: 'recent',
+      defaultVisibleItemIds: [experimental.id, available.id],
+    }
+
+    expect(filterExperimentalToolbarItems([dropdown], false)).toEqual([
+      {
+        ...dropdown,
+        array: [available],
+        defaultVisibleItemIds: [available.id],
+      },
+    ])
+    expect(dropdown.array).toEqual([experimental, available])
+    expect(dropdown.defaultVisibleItemIds).toEqual([
+      experimental.id,
+      available.id,
+    ])
+  })
+
+  test('removes dropdowns left empty by filtering and restores them when enabled', () => {
+    const dropdown: ToolbarDropdown = {
+      id: 'plugin.experimental-dropdown',
+      array: [experimental],
+    }
+
+    expect(filterExperimentalToolbarItems([dropdown], false)).toEqual([])
+    expect(filterExperimentalToolbarItems([dropdown], true)).toEqual([dropdown])
+  })
+})
 
 describe('toolbar state helpers', () => {
   test('keeps the sketch solve toolbar visible while animating into sketch solve', () => {
