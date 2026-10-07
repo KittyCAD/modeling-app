@@ -2374,6 +2374,7 @@ extrude001 = extrude(profile001, length = 500)`
       })
 
       await clickOnDebugCap()
+      await toolbar.expectSelection('1 face')
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'arguments',
