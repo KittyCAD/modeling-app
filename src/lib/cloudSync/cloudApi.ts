@@ -167,12 +167,8 @@ export async function listRemoteProjects(
       ? `/user/projects?${new URLSearchParams({ page_token: pageToken })}`
       : '/user/projects'
     const response = await cloudJson<unknown>(config, targetPath)
-    const legacy = isArray(response)
-    const page =
-      !legacy && response && typeof response === 'object'
-        ? (response as { items?: unknown; next_page?: unknown })
-        : undefined
-    const items = legacy ? response : page?.items
+    const page = isRecord(response) ? response : undefined
+    const items = page?.items
     if (!isArray(items) || !items.every(isRemoteProjectSummary)) {
       return Promise.reject(
         new CloudSyncError(
@@ -182,11 +178,6 @@ export async function listRemoteProjects(
       )
     }
 
-    // A legacy array is the complete inventory, including if the API rolls back
-    // between pages. Keep this branch until all supported deployments paginate.
-    if (legacy) {
-      return [...items]
-    }
     for (const item of items) {
       projects.set(item.id, item)
     }
