@@ -22,6 +22,7 @@ import {
   type ToolbarItem,
 } from '@src/lib/toolbar'
 import type { Command } from '@src/lib/commandTypes'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import { TOOLBAR_COMMAND_IDS } from '@src/registry/extensions/commands/toolbarCommandIds'
 import { defaultKeymap } from '@src/registry/extensions/keymap/defaultKeymap'
@@ -96,6 +97,32 @@ function getToolbarItems(
 }
 
 describe('toolbar state helpers', () => {
+  test('derives modeling command metadata and preserves supplemental toolbar links', () => {
+    const hole = findModelingToolbarItem('hole')
+    expect(hole).toMatchObject({
+      command: 'modeling:Hole',
+      icon: 'hole',
+      title: 'Hole',
+      status: 'available',
+    })
+    expect(hole.links).toEqual([
+      {
+        label: 'KCL docs',
+        url: withSiteBaseURL('/docs/kcl-std/functions/std-hole-hole'),
+      },
+    ])
+    expect(findModelingToolbarItem('revolve').links).toEqual([
+      {
+        label: 'KCL docs',
+        url: withSiteBaseURL('/docs/kcl-std/functions/std-sketch-revolve'),
+      },
+      {
+        label: 'KCL example',
+        url: withSiteBaseURL('/docs/kcl-samples/ball-bearing'),
+      },
+    ])
+  })
+
   test('uses registered command descriptions with toolbar text as a fallback', () => {
     const item = {
       command: 'test:Available',

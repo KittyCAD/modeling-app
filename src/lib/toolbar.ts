@@ -5,6 +5,16 @@ import {
   getSelectedSketchTarget as getSelectedSketchTargetId,
 } from '@src/lang/queryAst'
 import { useApp } from '@src/lib/boot'
+import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import {
+  modelingStdLibCommandName,
+  modelingStdLibCommandStatus,
+  type ModelingStdLibCommandName,
+} from '@src/lib/commandBarConfigs/modelingCommandStdLib'
+import {
+  STD_LIB_COMMANDS,
+  type StdLibCommandName,
+} from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
 import type { Command } from '@src/lib/commandTypes'
 import { commandKey } from '@src/lib/commandUtils'
 import {
@@ -20,6 +30,7 @@ import type { HotkeySequence } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
 import { selectSketchPlane } from '@src/lib/selectSketchPlane'
 import { getSelectedDefaultPlane } from '@src/lib/selections'
+import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { modelingMachine } from '@src/machines/modelingMachine'
@@ -539,6 +550,16 @@ export function isLegacySketchEditRequest({
   )
 }
 
+function stdLibDocsLink(stdLibName: StdLibCommandName, label = 'KCL docs') {
+  const { qualName } = STD_LIB_COMMANDS[stdLibName]
+  return {
+    label,
+    url: withSiteBaseURL(
+      `/docs/kcl-std/functions/${qualName.replaceAll('::', '-')}`
+    ),
+  }
+}
+
 export function buildToolbarConfig(
   commands: ToolbarCommands,
   {
@@ -549,6 +570,37 @@ export function buildToolbarConfig(
     hasLegacySketchMode?: boolean
   } = {}
 ): ToolbarConfig {
+  const modelingCommand = (
+    name: ModelingStdLibCommandName,
+    {
+      title,
+      icon,
+      extraLinks = [],
+      ...item
+    }: Pick<ToolbarItem, 'id' | 'icon' | 'extraInfo'> & {
+      title?: string
+      extraLinks?: ToolbarItem['links']
+    }
+  ): ToolbarItem & { title: string } => {
+    const stdLibName = modelingStdLibCommandName(name)
+    const config = modelingMachineCommandConfig[name]
+    const commandConfig = isArray(config) ? undefined : config
+    const status = commandConfig?.status ?? modelingStdLibCommandStatus(name)
+    return {
+      ...item,
+      command: `modeling:${name}`,
+      title: title ?? commandConfig?.displayName ?? name,
+      icon: icon ?? commandConfig?.icon,
+      status: status === 'experimental' ? 'experimental' : 'available',
+      links: [stdLibDocsLink(stdLibName), ...extraLinks],
+      onClick: () =>
+        commands.send({
+          type: 'Find and select command',
+          data: { name, groupId: 'modeling' },
+        }),
+    }
+  }
+
   const splineToolbarItem: ToolbarItem = {
     id: 'spline',
     command: TOOLBAR_COMMAND_IDS.sketchSolve.spline,
@@ -700,361 +752,84 @@ export function buildToolbarConfig(
           ],
         },
         'break',
-        {
+        modelingCommand('Extrude', {
           id: 'extrude',
-          command: 'modeling:Extrude',
-          onClick: () =>
-            commands.send({
-              type: 'Find and select command',
-              data: { name: 'Extrude', groupId: 'modeling' },
-            }),
-          icon: 'extrude',
-          status: 'available',
-          title: 'Extrude',
-          links: [
-            {
-              label: 'KCL docs',
-              url: withSiteBaseURL(
-                '/docs/kcl-std/functions/std-sketch-extrude'
-              ),
-            },
-          ],
-        },
-        {
+        }),
+        modelingCommand('Sweep', {
           id: 'sweep',
-          command: 'modeling:Sweep',
-          onClick: () =>
-            commands.send({
-              type: 'Find and select command',
-              data: { name: 'Sweep', groupId: 'modeling' },
-            }),
-          icon: 'sweep',
-          status: 'available',
-          title: 'Sweep',
-          links: [
-            {
-              label: 'KCL docs',
-              url: withSiteBaseURL('/docs/kcl-std/functions/std-sketch-sweep'),
-            },
-          ],
-        },
-        {
+        }),
+        modelingCommand('Loft', {
           id: 'loft',
-          command: 'modeling:Loft',
-          onClick: () =>
-            commands.send({
-              type: 'Find and select command',
-              data: { name: 'Loft', groupId: 'modeling' },
-            }),
-          icon: 'loft',
-          status: 'available',
-          title: 'Loft',
-          links: [
-            {
-              label: 'KCL docs',
-              url: withSiteBaseURL('/docs/kcl-std/functions/std-sketch-loft'),
-            },
-          ],
-        },
-        {
+        }),
+        modelingCommand('Revolve', {
           id: 'revolve',
-          command: 'modeling:Revolve',
-          onClick: () =>
-            commands.send({
-              type: 'Find and select command',
-              data: { name: 'Revolve', groupId: 'modeling' },
-            }),
-          icon: 'revolve',
-          status: 'available',
-          title: 'Revolve',
-          links: [
-            {
-              label: 'KCL docs',
-              url: withSiteBaseURL(
-                '/docs/kcl-std/functions/std-sketch-revolve'
-              ),
-            },
+          extraLinks: [
             {
               label: 'KCL example',
               url: withSiteBaseURL('/docs/kcl-samples/ball-bearing'),
             },
           ],
-        },
+        }),
         'break',
-        {
+        modelingCommand('Fillet', {
           id: 'fillet3d',
-          command: 'modeling:Fillet',
-          onClick: () =>
-            commands.send({
-              type: 'Find and select command',
-              data: { name: 'Fillet', groupId: 'modeling' },
-            }),
-          icon: 'fillet3d',
-          status: 'available',
-          title: 'Fillet',
-          links: [
-            {
-              label: 'KCL docs',
-              url: withSiteBaseURL('/docs/kcl-std/functions/std-solid-fillet'),
-            },
-          ],
-        },
-        {
+        }),
+        modelingCommand('Chamfer', {
           id: 'chamfer3d',
-          command: 'modeling:Chamfer',
-          onClick: () =>
-            commands.send({
-              type: 'Find and select command',
-              data: { name: 'Chamfer', groupId: 'modeling' },
-            }),
-          icon: 'chamfer3d',
-          status: 'available',
-          title: 'Chamfer',
-          extraInfo:
-            'Chamfers cannot touch other chamfers yet. This is under development, see issue tracker.',
-          links: [
-            {
-              label: 'issue tracker',
-              url: 'https://github.com/KittyCAD/modeling-app/issues/6617',
-            },
-            {
-              label: 'KCL docs',
-              url: withSiteBaseURL('/docs/kcl-std/functions/std-solid-chamfer'),
-            },
-          ],
-        },
-        {
+        }),
+        modelingCommand('Shell', {
           id: 'shell',
-          command: 'modeling:Shell',
-          onClick: () => {
-            commands.send({
-              type: 'Find and select command',
-              data: { name: 'Shell', groupId: 'modeling' },
-            })
-          },
-          icon: 'shell',
-          status: 'available',
-          title: 'Shell',
-          links: [
-            {
-              label: 'KCL docs',
-              url: withSiteBaseURL('/docs/kcl-std/functions/std-solid-shell'),
-            },
-          ],
-        },
-        {
+        }),
+        modelingCommand('Hole', {
           id: 'hole',
-          command: 'modeling:Hole',
-          onClick: () => {
-            commands.send({
-              type: 'Find and select command',
-              data: { name: 'Hole', groupId: 'modeling' },
-            })
-          },
-          icon: 'hole',
-          status: 'available',
-          title: 'Hole',
-          links: [
-            {
-              label: 'KCL docs',
-              url: withSiteBaseURL('/docs/kcl-std/modules/std-hole'),
-            },
-          ],
-        },
+        }),
         'break',
         {
           id: 'booleans',
           array: [
-            {
+            modelingCommand('Boolean Union', {
               id: 'boolean-union',
-              command: 'modeling:Boolean Union',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'Boolean Union', groupId: 'modeling' },
-                }),
-              icon: 'booleanUnion',
-              status: 'available',
               title: 'Union',
-              links: [
-                {
-                  label: 'KCL docs',
-                  url: withSiteBaseURL(
-                    '/docs/kcl-std/functions/std-solid-union'
-                  ),
-                },
-              ],
-            },
-            {
-              id: 'boolean-subtract',
-              command: 'modeling:Boolean Subtract',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'Boolean Subtract', groupId: 'modeling' },
-                }),
-              icon: 'booleanSubtract',
-              status: 'available',
-              title: 'Subtract',
-              links: [
-                {
-                  label: 'KCL docs',
-                  url: withSiteBaseURL(
-                    '/docs/kcl-std/functions/std-solid-subtract'
-                  ),
-                },
-              ],
-            },
-            {
-              id: 'boolean-intersect',
-              command: 'modeling:Boolean Intersect',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'Boolean Intersect', groupId: 'modeling' },
-                }),
-              icon: 'booleanIntersect',
-              status: 'available',
-              title: 'Intersect',
-              links: [
-                {
-                  label: 'KCL docs',
-                  url: withSiteBaseURL(
-                    '/docs/kcl-std/functions/std-solid-intersect'
-                  ),
-                },
-              ],
-            },
-          ],
-        },
-        {
-          id: 'split',
-          command: 'modeling:Boolean Split',
-          onClick: () =>
-            commands.send({
-              type: 'Find and select command',
-              data: { name: 'Boolean Split', groupId: 'modeling' },
             }),
-          icon: 'split',
-          status: 'available',
-          title: 'Split',
-          links: [
-            {
-              label: 'KCL docs',
-              url: withSiteBaseURL('/docs/kcl-std/functions/std-solid-split'),
-            },
+            modelingCommand('Boolean Subtract', {
+              id: 'boolean-subtract',
+              title: 'Subtract',
+            }),
+            modelingCommand('Boolean Intersect', {
+              id: 'boolean-intersect',
+              title: 'Intersect',
+            }),
           ],
         },
+        modelingCommand('Boolean Split', {
+          id: 'split',
+          title: 'Split',
+        }),
         {
           id: 'surface',
           array: [
-            {
+            modelingCommand('Blend', {
               id: 'blend-surface',
-              command: 'modeling:Blend',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'Blend', groupId: 'modeling' },
-                }),
-              icon: 'blend',
-              status: 'experimental',
-              title: 'Blend',
-              links: [
-                {
-                  label: 'API docs',
-                  url: withSiteBaseURL(
-                    '/docs/kcl-std/functions/std-solid-blend'
-                  ),
-                },
-              ],
-            },
-            {
+            }),
+            modelingCommand('Flip Surface', {
               id: 'flip-surface',
-              command: 'modeling:Flip Surface',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'Flip Surface', groupId: 'modeling' },
-                }),
-              icon: 'flipSurface',
-              status: 'available',
-              title: 'Flip Surface',
-              links: [
-                {
-                  label: 'API docs',
-                  url: withSiteBaseURL(
-                    '/docs/kcl-std/functions/std-solid-flipSurface'
-                  ),
-                },
-              ],
-            },
-            {
+            }),
+            modelingCommand('Join Surfaces', {
               id: 'join-surfaces',
-              command: 'modeling:Join Surfaces',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'Join Surfaces', groupId: 'modeling' },
-                }),
-              status: 'available',
-              icon: 'joinSurfaces',
-              title: 'Join Surfaces',
-              links: [
-                {
-                  label: 'API docs',
-                  url: withSiteBaseURL(
-                    '/docs/kcl-std/functions/std-surface-joinSurfaces'
-                  ),
-                },
-              ],
-            },
-            {
+            }),
+            modelingCommand('Delete Face', {
               id: 'delete-face',
-              command: 'modeling:Delete Face',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'Delete Face', groupId: 'modeling' },
-                }),
-              icon: 'deleteFace',
-              status: 'experimental',
-              title: 'Delete Face',
-              links: [
-                {
-                  label: 'API docs',
-                  url: withSiteBaseURL(
-                    '/docs/kcl-std/functions/std-solid-deleteFace'
-                  ),
-                },
-              ],
-            },
+            }),
           ],
         },
         'break',
         {
           id: 'planes',
           array: [
-            {
+            modelingCommand('Offset plane', {
               id: 'plane-offset',
-              command: 'modeling:Offset plane',
-              onClick: () => {
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'Offset plane', groupId: 'modeling' },
-                })
-              },
-              icon: 'plane',
-              status: 'available',
               title: 'Offset Plane',
-              links: [
-                {
-                  label: 'KCL docs',
-                  url: withSiteBaseURL(
-                    '/docs/kcl-std/functions/std-offsetPlane'
-                  ),
-                },
-              ],
-            },
+            }),
             {
               id: 'plane-points',
               onClick: () =>
@@ -1066,100 +841,24 @@ export function buildToolbarConfig(
             },
           ],
         },
-        {
+        modelingCommand('Helix', {
           id: 'helix',
-          command: 'modeling:Helix',
-          onClick: () => {
-            commands.send({
-              type: 'Find and select command',
-              data: { name: 'Helix', groupId: 'modeling' },
-            })
-          },
-          icon: 'helix',
-          status: 'available',
-          title: 'Helix',
-          links: [
-            {
-              label: 'KCL docs',
-              url: withSiteBaseURL('/docs/kcl-std/functions/std-helix'),
-            },
-          ],
-        },
+        }),
         {
           id: 'gears',
           array: [
-            {
+            modelingCommand('Helical Gear', {
               id: 'gear-helical',
-              command: 'modeling:Helical Gear',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'Helical Gear', groupId: 'modeling' },
-                }),
-              icon: 'gear',
-              status: 'experimental',
-              title: 'Helical Gear',
-              links: [
-                {
-                  label: 'KCL docs',
-                  url: withSiteBaseURL('/docs/kcl-std/modules/std-gear'),
-                },
-              ],
-            },
-            {
+            }),
+            modelingCommand('Spur Gear', {
               id: 'gear-spur',
-              command: 'modeling:Spur Gear',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'Spur Gear', groupId: 'modeling' },
-                }),
-              icon: 'gear',
-              status: 'experimental',
-              title: 'Spur Gear',
-              links: [
-                {
-                  label: 'KCL docs',
-                  url: withSiteBaseURL('/docs/kcl-std/modules/std-gear'),
-                },
-              ],
-            },
-            {
+            }),
+            modelingCommand('Herringbone Gear', {
               id: 'gear-herringbone',
-              command: 'modeling:Herringbone Gear',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'Herringbone Gear', groupId: 'modeling' },
-                }),
-              icon: 'gear',
-              status: 'experimental',
-              title: 'Herringbone Gear',
-              links: [
-                {
-                  label: 'KCL docs',
-                  url: withSiteBaseURL('/docs/kcl-std/modules/std-gear'),
-                },
-              ],
-            },
-            {
+            }),
+            modelingCommand('Ring Gear', {
               id: 'gear-ring',
-              command: 'modeling:Ring Gear',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'Ring Gear', groupId: 'modeling' },
-                }),
-              icon: 'gear',
-              status: 'experimental',
-              title: 'Ring Gear',
-              links: [
-                {
-                  label: 'KCL docs',
-                  url: withSiteBaseURL('/docs/kcl-std/modules/std-gear'),
-                },
-              ],
-            },
+            }),
           ],
         },
         'break',
@@ -1186,527 +885,114 @@ export function buildToolbarConfig(
         {
           id: 'transform',
           array: [
-            {
+            modelingCommand('Translate', {
               id: 'translate',
-              command: 'modeling:Translate',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'Translate', groupId: 'modeling' },
-                }),
-              icon: 'move',
-              status: 'available',
-              title: 'Translate',
-              links: [
-                {
-                  label: 'API docs',
-                  url: withSiteBaseURL(
-                    '/docs/kcl-std/functions/std-transform-translate'
-                  ),
-                },
-              ],
-            },
-            {
+            }),
+            modelingCommand('Rotate', {
               id: 'rotate',
-              command: 'modeling:Rotate',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'Rotate', groupId: 'modeling' },
-                }),
-              icon: 'rotate',
-              status: 'available',
-              title: 'Rotate',
-              links: [
-                {
-                  label: 'API docs',
-                  url: withSiteBaseURL(
-                    '/docs/kcl-std/functions/std-transform-rotate'
-                  ),
-                },
-              ],
-            },
-            {
+            }),
+            modelingCommand('Scale', {
               id: 'scale',
-              command: 'modeling:Scale',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'Scale', groupId: 'modeling' },
-                }),
-              icon: 'scale',
-              status: 'available',
-              title: 'Scale',
-              links: [
-                {
-                  label: 'API docs',
-                  url: 'https://zoo.dev/docs/kcl-std/functions/std-transform-scale',
-                },
-              ],
-            },
-            {
+            }),
+            modelingCommand('Clone', {
               id: 'clone',
-              command: 'modeling:Clone',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'Clone', groupId: 'modeling' },
-                }),
-              status: 'available',
-              title: 'Clone',
-              icon: 'clone',
-              links: [
-                {
-                  label: 'API docs',
-                  url: withSiteBaseURL('/docs/kcl-std/functions/std-clone'),
-                },
-              ],
-            },
-            {
+            }),
+            modelingCommand('Mirror 3D', {
               id: 'mirror3d',
-              command: 'modeling:Mirror 3D',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'Mirror 3D', groupId: 'modeling' },
-                }),
-              icon: 'mirror3d',
-              status: 'available',
-              title: 'Mirror',
-              links: [
-                {
-                  label: 'KCL docs',
-                  url: withSiteBaseURL(
-                    '/docs/kcl-std/functions/std-transform-mirror3d'
-                  ),
-                },
-              ],
-            },
-            {
+            }),
+            modelingCommand('Appearance', {
               id: 'appearance',
-              command: 'modeling:Appearance',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'Appearance', groupId: 'modeling' },
-                }),
-              status: 'available',
-              title: 'Appearance',
               icon: 'text',
-              links: [
-                {
-                  label: 'API docs',
-                  url: withSiteBaseURL(
-                    '/docs/kcl-std/functions/std-appearance'
-                  ),
-                },
-              ],
-            },
-            {
+            }),
+            modelingCommand('Delete', {
               id: 'delete',
-              command: 'modeling:Delete',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'Delete', groupId: 'modeling' },
-                }),
-              status: 'available',
-              title: 'Delete',
-              icon: 'trash',
-              links: [
-                {
-                  label: 'API docs',
-                  url: withSiteBaseURL(
-                    '/docs/kcl-std/functions/std-transform-delete'
-                  ),
-                },
-              ],
-            },
+            }),
           ],
         },
         {
           id: 'pattern',
           array: [
-            {
+            modelingCommand('Pattern Circular 3D', {
               id: 'pattern-circular-3d',
-              command: 'modeling:Pattern Circular 3D',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'Pattern Circular 3D', groupId: 'modeling' },
-                }),
-              status: 'available',
               title: 'Circular Pattern',
-              icon: 'patternCircular3d',
-              links: [
-                {
-                  label: 'KCL docs',
-                  url: withSiteBaseURL(
-                    '/docs/kcl-std/functions/std-solid-patternCircular3d'
-                  ),
-                },
-              ],
-            },
-            {
+            }),
+            modelingCommand('Pattern Linear 3D', {
               id: 'pattern-linear-3d',
-              command: 'modeling:Pattern Linear 3D',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'Pattern Linear 3D', groupId: 'modeling' },
-                }),
-              status: 'available',
               title: 'Linear Pattern',
-              icon: 'patternLinear3d',
-              links: [
-                {
-                  label: 'KCL docs',
-                  url: withSiteBaseURL(
-                    '/docs/kcl-std/functions/std-solid-patternLinear3d'
-                  ),
-                },
-              ],
-            },
+            }),
           ],
         },
         'break',
         {
           id: 'gdt',
           array: sortToolbarItemsByTitle([
-            {
+            modelingCommand('GDT Flatness', {
               id: 'gdt-flatness',
-              command: 'modeling:GDT Flatness',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'GDT Flatness', groupId: 'modeling' },
-                }),
-              status: 'available',
               title: 'Flatness',
-              icon: 'gdtFlatness',
-              links: [
-                {
-                  label: 'KCL docs',
-                  url: withSiteBaseURL(
-                    '/docs/kcl-std/functions/std-gdt-flatness'
-                  ),
-                },
-              ],
-            },
-            {
+            }),
+            modelingCommand('GDT Straightness', {
               id: 'gdt-straightness',
-              command: 'modeling:GDT Straightness',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'GDT Straightness', groupId: 'modeling' },
-                }),
-              status: 'available',
               title: 'Straightness',
-              icon: 'gdtStraightness',
-              links: [
-                {
-                  label: 'KCL docs',
-                  url: withSiteBaseURL(
-                    '/docs/kcl-std/functions/std-gdt-straightness'
-                  ),
-                },
-              ],
-            },
-            {
+            }),
+            modelingCommand('GDT Circularity', {
               id: 'gdt-circularity',
-              command: 'modeling:GDT Circularity',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'GDT Circularity', groupId: 'modeling' },
-                }),
-              status: 'available',
               title: 'Circularity',
-              icon: 'gdtCircularity',
-              links: [
-                {
-                  label: 'KCL docs',
-                  url: withSiteBaseURL(
-                    '/docs/kcl-std/functions/std-gdt-circularity'
-                  ),
-                },
-              ],
-            },
-            {
+            }),
+            modelingCommand('GDT Cylindricity', {
               id: 'gdt-cylindricity',
-              command: 'modeling:GDT Cylindricity',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'GDT Cylindricity', groupId: 'modeling' },
-                }),
-              status: 'available',
               title: 'Cylindricity',
-              icon: 'gdtCylindricity',
-              links: [
-                {
-                  label: 'KCL docs',
-                  url: withSiteBaseURL(
-                    '/docs/kcl-std/functions/std-gdt-cylindricity'
-                  ),
-                },
-              ],
-            },
-            {
+            }),
+            modelingCommand('GDT Datum', {
               id: 'gdt-datum',
-              command: 'modeling:GDT Datum',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'GDT Datum', groupId: 'modeling' },
-                }),
-              status: 'available',
               title: 'Datum',
-              icon: 'gdtDatum',
-              links: [
-                {
-                  label: 'KCL docs',
-                  url: withSiteBaseURL('/docs/kcl-std/functions/std-gdt-datum'),
-                },
-              ],
-            },
-            {
+            }),
+            modelingCommand('GDT Profile', {
               id: 'gdt-profile',
-              command: 'modeling:GDT Profile',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'GDT Profile', groupId: 'modeling' },
-                }),
-              status: 'available',
               title: 'Profile',
-              icon: 'gdtProfile',
-              links: [
-                {
-                  label: 'KCL docs',
-                  url: withSiteBaseURL(
-                    '/docs/kcl-std/functions/std-gdt-profile'
-                  ),
-                },
+              extraLinks: [
+                stdLibDocsLink('gdt::profileSurface', 'KCL docs (faces)'),
               ],
-            },
-            {
+            }),
+            modelingCommand('GDT Position', {
               id: 'gdt-position',
-              command: 'modeling:GDT Position',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'GDT Position', groupId: 'modeling' },
-                }),
-              status: 'available',
               title: 'Position',
-              icon: 'gdtPosition',
-              links: [
-                {
-                  label: 'KCL docs',
-                  url: withSiteBaseURL(
-                    '/docs/kcl-std/functions/std-gdt-position'
-                  ),
-                },
-              ],
-            },
-            {
+            }),
+            modelingCommand('GDT Concentricity', {
               id: 'gdt-concentricity',
-              command: 'modeling:GDT Concentricity',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: {
-                    name: 'GDT Concentricity',
-                    groupId: 'modeling',
-                  },
-                }),
-              status: 'available',
               title: 'Concentricity',
-              icon: 'gdtConcentricity',
-              links: [
-                {
-                  label: 'KCL docs',
-                  url: withSiteBaseURL(
-                    '/docs/kcl-std/functions/std-gdt-concentricity'
-                  ),
-                },
-              ],
-            },
-            {
+            }),
+            modelingCommand('GDT Symmetry', {
               id: 'gdt-symmetry',
-              command: 'modeling:GDT Symmetry',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: {
-                    name: 'GDT Symmetry',
-                    groupId: 'modeling',
-                  },
-                }),
-              status: 'available',
               title: 'Symmetry',
-              icon: 'gdtSymmetry',
-              links: [
-                {
-                  label: 'KCL docs',
-                  url: withSiteBaseURL(
-                    '/docs/kcl-std/functions/std-gdt-symmetry'
-                  ),
-                },
-              ],
-            },
-            {
+            }),
+            modelingCommand('GDT Runout', {
               id: 'gdt-runout',
-              command: 'modeling:GDT Runout',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: {
-                    name: 'GDT Runout',
-                    groupId: 'modeling',
-                  },
-                }),
-              status: 'available',
               title: 'Runout',
-              icon: 'gdtRunout',
-              links: [
-                {
-                  label: 'KCL docs',
-                  url: withSiteBaseURL(
-                    '/docs/kcl-std/functions/std-gdt-runout'
-                  ),
-                },
-              ],
-            },
-            {
+            }),
+            modelingCommand('GDT Angularity', {
               id: 'gdt-angularity',
-              command: 'modeling:GDT Angularity',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: {
-                    name: 'GDT Angularity',
-                    groupId: 'modeling',
-                  },
-                }),
-              status: 'available',
               title: 'Angularity',
-              icon: 'angle',
-              links: [
-                {
-                  label: 'KCL docs',
-                  url: withSiteBaseURL(
-                    '/docs/kcl-std/functions/std-gdt-angularity'
-                  ),
-                },
-              ],
-            },
-            {
+            }),
+            modelingCommand('GDT Perpendicularity', {
               id: 'gdt-perpendicularity',
-              command: 'modeling:GDT Perpendicularity',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: {
-                    name: 'GDT Perpendicularity',
-                    groupId: 'modeling',
-                  },
-                }),
-              status: 'available',
               title: 'Perpendicularity',
-              icon: 'perpendicular',
-              links: [
-                {
-                  label: 'KCL docs',
-                  url: withSiteBaseURL(
-                    '/docs/kcl-std/functions/std-gdt-perpendicularity'
-                  ),
-                },
-              ],
-            },
-            {
+            }),
+            modelingCommand('GDT Parallelism', {
               id: 'gdt-parallelism',
-              command: 'modeling:GDT Parallelism',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: {
-                    name: 'GDT Parallelism',
-                    groupId: 'modeling',
-                  },
-                }),
-              status: 'available',
               title: 'Parallelism',
-              icon: 'parallel',
-              links: [
-                {
-                  label: 'KCL docs',
-                  url: withSiteBaseURL(
-                    '/docs/kcl-std/functions/std-gdt-parallelism'
-                  ),
-                },
-              ],
-            },
-            {
+            }),
+            modelingCommand('GDT Distance', {
               id: 'gdt-distance',
-              command: 'modeling:GDT Distance',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'GDT Distance', groupId: 'modeling' },
-                }),
-              status: 'available',
               title: 'Distance',
-              icon: 'dimension',
-              links: [
-                {
-                  label: 'KCL docs',
-                  url: withSiteBaseURL(
-                    '/docs/kcl-std/functions/std-gdt-distance'
-                  ),
-                },
-              ],
-            },
-            {
+            }),
+            modelingCommand('GDT Annotation', {
               id: 'gdt-annotation',
-              command: 'modeling:GDT Annotation',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'GDT Annotation', groupId: 'modeling' },
-                }),
-              status: 'available',
               title: 'Annotation',
-              icon: 'text',
-              links: [
-                {
-                  label: 'KCL docs',
-                  url: withSiteBaseURL(
-                    '/docs/kcl-std/functions/std-gdt-annotation'
-                  ),
-                },
-              ],
-            },
-            {
+            }),
+            modelingCommand('GDT Note', {
               id: 'gdt-note',
-              command: 'modeling:GDT Note',
-              onClick: () =>
-                commands.send({
-                  type: 'Find and select command',
-                  data: { name: 'GDT Note', groupId: 'modeling' },
-                }),
-              status: 'available',
               title: 'Note',
-              icon: 'note',
-              links: [
-                {
-                  label: 'KCL docs',
-                  url: withSiteBaseURL('/docs/kcl-std/functions/std-gdt-note'),
-                },
-              ],
-            },
+            }),
           ]),
         },
       ],
