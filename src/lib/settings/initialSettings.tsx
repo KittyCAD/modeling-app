@@ -1,7 +1,10 @@
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
-import type { LayoutsWithMetadata } from '@src/lib/layout/types'
+import type {
+  LayoutsWithMetadata,
+  PaneOpenBehavior,
+} from '@src/lib/layout/types'
 import type { OnboardingStatus } from '@src/lib/onboardingPaths'
 import { useRef } from 'react'
 
@@ -638,11 +641,26 @@ function createCoreSettings() {
     /**
      * App-owned layout settings.
      *
-     * These settings are intentionally hidden from the generic settings UI and
-     * command bar. They persist layout state that should travel through the same
-     * user settings file as plugin and other TypeScript-only settings.
+     * Layout preferences and hidden saved arrangements share the user settings
+     * file with other TypeScript-only settings.
      */
     layout: {
+      paneOpenBehavior: new Setting<PaneOpenBehavior>({
+        defaultValue: 'multiple',
+        description:
+          'Open multiple tabs together or a single tab at a time in each panel group.',
+        hideOnLevel: 'project',
+        validate: (v) => v === 'multiple' || v === 'single',
+        commandConfig: {
+          inputType: 'options',
+          defaultValueFromContext: (context) =>
+            context.layout.tabOpenBehavior.current,
+          options: [
+            { name: 'Multiple', value: 'multiple' },
+            { name: 'Single', value: 'single' },
+          ],
+        },
+      }),
       configs: new Setting<LayoutsWithMetadata>({
         defaultValue: {},
         hideOnLevel: 'project',

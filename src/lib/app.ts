@@ -105,6 +105,7 @@ import {
 } from '@src/registry/registry'
 import type { SnapshotFrom, Subscription } from 'xstate'
 import { createActor } from 'xstate'
+import { applyPaneOpenBehavior } from '@src/lib/layout'
 
 const appCommandsSlot = new Slot()
 
@@ -1009,6 +1010,10 @@ export class App implements AppSubsystems {
         newCurrentProjection
     }
 
+    const newPaneOpenBehavior = context.layout.paneOpenBehavior.current
+    if (newPaneOpenBehavior !== this.lastSettings.layout.paneOpenBehavior) {
+      applyPaneOpenBehavior(this.layout.get(), newPaneOpenBehavior)
+    }
     // TODO: Migrate settings to not be an XState actor so we don't need to save a snapshot
     // of the last settings to know if they've changed.
     this.lastSettings = getAllCurrentSettings(

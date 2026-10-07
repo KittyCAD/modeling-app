@@ -49,52 +49,28 @@ const webRuntime: RuntimeInfo = {
   isPlaywright: false,
 }
 
-type TestSettingsSnapshot = {
-  value: string
-  context: ReturnType<typeof createSettings>
-}
-
-type TestSettingsRegistryService = SettingsRegistryService & {
-  resolve: () => void
-}
-
-function createSettingsService({
-  settings = createSettings(),
-  initialValue = 'idle',
-}: {
-  settings?: ReturnType<typeof createSettings>
-  initialValue?: string
-} = {}): TestSettingsRegistryService {
-  let snapshot: TestSettingsSnapshot = {
-    value: initialValue,
-    context: settings,
-  }
-  const subscribers = new Set<(snapshot: TestSettingsSnapshot) => void>()
-  const actor = {
-    getSnapshot: () => snapshot,
-    subscribe: vi.fn((subscriber: (snapshot: TestSettingsSnapshot) => void) => {
-      subscribers.add(subscriber)
-      return { unsubscribe: vi.fn(() => subscribers.delete(subscriber)) }
-    }),
+/**
+ * Create a test settings object that you can alter for layout tests,
+ * as well as a mock of the service that the layout system relies on.
+ */
+function createTestSettings() {
+  const initialSettings = createSettings()
+  const settings = signal(initialSettings)
+  const service: SettingsRegistryService = {
+    actor: {
+      send: vi.fn(),
+      getSnapshot: vi.fn().mockReturnValue({ value: 'idle' }),
+    } as unknown as SettingsRegistryService['actor'],
+    current: settings,
+    get: () => settings.value,
     send: vi.fn(),
+    useSettings: vi.fn(),
+    userFilePath: vi.fn(),
   }
-
   return {
-    actor,
-    current: signal(settings),
-    get: () => settings,
-    send: actor.send,
-    useSettings: () => settings,
-    resolve: () => {
-      snapshot = {
-        value: 'idle',
-        context: settings,
-      }
-      for (const subscriber of subscribers) {
-        subscriber(snapshot)
-      }
-    },
-  } as unknown as TestSettingsRegistryService
+    settings,
+    service,
+  }
 }
 
 function createRuntimeService(runtimeInfo = playwrightRuntime) {
@@ -188,15 +164,16 @@ describe('layout extension', () => {
     registry = undefined
   })
 
-  it('toggles panes through the service and restores defaults on reset', () => {
-    const settings = createSettings()
+  it('applies the tab preference to loading, opening, contributions, and resets', () => {
+    const { settings, service } = createTestSettings()
 
     const savedLayout = togglePaneLayoutNode({
       rootLayout: structuredClone(playwrightLayoutConfig),
       targetNodeId: 'variables',
       shouldExpand: true,
+      paneOpenBehavior: settings.value.layout.paneOpenBehavior.current,
     })
-    settings.layout.configs.user = {
+    settings.value.layout.configs.user = {
       default: createLayoutWithMetadata(savedLayout),
     }
 
@@ -206,7 +183,7 @@ describe('layout extension', () => {
         id: 'test-dependencies',
         providesServices: [
           provideService(runtimeService, createRuntimeService()),
-          provideService(settingsService, createSettingsService({ settings })),
+          provideService(settingsService, service),
           provideService(userFeaturesService, createUserFeaturesService()),
         ],
       }),
@@ -219,17 +196,51 @@ describe('layout extension', () => {
         targetNodeId: DefaultLayoutToolbarID.Left,
       })
 
+    // TODO: We do not test that changing the setting changes the layout here,
+    // because for now all effects that fire when a setting is changed must live
+    // separate from the setting's definition: in this case, the effect is in
+    // `App.onSettingsUpdate`, and this unit test doesn't mock or import `App`.
     expect(toolbar()).toMatchObject({ activeIndices: [1, 3], sizes: [50, 50] })
+
+    // Exercise opening tabs both before and after the current tab's index.
     layout.togglePane('variables')
     expect(toolbar()).toMatchObject({ activeIndices: [1], sizes: [100] })
+    settings.value.layout.paneOpenBehavior.user = 'single'
     layout.togglePane('feature-tree')
-    expect(toolbar()).toMatchObject({ activeIndices: [0, 1], sizes: [50, 50] })
+    expect(toolbar()).toMatchObject({ activeIndices: [0], sizes: [100] })
     layout.togglePane('feature-tree')
-    expect(toolbar()).toMatchObject({ activeIndices: [1], sizes: [100] })
-    layout.togglePane('code')
     expect(toolbar()).toMatchObject({ activeIndices: [], sizes: [] })
+    layout.togglePane('code')
+    expect(toolbar()).toMatchObject({ activeIndices: [1], sizes: [100] })
+
+    settings.value.layout.paneOpenBehavior.user = 'multiple'
     layout.togglePane('variables')
-    expect(toolbar()).toMatchObject({ activeIndices: [3], sizes: [100] })
+    expect(toolbar()).toMatchObject({ activeIndices: [1, 3], sizes: [50, 50] })
+    settings.value.layout.paneOpenBehavior.user = 'single'
+
+    // We cannot test this "auto-pruning" behavior in a unit test until the subscriber in `App`
+    // is isolated to a service, see TODO above.
+    // expect(toolbar()).toMatchObject({ activeIndices: [1], sizes: [100] })
+
+    layout.applyContributions([
+      {
+        id: 'extra-tab',
+        kind: 'area',
+        initiallyOpen: true,
+        pane: {
+          id: 'extra-tab',
+          label: 'Extra',
+          icon: 'code',
+          type: LayoutType.Simple,
+          areaType: AreaType.Code,
+        },
+        placement: {
+          targetPaneId: DefaultLayoutToolbarID.Left,
+          position: 'start',
+        },
+      },
+    ])
+    expect(toolbar()).toMatchObject({ activeIndices: [0], sizes: [100] })
     layout.reset()
     expect(toolbar()).toMatchObject({ activeIndices: [1], sizes: [100] })
   })
@@ -246,7 +257,7 @@ describe('layout extension', () => {
       defineRegistryItem({
         id: 'test-settings',
         providesServices: [
-          provideService(settingsService, createSettingsService()),
+          provideService(settingsService, createTestSettings().service),
         ],
       }),
       defineRegistryItem({
@@ -268,14 +279,10 @@ describe('layout extension', () => {
   })
 
   it('applies contributed user-feature transformations after settings hydrate', () => {
-    const settings = createSettings()
-    settings.layout.configs.user = {
+    const { settings, service } = createTestSettings()
+    settings.value.layout.configs.user = {
       default: createLayoutWithMetadata(structuredClone(defaultLayoutConfig)),
     }
-    const testSettingsService = createSettingsService({
-      settings,
-      initialValue: 'loadingUser',
-    })
     const testUserFeaturesService = createUserFeaturesService()
 
     registry = new Registry()
@@ -288,9 +295,7 @@ describe('layout extension', () => {
       }),
       defineRegistryItem({
         id: 'test-settings',
-        providesServices: [
-          provideService(settingsService, testSettingsService),
-        ],
+        providesServices: [provideService(settingsService, service)],
       }),
       defineRegistryItem({
         id: 'test-user-features',
@@ -312,7 +317,6 @@ describe('layout extension', () => {
     ])
 
     const layout = registry.get(layoutService)
-    testSettingsService.resolve()
     expect(hasFeatureControlledPane(layout.get())).toBe(false)
 
     testUserFeaturesService.setFeatureIds([EXPERIMENTAL_POINT_AND_CLICK_FLAG])
