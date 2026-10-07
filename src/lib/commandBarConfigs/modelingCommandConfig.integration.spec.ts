@@ -610,9 +610,6 @@ describe('stdlib command arg derivation', () => {
       required: false,
     })
     expect(args.direction.status).toBeUndefined()
-    expect(
-      modelingStdLibCommandArgs<ModelingCommandSchema['Hole']>('Hole').cutAt
-    ).toMatchObject({ inputType: 'vector2d' })
   })
 
   it('derives command status from KCL stdlib metadata', () => {

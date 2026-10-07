@@ -73,7 +73,7 @@ const stdLibArgInputType = (ty: StdLibCommandArg['ty']) => {
   if (ty === 'TagDecl') {
     return 'tagDeclarator'
   }
-  if (ty === 'Point2d' || ty === '[number(Length); 2]') {
+  if (ty === 'Point2d') {
     return 'vector2d'
   }
   if (ty === 'Point3d') {
