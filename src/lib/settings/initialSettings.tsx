@@ -224,6 +224,8 @@ function createCoreSettings() {
         description:
           'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.',
         validate: (v) => typeof v === 'boolean',
+        // Only the local renderer lets users choose.
+        isEnabled: (context) => context.modeling.useLocalRenderer.current,
       }),
       /**
        * Whether the 3D scene is rendered on this device or streamed as video
