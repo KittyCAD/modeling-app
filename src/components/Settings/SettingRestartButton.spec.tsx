@@ -2,10 +2,16 @@ import { SettingRestartButton } from '@src/components/Settings/SettingRestartBut
 import { useApp, useSingletons } from '@src/lib/boot'
 import { Setting } from '@src/lib/settings/Setting'
 import { act, fireEvent, render, screen } from '@testing-library/react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { afterEach, expect, test, vi } from 'vitest'
 import { createActor, createMachine } from 'xstate'
 
 vi.mock('@src/lib/boot', () => ({ useApp: vi.fn(), useSingletons: vi.fn() }))
+vi.mock(import('react-router-dom'), async (importOriginal) => ({
+  ...(await importOriginal()),
+  useNavigate: vi.fn(),
+  useLocation: vi.fn(),
+}))
 
 afterEach(() => {
   vi.restoreAllMocks()
@@ -39,11 +45,21 @@ function setup({ connected = true } = {}) {
       },
     },
   } as unknown as ReturnType<typeof useSingletons>)
-  const reload = vi
-    .spyOn(window.location, 'reload')
-    .mockImplementation(() => undefined)
+  const events: string[] = []
+  const navigate = vi.fn(async (to: string) => {
+    events.push(`navigate ${to}`)
+  })
+  vi.mocked(useNavigate).mockReturnValue(
+    navigate as unknown as ReturnType<typeof useNavigate>
+  )
+  vi.mocked(useLocation).mockReturnValue({
+    pathname: '/file/some-project/settings',
+  } as ReturnType<typeof useLocation>)
+  const reload = vi.spyOn(window.location, 'reload').mockImplementation(() => {
+    events.push('reload')
+  })
   render(<SettingRestartButton setting={setting as Setting<unknown>} />)
-  return { setting, actor, reload }
+  return { setting, actor, reload, events }
 }
 
 test('is hidden while the live session already uses the saved value', () => {
@@ -64,15 +80,16 @@ test('is hidden when there is no engine session to restart', () => {
   expect(screen.queryByRole('button')).toBeNull()
 })
 
-test('waits for the change to be saved before restarting', async () => {
-  const { setting, actor, reload } = setup()
+test('saves the change and closes settings before restarting', async () => {
+  const { setting, actor, reload, events } = setup()
   act(() => {
     setting.user = false
   })
   fireEvent.click(screen.getByRole('button'))
   await Promise.resolve()
-  expect(reload).not.toHaveBeenCalled()
+  expect(events).toEqual([])
 
   actor.send({ type: 'saved' })
   await vi.waitFor(() => expect(reload).toHaveBeenCalledOnce())
+  expect(events).toEqual(['navigate /file/some-project', 'reload'])
 })
