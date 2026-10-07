@@ -206,7 +206,7 @@ async fn inner_offset_plane(
     let mut info = PlaneInfo::try_from(plane)?;
 
     let normal = info.x_axis.axes_cross_product(&info.y_axis);
-    info.origin += normal * offset.to_length_units(info.origin.units.unwrap_or(UnitLength::Millimeters));
+    info.origin += normal * offset.unwrap_to_length_units(info.origin.units.unwrap_or(UnitLength::Millimeters));
 
     let id = exec_state.next_uuid();
     let mut plane = Plane {

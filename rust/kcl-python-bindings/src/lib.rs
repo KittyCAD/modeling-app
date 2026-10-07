@@ -326,14 +326,31 @@ fn executor_settings(
     settings
 }
 
-async fn new_context_state(
+#[derive(Debug, Default)]
+struct ContextParams {
     current_file: Option<PathBuf>,
     mock: bool,
     highlight_edges: Option<bool>,
     geometry_only: bool,
     video_res_width: Option<u32>,
     video_res_height: Option<u32>,
+    token: Option<String>,
+    base_url: Option<String>,
+}
+
+// Keep the Python session's independent keyword options explicit at this boundary.
+async fn new_context_state(
     kcl_version: kcl_lib::KclVersion,
+    ContextParams {
+        current_file,
+        mock,
+        highlight_edges,
+        geometry_only,
+        video_res_width,
+        video_res_height,
+        token,
+        base_url,
+    }: ContextParams,
 ) -> Result<(ExecutorContext, kcl_lib::ExecState)> {
     let mut settings = executor_settings(current_file, highlight_edges, geometry_only);
     settings.video_res_width = video_res_width;
@@ -341,7 +358,7 @@ async fn new_context_state(
     let ctx = if mock {
         ExecutorContext::new_mock(Some(settings)).await
     } else {
-        ExecutorContext::new_with_client(settings, None, None, kcl_version).await?
+        ExecutorContext::new_with_client(settings, token, base_url, kcl_version).await?
     };
     let state = kcl_lib::ExecState::new(&ctx);
     Ok((ctx, state))
@@ -430,15 +447,16 @@ async fn run_kcl(
     } = load_and_parse(input).await?;
 
     let (ctx, mut state) = new_context_state(
-        path,
-        mock,
-        highlight_edges,
-        geometry_only,
-        None,
-        None,
         program
             .language_version()
             .map_err(|err| into_miette_for_parse(&filename, &code, err))?,
+        ContextParams {
+            current_file: path,
+            mock,
+            highlight_edges,
+            geometry_only,
+            ..Default::default()
+        },
     )
     .await
     .map_err(to_py_exception)?;
@@ -509,9 +527,17 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
         }
     };
 
-    let (ctx, mut state) = new_context_state(path, false, None, false, None, None, kcl_version)
-        .await
-        .map_err(to_py_exception)?;
+    let (ctx, mut state) = new_context_state(
+        kcl_version,
+        ContextParams {
+            current_file: path,
+            mock: false,
+            geometry_only: false,
+            ..Default::default()
+        },
+    )
+    .await
+    .map_err(to_py_exception)?;
     let result = match ctx.run(&program, &mut state).await {
         Ok((env_ref, _)) => {
             let outcome = state.into_exec_outcome(env_ref, &ctx).await.map_err(to_py_exception)?;
@@ -779,13 +805,13 @@ async fn import_and_snapshot_views(
     let zoom = zoom.unwrap_or(true);
     spawn_py(async move {
         let (ctx, _state) = new_context_state(
-            None,
-            false,
-            highlight_edges,
-            false,
-            None,
-            None,
             kcl_lib::KclVersion::default(),
+            ContextParams {
+                mock: false,
+                highlight_edges,
+                geometry_only: false,
+                ..Default::default()
+            },
         )
         .await
         .map_err(to_py_exception)?;

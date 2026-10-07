@@ -18,12 +18,12 @@ description: Physical properties radial-flow-centrifugal-impeller.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 85102.6179868768
+    "value": 85102.61232254379
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 174.1077135524923
+    "value": 174.10767971171026
   }
 }

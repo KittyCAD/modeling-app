@@ -197,6 +197,7 @@ pub use execution::SketchConstraintReport;
 pub use execution::SketchConstraintStatus;
 pub use execution::bust_cache;
 pub use execution::clear_mem_cache;
+pub use execution::kcl_value::is_kcl_version_available;
 pub use execution::typed_path::TypedPath;
 pub use fs::FileSystem;
 pub use fs::FileSystemHandle;
@@ -533,6 +534,8 @@ mod test {
             "@settings(defaultLengthUnit = mm)\nx = 1\n",
             "@settings(kclVersion = 1.0)\nx = 1\n",
             "@settings(kclVersion = 2.0)\nx = 1\n",
+            "@settings(kclVersion = 3.0)\nx = 1\n",
+            "@settings(kclVersion = \"3.0\")\nx = 1\n",
             "@settings(kclVersion = \"3.0-preview\")\nx = 1\n",
             "@settings(kclVersion = \"3-preview\")\nx = 1\n",
             "@settings(kclVersion = 2.0)\n@settings(kclVersion = \"3.0-preview\")\nx = 1\n",
@@ -564,6 +567,16 @@ mod test {
                 KclVersion::V2,
                 KclVersion::V3Preview,
             ),
+            (
+                "@settings(kclVersion = 3.0)\nx = 1\n",
+                KclVersion::V3Preview,
+                KclVersion::V3,
+            ),
+            (
+                "@settings(kclVersion = \"3.0-preview\")\nx = 1\n",
+                KclVersion::V3,
+                KclVersion::V3Preview,
+            ),
         ] {
             let mut program = Program::parse_no_errs(code).unwrap();
             program.kcl_version = supplied_version;
@@ -583,6 +596,8 @@ mod test {
             ("", KclVersion::V1),
             ("@settings(defaultLengthUnit = mm)", KclVersion::V1),
             ("@settings(kclVersion = 2.0)", KclVersion::V2),
+            ("@settings(kclVersion = 3.0)", KclVersion::V3),
+            ("@settings(kclVersion = \"3.0\")", KclVersion::V3),
             ("@settings(kclVersion = \"3.0-preview\")", KclVersion::V3Preview),
         ] {
             assert_eq!(

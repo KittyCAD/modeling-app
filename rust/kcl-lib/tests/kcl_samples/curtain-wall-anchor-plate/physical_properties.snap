@@ -18,12 +18,12 @@ description: Physical properties curtain-wall-anchor-plate.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 163086.57684403373
+    "value": 163086.57802074932
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 592.729667132493
+    "value": 592.7297220550779
   }
 }

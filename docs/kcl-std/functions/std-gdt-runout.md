@@ -53,7 +53,7 @@ Runout is applied regardless of feature size and does not use MMC or LMC.
 ### Examples
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 annotationPlane = offsetPlane(XZ, offset = 24mm)
 
@@ -80,10 +80,12 @@ controlledShaft = extrude(
   tagEnd = $controlledFreeEnd,
 )
 
-controlledUpperShoulderEdge = getCommonEdge(faces = [
-  controlledShaft.sketch.tags.upperPerimeter,
-  controlledShoulder
-])
+controlledUpperShoulderEdge = {
+  sideFaces = [
+    controlledShaft.sketch.tags.upperPerimeter,
+    controlledShoulder
+  ]
+}
 
 datumSketch = sketch(on = YZ) {
   perimeter = circle(start = [var 18mm, var 0mm], center = [var 0mm, var 0mm])

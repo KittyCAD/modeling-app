@@ -317,6 +317,7 @@ export function createOnConnectionStateChange({
         dispatchEvent(new CustomEvent(EngineConnectionEvents.Offline, {}))
         tearDownForWebrtcState('peer-connection-closed')
         break
+      case 'new':
       default:
         break
     }

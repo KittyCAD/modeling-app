@@ -1,8 +1,5 @@
 import type { KclRuntimeFlags } from '@rust/kcl-lib/bindings/KclRuntimeFlags'
-import {
-  KCL_CEK_EXECUTOR_FEATURE_FLAG,
-  KCL_NEW_LEXER_PARSER_FEATURE_FLAG,
-} from '@src/lib/constants'
+import { KCL_NEW_LEXER_PARSER_FEATURE_FLAG } from '@src/lib/constants'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
   type UserFeaturesSettleSource,
@@ -21,15 +18,14 @@ export function kclRuntimeFlagsFromUserFeatures(
   userFeatures: RuntimeFlagUserFeatures
 ): KclRuntimeFlags {
   return {
-    use_cek_executor: userFeatures.has(KCL_CEK_EXECUTOR_FEATURE_FLAG, false)
-      ? 'On'
-      : 'Off',
     use_new_lexer_parser: userFeatures.has(
       KCL_NEW_LEXER_PARSER_FEATURE_FLAG,
       false
     )
       ? 'On'
       : 'Off',
+    // The API does not expose a parser feature flag yet.
+    use_new_parser: 'Off',
   }
 }
 

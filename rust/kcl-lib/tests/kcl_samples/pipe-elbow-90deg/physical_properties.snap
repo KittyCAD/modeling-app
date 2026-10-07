@@ -18,12 +18,12 @@ description: Physical properties pipe-elbow-90deg.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 150482.07265317615
+    "value": 150482.0730862093
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 674.9061638672653
+    "value": 674.9061919485063
   }
 }

@@ -37,6 +37,7 @@ export const useOnPageExit = ({
         initiatedBy: 'client',
       })
       sceneInfra.camControls.oldCameraState = undefined
+      sceneInfra.camControls.reconnectCameraState = undefined
     }
   }, [callback, engineCommandManager, sceneInfra])
 }

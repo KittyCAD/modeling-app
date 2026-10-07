@@ -510,6 +510,13 @@ fn kcl_version_expr(kcl_version: KclVersion) -> Result<Expr, KclError> {
             LiteralValue::String(kcl_version.as_str().to_owned()),
             format!("\"{}\"", kcl_version.as_str()),
         ),
+        crate::KclVersion::V3 => (
+            LiteralValue::Number {
+                value: 3.0,
+                suffix: NumericSuffix::None,
+            },
+            "3.0".to_owned(),
+        ),
     };
 
     Ok(Expr::Literal(BoxNode::new(Node::no_src(Literal {
@@ -5571,6 +5578,31 @@ startSketchOn(XY)"#,
 startSketchOn(XY)
 "#
         );
+    }
+
+    #[test]
+    fn test_change_kcl_version_writes_stable_version_as_number() {
+        for (source, expected) in [
+            ("x = 1\n", "@settings(kclVersion = 3.0)\n\nx = 1\n"),
+            (
+                "@settings(defaultLengthUnit = in)\nx = 1\n",
+                "@settings(defaultLengthUnit = in, kclVersion = 3.0)\n\nx = 1\n",
+            ),
+            (
+                "@settings(defaultLengthUnit = in, kclVersion = \"3.0-preview\")\nx = 1\n",
+                "@settings(defaultLengthUnit = in, kclVersion = 3.0)\n\nx = 1\n",
+            ),
+        ] {
+            let program = crate::Program::parse_no_errs(source).unwrap();
+            let changed = program.change_kcl_version(Some(KclVersion::V3)).unwrap();
+
+            assert_eq!(changed.kcl_version, KclVersion::V3);
+            assert_eq!(changed.language_version().unwrap(), KclVersion::V3);
+            assert_eq!(changed.recast(), expected, "{source}");
+
+            let reparsed = crate::Program::parse_no_errs(&changed.recast()).unwrap();
+            assert_eq!(reparsed.language_version().unwrap(), KclVersion::V3);
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]

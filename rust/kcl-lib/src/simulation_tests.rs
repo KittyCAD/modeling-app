@@ -446,7 +446,7 @@ fn assert_physical_properties_snapshot(test: &Test, actual: serde_json::Value) {
     // Missing, unreadable, or materially different snapshots use Insta's normal
     // failure reporting and update policy, including .snap.new review files.
     assert_snapshot(test, "Physical properties", || {
-        insta::assert_json_snapshot!("physical_properties", actual)
+        insta::assert_json_snapshot!("physical_properties", actual);
     });
 }
 
@@ -832,7 +832,7 @@ async fn execute_once(test: &Test, kcl_version: Option<KclVersion>) {
 
             let ok_snap = catch_unwind(AssertUnwindSafe(|| {
                 assert_snapshot(test, "Execution success", || {
-                    insta::assert_json_snapshot!("execution_success", ())
+                    insta::assert_json_snapshot!("execution_success", ());
                 })
             }));
 
@@ -899,7 +899,9 @@ async fn execute_once(test: &Test, kcl_version: Option<KclVersion>) {
                     panic!("Missing lints");
                 }
             } else {
-                assert_snapshot(test, "Lints", || insta::assert_json_snapshot!("lints", lint_findings));
+                assert_snapshot(test, "Lints", || {
+                    insta::assert_json_snapshot!("lints", lint_findings);
+                });
             }
 
             for result in snapshot_results {
@@ -987,14 +989,14 @@ fn common_snapshots(
         assert_snapshot(test, "Variables in memory after executing", || {
             insta::assert_json_snapshot!("program_memory", variables, {
                  ".**.sourceRange" => Vec::new(),
-            })
+            });
         })
     }));
     #[cfg(feature = "snapshot-engine-responses")]
     let responses_result_option = responses.map(|responses| {
         catch_unwind(AssertUnwindSafe(|| {
             assert_snapshot(test, "Root module engine responses", || {
-                insta::assert_json_snapshot!("root_module_engine_responses", responses)
+                insta::assert_json_snapshot!("root_module_engine_responses", responses);
             })
         }))
     });
@@ -10100,6 +10102,27 @@ mod fillets_referencing_other_fillets {
 }
 mod hex_fillet {
     const TEST_NAME: &str = "hex_fillet";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME).await
+    }
+}
+mod kcl_v3_stable_execution {
+    const TEST_NAME: &str = "kcl_v3_stable_execution";
 
     /// Test parsing KCL.
     #[test]

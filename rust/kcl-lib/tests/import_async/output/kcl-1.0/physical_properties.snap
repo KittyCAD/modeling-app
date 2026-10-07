@@ -18,12 +18,12 @@ description: Physical properties import_async.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 5431.1267741500715
+    "value": 4134.0832415657505
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 8.840586078577067
+    "value": 8.701953493954935
   }
 }

@@ -18,12 +18,12 @@ description: Physical properties utility-sink.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 7738136.351269883
+    "value": 7738136.11066992
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 34383.10704067585
+    "value": 34383.113022231104
   }
 }

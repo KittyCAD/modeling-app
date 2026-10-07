@@ -9,13 +9,6 @@ const normalizeEntityReference = vi.hoisted(() => vi.fn())
 const selectSketchPlane = vi.hoisted(() => vi.fn())
 
 vi.mock('@src/hooks/useModelingContext', () => ({ useModelingContext }))
-vi.mock('@src/lib/boot', () => ({
-  useApp: () => ({
-    userFeatures: {
-      useHas: () => false,
-    },
-  }),
-}))
 vi.mock('@src/lib/selections', () => ({
   engineTopologyFallbackFromReference: vi.fn(() => null),
   getEventForQueryEntityTypeWithPoint,

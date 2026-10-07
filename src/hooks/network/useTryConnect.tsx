@@ -35,6 +35,7 @@ const attemptToConnectToEngine = async ({
   kclVersion,
   rustContext,
   geometryOnly = false,
+  prepareForReconnect,
 }: {
   authToken: string
   videoWrapperRef: React.RefObject<HTMLDivElement | null>
@@ -46,6 +47,7 @@ const attemptToConnectToEngine = async ({
   kclVersion?: KclVersion
   rustContext: RustContext
   geometryOnly?: boolean
+  prepareForReconnect: (signal: AbortSignal) => Promise<undefined | Error>
 }) => {
   const codecError = !geometryOnly
     ? await preflightEngineVideoCodecSupport()
@@ -101,6 +103,7 @@ const attemptToConnectToEngine = async ({
           rustContext,
           geometryOnly,
           kclVersion,
+          prepareForReconnect,
         })
 
         if (geometryOnly) {
@@ -165,6 +168,15 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
   kclManager: KclManager
   rustContext: RustContext
 }) => {
+  const connection = engineCommandManager.connection
+  const reconnectCameraState = sceneInfra.camControls.reconnectCameraState
+  sceneInfra.camControls.reconnectCameraState = undefined
+  if (!reconnectCameraState && sceneInfra.camControls.oldCameraState) {
+    // Idle reconnects honor projection settings changed while disconnected.
+    sceneInfra.camControls.overrideOldCameraStateToPreventDesync()
+  }
+  const cameraState =
+    reconnectCameraState ?? sceneInfra.camControls.oldCameraState
   const providedSettings = getSettingsFromActorContext(settingsActor)
   const settings = jsAppSettings(providedSettings)
   EngineDebugger.addLog({
@@ -180,11 +192,28 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
     settings,
     kclManager.path || undefined
   )
+  if (engineCommandManager.connection !== connection) {
+    return
+  }
+  // Geometry-only connections keep the camera local, so there is no engine camera to restore.
+  if (cameraState && !engineCommandManager.geometryOnly) {
+    // Restore both idle and requested reconnect cameras before rebuilding.
+    await sceneInfra.camControls.setCameraView(cameraState)
+    if (engineCommandManager.connection !== connection) {
+      return
+    }
+  }
   EngineDebugger.addLog({
     label: 'onEngineConnectionReadyForRequests',
     message: 'kclManager.executeCode()',
   })
+  // Rebuild from current source instead of replaying a queued execution from previous connection.
+  kclManager.executeIsStale = null
   await kclManager.executeCode()
+  // This prevents an old rebuild from restoring its camera onto a replacement connection.
+  if (engineCommandManager.connection !== connection) {
+    return
+  }
 
   if (engineCommandManager.geometryOnly) {
     sceneInfra.camControls.clearOldCameraState()
@@ -196,21 +225,21 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
 
   // A named view outlives the connection that showed it, and the new connection
   // has neither its visibility nor its camera.
-  const restoredNamedViewCamera =
-    await reapplyActiveViewAfterReconnect(kclManager)
+  const restoredNamedViewCamera = await reapplyActiveViewAfterReconnect(
+    kclManager,
+    { restoreCamera: cameraState === undefined }
+  )
 
-  // Skipped when the view placed the camera, which both branches would undo.
-  if (!restoredNamedViewCamera) {
-    // This means you idled, otherwise you use the reset camera position
-    if (sceneInfra.camControls.oldCameraState) {
-      await sceneInfra.camControls.restoreRemoteCameraStateAndTriggerSync()
-    } else {
-      await resetCameraPosition({
-        sceneInfra,
-        engineCommandManager,
-        settingsActor,
-      })
-    }
+  if (engineCommandManager.connection !== connection) {
+    return
+  }
+
+  if (!cameraState && !restoredNamedViewCamera) {
+    await resetCameraPosition({
+      sceneInfra,
+      engineCommandManager,
+      settingsActor,
+    })
   }
 
   // Since you reconnected you are not idle, clear the old camera state
@@ -293,6 +322,8 @@ export async function tryConnecting({
             kclVersion: isErr(kclVersion) ? undefined : kclVersion,
             rustContext,
             geometryOnly,
+            prepareForReconnect: (signal) =>
+              sceneInfra.camControls.captureCameraForReconnect(signal),
           })
 
           // Do not count the 30 second timer to connect within the kcl execution and scene setup

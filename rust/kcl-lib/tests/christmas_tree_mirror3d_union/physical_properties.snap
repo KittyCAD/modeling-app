@@ -18,12 +18,12 @@ description: Physical properties christmas_tree_mirror3d_union.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 334.68852890528035
+    "value": 334.73571019765336
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.2940924753539835
+    "value": 0.2941261973143927
   }
 }

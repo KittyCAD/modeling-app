@@ -6,6 +6,9 @@ import {
 
 import type { CommandArgumentConfig } from '@src/lib/commandTypes'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
+import { isKclVersionAvailable } from '@src/lib/kclVersionRange'
+import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export type StdLibCommandDriftConfig = {
   stdLibName: StdLibCommandName
@@ -99,6 +102,18 @@ const stdLibArgDeprecatedMessage = (arg: StdLibCommandArg) => {
     .join(' ')
 }
 
+export function stdLibCommandArgAvailable<Name extends StdLibCommandName>(
+  stdLibName: Name,
+  argName: (typeof STD_LIB_COMMANDS)[Name]['args'][number]['name'],
+  version: KclVersion,
+  instance: ModuleType
+) {
+  const arg = STD_LIB_COMMANDS[stdLibName].args.find(
+    (arg) => arg.name === argName
+  )
+  return arg !== undefined && isKclVersionAvailable(version, arg, instance)
+}
+
 const hasExistingEditFlowArgument = (
   context: { argumentsToSubmit: Record<string, unknown> },
   argName: string
@@ -112,6 +127,14 @@ const stdLibArgBaseConfig = (
 ) => ({
   inputType: stdLibArgInputType(arg.ty),
   required: arg.required,
+  ...((arg.addedIn || arg.removedIn) && {
+    available: (context: ModelingMachineContext) =>
+      isKclVersionAvailable(
+        context.kclManager.kclProgramVersionSignal.peek(),
+        arg,
+        context.wasmInstance
+      ),
+  }),
   ...(arg.experimental
     ? ({ status: 'experimental' } as const)
     : isDeprecatedStdLibArg(arg)
@@ -265,7 +288,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'fillet',
     editFlow: true,
     flowArgOrder: ['selection', 'radius'],
-    omittedStdLibArgs: ['solid', 'edges', 'legacyMethod', 'tangentChain'],
+    omittedStdLibArgs: ['solid', 'edges', 'legacyMethod'],
     argAliases: {
       tags: 'selection',
     },
@@ -274,7 +297,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'chamfer',
     editFlow: true,
     flowArgOrder: ['selection', 'length'],
-    omittedStdLibArgs: ['solid', 'edges', 'legacyMethod', 'tangentChain'],
+    omittedStdLibArgs: ['solid', 'edges', 'legacyMethod'],
     argAliases: {
       tags: 'selection',
     },
