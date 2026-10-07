@@ -539,7 +539,8 @@ export function getOutsideDistanceSetback(
   from: Point3d,
   to: Point3d,
   plane: string,
-  bounds: BoundingBox
+  bounds: BoundingBox,
+  minimumMargin = 0
 ): number | undefined {
   const axes: [Axis, Axis] | undefined =
     plane === KCL_PLANE_XY
@@ -577,7 +578,10 @@ export function getOutsideDistanceSetback(
   const sign = a + b < 0 ? -1 : 1
   const clearance =
     Math.max(0, extent - Math.min(sign * a, sign * b)) +
-    margin * GDT_FONT_SIZE_TO_BOUNDING_BOX_AVERAGE_RATIO
+    Math.max(
+      margin * GDT_FONT_SIZE_TO_BOUNDING_BOX_AVERAGE_RATIO,
+      minimumMargin
+    )
   // The engine renders the dimension line at 0.8 * offset.y. Leaders use 1.0.
   return (sign * Math.ceil((clearance / 0.8) * 10000)) / 10000
 }
@@ -980,6 +984,33 @@ async function getDistanceFeatureCenters(
   )
 }
 
+function getGdtFontHeight(
+  fontSize: KclCommandValue | undefined,
+  outputUnit: UnitLength
+): number | undefined {
+  const value = fontSize?.valueAst
+  if (
+    value?.type !== 'Literal' ||
+    typeof value.value !== 'object' ||
+    value.value === null ||
+    typeof value.value.value !== 'number'
+  )
+    return undefined
+  const units: Partial<Record<typeof value.value.suffix, UnitLength>> = {
+    Mm: 'mm',
+    Cm: 'cm',
+    M: 'm',
+    Inch: 'in',
+    Ft: 'ft',
+    Yd: 'yd',
+    None: outputUnit,
+  }
+  const unit = units[value.value.suffix]
+  return unit && Number.isFinite(value.value.value) && value.value.value > 0
+    ? (value.value.value * baseUnitToMm(unit)) / baseUnitToMm(outputUnit)
+    : undefined
+}
+
 async function getOutsideSetbackForSelections({
   engine,
   selections,
@@ -990,6 +1021,7 @@ async function getOutsideSetbackForSelections({
   modelBounds,
   plane,
   outputUnit,
+  fontSize,
 }: {
   engine: ConnectionManager
   selections: Selections | undefined
@@ -1000,6 +1032,7 @@ async function getOutsideSetbackForSelections({
   modelBounds: BoundingBox | undefined
   plane: string | KclCommandValue | undefined
   outputUnit: UnitLength
+  fontSize: KclCommandValue | undefined
 }): Promise<number | undefined> {
   const planeName = typeof plane === 'string' ? plane : plane?.valueText
   if (
@@ -1123,7 +1156,19 @@ async function getOutsideSetbackForSelections({
       outputUnit,
       includeEntireScene: true,
     }))
-  return bounds && getOutsideDistanceSetback(from, to, planeName, bounds)
+  if (!bounds) return undefined
+  // A single-edge label is centered on its dimension line. Leave room for
+  // its width as well as clearing the body, including an inherited font.
+  const minimumMargin =
+    entityIds.length === 1
+      ? 2 *
+        Math.max(
+          (distanceSetback(bounds) ?? 0) *
+            GDT_FONT_SIZE_TO_BOUNDING_BOX_AVERAGE_RATIO,
+          getGdtFontHeight(fontSize, outputUnit) ?? 0
+        )
+      : 0
+  return getOutsideDistanceSetback(from, to, planeName, bounds, minimumMargin)
 }
 
 export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
@@ -1360,6 +1405,7 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
         modelBounds: modelBoundingBox,
         plane: nextData.framePlane,
         outputUnit,
+        fontSize: nextData.fontSize,
       })) ?? setback
     nextData = {
       ...nextData,

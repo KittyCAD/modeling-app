@@ -511,8 +511,67 @@ describe('GD&T frame defaults', () => {
         } as unknown as ConnectionManager,
         wasmInstance,
       })
-      expect(result.framePosition?.valueText).toBe('[0mm, -11mm]')
+      expect(result.framePosition?.valueText).toBe('[0mm, -20.625mm]')
     })
+
+    it.each([-1, 1])(
+      'leaves space for a wide single-edge label on side %s with an inherited font in cm',
+      async (side) => {
+        const selections: Selections = {
+          graphSelections: [
+            {
+              engineEntityId: 'edge',
+              entityRef: { type: 'edge', side_faces: [] },
+              engineTopologyFallback: { parentId: 'part', primitiveIndex: 0 },
+            },
+          ],
+          otherSelections: [],
+        }
+        const sendSceneCommand = vi.fn().mockImplementation(async ({ cmd }) => {
+          const response =
+            cmd.type === 'curve_get_end_points'
+              ? {
+                  type: cmd.type,
+                  data: {
+                    start: { x: side * 25, y: 0, z: 0 },
+                    end: { x: side * 25, y: 0, z: 50 },
+                  },
+                }
+              : {
+                  type: 'bounding_box',
+                  data: {
+                    center: { x: 0, y: 0, z: 25 },
+                    dimensions: { x: 50, y: 5, z: 50 },
+                  },
+                }
+          return {
+            success: true,
+            resp: { type: 'modeling', data: { modeling_response: response } },
+          }
+        })
+        const fontSize = {
+          ...kclValue('0.5cm'),
+          valueAst: createLiteral(0.5, wasmInstance, 'Cm'),
+        }
+        const result = await withDefaultGdtFrameDefaults<
+          ModelingCommandSchema['GDT Distance']
+        >({
+          data: { objects: selections, framePlane: 'XZ', fontSize },
+          distance: true,
+          engineCommandManager: {
+            sendSceneCommand,
+          } as unknown as ConnectionManager,
+          wasmInstance,
+        })
+        expect(result.framePosition?.valueText).toBe(
+          `[0mm, ${side > 0 ? '-' : ''}13.75mm]`
+        )
+        // The dimension line leaves 11mm: enough for half a five-character
+        // label's width plus padding, rather than the previous 2.7mm gap.
+        expect(Math.abs(0.8 * 13.75)).toBeGreaterThan(2 * 5)
+        expect(result.fontSize).toBe(fontSize)
+      }
+    )
 
     it('converts engine endpoints from mm before placing a Z-edge dimension in feet', async () => {
       const selections: Selections = {
@@ -562,7 +621,7 @@ describe('GD&T frame defaults', () => {
         } as unknown as ConnectionManager,
         wasmInstance,
       })
-      expect(result.framePosition?.valueText).toBe('[0ft, 16.5ft]')
+      expect(result.framePosition?.valueText).toBe('[0ft, 26.125ft]')
     })
 
     it.each(['mm', 'cm', 'in'] as const)(
