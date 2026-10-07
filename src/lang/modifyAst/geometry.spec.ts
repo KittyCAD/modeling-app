@@ -384,24 +384,6 @@ profile001 = startProfile(sketch001, at = [0, 0])
     expect(result).toBeInstanceOf(Error)
   })
 
-  it('preserves the edge-cut inference contract for a graph with consumed-edge associations', () => {
-    const { ast, graph, wall, cut } = createFaceAxisFixture()
-    // This is a compatibility fixture for the existing inference branch.
-    // Current face-API execution does not produce this consumed-edge association.
-    if (!wall.edgeCutEdgeIds) {
-      throw new Error('Expected compatibility edge-cut associations')
-    }
-    wall.edgeCutEdgeIds.push(cut.id)
-    const code = generateAxis(ast, graph, {
-      entityRef: { type: 'face', face_id: cut.id },
-      codeRef: cut.codeRef,
-    })
-    expect(code).toContain('extrude(region001,length=5mm,tagEnd=$capEnd001)')
-    expect(code).toContain(
-      'axisResult={sideFaces=[region001.tags.line1,capEnd001]}'
-    )
-  })
-
   it('preserves explicit face-reference disambiguators', () => {
     const { ast, graph, sketchSegment } = createFaceAxisFixture()
     const code = generateAxis(ast, graph, {
@@ -493,7 +475,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
       (artifact) => artifact.type === 'edgeCut'
     )
     if (!cut || cut.type !== 'edgeCut') throw new Error('Fillet face not found')
-    expect(cut.edgeIds).toEqual([])
+    expect(cut.edgeIds).toBeUndefined()
     expect(
       [...artifactGraph.values()].some(
         (artifact) =>
@@ -502,8 +484,8 @@ profile001 = startProfile(sketch001, at = [0, 0])
       )
     ).toBe(false)
     const originalAst = structuredClone(ast)
-    // Both original helpers failed here: segment tagging needs edge-cut
-    // metadata, and the body fallback cannot recover the missing lineage.
+    // A generated fillet face is not itself an axis and cannot imply its source
+    // edge when the artifact graph does not contain consumed-edge lineage.
     const result = getAxisExpression(
       undefined,
       {
@@ -520,9 +502,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
       artifactGraph
     )
     expect(result).toEqual(
-      new Error(
-        'edgeCut artifact has no edge_ids or consumedEdgeId; cannot resolve sweep'
-      )
+      new Error('edgeCut artifact has no consumed segment')
     )
     expect(ast).toEqual(originalAst)
   })

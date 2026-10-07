@@ -277,7 +277,7 @@ function extractDistanceTargetSelections(
   }
 
   const faceSelections = extractFaceSelections(artifactGraph, targetArg)
-  if (Array.isArray(faceSelections) && faceSelections.length > 0) {
+  if (isArray(faceSelections) && faceSelections.length > 0) {
     return faceSelections
   }
 
@@ -301,7 +301,7 @@ function retrieveFaceAndEdgeSelectionsForEdit(
   const faceSelections = facesArg?.sourceRange
     ? extractFaceSelections(artifactGraph, facesArg)
     : []
-  const graphSelections: Selection[] = Array.isArray(faceSelections)
+  const graphSelections: Selection[] = isArray(faceSelections)
     ? faceSelections.map((selection) =>
         selection.artifact
           ? {
