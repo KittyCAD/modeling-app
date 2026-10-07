@@ -3753,6 +3753,7 @@ export function getOperationCalculatedDisplay(op: OpKclValue): string {
     case 'Number':
       return isNonNullable(op.value) ? op.value.toPrecision(5) : ''
     case 'Helix':
+    case 'Path3d':
     case 'Sketch':
     case 'Solid':
     case 'Face':
