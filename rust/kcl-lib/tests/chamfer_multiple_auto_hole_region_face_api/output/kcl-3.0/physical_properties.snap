@@ -18,12 +18,12 @@ description: Physical properties chamfer_multiple_auto_hole_region_face_api.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 5766.212771931123
+    "value": 5766.2127720732315
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 11.182405989795807
+    "value": 11.182406002322823
   }
 }

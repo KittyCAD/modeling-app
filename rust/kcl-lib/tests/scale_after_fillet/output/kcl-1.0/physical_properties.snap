@@ -18,12 +18,12 @@ description: Physical properties scale_after_fillet.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 87.3656271405121
+    "value": 87.2587427435123
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.03380259833985295
+    "value": 0.03366732910821893
   }
 }

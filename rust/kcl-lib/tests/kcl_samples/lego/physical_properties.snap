@@ -18,7 +18,7 @@ description: Physical properties lego.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 1049224.1669197
+    "value": 1049224.1673853614
   },
   "weight": {
     "material_density": 1000.0,

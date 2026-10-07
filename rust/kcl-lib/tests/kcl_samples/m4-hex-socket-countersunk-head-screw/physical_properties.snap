@@ -18,12 +18,12 @@ description: Physical properties m4-hex-socket-countersunk-head-screw.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 352.407969070323
+    "value": 352.30559600563095
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.26742178715899456
+    "value": 0.2673426148236402
   }
 }

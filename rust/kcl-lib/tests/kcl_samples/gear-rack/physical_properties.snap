@@ -18,12 +18,12 @@ description: Physical properties gear-rack.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 4785.7976211584
+    "value": 4785.066629071772
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 5.73028847180541
+    "value": 5.730286553801608
   }
 }

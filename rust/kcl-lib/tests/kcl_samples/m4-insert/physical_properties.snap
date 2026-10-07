@@ -18,12 +18,12 @@ description: Physical properties m4-insert.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 304.23375228849636
+    "value": 304.2139690343504
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.1520599609214357
+    "value": 0.1520419672940143
   }
 }

@@ -18,12 +18,12 @@ description: Physical properties end-effector-gripper-fingers.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 379035.9893660472
+    "value": 379034.66695646994
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 1865.5253616838424
+    "value": 1865.5233504914631
   }
 }

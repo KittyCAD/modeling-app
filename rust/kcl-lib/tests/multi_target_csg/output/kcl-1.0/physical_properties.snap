@@ -18,12 +18,12 @@ description: Physical properties multi_target_csg.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 425.0045553709329
+    "value": 425.0095025933112
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.23463716300168713
+    "value": 0.23463975400589732
   }
 }

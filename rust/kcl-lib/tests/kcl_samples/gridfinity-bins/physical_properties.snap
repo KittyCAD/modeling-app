@@ -18,12 +18,12 @@ description: Physical properties gridfinity-bins.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 65100.38664141593
+    "value": 65099.49804463755
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 58.25716410120882
+    "value": 58.25663549108382
   }
 }

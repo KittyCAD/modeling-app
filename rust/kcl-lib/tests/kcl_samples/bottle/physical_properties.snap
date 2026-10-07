@@ -18,12 +18,12 @@ description: Physical properties bottle.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 174662.89590470295
+    "value": 174662.89732715266
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 347.5083666065378
+    "value": 347.5081454856384
   }
 }

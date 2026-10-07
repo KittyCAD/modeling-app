@@ -18,12 +18,12 @@ description: Physical properties manhole-cover.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 844658.0322925001
+    "value": 844658.0315703613
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 9572.73555472208
+    "value": 9572.735379758038
   }
 }

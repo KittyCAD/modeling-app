@@ -18,12 +18,12 @@ description: Physical properties crab_mirror_region.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 126240.40237392364
+    "value": 126240.40363220956
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 1078.9543399217412
+    "value": 1078.9543590590256
   }
 }

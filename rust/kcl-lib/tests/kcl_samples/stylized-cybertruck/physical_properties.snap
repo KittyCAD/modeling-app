@@ -18,12 +18,12 @@ description: Physical properties stylized-cybertruck.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 58086708.072811686
+    "value": 58086708.465480566
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 7275827.448397952
+    "value": 7275827.452317269
   }
 }

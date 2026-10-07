@@ -18,12 +18,12 @@ description: Physical properties fun-stacker-toy.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 790386.6241837534
+    "value": 790389.1122993798
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 11432.997247228312
+    "value": 11433.16219861982
   }
 }

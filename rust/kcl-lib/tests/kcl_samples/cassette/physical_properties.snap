@@ -18,12 +18,12 @@ description: Physical properties cassette.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 29788.723783187976
+    "value": 29787.412085660493
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 15.895334727421274
+    "value": 15.894615541069705
   }
 }

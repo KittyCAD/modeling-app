@@ -18,12 +18,12 @@ description: Physical properties beam_sweeps.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 105443068.27324907
+    "value": 105443067.6830234
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 666735.6934825269
+    "value": 666735.5014942586
   }
 }

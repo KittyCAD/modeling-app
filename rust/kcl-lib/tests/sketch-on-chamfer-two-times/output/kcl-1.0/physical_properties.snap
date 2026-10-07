@@ -18,12 +18,12 @@ description: Physical properties sketch-on-chamfer-two-times.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 211317.99854558153
+    "value": 211317.9990112428
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 5539.964549598153
+    "value": 5539.964282813041
   }
 }

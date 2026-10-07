@@ -18,12 +18,12 @@ description: Physical properties subtract_inherits_tool_face_tags.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 848.660717082339
+    "value": 848.6607172528693
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.769708817275709
+    "value": 0.7697088190763516
   }
 }

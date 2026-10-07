@@ -18,12 +18,12 @@ description: Physical properties helium-tank.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 799393.5515895098
+    "value": 799394.0078724644
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 1458.5963860735685
+    "value": 1458.594943377971
   }
 }

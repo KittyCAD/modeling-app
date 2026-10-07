@@ -18,12 +18,12 @@ description: Physical properties tube-manifold.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 791356.4839798965
+    "value": 791357.3030907912
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 2003.658934175941
+    "value": 2003.5864794113088
   }
 }

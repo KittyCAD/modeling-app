@@ -18,12 +18,12 @@ description: Physical properties flat-bladed-impeller.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 58982.215917239955
+    "value": 58982.21591633046
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 108.94240765206102
+    "value": 108.94240718073434
   }
 }

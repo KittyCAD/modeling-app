@@ -18,12 +18,12 @@ description: Physical properties bone-plate.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 16695.721443368777
+    "value": 16695.5027382666
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 46.923984580617194
+    "value": 46.92365499194516
   }
 }

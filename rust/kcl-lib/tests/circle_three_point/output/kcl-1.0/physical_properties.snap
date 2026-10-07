@@ -18,12 +18,12 @@ description: Physical properties circle_three_point.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 503.5569200396717
+    "value": 503.5570579324799
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.8669954281910938
+    "value": 0.8669957664390419
   }
 }

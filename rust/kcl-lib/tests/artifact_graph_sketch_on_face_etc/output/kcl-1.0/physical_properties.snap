@@ -18,12 +18,12 @@ description: Physical properties artifact_graph_sketch_on_face_etc.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 347.0930572859743
+    "value": 347.0930811602102
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.2742500142769814
+    "value": 0.2742500005287196
   }
 }

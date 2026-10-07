@@ -18,12 +18,12 @@ description: Physical properties focusrite-scarlett-mounting-bracket.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 52675.56094004355
+    "value": 52675.56096368686
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 94.97383682136966
+    "value": 94.97382887957428
   }
 }

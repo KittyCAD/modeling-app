@@ -18,12 +18,12 @@ description: Physical properties hex-nut-with-chamfer.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 1152.9260892126913
+    "value": 1152.8855416003123
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 1.9665797325133885
+    "value": 1.966513939734756
   }
 }

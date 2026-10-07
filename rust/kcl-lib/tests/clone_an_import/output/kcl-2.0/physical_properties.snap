@@ -18,12 +18,12 @@ description: Physical properties clone_an_import.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 2363730.4287898927
+    "value": 2363769.7074646554
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 40097.589447995575
+    "value": 40098.83322644233
   }
 }

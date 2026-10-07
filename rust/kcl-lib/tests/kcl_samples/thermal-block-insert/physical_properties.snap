@@ -18,12 +18,12 @@ description: Physical properties thermal-block-insert.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 560520.8883062005
+    "value": 560520.8365013823
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 5882.353199316036
+    "value": 5882.352893725813
   }
 }

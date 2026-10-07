@@ -18,12 +18,12 @@ description: Physical properties patterns_circular_basic_2d.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 488.8358058743325
+    "value": 487.8158428788526
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.16280663219046115
+    "value": 0.16235332387047144
   }
 }

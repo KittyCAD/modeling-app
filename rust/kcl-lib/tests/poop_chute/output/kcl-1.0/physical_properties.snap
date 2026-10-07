@@ -18,12 +18,12 @@ description: Physical properties poop_chute.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 120.74469210165972
+    "value": 147.3834900458382
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.024424434146421408
+    "value": 0.008012521814716133
   }
 }

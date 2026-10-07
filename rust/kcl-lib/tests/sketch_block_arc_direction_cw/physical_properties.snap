@@ -18,12 +18,12 @@ description: Physical properties sketch_block_arc_direction_cw.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 371.9588856938571
+    "value": 371.8577801734568
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.2853357095043409
+    "value": 0.28524129669360576
   }
 }

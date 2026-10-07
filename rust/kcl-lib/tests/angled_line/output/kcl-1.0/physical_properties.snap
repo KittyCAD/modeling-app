@@ -18,12 +18,12 @@ description: Physical properties angled_line.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 909.0113635465968
+    "value": 909.011418116279
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 1.140258717668985
+    "value": 1.1402588325400604
   }
 }

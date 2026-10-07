@@ -18,12 +18,12 @@ description: Physical properties ball-bearing.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 7059.519212392957
+    "value": 7059.38434893083
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 5.276237008736082
+    "value": 5.275631165689778
   }
 }

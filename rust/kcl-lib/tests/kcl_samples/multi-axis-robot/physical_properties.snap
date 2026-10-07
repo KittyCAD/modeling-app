@@ -18,12 +18,12 @@ description: Physical properties multi-axis-robot.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 952432.3959275556
+    "value": 952431.9811741062
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 15073.2530128182
+    "value": 15073.250077776038
   }
 }

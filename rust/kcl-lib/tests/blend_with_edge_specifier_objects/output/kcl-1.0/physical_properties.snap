@@ -18,12 +18,12 @@ description: Physical properties blend_with_edge_specifier_objects.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 79.07251570493656
+    "value": 79.0725151889049
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.02073212630968972
+    "value": 0.020732126702604586
   }
 }

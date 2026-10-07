@@ -18,12 +18,12 @@ description: Physical properties kittycad_svg.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 1322.4262865266153
+    "value": 1322.426360739251
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.3543473516298892
+    "value": 0.3543474097408127
   }
 }

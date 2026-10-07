@@ -18,12 +18,12 @@ description: Physical properties sprocket.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 5577.7386395732265
+    "value": 5577.738524522147
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 6.200058655545885
+    "value": 6.200057351107846
   }
 }

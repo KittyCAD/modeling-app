@@ -18,12 +18,12 @@ description: Physical properties multi_transform.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 3359.999871463515
+    "value": 3360.0011811358854
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 4.799999563450304
+    "value": 4.800001950873896
   }
 }

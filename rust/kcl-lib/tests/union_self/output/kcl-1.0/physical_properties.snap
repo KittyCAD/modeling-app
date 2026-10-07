@@ -18,12 +18,12 @@ description: Physical properties union_self.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 2399.9999393709004
+    "value": 2399.9996919883415
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 7.999999373472141
+    "value": 7.99999922188969
   }
 }

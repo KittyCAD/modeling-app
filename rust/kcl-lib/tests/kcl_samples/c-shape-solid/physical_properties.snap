@@ -18,12 +18,12 @@ description: Physical properties c-shape-solid.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 651.7843419260316
+    "value": 651.7843263509349
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.45115153679553543
+    "value": 0.4511515325026731
   }
 }

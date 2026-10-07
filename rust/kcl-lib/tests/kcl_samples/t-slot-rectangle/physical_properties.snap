@@ -18,12 +18,12 @@ description: Physical properties t-slot-rectangle.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 471957.0959283841
+    "value": 471512.0546550295
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 516.5062612917382
+    "value": 516.2824798938814
   }
 }

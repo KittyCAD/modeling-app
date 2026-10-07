@@ -18,12 +18,12 @@ description: Physical properties solid_edge_cut_using_edge_ref_csg.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 933.778070381544
+    "value": 933.7780225967816
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 1.643416881869549
+    "value": 1.6434166763267903
   }
 }

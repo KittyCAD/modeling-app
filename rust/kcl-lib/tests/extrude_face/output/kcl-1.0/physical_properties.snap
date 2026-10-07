@@ -18,12 +18,12 @@ description: Physical properties extrude_face.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 26.55635023529612
+    "value": 26.55636978943221
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.006156855081318469
+    "value": 0.006156860484403855
   }
 }

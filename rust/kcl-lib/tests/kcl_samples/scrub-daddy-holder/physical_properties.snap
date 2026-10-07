@@ -18,12 +18,12 @@ description: Physical properties scrub-daddy-holder.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 7073.501950423555
+    "value": 7073.019283082793
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 16.70028696797744
+    "value": 16.697573550267155
   }
 }

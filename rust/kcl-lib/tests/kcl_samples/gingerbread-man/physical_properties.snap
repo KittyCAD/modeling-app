@@ -18,12 +18,12 @@ description: Physical properties gingerbread-man.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 493902.76445253176
+    "value": 493902.7613080285
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 7814.145876133608
+    "value": 7814.147032373005
   }
 }

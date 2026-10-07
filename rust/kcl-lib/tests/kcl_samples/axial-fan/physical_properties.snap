@@ -18,12 +18,12 @@ description: Physical properties axial-fan.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 79489.18109710493
+    "value": 79488.84092079825
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 82.58936937691603
+    "value": 82.58606560656324
   }
 }

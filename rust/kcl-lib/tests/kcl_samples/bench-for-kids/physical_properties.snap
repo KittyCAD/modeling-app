@@ -18,12 +18,12 @@ description: Physical properties bench-for-kids.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 1364942.3435654598
+    "value": 1364942.3384985474
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 57925.253944987075
+    "value": 57925.24860833859
   }
 }

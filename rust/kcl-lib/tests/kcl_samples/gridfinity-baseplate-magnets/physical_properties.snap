@@ -18,12 +18,12 @@ description: Physical properties gridfinity-baseplate-magnets.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 41431.29219555042
+    "value": 41430.50258758496
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 29.518376994771053
+    "value": 29.51844961649682
   }
 }

@@ -24,6 +24,6 @@ description: Physical properties patterns_linear_basic_3d.kcl
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.0039999974073741855
+    "value": 0.00399998933975354
   }
 }

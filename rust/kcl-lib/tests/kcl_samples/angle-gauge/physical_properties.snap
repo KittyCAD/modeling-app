@@ -18,12 +18,12 @@ description: Physical properties angle-gauge.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 2098.8875348848524
+    "value": 2098.8876412957325
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 1.1824607047590994
+    "value": 1.1824607829188
   }
 }

@@ -18,12 +18,12 @@ description: Physical properties sketch_on_face_of_region_extrude_one_to_one.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 45.78720114523094
+    "value": 45.787231861993405
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.016402073097869046
+    "value": 0.01640208954420408
   }
 }

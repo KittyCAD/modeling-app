@@ -18,12 +18,12 @@ description: Physical properties stylized-dump-truck.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 86672493.13496712
+    "value": 86672493.12716728
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 14015305.35867399
+    "value": 14015305.378037738
   }
 }

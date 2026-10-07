@@ -18,12 +18,12 @@ description: Physical properties sketch_on_face.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 2521.2186919816304
+    "value": 2521.2187774741324
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 4.374961349640216
+    "value": 4.374961586487795
   }
 }

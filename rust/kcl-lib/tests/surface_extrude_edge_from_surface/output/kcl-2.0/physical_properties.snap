@@ -18,12 +18,12 @@ description: Physical properties surface_extrude_edge_from_surface.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 102.5343431138026
+    "value": 102.5054473302589
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.0050378829441477535
+    "value": 0.00491308460581763
   }
 }

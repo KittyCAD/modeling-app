@@ -18,12 +18,12 @@ description: Physical properties wheel-hub.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 114954.90477312754
+    "value": 114954.2991042818
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 472.6685008504446
+    "value": 472.6683538118411
   }
 }
