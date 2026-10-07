@@ -514,7 +514,7 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
         },
         commandName: 'Extrude',
       })
-      await cmdBar.progressCmdBar()
+      await scene.waitForExecutionDoneAfter(() => cmdBar.progressCmdBar())
       await editor.expectState({
         highlightedCode: '',
         diagnostics: [],
