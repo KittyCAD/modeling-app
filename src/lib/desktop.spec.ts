@@ -451,19 +451,19 @@ describe('desktop utilities', () => {
 
   describe('getEnvironmentConfigurationPath', () => {
     it('should return a wonky path because appConfig is not set by default', async () => {
-      const expected = '/appData//envs/development.json'
+      const expected = '/appData/-local/envs/development.json'
       const actual = await getEnvironmentConfigurationPath('development')
       expect(actual).toBe(expected)
     })
     it('should return path to the configuration file for development', async () => {
-      const expected = '/appData/zoo-modeling-app/envs/development.json'
+      const expected = '/appData/zoo-modeling-app-local/envs/development.json'
       mockElectron.packageJson.name = 'zoo-modeling-app'
       const actual = await getEnvironmentConfigurationPath('development')
       mockElectron.packageJson.name = ''
       expect(actual).toBe(expected)
     })
     it('should return path to the configuration file for production', async () => {
-      const expected = '/appData/zoo-modeling-app/envs/production.json'
+      const expected = '/appData/zoo-modeling-app-local/envs/production.json'
       mockElectron.packageJson.name = 'zoo-modeling-app'
       const actual = await getEnvironmentConfigurationPath('production')
       mockElectron.packageJson.name = ''
@@ -473,12 +473,12 @@ describe('desktop utilities', () => {
 
   describe('getEnvironmentPath', () => {
     it('should return a wonky path because appConfig is not set by default', async () => {
-      const expected = '/appData//environment.txt'
+      const expected = '/appData/-local/environment.txt'
       const actual = await getEnvironmentFilePath()
       expect(actual).toBe(expected)
     })
     it('should return path to the environment.txt file', async () => {
-      const expected = '/appData/zoo-modeling-app/environment.txt'
+      const expected = '/appData/zoo-modeling-app-local/environment.txt'
       mockElectron.packageJson.name = 'zoo-modeling-app'
       const actual = await getEnvironmentFilePath()
       mockElectron.packageJson.name = ''
