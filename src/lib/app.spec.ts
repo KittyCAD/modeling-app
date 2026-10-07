@@ -494,6 +494,8 @@ describe('project system', () => {
         name: 'zoo-modeling-app',
       },
       getAppTestProperty: vi.fn().mockResolvedValue(undefined),
+      watchFileOn: vi.fn(),
+      watchFileOff: vi.fn(),
       pluginIpc: {
         invoke: vi.fn(),
         syncActivePlugins,
@@ -653,6 +655,8 @@ describe('project system', () => {
         name: 'zoo-modeling-app',
       },
       getAppTestProperty: vi.fn().mockResolvedValue(undefined),
+      watchFileOn: vi.fn(),
+      watchFileOff: vi.fn(),
       pluginIpc: {
         invoke: vi.fn(),
         syncActivePlugins: vi.fn().mockResolvedValue(undefined),

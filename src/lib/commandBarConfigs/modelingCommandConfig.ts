@@ -105,7 +105,7 @@ const FRAME_PLANE_OPTIONS = Object.freeze([
   Object.freeze({ name: 'YZ Plane', value: KCL_PLANE_YZ }),
 ] as const)
 
-// For all transforms and boolean commands
+// Common geometry selections for transforms, booleans, and surface commands.
 const objectsTypesAndFilters: {
   selectionTypes: Artifact['type'][]
   selectionFilter: EntityType[]
@@ -113,6 +113,18 @@ const objectsTypesAndFilters: {
   selectionTypes: ['path', 'sweep', 'compositeSolid'],
   selectionFilter: ['object'],
 }
+
+// Imported geometry is supported by only a subset of those KCL operations.
+// Keep it separate so solid-only commands such as booleans remain correctly
+// constrained by the command bar.
+const objectsWithImportedGeometryTypesAndFilters: typeof objectsTypesAndFilters =
+  {
+    ...objectsTypesAndFilters,
+    selectionTypes: [
+      ...objectsTypesAndFilters.selectionTypes,
+      'importedGeometry',
+    ],
+  }
 
 // For all surface modeling commands
 const kclBodyTypeOptions = KCL_PRELUDE_BODY_TYPE_VALUES.map((value) => ({
@@ -1510,7 +1522,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   Appearance: {
     description:
-      'Set the appearance of a solid. This only works on solids, not sketches or individual paths.',
+      'Set the appearance of a solid or imported geometry. This does not work on sketches or individual paths.',
     icon: 'extrude',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1523,7 +1535,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           objects: {
             // selectionMixed allows for feature tree selection of module imports
             inputType: 'selectionMixed',
-            selectionTypes: ['path', 'sweep', 'compositeSolid'],
+            selectionTypes:
+              objectsWithImportedGeometryTypesAndFilters.selectionTypes,
             selectionFilter: ['object'],
             multiple: true,
             hidden: isEditingNodeSelection,
@@ -1546,7 +1559,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Delete']>('Delete', {
       overrides: {
         objects: {
-          ...objectsTypesAndFilters,
+          ...objectsWithImportedGeometryTypesAndFilters,
           inputType: 'selectionMixed',
           multiple: true,
         },
@@ -1554,7 +1567,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Translate: {
-    description: 'Set translation on a solid, sketch, or helix.',
+    description:
+      'Set translation on a solid, sketch, helix, or imported geometry.',
     icon: 'move',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1565,8 +1579,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           objects: {
-            ...objectsTypesAndFilters,
-            selectionTypes: [...objectsTypesAndFilters.selectionTypes, 'helix'],
+            ...objectsWithImportedGeometryTypesAndFilters,
+            selectionTypes: [
+              ...objectsWithImportedGeometryTypesAndFilters.selectionTypes,
+              'helix',
+            ],
             inputType: 'selectionMixed',
             multiple: true,
             hidden: isEditingNodeSelection,
@@ -1590,7 +1607,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   Rotate: {
-    description: 'Set rotation on a solid, sketch, or helix.',
+    description:
+      'Set rotation on a solid, sketch, helix, or imported geometry.',
     icon: 'rotate',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1599,8 +1617,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Rotate']>('Rotate', {
       overrides: {
         objects: {
-          ...objectsTypesAndFilters,
-          selectionTypes: [...objectsTypesAndFilters.selectionTypes, 'helix'],
+          ...objectsWithImportedGeometryTypesAndFilters,
+          selectionTypes: [
+            ...objectsWithImportedGeometryTypesAndFilters.selectionTypes,
+            'helix',
+          ],
           inputType: 'selectionMixed',
           multiple: true,
           hidden: isEditingNodeSelection,
@@ -1632,7 +1653,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Scale: {
-    description: 'Set scale on a solid, sketch, or helix.',
+    description: 'Set scale on a solid, sketch, helix, or imported geometry.',
     icon: 'scale',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1641,8 +1662,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Scale']>('Scale', {
       overrides: {
         objects: {
-          ...objectsTypesAndFilters,
-          selectionTypes: [...objectsTypesAndFilters.selectionTypes, 'helix'],
+          ...objectsWithImportedGeometryTypesAndFilters,
+          selectionTypes: [
+            ...objectsWithImportedGeometryTypesAndFilters.selectionTypes,
+            'helix',
+          ],
           inputType: 'selectionMixed',
           multiple: true,
           hidden: isEditingNodeSelection,
@@ -1664,7 +1688,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Clone: {
-    description: 'Clone a solid or sketch.',
+    description: 'Clone a solid, sketch, or imported geometry.',
     icon: 'clone',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1673,7 +1697,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Clone']>('Clone', {
       overrides: {
         objects: {
-          ...objectsTypesAndFilters,
+          ...objectsWithImportedGeometryTypesAndFilters,
           inputType: 'selectionMixed',
           multiple: false, // only one object can be cloned at this time
           hidden: isEditingNodeSelection,
@@ -1749,7 +1773,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Pattern Circular 3D': {
-    description: 'Create a circular pattern of 3D solids around an axis.',
+    description: 'Create a circular pattern of 3D geometry around an axis.',
     icon: 'patternCircular3d',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1760,7 +1784,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     >('Pattern Circular 3D', {
       overrides: {
         solids: {
-          ...objectsTypesAndFilters,
+          ...objectsWithImportedGeometryTypesAndFilters,
           inputType: 'selectionMixed',
           multiple: true,
           hidden: isEditingNodeSelection,
@@ -1788,7 +1812,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   'Pattern Linear 3D': {
-    description: 'Create a linear pattern of 3D solids along an axis.',
+    description: 'Create a linear pattern of 3D geometry along an axis.',
     icon: 'patternLinear3d',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1799,7 +1823,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           solids: {
-            ...objectsTypesAndFilters,
+            ...objectsWithImportedGeometryTypesAndFilters,
             inputType: 'selectionMixed',
             multiple: true,
             hidden: isEditingNodeSelection,

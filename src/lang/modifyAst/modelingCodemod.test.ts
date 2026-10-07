@@ -33,6 +33,7 @@ describe('createModelingCodemodReviewValidation', () => {
     const wasmInstance = {
       recast_wasm: vi.fn().mockReturnValue(proposedCode),
     } as unknown as ModuleType
+    const currentPath = 'project/main.kcl'
     const kclManager = {
       get ast() {
         return currentAst
@@ -41,7 +42,9 @@ describe('createModelingCodemodReviewValidation', () => {
         return currentCode
       },
       fileSettings: {},
+      path: currentPath,
     } as KclManager
+    const rustContext = {} as RustContext
     const executionError = new Error('Mock execution failed')
     vi.mocked(mockExecAstAndReportErrors).mockResolvedValueOnce(executionError)
 
@@ -74,7 +77,7 @@ describe('createModelingCodemodReviewValidation', () => {
               connection: { connected: true },
             } as unknown as ConnectionManager,
             kclManager,
-            rustContext: {} as RustContext,
+            rustContext,
           },
         }),
       }
@@ -85,6 +88,11 @@ describe('createModelingCodemodReviewValidation', () => {
     const result = await resultPromise
 
     expect(run).toHaveBeenCalledOnce()
+    expect(mockExecAstAndReportErrors).toHaveBeenCalledWith(
+      modifiedAst,
+      rustContext,
+      currentPath
+    )
     expect(result).toBeInstanceOf(Error)
     expect(result?.message).toBe(executionError.message)
     expect(result?.cause).toBe(executionError)
