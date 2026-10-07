@@ -18,12 +18,12 @@ description: Physical properties engine-valve.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 2976.623793012223
+    "value": 2976.615354560508
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 4.617689043436475
+    "value": 4.6177207448722415
   }
 }

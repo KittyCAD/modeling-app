@@ -18,12 +18,12 @@ description: Physical properties countersunk-plate.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 18955.78302026024
+    "value": 18955.78281721555
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 59.26681734713668
+    "value": 59.26681686870457
   }
 }
