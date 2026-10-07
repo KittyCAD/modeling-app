@@ -50,7 +50,7 @@ export async function collectApiList<T>(
   }
 }
 
-/** Use the SDK client's configured transport while its generated list types lag. */
+/** Read list endpoints that still serve legacy responses in production. */
 export function listClientItems<T>(
   client: Client,
   path: string,
