@@ -18,12 +18,12 @@ description: Physical properties face_api_fillet_edge_refs_variant_4.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 159.9519445658346
+    "value": 159.9519392434254
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.07442993911397783
+    "value": 0.07442984559019247
   }
 }

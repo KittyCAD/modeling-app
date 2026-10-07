@@ -1535,9 +1535,14 @@ export class KclManager extends File {
   set isExecuting(isExecuting) {
     this._isExecuting.value = isExecuting
     this.updateExecutionTimer(isExecuting)
-    // If we have finished executing, but the execute is stale, we should
-    // execute again.
-    if (!isExecuting && this.executeIsStale && this.sceneEntitiesManager) {
+    // If we have finished executing and reconnect is not pending,
+    // but the execute is stale, we should execute again.
+    if (
+      !isExecuting &&
+      this.executeIsStale &&
+      this.sceneEntitiesManager &&
+      !this.engineCommandManager.isReconnectPending
+    ) {
       const args = this.executeIsStale
       this.executeIsStale = null
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -1580,9 +1585,9 @@ export class KclManager extends File {
 
   set executeIsStale(executeIsStale) {
     this._executeIsStale = executeIsStale
-    // Next execution will be flagged as stale or not depending on this value.
+    // During reconnect, queue edits without interrupting the current execution.
     this.systemDeps.engineCommandManager.executionIsStale =
-      executeIsStale !== null
+      executeIsStale !== null && !this.engineCommandManager.isReconnectPending
   }
 
   get wasmInitFailed() {
@@ -2565,6 +2570,11 @@ export class KclManager extends File {
       console.warn('`executeAst` called before engine connection started')
       return
     }
+    if (this.engineCommandManager.isReconnectPending) {
+      // Keep latest requested execution for after reconnection.
+      this.executeIsStale = args
+      return
+    }
     if (this.isExecuting) {
       this.executeIsStale = args
 
@@ -2577,142 +2587,148 @@ export class KclManager extends File {
       return
     }
 
-    const ast = args.ast || this.ast
-    markOnce('code/startExecuteAst')
+    const finishExecution = this.engineCommandManager.trackExecution()
 
-    const currentExecutionId = args.executionId || Date.now()
-    this._cancelTokens.set(currentExecutionId, false)
+    try {
+      const ast = args.ast || this.ast
+      markOnce('code/startExecuteAst')
 
-    this.isExecuting = true
-    this.errors = []
-    this.logs = []
-    this.setSketchSolveDiagnostics([])
-    this.beginLiveOperationUpdates(currentExecutionId)
+      const currentExecutionId = args.executionId || Date.now()
+      this._cancelTokens.set(currentExecutionId, false)
 
-    const codeThatExecuted = this.code
-    const { logs, errors, execState, isInterrupted } = await executeAst({
-      ast,
-      path: this.path,
-      rustContext: this.rustContext,
-      callbacks: this.createExecutionCallbacks(currentExecutionId),
-    })
+      this.isExecuting = true
+      this.errors = []
+      this.logs = []
+      this.setSketchSolveDiagnostics([])
+      this.beginLiveOperationUpdates(currentExecutionId)
 
-    const livePathsToWatch = Object.values(execState.filenames)
-      .filter((file) => {
-        return file?.type === 'Local'
+      const codeThatExecuted = this.code
+      const { logs, errors, execState, isInterrupted } = await executeAst({
+        ast,
+        path: this.path,
+        rustContext: this.rustContext,
+        callbacks: this.createExecutionCallbacks(currentExecutionId),
       })
-      .map((file) => {
-        return file.value
-      })
-    this.livePathsToWatch.value = livePathsToWatch
 
-    // Program was not interrupted, setup the scene
-    // Do not send send scene commands if the program was interrupted, go to clean up
-    if (!isInterrupted) {
-      this.addDiagnostics(
-        await lintAst({
-          ast,
-          sourceCode: this.code,
-          instance: await this.systemDeps.wasmInstancePromise,
-          rustContext: this.rustContext,
-          legacyAngleRefactorMetadata: execState.legacyAngleRefactorMetadata,
-          edgeRefactorMetadata: execState.edgeRefactorMetadata,
-          directTagFilletMetadata: execState.directTagFilletMetadata,
-          artifactGraph: execState.artifactGraph,
+      const livePathsToWatch = Object.values(execState.filenames)
+        .filter((file) => {
+          return file?.type === 'Local'
         })
-      )
-      if (this.sceneEntitiesManager) {
-        setSelectionFilterToDefault({
-          engineCommandManager: this.engineCommandManager,
-          kclManager: this,
-          sceneEntitiesManager: this.sceneEntitiesManager,
-          wasmInstance: await this.systemDeps.wasmInstancePromise,
+        .map((file) => {
+          return file.value
         })
+      this.livePathsToWatch.value = livePathsToWatch
+
+      // Program was not interrupted, setup the scene
+      // Do not send send scene commands if the program was interrupted, go to clean up
+      if (!isInterrupted) {
+        this.addDiagnostics(
+          await lintAst({
+            ast,
+            sourceCode: this.code,
+            instance: await this.systemDeps.wasmInstancePromise,
+            rustContext: this.rustContext,
+            legacyAngleRefactorMetadata: execState.legacyAngleRefactorMetadata,
+            edgeRefactorMetadata: execState.edgeRefactorMetadata,
+            directTagFilletMetadata: execState.directTagFilletMetadata,
+            artifactGraph: execState.artifactGraph,
+          })
+        )
+        if (this.sceneEntitiesManager) {
+          setSelectionFilterToDefault({
+            engineCommandManager: this.engineCommandManager,
+            kclManager: this,
+            sceneEntitiesManager: this.sceneEntitiesManager,
+            wasmInstance: await this.systemDeps.wasmInstancePromise,
+          })
+        }
       }
-    }
 
-    this.isExecuting = false
+      this.isExecuting = false
 
-    // Check the cancellation token for this execution before applying side effects
-    if (this._cancelTokens.get(currentExecutionId)) {
-      this.endLiveOperationUpdates()
-      this._cancelTokens.delete(currentExecutionId)
-      markOnce('code/endExecuteAst')
-      this.notifyExecutionCompletion('cancelled')
-      return
-    }
-
-    let fileSettings = getSettingsAnnotation(
-      ast,
-      await this.wasmInstancePromise
-    )
-    if (err(fileSettings)) {
-      fileSettings = {}
-    }
-    this.fileSettings = fileSettings
-
-    this.logs = logs
-    this.errors = errors
-    if (!isInterrupted) {
-      this.markCodeAsExecuted(codeThatExecuted)
-    }
-    const code = this.code
-    // Do not add the errors since the program was interrupted and the error is not a real KCL error
-    this.addDiagnostics(
-      isInterrupted ? [] : kclErrorsToDiagnostics(errors, code)
-    )
-    // Add warnings and non-fatal errors
-    this.addDiagnostics(
-      isInterrupted
-        ? []
-        : compilationIssuesToDiagnostics(execState.issues, code)
-    )
-    this.execState = execState
-    if (!errors.length) {
-      this.lastSuccessfulVariables = execState.variables
-      this.lastSuccessfulOperations = execState.operations
-      this.lastSuccessfulCode = codeThatExecuted
-    }
-    this.endLiveOperationUpdates()
-    this.ast = structuredClone(ast)
-    // updateArtifactGraph relies on updated executeState/variables
-    await this.updateArtifactGraph(execState.artifactGraph)
-    this._engineSceneGeneration.value += 1
-    this.dispatchUpdateOperations(
-      getOperationsForCurrentFile({
-        operationsByModule: execState.operations,
-        filenames: execState.filenames,
-        currentPath: this.path,
-      })
-    )
-
-    if (!isInterrupted) {
-      this.sceneInfra.modelingSend({
-        type: 'code edit during sketch',
-      })
-    }
-    EngineDebugger.addLog({
-      label: 'executeAst',
-      message: 'execution done',
-    })
-    this.engineCommandManager.addCommandLog({
-      type: CommandLogType.ExecutionDone,
-      data: null,
-    })
-
-    this._cancelTokens.delete(currentExecutionId)
-    markOnce('code/endExecuteAst')
-    this.notifyExecutionCompletion('completed')
-
-    // Update project thumbnail after successful execution
-    if (!isInterrupted && errors.length === 0 && projectFsManager.dir) {
-      if (!this.fileOperations) {
+      // Check the cancellation token for this execution before applying side effects
+      if (this._cancelTokens.get(currentExecutionId)) {
+        this.endLiveOperationUpdates()
+        this._cancelTokens.delete(currentExecutionId)
+        markOnce('code/endExecuteAst')
+        this.notifyExecutionCompletion('cancelled')
         return
       }
-      createThumbnailPNGOnDesktop({
-        fileOperations: this.fileOperations,
-        projectDirectoryWithoutEndingSlash: projectFsManager.dir,
+
+      let fileSettings = getSettingsAnnotation(
+        ast,
+        await this.wasmInstancePromise
+      )
+      if (err(fileSettings)) {
+        fileSettings = {}
+      }
+      this.fileSettings = fileSettings
+
+      this.logs = logs
+      this.errors = errors
+      if (!isInterrupted) {
+        this.markCodeAsExecuted(codeThatExecuted)
+      }
+      const code = this.code
+      // Do not add the errors since the program was interrupted and the error is not a real KCL error
+      this.addDiagnostics(
+        isInterrupted ? [] : kclErrorsToDiagnostics(errors, code)
+      )
+      // Add warnings and non-fatal errors
+      this.addDiagnostics(
+        isInterrupted
+          ? []
+          : compilationIssuesToDiagnostics(execState.issues, code)
+      )
+      this.execState = execState
+      if (!errors.length) {
+        this.lastSuccessfulVariables = execState.variables
+        this.lastSuccessfulOperations = execState.operations
+        this.lastSuccessfulCode = codeThatExecuted
+      }
+      this.endLiveOperationUpdates()
+      this.ast = structuredClone(ast)
+      // updateArtifactGraph relies on updated executeState/variables
+      await this.updateArtifactGraph(execState.artifactGraph)
+      this._engineSceneGeneration.value += 1
+      this.dispatchUpdateOperations(
+        getOperationsForCurrentFile({
+          operationsByModule: execState.operations,
+          filenames: execState.filenames,
+          currentPath: this.path,
+        })
+      )
+
+      if (!isInterrupted) {
+        this.sceneInfra.modelingSend({
+          type: 'code edit during sketch',
+        })
+      }
+      EngineDebugger.addLog({
+        label: 'executeAst',
+        message: 'execution done',
       })
+      this.engineCommandManager.addCommandLog({
+        type: CommandLogType.ExecutionDone,
+        data: null,
+      })
+
+      this._cancelTokens.delete(currentExecutionId)
+      markOnce('code/endExecuteAst')
+      this.notifyExecutionCompletion('completed')
+
+      // Update project thumbnail after successful execution
+      if (!isInterrupted && errors.length === 0 && projectFsManager.dir) {
+        if (!this.fileOperations) {
+          return
+        }
+        createThumbnailPNGOnDesktop({
+          fileOperations: this.fileOperations,
+          projectDirectoryWithoutEndingSlash: projectFsManager.dir,
+        })
+      }
+    } finally {
+      finishExecution()
     }
   }
 
@@ -2725,8 +2741,9 @@ export class KclManager extends File {
    */
   executeAstCleanUp() {
     this.endLiveOperationUpdates()
-    this.isExecuting = false
+    // Discard queued execution before the setter can start it.
     this.executeIsStale = null
+    this.isExecuting = false
     this.notifyExecutionCompletion('cleanup')
     this.engineCommandManager.addCommandLog({
       type: CommandLogType.ExecutionDone,

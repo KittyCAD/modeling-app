@@ -18,12 +18,12 @@ description: Physical properties plane_of_chamfer.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 7.670607087284509
+    "value": 7.670610973065095
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.0010456430906321164
+    "value": 0.0010456444396687397
   }
 }
