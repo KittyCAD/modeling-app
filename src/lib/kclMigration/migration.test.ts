@@ -40,7 +40,7 @@ async function startRunning() {
 describe('project migration', () => {
   it('links the attempt to its conversation and reports application only after the write', async () => {
     const states: string[] = []
-    await fixture.controller.start(true, {
+    await fixture.controller.start({
       id: 'existing-conversation',
       completed: () => {},
       reportApplication: (id, status) => {

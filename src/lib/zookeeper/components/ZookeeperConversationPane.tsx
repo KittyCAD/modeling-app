@@ -292,11 +292,9 @@ export const ZookeeperConversationPane = (props: {
           })),
         ]}
         afterMessages={
-          <>
-            {props.migrationHistory && (
-              <KclMigrationHistoryStatus history={props.migrationHistory} />
-            )}
-          </>
+          props.migrationHistory && (
+            <KclMigrationHistoryStatus history={props.migrationHistory} />
+          )
         }
         toolbarActions={props.migrationContent?.(
           chatBusy,
