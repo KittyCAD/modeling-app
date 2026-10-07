@@ -413,6 +413,33 @@ function getDistanceFramePlaneFromDirection(
   return getFeaturePlaneForNormalAxis(normalAxis)
 }
 
+function planeContainsDirection(
+  plane: GdtFramePlane,
+  direction: Point3d
+): boolean {
+  const normal =
+    plane === KCL_PLANE_XY
+      ? direction.z
+      : plane === KCL_PLANE_XZ
+        ? direction.y
+        : direction.x
+  return (
+    Math.abs(normal) <=
+    Math.hypot(direction.x, direction.y, direction.z) * AXIS_INFERENCE_TOLERANCE
+  )
+}
+
+function getFlatFeaturePlane(
+  dimensions: BoundingBox['dimensions']
+): GdtFramePlane | undefined {
+  const axis = getDecisiveAxis(dimensions, (left, right) => left - right)
+  if (!axis) return undefined
+  const scale = Math.max(dimensions.x, dimensions.y, dimensions.z)
+  return scale > 0 && dimensions[axis] <= scale * AXIS_INFERENCE_TOLERANCE
+    ? getFeaturePlaneForNormalAxis(axis)
+    : undefined
+}
+
 export function getAverageBoundingBoxDimension(
   dimensions: BoundingBox['dimensions']
 ): number | undefined {
@@ -642,6 +669,25 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
           fontSize: existingFontSize,
         }
   let hasResolvedFramePlane = Boolean(nextData.framePlane)
+  const kclFramePlane =
+    distance && !nextData.framePlane
+      ? getDistanceFramePlaneFromKcl(ast, artifactGraph, selections)
+      : undefined
+  let distanceBoundingBox: BoundingBox | undefined
+  if (distance && !nextData.framePlane && entityIds.length === 1) {
+    distanceBoundingBox = await getBoundingBoxForGdtEntities({
+      engineCommandManager,
+      entityIds,
+      outputUnit,
+    })
+    const framePlane =
+      distanceBoundingBox &&
+      getDistanceFramePlaneFromDirection(distanceBoundingBox.dimensions)
+    if (framePlane) {
+      nextData = { ...nextData, framePlane }
+      hasResolvedFramePlane = true
+    }
+  }
   if (distance && !nextData.framePlane && entityIds.length === 2) {
     const bounds = await Promise.all(
       entityIds.map((entityId) =>
@@ -654,11 +700,21 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
     )
     const [from, to] = bounds
     if (from?.center && to?.center) {
-      const framePlane = getDistanceFramePlaneFromDirection({
+      const direction = {
         x: to.center.x - from.center.x,
         y: to.center.y - from.center.y,
         z: to.center.z - from.center.z,
-      })
+      }
+      const fromPlane = getFlatFeaturePlane(from.dimensions)
+      const toPlane = getFlatFeaturePlane(to.dimensions)
+      // Circular rims retain their face plane when their centers are
+      // separated along an axis shared by more than one standard plane.
+      const featurePlane = fromPlane === toPlane ? fromPlane : undefined
+      const preferredPlane = featurePlane ?? kclFramePlane
+      const framePlane =
+        preferredPlane && planeContainsDirection(preferredPlane, direction)
+          ? preferredPlane
+          : getDistanceFramePlaneFromDirection(direction)
       if (framePlane) {
         nextData = { ...nextData, framePlane }
         hasResolvedFramePlane = true
@@ -666,11 +722,7 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
     }
   }
   if (distance && !nextData.framePlane) {
-    const framePlane = getDistanceFramePlaneFromKcl(
-      ast,
-      artifactGraph,
-      selections
-    )
+    const framePlane = kclFramePlane
     if (framePlane) {
       nextData = { ...nextData, framePlane }
       hasResolvedFramePlane = true
@@ -709,11 +761,12 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   const needsSelectionBoundingBox =
     !hasResolvedFramePlane || !nextData.framePosition
   const selectionBoundingBox = needsSelectionBoundingBox
-    ? await getBoundingBoxForGdtEntities({
+    ? (distanceBoundingBox ??
+      (await getBoundingBoxForGdtEntities({
         engineCommandManager,
         entityIds,
         outputUnit,
-      })
+      })))
     : undefined
 
   if (!hasResolvedFramePlane && selectionBoundingBox) {

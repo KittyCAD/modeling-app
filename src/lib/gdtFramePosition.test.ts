@@ -219,32 +219,24 @@ describe('GD&T frame defaults', () => {
         createLiteral(1, wasmInstance, 'Mm'),
       ])
       const fontSize = { ...kclValue('textHeight + 1mm'), valueAst }
-      const sendSceneCommand = vi
-        .fn()
-        .mockResolvedValueOnce({
-          success: true,
-          resp: {
-            type: 'modeling',
-            data: {
-              modeling_response: {
-                type: 'face_is_planar',
-                data: { z_axis: { x: 0, y: 0, z: -1 } },
-              },
-            },
+      const sendSceneCommand = vi.fn().mockImplementation(async ({ cmd }) => ({
+        success: true,
+        resp: {
+          type: 'modeling',
+          data: {
+            modeling_response:
+              cmd.type === 'face_is_planar'
+                ? {
+                    type: 'face_is_planar',
+                    data: { z_axis: { x: 0, y: 0, z: -1 } },
+                  }
+                : {
+                    type: 'bounding_box',
+                    data: { dimensions: { x: 40, y: 10, z: 0 } },
+                  },
           },
-        })
-        .mockResolvedValue({
-          success: true,
-          resp: {
-            type: 'modeling',
-            data: {
-              modeling_response: {
-                type: 'bounding_box',
-                data: { dimensions: { x: 40, y: 10, z: 0 } },
-              },
-            },
-          },
-        })
+        },
+      }))
       const result = await withDefaultGdtFrameDefaults<
         ModelingCommandSchema['GDT Distance']
       >({
@@ -263,7 +255,7 @@ describe('GD&T frame defaults', () => {
         ],
       })
       expect(result.fontSize).toBe(fontSize)
-      expect(result.framePlane).toBe('XZ')
+      expect(result.framePlane).toBe('XY')
     })
 
     it.each(['[0, 0]', '[-12mm, -8mm]'])(
@@ -377,13 +369,15 @@ describe('GD&T frame defaults', () => {
   describe('distance frame plane', () => {
     it.each([
       ['circular rims along Z', 'edge', { x: 0, y: 0, z: 3 }, 'XZ'],
+      ['XZ rims along X', 'edge', { x: 8, y: 0, z: 0 }, 'XZ'],
+      ['YZ rims along Y', 'edge', { x: 0, y: 8, z: 0 }, 'YZ'],
       ['circular rims along X', 'edge', { x: 8, y: 0, z: 0 }, 'XY'],
       ['cylindrical faces along Z', 'face', { x: 0, y: 0, z: 6 }, 'XZ'],
       ['cylindrical faces along Y', 'face', { x: 0, y: 8, z: 0 }, 'XY'],
       ['tilted separation in YZ', 'face', { x: 0, y: 4, z: 7 }, 'YZ'],
     ] as const)(
       'retains the measurement direction for %s',
-      async (_, primitiveType, direction, expectedPlane) => {
+      async (label, primitiveType, direction, expectedPlane) => {
         const sendSceneCommand = vi
           .fn()
           .mockImplementation(async ({ cmd }) => ({
@@ -404,7 +398,12 @@ describe('GD&T frame defaults', () => {
                                   z: 7 + direction.z,
                                 }
                               : { x: 10, y: -5, z: 7 },
-                          dimensions: { x: 4, y: 4, z: 10 },
+                          dimensions:
+                            label === 'XZ rims along X'
+                              ? { x: 4, y: 0, z: 4 }
+                              : label === 'YZ rims along Y'
+                                ? { x: 0, y: 4, z: 4 }
+                                : { x: 4, y: 4, z: 10 },
                         },
                       }
                     : {

@@ -66,6 +66,20 @@ plate = extrude(region(${segments ? 'segments = [profileAlias.rim]' : 'sketch = 
       expect(getDistanceFramePlaneFromKcl(ast, graph, selections)).toBe(
         expected
       )
+      const pairedPrimitives = {
+        ...selections,
+        otherSelections: [
+          selections.otherSelections[0],
+          {
+            ...selections.otherSelections[0],
+            entityId: 'other-edge',
+            primitiveIndex: 2,
+          },
+        ],
+      }
+      expect(getDistanceFramePlaneFromKcl(ast, graph, pairedPrimitives)).toBe(
+        plane.includes('XY') ? 'XY' : plane
+      )
       const body = graph.get('body')!
       graph.set('wall1', {
         type: 'wall',
@@ -112,6 +126,10 @@ plate = extrude(region(${segments ? 'segments = [profileAlias.rim]' : 'sketch = 
       const rims = {
         graphSelections: ['start', 'end'].map((id) => ({
           entityRef: { type: 'edge' as const, side_faces: [id, 'wall1'] },
+          engineTopologyFallback: {
+            parentId: 'body',
+            primitiveIndex: id === 'start' ? 1 : 2,
+          },
         })),
         otherSelections: [],
       }

@@ -8,16 +8,28 @@ import { describe, expect, it, vi } from 'vitest'
 describe('distance edge topology', () => {
   it.each(
     (['primitive', 'graph', 'mixed'] as const).flatMap((route) =>
-      [true, false].map((engineBounds) => ({ route, engineBounds }))
+      ['XY', 'XZ', 'YZ'].flatMap((plane) =>
+        [true, false]
+          .map((engineBounds) => ({
+            route,
+            engineBounds,
+            plane,
+            measurement: 'holes',
+          }))
+          .concat([
+            { route, engineBounds: true, plane, measurement: 'zEdge' },
+            { route, engineBounds: true, plane, measurement: 'depth' },
+          ])
+      )
     )
   )(
-    'generates endpoints and a vertical plane for $route selections with engine bounds $engineBounds',
-    async ({ route, engineBounds }) => {
+    'generates $measurement on $plane for $route selections with engine bounds $engineBounds',
+    async ({ route, engineBounds, plane, measurement }) => {
       const { instance, kclManager, engineCommandManager } =
         await buildTheWorldAndNoEngineConnection()
       const ast = assertParse(
         `@settings(defaultLengthUnit = mm, kclVersion = 2)
-holeSketch = sketch(on = XY) {
+holeSketch = sketch(on = ${plane}) {
   outer = circle(start = [20mm, 0mm], center = [0mm, 0mm])
   leftHole = circle(start = [-3mm, 0mm], center = [-6mm, 0mm])
   rightHole = circle(start = [9mm, 0mm], center = [6mm, 0mm])
@@ -47,7 +59,7 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
         ],
       ])
       const objects: Selections = { graphSelections: [], otherSelections: [] }
-      for (const index of [1, 2]) {
+      for (const index of measurement === 'zEdge' ? [1] : [1, 2]) {
         if (route === 'graph' || (route === 'mixed' && index === 1)) {
           objects.graphSelections.push({
             entityRef: {
@@ -82,17 +94,40 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
               modeling_response: {
                 type: 'bounding_box',
                 data: {
-                  center: {
-                    x: 0,
-                    y: 0,
-                    z:
-                      command.type === 'modeling_cmd_req' &&
-                      command.cmd.type === 'bounding_box' &&
-                      command.cmd.entity_ids[0] === 'hole-rim-2'
-                        ? 3
-                        : 0,
-                  },
-                  dimensions: { x: 4, y: 4, z: 3 },
+                  center:
+                    command.type === 'modeling_cmd_req' &&
+                    command.cmd.type === 'bounding_box' &&
+                    command.cmd.entity_ids[0] === 'hole-rim-1'
+                      ? { x: 0, y: 0, z: 0 }
+                      : {
+                          x:
+                            measurement === 'depth'
+                              ? plane === 'YZ'
+                                ? 3
+                                : 0
+                              : plane === 'YZ'
+                                ? 0
+                                : 12,
+                          y:
+                            measurement === 'depth'
+                              ? plane === 'XZ'
+                                ? 3
+                                : 0
+                              : plane === 'YZ'
+                                ? 12
+                                : 0,
+                          z: measurement === 'depth' && plane === 'XY' ? 3 : 0,
+                        },
+                  dimensions:
+                    measurement === 'zEdge'
+                      ? { x: 0, y: 0, z: 10 }
+                      : route === 'mixed' && measurement === 'holes'
+                        ? { x: 4, y: 4, z: 4 }
+                        : plane === 'XY'
+                          ? { x: 4, y: 4, z: 0 }
+                          : plane === 'XZ'
+                            ? { x: 4, y: 0, z: 4 }
+                            : { x: 0, y: 4, z: 4 },
                 },
               },
             },
@@ -110,12 +145,22 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
       if (result instanceof Error) throw result
       const code = recast(result.modifiedAst, instance)
       expect(code).toContain('edgeId(plate, index = 1)')
-      expect(code).toContain('edgeId(plate, index = 2)')
-      expect(code).toContain('from = edge001')
-      expect(code).toContain('to = edge002')
+      if (measurement !== 'zEdge')
+        expect(code).toContain('edgeId(plate, index = 2)')
+      if (measurement === 'zEdge') expect(code).toContain('edges = [edge001]')
+      else expect(code).toContain('from = edge001')
+      if (measurement !== 'zEdge') expect(code).toContain('to = edge002')
       expect(code).not.toContain('getCommonEdge')
       expect(code).not.toContain('tolerance =')
-      expect(code).toContain('framePlane = XZ')
+      const expectedPlane =
+        measurement === 'zEdge'
+          ? 'XZ'
+          : measurement === 'depth'
+            ? plane === 'XY'
+              ? 'XZ'
+              : 'XY'
+            : plane
+      expect(code).toContain(`framePlane = ${expectedPlane}`)
     }
   )
 })

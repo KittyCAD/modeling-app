@@ -118,16 +118,20 @@ export function getDistanceFramePlaneFromKcl(
   const artifacts: Artifact[] = []
   for (const selection of selections.graphSelections) {
     if (selection.artifact) artifacts.push(selection.artifact)
-    else if (selection.engineTopologyFallback) {
-      const body = graph.get(selection.engineTopologyFallback.parentId)
-      if (body) artifacts.push(body)
-    } else if (selection.entityRef?.type === 'edge') {
-      for (const id of [
-        ...selection.entityRef.side_faces,
-        ...(selection.entityRef.end_faces ?? []),
-      ]) {
-        const artifact = graph.get(id)
-        if (artifact) artifacts.push(artifact)
+    else {
+      const start = artifacts.length
+      if (selection.entityRef?.type === 'edge') {
+        for (const id of [
+          ...selection.entityRef.side_faces,
+          ...(selection.entityRef.end_faces ?? []),
+        ]) {
+          const artifact = graph.get(id)
+          if (artifact) artifacts.push(artifact)
+        }
+      }
+      if (artifacts.length === start && selection.engineTopologyFallback) {
+        const body = graph.get(selection.engineTopologyFallback.parentId)
+        if (body) artifacts.push(body)
       }
     }
   }
@@ -165,5 +169,13 @@ export function getDistanceFramePlaneFromKcl(
   ) {
     return plane
   }
+  // Opaque primitive IDs identify the body, not an extrusion edge.
+  // Prefer the sketch plane for paired features unless opposite caps
+  // explicitly establish a measurement along the extrusion.
+  if (
+    caps.length < 2 &&
+    selections.graphSelections.length + selections.otherSelections.length >= 2
+  )
+    return plane
   return plane === 'XY' ? 'XZ' : 'XY'
 }
