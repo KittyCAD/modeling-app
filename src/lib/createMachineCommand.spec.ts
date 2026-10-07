@@ -1,7 +1,10 @@
 import { describe, expect, test, vi } from 'vitest'
 import { createActor, createMachine } from 'xstate'
 
-import type { StateMachineCommandSetConfig } from '@src/lib/commandTypes'
+import type {
+  KclCommandValue,
+  StateMachineCommandSetConfig,
+} from '@src/lib/commandTypes'
 import { createMachineCommand } from '@src/lib/createMachineCommand'
 import {
   GLOBAL_COMMAND_SCOPES,
@@ -21,6 +24,7 @@ type TestCommandSchema = {
   Experimental: Record<string, never>
   Deprecated: Record<string, never>
   ManyCommands: Record<string, never>
+  WithNestedArrays: { points: KclCommandValue }
   WithArguments: {
     availableArg?: string
     experimentalArg?: string
@@ -29,6 +33,16 @@ type TestCommandSchema = {
 }
 
 const commandBarConfig = {
+  WithNestedArrays: {
+    args: {
+      points: {
+        inputType: 'kcl',
+        required: true,
+        allowArrays: true,
+        allowNestedArrays: true,
+      },
+    },
+  },
   Available: {
     description: 'Available command',
   },
@@ -74,6 +88,24 @@ const commandBarConfig = {
 } satisfies StateMachineCommandSetConfig<typeof testMachine, TestCommandSchema>
 
 describe('createMachineCommand', () => {
+  test('preserves nested numeric array support when building KCL input arguments', () => {
+    const actor = createActor(testMachine).start()
+    const command = createMachineCommand<typeof testMachine, TestCommandSchema>(
+      {
+        groupId: testMachine.id,
+        type: 'WithNestedArrays',
+        state: actor.getSnapshot(),
+        send: vi.fn(),
+        actor,
+        commandBarConfig,
+        defaultScopes: GLOBAL_COMMAND_SCOPES,
+      }
+    )
+    actor.stop()
+    expect(command).toMatchObject({
+      args: { points: { allowArrays: true, allowNestedArrays: true } },
+    })
+  })
   test('hides experimental commands by default', () => {
     const actor = createActor(testMachine).start()
 

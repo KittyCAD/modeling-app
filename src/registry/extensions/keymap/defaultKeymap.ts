@@ -401,6 +401,13 @@ export const defaultKeymap: KeymapDocument = {
       command: 'modeling:Offset plane',
     },
     {
+      id: 'toolbar.modeling.construction-plane',
+      title: 'Construction Plane',
+      when: [MODE_MODELING_KEYMAP_SCOPE],
+      keystrokes: ['shift+o'],
+      command: 'modeling:Construction plane',
+    },
+    {
       id: 'toolbar.modeling.helix',
       title: 'Helix',
       when: [MODE_MODELING_KEYMAP_SCOPE],

@@ -796,7 +796,8 @@ export class ConnectionManager extends EventTarget {
 
   async sendSceneCommand(
     command: EngineCommand,
-    forceWebsocket = false
+    forceWebsocket = false,
+    selectionContext?: PendingMessage['selectionContext']
   ): Promise<WebSocketResponse | [WebSocketResponse] | null> {
     if (
       this.connection === undefined ||
@@ -883,6 +884,7 @@ export class ConnectionManager extends EventTarget {
         command,
         idToRangeMap: {},
         range: defaultSourceRange(),
+        selectionContext,
       },
       true // isSceneCommand
     )
@@ -909,6 +911,7 @@ export class ConnectionManager extends EventTarget {
       command: PendingMessage['command']
       range: PendingMessage['range']
       idToRangeMap: PendingMessage['idToRangeMap']
+      selectionContext?: PendingMessage['selectionContext']
     },
     isSceneCommand = false
   ): Promise<[WebSocketResponse]> {
@@ -964,6 +967,7 @@ export class ConnectionManager extends EventTarget {
       range: message.range,
       idToRangeMap: message.idToRangeMap,
       isSceneCommand,
+      selectionContext: message.selectionContext,
     }
 
     // For exports do not time out the command
@@ -1092,9 +1096,23 @@ export class ConnectionManager extends EventTarget {
         })
 
         const modelingResponse = message.resp.data.modeling_response
+        // Keep the originating cursor location with the response so ambiguous
+        // vertex references can be resolved against the actual click.
+        const subscriptionResponse =
+          modelingResponse.type === 'query_entity_type_with_point' &&
+          pending.command.cmd.type === 'query_entity_type_with_point'
+            ? {
+                ...modelingResponse,
+                data: {
+                  ...modelingResponse.data,
+                  selectedAtWindow: pending.command.cmd.selected_at_window,
+                  isShiftDown: pending.selectionContext?.isShiftDown,
+                },
+              }
+            : modelingResponse
 
         Object.values(this.subscriptions[modelingResponse.type] || {}).forEach(
-          (callback) => callback(modelingResponse)
+          (callback) => callback(subscriptionResponse)
         )
 
         this.responseMap[message.request_id] = message.resp

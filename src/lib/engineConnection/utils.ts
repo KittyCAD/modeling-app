@@ -362,6 +362,8 @@ export interface UnreliableSubscription<T extends UnreliableResponses['type']> {
 
 export interface PendingMessage {
   command: EngineCommand
+  /** Local click metadata; never sent to the engine. */
+  selectionContext?: { isShiftDown: boolean }
   range: SourceRange
   idToRangeMap: { [key: string]: SourceRange }
   resolve: (data: [WebSocketResponse]) => void

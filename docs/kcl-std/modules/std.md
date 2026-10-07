@@ -62,4 +62,5 @@ You might also want the [KCL language reference](/docs/kcl-lang) or the [KCL gui
 * [`fail`](/docs/kcl-std/functions/std-fail)
 * [`helix`](/docs/kcl-std/functions/std-helix)
 * [`offsetPlane`](/docs/kcl-std/functions/std-offsetPlane)
+* [`plane`](/docs/kcl-std/functions/std-plane)
 

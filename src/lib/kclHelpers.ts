@@ -41,6 +41,7 @@ export async function getCalculatedKclExpressionValue(
   options?: {
     allowArrays?: boolean
     allowStringArrays?: boolean
+    allowNestedArrays?: boolean
   }
 ) {
   // Create a one-line program that assigns the value to a variable
@@ -84,6 +85,29 @@ export async function getCalculatedKclExpressionValue(
 
     const allElementsAreNumbers = varValue.value.every(isNumberValueItem)
     const allElementsAreStrings = varValue.value.every(isStringValueItem)
+
+    if (options.allowNestedArrays) {
+      const formatNumericArray = (item: KclValueView): string | undefined => {
+        if (isNumberValueItem(item)) {
+          if (!Number.isFinite(item.value)) return undefined
+          const formatted = formatNumberValue(item.value, item.ty, wasmInstance)
+          return err(formatted) ? undefined : formatted
+        }
+        if (
+          (item.type !== 'Tuple' && item.type !== 'HomArray') ||
+          item.value.length === 0
+        )
+          return undefined
+        const items = item.value.map(formatNumericArray)
+        return items.some((v) => v === undefined)
+          ? undefined
+          : `[${items.join(', ')}]`
+      }
+      return {
+        astNode: variableDeclaratorAstNode,
+        valueAsString: formatNumericArray(varValue) ?? 'NAN',
+      }
+    }
 
     if (!allElementsAreNumbers && !options.allowStringArrays) {
       const valueAsString = 'NAN'
@@ -156,6 +180,7 @@ export async function stringToKclExpression(
   options?: {
     allowArrays?: boolean
     allowStringArrays?: boolean
+    allowNestedArrays?: boolean
   }
 ) {
   const calculatedResult = await getCalculatedKclExpressionValue(

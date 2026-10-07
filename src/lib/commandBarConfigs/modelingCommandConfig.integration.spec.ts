@@ -33,6 +33,7 @@ import {
   type ResolvedSelectionType,
 } from '@src/lib/selections'
 import { isArray } from '@src/lib/utils'
+import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type {
   ModelingMachineContext,
   Selections,
@@ -51,6 +52,34 @@ function selectionsForArtifact(artifact?: Artifact): Selections {
     otherSelections: [],
   }
 }
+
+it('validates picked plane points using the command-bar argument envelope', async () => {
+  const config = modelingMachineCommandConfig['Construction plane']
+  if (!config || isArray(config))
+    throw new Error('Missing construction plane command')
+  const arg = config.args?.pickedPoints
+  if (arg?.inputType !== 'selection' || !arg.validation)
+    throw new Error('Missing picked point validation')
+  const pickedPoints: Selections = {
+    graphSelections: [
+      [0, 0, 20],
+      [40, 0, 20],
+      [40, 40, 20],
+    ].map((point, index) => ({
+      entityRef: { type: 'vertex', side_faces: [], index },
+      vertexPosition: point as [number, number, number],
+    })),
+    otherSelections: [],
+  }
+  const context = {
+    argumentsToSubmit: { method: 'Points', pointSource: 'Pick' },
+  } as unknown as CommandBarContext
+  expect(await arg.validation({ data: { pickedPoints }, context })).toBe(true)
+  pickedPoints.graphSelections.pop()
+  expect(await arg.validation({ data: { pickedPoints }, context })).toBe(
+    'Select exactly three points on the part.'
+  )
+})
 
 function parsedLength(value = '5'): KclCommandValue {
   return {

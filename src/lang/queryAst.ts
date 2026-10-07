@@ -2326,7 +2326,9 @@ export function findOperationPlaneLikeArtifact(
 }
 
 export function isOffsetPlane(item: Operation): item is StdLibCallOp {
-  return item.type === 'StdLibCall' && item.name === 'offsetPlane'
+  return (
+    item.type === 'StdLibCall' && ['offsetPlane', 'plane'].includes(item.name)
+  )
 }
 
 export type StdLibCallOp = Extract<Operation, { type: 'StdLibCall' }>

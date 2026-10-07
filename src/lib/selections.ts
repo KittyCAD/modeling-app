@@ -8,7 +8,8 @@ import type {
 } from '@kittycad/lib'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import type { Object3D } from 'three'
-import { Mesh } from 'three'
+import { Mesh, Vector3 } from 'three'
+import { resolveVertexPosition } from '@src/lib/vertexPicking'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { PlaneName } from '@rust/kcl-lib/bindings/PlaneName'
@@ -1764,6 +1765,66 @@ export async function getEventForQueryEntityTypeWithPoint(
   }
 
   // Only convert face to solid2d when face_id directly references a solid2d (un-extruded profile).
+  if (entityRef.type === 'vertex') {
+    const isShiftDown = data?.isShiftDown ?? kclManager.isShiftDown
+    const selectionFilter = kclManager.selectionFilter.value
+    const camera = kclManager.sceneInfra.camControls.camera.clone()
+    camera.updateMatrixWorld(true)
+    const topology = engineTopologyFallbackFromReference(reference)
+    const parentId =
+      topology?.parentId ??
+      (entityRef.side_faces[0]
+        ? await getParentEntityIdForEntity(
+            entityRef.side_faces[0],
+            engineCommandManager
+          )
+        : undefined)
+    if (!parentId) {
+      toast.error(
+        'Could not find the part owning this point. Try another corner.'
+      )
+      return null
+    }
+    const { width, height } = engineCommandManager.streamDimensions
+    const point = await resolveVertexPosition({
+      reference: entityRef,
+      parentId,
+      engine: engineCommandManager,
+      selectedAtWindow: data?.selectedAtWindow,
+      project: (point) => {
+        const projected = new Vector3(...point).project(camera)
+        if (projected.z < -1 || projected.z > 1) return undefined
+        return {
+          x: ((projected.x + 1) * width) / 2,
+          y: ((1 - projected.y) * height) / 2,
+        }
+      },
+    })
+    // Topology queries may finish after the user edits/reexecutes the model.
+    if (
+      kclManager.ast !== ast ||
+      kclManager.artifactGraph !== artifactGraph ||
+      kclManager.selectionFilter.value !== selectionFilter
+    )
+      return null
+    if (isErr(point)) {
+      toast.error(point.message)
+      return null
+    }
+    return {
+      type: 'Set selection',
+      data: {
+        selectionType: 'singleCodeCursor',
+        isShiftDown,
+        selection: {
+          entityRef,
+          vertexPosition: point,
+          engineTopologyFallback: topology,
+        },
+      },
+    }
+  }
+
   // Do not convert wall/cap (extruded) faces to solid2d so the engine can highlight the face and we send face_id to select_entity.
   if (entityRef.type === 'face' && entityRef.face_id) {
     const directSolid2d = artifactGraph.get(entityRef.face_id)
@@ -1848,9 +1909,6 @@ export async function getEventForQueryEntityTypeWithPoint(
         entityId = firstFace.id
       }
     }
-  } else if (entityRef.type === 'vertex' && entityRef.side_faces.length > 0) {
-    // Similar approach for vertices
-    entityId = entityRef.side_faces[0]
   }
 
   // Handle special cases (axes, default planes)
@@ -1966,7 +2024,6 @@ export async function getEventForQueryEntityTypeWithPoint(
   let codeRefs: any[] | undefined
   if (
     entityRef.type === 'edge' ||
-    entityRef.type === 'vertex' ||
     entityRef.type === 'solid2d_edge' ||
     entityRef.type === 'segment'
   ) {
@@ -2526,12 +2583,28 @@ function getQueryEntityTypeWithPointData(
 }
 
 type QueryEntityTypeWithPointEvent =
-  | (QueryEntityTypeWithPoint & { entity_id?: string })
-  | { data: QueryEntityTypeWithPoint & { entity_id?: string } }
+  | (QueryEntityTypeWithPoint & {
+      entity_id?: string
+      selectedAtWindow?: Point2d
+      isShiftDown?: boolean
+    })
+  | {
+      data: QueryEntityTypeWithPoint & {
+        entity_id?: string
+        selectedAtWindow?: Point2d
+        isShiftDown?: boolean
+      }
+    }
 
 function getQueryEntityTypeWithPointEventData(
   engineEvent: QueryEntityTypeWithPointEvent | undefined
-): (QueryEntityTypeWithPoint & { entity_id?: string }) | undefined {
+):
+  | (QueryEntityTypeWithPoint & {
+      entity_id?: string
+      selectedAtWindow?: Point2d
+      isShiftDown?: boolean
+    })
+  | undefined {
   if (!engineEvent) return undefined
   if ('data' in engineEvent) return engineEvent.data
   return engineEvent
@@ -2647,7 +2720,9 @@ export function getSelectionCountByType(
         // All other edge-like refs: show as "edges"
         incrementOrInitializeSelectionType('segment')
       } else if (v2Selection.entityRef.type === 'vertex') {
-        incrementOrInitializeSelectionType('other')
+        incrementOrInitializeSelectionType(
+          v2Selection.vertexPosition ? 'vertex' : 'other'
+        )
       } else if (v2Selection.entityRef.type === 'face') {
         incrementOrInitializeSelectionType('wall')
       } else if (v2Selection.entityRef.type === 'plane') {
@@ -2990,15 +3065,19 @@ export async function sendQueryEntityTypeWithPoint(
     videoRef,
     systemDeps.engineCommandManager.streamDimensions
   )
-  let res = await systemDeps.engineCommandManager.sendSceneCommand({
-    type: 'modeling_cmd_req',
-    cmd: {
-      type: 'query_entity_type_with_point',
-      selected_at_window: { x, y },
-      selection_type: 'add',
+  let res = await systemDeps.engineCommandManager.sendSceneCommand(
+    {
+      type: 'modeling_cmd_req',
+      cmd: {
+        type: 'query_entity_type_with_point',
+        selected_at_window: { x, y },
+        selection_type: 'add',
+      },
+      cmd_id: uuidv4(),
     },
-    cmd_id: uuidv4(),
-  })
+    false,
+    { isShiftDown: e.shiftKey }
+  )
   if (!res) {
     console.warn('No response')
     return undefined
@@ -3007,7 +3086,8 @@ export async function sendQueryEntityTypeWithPoint(
   if (isArray(res)) {
     res = res[0]
   }
-  return getQueryEntityTypeWithPointData(res)
+  const data = getQueryEntityTypeWithPointData(res)
+  return data ? { ...data, selectedAtWindow: { x, y } } : undefined
 }
 
 /** Query entity at point using scene element for coordinates (e.g. renderer.domElement). Used when handling double-click from scene onClick. */
@@ -3192,7 +3272,7 @@ const semanticEntityNames: {
     'primitiveEdge',
     'enginePrimitiveEdge',
   ],
-  point: [],
+  point: ['vertex'],
   plane: ['defaultPlane'],
 }
 

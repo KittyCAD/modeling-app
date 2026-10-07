@@ -9,7 +9,7 @@ import { defaultSelectionFilter } from '@src/lib/selectionFilterUtils'
 import { reportRejection } from '@src/lib/trap'
 import { useCallback } from 'react'
 
-type SelectionFilterMode = 'default' | 'faces' | 'edges' | 'bodies'
+type SelectionFilterMode = 'default' | 'faces' | 'edges' | 'points' | 'bodies'
 
 const selectionFilterOptions: Array<{
   value: SelectionFilterMode
@@ -39,6 +39,12 @@ const selectionFilterOptions: Array<{
     label: 'Bodies',
     title: 'Select solid bodies',
     filter: ['solid3d'],
+  },
+  {
+    value: 'points',
+    label: 'Points',
+    title: 'Select corner points',
+    filter: ['vertex'],
   },
 ]
 

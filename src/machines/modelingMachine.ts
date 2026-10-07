@@ -478,6 +478,10 @@ export type ModelingMachineEvent =
   | { type: 'Chamfer'; data?: ModelingCommandSchema['Chamfer'] }
   | { type: 'Blend'; data?: ModelingCommandSchema['Blend'] }
   | { type: 'Offset plane'; data: ModelingCommandSchema['Offset plane'] }
+  | {
+      type: 'Construction plane'
+      data: ModelingCommandSchema['Construction plane']
+    }
   | { type: 'Helix'; data: ModelingCommandSchema['Helix'] }
   | { type: 'Helical Gear'; data?: ModelingCommandSchema['Helical Gear'] }
   | {
@@ -1702,10 +1706,12 @@ export const modelingMachine = setup({
           otherSelections: [],
         }
         if (setSelections.selectionType === 'singleCodeCursor') {
+          const isShiftDown =
+            setSelections.isShiftDown ?? kclManager.isShiftDown
           const sel = setSelections.selection
           const isEmpty =
             !sel || (typeof sel === 'object' && !sel.entityRef && !sel.codeRef)
-          if (isEmpty && kclManager.isShiftDown) {
+          if (isEmpty && isShiftDown) {
             // if the user is holding shift, but they didn't select anything
             // don't nuke their other selections (frustrating to have one bad click ruin your
             // whole selection)
@@ -1713,17 +1719,17 @@ export const modelingMachine = setup({
               graphSelections: selectionRanges.graphSelections || [],
               otherSelections: selectionRanges.otherSelections,
             }
-          } else if (isEmpty && !kclManager.isShiftDown) {
+          } else if (isEmpty && !isShiftDown) {
             selections = {
               graphSelections: [],
               otherSelections: [],
             }
-          } else if (!isEmpty && !kclManager.isShiftDown) {
+          } else if (!isEmpty && !isShiftDown) {
             selections = {
               graphSelections: [sel],
               otherSelections: [],
             }
-          } else if (!isEmpty && kclManager.isShiftDown) {
+          } else if (!isEmpty && isShiftDown) {
             // Handle Shift key – compare V2 to V2 via selectionV2Equals
             const newV2 = sel
             const current = selectionRanges.graphSelections || []
@@ -4252,6 +4258,9 @@ export const modelingMachine = setup({
     offsetPlaneAstMod: fromPromise(
       createModelingCodemodActor(modelingCommandCodemods['Offset plane'])
     ),
+    constructionPlaneAstMod: fromPromise(
+      createModelingCodemodActor(modelingCommandCodemods['Construction plane'])
+    ),
     helixAstMod: fromPromise(
       createModelingCodemodActor(modelingCommandCodemods.Helix)
     ),
@@ -4812,6 +4821,7 @@ export const modelingMachine = setup({
         'Offset plane': {
           target: 'Applying offset plane',
         },
+        'Construction plane': { target: 'Applying construction plane' },
 
         Helix: {
           target: 'Applying helix',
@@ -6589,6 +6599,22 @@ export const modelingMachine = setup({
           target: 'idle',
           actions: 'toastError',
         },
+      },
+    },
+    'Applying construction plane': {
+      invoke: {
+        src: 'constructionPlaneAstMod',
+        id: 'constructionPlaneAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'Construction plane') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: { target: 'idle', actions: 'toastError' },
       },
     },
 

@@ -49,6 +49,7 @@ import {
 import {
   type ArtifactGraph,
   type CallExpressionKw,
+  type PathToNode,
   type Program,
   pathToNodeFromRustNodePath,
 } from '@src/lang/wasm'
@@ -68,6 +69,11 @@ import {
   LEGACY_SKETCH_MODE_REMOVED_MESSAGE,
 } from '@src/lib/constants'
 import { getStringValue, stringToKclExpression } from '@src/lib/kclHelpers'
+import { planeMethodArgs } from '@src/lang/modifyAst/planes'
+import type {
+  ConstructionPlaneCommandArgs,
+  PlaneMethod,
+} from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 import { isDefaultPlaneStr } from '@src/lib/planes'
 import type RustContext from '@src/lib/rustContext'
 import { err, isErr } from '@src/lib/trap'
@@ -1406,6 +1412,43 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
     ...baseCommand,
     argDefaultValues,
   }
+}
+
+const prepareToEditConstructionPlane: PrepareToEditCallback = async ({
+  operation,
+  code,
+  rustContext,
+}) => {
+  if (operation.type !== 'StdLibCall') return { reason: 'Wrong operation type' }
+  const args = operation.labeledArgs
+  if (!args) return { reason: 'Missing plane arguments' }
+  const method: PlaneMethod = args.points
+    ? 'Points'
+    : args.normal
+      ? 'Normal'
+      : args.a
+        ? 'Equation'
+        : 'Axes'
+  const argDefaultValues: ConstructionPlaneCommandArgs & {
+    nodeToEdit: PathToNode
+  } = {
+    method,
+    pointSource: 'Coordinates',
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+  for (const name of planeMethodArgs[method]) {
+    const arg = args[name]
+    if (!arg) return { reason: `Missing plane argument: ${name}` }
+    const value = await stringToKclExpression(
+      code.slice(...arg.sourceRange.map((n) => toUtf16(n, code))),
+      rustContext,
+      { allowArrays: true, allowNestedArrays: name === 'points' }
+    )
+    if (isErr(value) || 'errors' in value)
+      return { reason: `Could not retrieve ${name}` }
+    argDefaultValues[name] = value
+  }
+  return { name: 'Construction plane', groupId: 'modeling', argDefaultValues }
 }
 
 /**
@@ -3406,6 +3449,11 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Offset Plane',
     icon: 'plane',
     prepareToEdit: prepareToEditOffsetPlane,
+  },
+  plane: {
+    label: 'Construction Plane',
+    icon: 'plane',
+    prepareToEdit: prepareToEditConstructionPlane,
   },
   parabolic: {
     label: 'Parabolic',
