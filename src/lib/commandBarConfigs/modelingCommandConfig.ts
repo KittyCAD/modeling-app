@@ -14,7 +14,6 @@ import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingComm
 import {
   modelingStdLibCommandArgs,
   modelingStdLibCommandStatus,
-  applyModelingCommandDescriptions,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type {
   CommandArgumentConfig,
@@ -1937,7 +1936,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Profile': {
-    // This command dispatches to both profileLine and profileSurface.
+    // Keep a shared description: edge selections create profileLine,
+    // while face selections create profileSurface.
     description:
       'Add profile geometric dimensioning & tolerancing annotation to faces or edges.',
     icon: 'gdtProfile',
@@ -2274,7 +2274,5 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
 }
-
-applyModelingCommandDescriptions(modelingMachineCommandConfig)
 
 // TODO: update modelingMachineCommandConfig with satisfies?

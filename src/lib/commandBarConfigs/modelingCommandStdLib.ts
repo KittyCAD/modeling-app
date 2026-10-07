@@ -9,7 +9,6 @@ import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import { isKclVersionAvailable } from '@src/lib/kclVersionRange'
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { isArray } from '@src/lib/utils'
 
 export type StdLibCommandDriftConfig = {
   stdLibName: StdLibCommandName
@@ -613,21 +612,13 @@ export const modelingCommandStdLibDriftConfig = {
 export type ModelingStdLibCommandName =
   keyof typeof modelingCommandStdLibDriftConfig
 
-/** Default omitted descriptions to KCL summaries; explicit strings (even '') win. */
-export function applyModelingCommandDescriptions(
-  commands: Record<
-    string,
-    { description?: string } | { description?: string }[] | undefined
-  >
-) {
+export function modelingStdLibCommandSummary(
+  commandName: string
+): string | undefined {
   for (const [name, { stdLibName }] of Object.entries(
     modelingCommandStdLibDriftConfig
   )) {
-    const configs = commands[name]
-    if (!configs) continue
-    for (const config of isArray(configs) ? configs : [configs]) {
-      config.description ??= stdLibCommandSummary(stdLibName)
-    }
+    if (name === commandName) return stdLibCommandSummary(stdLibName)
   }
 }
 

@@ -12,10 +12,10 @@ import {
 import {
   modelingCommandStdLibDriftConfig,
   modelingStdLibCommandArgs,
+  modelingStdLibCommandSummary,
   modelingStdLibCommandStatus,
   modelingStdLibCommandUsesExperimentalFeatures,
   type StdLibCommandDriftConfig,
-  stdLibCommandSummary,
   stdLibCommandStatus,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import { STD_LIB_COMMANDS } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
@@ -571,7 +571,7 @@ function pointAndClickStdLibArgs(config: StdLibCommandDriftConfig) {
 }
 
 describe('stdlib command arg derivation', () => {
-  it('defaults stdlib-backed descriptions except the combined GDT Profile flow', () => {
+  it('leaves stdlib descriptions to command creation except the combined GDT Profile flow', () => {
     const commandNames = Object.keys(modelingCommandStdLibDriftConfig) as Array<
       keyof typeof modelingCommandStdLibDriftConfig
     >
@@ -582,13 +582,11 @@ describe('stdlib command arg derivation', () => {
         throw new Error(`${commandName} should have a single command config`)
       }
 
-      const stdLibName =
-        modelingCommandStdLibDriftConfig[commandName].stdLibName
-      expect(stdLibCommandSummary(stdLibName)).toBeTruthy()
+      expect(modelingStdLibCommandSummary(commandName)).toBeTruthy()
       expect(commandConfig.description).toBe(
         commandName === 'GDT Profile'
           ? 'Add profile geometric dimensioning & tolerancing annotation to faces or edges.'
-          : stdLibCommandSummary(stdLibName)
+          : undefined
       )
     }
   })
