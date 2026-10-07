@@ -1,13 +1,17 @@
-import type { components } from '@src/lib/kclMigration/api.generated'
+import type {
+  KclMigrationClientMessage,
+  KclMigrationOperation,
+  KclMigrationRequest,
+  KclMigrationResult,
+  KclMigrationServerMessage,
+} from '@kittycad/lib'
 import { isArray, isRecord } from '@src/lib/utils'
 
-export type MigrationRequest = components['schemas']['KclMigrationRequest']
-export type MigrationOperation = components['schemas']['KclMigrationOperation']
-export type MigrationResult = components['schemas']['KclMigrationResult']
-export type MigrationClientMessage =
-  components['schemas']['KclMigrationClientMessage']
-export type MigrationServerMessage =
-  components['schemas']['KclMigrationServerMessage']
+export type MigrationRequest = KclMigrationRequest
+export type MigrationOperation = KclMigrationOperation
+export type MigrationResult = KclMigrationResult
+export type MigrationClientMessage = KclMigrationClientMessage
+export type MigrationServerMessage = KclMigrationServerMessage
 
 export type MigrationProgress = Extract<
   MigrationServerMessage,
