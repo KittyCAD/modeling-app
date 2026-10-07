@@ -229,7 +229,7 @@ describe('GD&T frame defaults', () => {
           wasmInstance,
         })
         expect(result.framePosition?.valueText).toBe(
-          `[0${outputUnit}, -21.25${outputUnit}]`
+          `[0${outputUnit}, -23.375${outputUnit}]`
         )
         expect(sendSceneCommand).toHaveBeenCalledWith(
           expect.objectContaining({
@@ -358,8 +358,107 @@ describe('GD&T frame defaults', () => {
           wasmInstance,
         })
         expect(result.framePosition?.valueText).toBe(
-          `[0${unit}, -21.25${unit}]`
+          `[0${unit}, -23.375${unit}]`
         )
+      }
+    )
+
+    it.each(
+      ['XY', 'XZ', 'YZ'].flatMap((plane) =>
+        (['mm', 'ft'] as const).flatMap((unit) =>
+          [-40, 40].flatMap((y) =>
+            ['primitive', 'wall', 'face reference'].map((route) => ({
+              plane,
+              unit,
+              y,
+              route,
+            }))
+          )
+        )
+      )
+    )(
+      'places cylindrical faces like circular rims in $plane/$unit at $y through $route',
+      async ({ plane, unit, y, route }) => {
+        const scale = unit === 'ft' ? 304.8 : 1
+        const point = (x: number, y: number) =>
+          plane === 'XY'
+            ? { x, y, z: 0 }
+            : plane === 'XZ'
+              ? { x, y: 0, z: y }
+              : { x: 0, y: x, z: y }
+        const selections: Selections = {
+          graphSelections: [],
+          otherSelections: [],
+        }
+        for (const id of ['left', 'right']) {
+          if (route === 'primitive')
+            selections.otherSelections.push({
+              type: 'enginePrimitive',
+              primitiveType: 'face',
+              entityId: id,
+              primitiveIndex: 0,
+              parentEntityId: 'part',
+            })
+          else
+            selections.graphSelections.push(
+              route === 'wall'
+                ? {
+                    artifact: testArtifact({
+                      type: 'wall',
+                      id,
+                      sweepId: 'part',
+                    }),
+                  }
+                : { entityRef: { type: 'face', face_id: id } }
+            )
+        }
+        const sendSceneCommand = vi.fn().mockImplementation(async ({ cmd }) => {
+          let data
+          if (cmd.type === 'face_get_center')
+            data = {
+              pos: point(
+                (cmd.object_id === 'left' ? 20 : 80) * scale,
+                y * scale
+              ),
+            }
+          else if (cmd.type === 'entity_get_parent_id')
+            data = { entity_id: 'part' }
+          else if (cmd.type === 'bounding_box') {
+            // Misleading identical face bounds must not replace the two hole
+            // centers or force the positive placement fallback.
+            data = { center: point(50, 0), dimensions: point(100, 100) }
+          } else throw new Error('Unexpected command')
+          return {
+            success: true,
+            resp: {
+              type: 'modeling',
+              data: { modeling_response: { type: cmd.type, data } },
+            },
+          }
+        })
+        const result = await withDefaultGdtFrameDefaults<
+          ModelingCommandSchema['GDT Distance']
+        >({
+          data: {
+            objects: selections,
+            framePlane: plane,
+            fontSize: kclValue(`1${unit}`),
+          },
+          distance: true,
+          outputUnit: unit,
+          engineCommandManager: {
+            sendSceneCommand,
+          } as unknown as ConnectionManager,
+          wasmInstance,
+        })
+        expect(result.framePosition?.valueText).toBe(
+          `[0${unit}, ${y < 0 ? '-' : ''}23.375${unit}]`
+        )
+        expect(
+          sendSceneCommand.mock.calls.filter(
+            ([{ cmd }]) => cmd.type === 'face_get_center'
+          )
+        ).toHaveLength(2)
       }
     )
 
@@ -412,7 +511,7 @@ describe('GD&T frame defaults', () => {
         } as unknown as ConnectionManager,
         wasmInstance,
       })
-      expect(result.framePosition?.valueText).toBe('[0mm, -10mm]')
+      expect(result.framePosition?.valueText).toBe('[0mm, -11mm]')
     })
 
     it('converts engine endpoints from mm before placing a Z-edge dimension in feet', async () => {
@@ -463,7 +562,7 @@ describe('GD&T frame defaults', () => {
         } as unknown as ConnectionManager,
         wasmInstance,
       })
-      expect(result.framePosition?.valueText).toBe('[0ft, 15ft]')
+      expect(result.framePosition?.valueText).toBe('[0ft, 16.5ft]')
     })
 
     it.each(['mm', 'cm', 'in'] as const)(
@@ -504,7 +603,7 @@ describe('GD&T frame defaults', () => {
         })
         expect(result.fontSize?.valueText).toBe(`5.25${outputUnit}`)
         expect(result.framePosition?.valueText).toBe(
-          `[0${outputUnit}, 75${outputUnit}]`
+          `[0${outputUnit}, 82.5${outputUnit}]`
         )
         expect(result.framePosition?.valueAst).toMatchObject({
           type: 'ArrayExpression',
@@ -523,7 +622,7 @@ describe('GD&T frame defaults', () => {
             },
             {
               type: 'Literal',
-              value: { value: 75 },
+              value: { value: 82.5 },
             },
           ],
         })
@@ -564,7 +663,7 @@ describe('GD&T frame defaults', () => {
           outputUnit: 'in',
           wasmInstance,
         })
-        expect(result.framePosition?.valueText).toBe('[0in, 20mm]')
+        expect(result.framePosition?.valueText).toBe('[0in, 22mm]')
         expect(result.fontSize).toBeUndefined()
         expect(result.framePlane).toBe('XY')
       }
@@ -605,11 +704,11 @@ describe('GD&T frame defaults', () => {
         } as unknown as ConnectionManager,
         wasmInstance,
       })
-      expect(result.framePosition?.valueText).toBe('[0mm, 25mm]')
+      expect(result.framePosition?.valueText).toBe('[0mm, 27.5mm]')
       expect(result.framePosition?.valueAst).toMatchObject({
         elements: [
           { value: { value: 0 } },
-          { type: 'Literal', value: { value: 25, suffix: 'Mm' } },
+          { type: 'Literal', value: { value: 27.5, suffix: 'Mm' } },
         ],
       })
       expect(result.fontSize).toBe(fontSize)
@@ -696,7 +795,7 @@ describe('GD&T frame defaults', () => {
           wasmInstance,
         })
         expect(result.framePosition?.valueText).toBe(
-          edgeSize === 0 ? '[0mm, 25mm]' : '[0mm, 4mm]'
+          edgeSize === 0 ? '[0mm, 27.5mm]' : '[0mm, 4.4mm]'
         )
         expect(sendSceneCommand).toHaveBeenNthCalledWith(
           1,

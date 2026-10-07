@@ -197,6 +197,9 @@ export function getEngineEntityIdsForGdtSelections(
     if (selection.engineEntityId) {
       return [selection.engineEntityId]
     }
+    if (selection.entityRef?.type === 'face') {
+      return [selection.entityRef.face_id]
+    }
 
     const artifact = selection.artifact
     if (!artifact?.id) {
@@ -505,8 +508,9 @@ function createDistanceFramePositionCommandValue(
   outputUnit: UnitLength,
   wasmInstance: ModuleType
 ): KclCommandValue {
+  // Add a little extra clearance in either setback direction.
   const offset = createLiteral(
-    setback ?? 20,
+    roundOff((setback ?? 20) * 1.1, 4),
     wasmInstance,
     setback === undefined ? 'Mm' : baseUnitToNumericSuffix(outputUnit),
     4
@@ -907,12 +911,82 @@ async function getCircularEdgeCenter(
   }
 }
 
+async function getDistanceFaceCenter(
+  engine: ConnectionManager,
+  id: ArtifactId,
+  outputUnit: UnitLength
+): Promise<Point3d | undefined> {
+  try {
+    const response = await engine.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: { type: 'face_get_center', object_id: id },
+    })
+    if (
+      !isModelingResponse(response) ||
+      response.resp.data.modeling_response.type !== 'face_get_center'
+    )
+      return undefined
+    const { pos } = response.resp.data.modeling_response.data
+    if (AXES.some((axis) => !Number.isFinite(pos[axis]))) return undefined
+    const scale = baseUnitToMm(outputUnit)
+    return { x: pos.x / scale, y: pos.y / scale, z: pos.z / scale }
+  } catch {
+    return undefined
+  }
+}
+
+async function getDistanceFeatureCenters(
+  engine: ConnectionManager,
+  selections: Selections | undefined,
+  entityIds: ArtifactId[],
+  bounds: Array<BoundingBox | undefined>,
+  outputUnit: UnitLength
+): Promise<Array<Point3d | undefined>> {
+  return Promise.all(
+    entityIds.map(async (id, index) => {
+      // Closed circular edges have coincident seam vertices, so their
+      // bounding box center is on the rim, not the annotation's center.
+      const selection = selections?.graphSelections.find(
+        (s) =>
+          (s.engineEntityId ??
+            (s.entityRef?.type === 'face'
+              ? s.entityRef.face_id
+              : s.artifact?.id)) === id
+      )
+      const isEdge =
+        selection?.entityRef?.type === 'edge' ||
+        selection?.artifact?.type === 'segment' ||
+        selection?.artifact?.type === 'sweepEdge' ||
+        selections?.otherSelections.some(
+          (s) =>
+            typeof s === 'object' &&
+            'entityId' in s &&
+            s.entityId === id &&
+            s.primitiveType === 'edge'
+        )
+      if (isEdge) {
+        const center = await getCircularEdgeCenter(engine, id, outputUnit)
+        if (center) return center
+      } else {
+        // Cylindrical face bounds can differ from the actual hole center.
+        // Use the center of its boundary loops, in the file's units, just
+        // as circular rims use their circle center for outward placement.
+        const center = await getDistanceFaceCenter(engine, id, outputUnit)
+        if (center) return center
+      }
+      return bounds[index]?.center
+    })
+  )
+}
+
 async function getOutsideSetbackForSelections({
   engine,
   selections,
   artifactGraph,
   entityIds,
   endpointBounds,
+  endpointCenters,
   modelBounds,
   plane,
   outputUnit,
@@ -922,6 +996,7 @@ async function getOutsideSetbackForSelections({
   artifactGraph: ArtifactGraph | undefined
   entityIds: ArtifactId[]
   endpointBounds: Array<BoundingBox | undefined> | undefined
+  endpointCenters: Array<Point3d | undefined> | undefined
   modelBounds: BoundingBox | undefined
   plane: string | KclCommandValue | undefined
   outputUnit: UnitLength
@@ -945,31 +1020,15 @@ async function getOutsideSetbackForSelections({
           })
         )
       ))
-    const centers = await Promise.all(
-      entityIds.map(async (id, index) => {
-        // Closed circular edges have coincident seam vertices, so their
-        // bounding box center is on the rim, not the annotation's center.
-        const selection = selections?.graphSelections.find(
-          (s) => (s.engineEntityId ?? s.artifact?.id) === id
-        )
-        const isEdge =
-          selection?.entityRef?.type === 'edge' ||
-          selection?.artifact?.type === 'segment' ||
-          selection?.artifact?.type === 'sweepEdge' ||
-          selections?.otherSelections.some(
-            (s) =>
-              typeof s === 'object' &&
-              'entityId' in s &&
-              s.entityId === id &&
-              s.primitiveType === 'edge'
-          )
-        if (isEdge) {
-          const center = await getCircularEdgeCenter(engine, id, outputUnit)
-          if (center) return center
-        }
-        return bounds[index]?.center
-      })
-    )
+    const centers =
+      endpointCenters ??
+      (await getDistanceFeatureCenters(
+        engine,
+        selections,
+        entityIds,
+        bounds,
+        outputUnit
+      ))
     from = centers[0]
     to = centers[1]
   } else if (entityIds.length === 1) {
@@ -1116,6 +1175,7 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   }
   let distanceBoundingBox: BoundingBox | undefined
   let distanceEndpointBounds: Array<BoundingBox | undefined> | undefined
+  let distanceEndpointCenters: Array<Point3d | undefined> | undefined
   if (distance && !nextData.framePlane && entityIds.length === 1) {
     distanceBoundingBox = await getBoundingBoxForGdtEntities({
       engineCommandManager,
@@ -1147,15 +1207,22 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
       )
     )
     distanceEndpointBounds = bounds
-    const [from, to] = bounds
-    if (from?.center && to?.center) {
+    distanceEndpointCenters = await getDistanceFeatureCenters(
+      engineCommandManager,
+      selections,
+      entityIds,
+      bounds,
+      outputUnit
+    )
+    const [from, to] = distanceEndpointCenters
+    if (from && to) {
       const direction = {
-        x: to.center.x - from.center.x,
-        y: to.center.y - from.center.y,
-        z: to.center.z - from.center.z,
+        x: to.x - from.x,
+        y: to.y - from.y,
+        z: to.z - from.z,
       }
-      const fromPlane = getFlatFeaturePlane(from.dimensions)
-      const toPlane = getFlatFeaturePlane(to.dimensions)
+      const fromPlane = bounds[0] && getFlatFeaturePlane(bounds[0].dimensions)
+      const toPlane = bounds[1] && getFlatFeaturePlane(bounds[1].dimensions)
       // Circular rims retain their face plane when their centers are
       // separated along an axis shared by more than one standard plane.
       const featurePlane = fromPlane === toPlane ? fromPlane : undefined
@@ -1289,6 +1356,7 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
         artifactGraph,
         entityIds,
         endpointBounds: distanceEndpointBounds,
+        endpointCenters: distanceEndpointCenters,
         modelBounds: modelBoundingBox,
         plane: nextData.framePlane,
         outputUnit,

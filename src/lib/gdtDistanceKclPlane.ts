@@ -117,6 +117,13 @@ export function getDistanceFramePlaneFromKcl(
 
   const artifacts: Artifact[] = []
   for (const selection of selections.graphSelections) {
+    if (selection.entityRef?.type === 'face') {
+      const face = graph.get(selection.entityRef.face_id)
+      if (face) {
+        artifacts.push(face)
+        continue
+      }
+    }
     if (selection.artifact && selection.entityRef?.type !== 'edge')
       artifacts.push(selection.artifact)
     else {

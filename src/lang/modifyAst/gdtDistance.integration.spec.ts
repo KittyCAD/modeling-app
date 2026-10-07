@@ -13,6 +13,136 @@ import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { describe, expect, it, vi } from 'vitest'
 
 describe('distance edge topology', () => {
+  it.each(
+    ['XY', 'XZ', 'YZ'].flatMap((plane) =>
+      [-1, 1].map((sign) => ({ plane, sign }))
+    )
+  )(
+    'generates an outward distance between cylindrical faces on $plane with sign $sign',
+    async ({ plane, sign }) => {
+      const { instance, kclManager, engineCommandManager, rustContext } =
+        await buildTheWorldAndNoEngineConnection()
+      const ast = assertParse(
+        `@settings(defaultLengthUnit = mm, kclVersion = 2)
+holeSketch = sketch(on = ${plane}) {
+  outer = circle(start = [20mm, 0mm], center = [0mm, 0mm])
+  leftHole = circle(start = [-3mm, ${sign}mm], center = [-6mm, ${sign}mm])
+  rightHole = circle(start = [9mm, ${sign}mm], center = [6mm, ${sign}mm])
+}
+plateRegion = region(segments = [holeSketch.outer, holeSketch.leftHole, holeSketch.rightHole])
+plate = extrude(plateRegion, length = 5mm)`,
+        instance
+      )
+      const { artifactGraph } = await enginelessExecutor(ast, rustContext)
+      const sweep = [...artifactGraph.values()].find((a) => a.type === 'sweep')
+      if (sweep?.type !== 'sweep' || !sweep.pathId)
+        throw new Error('Missing plate extrusion')
+      const path = artifactGraph.get(sweep.pathId)
+      if (path?.type !== 'path') throw new Error('Missing region')
+      const objects: Selections = { graphSelections: [], otherSelections: [] }
+      for (const name of ['leftHole', 'rightHole']) {
+        const source = [...artifactGraph.values()].find(
+          (a) =>
+            a.type === 'segment' &&
+            getSketchSegmentName(ast, a.id, artifactGraph, instance) === name
+        )
+        if (source?.type !== 'segment') throw new Error('Missing hole')
+        const segId = `${name}-segment`
+        const id = `${name}-face`
+        artifactGraph.set(segId, {
+          ...source,
+          id: segId,
+          originalSegId: source.id,
+          pathId: path.id,
+          codeRef: path.codeRef,
+        })
+        const wall = {
+          type: 'wall' as const,
+          id,
+          sweepId: sweep.id,
+          segId,
+          pathIds: [path.id],
+          edgeCutEdgeIds: [],
+          faceCodeRef: sweep.codeRef,
+          cmdId: sweep.id,
+        }
+        artifactGraph.set(id, wall)
+        objects.graphSelections.push({ artifact: wall, codeRef: sweep.codeRef })
+      }
+      kclManager.artifactGraph = artifactGraph
+      const point = (x: number, y: number) =>
+        plane === 'XY'
+          ? { x, y, z: 0 }
+          : plane === 'XZ'
+            ? { x, y: 0, z: y }
+            : { x: 0, y: x, z: y }
+      const mock = vi
+        .spyOn(engineCommandManager, 'sendSceneCommand')
+        .mockImplementation(async (command) => {
+          if (command.type !== 'modeling_cmd_req')
+            throw new Error('Unexpected command')
+          const cmd = command.cmd
+          let response
+          if (cmd.type === 'face_get_center')
+            response = {
+              type: cmd.type,
+              data: {
+                pos: point(cmd.object_id === 'leftHole-face' ? -6 : 6, sign),
+              },
+            }
+          else if (cmd.type === 'bounding_box')
+            response = {
+              type: cmd.type,
+              data: {
+                center: point(0, 0),
+                dimensions: {
+                  x: plane === 'YZ' ? 5 : 40,
+                  y: plane === 'XZ' ? 5 : 40,
+                  z: plane === 'XY' ? 5 : 40,
+                },
+              },
+            }
+          else throw new Error('Unexpected command')
+          return {
+            success: true,
+            request_id: 'test',
+            resp: {
+              type: 'modeling',
+              data: { modeling_response: response },
+            },
+          }
+        })
+      let result
+      try {
+        result = await modelingCommandCodemods['GDT Distance'].run({
+          ast,
+          args: { objects },
+          kclManager,
+          wasmInstance: instance,
+        })
+        expect(
+          mock.mock.calls.filter(
+            ([c]) =>
+              c.type === 'modeling_cmd_req' && c.cmd.type === 'face_get_center'
+          )
+        ).toHaveLength(2)
+      } finally {
+        mock.mockRestore()
+      }
+      if (result instanceof Error) throw result
+      const code = recast(result.modifiedAst, instance)
+      if (code instanceof Error) throw code
+      expect(code).toContain(`framePlane = ${plane}`)
+      expect(code).toContain(
+        `framePosition = [0mm, ${sign < 0 ? '-' : ''}28.8521mm]`
+      )
+      expect(code).toContain('from = plateRegion.tags.leftHole')
+      expect(code).toContain('to = plateRegion.tags.rightHole')
+      expect(code).not.toContain('tolerance =')
+      await enginelessExecutor(result.modifiedAst, rustContext)
+    }
+  )
+
   it.each(['start', 'end'] as const)(
     'qualifies each %s cap through its multi-region extrusion output',
     async (capType) => {
@@ -401,7 +531,7 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
             : plane
       expect(code).toContain(`framePlane = ${expectedPlane}`)
       if (measurement === 'holes')
-        expect(code).toContain('framePosition = [0mm, -26.2292mm]')
+        expect(code).toContain('framePosition = [0mm, -28.8521mm]')
       await enginelessExecutor(result.modifiedAst, rustContext)
     }
   )
