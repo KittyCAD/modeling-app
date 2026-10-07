@@ -18,12 +18,12 @@ description: Physical properties sweep_mirror.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 12.513526632673688
+    "value": 12.513541133074568
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.0007606977050581923
+    "value": 0.00076069709501377
   }
 }

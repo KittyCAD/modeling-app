@@ -18,12 +18,12 @@ description: Physical properties pillow-block-bearing.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 59770.59825433123
+    "value": 59770.84890029391
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 169.5398950863898
+    "value": 169.54041713760122
   }
 }

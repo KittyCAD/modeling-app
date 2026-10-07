@@ -18,12 +18,12 @@ description: Physical properties circular_pattern3d_chamfered_sketch.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 10914.212864008732
+    "value": 10914.213882642798
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 34.999998414756796
+    "value": 35.000005273862676
   }
 }
