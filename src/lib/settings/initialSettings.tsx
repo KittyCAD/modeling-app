@@ -225,6 +225,25 @@ function createCoreSettings() {
           'Whether or not Screen Space Ambient Occlusion (SSAO) is enabled.',
         validate: (v) => typeof v === 'boolean',
       }),
+      /**
+       * Whether the 3D scene is rendered on this device or streamed as video
+       * from the engine. Read once when the scene mounts, because each renderer
+       * needs its own kind of engine session.
+       */
+      useLocalRenderer: new Setting<boolean>({
+        defaultValue: true,
+        hideOnLevel: 'project',
+        description:
+          'Render the 3D scene on this device instead of streaming it as video from the engine. Takes effect after restarting the app.',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
+        // geometryOnly reads as false without a session, so check for one first.
+        restartRequired: (value, engineCommandManager) =>
+          engineCommandManager.connection !== undefined &&
+          engineCommandManager.geometryOnly !== value,
+      }),
       backfaceColor: new Setting<string>({
         defaultValue: DEFAULT_BACKFACE_COLOR,
         description: 'Default backface color for surfaces.',

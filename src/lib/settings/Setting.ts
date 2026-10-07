@@ -19,6 +19,7 @@ export class Setting<T = unknown> {
   public hideWithoutFeatureOnPlatform: SettingProps<T>['hideWithoutFeatureOnPlatform']
   public commandConfig: SettingProps<T>['commandConfig']
   public Component: SettingProps<T>['Component']
+  public restartRequired: SettingProps<T>['restartRequired']
   public description?: string
   private validate: (v: T) => boolean
   public readonly isEnabled: (c: SettingsType) => boolean
@@ -49,6 +50,7 @@ export class Setting<T = unknown> {
     this.hideWithoutFeatureOnPlatform = props.hideWithoutFeatureOnPlatform
     this.commandConfig = props.commandConfig
     this.Component = props.Component
+    this.restartRequired = props.restartRequired
   }
 
   /**

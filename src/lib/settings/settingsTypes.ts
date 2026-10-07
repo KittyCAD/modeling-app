@@ -6,6 +6,7 @@ import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjecti
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 
 import type { CommandArgumentConfig } from '@src/lib/commandTypes'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import type { Themes } from '@src/lib/theme'
 import type { AtLeast, PathValue, Paths } from '@src/lib/types'
@@ -163,6 +164,15 @@ export interface SettingProps<T = unknown> {
    * setting will not be able to be edited directly by the user.
    */
   Component?: React.ComponentType<SettingComponentProps<T>>
+  /**
+   * For settings that are only read when an engine session starts. Returns
+   * true while the given value is not the one the live session is using, so
+   * the settings panel can offer a restart.
+   */
+  restartRequired?: (
+    value: T,
+    engineCommandManager: ConnectionManager
+  ) => boolean
 }
 
 /** The levels available to set settings at.

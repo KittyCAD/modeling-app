@@ -1,6 +1,5 @@
 import { useAppState } from '@src/AppState'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
-import { LOCAL_WEBGPU_RENDERING_ENABLED } from '@src/clientSideScene/localRenderer/config'
 import { LocalWebGPUScene } from '@src/clientSideScene/localRenderer/LocalWebGPUScene'
 import Loading from '@src/components/Loading'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
@@ -47,11 +46,7 @@ import {
   normalizeEntityReference,
   sendQueryEntityTypeWithPoint,
 } from '@src/lib/selections'
-import {
-  Themes,
-  getResolvedTheme,
-  getThemeBackgroundColor,
-} from '@src/lib/theme'
+import { getResolvedTheme, getThemeBackgroundColor } from '@src/lib/theme'
 import { err, reportRejection } from '@src/lib/trap'
 import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
 import type {
@@ -108,6 +103,11 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const [isSceneReady, setIsSceneReady] = useState(false)
   const [isLocalRenderVisible, setIsLocalRenderVisible] = useState(false)
   const settingsValues = settings.useSettings()
+  // Each renderer needs its own kind of engine session, so the choice is fixed
+  // when the scene mounts instead of following the setting live.
+  const [isLocalRendering] = useState(
+    () => settingsValues.modeling.useLocalRenderer.current
+  )
   const theme = getResolvedTheme(settingsValues.app.theme.current)
   const { setAppState } = useAppState()
   const { overallState } = useNetworkContext()
@@ -128,7 +128,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     isConnecting,
     numberOfConnectionAttempts,
     abnormalCloseRetries,
-  } = useTryConnect({ geometryOnly: LOCAL_WEBGPU_RENDERING_ENABLED })
+  } = useTryConnect({ geometryOnly: isLocalRendering })
   const safariObjectFitClass = useMemo(() => {
     // on safari we want to apply object-fit: fill to fix video resize bug
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
@@ -436,9 +436,9 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       videoRef,
       canvasRef,
       engineCommandManager,
-      enabled: !LOCAL_WEBGPU_RENDERING_ENABLED,
+      enabled: !isLocalRendering,
     }),
-    [engineCommandManager]
+    [engineCommandManager, isLocalRendering]
   )
   useOnPageResize(onPageResizeParams)
 
@@ -478,9 +478,9 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       idleCallback: () => {
         isIdle.current = true
       },
-      enabled: !LOCAL_WEBGPU_RENDERING_ENABLED,
+      enabled: !isLocalRendering,
     }),
-    [onPageIdleStartCb]
+    [onPageIdleStartCb, isLocalRendering]
   )
   useOnPageIdle(onPageIdleParams)
 
@@ -683,18 +683,17 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     setIsLocalRenderVisible(isVisible)
   }, [])
 
-  const shouldShowLocalWebGpuScene =
-    LOCAL_WEBGPU_RENDERING_ENABLED && isLocalRenderVisible
+  const shouldShowLocalWebGpuScene = isLocalRendering && isLocalRenderVisible
 
   useEffect(() => {
     const cameraControls = sceneInfra.camControls
     const wasLocalCameraMode = cameraControls.localCameraMode
-    cameraControls.localCameraMode = LOCAL_WEBGPU_RENDERING_ENABLED
+    cameraControls.localCameraMode = isLocalRendering
 
     return () => {
       cameraControls.localCameraMode = wasLocalCameraMode
     }
-  }, [sceneInfra.camControls])
+  }, [sceneInfra.camControls, isLocalRendering])
 
   return (
     <div
@@ -716,7 +715,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         ref={videoRef}
         controls={false}
         className={`w-full cursor-pointer h-full transition-opacity duration-200 ${
-          LOCAL_WEBGPU_RENDERING_ENABLED ? 'opacity-0' : 'opacity-100'
+          isLocalRendering ? 'opacity-0' : 'opacity-100'
         }${safariObjectFitClass}`}
         disablePictureInPicture
         id="video-stream"
@@ -724,14 +723,12 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       <canvas
         key={id + 'canvas'}
         ref={canvasRef}
-        className={
-          LOCAL_WEBGPU_RENDERING_ENABLED ? 'opacity-0' : 'cursor-pointer'
-        }
+        className={isLocalRendering ? 'opacity-0' : 'cursor-pointer'}
         id="freeze-frame"
       >
         No canvas support
       </canvas>
-      {LOCAL_WEBGPU_RENDERING_ENABLED && (
+      {isLocalRendering && (
         <LocalWebGPUScene
           theme={theme}
           enableSSAO={settingsValues.modeling.enableSSAO.current}
