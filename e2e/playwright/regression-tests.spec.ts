@@ -735,7 +735,7 @@ faceProfile001 = circle(faceSketch, center = [0, 0], radius = 0.01)`
         )
       })
       await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
+      await scene.waitForExecutionDoneAfter(() => homePage.goToModelingScene())
     })
     const [circleCenterClick] = scene.makeMouseHelpers(650, 300)
     const [circleRadiusClick] = scene.makeMouseHelpers(800, 320)
@@ -759,8 +759,7 @@ faceProfile001 = circle(faceSketch, center = [0, 0], radius = 0.01)`
       await Promise.all([
         legacySketchClientError,
         (async () => {
-          await editor.selectText('faceProfile001 = circle(')
-          await toolbar.startSketchBtn.click()
+          await toolbar.editSketch(1)
           await toolbar.expectToolbarMode.toBe('sketching')
         })(),
       ])
