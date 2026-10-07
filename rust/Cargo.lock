@@ -2694,11 +2694,32 @@ dependencies = [
 [[package]]
 name = "kcl-api"
 version = "0.2.190"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e5499e0298a225ce225907780fac5fbfb91694ac7139b05ac1080e3905507f07"
+dependencies = [
+ "euler",
+ "indexmap 2.14.2",
+ "kcl-error 0.2.190",
+ "kittycad-measurements",
+ "kittycad-point 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kittycad-unit-conversion-derive",
+ "parse-display",
+ "parse-display-derive",
+ "schemars 0.8.22",
+ "serde",
+ "serde_json",
+ "ts-rs",
+ "uuid",
+]
+
+[[package]]
+name = "kcl-api"
+version = "0.2.191"
 dependencies = [
  "arbitrary",
  "euler",
  "indexmap 2.14.2",
- "kcl-error 0.2.190",
+ "kcl-error 0.2.191",
  "kittycad-measurements",
  "kittycad-point 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "kittycad-unit-conversion-derive",
@@ -2714,29 +2735,8 @@ dependencies = [
 ]
 
 [[package]]
-name = "kcl-api"
-version = "0.2.190"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e5499e0298a225ce225907780fac5fbfb91694ac7139b05ac1080e3905507f07"
-dependencies = [
- "euler",
- "indexmap 2.14.2",
- "kcl-error 0.2.190 (registry+https://github.com/rust-lang/crates.io-index)",
- "kittycad-measurements",
- "kittycad-point 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "kittycad-unit-conversion-derive",
- "parse-display",
- "parse-display-derive",
- "schemars 0.8.22",
- "serde",
- "serde_json",
- "ts-rs",
- "uuid",
-]
-
-[[package]]
 name = "kcl-bumper"
-version = "0.1.190"
+version = "0.1.191"
 dependencies = [
  "anyhow",
  "clap",
@@ -2747,7 +2747,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.2.190"
+version = "0.2.191"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2756,7 +2756,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.190"
+version = "0.1.191"
 dependencies = [
  "convert_case",
  "proc-macro2",
@@ -2766,24 +2766,11 @@ dependencies = [
 
 [[package]]
 name = "kcl-engine-codec"
-version = "0.2.190"
+version = "0.2.191"
 dependencies = [
  "kittycad-modeling-cmds",
  "rmp-serde",
  "serde_json",
-]
-
-[[package]]
-name = "kcl-error"
-version = "0.2.190"
-dependencies = [
- "miette",
- "pyo3",
- "schemars 0.8.22",
- "serde",
- "serde_json",
- "thiserror 2.0.21",
- "ts-rs",
 ]
 
 [[package]]
@@ -2801,8 +2788,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "kcl-error"
+version = "0.2.191"
+dependencies = [
+ "miette",
+ "pyo3",
+ "schemars 0.8.22",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "ts-rs",
+]
+
+[[package]]
 name = "kcl-language-server"
-version = "0.2.190"
+version = "0.2.191"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2833,7 +2833,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.190"
+version = "0.1.191"
 dependencies = [
  "anyhow",
  "clap",
@@ -2853,7 +2853,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.190"
+version = "0.2.191"
 dependencies = [
  "ahash",
  "anyhow",
@@ -2886,11 +2886,11 @@ dependencies = [
  "insta",
  "itertools 0.15.0",
  "js-sys",
- "kcl-api 0.2.190",
+ "kcl-api 0.2.191",
  "kcl-derive-docs",
  "kcl-directory-test-macro",
  "kcl-engine-codec",
- "kcl-error 0.2.190",
+ "kcl-error 0.2.191",
  "kcl-syntax",
  "kittycad",
  "kittycad-modeling-cmds",
@@ -2937,10 +2937,10 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.190"
+version = "0.3.191"
 dependencies = [
  "anyhow",
- "kcl-api 0.2.190",
+ "kcl-api 0.2.191",
  "kcl-lib",
  "kittycad-modeling-cmds",
  "miette",
@@ -2954,7 +2954,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-syntax"
-version = "0.2.190"
+version = "0.2.191"
 dependencies = [
  "logos",
  "proptest",
@@ -2963,7 +2963,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.2.190"
+version = "0.2.191"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -2976,7 +2976,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.190"
+version = "0.1.191"
 dependencies = [
  "anyhow",
  "console_error_panic_hook",
@@ -2986,7 +2986,7 @@ dependencies = [
  "getrandom 0.3.4",
  "gloo-utils",
  "js-sys",
- "kcl-api 0.2.190",
+ "kcl-api 0.2.191",
  "kcl-language-server",
  "kcl-lib",
  "kittycad",
@@ -3067,7 +3067,7 @@ dependencies = [
  "euler",
  "http 1.5.0",
  "indexmap 2.14.2",
- "kcl-api 0.2.190 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kcl-api 0.2.190",
  "kittycad-measurements",
  "kittycad-modeling-cmds-macros",
  "kittycad-point 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
