@@ -20,6 +20,7 @@ import {
 import type {
   ArtifactGraph,
   CallExpressionKw,
+  Expr,
   PathToNode,
   Program,
 } from '@src/lang/wasm'
@@ -74,28 +75,6 @@ function namedViewCall({
   }
 
   return node
-}
-
-/** Rename one `view::named` call without reconstructing its other arguments. */
-export function renameNamedView({
-  ast,
-  pathToNode,
-  name,
-  wasmInstance,
-}: {
-  ast: Node<Program>
-  pathToNode: PathToNode
-  name: string
-  wasmInstance: ModuleType
-}): Node<Program> | Error {
-  const modifiedAst = structuredClone(ast)
-  const call = namedViewCall({ ast: modifiedAst, pathToNode, wasmInstance })
-  if (err(call)) {
-    return call
-  }
-
-  call.unlabeled = createLiteral(name, wasmInstance)
-  return modifiedAst
 }
 
 function rounded(value: number): number {
@@ -185,10 +164,10 @@ export function addNamedView({
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   name: string
-  orientation: NamedViewOrientation
+  orientation?: NamedViewOrientation
   target?: KclCommandValue
   distance?: KclCommandValue
-  projection: NamedViewProjection
+  projection?: NamedViewProjection
   baseline: NamedViewVisibility
   except?: Selections
   nodeToEdit?: PathToNode
@@ -198,33 +177,54 @@ export function addNamedView({
   const pathToEdit = structuredClone(nodeToEdit)
   const namedCall = modelingStdLibCall('Named View')
 
-  const exceptVars = except
-    ? getVariableExprsFromSelection(
-        except,
-        artifactGraph,
-        modifiedAst,
-        wasmInstance,
-        undefined,
-        { lastChildLookup: false }
-      )
-    : { exprs: [] }
+  const exceptVars =
+    except && !pathToEdit
+      ? getVariableExprsFromSelection(
+          except,
+          artifactGraph,
+          modifiedAst,
+          wasmInstance,
+          undefined,
+          { lastChildLookup: false }
+        )
+      : { exprs: [] }
   if (err(exceptVars)) {
     return exceptVars
   }
 
-  const camera = createCallExpressionStdLibKw(
-    'oriented',
-    viewEnum('Orientation', orientation),
-    [
-      ...(target ? [createLabeledArg('target', valueOrVariable(target))] : []),
-      ...(distance
-        ? [createLabeledArg('distance', valueOrVariable(distance))]
-        : []),
-      createLabeledArg('projection', viewEnum('Projection', projection)),
-    ],
-    undefined,
-    [createIdentifier('view')]
-  )
+  let camera: Expr | undefined
+  if (orientation && projection) {
+    camera = createCallExpressionStdLibKw(
+      'oriented',
+      viewEnum('Orientation', orientation),
+      [
+        ...(target
+          ? [createLabeledArg('target', valueOrVariable(target))]
+          : []),
+        ...(distance
+          ? [createLabeledArg('distance', valueOrVariable(distance))]
+          : []),
+        createLabeledArg('projection', viewEnum('Projection', projection)),
+      ],
+      undefined,
+      [createIdentifier('view')]
+    )
+    insertKclVariableIfNeeded(target, modifiedAst, pathToEdit)
+    insertKclVariableIfNeeded(distance, modifiedAst, pathToEdit)
+  } else if (pathToEdit && !orientation && !projection) {
+    const existingCall = namedViewCall({
+      ast: modifiedAst,
+      pathToNode: pathToEdit,
+      wasmInstance,
+    })
+    if (err(existingCall)) return existingCall
+    camera = existingCall.arguments.find(
+      (argument) => argument.label?.name === 'camera'
+    )?.arg
+  }
+  if (!camera) {
+    return new Error('Could not determine the named view camera.')
+  }
 
   const call = createCallExpressionStdLibKw(
     namedCall.name,
@@ -240,14 +240,12 @@ export function addNamedView({
     namedCall.path.map(createIdentifier)
   )
 
-  insertKclVariableIfNeeded(target, modifiedAst, pathToEdit)
-  insertKclVariableIfNeeded(distance, modifiedAst, pathToEdit)
-
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
     pathToEdit,
     replaceUnlabeled: true,
+    labeledSelectionArgNames: ['except'],
     variableIfNewDecl: 'view',
     wasmInstance,
   })

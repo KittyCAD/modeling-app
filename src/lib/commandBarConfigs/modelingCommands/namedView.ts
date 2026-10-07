@@ -1,6 +1,17 @@
 import type { CommandDialogLayout } from '@src/lib/commandTypes'
 import type { ModelingCommandArgOverrides } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { NamedViewCommandArgs } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
+import {
+  isEditingNode,
+  type ModelingCommandContext,
+} from '@src/lib/commandBarConfigs/modelingCommandUtils'
+
+// Missing orientation on edit means the authored camera must stay untouched.
+const canEditCamera = (context: ModelingCommandContext) =>
+  !isEditingNode(context) || context.argumentsToSubmit.orientation !== undefined
+
+const preserveCamera = (context: ModelingCommandContext) =>
+  !canEditCamera(context)
 
 export const namedViewLayout = [
   { title: 'View', args: ['name'] },
@@ -21,8 +32,10 @@ export const namedViewLayout = [
 export const namedViewArgs = {
   orientation: {
     inputType: 'options',
-    required: true,
-    defaultValue: 'Isometric',
+    required: canEditCamera,
+    hidden: preserveCamera,
+    defaultValue: (context) =>
+      isEditingNode(context) ? undefined : 'Isometric',
     options: [
       { name: 'Isometric', value: 'Isometric', isCurrent: true },
       { name: 'Front', value: 'Front' },
@@ -35,7 +48,8 @@ export const namedViewArgs = {
   },
   projection: {
     inputType: 'options',
-    required: true,
+    required: canEditCamera,
+    hidden: preserveCamera,
     defaultValue: 'Orthographic',
     options: [
       { name: 'Orthographic', value: 'Orthographic', isCurrent: true },
@@ -75,11 +89,13 @@ export const namedViewArgs = {
   target: {
     inputType: 'vector3d',
     required: false,
+    hidden: preserveCamera,
     dialog: { displayName: 'Look at' },
   },
   distance: {
     inputType: 'kcl',
     required: false,
+    hidden: preserveCamera,
     dialog: { displayName: 'Camera distance' },
   },
 } satisfies ModelingCommandArgOverrides<NamedViewCommandArgs>

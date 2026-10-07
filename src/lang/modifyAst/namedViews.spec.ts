@@ -1,6 +1,5 @@
 import {
   addNamedView,
-  renameNamedView,
   updateNamedViewCamera,
 } from '@src/lang/modifyAst/namedViews'
 import { assertParse, getAllOperations, recast } from '@src/lang/wasm'
@@ -122,7 +121,7 @@ extrude001 = extrude(region001, length = 5mm)`
     ).toBe(true)
   })
 
-  it('loads and updates an existing named view', async () => {
+  it('loads and updates an existing named view without rebuilding visibility', async () => {
     const code = `${settings}
 
 sketch001 = sketch(on = XY) {
@@ -130,6 +129,7 @@ sketch001 = sketch(on = XY) {
 }
 region001 = region(segments = [sketch001.line1])
 extrude001 = extrude(region001, length = 5mm)
+exceptions = [extrude001]
 
 view001 = view::named(
   "Inspection view",
@@ -140,7 +140,7 @@ view001 = view::named(
     projection = view::Projection::Perspective,
   ),
   baseline = view::Visibility::Show,
-  except = [extrude001],
+  except = exceptions,
 )`
     const ast = assertParse(code, instance)
     const execState = await enginelessExecutor(ast, rustContext)
@@ -199,7 +199,7 @@ view001 = view::named(
     expect(updatedCode).toContain('view::Orientation::Top')
     expect(updatedCode).toContain('view::Projection::Orthographic')
     expect(updatedCode).toContain('view::Visibility::Hide')
-    expect(updatedCode).toContain('except = [extrude001]')
+    expect(updatedCode).toContain('except = exceptions')
   })
 })
 
@@ -300,25 +300,6 @@ view001 = view::named(
     ).toBe('Direction [0, -1, 0] Up [0, 0, 1] Target [1mm, 2mm, 3mm] 80mm')
   })
 
-  it('renames without rebuilding the camera or visibility', async () => {
-    const { ast, artifact } = await subject()
-    const modifiedAst = renameNamedView({
-      ast,
-      pathToNode: artifact.codeRef.pathToNode,
-      name: 'Close-up',
-      wasmInstance: instance,
-    })
-    if (err(modifiedAst)) throw modifiedAst
-
-    await enginelessExecutor(modifiedAst, rustContext)
-    const updatedCode = recast(modifiedAst, instance)
-    if (err(updatedCode)) throw updatedCode
-    expect(updatedCode).toContain('"Close-up"')
-    expect(updatedCode).toContain('view::Orientation::Front')
-    expect(updatedCode).toContain('distance = 200mm')
-    expect(updatedCode).toContain('baseline = view::Visibility::Show')
-  })
-
   it('replaces only the camera with the current directed camera', async () => {
     const { ast, artifact } = await subject()
     const modifiedAst = updateNamedViewCamera({
@@ -335,7 +316,7 @@ view001 = view::named(
     })
     if (err(modifiedAst)) throw modifiedAst
 
-    await enginelessExecutor(modifiedAst, rustContext)
+    const execState = await enginelessExecutor(modifiedAst, rustContext)
     const updatedCode = recast(modifiedAst, instance)
     if (err(updatedCode)) throw updatedCode
     expect(updatedCode).toContain(`camera = view::directed(
@@ -347,5 +328,43 @@ view001 = view::named(
   )`)
     expect(updatedCode).toContain('"Inspection view"')
     expect(updatedCode).toContain('baseline = view::Visibility::Show')
+
+    const updatedView = [...execState.artifactGraph.values()].find(
+      (candidate) => candidate.type === 'namedView'
+    )
+    if (!updatedView || updatedView.type !== 'namedView') {
+      throw new Error('Expected the updated named view artifact')
+    }
+    const event = await prepareNamedViewEditCommand({
+      artifact: updatedView,
+      artifactGraph: execState.artifactGraph,
+      ast: modifiedAst,
+      code: updatedCode,
+      rustContext,
+    })
+    if (err(event)) throw event
+    if (event.type !== 'Find and select command') {
+      throw new Error(`Expected an edit command, got ${event.type}`)
+    }
+    expect(event.data.argDefaultValues).toMatchObject({
+      name: 'Inspection view',
+      orientation: undefined,
+      projection: undefined,
+      nodeToEdit: updatedView.codeRef.pathToNode,
+    })
+    const renamed = addNamedView({
+      ast: modifiedAst,
+      artifactGraph: execState.artifactGraph,
+      name: 'Close-up',
+      baseline: 'Hide',
+      nodeToEdit: updatedView.codeRef.pathToNode,
+      wasmInstance: instance,
+    })
+    if (err(renamed)) throw renamed
+    expect(recast(renamed.modifiedAst, instance)).toBe(
+      updatedCode
+        .replace('"Inspection view"', '"Close-up"')
+        .replace('view::Visibility::Show', 'view::Visibility::Hide')
+    )
   })
 })

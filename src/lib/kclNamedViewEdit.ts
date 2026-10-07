@@ -121,12 +121,6 @@ export async function prepareNamedViewEditCommand({
   code: string
   rustContext: RustContext
 }): Promise<CommandBarMachineEvent | Error> {
-  if (artifact.camera.look.type !== 'oriented') {
-    return new Error(
-      'Editing directed named-view cameras is not supported yet. Please edit the KCL source.'
-    )
-  }
-
   const callResult = getNodeFromPath<CallExpressionKw>(
     ast,
     artifact.codeRef.pathToNode,
@@ -142,18 +136,15 @@ export async function prepareNamedViewEditCommand({
   const camera = callResult.node.arguments.find(
     (argument) => argument.label?.name === 'camera'
   )?.arg
-  if (
-    camera?.type !== 'CallExpressionKw' ||
-    camera.callee.name.name !== 'oriented'
-  ) {
-    return new Error(
-      'Editing named views with a referenced camera is not supported yet. Please edit the KCL source.'
-    )
-  }
-
   const extractCameraArgument = async (
     name: 'target' | 'distance'
   ): Promise<KclCommandValue | undefined | Error> => {
+    if (
+      camera?.type !== 'CallExpressionKw' ||
+      camera.callee.name.name !== 'oriented'
+    ) {
+      return undefined
+    }
     const argument = camera.arguments.find(
       (candidate) => candidate.label?.name === name
     )?.arg
@@ -207,15 +198,23 @@ export async function prepareNamedViewEditCommand({
     bottom: 'Bottom',
     isometric: 'Isometric',
   } as const
+  // Other camera expressions stay in source; only name and visibility are editable.
+  const orientation =
+    camera?.type === 'CallExpressionKw' &&
+    camera.callee.name.name === 'oriented' &&
+    artifact.camera.look.type === 'oriented'
+      ? orientations[artifact.camera.look.orientation]
+      : undefined
   const argDefaultValues: ModelingCommandSchema['Named View'] = {
     name: artifact.name,
-    orientation: orientations[artifact.camera.look.orientation],
+    orientation,
     target,
     distance,
-    projection:
-      artifact.camera.projection === 'orthographic'
+    projection: orientation
+      ? artifact.camera.projection === 'orthographic'
         ? 'Orthographic'
-        : 'Perspective',
+        : 'Perspective'
+      : undefined,
     baseline: artifact.baseline === 'show' ? 'Show' : 'Hide',
     except,
     nodeToEdit: structuredClone(artifact.codeRef.pathToNode),
