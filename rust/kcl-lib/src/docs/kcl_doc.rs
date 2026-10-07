@@ -1075,9 +1075,13 @@ impl ArgData {
             | Some("Axis3d | Edge | Segment")
             | Some("Axis2d | Edge | Segment | any")
             | Some("Axis3d | Edge | Segment | any") => Some((index, format!(r#"{label}${{{index}:X}}"#))),
-            Some("Sketch") | Some("Sketch | Helix") | Some("Sketch | Helix | [Segment; 1+]") => {
+            Some("Sketch")
+            | Some("Sketch | Helix")
+            | Some("Sketch | Helix | [Segment; 1+]")
+            | Some("Sketch | Helix | Path3d | [Segment; 1+]") => {
                 Some((index, format!(r#"{label}${{{index}:sketch000}}"#)))
             }
+            Some("Path3d") => Some((index, format!(r#"{label}${{{index}:route}}"#))),
             Some("Edge") => Some((index, format!(r#"{label}${{{index}:tag_or_edge_fn}}"#))),
             Some("[Edge; 1+]") => Some((index, format!(r#"{label}[${{{index}:tag_or_edge_fn}}]"#))),
             Some("Plane") | Some("Solid | Plane") => Some((index, format!(r#"{label}${{{index}:XY}}"#))),

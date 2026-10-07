@@ -721,6 +721,7 @@ fn might_be_legacy_sketch(value: &KclValue) -> bool {
             .sketch()
             .map(|sketch| sketch.origin_sketch_id.is_none())
             .unwrap_or(true),
+        KclValue::Path3d { .. } => false,
         KclValue::Helix { .. } => false,
         KclValue::ImportedGeometry(_) => false,
         KclValue::Function { .. } => false,

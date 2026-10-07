@@ -7,7 +7,41 @@
 @no_std
 @settings(defaultLengthUnit = mm, experimentalFeatures = allow)
 
-import Axis2d, Axis3d, BoundedEdge, Edge, Face, Helix, Plane, Point2d, Point3d, Segment, Sketch, Solid, TaggedEdge, TaggedFace from "std::types"
+import Axis2d, Axis3d, BoundedEdge, Edge, Face, Helix, Path3d, Plane, Point2d, Point3d, Segment, Sketch, Solid, TaggedEdge, TaggedFace from "std::types"
+
+/// Start a continuous 3D path in world coordinates, without a sketch plane or constraints.
+/// Extend it with `line3d` and `arc3d`, then use it as the path of `sweep`.
+/// ```kcl,norun
+/// @settings(kclVersion = 3.0, experimentalFeatures = allow)
+/// route = startPath3d(at = [0mm, 0mm, 0mm])
+///   |> line3d(end = [0mm, 0mm, 20mm])
+/// ```
+@(impl = std_rust, experimental = true, feature_tree = true)
+export fn startPath3d(at: Point3d): Path3d {}
+
+/// Append a straight segment to a 3D path. Supply exactly one of `end` (an offset
+/// from the current position) or `endAbsolute` (a world coordinate).
+/// ```kcl,norun
+/// @settings(kclVersion = 3.0, experimentalFeatures = allow)
+/// route = startPath3d(at = [0mm, 0mm, 0mm])
+///   |> line3d(end = [0mm, 0mm, 20mm])
+///   |> line3d(endAbsolute = [10mm, 5mm, 30mm])
+/// ```
+@(impl = std_rust, experimental = true, feature_tree = false)
+export fn line3d(@path: Path3d, end?: Point3d, endAbsolute?: Point3d): Path3d {}
+
+/// Append a circular arc from the current position, through `interiorAbsolute`,
+/// to `endAbsolute`. The three distinct, non-collinear world points determine
+/// the arc's plane and traversal, including arcs greater than 180 degrees.
+/// ```kcl,norun
+/// @settings(kclVersion = 3.0, experimentalFeatures = allow)
+/// route = startPath3d(at = [0mm, 0mm, 0mm])
+///   |> line3d(end = [0mm, 0mm, 20mm])
+///   |> arc3d(interiorAbsolute = [5mm, 0mm, 25mm], endAbsolute = [10mm, 0mm, 20mm])
+///   |> line3d(end = [0mm, 10mm, -20mm])
+/// ```
+@(impl = std_rust, experimental = true, feature_tree = false)
+export fn arc3d(@path: Path3d, interiorAbsolute: Point3d, endAbsolute: Point3d): Path3d {}
 
 /// Start a new 2-dimensional sketch on a specific plane or face.
 ///
@@ -1839,7 +1873,7 @@ export fn sweep(
   /// The sketch or set of sketches that should be swept in space.
   @sketches: [Sketch | Face | TaggedFace | Segment; 1+],
   /// The path to sweep the sketch along.
-  path: Sketch | Helix | [Segment; 1+],
+  path: Sketch | Helix | Path3d | [Segment; 1+],
   /// If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components.
   sectional?: bool,
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.

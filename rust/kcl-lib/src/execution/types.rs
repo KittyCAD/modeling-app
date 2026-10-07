@@ -248,6 +248,10 @@ impl RuntimeType {
             ArrayLen::Minimum(1),
         )
     }
+    pub fn path3d() -> Self {
+        RuntimeType::Primitive(PrimitiveType::Path3d)
+    }
+
     pub fn helix() -> Self {
         RuntimeType::Primitive(PrimitiveType::Helix)
     }
@@ -633,6 +637,7 @@ pub enum PrimitiveType {
     Constraint,
     Solid,
     Plane,
+    Path3d,
     Helix,
     Face,
     Edge,
@@ -661,6 +666,7 @@ impl PrimitiveType {
             PrimitiveType::Constraint => "Constraints".to_owned(),
             PrimitiveType::Solid => "Solids".to_owned(),
             PrimitiveType::Plane => "Planes".to_owned(),
+            PrimitiveType::Path3d => "3D paths".to_owned(),
             PrimitiveType::Helix => "Helices".to_owned(),
             PrimitiveType::Face => "Faces".to_owned(),
             PrimitiveType::Edge => "Edges".to_owned(),
@@ -715,6 +721,7 @@ impl std::fmt::Display for PrimitiveType {
             PrimitiveType::BoundedEdge => write!(f, "BoundedEdge"),
             PrimitiveType::Axis2d => write!(f, "Axis2d"),
             PrimitiveType::Axis3d => write!(f, "Axis3d"),
+            PrimitiveType::Path3d => write!(f, "Path3d"),
             PrimitiveType::Helix => write!(f, "Helix"),
             PrimitiveType::ImportedGeometry => write!(f, "ImportedGeometry"),
             PrimitiveType::Function => write!(f, "fn"),
@@ -1722,6 +1729,10 @@ impl KclValue {
                 KclValue::Face { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
             },
+            PrimitiveType::Path3d => match self {
+                KclValue::Path3d { .. } => Ok(self.clone()),
+                _ => Err(self.into()),
+            },
             PrimitiveType::Helix => match self {
                 KclValue::Helix { .. } => Ok(self.clone()),
                 _ => Err(self.into()),
@@ -2036,6 +2047,7 @@ impl KclValue {
             KclValue::Solid { .. } => Some(RuntimeType::Primitive(PrimitiveType::Solid)),
             KclValue::Face { .. } => Some(RuntimeType::Primitive(PrimitiveType::Face)),
             KclValue::Segment { .. } => Some(RuntimeType::Primitive(PrimitiveType::Segment)),
+            KclValue::Path3d { .. } => Some(RuntimeType::path3d()),
             KclValue::Helix { .. } => Some(RuntimeType::Primitive(PrimitiveType::Helix)),
             KclValue::ImportedGeometry(..) => Some(RuntimeType::Primitive(PrimitiveType::ImportedGeometry)),
             KclValue::Tuple { value, .. } => Some(RuntimeType::Tuple(

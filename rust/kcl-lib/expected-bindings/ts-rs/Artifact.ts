@@ -213,7 +213,7 @@ showIds: Array<ArtifactId>,
  */
 hideIds: Array<ArtifactId>, codeRef: CodeRef, };
 
-export type Path = { id: ArtifactId, subType: PathSubType, planeId: ArtifactId, segIds: Array<ArtifactId>, 
+export type Path = { id: ArtifactId, subType: PathSubType, planeId?: ArtifactId | null, segIds: Array<ArtifactId>, 
 /**
  * Whether this artifact has been used in a subsequent operation
  */
@@ -256,7 +256,7 @@ outerPathId?: ArtifactId | null,
  */
 patternIds?: Array<ArtifactId>, };
 
-export type PathSubType = "sketch" | "region";
+export type PathSubType = "sketch" | "spatial" | "region";
 
 export type Pattern = { id: ArtifactId, subType: PatternSubType, 
 /**

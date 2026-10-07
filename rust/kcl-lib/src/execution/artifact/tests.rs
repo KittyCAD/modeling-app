@@ -533,7 +533,7 @@ fn entity_clone_remaps_path_ids() {
         Artifact::Path(Path {
             id: source_id,
             sub_type: PathSubType::Region,
-            plane_id,
+            plane_id: Some(plane_id),
             sketch_block_id: Some(sketch_block_id),
             seg_ids: vec![source_seg_id],
             consumed: true,
@@ -594,7 +594,7 @@ fn entity_clone_remaps_path_ids() {
     };
     assert_eq!(clone_path.id, ArtifactId::new(cmd_id));
     assert_eq!(clone_path.sub_type, PathSubType::Region);
-    assert_eq!(clone_path.plane_id, plane_id);
+    assert_eq!(clone_path.plane_id, Some(plane_id));
     assert_eq!(clone_path.sketch_block_id, Some(sketch_block_id));
     assert_eq!(clone_path.seg_ids, vec![cloned_seg_id]);
     assert_eq!(clone_path.sweep_id, Some(cloned_sweep_id));
@@ -695,7 +695,7 @@ fn entity_clone_does_not_preserve_unmapped_pattern_links() {
         Artifact::Path(Path {
             id: source_id,
             sub_type: PathSubType::Sketch,
-            plane_id: ArtifactId::new(Uuid::new_v4()),
+            plane_id: Some(ArtifactId::new(Uuid::new_v4())),
             sketch_block_id: None,
             seg_ids: Vec::new(),
             consumed: true,
@@ -765,7 +765,7 @@ fn entity_clone_clones_mapped_child_artifacts() {
         Artifact::Path(Path {
             id: source_path_id,
             sub_type: PathSubType::Sketch,
-            plane_id: source_plane_id,
+            plane_id: Some(source_plane_id),
             seg_ids: vec![source_seg_id],
             consumed: true,
             sweep_id: Some(source_sweep_id),
@@ -916,7 +916,7 @@ fn entity_clone_separates_solid_artifact_from_root_path() {
         Artifact::Path(Path {
             id: source_path_id,
             sub_type: PathSubType::Region,
-            plane_id: source_plane_id,
+            plane_id: Some(source_plane_id),
             seg_ids: vec![source_seg_id],
             consumed: true,
             sweep_id: Some(source_sweep_id),
@@ -1315,7 +1315,7 @@ fn create_region_creates_region_path_sub_type() {
         Artifact::Path(Path {
             id: origin_path_id,
             sub_type: PathSubType::Sketch,
-            plane_id: origin_plane_id,
+            plane_id: Some(origin_plane_id),
             seg_ids: Vec::new(),
             consumed: false,
             sweep_id: None,
@@ -1370,7 +1370,7 @@ fn create_region_creates_region_path_sub_type() {
     };
     assert_eq!(region_path.id, ArtifactId::new(cmd_id));
     assert_eq!(region_path.sub_type, PathSubType::Region);
-    assert_eq!(region_path.plane_id, origin_plane_id);
+    assert_eq!(region_path.plane_id, Some(origin_plane_id));
     // A region path isn't created from a sketch block directly.
     assert_eq!(region_path.sketch_block_id, None);
     // It links back to the origin sketch path.
@@ -1406,7 +1406,7 @@ fn pattern_artifact_links_to_source_geometry() {
         Artifact::Path(Path {
             id: path_id,
             sub_type: PathSubType::Sketch,
-            plane_id,
+            plane_id: Some(plane_id),
             seg_ids: Vec::new(),
             consumed: true,
             sweep_id: Some(sweep_id),
@@ -1585,7 +1585,7 @@ fn entity_clone_resolves_pattern_copy_lazily() {
         Artifact::Path(Path {
             id: source_path_id,
             sub_type: PathSubType::Region,
-            plane_id: ArtifactId::new(Uuid::new_v4()),
+            plane_id: Some(ArtifactId::new(Uuid::new_v4())),
             seg_ids: Vec::new(),
             consumed: true,
             sweep_id: Some(source_sweep_id),
@@ -1762,7 +1762,7 @@ fn entity_clone_of_2d_pattern_copy_does_not_create_body() {
         Artifact::Path(Path {
             id: source_path_id,
             sub_type: PathSubType::Sketch,
-            plane_id: ArtifactId::new(Uuid::new_v4()),
+            plane_id: Some(ArtifactId::new(Uuid::new_v4())),
             seg_ids: Vec::new(),
             consumed: true,
             sweep_id: Some(source_sweep_id),
@@ -2133,7 +2133,7 @@ fn mirror_3d_artifacts_include_mirrored_body_with_face_and_edge_ids() {
         Artifact::Path(Path {
             id: path_id,
             sub_type: PathSubType::Region,
-            plane_id: ArtifactId::new(Uuid::new_v4()),
+            plane_id: Some(ArtifactId::new(Uuid::new_v4())),
             seg_ids: Vec::new(),
             consumed: true,
             sweep_id: Some(source_sweep_id),

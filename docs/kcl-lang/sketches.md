@@ -8,6 +8,35 @@ KCL sketch blocks define 2D geometry and the relationships that control it.
 Start a block on a base plane or supported face, add sketch geometry inside the
 braces, then apply constraints to express design intent.
 
+For a route that changes planes, use the experimental `startPath3d`, `line3d`,
+and `arc3d` functions outside a sketch block. A `Path3d` has world coordinates,
+no sketch plane, and no constraints. Its segments form one continuous path:
+
+```kcl
+@settings(kclVersion = 3.0, experimentalFeatures = allow)
+
+route = startPath3d(at = [0mm, 0mm, 0mm])
+  |> line3d(end = [0mm, 0mm, 20mm])
+  |> arc3d(interiorAbsolute = [5mm, 0mm, 25mm], endAbsolute = [10mm, 0mm, 20mm])
+  |> line3d(end = [0mm, 10mm, -20mm])
+
+profile = sketch(on = XY) {
+  section = circle(start = [2mm, 0mm], center = [0mm, 0mm])
+}
+sectionRegion = region(point = [0mm, 0mm], sketch = profile)
+body = sweep(sectionRegion, path = route)
+```
+
+`line3d` takes exactly one of `end` (an offset) or `endAbsolute` (a world
+coordinate). `arc3d` passes through `interiorAbsolute` and ends at
+`endAbsolute`; those points and the current endpoint determine the arc's
+plane and direction. The points must be distinct and non-collinear.
+
+Always pass the value returned by the most recent segment call. Complete the
+route before using it in `sweep`; a swept path cannot be extended. These paths
+are edited in code and appear as **3D Path** features. They do not create
+sketch regions and cannot be used as extrusion or revolve profiles.
+
 ```kcl
 @settings(kclVersion = 3.0)
 

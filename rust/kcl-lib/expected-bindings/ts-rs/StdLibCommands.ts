@@ -448,6 +448,56 @@ export default {
       }
     ]
   },
+  "arc3d": {
+    "name": "arc3d",
+    "preferredName": "arc3d",
+    "qualName": "std::sketch::arc3d",
+    "moduleName": "sketch",
+    "returnType": "Path3d",
+    "addedIn": null,
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": true,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "path",
+        "ty": "Path3d",
+        "docs": null,
+        "required": true,
+        "special": true,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "interiorAbsolute",
+        "ty": "Point3d",
+        "docs": null,
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "endAbsolute",
+        "ty": "Point3d",
+        "docs": null,
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      }
+    ]
+  },
   "asin": {
     "name": "asin",
     "preferredName": "asin",
@@ -6327,6 +6377,56 @@ export default {
       }
     ]
   },
+  "line3d": {
+    "name": "line3d",
+    "preferredName": "line3d",
+    "qualName": "std::sketch::line3d",
+    "moduleName": "sketch",
+    "returnType": "Path3d",
+    "addedIn": null,
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": true,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "path",
+        "ty": "Path3d",
+        "docs": null,
+        "required": true,
+        "special": true,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "end",
+        "ty": "Point3d",
+        "docs": null,
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "endAbsolute",
+        "ty": "Point3d",
+        "docs": null,
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      }
+    ]
+  },
   "ln": {
     "name": "ln",
     "preferredName": "ln",
@@ -9581,6 +9681,32 @@ export default {
       }
     ]
   },
+  "startPath3d": {
+    "name": "startPath3d",
+    "preferredName": "startPath3d",
+    "qualName": "std::sketch::startPath3d",
+    "moduleName": "sketch",
+    "returnType": "Path3d",
+    "addedIn": null,
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": true,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "at",
+        "ty": "Point3d",
+        "docs": null,
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      }
+    ]
+  },
   "startProfile": {
     "name": "startProfile",
     "preferredName": "startProfile",
@@ -10037,7 +10163,7 @@ export default {
       },
       {
         "name": "path",
-        "ty": "Sketch | Helix | [Segment; 1+]",
+        "ty": "Sketch | Helix | Path3d | [Segment; 1+]",
         "docs": "The path to sweep the sketch along.",
         "required": true,
         "special": false,

@@ -21,6 +21,7 @@ pub mod loft;
 pub mod math;
 pub mod mirror;
 pub mod operation;
+pub mod path3d;
 pub mod patterns;
 pub mod planes;
 pub(crate) mod region_consumption;
@@ -398,6 +399,18 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("sketch", "ellipse") => (
             |e, a| Box::pin(crate::std::shapes::ellipse(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::ellipse").reads_regions_locally(),
+        ),
+        ("sketch", "startPath3d") => (
+            |e, a| Box::pin(crate::std::path3d::start_path3d(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::sketch::startPath3d").reads_regions_locally(),
+        ),
+        ("sketch", "line3d") => (
+            |e, a| Box::pin(crate::std::path3d::line3d(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::sketch::line3d").reads_regions_locally(),
+        ),
+        ("sketch", "arc3d") => (
+            |e, a| Box::pin(crate::std::path3d::arc3d(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::sketch::arc3d").reads_regions_locally(),
         ),
         ("prelude", "helix") => (
             |e, a| Box::pin(crate::std::helix::helix(e, a).map(|r| r.map(KclValue::continue_))),
@@ -937,6 +950,7 @@ pub(crate) fn std_ty(path: &str, fn_name: &str) -> (PrimitiveType, StdFnProps) {
             PrimitiveType::GdtAnnotation,
             StdFnProps::default("std::types::GdtAnnotation"),
         ),
+        ("types", "Path3d") => (PrimitiveType::Path3d, StdFnProps::default("std::types::Path3d")),
         ("types", "Helix") => (PrimitiveType::Helix, StdFnProps::default("std::types::Helix")),
         ("types", "Edge") => (PrimitiveType::Edge, StdFnProps::default("std::types::Edge")),
         ("types", "Axis2d") => (PrimitiveType::Axis2d, StdFnProps::default("std::types::Axis2d")),

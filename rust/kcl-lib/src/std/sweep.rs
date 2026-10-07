@@ -21,6 +21,7 @@ use crate::execution::Extrudable;
 use crate::execution::Helix;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
+use crate::execution::Path3d;
 use crate::execution::ProfileClosed;
 use crate::execution::Segment;
 use crate::execution::Sketch;
@@ -43,6 +44,7 @@ use crate::std::extrude::do_post_extrude;
 pub enum SweepPath {
     Sketch(Sketch),
     Helix(Box<Helix>),
+    Path3d(Box<Path3d>),
     Segments(Vec<Segment>),
 }
 
@@ -51,6 +53,7 @@ pub enum SweepPath {
 enum InnerSweepPath {
     Sketch(Sketch),
     Helix(Box<Helix>),
+    Path3d(Box<Path3d>),
 }
 
 /// Create a 3D surface or solid by sweeping a sketch along a path.
@@ -73,6 +76,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         &RuntimeType::Union(vec![
             RuntimeType::sketch(),
             RuntimeType::helix(),
+            RuntimeType::path3d(),
             RuntimeType::Array(Box::new(RuntimeType::segment()), ArrayLen::Minimum(1)),
         ]),
         exec_state,
@@ -93,12 +97,29 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let orient_profile_perpendicular: Option<bool> =
         args.get_kw_arg_opt("orientProfilePerpendicular", &RuntimeType::bool(), exec_state)?;
 
+    let spatial_path = match &path {
+        SweepPath::Path3d(path) => Some(crate::std::path3d::validate_current_path(
+            path,
+            exec_state,
+            args.source_range,
+        )?),
+        _ => None,
+    };
     let path = match path {
         SweepPath::Segments(segments) => InnerSweepPath::Sketch(
             build_segment_surface_sketch(segments, exec_state, &args.ctx, args.source_range).await?,
         ),
         SweepPath::Sketch(sketch) => InnerSweepPath::Sketch(sketch),
         SweepPath::Helix(helix) => InnerSweepPath::Helix(helix),
+        SweepPath::Path3d(path) => {
+            if path.segment_count == 0 {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "Cannot sweep along an empty 3D path. Add a line3d or arc3d segment first.".to_owned(),
+                    vec![args.source_range],
+                )));
+            }
+            InnerSweepPath::Path3d(path)
+        }
     };
 
     let sketches = coerce_extrude_targets(
@@ -128,6 +149,10 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         args,
     )
     .await?;
+    if let Some(mut path) = spatial_path {
+        path.consumed = true;
+        exec_state.update_spatial_path_artifact(path);
+    }
     Ok(value.into())
 }
 
@@ -233,6 +258,7 @@ async fn inner_sweep(
     let trajectory = ModelingCmdId::from(match path {
         InnerSweepPath::Sketch(sketch) => sketch.id,
         InnerSweepPath::Helix(helix) => helix.value,
+        InnerSweepPath::Path3d(path) => path.id,
     });
 
     let profile_transform = match (relative_to, translate_profile_to_path, orient_profile_perpendicular) {

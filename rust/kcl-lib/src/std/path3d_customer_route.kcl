@@ -1,0 +1,20 @@
+@settings(kclVersion = 3.0, defaultLengthUnit = mm, experimentalFeatures = allow)
+
+// Four tangent quarter-circle bends, each with a 10 mm radius.
+a = 10mm / sqrt(2)
+b = 10mm - a
+route = startPath3d(at = [0mm, 0mm, 0mm])
+  |> line3d(endAbsolute = [0mm, 0mm, 50mm])
+  |> arc3d(interiorAbsolute = [0mm, b, 50mm + a], endAbsolute = [0mm, 10mm, 60mm])
+  |> line3d(endAbsolute = [0mm, 25mm, 60mm])
+  |> arc3d(interiorAbsolute = [-b, 25mm + a, 60mm], endAbsolute = [-10mm, 35mm, 60mm])
+  |> line3d(endAbsolute = [-40mm, 35mm, 60mm])
+  |> arc3d(interiorAbsolute = [-40mm - a, 35mm, 50mm + a], endAbsolute = [-50mm, 35mm, 50mm])
+  |> line3d(endAbsolute = [-50mm, 35mm, 45mm])
+  |> arc3d(interiorAbsolute = [-60mm + a, 35mm, 45mm - a], endAbsolute = [-60mm, 35mm, 35mm])
+
+profile = sketch(on = XY) {
+  section = circle(start = [2mm, 0mm], center = [0mm, 0mm])
+}
+sectionRegion = region(point = [0mm, 0mm], sketch = profile)
+body = sweep(sectionRegion, path = route)

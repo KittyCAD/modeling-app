@@ -521,6 +521,16 @@ pub(super) fn build_artifact_graph(
     }
 
     for exec_artifact in exec_artifacts.values() {
+        if let Artifact::Path(exec_path) = exec_artifact
+            && exec_path.sub_type == PathSubType::Spatial
+            && let Some(Artifact::Path(path)) = map.get_mut(&exec_path.id)
+        {
+            // Execution tracks the route's segments and whether it may still
+            // be extended. Preserve the sweep links derived from commands.
+            merge_ids(&mut path.seg_ids, exec_path.seg_ids.clone());
+            path.consumed |= exec_path.consumed;
+            continue;
+        }
         merge_artifact_into_map(&mut map, exec_artifact.clone());
     }
 
@@ -847,7 +857,7 @@ fn remap_artifact_for_clone(
         Artifact::Path(source) => Artifact::Path(Path {
             id: remap_id_for_clone(source.id, entity_id_map),
             sub_type: source.sub_type,
-            plane_id: remap_id_for_clone(source.plane_id, entity_id_map),
+            plane_id: remap_opt_id_for_clone(source.plane_id, entity_id_map),
             seg_ids: remap_ids_for_clone(&source.seg_ids, entity_id_map),
             consumed: if source.id == source_root_id {
                 false
@@ -1447,6 +1457,13 @@ fn artifacts_to_update(
         }
         ModelingCmd::StartPath(_) => {
             let mut return_arr = Vec::new();
+            if let Some(Artifact::Path(path)) = exec_artifacts.get(&id)
+                && path.sub_type == PathSubType::Spatial
+            {
+                let mut path = path.clone();
+                path.code_ref = code_ref;
+                return Ok(vec![Artifact::Path(path)]);
+            }
             let current_plane_id = path_to_plane_id_map.get(&artifact_command.cmd_id).ok_or_else(|| {
                 KclError::new_internal(KclErrorDetails::new(
                     format!("Expected a current plane ID when processing StartPath command, but we have none: {id:?}"),
@@ -1470,7 +1487,7 @@ fn artifacts_to_update(
             return_arr.push(Artifact::Path(Path {
                 id,
                 sub_type: PathSubType::Sketch,
-                plane_id: (*current_plane_id).into(),
+                plane_id: Some((*current_plane_id).into()),
                 seg_ids: Vec::new(),
                 sweep_id: None,
                 trajectory_sweep_id: None,

@@ -26,6 +26,7 @@ use crate::execution::Helix;
 use crate::execution::KclObjectFields;
 use crate::execution::KclValue;
 use crate::execution::Metadata;
+use crate::execution::Path3d;
 use crate::execution::Plane;
 use crate::execution::PlaneInfo;
 use crate::execution::Segment;
@@ -1558,6 +1559,15 @@ impl<'a> FromKclValue<'a> for Sketch {
     }
 }
 
+impl<'a> FromKclValue<'a> for Path3d {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::Path3d { value } = arg else {
+            return None;
+        };
+        Some((**value).clone())
+    }
+}
+
 impl<'a> FromKclValue<'a> for Helix {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let KclValue::Helix { value } = arg else {
@@ -1578,6 +1588,7 @@ impl<'a> FromKclValue<'a> for SweepPath {
             .or_else(|| case2(arg).map(|arg0: Vec<Sketch>| Self::Sketch(arg0[0].clone())))
             .or_else(|| case3(arg).map(|arg0: Helix| Self::Helix(Box::new(arg0))))
             .or_else(|| case4(arg).map(Self::Segments))
+            .or_else(|| Path3d::from_kcl_val(arg).map(|p| Self::Path3d(Box::new(p))))
     }
 }
 impl<'a> FromKclValue<'a> for String {

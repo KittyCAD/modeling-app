@@ -2712,6 +2712,13 @@ pub(crate) struct ExecTestResults {
 
 #[cfg(test)]
 impl ExecTestResults {
+    pub(crate) async fn artifact_graph(&mut self) -> Result<&ArtifactGraph, KclError> {
+        self.exec_state
+            .build_artifact_graph(&self.exec_ctxt.engine, &self.program.ast)
+            .await?;
+        Ok(&self.exec_state.global.artifacts.graph)
+    }
+
     pub(crate) fn root_module_artifact_commands(&self) -> &[ArtifactCommand] {
         &self.exec_state.global.root_module_artifacts.commands
     }

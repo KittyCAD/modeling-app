@@ -538,7 +538,7 @@ export function getMergedSweepBodyArtifact(
       return current
     }
 
-    const face = artifactGraph.get(path.planeId)
+    const face = path.planeId ? artifactGraph.get(path.planeId) : undefined
     if (face?.type !== 'cap' && face?.type !== 'wall') return current
     const parentSweep = artifactGraph.get(face.sweepId)
     if (parentSweep?.type !== 'sweep') return current
@@ -819,6 +819,7 @@ function getPlaneFromPath(
   path: PathArtifact,
   graph: ArtifactGraph
 ): PlaneArtifact | WallArtifact | CapArtifact | Error {
+  if (!path.planeId) return new Error('A spatial path has no sketch plane')
   const plane = getArtifactOfTypes(
     { key: path.planeId, types: ['plane', 'wall', 'cap'] },
     graph
