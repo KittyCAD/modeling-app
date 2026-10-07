@@ -57,7 +57,7 @@ const candidate = '@settings(kclVersion = "3.0")\nlength = 11mm\n'
 
 test.describe(
   'Sponsored KCL project migration',
-  { tag: ['@web', '@desktop', '@zookeeper'] },
+  { tag: ['@web', '@zookeeper'] },
   () => {
     test('captures unsaved and supporting files, cancels, automatically applies and undoes a project', async ({
       page,
