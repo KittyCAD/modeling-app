@@ -70,7 +70,7 @@ describe('createOnWebSocketMessage', () => {
     vi.restoreAllMocks()
   })
 
-  it('reports the first ping-pong and later ones only when they exceed 2 seconds', () => {
+  it('reports the first ping-pong and later ones only when they exceed 10 seconds', () => {
     vi.useFakeTimers()
     const ping = vi.fn()
     const handler = createMessageHandler(undefined, vi.fn(), ping)
@@ -89,8 +89,8 @@ describe('createOnWebSocketMessage', () => {
 
     for (const [now, sentAt] of [
       [1_000, 950],
-      [4_000, 2_000],
-      [7_001, 5_000],
+      [14_000, 4_000],
+      [26_001, 16_000],
     ]) {
       vi.setSystemTime(now)
       ping.mockReturnValueOnce(sentAt)
@@ -115,7 +115,7 @@ describe('createOnWebSocketMessage', () => {
         connectionId: 'local-attempt',
         modelingApiCallId: 'server-session',
         pingPongNumber: 3,
-        durationMs: 2_001,
+        durationMs: 10_001,
       },
     })
   })

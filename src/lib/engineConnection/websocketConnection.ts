@@ -21,8 +21,8 @@ import { reportRejection } from '@src/lib/trap'
 
 const MODELING_BACKEND_DISCONNECTED_MESSAGE =
   'modeling connection interrupted; please reconnect and retry'
-// Grafana's "average worst" WebRTC RTT is about 2 seconds.
-const SLOW_PING_PONG_MS = 2_000
+// Grafana's "average worst" WebRTC RTT is about 2 seconds; report larger outliers.
+const SLOW_PING_PONG_MS = 10_000
 
 /**
  * 4 different event listeners to clean up
