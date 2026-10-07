@@ -7,6 +7,7 @@ import {
   getVariableNameFromNodePath,
 } from '@src/lang/queryAst'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
+import { createLiteral } from '@src/lang/create'
 import { type ArtifactGraph, assertParse, recast } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
@@ -113,10 +114,18 @@ plate = extrude(plateRegion, length = 5mm)`,
           }
         })
       let result
+      const precision = sign < 0 ? 0 : 2
       try {
         result = await modelingCommandCodemods['GDT Distance'].run({
           ast,
-          args: { objects },
+          args: {
+            objects,
+            precision: {
+              valueText: String(precision),
+              valueAst: createLiteral(precision, instance),
+              valueCalculated: String(precision),
+            },
+          },
           kclManager,
           wasmInstance: instance,
         })
@@ -139,6 +148,7 @@ plate = extrude(plateRegion, length = 5mm)`,
       expect(code).toContain('from = plateRegion.tags.leftHole')
       expect(code).toContain('to = plateRegion.tags.rightHole')
       expect(code).not.toContain('tolerance =')
+      expect(code).toContain(`precision = ${precision}`)
       await enginelessExecutor(result.modifiedAst, rustContext)
     }
   )
