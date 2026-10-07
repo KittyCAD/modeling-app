@@ -72,14 +72,14 @@ async fn inner_mirror_3d(
     let across = match across {
         MirrorAcross3d::Axis { direction, origin } => MirrorAcross::Axis {
             axis: Point3d {
-                x: direction[0].to_mm(),
-                y: direction[1].to_mm(),
-                z: direction[2].to_mm(),
+                x: direction[0].unwrap_to_mm(),
+                y: direction[1].unwrap_to_mm(),
+                z: direction[2].unwrap_to_mm(),
             },
             point: Point3d {
-                x: LengthUnit(origin[0].to_mm()),
-                y: LengthUnit(origin[1].to_mm()),
-                z: LengthUnit(origin[2].to_mm()),
+                x: LengthUnit(origin[0].unwrap_to_mm()),
+                y: LengthUnit(origin[1].unwrap_to_mm()),
+                z: LengthUnit(origin[2].unwrap_to_mm()),
             },
         },
         MirrorAcross3d::Edge(edge) => {
@@ -224,13 +224,13 @@ async fn inner_mirror_2d(
                         mcmd::EntityMirror::builder()
                             .ids(starting_sketches.iter().map(|sketch| sketch.id).collect())
                             .axis(Point3d {
-                                x: direction[0].to_mm(),
-                                y: direction[1].to_mm(),
+                                x: direction[0].unwrap_to_mm(),
+                                y: direction[1].unwrap_to_mm(),
                                 z: 0.0,
                             })
                             .point(Point3d {
-                                x: LengthUnit(origin[0].to_mm()),
-                                y: LengthUnit(origin[1].to_mm()),
+                                x: LengthUnit(origin[0].unwrap_to_mm()),
+                                y: LengthUnit(origin[1].unwrap_to_mm()),
                                 z: LengthUnit(0.0),
                             })
                             .build(),

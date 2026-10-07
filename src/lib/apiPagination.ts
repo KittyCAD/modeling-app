@@ -1,7 +1,7 @@
 import { ApiError } from '@kittycad/lib'
 import type { Client } from '@kittycad/lib'
 
-export type ApiListResponse<T> = T[] | { items: T[]; next_page: string | null }
+export type ApiListResponse<T> = T[] | { items: T[]; next_page?: string | null }
 
 /** Keep legacy responses during rollout; never return an incomplete traversal. */
 export async function collectApiList<T>(
@@ -33,7 +33,7 @@ export async function collectApiList<T>(
       return Promise.reject(new Error('Invalid API list response'))
     }
     items.push(...page.items)
-    if (page.next_page === null) return items
+    if (page.next_page === null || page.next_page === undefined) return items
     if (
       typeof page.next_page !== 'string' ||
       !page.next_page ||

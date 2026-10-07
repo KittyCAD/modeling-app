@@ -233,11 +233,19 @@ hidden002 = hide(sketch002)
 
 solid001 = subtract(bracketProfile, tools = extrude001)
   |> fillet(
-       tags = [
-         getCommonEdge(faces = [region0011.tags.line21, capEnd001]),
-         getCommonEdge(faces = [region0011.tags.line10, capEnd001]),
-         getCommonEdge(faces = [region0011.tags.line10, capStart001]),
-         getCommonEdge(faces = [region0011.tags.line21, capStart001])
-       ],
        radius = flangeLength / 3,
+       edges = [
+         {
+           sideFaces = [region0011.tags.line21, capEnd001]
+         },
+         {
+           sideFaces = [region0011.tags.line10, capEnd001]
+         },
+         {
+           sideFaces = [region0011.tags.line10, capStart001]
+         },
+         {
+           sideFaces = [region0011.tags.line21, capStart001]
+         }
+       ],
      )

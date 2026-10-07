@@ -64,10 +64,13 @@ async function main() {
   let eligible = 0
   for (const project of candidates) {
     try {
-      const shares = await listClientItems<ProjectShareLinkResponse>(
+      const pager = projects.list_project_share_links_pager({
         client,
-        `/user/projects/${project.id}/share-links`
-      )
+        id: project.id,
+        limit: 100,
+      })
+      const shares: ProjectShareLinkResponse[] = []
+      while (pager.hasNext()) shares.push(...(await pager.next()))
       if (shares.length !== 0) continue
 
       // Recheck immediately before deletion so activity since the initial list

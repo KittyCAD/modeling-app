@@ -48,6 +48,8 @@ Valid properties are:
   - `3.0`: the current language version, for new programs.
   - See [Migrating to KCL 3.0](/docs/kcl-lang/migrating-to-kcl-3) for how to
     update a program to the newest version.
+  - Point-and-click modeling commands only offer arguments supported by this
+    version. Arguments already present in the code are left alone.
 
 `defaultAngleUnit` is not accepted in KCL 3.0. Use explicit angle suffixes,
 such as `180deg` or `3.14rad`, instead.
