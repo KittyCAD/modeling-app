@@ -68,29 +68,15 @@ export class MigrationConversation {
     this.loading.value = !!conversationId
     if (!conversationId) return
     try {
-      const entries = new Map<string, MigrationHistoryEntry>()
-      const cursors = new Set<string>()
-      let before: string | undefined
-      do {
-        const response = await migrationConversationCommand(
-          { type: 'history', conversation_id: conversationId, before },
-          this.token(),
-          owner.signal
-        )
-        if (response.type !== 'history' || owner.signal.aborted) return
-        for (const entry of response.entries)
-          entries.set(entry.operation_id, entry)
-        before = response.next_before ?? undefined
-        if (before && cursors.has(before)) {
-          this.error.value = 'Migration history could not finish loading.'
-          return
-        }
-        if (before) cursors.add(before)
-      } while (before)
-      if (!owner.signal.aborted)
-        this.entries.value = [...entries.values()].sort(
-          (a, b) => Date.parse(a.created_at) - Date.parse(b.created_at)
-        )
+      const response = await migrationConversationCommand(
+        { type: 'history', conversation_id: conversationId },
+        this.token(),
+        owner.signal
+      )
+      if (response.type !== 'history' || owner.signal.aborted) return
+      this.entries.value = response.entries.sort(
+        (a, b) => Date.parse(a.created_at) - Date.parse(b.created_at)
+      )
     } catch (error: unknown) {
       if (!owner.signal.aborted)
         this.error.value = isErr(error)

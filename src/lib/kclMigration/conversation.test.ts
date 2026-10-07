@@ -55,7 +55,7 @@ afterEach(async () => {
   vi.unstubAllEnvs()
 })
 
-it('loads all pages as read-only entries and anchors them to the prior prompt', async () => {
+it('loads read-only history in one request and anchors entries to the prior prompt', async () => {
   respond = (message, socket) => {
     assert.equal(message.type, 'history')
     if (message.type !== 'history') return
@@ -63,22 +63,19 @@ it('loads all pages as read-only entries and anchors them to the prior prompt', 
       type: 'history',
       conversation_id: conversationId,
       entries: [
-        message.before
-          ? {
-              ...entry,
-              operation_id: 'older',
-              created_at: '2026-10-01T12:00:00Z',
-            }
-          : entry,
+        entry,
+        {
+          ...entry,
+          operation_id: 'older',
+          created_at: '2026-10-01T12:00:00Z',
+        },
       ],
-      next_before: message.before ? null : entry.operation_id,
     })
   }
   history.select(conversationId)
   await vi.waitFor(() => expect(history.entries.value).toHaveLength(2))
-  expect(messages.map((message) => message.type)).toEqual([
-    'history',
-    'history',
+  expect(messages).toEqual([
+    { type: 'history', conversation_id: conversationId },
   ])
   expect(history.entries.value[0].operation_id).toBe('older')
   expect(history.entries.value[1].application.status).toBe('not_applied')
