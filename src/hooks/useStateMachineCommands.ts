@@ -12,6 +12,7 @@ import type {
   StateMachineCommandSetConfig,
   StateMachineCommandSetSchema,
 } from '@src/lib/commandTypes'
+import { canUseModelingDialog } from '@src/lib/commandUtils'
 import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
 import { createMachineCommand } from '@src/lib/createMachineCommand'
 
@@ -97,8 +98,12 @@ export default function useStateMachineCommands<
         })
       })
       .map((command) =>
-        command?.useModelingDialog
-          ? { ...command, useModelingDialog: modelingDialogsEnabled }
+        command
+          ? {
+              ...command,
+              useModelingDialog:
+                modelingDialogsEnabled && canUseModelingDialog(command),
+            }
           : command
       )
       .filter((c) => c !== null) as Command[] // TS isn't smart enough to know this filter removes nulls

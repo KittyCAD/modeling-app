@@ -21,6 +21,33 @@ export interface CommandWithDisabledState {
   disabled: boolean
 }
 
+export function canUseModelingDialog(command: {
+  groupId: string
+  args?: Record<string, { inputType: string; hidden?: unknown; skip?: boolean }>
+}): boolean {
+  if (command.groupId !== 'modeling') return false
+  const args = Object.values(command.args ?? {}).filter(
+    (arg) => arg.hidden !== true
+  )
+  return (
+    args.length > 0 &&
+    args.every(
+      (arg) =>
+        !arg.skip &&
+        [
+          'kcl',
+          'selection',
+          'options',
+          'boolean',
+          'string',
+          'tagDeclarator',
+          'vector2d',
+          'vector3d',
+        ].includes(arg.inputType)
+    )
+  )
+}
+
 export function isModelingDialogCommand(command: Command | undefined): boolean {
   return command?.groupId === 'modeling' && command.useModelingDialog === true
 }
