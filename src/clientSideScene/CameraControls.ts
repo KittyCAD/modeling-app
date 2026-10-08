@@ -649,10 +649,7 @@ export class CameraControls {
 
       // Clear any previous drag state
       this.wasDragging = false
-      if (
-        this.effectiveCameraMode === 'engineToClient' ||
-        this.effectiveCameraMode === 'local'
-      ) {
+      if (this.syncDirection === 'engineToClient') {
         const newCmdId = uuidv4()
 
         // You can use raw JS to fetch the element from the DOM. We do not need to proxy a ref of a ref element on the DOM element

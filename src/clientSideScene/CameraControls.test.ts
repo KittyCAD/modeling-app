@@ -533,3 +533,53 @@ describe('reconnect camera capture', () => {
     })
   })
 })
+
+describe('hover queries', () => {
+  afterEach(() => {
+    document.getElementById('video-stream')?.remove()
+  })
+
+  function hoverQueriesSent(
+    local: boolean,
+    syncDirection: CameraControls['syncDirection']
+  ) {
+    const video = document.createElement('video')
+    video.id = 'video-stream'
+    document.body.append(video)
+    const manager = makeConnectionManager({ width: 1024, height: 768 })
+    const controls = new CameraControls(
+      makeCanvas(1024, 768),
+      manager,
+      unusedSettings
+    )
+    controls.localCameraMode = local
+    controls.syncDirection = syncDirection
+    const send = vi.spyOn(manager, 'sendSceneCommand').mockClear()
+    controls.onMouseMove(
+      new PointerEvent('pointermove', {
+        clientX: 100,
+        clientY: 100,
+        pointerType: 'mouse',
+      })
+    )
+    return send.mock.calls.filter(
+      ([command]) =>
+        command.type === 'modeling_cmd_req' &&
+        command.cmd.type === 'highlight_set_entity'
+    )
+  }
+
+  it.each([true, false])(
+    'are sent outside a sketch (local camera: %s)',
+    (local) => {
+      expect(hoverQueriesSent(local, 'engineToClient')).toHaveLength(1)
+    }
+  )
+
+  it.each([true, false])(
+    'are not sent while sketching (local camera: %s)',
+    (local) => {
+      expect(hoverQueriesSent(local, 'clientToEngine')).toHaveLength(0)
+    }
+  )
+})
