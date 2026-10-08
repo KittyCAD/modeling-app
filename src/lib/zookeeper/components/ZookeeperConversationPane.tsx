@@ -271,24 +271,20 @@ export const ZookeeperConversationPane = (props: {
               promptPositions,
               conversation?.exchanges.length ?? 0
             ),
-            content: (
+            content: (onClickClearChat?: () => void) => (
               <KclMigrationHistoryEntry
                 entry={entry}
                 transcriptPresent={persistedOperations.has(entry.operation_id)}
                 userAvatar={props.userAvatarSrc}
+                onClickClearChat={onClickClearChat}
               />
             ),
           })),
           ...turns.map((turn) => ({
             id: turn.id,
             afterExchange: turn.afterExchange,
-            content: props.renderMigrationTurn?.(
-              turn,
-              turn === turns.at(-1) &&
-                turn.afterExchange >= (conversation?.exchanges.length ?? 0)
-                ? () => setIsConfirmingClearChat(true)
-                : undefined
-            ),
+            content: (onClickClearChat?: () => void) =>
+              props.renderMigrationTurn?.(turn, onClickClearChat),
           })),
         ]}
         afterMessages={
