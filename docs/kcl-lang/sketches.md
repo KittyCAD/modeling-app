@@ -39,7 +39,7 @@ tangent line. It keeps the start tangent when you move the preceding segment;
 a following line still needs to match the arc's exit direction.
 
 Author a route with straight lines, then round its interior corners with
-`fillet3d`. Endpoint edits recompute both tangent joins at each bend:
+`pathFillet`. Endpoint edits recompute both tangent joins at each bend:
 
 ```kcl
 @settings(kclVersion = 3.0, experimentalFeatures = allow)
@@ -47,7 +47,7 @@ Author a route with straight lines, then round its interior corners with
 route = startPath3d(at = [0mm, 0mm, 0mm])
   |> line3d(endAbsolute = [0mm, 0mm, 60mm])
   |> line3d(endAbsolute = [15mm, 25mm, 65mm])
-  |> fillet3d(radius = 10mm)
+  |> pathFillet(radius = 10mm)
 ```
 
 This trims both legs at each corner and inserts a circular arc. One radius

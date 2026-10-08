@@ -5,7 +5,7 @@ end = [15mm, 25mm, 65mm]
 route = startPath3d(at = [0mm, 0mm, 0mm])
   |> line3d(endAbsolute = corner)
   |> line3d(endAbsolute = end)
-  |> fillet3d(radius = 10mm)
+  |> pathFillet(radius = 10mm)
 
 profile = sketch(on = XY) {
   section = circle(start = [2mm, 0mm], center = [0mm, 0mm])

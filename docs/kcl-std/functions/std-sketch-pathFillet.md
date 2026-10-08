@@ -1,5 +1,5 @@
 ---
-title: "fillet3d"
+title: "pathFillet"
 subtitle: "Function in std::sketch"
 excerpt: "Round all interior line-line corners of an open 3D route. Each corner replaces the ends of its two straight legs with a circular arc of the given radius. Editing the line endpoints recomputes both tangent joins. Existing arcs retain their points, radius, and traversal; joins involving arcs must already be tangent. Straight continuations are retained. Reversals, closed routes, sharp arc joins, and radii that consume a leg or overlap neighboring fillets are rejected. The input route is consumed and hidden; use the returned rounded path."
 layout: manual
@@ -10,7 +10,7 @@ layout: manual
 Round all interior line-line corners of an open 3D route. Each corner replaces the ends of its two straight legs with a circular arc of the given radius. Editing the line endpoints recomputes both tangent joins. Existing arcs retain their points, radius, and traversal; joins involving arcs must already be tangent. Straight continuations are retained. Reversals, closed routes, sharp arc joins, and radii that consume a leg or overlap neighboring fillets are rejected. The input route is consumed and hidden; use the returned rounded path.
 
 ```kcl
-fillet3d(
+pathFillet(
   @path: Path3d,
   radius: number(Length),
 ): Path3d
@@ -40,7 +40,7 @@ route = startPath3d(at = [0mm, 0mm, 0mm])
   |> tangentialArc3d(end = [20mm, 0mm, 20mm])
   |> line3d(endAbsolute = [60mm, 0mm, 60mm])
   |> line3d(endAbsolute = [60mm, 40mm, 60mm])
-  |> fillet3d(radius = 6mm)
+  |> pathFillet(radius = 6mm)
 
 ```
 

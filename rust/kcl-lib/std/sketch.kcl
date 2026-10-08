@@ -75,10 +75,10 @@ export fn tangentialArc3d(@path: Path3d, end?: Point3d, endAbsolute?: Point3d): 
 ///   |> tangentialArc3d(end = [20mm, 0mm, 20mm])
 ///   |> line3d(endAbsolute = [60mm, 0mm, 60mm])
 ///   |> line3d(endAbsolute = [60mm, 40mm, 60mm])
-///   |> fillet3d(radius = 6mm)
+///   |> pathFillet(radius = 6mm)
 /// ```
 @(impl = std_rust, experimental = true, feature_tree = false)
-export fn fillet3d(@path: Path3d, radius: number(Length)): Path3d {}
+export fn pathFillet(@path: Path3d, radius: number(Length)): Path3d {}
 
 /// Start a new 2-dimensional sketch on a specific plane or face.
 ///

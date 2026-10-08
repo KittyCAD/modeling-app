@@ -2320,45 +2320,6 @@ export default {
       }
     ]
   },
-  "fillet3d": {
-    "name": "fillet3d",
-    "preferredName": "fillet3d",
-    "qualName": "std::sketch::fillet3d",
-    "moduleName": "sketch",
-    "returnType": "Path3d",
-    "addedIn": null,
-    "summary": "Round all interior line-line corners of an open 3D route. Each corner replaces the ends of its two straight legs with a circular arc of the given radius. Editing the line endpoints recomputes both tangent joins. Existing arcs retain their points, radius, and traversal; joins involving arcs must already be tangent. Straight continuations are retained. Reversals, closed routes, sharp arc joins, and radii that consume a leg or overlap neighboring fillets are rejected. The input route is consumed and hidden; use the returned rounded path.",
-    "deprecated": false,
-    "deprecatedSince": null,
-    "experimental": true,
-    "docHidden": false,
-    "args": [
-      {
-        "name": "path",
-        "ty": "Path3d",
-        "docs": null,
-        "required": true,
-        "special": true,
-        "experimental": false,
-        "addedIn": null,
-        "deprecated": false,
-        "deprecatedSince": null,
-        "removedIn": null
-      },
-      {
-        "name": "radius",
-        "ty": "number(Length)",
-        "docs": null,
-        "required": true,
-        "special": false,
-        "experimental": false,
-        "addedIn": null,
-        "deprecated": false,
-        "deprecatedSince": null,
-        "removedIn": null
-      }
-    ]
-  },
   "flatten": {
     "name": "flatten",
     "preferredName": "flatten",
@@ -7192,6 +7153,45 @@ export default {
         "ty": "number(Length)",
         "docs": "The y value. Calculates x and returns (x, y). Incompatible with `x`.",
         "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      }
+    ]
+  },
+  "pathFillet": {
+    "name": "pathFillet",
+    "preferredName": "pathFillet",
+    "qualName": "std::sketch::pathFillet",
+    "moduleName": "sketch",
+    "returnType": "Path3d",
+    "addedIn": null,
+    "summary": "Round all interior line-line corners of an open 3D route. Each corner replaces the ends of its two straight legs with a circular arc of the given radius. Editing the line endpoints recomputes both tangent joins. Existing arcs retain their points, radius, and traversal; joins involving arcs must already be tangent. Straight continuations are retained. Reversals, closed routes, sharp arc joins, and radii that consume a leg or overlap neighboring fillets are rejected. The input route is consumed and hidden; use the returned rounded path.",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": true,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "path",
+        "ty": "Path3d",
+        "docs": null,
+        "required": true,
+        "special": true,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "radius",
+        "ty": "number(Length)",
+        "docs": null,
+        "required": true,
         "special": false,
         "experimental": false,
         "addedIn": null,

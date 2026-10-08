@@ -107,7 +107,6 @@ layout: manual
   * [`ellipticPoint`](/docs/kcl-std/functions/std-sketch-ellipticPoint)
   * [`extrude`](/docs/kcl-std/functions/std-sketch-extrude)
   * [`faceOf`](/docs/kcl-std/functions/std-sketch-faceOf)
-  * [`fillet3d`](/docs/kcl-std/functions/std-sketch-fillet3d) Experimental
   * [`getBoundedEdge`](/docs/kcl-std/functions/std-sketch-getBoundedEdge)
   * [`getCommonEdge`](/docs/kcl-std/functions/std-sketch-getCommonEdge)
   * [`getNextAdjacentEdge`](/docs/kcl-std/functions/std-sketch-getNextAdjacentEdge)
@@ -123,6 +122,7 @@ layout: manual
   * [`loft`](/docs/kcl-std/functions/std-sketch-loft)
   * [`parabolic`](/docs/kcl-std/functions/std-sketch-parabolic) Experimental
   * [`parabolicPoint`](/docs/kcl-std/functions/std-sketch-parabolicPoint)
+  * [`pathFillet`](/docs/kcl-std/functions/std-sketch-pathFillet) Experimental
   * [`patternCircular2d`](/docs/kcl-std/functions/std-sketch-patternCircular2d)
   * [`patternLinear2d`](/docs/kcl-std/functions/std-sketch-patternLinear2d)
   * [`patternTransform2d`](/docs/kcl-std/functions/std-sketch-patternTransform2d)
