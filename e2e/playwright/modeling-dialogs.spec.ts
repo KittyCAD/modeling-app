@@ -32,7 +32,9 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
       exact: true,
     })
     const submit = dialog.getByRole('button', { name: 'Submit', exact: true })
+    const tagStart = dialog.getByRole('textbox', { name: /^tag start$/i })
     await expect(length).toHaveText('5')
+    await expect(tagStart).toBeHidden()
     await expect(
       dialog.getByRole('combobox', { name: /^symmetric$/i })
     ).toBeVisible()
@@ -53,9 +55,7 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     await expect(
       dialog.getByRole('button', { name: 'Cancel' })
     ).toBeInViewport()
-    await dialog
-      .getByRole('textbox', { name: /^tag start$/i })
-      .fill('startFace')
+    await tagStart.fill('startFace')
     await more.click()
     await submit.click()
     await expect(dialog).not.toBeAttached()
@@ -67,14 +67,15 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     const operation = await toolbar.getFeatureTreeOperation('Extrude', 0)
     await operation.dblclick()
     await expect(length).toHaveText('12mm')
+    await expect(tagStart).toBeHidden()
+    await more.click()
+    await expect(tagStart).toHaveValue('startFace')
     await length.fill('99mm')
     await dialog.getByRole('button', { name: 'Cancel', exact: true }).click()
     await expect(dialog).not.toBeAttached()
     await operation.dblclick()
     await expect(length).toHaveText('12mm')
-    await expect(
-      dialog.getByRole('textbox', { name: /^tag start$/i })
-    ).toHaveValue('startFace')
+    await expect(tagStart).toBeHidden()
     await length.fill('8mm')
     await expect(submit).toBeEnabled()
     await submit.click()
