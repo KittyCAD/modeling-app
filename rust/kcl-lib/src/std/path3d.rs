@@ -49,7 +49,7 @@ fn delta(a: [f64; 3], b: [f64; 3]) -> [f64; 3] {
 }
 
 fn length(v: [f64; 3]) -> f64 {
-    v[0].hypot(v[1]).hypot(v[2])
+    libm::hypot(libm::hypot(v[0], v[1]), v[2])
 }
 
 fn validate_arc(start: [f64; 3], interior: [f64; 3], end: [f64; 3], range: SourceRange) -> Result<(), KclError> {
@@ -75,6 +75,135 @@ fn validate_arc(start: [f64; 3], interior: [f64; 3], end: [f64; 3], range: Sourc
         ));
     }
     Ok(())
+}
+
+
+fn dot(a: [f64; 3], b: [f64; 3]) -> f64 {
+    a.iter().zip(b).map(|(a, b)| a * b).sum()
+}
+
+fn cross(a: [f64; 3], b: [f64; 3]) -> [f64; 3] {
+    [
+        a[1] * b[2] - a[2] * b[1],
+        a[2] * b[0] - a[0] * b[2],
+        a[0] * b[1] - a[1] * b[0],
+    ]
+}
+
+fn unit(v: [f64; 3], range: SourceRange) -> Result<[f64; 3], KclError> {
+    let len = length(v);
+    if !len.is_finite() || len <= POINT_TOLERANCE_MM {
+        return Err(argument_error("The 3D arc cannot be represented with finite coordinates.", range));
+    }
+    Ok(v.map(|v| v / len))
+}
+
+/// Use the ordered three-point circle's normal to preserve major-arc traversal.
+fn arc_end_tangent(
+    start: [f64; 3],
+    interior: [f64; 3],
+    end: [f64; 3],
+    range: SourceRange,
+) -> Result<[f64; 3], KclError> {
+    let a = delta(interior, start);
+    let b = delta(end, start);
+    let u = unit(a, range)?;
+    let b_len = length(b);
+    let b_unit = b.map(|v| v / b_len);
+    let normal = unit(cross(u, b_unit), range)?;
+    let v = cross(normal, u);
+    let x = dot(b_unit, u);
+    let y = dot(b_unit, v);
+    let cx = length(a) / 2.0;
+    let cy = (b_len / 2.0 - cx * x) / y;
+    let radius = std::array::from_fn(|i| b[i] - cx * u[i] - cy * v[i]);
+    Ok(cross(normal, unit(radius, range)?))
+}
+
+fn tangent_arc(
+    start: [f64; 3],
+    tangent: [f64; 3],
+    end: [f64; 3],
+    range: SourceRange,
+) -> Result<([f64; 3], [f64; 3]), KclError> {
+    let chord = delta(end, start);
+    let chord_len = length(chord);
+    if !chord_len.is_finite() || !end.iter().all(|v| v.is_finite()) {
+        return Err(argument_error("3D path coordinates must be finite lengths.", range));
+    }
+    if chord_len <= POINT_TOLERANCE_MM {
+        return Err(argument_error(
+            "tangentialArc3d requires an endpoint different from the current path position.",
+            range,
+        ));
+    }
+    let chord_unit = chord.map(|v| v / chord_len);
+    let cos_half = dot(chord_unit, tangent).clamp(-1.0, 1.0);
+    let perpendicular = std::array::from_fn(|i| chord_unit[i] - tangent[i] * cos_half);
+    let sin_half = length(perpendicular);
+    if sin_half <= 1.0e-8 {
+        return Err(argument_error(
+            "tangentialArc3d requires an endpoint off the preceding tangent line. Use line3d for a straight continuation.",
+            range,
+        ));
+    }
+    let v = perpendicular.map(|v| v / sin_half);
+    // Rationalize 1 - cos(theta/2) for shallow bends. A negative cosine
+    // selects the major arc, whose halfway point lies beyond the endpoint.
+    let sideways = if cos_half >= 0.0 {
+        (chord_len / 2.0) * sin_half / (1.0 + cos_half)
+    } else {
+        (chord_len / 2.0) * (1.0 - cos_half) / sin_half
+    };
+    let interior = std::array::from_fn(|i| start[i] + tangent[i] * (chord_len / 2.0) + v[i] * sideways);
+    if !interior.iter().all(|v| v.is_finite()) {
+        return Err(argument_error("The 3D arc cannot be represented with finite coordinates.", range));
+    }
+    validate_arc(start, interior, end, range)?;
+    let cos_angle = cos_half * cos_half - sin_half * sin_half;
+    let sin_angle = 2.0 * cos_half * sin_half;
+    let end_tangent = unit(
+        std::array::from_fn(|i| tangent[i] * cos_angle + v[i] * sin_angle),
+        range,
+    )?;
+    Ok((interior, end_tangent))
+}
+
+pub async fn tangential_arc3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let path: Path3d = args.get_unlabeled_kw_arg("path", &RuntimeType::path3d(), exec_state)?;
+    validate_current_path(&path, exec_state, args.source_range)?;
+    let tangent = path.end_tangent.ok_or_else(|| {
+        argument_error("tangentialArc3d requires a preceding line or arc.", args.source_range)
+    })?;
+    let relative: Option<[TyF64; 3]> = args.get_kw_arg_opt("end", &RuntimeType::point3d(), exec_state)?;
+    let absolute: Option<[TyF64; 3]> = args.get_kw_arg_opt("endAbsolute", &RuntimeType::point3d(), exec_state)?;
+    let end = match (relative, absolute) {
+        (Some(offset), None) => {
+            let offset = point_mm(offset, args.source_range)?;
+            std::array::from_fn(|i| path.end[i] + offset[i])
+        }
+        (None, Some(end)) => point_mm(end, args.source_range)?,
+        _ => {
+            return Err(argument_error(
+                "tangentialArc3d requires exactly one of end or endAbsolute.",
+                args.source_range,
+            ));
+        }
+    };
+    let (interior, tangent) = tangent_arc(path.end, tangent, end, args.source_range)?;
+    append(
+        path,
+        end,
+        tangent,
+        PathSegment::ArcTo {
+            interior: engine_point(interior),
+            end: engine_point(end),
+            relative: false,
+        },
+        exec_state,
+        args,
+    )
+    .await
 }
 
 /// Start a world-space path. Disable sketch mode before creation so a previous
@@ -135,6 +264,7 @@ pub async fn start_path3d(exec_state: &mut ExecState, args: Args) -> Result<KclV
             start: at,
             end: at,
             segment_count: 0,
+            end_tangent: None,
             meta: vec![args.source_range.into()],
         }),
     })
@@ -169,9 +299,11 @@ pub async fn line3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
             args.source_range,
         ));
     }
+    let tangent = unit(delta(end, path.end), args.source_range)?;
     append(
         path,
         end,
+        tangent,
         PathSegment::Line {
             end: engine_point(end),
             relative: false,
@@ -193,9 +325,11 @@ pub async fn arc3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         args.source_range,
     )?;
     validate_arc(path.end, interior, end, args.source_range)?;
+    let tangent = arc_end_tangent(path.end, interior, end, args.source_range)?;
     append(
         path,
         end,
+        tangent,
         PathSegment::ArcTo {
             interior: engine_point(interior),
             end: engine_point(end),
@@ -210,6 +344,7 @@ pub async fn arc3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 async fn append(
     mut path: Path3d,
     end: [f64; 3],
+    tangent: [f64; 3],
     segment: PathSegment,
     exec_state: &mut ExecState,
     args: Args,
@@ -234,6 +369,7 @@ async fn append(
         )
         .await?;
     path.end = end;
+    path.end_tangent = Some(tangent);
     path.segment_count += 1;
     artifact.seg_ids.push(id.into());
     exec_state.update_spatial_path_artifact(artifact);
@@ -250,7 +386,7 @@ pub(super) fn validate_current_path(
         .ok_or_else(|| argument_error("The 3D path is no longer available in this execution.", range))?;
     if artifact.seg_ids.len() != path.segment_count {
         return Err(argument_error(
-            "This 3D path value is out of date. Use the result of the most recent line3d or arc3d call.",
+            "This 3D path value is out of date. Use the result of the most recent line3d, arc3d, or tangentialArc3d call.",
             range,
         ));
     }
@@ -272,6 +408,120 @@ mod tests {
     }
 
     const SETTINGS: &str = "@settings(kclVersion = 3.0, defaultLengthUnit = mm, experimentalFeatures = allow)\n";
+
+
+    fn assert_point(actual: [f64; 3], expected: [f64; 3]) {
+        for (actual, expected) in actual.into_iter().zip(expected) {
+            assert!((actual - expected).abs() < 1.0e-9, "{actual} != {expected}");
+        }
+    }
+
+    #[tokio::test]
+    async fn tangent_arcs_chain_across_planes_and_units() {
+        let result = parse_execute(&format!(
+            "{SETTINGS}
+route = startPath3d(at = [0mm, 0mm, 0mm])
+  |> line3d(end = [0mm, 0mm, 1in])
+  |> tangentialArc3d(end = [0mm, 10mm, 10mm])
+  |> tangentialArc3d(endAbsolute = [10mm, 20mm, 35.4mm])
+"
+        ))
+        .await
+        .unwrap();
+        let KclValue::Path3d { value } = result.variable("route") else {
+            panic!("expected Path3d")
+        };
+        assert_point(value.end, [10.0, 20.0, 35.4]);
+        assert_point(value.end_tangent.unwrap(), [1.0, 0.0, 0.0]);
+        assert_eq!(value.segment_count, 3);
+        let arcs: Vec<_> = result
+            .root_module_artifact_commands()
+            .iter()
+            .filter_map(|c| match &c.command {
+                ModelingCmd::ExtendPath(c) => match &c.segment {
+                    PathSegment::ArcTo { interior, relative, .. } => {
+                        assert!(!relative);
+                        Some([interior.x.0, interior.y.0, interior.z.0])
+                    }
+                    _ => None,
+                },
+                _ => None,
+            })
+            .collect();
+        let diagonal = 10.0 / libm::sqrt(2.0);
+        assert_point(arcs[0], [0.0, 10.0 - diagonal, 25.4 + diagonal]);
+        assert_point(arcs[1], [10.0 - diagonal, 10.0 + diagonal, 35.4]);
+    }
+
+    #[tokio::test]
+    async fn tangent_arc_after_three_point_arc() {
+        let result = parse_execute(&format!(
+            "{SETTINGS}
+route = startPath3d(at = [0mm, 0mm, 0mm])
+  |> arc3d(interiorAbsolute = [5mm, 0mm, 5mm], endAbsolute = [10mm, 0mm, 0mm])
+  |> tangentialArc3d(end = [0mm, 10mm, -10mm])
+"
+        ))
+        .await
+        .unwrap();
+        let KclValue::Path3d { value } = result.variable("route") else {
+            panic!("expected Path3d")
+        };
+        assert_point(value.end_tangent.unwrap(), [0.0, 1.0, 0.0]);
+        assert_point(value.end, [10.0, 10.0, -10.0]);
+    }
+
+    #[test]
+    fn tangent_arc_supports_major_arcs_and_rotated_lines() {
+        let range = SourceRange::default();
+        let (interior, tangent) = tangent_arc([0.0; 3], [1.0, 0.0, 0.0], [-10.0, 10.0, 0.0], range).unwrap();
+        let diagonal = 10.0 / libm::sqrt(2.0);
+        assert_point(interior, [diagonal, 10.0 + diagonal, 0.0]);
+        assert_point(tangent, [0.0, -1.0, 0.0]);
+        assert_point(
+            arc_end_tangent([0.0; 3], interior, [-10.0, 10.0, 0.0], range).unwrap(),
+            tangent,
+        );
+        // Rotating the preceding line changes the circle while retaining the endpoint.
+        let unit_diagonal = 1.0 / libm::sqrt(2.0);
+        let (_, tangent) = tangent_arc(
+            [0.0; 3],
+            [unit_diagonal, unit_diagonal, 0.0],
+            [0.0, 10.0, 0.0],
+            range,
+        )
+        .unwrap();
+        assert_point(tangent, [-unit_diagonal, unit_diagonal, 0.0]);
+    }
+
+    #[tokio::test]
+    async fn rejects_invalid_tangent_arcs() {
+        let cases = [
+            ("route |> tangentialArc3d(end = [1mm, 1mm, 0mm])", "preceding line or arc"),
+            ("next |> tangentialArc3d()", "exactly one"),
+            (
+                "next |> tangentialArc3d(end = [1mm, 1mm, 0mm], endAbsolute = [2mm, 2mm, 0mm])",
+                "exactly one",
+            ),
+            ("next |> tangentialArc3d(end = [0mm, 0mm, 0mm])", "endpoint different"),
+            ("next |> tangentialArc3d(end = [10mm, 0mm, 0mm])", "tangent line"),
+            ("next |> tangentialArc3d(end = [-10mm, 0mm, 0mm])", "tangent line"),
+            ("route |> tangentialArc3d(end = [0mm, 10mm, 0mm])", "out of date"),
+        ];
+        for (body, expected) in cases {
+            let prefix = if expected == "preceding line or arc" {
+                ""
+            } else {
+                "next = route |> line3d(end = [10mm, 0mm, 0mm])\n"
+            };
+            let error = parse_execute(&format!(
+                "{SETTINGS}route = startPath3d(at = [0mm, 0mm, 0mm])\n{prefix}{body}\n"
+            ))
+            .await
+            .unwrap_err();
+            assert!(error.to_string().contains(expected), "{body}: {error}");
+        }
+    }
 
     #[tokio::test]
     async fn world_coordinates_and_units() {

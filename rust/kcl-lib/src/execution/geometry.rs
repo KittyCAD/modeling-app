@@ -482,6 +482,10 @@ pub struct Path3d {
     pub start: [f64; 3],
     pub end: [f64; 3],
     pub segment_count: usize,
+    /// Incoming unit tangent, used to construct the next spatial arc.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub end_tangent: Option<[f64; 3]>,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
 }

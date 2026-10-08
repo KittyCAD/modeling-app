@@ -10,7 +10,7 @@
 import Axis2d, Axis3d, BoundedEdge, Edge, Face, Helix, Path3d, Plane, Point2d, Point3d, Segment, Sketch, Solid, TaggedEdge, TaggedFace from "std::types"
 
 /// Start a continuous 3D path in world coordinates, without a sketch plane or constraints.
-/// Extend it with `line3d` and `arc3d`, then use it as the path of `sweep`.
+/// Extend it with `line3d`, `arc3d`, and `tangentialArc3d`, then use it as the path of `sweep`.
 /// ```kcl,norun
 /// @settings(kclVersion = 3.0, experimentalFeatures = allow)
 /// route = startPath3d(at = [0mm, 0mm, 0mm])
@@ -42,6 +42,23 @@ export fn line3d(@path: Path3d, end?: Point3d, endAbsolute?: Point3d): Path3d {}
 /// ```
 @(impl = std_rust, experimental = true, feature_tree = false)
 export fn arc3d(@path: Path3d, interiorAbsolute: Point3d, endAbsolute: Point3d): Path3d {}
+
+
+/// Append a circular 3D arc tangent to the preceding line or arc. Supply exactly
+/// one of `end` (an offset) or `endAbsolute` (a world coordinate). The incoming
+/// tangent and endpoint determine the arc's plane and radius automatically.
+/// The endpoint must be off the incoming tangent line. Tangency is enforced at
+/// the arc's start; a following segment must supply its own matching direction.
+/// ```kcl,norun
+/// @settings(kclVersion = 3.0, experimentalFeatures = allow)
+/// route = startPath3d(at = [0mm, 0mm, 0mm])
+///   |> line3d(end = [0mm, 0mm, 20mm])
+///   |> tangentialArc3d(end = [10mm, 0mm, 10mm])
+///   |> line3d(end = [20mm, 0mm, 0mm])
+///   |> tangentialArc3d(endAbsolute = [40mm, 10mm, 30mm])
+/// ```
+@(impl = std_rust, experimental = true, feature_tree = false)
+export fn tangentialArc3d(@path: Path3d, end?: Point3d, endAbsolute?: Point3d): Path3d {}
 
 /// Start a new 2-dimensional sketch on a specific plane or face.
 ///

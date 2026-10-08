@@ -9,7 +9,7 @@ Start a block on a base plane or supported face, add sketch geometry inside the
 braces, then apply constraints to express design intent.
 
 For a route that changes planes, use the experimental `startPath3d`, `line3d`,
-and `arc3d` functions outside a sketch block. A `Path3d` has world coordinates,
+`arc3d`, and `tangentialArc3d` functions outside a sketch block. A `Path3d` has world coordinates,
 no sketch plane, and no constraints. Its segments form one continuous path:
 
 ```kcl
@@ -31,6 +31,12 @@ body = sweep(sectionRegion, path = route)
 coordinate). `arc3d` passes through `interiorAbsolute` and ends at
 `endAbsolute`; those points and the current endpoint determine the arc's
 plane and direction. The points must be distinct and non-collinear.
+
+Use `tangentialArc3d(end = [10mm, 0mm, 10mm])` after a line or arc to
+infer the bend from its incoming tangent and endpoint. Like `line3d`, it accepts
+exactly one of `end` or `endAbsolute`. The endpoint must be off the incoming
+tangent line. It keeps the start tangent when you move the preceding segment;
+a following line still needs to match the arc's exit direction.
 
 Always pass the value returned by the most recent segment call. Complete the
 route before using it in `sweep`; a swept path cannot be extended. These paths
