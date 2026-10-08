@@ -35,6 +35,7 @@ import {
   getDefaultRecentToolbarItemIds,
   getToolbarDropdownDisplay,
   getToolbarItemDescription,
+  indexToolbarCommands,
   isSketchToolbarTransitioning,
   isToolbarItemResolvedDropdown,
   modelingMachineStateToToolbarModeName,
@@ -84,6 +85,10 @@ const Toolbar_ = memo(
     const registeredCommands = useSelector(
       app.commands.actor,
       (state) => state.context.commands
+    )
+    const commandsByKey = useMemo(
+      () => indexToolbarCommands(registeredCommands),
+      [registeredCommands]
     )
     const keymap = app.registry.get(keymapService)
     const keymapTree = keymap.keymap.value
@@ -306,7 +311,7 @@ const Toolbar_ = memo(
           iconColor,
           description: getToolbarItemDescription(
             maybeIconConfig,
-            registeredCommands
+            commandsByKey
           ),
           links: maybeIconConfig.links || [],
           isActive: itemIsActive,
@@ -346,7 +351,7 @@ const Toolbar_ = memo(
       showNonVisualConstraints,
       sketchSolveSelectedIdsKey,
       keymapTree,
-      registeredCommands,
+      commandsByKey,
     ])
 
     // To remember the last selected item in a standard ActionButtonDropdown

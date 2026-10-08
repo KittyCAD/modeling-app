@@ -147,16 +147,24 @@ export type ToolbarItem = {
 
 type ToolbarConfig = Record<ToolbarModeName, ToolbarMode>
 
+export function indexToolbarCommands(commands: readonly Command[]) {
+  const commandsByKey = new Map<string, Command>()
+  for (const command of commands) {
+    const key = commandKey(command)
+    if (!commandsByKey.has(key)) {
+      commandsByKey.set(key, command)
+    }
+  }
+  return commandsByKey
+}
+
 export function getToolbarItemDescription(
   item: Pick<ToolbarItem, 'command' | 'description'>,
-  commands: readonly Command[]
+  commandsByKey: ReadonlyMap<string, Command>
 ) {
-  return (
-    commands.find((command) => commandKey(command) === item.command)
-      ?.description ??
-    item.description ??
-    ''
-  )
+  const command =
+    item.command === undefined ? undefined : commandsByKey.get(item.command)
+  return command?.description ?? item.description ?? ''
 }
 
 function filterExperimentalToolbarConfig(

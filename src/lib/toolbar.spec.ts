@@ -11,6 +11,7 @@ import {
   getDefaultRecentToolbarItemIds,
   getSketchSolveToolIconMap,
   getToolbarItemDescription,
+  indexToolbarCommands,
   isLegacySketchEditRequest,
   isSketchSolveConstraintToolActive,
   isSketchToolbarTransitioning,
@@ -96,7 +97,7 @@ function getToolbarItems(
 }
 
 describe('toolbar state helpers', () => {
-  test('uses registered command descriptions with toolbar text as a fallback', () => {
+  test('uses indexed command descriptions with toolbar text as a fallback', () => {
     const item = {
       command: 'test:Available',
       description: 'Toolbar fallback',
@@ -109,16 +110,30 @@ describe('toolbar state helpers', () => {
       onSubmit: vi.fn(),
       scopes: ['base'],
     }
+    const commandsByKey = indexToolbarCommands([
+      command,
+      { ...command, description: 'Duplicate description' },
+      { ...command, id: 'test:WithId', description: 'ID command description' },
+    ])
+    const noCommands = indexToolbarCommands([])
+    const emptyDescription = indexToolbarCommands([
+      { ...command, description: '' },
+    ])
 
-    expect(getToolbarItemDescription(item, [command])).toBe(command.description)
+    expect(getToolbarItemDescription(item, commandsByKey)).toBe(
+      command.description
+    )
     expect(
-      getToolbarItemDescription({ command: item.command }, [command])
+      getToolbarItemDescription({ command: item.command }, commandsByKey)
     ).toBe(command.description)
-    expect(getToolbarItemDescription({ command: item.command }, [])).toBe('')
-    expect(getToolbarItemDescription(item, [])).toBe(item.description)
     expect(
-      getToolbarItemDescription(item, [{ ...command, description: '' }])
+      getToolbarItemDescription({ command: 'test:WithId' }, commandsByKey)
+    ).toBe('ID command description')
+    expect(
+      getToolbarItemDescription({ command: item.command }, noCommands)
     ).toBe('')
+    expect(getToolbarItemDescription(item, noCommands)).toBe(item.description)
+    expect(getToolbarItemDescription(item, emptyDescription)).toBe('')
   })
 
   test('keeps the sketch solve toolbar visible while animating into sketch solve', () => {
