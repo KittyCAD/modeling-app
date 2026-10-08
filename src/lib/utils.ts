@@ -167,7 +167,7 @@ export function throttle<T>(
 
     if (!latestTimestamp || currentTimestamp - latestTimestamp >= wait) {
       // The wait is over
-      
+
       if (timeout) {
         // The wait is over but a delayed call is still pending. That would
         // send these same args a second time, so cancel it.
