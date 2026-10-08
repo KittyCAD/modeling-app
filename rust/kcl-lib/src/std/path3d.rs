@@ -650,7 +650,7 @@ route = base |> tangentialArc3d(end = [10mm, 10mm, 0mm])
             .root_module_artifact_commands()
             .iter()
             .filter_map(|c| match &c.command {
-                ModelingCmd::ExtendPath(c) => Some(c.segment.clone()),
+                ModelingCmd::ExtendPath(c) => Some(c.segment),
                 _ => None,
             })
             .collect();
