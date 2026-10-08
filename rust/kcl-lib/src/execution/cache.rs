@@ -152,6 +152,7 @@ impl GlobalState {
             .collect();
         Ok(ExecOutcome {
             variables,
+            imported_files: self.exec_state.imported_files(),
             filenames: self.exec_state.filenames(),
             operations: self.exec_state.operations_by_module(),
             artifact_graph: self.exec_state.artifacts.graph,

@@ -95,9 +95,9 @@ pub struct EngineManager {
     #[builder(default)]
     async_tasks: AsyncTasks,
 
-    /// Source of the last successful execution in this engine session.
-    #[builder(default)]
-    pub(crate) export_source: RwLock<Option<kcmc::shared::KclProject>>,
+    /// Original KCL and import bytes from the last successful execution in this engine session.
+    #[builder(default, setters(vis = "pub(crate)"))]
+    pub(crate) export_source: RwLock<Option<crate::execution::export_source::ExportSource>>,
 }
 
 impl std::fmt::Debug for EngineManager {

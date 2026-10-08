@@ -162,7 +162,7 @@ pub(crate) use artifact::mermaid_tests::ArtifactGraphMermaidExt;
 pub(crate) mod cache;
 mod cad_op;
 pub(crate) mod exec_ast;
-mod export_source;
+pub(crate) mod export_source;
 pub mod fn_call;
 #[cfg(test)]
 mod freedom_analysis_tests;
@@ -395,6 +395,9 @@ pub struct ExecOutcome {
     /// directly.
     #[serde(skip)]
     pub source_files: IndexMap<ModuleId, ModuleSource>,
+    /// Exact bytes of executed foreign imports. Kept inside Rust for export.
+    #[serde(skip)]
+    pub imported_files: Vec<kittycad_modeling_cmds::ImportFile>,
     /// The default planes.
     pub default_planes: Option<DefaultPlanes>,
 }
@@ -1641,8 +1644,12 @@ impl ExecutorContext {
         if let Ok(outcome) = &result
             && outcome.errors().next().is_none()
         {
-            *self.engine.export_source.write().await =
-                export_source::collect(&outcome.source_files, &self.settings, &entrypoint_source);
+            *self.engine.export_source.write().await = export_source::collect(
+                &outcome.source_files,
+                &outcome.imported_files,
+                &self.settings,
+                &entrypoint_source,
+            );
         }
         result
     }
@@ -1954,6 +1961,7 @@ impl ExecutorContext {
         if !self.is_mock() && !exec_state.global.issues.iter().any(|issue| issue.is_err()) {
             *self.engine.export_source.write().await = export_source::collect(
                 &exec_state.global.id_to_source,
+                &exec_state.global.imported_files(),
                 &self.settings,
                 &program.original_file_contents,
             );
@@ -2585,6 +2593,19 @@ impl ExecutorContext {
         &self,
         format: kittycad_modeling_cmds::format::OutputFormat3d,
     ) -> Result<Vec<kittycad_modeling_cmds::websocket::RawFile>, KclError> {
+        let (kcl_source, imported_files) = {
+            let source = self.engine.export_source.read().await;
+            let imported_files = if matches!(format, kittycad_modeling_cmds::format::OutputFormat3d::Gltf(_)) {
+                source
+                    .as_ref()
+                    .map(|source| source.imported_files.clone())
+                    .transpose()?
+                    .unwrap_or_default()
+            } else {
+                Vec::new()
+            };
+            (source.as_ref().map(|source| source.kcl_source.clone()), imported_files)
+        };
         let resp = self
             .engine
             .send_modeling_cmd(
@@ -2595,7 +2616,8 @@ impl ExecutorContext {
                     kittycad_modeling_cmds::Export::builder()
                         .entity_ids(vec![])
                         .format(format)
-                        .maybe_kcl_source(self.engine.export_source.read().await.clone())
+                        .maybe_kcl_source(kcl_source)
+                        .imported_files(imported_files)
                         .build(),
                 ),
             )

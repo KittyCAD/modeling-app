@@ -156,6 +156,18 @@ pub(crate) struct ScopedNotYetAdded {
 }
 
 impl GlobalState {
+    pub(super) fn imported_files(&self) -> Vec<kittycad_modeling_cmds::ImportFile> {
+        self.module_infos
+            .values()
+            .filter_map(|info| match &info.repr {
+                ModuleRepr::Foreign(geometry, Some(_)) => Some(geometry.source_files.as_slice()),
+                _ => None,
+            })
+            .flatten()
+            .cloned()
+            .collect()
+    }
+
     pub(crate) fn operations_by_module(&self) -> OperationsByModule {
         let mut operations = OperationsByModule::default();
         operations.insert(ModuleId::default(), self.root_module_artifacts.operations.clone());
@@ -797,6 +809,7 @@ impl ExecState {
             .collect();
         Ok(ExecOutcome {
             variables,
+            imported_files: self.global.imported_files(),
             filenames: self.global.filenames(),
             operations: self.global.operations_by_module(),
             artifact_graph: self.global.artifacts.graph,
