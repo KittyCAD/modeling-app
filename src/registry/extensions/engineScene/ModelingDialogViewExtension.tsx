@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useRef } from 'react'
 import { useApp } from '@src/lib/boot'
 import { isModelingDialogCommand } from '@src/lib/commandUtils'
 
@@ -7,6 +7,7 @@ const ModelingDialog = lazy(
 )
 
 export function ModelingDialogViewExtension() {
+  const containerRef = useRef<HTMLDivElement>(null)
   const { commands } = useApp()
   const state = commands.useState()
   if (
@@ -15,9 +16,15 @@ export function ModelingDialogViewExtension() {
   )
     return null
   return (
-    <div className="pointer-events-none absolute top-20 bottom-2 right-2 flex min-h-0 max-w-[calc(100%-1rem)] items-start">
+    <div
+      ref={containerRef}
+      className="pointer-events-none absolute top-20 bottom-2 inset-x-2 flex min-h-0 items-start justify-end"
+    >
       <Suspense fallback={null}>
-        <ModelingDialog key={state.context.commandInvocationId} />
+        <ModelingDialog
+          key={state.context.commandInvocationId}
+          containerRef={containerRef}
+        />
       </Suspense>
     </div>
   )

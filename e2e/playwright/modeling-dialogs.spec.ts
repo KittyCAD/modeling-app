@@ -87,6 +87,14 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     await expect(submit).toBeDisabled()
     await length.fill('12mm')
     await expect(submit).toBeEnabled()
+    const initialPosition = await dialog.boundingBox()
+    if (!initialPosition) throw new Error('Modeling dialog is not visible')
+    await page.mouse.move(initialPosition.x + 20, initialPosition.y + 15)
+    await page.mouse.down()
+    await page.mouse.move(initialPosition.x - 140, initialPosition.y + 15)
+    await page.mouse.up()
+    await expect(dialog).toHaveCSS('position', 'fixed')
+    expect((await dialog.boundingBox())?.x).toBeCloseTo(initialPosition.x - 160)
     const more = dialog.getByText('Show more', { exact: true })
     await more.click()
     await expect(submit).toBeInViewport()
@@ -95,6 +103,24 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     ).toBeInViewport()
     await tagStart.fill('startFace')
     await more.click()
+    await page.setBodyDimensions({ width: 1100, height: 540 })
+    await expect
+      .poll(() =>
+        dialog.evaluate((element) => {
+          const panel = element.getBoundingClientRect()
+          const bounds = element.parentElement?.getBoundingClientRect()
+          return (
+            bounds &&
+            panel.top >= bounds.top &&
+            panel.left >= bounds.left &&
+            panel.bottom <= bounds.bottom &&
+            panel.right <= bounds.right
+          )
+        })
+      )
+      .toBe(true)
+    await expect(submit).toBeInViewport()
+    await expect(dialog.locator('header')).toBeInViewport()
     await submit.click()
     await expect(dialog).not.toBeAttached()
     await editor.expectEditor.toContain('length = 12mm')
