@@ -4411,6 +4411,7 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
     let fn_call = fn_call_kw.parse_next(i)?;
     if is_callee_sketch_block(&fn_call.callee) && peek((opt(whitespace), open_brace)).parse_next(i).is_ok() {
         // We have `sketch() {`. Parse the block.
+        // Cut on error: no other parser accepts `sketch(...) {`, so backtracking would only move the error to `sketch(`.
         ignore_whitespace(i);
         let (_, body, close) = ParseContext::in_sketch_block(|| parse_block(i)).map_err(|e| e.cut())?;
         let end = close.end;
@@ -6015,6 +6016,22 @@ mySk1 = startSketchOn(XY)
         }
     }
 
+    /// Check that parsing fails with one fatal error, with this exact message and range.
+    #[track_caller]
+    fn assert_single_fatal(code: &str, msg: &str, start: usize, end: usize) {
+        let (program, issues) = crate::parsing::top_level_parse(code).0.unwrap();
+        assert!(program.is_none(), "Unexpected AST for `{code}`");
+        assert_eq!(issues.len(), 1, "Unexpected diagnostics for `{code}`: {issues:#?}");
+        let issue = &issues[0];
+        assert_eq!(issue.severity, Severity::Fatal);
+        assert_eq!(issue.message, msg);
+        assert_eq!(
+            issue.source_range,
+            SourceRange::new(start, end, ModuleId::default()),
+            "Incorrect range for `{code}`"
+        );
+    }
+
     #[test]
     fn test_stray_token_in_sketch_block() {
         // A stray token after a statement in a sketch block used to be reported at `sketch(`.
@@ -6028,8 +6045,50 @@ s = sketch(on = XY) {{
 }}"
                 );
                 let start = code.find(&format!("]){stray}")).unwrap() + 2;
-                assert_err(&code, &format!("Unexpected token: {stray}"), [start, start + 1]);
+                assert_single_fatal(&code, &format!("Unexpected token: {stray}"), start, start + 1);
+                // Without the stray token, the code is valid.
+                assert_no_err(&format!("{}{}", &code[..start], &code[start + 1..]));
             }
+        }
+    }
+
+    #[test]
+    fn test_stray_token_in_embedded_sketch_block() {
+        // Used to be reported at the array's `[`.
+        for version in ["2.0", "3.0"] {
+            let code = format!("@settings(kclVersion = {version})\nvalues = [sketch(on = XY) {{ x = 1; }}]");
+            let start = code.find(';').unwrap();
+            assert_single_fatal(&code, "Unexpected token: ;", start, start + 1);
+            assert_no_err(&format!("{}{}", &code[..start], &code[start + 1..]));
+        }
+    }
+
+    #[test]
+    fn test_unclosed_sketch_block() {
+        // Used to be reported at `sketch(`.
+        for version in ["2.0", "3.0"] {
+            let code = format!("@settings(kclVersion = {version})\ns = sketch(on = XY) {{\n  x = 1");
+            let end = code.len();
+            assert_single_fatal(&code, "Unexpected end of file. The compiler expected }", end - 1, end);
+        }
+    }
+
+    #[test]
+    fn test_sketch_block_recovered_error_keeps_ast() {
+        // An error the parser recovers from inside a sketch block is not made fatal.
+        for version in ["2.0", "3.0"] {
+            let code = format!("@settings(kclVersion = {version})\ns = sketch(on = XY) {{\n  x = f(a = 1, a = 2)\n}}");
+            let (program, issues) = crate::parsing::top_level_parse(&code).0.unwrap();
+            assert!(program.is_some(), "Expected an AST for `{code}`");
+            assert_eq!(issues.len(), 1, "Unexpected diagnostics for `{code}`: {issues:#?}");
+            assert_eq!(issues[0].severity, Severity::Error);
+            assert!(
+                issues[0]
+                    .message
+                    .starts_with("You've used the parameter labelled 'a' 2 times"),
+                "found: {}",
+                issues[0].message
+            );
         }
     }
 
