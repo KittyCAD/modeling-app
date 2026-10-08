@@ -12,6 +12,7 @@ import Loading from '@src/components/Loading'
 import Tooltip from '@src/components/Tooltip'
 import { useApp } from '@src/lib/boot'
 import type { Command, CommandArgument } from '@src/lib/commandTypes'
+import { isModelingDialogCommand } from '@src/lib/commandUtils'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { interactions } from '@src/lib/interactionPerformance/definitions'
 import {
@@ -159,6 +160,8 @@ export const CommandBar = () => {
       }
     }
   }
+
+  if (isModelingDialogCommand(selectedCommand)) return null
 
   const commandBar = (
     <Transition.Root
