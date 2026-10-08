@@ -311,7 +311,9 @@ description: Result of parsing sheet-metal-bracket.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "// Define bracket parameters such as sheet metal thickness, bend radius, flange length, etc."
+          "// Define bracket parameters such as sheet metal thickness, bend radius, flange length, etc.",
+          "// hatHeight - thickness sets the wall tangent points at the inner top bends.",
+          "// The overall height is about 2.59 in with the default dimensions."
         ],
         "start": 0,
         "type": "VariableDeclaration",
@@ -10312,19 +10314,46 @@ description: Result of parsing sheet-metal-bracket.kcl
                         "type": "Name"
                       },
                       "moduleId": 0,
-                      "operator": "*",
+                      "operator": "+",
                       "right": {
                         "commentStart": 0,
                         "end": 0,
+                        "left": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "raw": "2",
+                          "start": 0,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 2.0,
+                            "suffix": "None"
+                          }
+                        },
                         "moduleId": 0,
-                        "raw": "1.2",
+                        "operator": "*",
+                        "right": {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "overhang",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        },
                         "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 1.2,
-                          "suffix": "None"
-                        }
+                        "type": "BinaryExpression",
+                        "type": "BinaryExpression"
                       },
                       "start": 0,
                       "type": "BinaryExpression",
@@ -10536,7 +10565,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "name": "line21",
+                        "name": "line10",
                         "start": 0,
                         "type": "Identifier"
                       },
@@ -10565,7 +10594,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "name": "vertical",
+                        "name": "horizontal",
                         "start": 0,
                         "type": "Identifier"
                       },
@@ -10588,7 +10617,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "name": "line10",
+                        "name": "line1",
                         "start": 0,
                         "type": "Identifier"
                       },
@@ -10597,6 +10626,1399 @@ description: Result of parsing sheet-metal-bracket.kcl
                       "type": "Name",
                       "type": "Name"
                     }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "horizontal",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "line2",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "arguments": [
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "point",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "arg": {
+                          "abs_path": false,
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "ORIGIN",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
+                          "start": 0,
+                          "type": "Name",
+                          "type": "Name"
+                        }
+                      }
+                    ],
+                    "callee": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "midpoint",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name"
+                    },
+                    "commentStart": 0,
+                    "end": 0,
+                    "moduleId": 0,
+                    "start": 0,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "line2",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    }
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "left": {
+                      "arguments": [],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "distance",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": {
+                        "commentStart": 0,
+                        "elements": [
+                          {
+                            "commentStart": 0,
+                            "computed": false,
+                            "end": 0,
+                            "moduleId": 0,
+                            "object": {
+                              "abs_path": false,
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "line1",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
+                            },
+                            "property": {
+                              "abs_path": false,
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "start",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
+                            },
+                            "start": 0,
+                            "type": "MemberExpression",
+                            "type": "MemberExpression"
+                          },
+                          {
+                            "commentStart": 0,
+                            "computed": false,
+                            "end": 0,
+                            "moduleId": 0,
+                            "object": {
+                              "abs_path": false,
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "line1",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
+                            },
+                            "property": {
+                              "abs_path": false,
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "end",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
+                            },
+                            "start": 0,
+                            "type": "MemberExpression",
+                            "type": "MemberExpression"
+                          }
+                        ],
+                        "end": 0,
+                        "moduleId": 0,
+                        "start": 0,
+                        "type": "ArrayExpression",
+                        "type": "ArrayExpression"
+                      }
+                    },
+                    "moduleId": 0,
+                    "operator": "==",
+                    "right": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "flangeLength",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    },
+                    "start": 0,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "left": {
+                      "arguments": [],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "distance",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": {
+                        "commentStart": 0,
+                        "elements": [
+                          {
+                            "commentStart": 0,
+                            "computed": false,
+                            "end": 0,
+                            "moduleId": 0,
+                            "object": {
+                              "abs_path": false,
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "line10",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
+                            },
+                            "property": {
+                              "abs_path": false,
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "start",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
+                            },
+                            "start": 0,
+                            "type": "MemberExpression",
+                            "type": "MemberExpression"
+                          },
+                          {
+                            "commentStart": 0,
+                            "computed": false,
+                            "end": 0,
+                            "moduleId": 0,
+                            "object": {
+                              "abs_path": false,
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "line10",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
+                            },
+                            "property": {
+                              "abs_path": false,
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "end",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
+                            },
+                            "start": 0,
+                            "type": "MemberExpression",
+                            "type": "MemberExpression"
+                          }
+                        ],
+                        "end": 0,
+                        "moduleId": 0,
+                        "start": 0,
+                        "type": "ArrayExpression",
+                        "type": "ArrayExpression"
+                      }
+                    },
+                    "moduleId": 0,
+                    "operator": "==",
+                    "right": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "thickness",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    },
+                    "start": 0,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "left": {
+                      "arguments": [],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "verticalDistance",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": {
+                        "commentStart": 0,
+                        "elements": [
+                          {
+                            "abs_path": false,
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": {
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": "ORIGIN",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
+                            "start": 0,
+                            "type": "Name",
+                            "type": "Name"
+                          },
+                          {
+                            "commentStart": 0,
+                            "computed": false,
+                            "end": 0,
+                            "moduleId": 0,
+                            "object": {
+                              "abs_path": false,
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "line3",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
+                            },
+                            "property": {
+                              "abs_path": false,
+                              "commentStart": 0,
+                              "end": 0,
+                              "moduleId": 0,
+                              "name": {
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": "end",
+                                "start": 0,
+                                "type": "Identifier"
+                              },
+                              "path": [],
+                              "start": 0,
+                              "type": "Name",
+                              "type": "Name"
+                            },
+                            "start": 0,
+                            "type": "MemberExpression",
+                            "type": "MemberExpression"
+                          }
+                        ],
+                        "end": 0,
+                        "moduleId": 0,
+                        "start": 0,
+                        "type": "ArrayExpression",
+                        "type": "ArrayExpression"
+                      }
+                    },
+                    "moduleId": 0,
+                    "operator": "==",
+                    "right": {
+                      "commentStart": 0,
+                      "end": 0,
+                      "left": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "hatHeight",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "moduleId": 0,
+                      "operator": "-",
+                      "right": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "thickness",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "start": 0,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    },
+                    "start": 0,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "left": {
+                      "arguments": [
+                        {
+                          "type": "LabeledArg",
+                          "label": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "lines",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "arg": {
+                            "commentStart": 0,
+                            "elements": [
+                              {
+                                "abs_path": false,
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": "line1",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
+                                "start": 0,
+                                "type": "Name",
+                                "type": "Name"
+                              },
+                              {
+                                "abs_path": false,
+                                "commentStart": 0,
+                                "end": 0,
+                                "moduleId": 0,
+                                "name": {
+                                  "commentStart": 0,
+                                  "end": 0,
+                                  "moduleId": 0,
+                                  "name": "line3",
+                                  "start": 0,
+                                  "type": "Identifier"
+                                },
+                                "path": [],
+                                "start": 0,
+                                "type": "Name",
+                                "type": "Name"
+                              }
+                            ],
+                            "end": 0,
+                            "moduleId": 0,
+                            "start": 0,
+                            "type": "ArrayExpression",
+                            "type": "ArrayExpression"
+                          }
+                        },
+                        {
+                          "type": "LabeledArg",
+                          "label": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "name": "sector",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "arg": {
+                            "commentStart": 0,
+                            "end": 0,
+                            "moduleId": 0,
+                            "raw": "1",
+                            "start": 0,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 1.0,
+                              "suffix": "None"
+                            }
+                          }
+                        }
+                      ],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "angleDimension",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": null
+                    },
+                    "moduleId": 0,
+                    "operator": "==",
+                    "right": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "bendAngle",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    },
+                    "start": 0,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "left": {
+                      "arguments": [],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "radius",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "arc2",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      }
+                    },
+                    "moduleId": 0,
+                    "operator": "==",
+                    "right": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "exteriorBendRadius",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    },
+                    "start": 0,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "left": {
+                      "arguments": [],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "radius",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "arc4",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      }
+                    },
+                    "moduleId": 0,
+                    "operator": "==",
+                    "right": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "interiorBendRadius",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    },
+                    "start": 0,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "left": {
+                      "arguments": [],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "radius",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "arc6",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      }
+                    },
+                    "moduleId": 0,
+                    "operator": "==",
+                    "right": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "interiorBendRadius",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    },
+                    "start": 0,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "left": {
+                      "arguments": [],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "radius",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "arc8",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      }
+                    },
+                    "moduleId": 0,
+                    "operator": "==",
+                    "right": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "exteriorBendRadius",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    },
+                    "start": 0,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "left": {
+                      "arguments": [],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "radius",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "arc12",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      }
+                    },
+                    "moduleId": 0,
+                    "operator": "==",
+                    "right": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "interiorBendRadius",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    },
+                    "start": 0,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "left": {
+                      "arguments": [],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "radius",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "arc14",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      }
+                    },
+                    "moduleId": 0,
+                    "operator": "==",
+                    "right": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "exteriorBendRadius",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    },
+                    "start": 0,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "left": {
+                      "arguments": [],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "radius",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "arc16",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      }
+                    },
+                    "moduleId": 0,
+                    "operator": "==",
+                    "right": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "exteriorBendRadius",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    },
+                    "start": 0,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  },
+                  "moduleId": 0,
+                  "start": 0,
+                  "type": "ExpressionStatement",
+                  "type": "ExpressionStatement"
+                },
+                {
+                  "commentStart": 0,
+                  "end": 0,
+                  "expression": {
+                    "commentStart": 0,
+                    "end": 0,
+                    "left": {
+                      "arguments": [],
+                      "callee": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "radius",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name"
+                      },
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "start": 0,
+                      "type": "CallExpressionKw",
+                      "type": "CallExpressionKw",
+                      "unlabeled": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "arc18",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      }
+                    },
+                    "moduleId": 0,
+                    "operator": "==",
+                    "right": {
+                      "abs_path": false,
+                      "commentStart": 0,
+                      "end": 0,
+                      "moduleId": 0,
+                      "name": {
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": "interiorBendRadius",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
+                      "start": 0,
+                      "type": "Name",
+                      "type": "Name"
+                    },
+                    "start": 0,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
                   },
                   "moduleId": 0,
                   "start": 0,
@@ -21641,7 +23063,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -21649,48 +23071,49 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "commentStart": 0,
                   "elements": [
                     {
-                      "argument": {
+                      "commentStart": 0,
+                      "computed": false,
+                      "end": 0,
+                      "moduleId": 0,
+                      "object": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "83.5119mm",
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "sketch002",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 83.5119,
-                          "suffix": "Mm"
-                        }
+                        "type": "Name",
+                        "type": "Name"
                       },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "operator": "-",
-                      "start": 0,
-                      "type": "UnaryExpression",
-                      "type": "UnaryExpression"
-                    },
-                    {
-                      "argument": {
+                      "property": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "54.1555mm",
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "circle2",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 54.1555,
-                          "suffix": "Mm"
-                        }
+                        "type": "Name",
+                        "type": "Name"
                       },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "operator": "-",
                       "start": 0,
-                      "type": "UnaryExpression",
-                      "type": "UnaryExpression"
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -21698,35 +23121,6 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "sketch",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "sketch002",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
                 }
               }
             ],
@@ -21787,7 +23181,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -21795,39 +23189,49 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "commentStart": 0,
                   "elements": [
                     {
-                      "argument": {
+                      "commentStart": 0,
+                      "computed": false,
+                      "end": 0,
+                      "moduleId": 0,
+                      "object": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "91.277mm",
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "sketch002",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 91.277,
-                          "suffix": "Mm"
-                        }
+                        "type": "Name",
+                        "type": "Name"
                       },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "operator": "-",
+                      "property": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "circle1",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
                       "start": 0,
-                      "type": "UnaryExpression",
-                      "type": "UnaryExpression"
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "raw": "44.9144mm",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 44.9144,
-                        "suffix": "Mm"
-                      }
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -21835,35 +23239,6 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "sketch",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "sketch002",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
                 }
               }
             ],
@@ -21924,7 +23299,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -21932,39 +23307,49 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "commentStart": 0,
                   "elements": [
                     {
-                      "argument": {
+                      "commentStart": 0,
+                      "computed": false,
+                      "end": 0,
+                      "moduleId": 0,
+                      "object": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "21.77mm",
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "sketch002",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 21.77,
-                          "suffix": "Mm"
-                        }
+                        "type": "Name",
+                        "type": "Name"
                       },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "operator": "-",
+                      "property": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "circle6",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
                       "start": 0,
-                      "type": "UnaryExpression",
-                      "type": "UnaryExpression"
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "raw": "35.021mm",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 35.021,
-                        "suffix": "Mm"
-                      }
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -21972,35 +23357,6 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "sketch",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "sketch002",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
                 }
               }
             ],
@@ -22061,7 +23417,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -22069,48 +23425,49 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "commentStart": 0,
                   "elements": [
                     {
-                      "argument": {
+                      "commentStart": 0,
+                      "computed": false,
+                      "end": 0,
+                      "moduleId": 0,
+                      "object": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "21.3146mm",
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "sketch002",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 21.3146,
-                          "suffix": "Mm"
-                        }
+                        "type": "Name",
+                        "type": "Name"
                       },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "operator": "-",
-                      "start": 0,
-                      "type": "UnaryExpression",
-                      "type": "UnaryExpression"
-                    },
-                    {
-                      "argument": {
+                      "property": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "35.6573mm",
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "circle7",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 35.6573,
-                          "suffix": "Mm"
-                        }
+                        "type": "Name",
+                        "type": "Name"
                       },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "operator": "-",
                       "start": 0,
-                      "type": "UnaryExpression",
-                      "type": "UnaryExpression"
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -22118,35 +23475,6 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "sketch",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "sketch002",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
                 }
               }
             ],
@@ -22207,7 +23535,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -22216,38 +23544,48 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "elements": [
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "20.724mm",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 20.724,
-                        "suffix": "Mm"
-                      }
-                    },
-                    {
-                      "argument": {
+                      "object": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "37.2099mm",
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "sketch002",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 37.2099,
-                          "suffix": "Mm"
-                        }
+                        "type": "Name",
+                        "type": "Name"
                       },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "operator": "-",
+                      "property": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "circle8",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
                       "start": 0,
-                      "type": "UnaryExpression",
-                      "type": "UnaryExpression"
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -22255,35 +23593,6 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "sketch",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "sketch002",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
                 }
               }
             ],
@@ -22344,7 +23653,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -22353,29 +23662,48 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "elements": [
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "22.5716mm",
+                      "object": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "sketch002",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "property": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "circle5",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
                       "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 22.5716,
-                        "suffix": "Mm"
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "raw": "34.2714mm",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 34.2714,
-                        "suffix": "Mm"
-                      }
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -22383,35 +23711,6 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "sketch",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "sketch002",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
                 }
               }
             ],
@@ -22472,7 +23771,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -22481,29 +23780,48 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "elements": [
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "85.2549mm",
+                      "object": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "sketch002",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
+                      "property": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "circle4",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
                       "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 85.2549,
-                        "suffix": "Mm"
-                      }
-                    },
-                    {
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "raw": "45.6035mm",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 45.6035,
-                        "suffix": "Mm"
-                      }
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -22511,35 +23829,6 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "sketch",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "sketch002",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
                 }
               }
             ],
@@ -22600,7 +23889,7 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "commentStart": 0,
                   "end": 0,
                   "moduleId": 0,
-                  "name": "point",
+                  "name": "segments",
                   "start": 0,
                   "type": "Identifier"
                 },
@@ -22609,38 +23898,48 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "elements": [
                     {
                       "commentStart": 0,
+                      "computed": false,
                       "end": 0,
                       "moduleId": 0,
-                      "raw": "82.8907mm",
-                      "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 82.8907,
-                        "suffix": "Mm"
-                      }
-                    },
-                    {
-                      "argument": {
+                      "object": {
+                        "abs_path": false,
                         "commentStart": 0,
                         "end": 0,
                         "moduleId": 0,
-                        "raw": "52.8442mm",
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "sketch002",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 52.8442,
-                          "suffix": "Mm"
-                        }
+                        "type": "Name",
+                        "type": "Name"
                       },
-                      "commentStart": 0,
-                      "end": 0,
-                      "moduleId": 0,
-                      "operator": "-",
+                      "property": {
+                        "abs_path": false,
+                        "commentStart": 0,
+                        "end": 0,
+                        "moduleId": 0,
+                        "name": {
+                          "commentStart": 0,
+                          "end": 0,
+                          "moduleId": 0,
+                          "name": "circle3",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
+                        "start": 0,
+                        "type": "Name",
+                        "type": "Name"
+                      },
                       "start": 0,
-                      "type": "UnaryExpression",
-                      "type": "UnaryExpression"
+                      "type": "MemberExpression",
+                      "type": "MemberExpression"
                     }
                   ],
                   "end": 0,
@@ -22648,35 +23947,6 @@ description: Result of parsing sheet-metal-bracket.kcl
                   "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
-                }
-              },
-              {
-                "type": "LabeledArg",
-                "label": {
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": "sketch",
-                  "start": 0,
-                  "type": "Identifier"
-                },
-                "arg": {
-                  "abs_path": false,
-                  "commentStart": 0,
-                  "end": 0,
-                  "moduleId": 0,
-                  "name": {
-                    "commentStart": 0,
-                    "end": 0,
-                    "moduleId": 0,
-                    "name": "sketch002",
-                    "start": 0,
-                    "type": "Identifier"
-                  },
-                  "path": [],
-                  "start": 0,
-                  "type": "Name",
-                  "type": "Name"
                 }
               }
             ],
