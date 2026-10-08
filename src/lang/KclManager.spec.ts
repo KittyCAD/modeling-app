@@ -19,6 +19,7 @@ import { KclManager } from '@src/lang/KclManager'
 import { File } from '@src/lib/projectSession'
 import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
 import { createSettings } from '@src/lib/settings/initialSettings'
+import { Themes } from '@src/lib/theme'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { waitFor } from 'xstate'
 
@@ -201,6 +202,274 @@ describe('KclManager line wrapping settings', () => {
       expect(updateWrapping).not.toHaveBeenCalled()
     } finally {
       kclManager.close()
+      app.dispose()
+    }
+  })
+})
+
+describe('KclManager settings ownership', () => {
+  function mockEngineSettings(kclManager: KclManager) {
+    const engine = kclManager.engineCommandManager
+    const setTheme = vi.spyOn(engine, 'setTheme').mockResolvedValue(undefined)
+    const setHighlightEdges = vi
+      .spyOn(engine, 'setHighlightEdges')
+      .mockResolvedValue(undefined)
+    const setDefaultSystemProperties = vi
+      .spyOn(engine, 'setDefaultSystemProperties')
+      .mockResolvedValue(undefined)
+    const executeCode = vi
+      .spyOn(kclManager, 'executeCode')
+      .mockResolvedValue(undefined)
+    const clearScene = vi
+      .spyOn(kclManager.rustContext, 'clearSceneAndBustCache')
+      .mockResolvedValue(kclManager.execState)
+    engine.connection = {
+      connected: true,
+    } as typeof engine.connection
+    return {
+      setTheme,
+      setHighlightEdges,
+      setDefaultSystemProperties,
+      executeCode,
+      clearScene,
+    }
+  }
+
+  it('updates each editor and its local scene directly from settings', async () => {
+    const { app, kclManager } = createKclManagerTestHarness()
+    try {
+      await waitFor(app.settings.actor, (snapshot) => snapshot.matches('idle'))
+      const settings = app.settings.get()
+      const blink = vi.spyOn(kclManager, 'setCursorBlinking')
+      const theme = vi.spyOn(kclManager, 'setEditorTheme')
+      const grid = vi.spyOn(kclManager.sceneEntitiesManager, 'updateSketchGrid')
+
+      settings.textEditor.blinkingCursor.user = false
+      expect(blink).toHaveBeenLastCalledWith(false)
+      expect(
+        kclManager.editorView.dom.style.getPropertyValue('--cursor-color')
+      ).toBe('transparent')
+      settings.app.theme.user = Themes.Light
+      expect(theme).toHaveBeenLastCalledWith('light')
+      settings.app.allowOrbitInSketchMode.user = true
+      expect(
+        kclManager.sceneInfra.camControls._setting_allowOrbitInSketchMode
+      ).toBe(true)
+      grid.mockClear()
+      settings.modeling.majorGridSpacing.user =
+        settings.modeling.majorGridSpacing.current + 1
+      expect(grid).toHaveBeenCalledTimes(1)
+
+      kclManager.close()
+      blink.mockClear()
+      theme.mockClear()
+      grid.mockClear()
+      settings.textEditor.blinkingCursor.user = true
+      settings.app.theme.user = Themes.Dark
+      settings.modeling.majorGridSpacing.user = 42
+      expect(blink).not.toHaveBeenCalled()
+      expect(theme).not.toHaveBeenCalled()
+      expect(grid).not.toHaveBeenCalled()
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('follows replacement settings without resending unchanged engine values', async () => {
+    const { app, kclManager } = createKclManagerTestHarness()
+    try {
+      await waitFor(app.settings.actor, (snapshot) => snapshot.matches('idle'))
+      const mocks = mockEngineSettings(kclManager)
+      kclManager.setSceneSettingsActive(true)
+      for (const mock of Object.values(mocks)) mock.mockClear()
+      const replacement = createSettings(
+        app.settings.actor.getSnapshot().context.extensionSettings
+      )
+      app.settings.actor.send({
+        type: 'Set all settings',
+        settings: replacement,
+      })
+      await waitFor(
+        app.settings.actor,
+        (snapshot) => snapshot.context.modeling === replacement.modeling
+      )
+      expect(mocks.setTheme).not.toHaveBeenCalled()
+      expect(mocks.setHighlightEdges).not.toHaveBeenCalled()
+      expect(mocks.setDefaultSystemProperties).not.toHaveBeenCalled()
+      expect(mocks.executeCode).not.toHaveBeenCalled()
+
+      replacement.app.theme.user = Themes.Light
+      expect(mocks.setTheme).toHaveBeenLastCalledWith(Themes.Light)
+      replacement.modeling.highlightEdges.user =
+        !replacement.modeling.highlightEdges.current
+      expect(mocks.setHighlightEdges).toHaveBeenCalledTimes(1)
+      expect(mocks.executeCode).toHaveBeenCalledTimes(1)
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it.each(['showScaleGrid', 'fixedSizeGrid', 'highlightEdges'] as const)(
+    'rerenders only the executing manager when %s changes',
+    async (name) => {
+      const { app, kclManager } = createKclManagerTestHarness()
+      const other = new KclManager('other.kcl', '', kclManager.systemDeps)
+      try {
+        await waitFor(app.settings.actor, (snapshot) =>
+          snapshot.matches('idle')
+        )
+        const mocks = mockEngineSettings(kclManager)
+        const otherExecute = vi
+          .spyOn(other, 'executeCode')
+          .mockResolvedValue(undefined)
+        kclManager.setSceneSettingsActive(true)
+        const setting = app.settings.get().modeling[name]
+        setting.user = !setting.current
+        expect(mocks.executeCode).toHaveBeenCalledTimes(1)
+        expect(otherExecute).not.toHaveBeenCalled()
+
+        kclManager.setSceneSettingsActive(false)
+        other.setSceneSettingsActive(true)
+        setting.user = !setting.current
+        expect(mocks.executeCode).toHaveBeenCalledTimes(1)
+        expect(otherExecute).toHaveBeenCalledTimes(1)
+      } finally {
+        other.close()
+        app.dispose()
+      }
+    }
+  )
+
+  it.each([
+    'showSketchGrid',
+    'majorGridSpacing',
+    'minorGridsPerMajor',
+  ] as const)(
+    'refreshes %s without clearing or rerendering the engine scene',
+    async (name) => {
+      const { app, kclManager } = createKclManagerTestHarness()
+      try {
+        await waitFor(app.settings.actor, (snapshot) =>
+          snapshot.matches('idle')
+        )
+        const mocks = mockEngineSettings(kclManager)
+        kclManager.setSceneSettingsActive(true)
+        const grid = vi.spyOn(
+          kclManager.sceneEntitiesManager,
+          'updateSketchGrid'
+        )
+        const setting = app.settings.get().modeling[name]
+        const current = setting.current
+        setting.user = typeof current === 'boolean' ? !current : current + 1
+        expect(grid).toHaveBeenCalledTimes(1)
+        expect(mocks.clearScene).not.toHaveBeenCalled()
+        expect(mocks.executeCode).not.toHaveBeenCalled()
+      } finally {
+        app.dispose()
+      }
+    }
+  )
+
+  it.each(['Sketch', 'sketchSolveMode'])(
+    'does not reapply camera projection during %s',
+    async (mode) => {
+      const { app, kclManager } = createKclManagerTestHarness()
+      try {
+        await waitFor(app.settings.actor, (snapshot) =>
+          snapshot.matches('idle')
+        )
+        const controls = kclManager.sceneInfra.camControls
+        const projection = vi.spyOn(controls, 'engineCameraProjection', 'set')
+        kclManager.modelingState = {
+          matches: (state: unknown) => state === mode,
+        } as unknown as NonNullable<KclManager['modelingState']>
+        kclManager.setSceneSettingsActive(true)
+        app.settings.get().modeling.cameraProjection.user =
+          controls.engineCameraProjection === 'perspective'
+            ? 'orthographic'
+            : 'perspective'
+        expect(projection).not.toHaveBeenCalled()
+      } finally {
+        app.dispose()
+      }
+    }
+  )
+
+  it.each(['closed', 'inactive'])(
+    'does not render after a backface cache clear finishes for a %s manager',
+    async (state) => {
+      const { app, kclManager } = createKclManagerTestHarness()
+      try {
+        await waitFor(app.settings.actor, (snapshot) =>
+          snapshot.matches('idle')
+        )
+        const mocks = mockEngineSettings(kclManager)
+        const pending = createDeferred<KclManager['execState']>()
+        mocks.clearScene.mockReturnValue(pending.promise)
+        kclManager.setSceneSettingsActive(true)
+        app.settings.get().modeling.backfaceColor.user = '#123456'
+        expect(mocks.setDefaultSystemProperties).toHaveBeenLastCalledWith(
+          '#123456'
+        )
+        expect(mocks.clearScene).toHaveBeenCalledTimes(1)
+        if (state === 'closed') kclManager.close()
+        else kclManager.setSceneSettingsActive(false)
+        pending.resolve(kclManager.execState)
+        await flushPromises()
+        expect(mocks.executeCode).not.toHaveBeenCalled()
+      } finally {
+        app.dispose()
+      }
+    }
+  )
+
+  it('waits for a backface cache clear before rendering newer engine settings', async () => {
+    const { app, kclManager } = createKclManagerTestHarness()
+    try {
+      await waitFor(app.settings.actor, (snapshot) => snapshot.matches('idle'))
+      const mocks = mockEngineSettings(kclManager)
+      const pending = createDeferred<KclManager['execState']>()
+      mocks.clearScene.mockReturnValue(pending.promise)
+      kclManager.setSceneSettingsActive(true)
+      const settings = app.settings.get()
+      settings.modeling.backfaceColor.user = '#123456'
+      settings.modeling.showScaleGrid.user =
+        !settings.modeling.showScaleGrid.current
+      expect(mocks.executeCode).not.toHaveBeenCalled()
+      pending.resolve(kclManager.execState)
+      await flushPromises(6)
+      expect(mocks.executeCode).toHaveBeenCalledTimes(1)
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('restarts subscriptions when a closed manager is reused for another file', async () => {
+    const { app, kclManager } = createKclManagerTestHarness()
+    try {
+      await waitFor(app.settings.actor, (snapshot) => snapshot.matches('idle'))
+      kclManager.close()
+      const settings = app.settings.get()
+      settings.textEditor.textWrapping.user = false
+      settings.textEditor.blinkingCursor.user = false
+      await KclManager.fromFile(
+        new File('reopened.kcl'),
+        kclManager.systemDeps,
+        kclManager,
+        '',
+        { shouldSyncRustOnOpen: false }
+      )
+      expect(lineWrappingCompartment.get(kclManager.editorView.state)).toEqual(
+        []
+      )
+      expect(
+        kclManager.editorView.dom.style.getPropertyValue('--cursor-color')
+      ).toBe('transparent')
+      settings.textEditor.textWrapping.user = true
+      expect(lineWrappingCompartment.get(kclManager.editorView.state)).toBe(
+        EditorView.lineWrapping
+      )
+    } finally {
       app.dispose()
     }
   })
