@@ -5615,7 +5615,7 @@ export default {
       {
         "name": "axis",
         "ty": "Axis2d | Point2d",
-        "docs": "Along which axis should the holes be cut?",
+        "docs": "Along which axis should the holes be cut? Given as a 2D direction on the face, in the face's own X and Y axes.",
         "required": true,
         "special": false,
         "experimental": false,
