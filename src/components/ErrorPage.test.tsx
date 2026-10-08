@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import {
   RouterProvider,
   createMemoryRouter,
@@ -9,6 +9,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 const mocks = vi.hoisted(() => ({
   reportClientError: vi.fn(async () => {}),
   isDesktop: vi.fn(() => false),
+  appCheckForUpdates: vi.fn().mockResolvedValue(undefined),
 }))
 
 vi.mock('@src/lib/clientErrors', () => ({
@@ -20,6 +21,12 @@ vi.mock('@src/lib/clientErrors', () => ({
 
 vi.mock('@src/lib/isDesktop', () => ({
   isDesktop: mocks.isDesktop,
+}))
+
+vi.mock('@src/routes/utils', () => ({
+  APP_VERSION: '1.0.0',
+  getReleaseUrl: () =>
+    'https://github.com/KittyCAD/modeling-app/releases/tag/v1.0.0',
 }))
 
 import { ErrorPage } from '@src/components/ErrorPage'
@@ -50,6 +57,9 @@ describe('ErrorPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mocks.isDesktop.mockReturnValue(false)
+    vi.stubGlobal('electron', {
+      appCheckForUpdates: mocks.appCheckForUpdates,
+    })
     vi.spyOn(console, 'error').mockImplementation(() => {})
     vi.spyOn(window.navigator, 'userAgent', 'get').mockReturnValue(
       'Mozilla/5.0 AppleWebKit/537.36 Chrome/117.0.0.0 Safari/537.36'
@@ -112,12 +122,11 @@ describe('ErrorPage', () => {
     expect(
       screen.queryByRole('button', { name: 'Check for updates' })
     ).toBeNull()
+    expect(mocks.appCheckForUpdates).not.toHaveBeenCalled()
   })
 
-  it('keeps desktop updates available after a route error', async () => {
+  it('checks automatically and keeps desktop updates available after a route error', async () => {
     mocks.isDesktop.mockReturnValue(true)
-    const appCheckForUpdates = vi.fn().mockResolvedValue(undefined)
-    vi.stubGlobal('electron', { appCheckForUpdates })
     setAutoUpdateReady({ version: '1.2.3' })
     renderErrorPage(new Error('unrelated failure'))
 
@@ -126,7 +135,10 @@ describe('ErrorPage', () => {
         name: 'Restart to update to v1.2.3',
       })
     ).toBeVisible()
-    fireEvent.click(screen.getByRole('button', { name: 'Check for updates' }))
-    expect(appCheckForUpdates).toHaveBeenCalledOnce()
+    expect(screen.getByRole('link', { name: 'v1.0.0' })).toBeVisible()
+    expect(
+      screen.queryByRole('button', { name: 'Check for updates' })
+    ).toBeNull()
+    expect(mocks.appCheckForUpdates).toHaveBeenCalledOnce()
   })
 })

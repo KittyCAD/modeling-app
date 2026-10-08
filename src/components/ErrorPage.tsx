@@ -54,6 +54,12 @@ export const ErrorPage = () => {
   console.error('error', error)
 
   useEffect(() => {
+    if (isDesktop()) {
+      window.electron?.appCheckForUpdates().catch(reportRejection)
+    }
+  }, [])
+
+  useEffect(() => {
     const isRouteError = isRouteErrorResponse(error)
     const message = errorMessage(error)
     const name = isErr(error) ? error.name : 'RouteError'
@@ -114,6 +120,7 @@ export const ErrorPage = () => {
             ? 'Your browser is out of date and cannot open Zoo Design Studio projects. Update your browser or use the latest Chrome, Edge, Firefox, or Safari.'
             : "We're sorry, something went wrong. The error has been reported to our team."}
         </p>
+        <AutoUpdateStatus />
         <div className="flex justify-between gap-2 mt-6">
           {browserCompatibilityError ? (
             <>
@@ -158,21 +165,10 @@ export const ErrorPage = () => {
               >
                 Clear Storage
               </ActionButton>
-              {isDesktop() && (
-                <ActionButton
-                  Element="button"
-                  onClick={() => {
-                    window.electron?.appCheckForUpdates().catch(reportRejection)
-                  }}
-                >
-                  Check for updates
-                </ActionButton>
-              )}
             </>
           )}
         </div>
       </section>
-      <AutoUpdateStatus />
     </div>
   )
 }

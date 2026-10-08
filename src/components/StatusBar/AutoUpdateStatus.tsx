@@ -1,12 +1,15 @@
 import { useSignals } from '@preact/signals-react/runtime'
+import { ActionButton } from '@src/components/ActionButton'
 import { AutoUpdateDownloadStatus } from '@src/components/StatusBar/AutoUpdateDownloadStatus'
 import { AutoUpdateReadyStatus } from '@src/components/StatusBar/AutoUpdateReadyStatus'
+import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 import {
   autoUpdateDownloadProgressSignal,
   autoUpdateReadySignal,
 } from '@src/lib/autoUpdate'
 import { isDesktop } from '@src/lib/isDesktop'
 import { reportRejection } from '@src/lib/trap'
+import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 import type { CSSProperties } from 'react'
 
 export function AutoUpdateStatus({ inline = false }: { inline?: boolean }) {
@@ -14,7 +17,7 @@ export function AutoUpdateStatus({ inline = false }: { inline?: boolean }) {
   const progress = autoUpdateDownloadProgressSignal.value
   const update = autoUpdateReadySignal.value
 
-  if (!isDesktop() || (!progress && !update)) return null
+  if (!isDesktop()) return null
 
   const status = update ? (
     <AutoUpdateReadyStatus
@@ -24,18 +27,27 @@ export function AutoUpdateStatus({ inline = false }: { inline?: boolean }) {
       }}
     />
   ) : progress ? (
-    <AutoUpdateDownloadStatus progress={progress} showProgressBar={!inline} />
+    <AutoUpdateDownloadStatus progress={progress} showProgressBar={false} />
   ) : null
 
   if (inline) return status
 
   return (
-    <footer
+    <div
+      role="group"
       aria-label="App update"
-      className="shrink-0 flex justify-end bg-chalkboard-20 dark:bg-chalkboard-90 border-t border-chalkboard-30 dark:border-chalkboard-80"
+      className="flex items-center self-start"
       style={{ WebkitAppRegion: 'no-drag' } as CSSProperties}
     >
+      <ActionButton
+        Element="externalLink"
+        to={getReleaseUrl(APP_VERSION)}
+        className={defaultStatusBarItemClassNames}
+        title="View this version on GitHub"
+      >
+        v{APP_VERSION}
+      </ActionButton>
       {status}
-    </footer>
+    </div>
   )
 }

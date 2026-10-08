@@ -5,6 +5,12 @@ vi.mock('@src/lib/isDesktop', () => ({
   isDesktop: vi.fn(),
 }))
 
+vi.mock('@src/routes/utils', () => ({
+  APP_VERSION: '1.0.0',
+  getReleaseUrl: () =>
+    'https://github.com/KittyCAD/modeling-app/releases/tag/v1.0.0',
+}))
+
 import { AutoUpdateStatus } from '@src/components/StatusBar/AutoUpdateStatus'
 import {
   clearAutoUpdateDownloadProgress,
@@ -33,6 +39,11 @@ describe('AutoUpdateStatus', () => {
       const appRestart = vi.fn().mockResolvedValue(undefined)
       vi.stubGlobal('electron', { appRestart })
       render(<AutoUpdateStatus inline={inline} />)
+      if (inline) {
+        expect(screen.queryByRole('group', { name: 'App update' })).toBeNull()
+      } else {
+        expect(screen.getByRole('link', { name: 'v1.0.0' })).toBeVisible()
+      }
       expect(screen.queryByTestId('auto-update-download-status')).toBeNull()
       expect(
         screen.queryByRole('button', { name: /Restart to update/ })
@@ -65,7 +76,7 @@ describe('AutoUpdateStatus', () => {
     vi.mocked(isDesktop).mockReturnValue(false)
     setAutoUpdateReady({ version: '1.2.3' })
     render(<AutoUpdateStatus />)
-    expect(screen.queryByRole('contentinfo')).toBeNull()
+    expect(screen.queryByRole('group', { name: 'App update' })).toBeNull()
     expect(screen.queryByRole('button')).toBeNull()
   })
 })
