@@ -714,8 +714,8 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         key={id + 'video'}
         ref={videoRef}
         controls={false}
-        className={`w-full cursor-pointer h-full transition-opacity duration-200 ${
-          isLocalRendering ? 'opacity-0' : 'opacity-100'
+        className={`w-full cursor-pointer h-full${
+          isLocalRendering ? ' opacity-0' : ''
         }${safariObjectFitClass}`}
         disablePictureInPicture
         id="video-stream"
