@@ -1,4 +1,5 @@
 import { test as base, expect } from '@e2e/playwright/zoo-test'
+import { waitForAppLoad } from '@e2e/playwright/test-utils'
 import type {
   MigrationClientMessage,
   MigrationOperation,
@@ -214,6 +215,7 @@ test.describe(
         })
       })
       await page.reload()
+      await waitForAppLoad(page)
       await page.setBodyDimensions({ width: 1440, height: 1000 })
       await expect(page.getByTestId('home-new-file')).toBeVisible()
       const localLibrary = page.getByRole('link', {
@@ -419,6 +421,7 @@ test.describe(
         await editor.flushWriteToFile()
       }, laterCode)
       await page.reload()
+      await waitForAppLoad(page)
       await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
       await expect(
         page.getByRole('region', { name: 'Past KCL migration' })
