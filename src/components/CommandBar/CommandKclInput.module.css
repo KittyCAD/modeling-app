@@ -1,0 +1,29 @@
+.editor {
+  @apply min-h-7 w-full rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs dark:border-chalkboard-70;
+}
+.inlineEditor {
+  @apply text-base flex-1 overflow-auto;
+  scrollbar-width: thin;
+}
+.editor :global(.cm-editor),
+.inlineEditor :global(.cm-editor) {
+  @apply bg-transparent;
+}
+.editor :global(.cm-editor.cm-focused) {
+  outline: none;
+}
+.editor:focus-within {
+  @apply outline outline-1 outline-offset-0 outline-chalkboard-100 dark:outline-chalkboard-10;
+}
+.editor :global(.cm-content) {
+  padding: 0;
+  min-height: 1rem;
+}
+.editor :global(.cm-line) {
+  padding: 0;
+}
+.editor :global(.cm-scroller) {
+  font-family:
+    "Source Code VF", Menlo, Monaco, Consolas, "Courier New", monospace;
+  overflow: hidden;
+}
