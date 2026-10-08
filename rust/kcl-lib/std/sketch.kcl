@@ -60,18 +60,22 @@ export fn arc3d(@path: Path3d, interiorAbsolute: Point3d, endAbsolute: Point3d):
 @(impl = std_rust, experimental = true, feature_tree = false)
 export fn tangentialArc3d(@path: Path3d, end?: Point3d, endAbsolute?: Point3d): Path3d {}
 
-/// Round all interior corners of an open route authored with `line3d`.
+/// Round all interior line-line corners of an open 3D route.
 /// Each corner replaces the ends of its two straight legs with a circular arc
 /// of the given radius. Editing the line endpoints recomputes both tangent joins.
-/// Straight continuations are retained. Reversals, closed routes, existing arcs,
-/// and radii that consume a leg or overlap neighboring fillets are rejected.
-/// The input polyline is consumed and hidden; use the returned rounded path.
+/// Existing arcs retain their points, radius, and traversal; joins involving
+/// arcs must already be tangent. Straight continuations are retained. Reversals,
+/// closed routes, sharp arc joins, and radii that consume a leg or overlap
+/// neighboring fillets are rejected. The input route is consumed and hidden;
+/// use the returned rounded path.
 /// ```kcl,norun
 /// @settings(kclVersion = 3.0, experimentalFeatures = allow)
 /// route = startPath3d(at = [0mm, 0mm, 0mm])
-///   |> line3d(endAbsolute = [0mm, 0mm, 60mm])
-///   |> line3d(endAbsolute = [15mm, 25mm, 65mm])
-///   |> fillet3d(radius = 10mm)
+///   |> line3d(endAbsolute = [0mm, 0mm, 40mm])
+///   |> tangentialArc3d(end = [20mm, 0mm, 20mm])
+///   |> line3d(endAbsolute = [60mm, 0mm, 60mm])
+///   |> line3d(endAbsolute = [60mm, 40mm, 60mm])
+///   |> fillet3d(radius = 6mm)
 /// ```
 @(impl = std_rust, experimental = true, feature_tree = false)
 export fn fillet3d(@path: Path3d, radius: number(Length)): Path3d {}

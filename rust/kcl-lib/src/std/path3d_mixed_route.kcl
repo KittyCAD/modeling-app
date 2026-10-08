@@ -1,0 +1,16 @@
+@settings(kclVersion = 3.0, defaultLengthUnit = mm, experimentalFeatures = allow)
+
+raw = startPath3d(at = [0mm, 0mm, 0mm])
+  |> line3d(endAbsolute = [0mm, 0mm, 40mm])
+  |> tangentialArc3d(end = [20mm, 0mm, 20mm])
+  |> line3d(endAbsolute = [60mm, 0mm, 60mm])
+  |> line3d(endAbsolute = [60mm, 40mm, 60mm])
+  |> tangentialArc3d(end = [0mm, 20mm, 20mm])
+  |> line3d(endAbsolute = [60mm, 60mm, 120mm])
+route = raw |> fillet3d(radius = 6mm)
+
+profile = sketch(on = XY) {
+  section = circle(start = [2mm, 0mm], center = [0mm, 0mm])
+}
+sectionRegion = region(point = [0mm, 0mm], sketch = profile)
+body = sweep(sectionRegion, path = route)

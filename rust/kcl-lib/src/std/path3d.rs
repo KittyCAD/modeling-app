@@ -257,7 +257,15 @@ struct PlannedSegment {
     segment: PathSegment,
 }
 
-fn fillet_polyline(path: &Path3d, radius: f64, range: SourceRange) -> Result<Vec<PlannedSegment>, KclError> {
+struct RouteSegment {
+    start: [f64; 3],
+    end: [f64; 3],
+    start_tangent: [f64; 3],
+    end_tangent: [f64; 3],
+    segment: PathSegment,
+}
+
+fn fillet_route(path: &Path3d, radius: f64, range: SourceRange) -> Result<Vec<PlannedSegment>, KclError> {
     if !radius.is_finite() || radius <= POINT_TOLERANCE_MM {
         return Err(argument_error(
             "fillet3d requires a finite positive radius greater than the path tolerance.",
@@ -265,82 +273,111 @@ fn fillet_polyline(path: &Path3d, radius: f64, range: SourceRange) -> Result<Vec
         ));
     }
     if path.segments.len() < 2 {
-        return Err(argument_error(
-            "fillet3d requires at least two straight line segments.",
-            range,
-        ));
+        return Err(argument_error("fillet3d requires at least two segments.", range));
     }
-    let mut points = vec![path.start];
+    let mut original = Vec::new();
+    let mut start = path.start;
     for segment in &path.segments {
-        let PathSegment::Line { end, relative: false } = segment else {
-            return Err(argument_error(
-                "fillet3d currently accepts only straight line routes. Apply it before adding arcs.",
-                range,
-            ));
+        let (end, start_tangent, end_tangent) = match *segment {
+            PathSegment::Line { end, relative: false } => {
+                let end = [end.x.0, end.y.0, end.z.0];
+                let tangent = unit(delta(end, start), range)?;
+                (end, tangent, tangent)
+            }
+            PathSegment::ArcTo {
+                interior,
+                end,
+                relative: false,
+            } => {
+                let interior = [interior.x.0, interior.y.0, interior.z.0];
+                let end = [end.x.0, end.y.0, end.z.0];
+                let start_tangent = arc_end_tangent(end, interior, start, range)?.map(|v| -v);
+                let end_tangent = arc_end_tangent(start, interior, end, range)?;
+                (end, start_tangent, end_tangent)
+            }
+            _ => {
+                return Err(argument_error(
+                    "fillet3d requires absolute line or circular arc segments.",
+                    range,
+                ));
+            }
         };
-        points.push([end.x.0, end.y.0, end.z.0]);
+        original.push(RouteSegment {
+            start,
+            end,
+            start_tangent,
+            end_tangent,
+            segment: *segment,
+        });
+        start = end;
     }
-    if length(delta(*points.last().unwrap_or(&path.start), path.start)) <= POINT_TOLERANCE_MM {
+    if length(delta(start, path.start)) <= POINT_TOLERANCE_MM {
         return Err(argument_error("fillet3d currently requires an open route.", range));
     }
     let mut corners = Vec::new();
-    for points in points.windows(3) {
-        let incoming = unit(delta(points[1], points[0]), range)?;
-        let outgoing = unit(delta(points[2], points[1]), range)?;
-        // Redundant vertices on a straight continuation need no fillet.
+    for (i, pair) in original.windows(2).enumerate() {
+        let incoming = pair[0].end_tangent;
+        let outgoing = pair[1].start_tangent;
         if length(cross(incoming, outgoing)) <= 1.0e-8 && dot(incoming, outgoing) > 0.0 {
             corners.push(None);
+        } else if pair.iter().all(|s| matches!(s.segment, PathSegment::Line { .. })) {
+            corners.push(Some(corner_fillet(
+                pair[0].start,
+                pair[0].end,
+                pair[1].end,
+                radius,
+                range,
+            )?));
         } else {
-            corners.push(Some(corner_fillet(points[0], points[1], points[2], radius, range)?));
+            return Err(argument_error(
+                &format!(
+                    "fillet3d requires joins involving existing arcs to already be tangent; join {} is sharp or reversing.",
+                    i + 1
+                ),
+                range,
+            ));
         }
     }
     let mut segments = Vec::new();
     let mut current = path.start;
-    for (i, corner) in corners.iter().enumerate() {
-        let (entry, exit) = match corner {
-            Some(corner) => (corner.entry, corner.exit),
-            None => (points[i + 1], points[i + 1]),
+    for (i, original) in original.iter().enumerate() {
+        let corner = corners.get(i).and_then(Option::as_ref);
+        let end = corner.map_or(original.end, |c| c.entry);
+        let segment = match original.segment {
+            PathSegment::Line { .. } => {
+                if dot(delta(end, current), original.end_tangent) <= POINT_TOLERANCE_MM {
+                    return Err(argument_error(
+                        "fillet3d radius causes adjacent corner cuts to overlap or consume a straight segment.",
+                        range,
+                    ));
+                }
+                PathSegment::Line {
+                    end: engine_point(end),
+                    relative: false,
+                }
+            }
+            // Preserve all three authored points, including major-arc traversal and radius.
+            _ => original.segment,
         };
-        let direction = match corner {
-            Some(corner) => corner.incoming,
-            None => unit(delta(points[i + 1], points[i]), range)?,
-        };
-        if dot(delta(entry, current), direction) <= POINT_TOLERANCE_MM {
-            return Err(argument_error(
-                "fillet3d radius causes adjacent corner cuts to overlap or consume a straight segment.",
-                range,
-            ));
-        }
         segments.push(PlannedSegment {
-            end: entry,
-            tangent: direction,
-            segment: PathSegment::Line {
-                end: engine_point(entry),
-                relative: false,
-            },
+            end,
+            tangent: corner.map_or(original.end_tangent, |c| c.incoming),
+            segment,
         });
+        current = end;
         if let Some(corner) = corner {
             segments.push(PlannedSegment {
-                end: exit,
+                end: corner.exit,
                 tangent: corner.outgoing,
                 segment: PathSegment::ArcTo {
                     interior: engine_point(corner.interior),
-                    end: engine_point(exit),
+                    end: engine_point(corner.exit),
                     relative: false,
                 },
             });
+            current = corner.exit;
         }
-        current = exit;
     }
-    let end = points[points.len() - 1];
-    segments.push(PlannedSegment {
-        end,
-        tangent: unit(delta(end, current), range)?,
-        segment: PathSegment::Line {
-            end: engine_point(end),
-            relative: false,
-        },
-    });
     Ok(segments)
 }
 
@@ -354,7 +391,7 @@ pub async fn fillet3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         ));
     }
     let radius: TyF64 = args.get_kw_arg("radius", &RuntimeType::length(), exec_state)?;
-    let segments = fillet_polyline(&path, radius.unwrap_to_mm(), args.source_range)?;
+    let segments = fillet_route(&path, radius.unwrap_to_mm(), args.source_range)?;
     let mut rounded = new_path3d(path.start, exec_state, args.clone()).await?;
     for segment in segments {
         rounded = append_segment(
@@ -667,7 +704,7 @@ mod tests {
     }
 
     #[test]
-    fn fillet_polyline_rebuilds_all_corners_with_continuous_tangents() {
+    fn fillet_route_rebuilds_all_corners_with_continuous_tangents() {
         let points = [
             [0.0, 0.0, 0.0],
             [0.0, 0.0, 60.0],
@@ -681,7 +718,7 @@ mod tests {
             [-10.0, -10.0, 280.0],
         ];
         let raw = polyline(&points);
-        let planned = fillet_polyline(&raw, 8.0, SourceRange::default()).unwrap();
+        let planned = fillet_route(&raw, 8.0, SourceRange::default()).unwrap();
         assert_eq!(planned.len(), 17);
         assert_eq!(raw.segments.len(), 9);
         let mut start = raw.start;
@@ -716,7 +753,7 @@ mod tests {
     }
 
     #[test]
-    fn fillet_polyline_rejects_overlapping_cuts_and_keeps_straight_vertices() {
+    fn fillet_route_rejects_overlapping_cuts_and_keeps_straight_vertices() {
         for shared_length in [15.0, 20.0] {
             let raw = polyline(&[
                 [0.0; 3],
@@ -724,14 +761,118 @@ mod tests {
                 [0.0, shared_length, 60.0],
                 [30.0, shared_length, 60.0],
             ]);
-            let error = fillet_polyline(&raw, 10.0, SourceRange::default()).err().unwrap();
+            let error = fillet_route(&raw, 10.0, SourceRange::default()).err().unwrap();
             assert!(error.to_string().contains("overlap"), "{error}");
-            assert_eq!(fillet_polyline(&raw, 7.0, SourceRange::default()).unwrap().len(), 5);
+            assert_eq!(fillet_route(&raw, 7.0, SourceRange::default()).unwrap().len(), 5);
         }
         let raw = polyline(&[[0.0; 3], [0.0, 0.0, 30.0], [0.0, 0.0, 60.0]]);
-        let planned = fillet_polyline(&raw, 10.0, SourceRange::default()).unwrap();
+        let planned = fillet_route(&raw, 10.0, SourceRange::default()).unwrap();
         assert_eq!(planned.len(), 2);
         assert!(planned.iter().all(|p| matches!(p.segment, PathSegment::Line { .. })));
+    }
+
+    #[tokio::test]
+    async fn fillet_mixed_route_preserves_authored_arcs_and_all_tangent_joins() {
+        let result = parse_execute(include_str!("path3d_mixed_route.kcl")).await.unwrap();
+        let KclValue::Path3d { value: raw } = result.variable("raw") else {
+            panic!("expected input path")
+        };
+        let KclValue::Path3d { value: route } = result.variable("route") else {
+            panic!("expected rounded path")
+        };
+        assert_eq!(raw.segments.len(), 6);
+        assert_eq!(route.segments.len(), 7);
+        assert_eq!(route.segments[1], raw.segments[1]);
+        assert_eq!(route.segments[5], raw.segments[4]);
+        assert_point(route.start, raw.start);
+        assert_point(route.end, raw.end);
+        let emitted: Vec<_> = result
+            .root_module_artifact_commands()
+            .iter()
+            .filter_map(|c| match &c.command {
+                ModelingCmd::ExtendPath(c) if c.path.as_ref() == &route.id => Some(c.segment),
+                _ => None,
+            })
+            .collect();
+        assert_eq!(emitted, route.segments);
+        let mut start = route.start;
+        let mut previous_tangent = None;
+        let mut radii = Vec::new();
+        for segment in &emitted {
+            let (end, start_tangent, end_tangent) = match *segment {
+                PathSegment::Line { end, .. } => {
+                    let end = [end.x.0, end.y.0, end.z.0];
+                    let tangent = unit(delta(end, start), SourceRange::default()).unwrap();
+                    (end, tangent, tangent)
+                }
+                PathSegment::ArcTo { interior, end, .. } => {
+                    let interior = [interior.x.0, interior.y.0, interior.z.0];
+                    let end = [end.x.0, end.y.0, end.z.0];
+                    let a = delta(interior, start);
+                    let b = delta(end, start);
+                    radii.push(length(a) * length(b) * length(delta(end, interior)) / (2.0 * length(cross(a, b))));
+                    (
+                        end,
+                        arc_end_tangent(end, interior, start, SourceRange::default())
+                            .unwrap()
+                            .map(|v| -v),
+                        arc_end_tangent(start, interior, end, SourceRange::default()).unwrap(),
+                    )
+                }
+                _ => panic!("unexpected route segment"),
+            };
+            if let Some(tangent) = previous_tangent {
+                assert_point(start_tangent, tangent);
+            }
+            previous_tangent = Some(end_tangent);
+            start = end;
+        }
+        assert_point([radii[0], radii[1], radii[2]], [20.0, 6.0, 20.0]);
+    }
+
+    #[tokio::test]
+    async fn fillet_preserves_major_arcs_and_tangent_arc_arc_joins() {
+        for (segments, arc_indices) in [
+            (
+                "|> line3d(end = [0mm, 0mm, 40mm])
+              |> arc3d(interiorAbsolute = [40mm, 0mm, 40mm], endAbsolute = [20mm, 0mm, 20mm])
+              |> line3d(endAbsolute = [-20mm, 0mm, 20mm])
+              |> line3d(endAbsolute = [-20mm, 30mm, 20mm])",
+                vec![1],
+            ),
+            (
+                "|> line3d(end = [0mm, 0mm, 40mm])
+              |> tangentialArc3d(end = [20mm, 0mm, 20mm])
+              |> tangentialArc3d(end = [20mm, 20mm, 0mm])
+              |> line3d(end = [0mm, 40mm, 0mm])
+              |> line3d(end = [0mm, 0mm, 40mm])",
+                vec![1, 2],
+            ),
+        ] {
+            let result = parse_execute(&format!(
+                "{SETTINGS}raw = startPath3d(at = [0mm, 0mm, 0mm]) {segments}\nroute = raw |> fillet3d(radius = 6mm)\n"
+            ))
+            .await
+            .unwrap();
+            let KclValue::Path3d { value: raw } = result.variable("raw") else {
+                panic!("expected input path")
+            };
+            let KclValue::Path3d { value: route } = result.variable("route") else {
+                panic!("expected rounded path")
+            };
+            assert_eq!(route.segments.len(), raw.segments.len() + 1);
+            for i in arc_indices {
+                assert_eq!(route.segments[i], raw.segments[i]);
+            }
+            assert_point(route.end, raw.end);
+        }
+    }
+
+    #[tokio::test]
+    async fn engine_mixed_fillet_route_sweep() {
+        crate::test_server::kcl_doc_execute_and_snapshot(include_str!("path3d_mixed_route.kcl"), None, false, true)
+            .await
+            .unwrap();
     }
 
     #[tokio::test]
@@ -785,13 +926,25 @@ route = rounded |> line3d(end = [0mm, 5mm, 0mm])
     }
 
     #[tokio::test]
-    async fn fillet_rejects_incomplete_arc_and_reversing_routes() {
+    async fn fillet_rejects_incomplete_sharp_arc_and_reversing_routes() {
         for (route, expected) in [
             ("", "at least two"),
             (" |> line3d(end = [0mm, 0mm, 60mm])", "at least two"),
             (
-                " |> line3d(end = [0mm, 0mm, 60mm]) |> tangentialArc3d(end = [0mm, 10mm, 10mm])",
-                "only straight line",
+                " |> line3d(end = [0mm, 0mm, 60mm]) |> arc3d(interiorAbsolute = [10mm, 0mm, 60mm], endAbsolute = [10mm, 0mm, 70mm])",
+                "already be tangent",
+            ),
+            (
+                " |> line3d(end = [0mm, 0mm, 40mm]) |> tangentialArc3d(end = [20mm, 0mm, 20mm]) |> line3d(end = [0mm, 20mm, 0mm])",
+                "already be tangent",
+            ),
+            (
+                " |> line3d(end = [0mm, 0mm, 40mm]) |> tangentialArc3d(end = [20mm, 0mm, 20mm]) |> line3d(end = [-20mm, 0mm, 0mm])",
+                "already be tangent",
+            ),
+            (
+                " |> line3d(end = [0mm, 0mm, 40mm]) |> tangentialArc3d(end = [20mm, 0mm, 20mm]) |> arc3d(interiorAbsolute = [20mm, 5mm, 65mm], endAbsolute = [20mm, 10mm, 60mm])",
+                "already be tangent",
             ),
             (
                 " |> line3d(end = [0mm, 0mm, 60mm]) |> line3d(endAbsolute = [0mm, 0mm, 20mm])",

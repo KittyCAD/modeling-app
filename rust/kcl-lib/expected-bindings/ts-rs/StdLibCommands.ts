@@ -2327,7 +2327,7 @@ export default {
     "moduleName": "sketch",
     "returnType": "Path3d",
     "addedIn": null,
-    "summary": "Round all interior corners of an open route authored with `line3d`. Each corner replaces the ends of its two straight legs with a circular arc of the given radius. Editing the line endpoints recomputes both tangent joins. Straight continuations are retained. Reversals, closed routes, existing arcs, and radii that consume a leg or overlap neighboring fillets are rejected. The input polyline is consumed and hidden; use the returned rounded path.",
+    "summary": "Round all interior line-line corners of an open 3D route. Each corner replaces the ends of its two straight legs with a circular arc of the given radius. Editing the line endpoints recomputes both tangent joins. Existing arcs retain their points, radius, and traversal; joins involving arcs must already be tangent. Straight continuations are retained. Reversals, closed routes, sharp arc joins, and radii that consume a leg or overlap neighboring fillets are rejected. The input route is consumed and hidden; use the returned rounded path.",
     "deprecated": false,
     "deprecatedSince": null,
     "experimental": true,

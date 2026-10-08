@@ -51,10 +51,12 @@ route = startPath3d(at = [0mm, 0mm, 0mm])
 ```
 
 This trims both legs at each corner and inserts a circular arc. One radius
-applies to all interior corners. The radius must leave a nonzero straight
+applies to all interior line-line corners. The radius must leave a nonzero straight
 portion on every segment, including segments shared by neighboring fillets.
-Straight continuations are retained; reversals, closed routes, and existing
-arcs are rejected. The original polyline is consumed and hidden; use the
+Existing arcs keep their authored points, radius, and traversal. Joins involving
+arcs must already be tangent; sharp line-arc and arc-arc joins are rejected.
+Straight continuations are retained; reversals and closed routes are rejected.
+The original route is consumed and hidden; use the
 returned rounded `Path3d` for further segments or as a `sweep` trajectory.
 Sweeping complex rounded routes has a reported folding issue under
 investigation; successful execution alone does not establish shape correctness.
