@@ -4,6 +4,10 @@ import { fileLoader } from '@src/lib/routeLoaders'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+// Transitive loader imports reach this wrapper even though redirects never use
+// Wasm. Unit tests run without the generated Wasm JavaScript or binary.
+vi.mock('@src/lib/wasm_lib_wrapper', () => ({}))
+
 // Keep application bootstrap and Wasm out of this route regression test.
 vi.mock('@src/lib/app', () => ({
   App: class {
