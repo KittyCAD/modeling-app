@@ -5,21 +5,14 @@ import type {
   MigrationHistoryEntry,
 } from '@src/lib/kclMigration/protocol'
 import { isErr } from '@src/lib/trap'
-import type { Exchange } from '@src/lib/zookeeper/zookeeperManagerMachine'
 
 export function migrationHistoryPosition(
   entry: MigrationHistoryEntry,
-  exchanges: readonly Exchange[]
+  promptPositions: ReadonlyMap<string, number>,
+  exchangeCount: number
 ): number {
   const promptId = entry.prompt_id ?? entry.after_prompt_id
-  if (!promptId) return 0
-  const index = exchanges.findIndex((exchange) =>
-    exchange.responses.some(
-      (response) =>
-        'end_of_stream' in response && response.end_of_stream.id === promptId
-    )
-  )
-  return index < 0 ? exchanges.length : index + 1
+  return promptId ? (promptPositions.get(promptId) ?? exchangeCount) : 0
 }
 
 export interface MigrationConversationLink {

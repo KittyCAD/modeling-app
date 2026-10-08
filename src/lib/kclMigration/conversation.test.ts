@@ -79,31 +79,31 @@ it('loads read-only history in one request and anchors entries to the prior prom
   ])
   expect(history.entries.value[0].operation_id).toBe('older')
   expect(history.entries.value[1].application.status).toBe('not_applied')
-  const exchanges = [
-    {
-      responses: [{ end_of_stream: { id: 'prompt-1' } }],
-      deltasAggregated: '',
-    },
-    {
-      responses: [{ end_of_stream: { id: 'prompt-2' } }],
-      deltasAggregated: '',
-    },
-  ]
+  const promptPositions = new Map([
+    ['prompt-1', 1],
+    ['prompt-2', 2],
+  ])
   expect(
     migrationHistoryPosition(
       { ...entry, after_prompt_id: 'prompt-1' },
-      exchanges
+      promptPositions,
+      2
     )
   ).toBe(1)
-  expect(migrationHistoryPosition(entry, exchanges)).toBe(0)
+  expect(migrationHistoryPosition(entry, promptPositions, 2)).toBe(0)
   expect(
     migrationHistoryPosition(
       { ...entry, after_prompt_id: 'prompt-1', prompt_id: 'prompt-2' },
-      exchanges
+      promptPositions,
+      2
     )
   ).toBe(2)
   expect(
-    migrationHistoryPosition({ ...entry, after_prompt_id: 'pruned' }, exchanges)
+    migrationHistoryPosition(
+      { ...entry, after_prompt_id: 'pruned' },
+      promptPositions,
+      2
+    )
   ).toBe(2)
 })
 
