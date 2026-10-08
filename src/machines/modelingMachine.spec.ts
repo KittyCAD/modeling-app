@@ -27,7 +27,11 @@ import type RustContext from '@src/lib/rustContext'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
-import { modelingMachine } from '@src/machines/modelingMachine'
+import {
+  modelingMachine,
+  positionLocalSketchSolveCamera,
+} from '@src/machines/modelingMachine'
+import type { DefaultPlane } from '@src/machines/modelingSharedTypes'
 import {
   dummyInitSketchGraphDelta,
   generateModelingMachineDefaultContext,
@@ -2016,5 +2020,42 @@ sketch001 = sketch(on = YZ) {
         'clientToEngine'
       )
     })
+  })
+})
+
+describe('positionLocalSketchSolveCamera', () => {
+  it('orients the sketch before aiming the camera at it', async () => {
+    const order: string[] = []
+    const sketchSolveGroup = {}
+    const plane: DefaultPlane = {
+      type: 'defaultPlane',
+      plane: 'XZ',
+      planeId: 'plane-id',
+      zAxis: [0, -1, 0],
+      yAxis: [0, 0, 1],
+    }
+    const initSketchSolveEntityOrientation = vi.fn(() => {
+      order.push('orient sketch')
+    })
+    const transitionToSketch = vi.fn(async () => {
+      order.push('aim camera')
+    })
+    const signal = new AbortController().signal
+
+    await positionLocalSketchSolveCamera(
+      {
+        sceneEntitiesManager: {
+          sketchSolveGroup,
+          initSketchSolveEntityOrientation,
+        },
+        sceneInfra: { camControls: { transitionToSketch } },
+      } as unknown as KclManager,
+      plane,
+      signal
+    )
+
+    expect(order).toEqual(['orient sketch', 'aim camera'])
+    expect(initSketchSolveEntityOrientation).toHaveBeenCalledWith(plane)
+    expect(transitionToSketch).toHaveBeenCalledWith(sketchSolveGroup, signal)
   })
 })

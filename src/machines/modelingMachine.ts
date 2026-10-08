@@ -271,6 +271,25 @@ function findSceneObjectForPlaneSelection(
   })
 }
 
+/**
+ * Aims the camera at a sketch solve plane before the sketch machine starts.
+ * The engine does this itself when streaming; with the local renderer we have to.
+ */
+export async function positionLocalSketchSolveCamera(
+  kclManager: KclManager,
+  plane: DefaultPlane | OffsetPlane | ExtrudeFacePlane,
+  signal?: AbortSignal
+) {
+  const { sceneEntitiesManager, sceneInfra } = kclManager
+  // The camera is aimed at the sketch group, which the sketch machine only
+  // orients once it starts.
+  sceneEntitiesManager.initSketchSolveEntityOrientation(plane)
+  await sceneInfra.camControls.transitionToSketch(
+    sceneEntitiesManager.sketchSolveGroup,
+    signal
+  )
+}
+
 async function enterSketchSolveFromSketchBlockArtifact({
   sketchBlockArtifact,
   kclManager,
@@ -279,6 +298,7 @@ async function enterSketchSolveFromSketchBlockArtifact({
   defaultUnit,
   projectRef,
   wasmInstance,
+  signal,
 }: {
   sketchBlockArtifact: Extract<Artifact, { type: 'sketchBlock' }>
   kclManager: KclManager
@@ -287,6 +307,7 @@ async function enterSketchSolveFromSketchBlockArtifact({
   defaultUnit?: ModelingMachineContext['store']['defaultUnit']
   projectRef?: { current: Project | undefined }
   wasmInstance: ModuleType
+  signal?: AbortSignal
 }): Promise<{
   plane: DefaultPlane | OffsetPlane | ExtrudeFacePlane
   sketchSolveId: number
@@ -326,6 +347,9 @@ async function enterSketchSolveFromSketchBlockArtifact({
     kclManager.sceneInfra.camControls,
     planeData.type === 'extrudeFace'
   )
+  if (engineCommandManager.geometryOnly) {
+    await positionLocalSketchSolveCamera(kclManager, planeData, signal)
+  }
   kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
 
   const project = projectRef?.current
@@ -3179,7 +3203,9 @@ export const modelingMachine = setup({
     'animate-to-sketch-solve': fromPromise(
       async ({
         input,
+        signal,
       }: {
+        signal: AbortSignal
         input:
           | {
               artifactOrPlaneId: ArtifactId | undefined
@@ -3364,6 +3390,7 @@ export const modelingMachine = setup({
             defaultUnit,
             projectRef,
             wasmInstance,
+            signal,
           })
         }
 
@@ -3460,6 +3487,9 @@ export const modelingMachine = setup({
           kclManager.sceneInfra.camControls,
           result.type === 'extrudeFace'
         )
+        if (engineCommandManager.geometryOnly) {
+          await positionLocalSketchSolveCamera(kclManager, result, signal)
+        }
 
         kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
         kclManager.updateCodeEditor(
@@ -3482,7 +3512,9 @@ export const modelingMachine = setup({
     'animate-to-existing-sketch-solve': fromPromise(
       async ({
         input,
+        signal,
       }: {
+        signal: AbortSignal
         input:
           | {
               artifactId: ArtifactId | undefined
@@ -3529,6 +3561,7 @@ export const modelingMachine = setup({
           defaultUnit,
           projectRef,
           wasmInstance,
+          signal,
         })
       }
     ),

@@ -2,7 +2,6 @@ import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import type { KclManager } from '@src/lang/KclManager'
 import { Themes } from '@src/lib/theme'
-import type { DefaultPlane } from '@src/machines/modelingSharedTypes'
 import { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 import { CHILD_TOOL_DONE_EVENT } from '@src/machines/sketchSolve/sketchSolveImpl'
 import {
@@ -85,14 +84,7 @@ function addConstraintLineHitObject(
   }
 }
 
-function createSketchSolveHarness(
-  objects: ApiObject[] = [],
-  geometryOnly = false,
-  transitionToSketch = vi
-    .fn<(sketch: Group, signal?: AbortSignal) => Promise<void>>()
-    .mockResolvedValue(undefined),
-  initialSketchSolvePlane: DefaultPlane | null = null
-) {
+function createSketchSolveHarness(objects: ApiObject[] = []) {
   const scene = new Group()
   const sketchSolveGroup = new Group()
   sketchSolveGroup.name = SKETCH_SOLVE_GROUP
@@ -106,11 +98,7 @@ function createSketchSolveHarness(
   camera.lookAt(0, 0, 0)
   const sceneInfra = {
     scene,
-    camControls: {
-      camera,
-      transitionToSketch,
-      cancelSketchCameraTransition: vi.fn(),
-    },
+    camControls: { camera },
     renderer: {
       domElement: { clientWidth: 800, clientHeight: 600 },
     },
@@ -122,9 +110,7 @@ function createSketchSolveHarness(
     theme: Themes.Light,
   }
   const rustContext = createMockRustContext()
-  const initSketchSolveEntityOrientation = vi.fn()
   const kclManager = {
-    engineCommandManager: { geometryOnly },
     code: 'sketch001 = startSketchOn(XY)',
     editorView: {
       dispatch: vi.fn(),
@@ -134,8 +120,7 @@ function createSketchSolveHarness(
     },
     sceneInfra,
     sceneEntitiesManager: {
-      initSketchSolveEntityOrientation,
-      sketchSolveGroup,
+      initSketchSolveEntityOrientation: vi.fn(),
     },
     rustContext,
     setHighlightRange: vi.fn(),
@@ -158,7 +143,7 @@ function createSketchSolveHarness(
     {
       input: {
         kclManager: kclManager as unknown as KclManager,
-        initialSketchSolvePlane,
+        initialSketchSolvePlane: null,
         sketchId: 0,
         initialSceneGraphDelta: createSceneGraphDelta(objects),
       },
@@ -166,64 +151,8 @@ function createSketchSolveHarness(
   ).start()
   startedActors.push(actor)
 
-  return {
-    actor,
-    getPlaneIntersectPoint,
-    rustContext,
-    scene,
-    transitionToSketch,
-    sketchSolveGroup,
-    initSketchSolveEntityOrientation,
-  }
+  return { actor, getPlaneIntersectPoint, rustContext, scene }
 }
-
-describe('sketchSolveMachine camera entry', () => {
-  it('waits for local framing before entering move and select', async () => {
-    const { actor, transitionToSketch, sketchSolveGroup } =
-      createSketchSolveHarness([], true)
-    expect(actor.getSnapshot().matches('positioning camera')).toBe(true)
-    expect(transitionToSketch).toHaveBeenCalledWith(
-      sketchSolveGroup,
-      expect.any(AbortSignal)
-    )
-    await vi.waitFor(() =>
-      expect(actor.getSnapshot().matches('move and select')).toBe(true)
-    )
-  })
-
-  it('orients the sketch before framing the local camera', () => {
-    const plane: DefaultPlane = {
-      type: 'defaultPlane',
-      plane: 'XZ',
-      planeId: 'plane-id',
-      zAxis: [0, -1, 0],
-      yAxis: [0, 0, 1],
-    }
-    const { transitionToSketch, initSketchSolveEntityOrientation } =
-      createSketchSolveHarness([], true, undefined, plane)
-    expect(initSketchSolveEntityOrientation).toHaveBeenCalledWith(plane)
-    expect(
-      initSketchSolveEntityOrientation.mock.invocationCallOrder[0]
-    ).toBeLessThan(transitionToSketch.mock.invocationCallOrder[0])
-  })
-
-  it('does not schedule local framing for streamed mode', () => {
-    const { actor, transitionToSketch } = createSketchSolveHarness()
-    expect(actor.getSnapshot().matches('move and select')).toBe(true)
-    expect(transitionToSketch).not.toHaveBeenCalled()
-  })
-
-  it('aborts the local camera actor when the sketch actor is stopped', () => {
-    const transition = vi.fn<
-      (sketch: Group, signal?: AbortSignal) => Promise<void>
-    >(() => new Promise(() => {}))
-    const { actor } = createSketchSolveHarness([], true, transition)
-    const signal = transition.mock.calls[0][1]
-    expect(signal?.aborted).toBe(false)
-    actor.stop()
-    expect(signal?.aborted).toBe(true)
-  })
-})
 
 describe('sketchSolveMachine selection clearing', () => {
   it('clears the selection when an equipped child tool completes', () => {
