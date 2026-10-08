@@ -3,6 +3,7 @@ import { isRouteErrorResponse, useRouteError } from 'react-router-dom'
 import UAParser from 'ua-parser-js'
 
 import { ActionButton } from '@src/components/ActionButton'
+import { AutoUpdateStatus } from '@src/components/StatusBar/AutoUpdateStatus'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
@@ -94,8 +95,8 @@ export const ErrorPage = () => {
   }, [browserCompatibilityError, error])
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <section className="max-w-full xl:max-w-4xl mx-auto">
+    <div className="flex flex-col h-screen">
+      <section className="flex-1 flex flex-col justify-center max-w-full xl:max-w-4xl mx-auto">
         <h1
           className="text-4xl mb-8 font-bold"
           data-testid={
@@ -157,10 +158,21 @@ export const ErrorPage = () => {
               >
                 Clear Storage
               </ActionButton>
+              {isDesktop() && (
+                <ActionButton
+                  Element="button"
+                  onClick={() => {
+                    window.electron?.appCheckForUpdates().catch(reportRejection)
+                  }}
+                >
+                  Check for updates
+                </ActionButton>
+              )}
             </>
           )}
         </div>
       </section>
+      <AutoUpdateStatus />
     </div>
   )
 }

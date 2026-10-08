@@ -1,13 +1,14 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import {
   RouterProvider,
   createMemoryRouter,
   type LoaderFunction,
 } from 'react-router-dom'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({
   reportClientError: vi.fn(async () => {}),
+  isDesktop: vi.fn(() => false),
 }))
 
 vi.mock('@src/lib/clientErrors', () => ({
@@ -17,7 +18,12 @@ vi.mock('@src/lib/clientErrors', () => ({
   reportClientError: mocks.reportClientError,
 }))
 
+vi.mock('@src/lib/isDesktop', () => ({
+  isDesktop: mocks.isDesktop,
+}))
+
 import { ErrorPage } from '@src/components/ErrorPage'
+import { clearAutoUpdateReady, setAutoUpdateReady } from '@src/lib/autoUpdate'
 
 function renderErrorPage(error: unknown) {
   const loader: LoaderFunction = () => {
@@ -43,10 +49,16 @@ function renderErrorPage(error: unknown) {
 describe('ErrorPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    mocks.isDesktop.mockReturnValue(false)
     vi.spyOn(console, 'error').mockImplementation(() => {})
     vi.spyOn(window.navigator, 'userAgent', 'get').mockReturnValue(
       'Mozilla/5.0 AppleWebKit/537.36 Chrome/117.0.0.0 Safari/537.36'
     )
+  })
+
+  afterEach(() => {
+    clearAutoUpdateReady()
+    vi.unstubAllGlobals()
   })
 
   it('offers actionable browser recovery for iterator compatibility errors', async () => {
@@ -97,5 +109,24 @@ describe('ErrorPage', () => {
     expect(screen.getByRole('button', { name: /Reload$/ })).toBeVisible()
     expect(screen.getByRole('button', { name: /Clear Storage$/ })).toBeVisible()
     expect(screen.queryByRole('link', { name: 'Update browser' })).toBeNull()
+    expect(
+      screen.queryByRole('button', { name: 'Check for updates' })
+    ).toBeNull()
+  })
+
+  it('keeps desktop updates available after a route error', async () => {
+    mocks.isDesktop.mockReturnValue(true)
+    const appCheckForUpdates = vi.fn().mockResolvedValue(undefined)
+    vi.stubGlobal('electron', { appCheckForUpdates })
+    setAutoUpdateReady({ version: '1.2.3' })
+    renderErrorPage(new Error('unrelated failure'))
+
+    expect(
+      await screen.findByRole('button', {
+        name: 'Restart to update to v1.2.3',
+      })
+    ).toBeVisible()
+    fireEvent.click(screen.getByRole('button', { name: 'Check for updates' }))
+    expect(appCheckForUpdates).toHaveBeenCalledOnce()
   })
 })

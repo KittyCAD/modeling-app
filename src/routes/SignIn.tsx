@@ -2,6 +2,7 @@ import type { IElectronAPI } from '@root/interface'
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
+import { AutoUpdateStatus } from '@src/components/StatusBar/AutoUpdateStatus'
 import env, { updateEnvironment } from '@src/env'
 import { noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
@@ -321,15 +322,18 @@ const SignIn = () => {
       >
         <div className="max-w-7xl flex flex-col md:grid gap-5 grid-cols-3 xl:grid-cols-4 xl:grid-rows-5">
           <div className="md:col-span-2 xl:col-span-3 xl:row-span-3 max-w-3xl mr-8 mb-8">
-            <div className="flex flex-row items-baseline mb-8">
+            <div className="flex flex-row flex-wrap items-baseline gap-y-2 mb-8">
               <Logo className="text-primary h-8 md:h-10 lg:h-12 xl:h-16 relative translate-y-1 mr-4 lg:mr-6 xl:mr-8" />
               <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl">
                 {APP_NAME}
               </h1>
               {isDesktop() && (
-                <span className="px-2 md:px-3 py-1 text-xs md:text-base rounded-full bg-primary/10 text-primary self-start">
-                  v{APP_VERSION}
-                </span>
+                <div className="flex items-center gap-2 self-start">
+                  <span className="px-2 md:px-3 py-1 text-xs md:text-base rounded-full bg-primary/10 text-primary">
+                    v{APP_VERSION}
+                  </span>
+                  <AutoUpdateStatus inline />
+                </div>
               )}
             </div>
             <p className="my-4 text-lg xl:text-xl">
