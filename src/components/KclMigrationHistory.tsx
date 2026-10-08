@@ -1,5 +1,9 @@
 import { useSignals } from '@preact/signals-react/runtime'
-import { AvatarUser, ChatBubble } from '@src/components/ExchangeCard'
+import {
+  AvatarUser,
+  ButtonClearChat,
+  ChatBubble,
+} from '@src/components/ExchangeCard'
 import type { MigrationConversation } from '@src/lib/kclMigration/conversation'
 import type { MigrationHistoryEntry } from '@src/lib/kclMigration/protocol'
 
@@ -7,12 +11,19 @@ export function KclMigrationHistoryEntry({
   entry,
   userAvatar,
   transcriptPresent = false,
+  onClickClearChat,
 }: {
   entry: MigrationHistoryEntry
   userAvatar?: string
   transcriptPresent?: boolean
+  onClickClearChat?: () => void
 }) {
-  if (transcriptPresent && entry.status !== 'succeeded') return null
+  const clearChat = onClickClearChat && (
+    <div className="flex justify-end">
+      <ButtonClearChat onClick={onClickClearChat} />
+    </div>
+  )
+  if (transcriptPresent && entry.status !== 'succeeded') return clearChat
 
   const outcome = {
     running: 'Migration was still running when history was loaded.',
@@ -55,6 +66,7 @@ export function KclMigrationHistoryEntry({
           </p>
         )}
       </ChatBubble>
+      {clearChat}
     </section>
   )
 }
