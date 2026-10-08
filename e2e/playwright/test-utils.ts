@@ -107,7 +107,7 @@ async function waitForPageLoad(page: Page) {
   })
 }
 
-async function waitForAppLoad(page: Page) {
+export async function waitForAppLoad(page: Page) {
   const home = page.getByTestId('home-section')
   const modelingScene = page.getByRole('button', { name: 'Start Sketch' })
   await expect(home.or(modelingScene)).toBeVisible({ timeout: 20_000 })

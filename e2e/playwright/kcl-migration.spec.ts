@@ -1,4 +1,5 @@
 import { test, expect } from '@e2e/playwright/zoo-test'
+import { waitForAppLoad } from '@e2e/playwright/test-utils'
 import type {
   MigrationClientMessage,
   MigrationOperation,
@@ -346,6 +347,7 @@ test.describe(
         await editor.flushWriteToFile()
       }, laterCode)
       await page.reload()
+      await waitForAppLoad(page)
       await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
       await expect(
         page.getByRole('region', { name: 'Past KCL migration' })
