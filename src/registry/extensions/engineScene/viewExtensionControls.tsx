@@ -12,6 +12,19 @@ const Gizmo = lazy(async () => {
   return { default: Gizmo }
 })
 
+const ModelingDialogViewExtension = lazy(async () => ({
+  default: (await import('./ModelingDialogViewExtension'))
+    .ModelingDialogViewExtension,
+}))
+
+export function EngineSceneModelingDialogViewExtension() {
+  return (
+    <Suspense fallback={null}>
+      <ModelingDialogViewExtension />
+    </Suspense>
+  )
+}
+
 export function EngineSceneToolbarViewExtension() {
   return (
     <div className="toolbar-container">

@@ -145,6 +145,9 @@ export function createMachineCommand<
   if ('reviewValidation' in commandConfig) {
     command.reviewValidation = commandConfig.reviewValidation
   }
+  if ('useModelingDialog' in commandConfig) {
+    command.useModelingDialog = commandConfig.useModelingDialog
+  }
   if ('status' in commandConfig) {
     command.status = commandConfig.status
   }
@@ -212,6 +215,7 @@ export function buildCommandArgument<
     skip: arg.skip,
     machineActor,
     valueSummary: arg.valueSummary,
+    dialog: arg.dialog,
   } satisfies Omit<CommandArgument<O, T>, 'inputType'>
 
   if (arg.inputType === 'options') {

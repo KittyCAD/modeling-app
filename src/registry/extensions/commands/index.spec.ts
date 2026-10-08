@@ -43,6 +43,7 @@ function createCommandBarContext({
   userFeatures?: NonNullable<CommandBarContext['userFeatures']>
 }): CommandBarContext {
   const context: CommandBarContext = {
+    commandInvocationId: 0,
     commands: [],
     wasmInstancePromise: Promise.resolve({} as ModuleType),
     machineManager: new MachineManager(),

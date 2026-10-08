@@ -639,6 +639,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   Extrude: {
     icon: 'extrude',
+    useModelingDialog: true,
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
       modelingCommandCodemods.Extrude
@@ -678,12 +679,15 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             hidden: isEditingNodeSelection,
           },
           tagStart: {
+            dialog: { advanced: true },
             // TODO: add validation like for Clone command
           },
           twistCenter: {
+            dialog: { advanced: true },
             defaultValue: KCL_DEFAULT_ORIGIN_2D,
           },
           direction: {
+            dialog: { advanced: true },
             inputType: 'selection',
             selectionTypes: [
               'segment',
@@ -695,6 +699,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             clearSelectionFirst: true,
             hidden: isEditingNodeSelection,
           },
+          tagEnd: { dialog: { advanced: true } },
+          draftAngle: { dialog: { advanced: true } },
+          twistAngle: { dialog: { advanced: true } },
+          twistAngleStep: { dialog: { advanced: true } },
+          hideSeams: { dialog: { advanced: true } },
           method: {
             inputType: 'options',
             required: extrudeSelectionRequiresMethod,
