@@ -832,7 +832,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
               { name: 'Sketch Axis', isCurrent: true, value: 'Axis' },
               { name: 'Edge', isCurrent: false, value: 'Edge' },
             ],
-            hidden: isEditingNodeSelection,
+            hidden: isEditingNode,
           },
           axis: {
             required: (context) =>
@@ -1157,7 +1157,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             { name: 'Edge', isCurrent: false, value: 'Edge' },
             { name: 'Cylinder', isCurrent: false, value: 'Cylinder' },
           ],
-          hidden: isEditingNodeSelection,
+          hidden: isEditingNode,
         },
         axis: {
           inputType: 'options',

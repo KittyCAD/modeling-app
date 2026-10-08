@@ -64,6 +64,8 @@ export function useDialogSelection(
 
   useEffect(() => {
     if (!activeArg || activeArg.inputType !== 'selection') return
+    const selectingPlane = activeArg.selectionTypes.includes('plane')
+    if (selectingPlane) void kclManager.showPlanes().catch(reportRejection)
     let cancelled = false
     void wasmPromise
       .then((wasm) => {
@@ -77,6 +79,8 @@ export function useDialogSelection(
       .catch(reportRejection)
     return () => {
       cancelled = true
+      if (selectingPlane && !kclManager._isAstEmpty(kclManager.ast))
+        void kclManager.hidePlanes().catch(reportRejection)
       void wasmPromise
         .then((wasm) =>
           kclManager.setSelectionFilterToDefault(wasm, selectionRef.current)
