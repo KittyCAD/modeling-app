@@ -112,7 +112,7 @@ import {
   setSelectionFilter,
   setSelectionFilterToDefault,
 } from '@src/lib/selectionFilterUtils'
-import type { StateFrom, Subscription } from 'xstate'
+import type { StateFrom } from 'xstate'
 
 import {
   addLineHighlight,
@@ -716,7 +716,9 @@ export class KclManager extends File {
     undefined
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
     undefined
-  private settingsSubscription: Subscription | undefined = undefined
+  /** Only the executing editor may change the shared engine scene. */
+  private sceneSettingsActive = signal(false)
+  private disposeSettings: (() => void) | undefined
   private _automaticallyRenderEnabled = true
   private _lastKnownFileCode = ''
   private pendingRecoverySnapshot: {
@@ -1821,6 +1823,8 @@ export class KclManager extends File {
       })
     }
     providedEditor.markFileCodeAsSynced(diskCode)
+    providedEditor.startWatchingSettings()
+    providedEditor.refreshEditorSettings()
     providedEditor.watch()
     return providedEditor
   }
@@ -1858,11 +1862,6 @@ export class KclManager extends File {
       zookeeperHistoryExtension(),
     ])
     this._editorView = this.createEditorView(initialCode)
-    this.settingsSubscription = this.systemDeps.settings.subscribe(() => {
-      this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
-    })
-    this.unwatchLineWrapping = this.watchLineWrapping()
-    this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
     // TODO: Delete this._code, only derive from the editorView's doc
     this._code.value = initialCode
     this.markFileCodeAsSynced(initialCode)
@@ -1871,6 +1870,8 @@ export class KclManager extends File {
       this._globalHistoryView.subscribeToHistoryChanges(() => {
         this.updateHistoryDepth()
       })
+
+    this.startWatchingSettings()
 
     this.systemDeps.wasmInstancePromise
       .then(async (wasmInstance) => {
@@ -1898,11 +1899,12 @@ export class KclManager extends File {
   public close() {
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
-    this.settingsSubscription?.unsubscribe()
+    this.sceneSettingsActive.value = false
+    this.disposeSettings?.()
+    this.disposeSettings = undefined
     this.disposeGlobalHistorySubscription?.()
     this.flushRecoverySnapshot()
     this.unwatch()
-    this.unwatchLineWrapping?.()
   }
 
   private markFileCodeAsSynced(code: string) {
@@ -2695,13 +2697,13 @@ export class KclManager extends File {
       })
     }
   }
-  async updateTheme(newTheme: Themes) {
+  async updateTheme(newTheme: Themes, updateEngine = true) {
     const resolvedTheme = getResolvedTheme(newTheme)
     const opposingTheme = getOppositeTheme(newTheme)
     this.sceneInfra.theme = opposingTheme
     this.sceneEntitiesManager.updateSegmentBaseColor(opposingTheme)
     this.setEditorTheme(resolvedTheme)
-    if (this.engineCommandManager.connection) {
+    if (updateEngine && this.engineCommandManager.connection) {
       return this.engineCommandManager.setTheme(newTheme).catch(reportRejection)
     }
   }
@@ -2730,27 +2732,248 @@ export class KclManager extends File {
       ],
     })
   }
-  private unwatchLineWrapping: (() => void) | undefined
-  private watchLineWrapping = () => {
-    // Settings loads replace Setting instances. Track the actor's current
-    // instance as well as changes to the value within that instance.
-    const setting = signal(
-      getSettingsFromActorContext(this.systemDeps.settings).textEditor
-        .textWrapping
+
+  /** Transfer shared scene settings ownership as a project switches editors. */
+  public setSceneSettingsActive(active: boolean) {
+    if (active) this.startWatchingSettings()
+    this.sceneSettingsActive.value = active
+  }
+
+  private startWatchingSettings() {
+    if (this.disposeSettings) return
+    this.disposeSettings = this.watchSettings()
+  }
+
+  private refreshEditorSettings() {
+    const settings = getSettingsFromActorContext(this.systemDeps.settings)
+    this.setEditorLineWrapping(settings.textEditor.textWrapping.current)
+    this.setCursorBlinking(settings.textEditor.blinkingCursor.current)
+    this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
+    this.updateTheme(settings.app.theme.current, false).catch(reportRejection)
+  }
+
+  private watchSettings() {
+    // Actor snapshots can replace Setting instances. Computed values follow
+    // both those replacements and each Setting's effective value, without
+    // reapplying unchanged values on unrelated actor transitions.
+    const settings = signal(
+      getSettingsFromActorContext(this.systemDeps.settings)
     )
-    const subscription = this.systemDeps.settings.subscribe((snapshot) => {
-      setting.value = snapshot.context.textEditor.textWrapping
+    const subscription = this.systemDeps.settings.subscribe(() => {
+      settings.value = getSettingsFromActorContext(this.systemDeps.settings)
+      this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
     })
-    const dispose = effect(() => {
-      const shouldWrap = setting.value.currentSignal.value
-      untracked(() => this.setEditorLineWrapping(shouldWrap))
-    })
+    this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
+    const disposers: Array<() => void> = []
+    const watchValue = <T>(read: () => T, apply: (value: T) => void) => {
+      const value = computed(read)
+      disposers.push(
+        effect(() => {
+          const current = value.value
+          untracked(() => apply(current))
+        })
+      )
+    }
+    const watchSceneValue = <T>(read: () => T, apply: (value: T) => void) => {
+      const value = computed(read)
+      disposers.push(
+        effect(() => {
+          if (!this.sceneSettingsActive.value) return
+          const current = value.value
+          untracked(() => apply(current))
+        })
+      )
+    }
+
+    watchValue(
+      () => settings.value.textEditor.textWrapping.currentSignal.value,
+      (value) => this.setEditorLineWrapping(value)
+    )
+    watchValue(
+      () => settings.value.textEditor.blinkingCursor.currentSignal.value,
+      (value) => this.setCursorBlinking(value)
+    )
+    const theme = computed(() => settings.value.app.theme.currentSignal.value)
+    watchValue(
+      () => theme.value,
+      (value) => {
+        this.updateTheme(value, false).catch(reportRejection)
+        this.sceneEntitiesManager.updateSketchGrid()
+      }
+    )
+    watchSceneValue(
+      () => theme.value,
+      (value) => {
+        if (this.engineCommandManager.connection) {
+          this.engineCommandManager.setTheme(value).catch(reportRejection)
+        }
+      }
+    )
+    watchValue(
+      () => settings.value.app.allowOrbitInSketchMode.currentSignal.value,
+      (value) => {
+        this.sceneInfra.camControls._setting_allowOrbitInSketchMode = value
+      }
+    )
+    watchSceneValue(
+      () => settings.value.modeling.cameraProjection.currentSignal.value,
+      (value) => {
+        const controls = this.sceneInfra.camControls
+        if (
+          controls.engineCameraProjection !== value &&
+          !this.modelingState?.matches('Sketch') &&
+          !this.modelingState?.matches('sketchSolveMode')
+        ) {
+          controls.engineCameraProjection = value
+        }
+      }
+    )
+    const highlightEdges = computed(
+      () => settings.value.modeling.highlightEdges.currentSignal.value
+    )
+    const backfaceColor = computed(
+      () => settings.value.modeling.backfaceColor.currentSignal.value
+    )
+    watchSceneValue(
+      () => highlightEdges.value,
+      (value) => {
+        if (this.engineCommandManager.connection) {
+          this.engineCommandManager
+            .setHighlightEdges(value)
+            .catch(reportRejection)
+        }
+      }
+    )
+    watchSceneValue(
+      () => backfaceColor.value,
+      (value) => {
+        if (this.engineCommandManager.connection?.connected) {
+          this.engineCommandManager
+            .setDefaultSystemProperties(value)
+            .catch(reportRejection)
+        }
+      }
+    )
+
+    const showSketchGrid = computed(
+      () => settings.value.modeling.showSketchGrid.currentSignal.value
+    )
+    const fixedSizeGrid = computed(
+      () => settings.value.modeling.fixedSizeGrid.currentSignal.value
+    )
+    const majorGridSpacing = computed(
+      () => settings.value.modeling.majorGridSpacing.currentSignal.value
+    )
+    const minorGridsPerMajor = computed(
+      () => settings.value.modeling.minorGridsPerMajor.currentSignal.value
+    )
+    disposers.push(
+      effect(() => {
+        // Read every grid input even when the grid is currently hidden.
+        const gridSettings = [
+          showSketchGrid.value,
+          fixedSizeGrid.value,
+          majorGridSpacing.value,
+          minorGridsPerMajor.value,
+        ]
+        void gridSettings
+        untracked(() => this.sceneEntitiesManager.updateSketchGrid())
+      })
+    )
+
+    const showScaleGrid = computed(
+      () => settings.value.modeling.showScaleGrid.currentSignal.value
+    )
+    // Inactive editors keep their render baseline current without issuing
+    // engine commands. Opening an editor alone does not request a rerender.
+    let previous = {
+      showScaleGrid: showScaleGrid.peek(),
+      fixedSizeGrid: fixedSizeGrid.peek(),
+      highlightEdges: highlightEdges.peek(),
+      backfaceColor: backfaceColor.peek(),
+    }
+    let pendingCacheClear: Promise<boolean> | undefined
+    disposers.push(
+      effect(() => {
+        const active = this.sceneSettingsActive.value
+        const current = {
+          showScaleGrid: showScaleGrid.value,
+          fixedSizeGrid: fixedSizeGrid.value,
+          highlightEdges: highlightEdges.value,
+          backfaceColor: backfaceColor.value,
+        }
+        const backfaceChanged = current.backfaceColor !== previous.backfaceColor
+        const engineSettingsChanged =
+          current.showScaleGrid !== previous.showScaleGrid ||
+          current.fixedSizeGrid !== previous.fixedSizeGrid ||
+          current.highlightEdges !== previous.highlightEdges
+        previous = current
+        let cancelled = false
+        untracked(() => {
+          if (!active || !this.engineCommandManager.connection) return
+          const path = this.path
+          const projectPath = this.systemDeps.projectPath.peek()
+          const isCurrent = () =>
+            !cancelled &&
+            this.sceneSettingsActive.peek() &&
+            this.path === path &&
+            this.systemDeps.projectPath.peek() === projectPath
+          const executeIfCurrent = () => {
+            if (isCurrent()) return this.executeCode()
+          }
+          if (backfaceChanged) {
+            const clearCache = () => {
+              if (!isCurrent()) return Promise.resolve(false)
+              return this.rustContext
+                .clearSceneAndBustCache(jsAppSettings(settings.peek()), path)
+                .then(() => true)
+                .catch((error) => {
+                  reportRejection(error)
+                  return false
+                })
+            }
+            // Serialize cache clears, and let later engine-setting updates
+            // wait for the pending clear before rendering the latest values.
+            const pending = pendingCacheClear
+              ? pendingCacheClear.then(clearCache)
+              : clearCache()
+            pendingCacheClear = pending
+            pending
+              .then((success) => {
+                if (pendingCacheClear === pending) pendingCacheClear = undefined
+                // Closing, switching editors/projects, or a newer settings
+                // update invalidates the continuation's ownership of the scene.
+                if (success) return executeIfCurrent()
+              })
+              .catch(reportRejection)
+          } else if (engineSettingsChanged) {
+            if (pendingCacheClear) {
+              pendingCacheClear
+                .then((success) => {
+                  if (success) return executeIfCurrent()
+                })
+                .catch(reportRejection)
+            } else {
+              this.executeCode().catch(reportRejection)
+            }
+          }
+        })
+        return () => {
+          cancelled = true
+        }
+      })
+    )
     return () => {
       subscription.unsubscribe()
-      dispose()
+      for (const dispose of disposers) dispose()
     }
   }
+
   setCursorBlinking(shouldBlink: boolean) {
+    this._editorView.dom.style.setProperty(
+      '--cursor-color',
+      shouldBlink ? 'auto' : 'transparent'
+    )
     this._editorView.dispatch({
       effects: [
         cursorBlinkingCompartment.reconfigure(

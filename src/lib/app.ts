@@ -27,11 +27,6 @@ import { projectLibrariesFromSettings } from '@src/lib/projectLibraries'
 import { projectWithLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import type RustContext from '@src/lib/rustContext'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
-import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
-import {
-  getAllCurrentSettings,
-  jsAppSettings,
-} from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -237,8 +232,6 @@ export class App implements AppSubsystems {
    */
   systemIOActor: SystemIOActor
 
-  // TODO: refactor this to not require keeping around the last settings to compare to
-  private lastSettings: SaveSettingsPayload
   private activeWasmInstance: ModuleType | undefined
   private unsubscribeFromActiveWasmInstance: (() => void) | undefined
 
@@ -284,9 +277,6 @@ export class App implements AppSubsystems {
     this.syncUserFeaturesFromAuth(this.auth.actor.getSnapshot())
 
     this.singletons = this.buildSingletons()
-    this.lastSettings = getAllCurrentSettings(
-      getOnlySettingsFromContext(this.settings.actor.getSnapshot().context)
-    )
     this.settings.actor.subscribe(this.syncPluginSettings)
     this.syncPluginSettingsFromCurrent()
   }
@@ -485,17 +475,8 @@ export class App implements AppSubsystems {
       }
     })
 
-    this.lastSettings = getAllCurrentSettings(
-      getOnlySettingsFromContext(this.settings.actor.getSnapshot().context)
-    )
-    this.unsubscribeFromSettings?.unsubscribe()
-    this.unsubscribeFromSettings = this.settings.actor.subscribe(
-      this.onSettingsUpdate
-    )
-
     return this.project
   }
-  private unsubscribeFromSettings: Subscription | undefined = undefined
   private disposeProjectHistoryExtensions: (() => void) | undefined = undefined
   private hasStoppedSubsystems = false
 
@@ -503,6 +484,7 @@ export class App implements AppSubsystems {
     if (this.hasStoppedSubsystems) return
     this.hasStoppedSubsystems = true
     this.closeProject()
+    this.singletons.kclManager.close()
     this.unsubscribeFromActiveWasmInstance?.()
     this.unsubscribeFromActiveWasmInstance = undefined
     this.systemIOActor.stop()
@@ -527,8 +509,6 @@ export class App implements AppSubsystems {
   closeProject() {
     this.disposeProjectHistoryExtensions?.()
     this.disposeProjectHistoryExtensions = undefined
-    this.unsubscribeFromSettings?.unsubscribe()
-    this.unsubscribeFromSettings = undefined
     this.unsubscribeSystemIO?.unsubscribe()
     this.unsubscribeSystemIO = undefined
     this.setCloudSyncOpenedProject(undefined)
@@ -896,119 +876,5 @@ export class App implements AppSubsystems {
     return {
       kclManager,
     }
-  }
-
-  /**
-   * Until we update these dependents of the settings to take settings
-   * as a dependency input, we must subscribe to updates from the outside.
-   */
-  onSettingsUpdate = (snapshot: SnapshotFrom<typeof this.settings.actor>) => {
-    if (!this.project) {
-      return // Everything in here only matters inside a project.
-    }
-    const { context } = snapshot
-    const sketchGridSettingsChanged =
-      this.lastSettings.modeling.showSketchGrid !==
-        context.modeling.showSketchGrid.current ||
-      this.lastSettings.modeling.fixedSizeGrid !==
-        context.modeling.fixedSizeGrid.current ||
-      this.lastSettings.modeling.majorGridSpacing !==
-        context.modeling.majorGridSpacing.current ||
-      this.lastSettings.modeling.minorGridsPerMajor !==
-        context.modeling.minorGridsPerMajor.current
-
-    if (sketchGridSettingsChanged) {
-      this.singletons.kclManager.sceneEntitiesManager.updateSketchGrid()
-    }
-
-    // Update engine highlighting
-    const newHighlighting = context.modeling.highlightEdges.current
-    if (
-      newHighlighting !== this.lastSettings.modeling.highlightEdges &&
-      this.singletons.kclManager.engineCommandManager.connection
-    ) {
-      this.singletons.kclManager.engineCommandManager
-        .setHighlightEdges(newHighlighting)
-        .catch(reportRejection)
-    }
-
-    // Update cursor blinking
-    const newBlinking = context.textEditor.blinkingCursor.current
-    document.documentElement.style.setProperty(
-      '--cursor-color',
-      newBlinking ? 'auto' : 'transparent'
-    )
-    this.singletons.kclManager.setCursorBlinking(newBlinking)
-
-    // Update theme
-    const newTheme = context.app.theme.current
-    const themeChanged = this.lastSettings.app.theme !== newTheme
-    const newBackfaceColor = context.modeling.backfaceColor.current
-    const backfaceColorChanged =
-      this.lastSettings.modeling.backfaceColor !== newBackfaceColor
-    if (themeChanged) {
-      this.singletons.kclManager
-        .updateTheme(newTheme)
-        .then(() =>
-          this.singletons.kclManager.sceneEntitiesManager.updateSketchGrid()
-        )
-        .catch(reportRejection)
-    }
-    if (
-      backfaceColorChanged &&
-      this.singletons.kclManager.engineCommandManager.connection?.connected
-    ) {
-      this.singletons.kclManager.engineCommandManager
-        .setDefaultSystemProperties(newBackfaceColor)
-        .catch(reportRejection)
-    }
-
-    // Reapply settings to the engine
-    try {
-      const engineSettingsChanged =
-        this.lastSettings.modeling.showScaleGrid !==
-          context.modeling.showScaleGrid.current ||
-        this.lastSettings.modeling.fixedSizeGrid !==
-          context.modeling.fixedSizeGrid.current ||
-        this.lastSettings.modeling.highlightEdges !==
-          context.modeling.highlightEdges.current
-      const engineConnection =
-        this.singletons.kclManager.engineCommandManager.connection
-
-      if (backfaceColorChanged && engineConnection) {
-        this.singletons.kclManager.rustContext
-          .clearSceneAndBustCache(
-            jsAppSettings(this.settings.actor),
-            this.singletons.kclManager.path
-          )
-          .then(() => this.singletons.kclManager.executeCode())
-          .catch(reportRejection)
-      } else if (engineSettingsChanged && engineConnection) {
-        this.singletons.kclManager.executeCode().catch(reportRejection)
-      }
-    } catch (e) {
-      console.error('Error executing AST after settings change', e)
-    }
-
-    this.singletons.kclManager.sceneInfra.camControls._setting_allowOrbitInSketchMode =
-      context.app.allowOrbitInSketchMode.current
-
-    const newCurrentProjection = context.modeling.cameraProjection.current
-    if (
-      this.singletons.kclManager.sceneInfra.camControls &&
-      this.singletons.kclManager.sceneInfra.camControls
-        .engineCameraProjection !== newCurrentProjection &&
-      !this.singletons.kclManager.modelingState?.matches('Sketch') &&
-      !this.singletons.kclManager.modelingState?.matches('sketchSolveMode')
-    ) {
-      this.singletons.kclManager.sceneInfra.camControls.engineCameraProjection =
-        newCurrentProjection
-    }
-
-    // TODO: Migrate settings to not be an XState actor so we don't need to save a snapshot
-    // of the last settings to know if they've changed.
-    this.lastSettings = getAllCurrentSettings(
-      getOnlySettingsFromContext(context)
-    )
   }
 }

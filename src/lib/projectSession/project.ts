@@ -97,6 +97,8 @@ export class ZDSProject {
     // TODO: Clear current executing editor's execution status
 
     if (newPath === null) {
+      this.executingEditor.peek()?.setSceneSettingsActive(false)
+      this.#executingPath.value = null
       return
     }
     const foundPathSignal = this.findEditor(newPath)
@@ -107,7 +109,9 @@ export class ZDSProject {
     if (found) {
       // TODO: Reconfigure the editor to be an executing one
     }
+    this.executingEditor.peek()?.setSceneSettingsActive(false)
     this.#executingPath.value = foundPathSignal[0]
+    found.setSceneSettingsActive(true)
   }
   findEditor(path: string) {
     return Array.from(this.editors.entries()).find(([p]) => p.value === path)
@@ -139,7 +143,7 @@ export class ZDSProject {
       return found
     }
 
-    const systemDeps: ProjectSystemDeps = {
+    const systemDeps: SystemDeps = {
       wasmInstancePromise: this.app.wasmPromise,
       commandBar: this.app.commands.actor,
       settings: this.app.settings.actor,
@@ -193,15 +197,6 @@ export class ZDSProject {
     if (newEditor.path !== path) {
       newEditor.path = path
     }
-
-    // Initialize the editor theme
-    // Subsequent changes are listened for within app.onSettingsUpdate()
-    // TODO: Disassemble onSettingsUpdate, subscribe to changes from subsystems
-    newEditor
-      .updateTheme(
-        getSettingsFromActorContext(this.app.settings.actor).app.theme.current
-      )
-      .catch(reportRejection)
 
     if (!foundEditor) {
       this.set(signal(path), newEditor)
