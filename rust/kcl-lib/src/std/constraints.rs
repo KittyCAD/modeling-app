@@ -5480,15 +5480,20 @@ mod tests {
     use kittycad_modeling_cmds::ModelingCmd;
     use kittycad_modeling_cmds::shared::PathSegment;
 
+    use crate::errors::KclError;
+    use crate::execution::ExecTestResults;
     use crate::execution::KclValue;
     use crate::execution::SegmentKind;
     use crate::execution::SegmentRepr;
     use crate::execution::parse_execute;
 
-    /// Runs `code`, which has one sketch block called `s`, and returns the
-    /// solved end point of each named line in `lines`, in mm.
-    async fn solved_line_ends_in_mm(code: &str, lines: &[&str]) -> Vec<[f64; 2]> {
-        let result = parse_execute(code).await.unwrap();
+    /// Every case runs under each of these KCL versions. The fixed point
+    /// conversion has no version gate, so the results must be the same.
+    const KCL_VERSIONS: [&str; 2] = ["2.0", "3.0"];
+
+    /// Returns the solved end point of each named line in `lines` of the
+    /// sketch block `s`, in mm.
+    fn solved_line_ends_in_mm(result: &ExecTestResults, lines: &[&str], code: &str) -> Vec<[f64; 2]> {
         let sketch = result.variable("s");
         let Some(fields) = sketch.as_object() else {
             panic!("expected `s` to be a sketch block, got {sketch:?} for:\n{code}");
@@ -5505,15 +5510,15 @@ mod tests {
                 let SegmentKind::Line { end, .. } = &segment.kind else {
                     panic!("expected `s.{name}` to be a line for:\n{code}");
                 };
-                [end[0].unwrap_to_mm(), end[1].unwrap_to_mm()]
+                end.each_ref()
+                    .map(|n| n.to_mm().expect("solved endpoint must be a length"))
             })
             .collect()
     }
 
-    /// Runs `code` and returns the end of every absolute line segment sent to
-    /// the engine, in mm. Sketch blocks send their solved lines this way.
-    async fn engine_line_ends_in_mm(code: &str) -> Vec<[f64; 2]> {
-        let result = parse_execute(code).await.unwrap();
+    /// Returns the end of every absolute line segment sent to the engine, in
+    /// mm. Sketch blocks send their solved lines this way.
+    fn engine_line_ends_in_mm(result: &ExecTestResults) -> Vec<[f64; 2]> {
         let mut ends = Vec::new();
         for command in result.root_module_artifact_commands() {
             if let ModelingCmd::ExtendPath(extend) = &command.command
@@ -5539,6 +5544,16 @@ mod tests {
         }
     }
 
+    /// Runs `code` once and checks that the solved ends of `lines` and the
+    /// line ends sent to the engine are both at `expected`, in mm.
+    async fn assert_line_ends(code: &str, lines: &[&str], expected: &[[f64; 2]]) {
+        let result = parse_execute(code)
+            .await
+            .unwrap_or_else(|e| panic!("expected to run, got {e:?} for:\n{code}"));
+        assert_close(&solved_line_ends_in_mm(&result, lines, code), expected, code);
+        assert_close(&engine_line_ends_in_mm(&result), expected, code);
+    }
+
     #[tokio::test(flavor = "multi_thread")]
     async fn horizontal_and_vertical_fixed_point_uses_the_file_length_unit() {
         // Every case pins the end of `line1` to the same place, 1in to the
@@ -5554,9 +5569,10 @@ mod tests {
             ("mm", "[25.4mm, 50.8mm]"),
             ("mm", "[1in, 2in]"),
         ];
-        for (unit, fixed) in cases {
-            let code = format!(
-                r#"@settings(kclVersion = 2.0, defaultLengthUnit = {unit})
+        for version in KCL_VERSIONS {
+            for (unit, fixed) in cases {
+                let code = format!(
+                    r#"@settings(kclVersion = {version}, defaultLengthUnit = {unit})
 s = sketch(on = XY) {{
   line1 = line(start = [var 0, var 0], end = [var 1, var 1])
   coincident([line1.start, ORIGIN])
@@ -5564,10 +5580,9 @@ s = sketch(on = XY) {{
   vertical([line1.end, {fixed}])
 }}
 "#
-            );
-            let expected = [[25.4, 50.8]];
-            assert_close(&solved_line_ends_in_mm(&code, &["line1"]).await, &expected, &code);
-            assert_close(&engine_line_ends_in_mm(&code).await, &expected, &code);
+                );
+                assert_line_ends(&code, &["line1"], &[[25.4, 50.8]]).await;
+            }
         }
     }
 
@@ -5575,8 +5590,10 @@ s = sketch(on = XY) {{
     async fn several_variable_points_align_to_one_fixed_point_in_an_inch_file() {
         // `horizontal` only uses the y of the fixed point and `vertical` only
         // uses the x, so each line end gets its own x and a shared y.
-        let code = r#"@settings(kclVersion = 2.0, defaultLengthUnit = in)
-s = sketch(on = XY) {
+        for version in KCL_VERSIONS {
+            let code = format!(
+                r#"@settings(kclVersion = {version}, defaultLengthUnit = in)
+s = sketch(on = XY) {{
   line1 = line(start = [var 0, var 0], end = [var 1, var 1])
   line2 = line(start = [var 0, var 0], end = [var 2, var 1])
   line3 = line(start = [var 0, var 0], end = [var 3, var 1])
@@ -5585,14 +5602,42 @@ s = sketch(on = XY) {
   vertical([line1.end, [1in, 100in]])
   vertical([line2.end, [2in, 100in]])
   vertical([line3.end, [3in, 100in]])
-}
-"#;
-        let expected = [[25.4, 50.8], [50.8, 50.8], [76.2, 50.8]];
-        assert_close(
-            &solved_line_ends_in_mm(code, &["line1", "line2", "line3"]).await,
-            &expected,
-            code,
-        );
-        assert_close(&engine_line_ends_in_mm(code).await, &expected, code);
+}}
+"#
+            );
+            let expected = [[25.4, 50.8], [50.8, 50.8], [76.2, 50.8]];
+            assert_line_ends(&code, &["line1", "line2", "line3"], &expected).await;
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn fixed_point_that_is_not_a_length_is_rejected() {
+        // The KCL signature only takes points made of lengths, so an angle
+        // point is rejected with an argument error before it is converted.
+        for version in KCL_VERSIONS {
+            for function in ["horizontal", "vertical"] {
+                let code = format!(
+                    r#"@settings(kclVersion = {version}, defaultLengthUnit = in)
+s = sketch(on = XY) {{
+  line1 = line(start = [var 0, var 0], end = [var 1, var 1])
+  {function}([line1.end, [1deg, 2deg]])
+}}
+"#
+                );
+                let error = match parse_execute(&code).await {
+                    Ok(_) => panic!("expected an error for:\n{code}"),
+                    Err(error) => error,
+                };
+                assert!(matches!(error, KclError::Argument { .. }), "{error:?} for:\n{code}");
+                let expected = format!(
+                    "The input argument of `{function}` requires a value with type `Segment` or an array of 2 or more `Segment`s or `Point2d`s"
+                );
+                assert!(
+                    error.message().starts_with(&expected),
+                    "expected `{expected}`, got `{}` for:\n{code}",
+                    error.message()
+                );
+            }
+        }
     }
 }
