@@ -5,6 +5,8 @@ excerpt: "Get the opposite edge to the edge given."
 layout: manual
 ---
 
+**WARNING:** This function is deprecated as of KCL 3.0.
+
 Get the opposite edge to the edge given.
 
 ```kcl
