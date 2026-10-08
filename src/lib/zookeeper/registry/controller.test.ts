@@ -71,7 +71,7 @@ vi.mock('@src/lib/zookeeper/registry/ZookeeperFileRequestProcessor', () => ({
   },
 }))
 
-import type { ZDSProject } from '@src/lang/KclManager'
+import type { ZDSProject } from '@src/lib/projectSession'
 import { BillingTransition } from '@src/lib/billing'
 import type { Project } from '@src/lib/project'
 import {

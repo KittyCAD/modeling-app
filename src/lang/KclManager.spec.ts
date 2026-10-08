@@ -15,7 +15,8 @@ import {
   operationsStateField,
   setOperationsEffect,
 } from '@src/editor/plugins/operations'
-import { File, KclManager } from '@src/lang/KclManager'
+import { KclManager } from '@src/lang/KclManager'
+import { File } from '@src/lib/projectSession'
 import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
 import { createSettings } from '@src/lib/settings/initialSettings'
 import { afterEach, describe, expect, it, vi } from 'vitest'

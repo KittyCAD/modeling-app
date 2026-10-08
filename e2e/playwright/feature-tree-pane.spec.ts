@@ -617,7 +617,7 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
         activeLines: [initialCode],
       })
       await cmdBar.expectState({
-        commandName: 'Offset plane',
+        commandName: 'Offset Plane',
         stage: 'arguments',
         currentArgKey: 'offset',
         currentArgValue: initialInput,
@@ -637,7 +637,7 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
         headerArguments: {
           Offset: '15',
         },
-        commandName: 'Offset plane',
+        commandName: 'Offset Plane',
       })
       await cmdBar.progressCmdBar()
       await editor.expectState({
