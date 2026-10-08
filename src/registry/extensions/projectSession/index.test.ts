@@ -1,5 +1,5 @@
 import { Registry } from '@kittycad/registry'
-import type { ZDSProject } from '@src/lang/KclManager'
+import type { ZDSProject } from '@src/lib/projectSession'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import projectSessionRegistryItem from '@src/registry/extensions/projectSession'
 import { afterEach, describe, expect, it } from 'vitest'
