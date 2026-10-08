@@ -15,6 +15,8 @@ import {
 import {
   getNodeFromPath,
   getVariableExprsFromSelection,
+  resolveToCodeRef,
+  stringifyPathToNode,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import type {
@@ -24,6 +26,7 @@ import type {
   PathToNode,
   Program,
 } from '@src/lang/wasm'
+import { ROOT_MODULE_ID } from '@src/lang/wasm'
 import { modelingStdLibCall } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type {
   NamedViewOrientation,
@@ -177,8 +180,35 @@ export function addNamedView({
   const pathToEdit = structuredClone(nodeToEdit)
   const namedCall = modelingStdLibCall('Named View')
 
+  let preserveExcept = Boolean(pathToEdit)
+  if (pathToEdit && except) {
+    const view = [...artifactGraph.values()].find(
+      (artifact) =>
+        artifact.type === 'namedView' &&
+        artifact.codeRef.range[2] === ROOT_MODULE_ID &&
+        stringifyPathToNode(artifact.codeRef.pathToNode) ===
+          stringifyPathToNode(pathToEdit)
+    )
+    if (view?.type !== 'namedView') {
+      return new Error('Could not find this named view visibility selection.')
+    }
+    const originalIds = new Set(
+      view.baseline === 'show' ? view.hideIds : view.showIds
+    )
+    const selectedIds = new Set(
+      except.graphSelections.map(
+        (selection) => resolveToCodeRef(selection, artifactGraph)?.artifact?.id
+      )
+    )
+    // Keep expressions such as `except = exceptions` when their selection is unchanged.
+    preserveExcept =
+      except.otherSelections.length === 0 &&
+      originalIds.size === selectedIds.size &&
+      [...originalIds].every((id) => selectedIds.has(id))
+  }
+
   const exceptVars =
-    except && !pathToEdit
+    except && !preserveExcept
       ? getVariableExprsFromSelection(
           except,
           artifactGraph,
@@ -245,7 +275,7 @@ export function addNamedView({
     call,
     pathToEdit,
     replaceUnlabeled: true,
-    labeledSelectionArgNames: ['except'],
+    labeledSelectionArgNames: preserveExcept ? ['except'] : [],
     variableIfNewDecl: 'view',
     wasmInstance,
   })

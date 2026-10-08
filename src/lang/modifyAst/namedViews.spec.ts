@@ -40,7 +40,7 @@ async function kclValue(value: string): Promise<KclCommandValue> {
 }
 
 describe('addNamedView', () => {
-  const settings = '@settings(kclVersion = "3.0-preview")'
+  const settings = '@settings(kclVersion = 3.0)'
 
   it('adds an oriented named view with camera options', async () => {
     const ast = assertParse(settings, instance)
@@ -121,7 +121,7 @@ extrude001 = extrude(region001, length = 5mm)`
     ).toBe(true)
   })
 
-  it('loads and updates an existing named view without rebuilding visibility', async () => {
+  it('preserves unchanged visibility expressions and replaces or clears edited selections', async () => {
     const code = `${settings}
 
 sketch001 = sketch(on = XY) {
@@ -200,6 +200,37 @@ view001 = view::named(
     expect(updatedCode).toContain('view::Projection::Orthographic')
     expect(updatedCode).toContain('view::Visibility::Hide')
     expect(updatedCode).toContain('except = exceptions')
+
+    const sketch = [...execState.artifactGraph.values()].find(
+      (candidate) => candidate.type === 'sketchBlock'
+    )
+    if (!sketch) throw new Error('Expected a sketch artifact')
+    const replaced = addNamedView({
+      ast,
+      artifactGraph: execState.artifactGraph,
+      ...defaults,
+      except: {
+        graphSelections: [{ artifact: sketch, codeRef: sketch.codeRef }],
+        otherSelections: [],
+      },
+      wasmInstance: instance,
+    })
+    if (err(replaced)) throw replaced
+    expect(recast(replaced.modifiedAst, instance)).toContain(
+      'except = [sketch001]'
+    )
+
+    const cleared = addNamedView({
+      ast,
+      artifactGraph: execState.artifactGraph,
+      ...defaults,
+      except: { graphSelections: [], otherSelections: [] },
+      wasmInstance: instance,
+    })
+    if (err(cleared)) throw cleared
+    expect(recast(cleared.modifiedAst, instance)).not.toContain('except =')
+    await enginelessExecutor(replaced.modifiedAst, rustContext)
+    await enginelessExecutor(cleared.modifiedAst, rustContext)
   })
 })
 

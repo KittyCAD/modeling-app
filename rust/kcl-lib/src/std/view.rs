@@ -265,7 +265,7 @@ boss = extrude(bossRegion, length = 8mm)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn named_is_not_a_feature_tree_operation() {
-        let program = r#"@settings(kclVersion = "3.0-preview")
+        let program = r#"@settings(kclVersion = 3.0)
 view::named(
   "Front",
   camera = view::oriented(view::Orientation::Front),

@@ -20,6 +20,7 @@ import type { CommandScopeService } from '@src/registry/contracts/commands'
 import type { EngineSceneViewExtensionProps } from '@src/registry/contracts/engineScene'
 import {
   fieldText,
+  canEditSelection,
   getDialogFields,
   hasValue,
   initializeArguments,
@@ -83,7 +84,7 @@ export default function ModelingDialog({
   const firstFieldName = visible.find(
     ({ arg }) =>
       !arg.dialog?.advanced &&
-      !(arg.inputType === 'selection' && context.argumentsToSubmit.nodeToEdit)
+      !(arg.inputType === 'selection' && !canEditSelection(context, arg))
   )?.name
 
   useEffect(() => {
@@ -197,7 +198,8 @@ export default function ModelingDialog({
           }
         />
       )
-    if (arg.inputType === 'selection')
+    if (arg.inputType === 'selection') {
+      const editable = canEditSelection(state.context, arg)
       return (
         <div key={name} className="flex flex-col gap-1">
           <span className="capitalize">
@@ -209,11 +211,9 @@ export default function ModelingDialog({
             autoFocus={name === firstFieldName}
             aria-label={`Select ${label}`}
             aria-pressed={selection.activeName === name}
-            disabled={Boolean(state.context.argumentsToSubmit.nodeToEdit)}
+            disabled={!editable}
             title={
-              state.context.argumentsToSubmit.nodeToEdit
-                ? "Selection edits aren't supported yet."
-                : undefined
+              !editable ? "Selection edits aren't supported yet." : undefined
             }
             className="m-0 rounded-sm border border-chalkboard-30 px-2 py-1 text-left text-xs focus-visible:ring-1 focus-visible:ring-primary aria-pressed:border-primary aria-pressed:text-primary dark:border-chalkboard-70"
             onClick={() => selection.select(name, arg)}
@@ -229,6 +229,7 @@ export default function ModelingDialog({
           {description}
         </div>
       )
+    }
     if (arg.inputType === 'options' || arg.inputType === 'boolean') {
       const choices =
         arg.inputType === 'boolean'

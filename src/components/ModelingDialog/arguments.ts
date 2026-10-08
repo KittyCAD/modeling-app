@@ -23,6 +23,16 @@ export type SelectionArgument = Extract<
   { inputType: 'selection' }
 >
 
+export function canEditSelection(
+  context: CommandBarContext,
+  arg: SelectionArgument
+): boolean {
+  return (
+    !context.argumentsToSubmit.nodeToEdit ||
+    arg.dialog?.editableSelection === true
+  )
+}
+
 export function hasValue(value: unknown): boolean {
   return isSelections(value)
     ? value.graphSelections.length + value.otherSelections.length > 0
@@ -109,7 +119,7 @@ export async function resolveArguments(
     const { isRequired } = evaluateCommandArgumentFlags(arg, current)
     let value = resolved[name]
     if (arg.inputType === 'selection') {
-      if (context.argumentsToSubmit.nodeToEdit)
+      if (!canEditSelection(context, arg))
         value = context.argumentsToSubmit[name]
       const selection =
         isSelections(value) && hasValue(value) ? value : undefined
@@ -123,7 +133,12 @@ export async function resolveArguments(
       ) {
         return new Error(`Select ${arg.displayName || name}.`)
       }
-      value = selection
+      // An explicit empty selection lets editable fields clear an authored selection.
+      value =
+        selection ??
+        (context.argumentsToSubmit.nodeToEdit && arg.dialog?.editableSelection
+          ? { graphSelections: [], otherSelections: [] }
+          : undefined)
     } else if (
       (arg.inputType === 'kcl' ||
         arg.inputType === 'vector2d' ||
