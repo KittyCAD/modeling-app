@@ -1679,7 +1679,7 @@ opacity: number, };
 /**
  * The type of entity
  */
-export type EntityType = "entity" | "object" | "path" | "segment" | "curve" | "solid2d" | "solid3d" | "edge" | "face" | "plane" | "vertex" | "region";
+export type EntityType = "entity" | "object" | "path" | "segment" | "curve" | "solid2d" | "solid3d" | "edge" | "face" | "plane" | "vertex" | "region" | "patterngroup";
 
 /**
  * Export the scene to a file.
@@ -2024,7 +2024,11 @@ storage: GltfStorage,
 /**
  * Specifies how the JSON will be presented.
  */
-presentation: GltfPresentation, };
+presentation: GltfPresentation, 
+/**
+ * Include engine UUIDs in glTF extras. Defaults to false.
+ */
+include_uuids: boolean, };
 
 /**
  * Options for importing glTF 2.0.

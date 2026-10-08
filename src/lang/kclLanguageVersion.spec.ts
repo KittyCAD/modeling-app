@@ -1,10 +1,15 @@
 import { join } from 'node:path'
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-import { isAtLeastKclV3, programUsesKclV3 } from '@src/lang/kclLanguageVersion'
+import {
+  getKclLanguageVersion,
+  isAtLeastKclV3,
+  programUsesKclV3,
+} from '@src/lang/kclLanguageVersion'
 import { parse } from '@src/lang/wasm'
 import type { Program } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
+import { isKclVersionAvailable } from '@src/lib/kclVersionRange'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { beforeAll, describe, expect, it } from 'vitest'
@@ -39,6 +44,7 @@ describe('isAtLeastKclV3', () => {
     ['1.0', false],
     ['2.0', false],
     ['3.0-preview', true],
+    ['3.0', true],
   ])('returns %s -> %s', (version, expected) => {
     expect(isAtLeastKclV3(version)).toBe(expected)
   })
@@ -49,7 +55,60 @@ describe('isAtLeastKclV3', () => {
   })
 })
 
+describe('getKclLanguageVersion', () => {
+  it.each<[string, KclVersion]>([
+    ['', '1.0'],
+    ['x = 1', '1.0'],
+    ['@settings(defaultLengthUnit = mm)\nx = 1', '1.0'],
+    ['@settings(kclVersion = 1.0)\nx = 1', '1.0'],
+    ['@settings(kclVersion = 2.0)\nx = 1', '2.0'],
+    ['@settings(kclVersion = "3.0-preview")\nx = 1', '3.0-preview'],
+    ['@settings(kclVersion = 3.0)\nx = 1', '3.0'],
+    ['@settings(kclVersion = "3.0")\nx = 1', '3.0'],
+  ])('resolves %j to %s using Wasm', (code, expected) => {
+    expect(getKclLanguageVersion(code, getInstance())).toBe(expected)
+    expect(getKclLanguageVersion(parseProgram(code), getInstance())).toBe(
+      expected
+    )
+  })
+
+  it('returns parse diagnostics and no version when there is no root program', () => {
+    const result = parse('@settings(kclVersion = 3.0)\nx =', getInstance())
+    if (err(result)) throw result
+    expect(result.program).toBeNull()
+    expect(result.kclVersion).toBeNull()
+    expect(result.errors.length).toBeGreaterThan(0)
+  })
+
+  it.each([
+    '@settings(kclVersion = "abcd")',
+    '@settings(kclVersion = 2.0)\nx =',
+  ])('does not supply a fallback for invalid source: %s', (code) => {
+    expect(getKclLanguageVersion(code, getInstance())).toBeInstanceOf(Error)
+  })
+})
+
+describe('isKclVersionAvailable Wasm bridge', () => {
+  it('passes a range to Rust and returns its boolean result', () => {
+    const range = { addedIn: '2.0', removedIn: '3.0' }
+    expect(isKclVersionAvailable('2.0', range, getInstance())).toBe(true)
+    expect(isKclVersionAvailable('3.0', range, getInstance())).toBe(false)
+  })
+
+  it('surfaces invalid-boundary errors from Rust', () => {
+    expect(() =>
+      isKclVersionAvailable('3.0', { addedIn: 'invalid' }, getInstance())
+    ).toThrow()
+  })
+})
+
 describe('programUsesKclV3', () => {
+  it('returns true for a stable 3.0 program', () => {
+    const program = parseProgram(`@settings(kclVersion = 3.0)
+x = 1`)
+    expect(programUsesKclV3(program, getInstance())).toBe(true)
+  })
+
   it('returns true for a 3.0-preview program', () => {
     const program = parseProgram(`@settings(kclVersion = "3.0-preview")
 x = 1`)

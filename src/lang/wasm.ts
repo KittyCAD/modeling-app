@@ -1,4 +1,13 @@
-import type { ArtifactGraph as RustArtifactGraph } from '@rust/kcl-lib/bindings/Artifact'
+import type {
+  CodeRef,
+  Artifact as RustArtifact,
+  ArtifactGraph as RustArtifactGraph,
+  Cap as RustCapArtifact,
+  EdgeCut as RustEdgeCut,
+  Segment as RustSegmentArtifact,
+  Sweep as RustSweepArtifact,
+  Wall as RustWallArtifact,
+} from '@rust/kcl-lib/bindings/Artifact'
 import type { ArtifactId } from '@rust/kcl-lib/bindings/ArtifactId'
 import type { CompilationIssue } from '@rust/kcl-lib/bindings/CompilationIssue'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
@@ -35,10 +44,7 @@ import {
   UNLABELED_ARG,
 } from '@src/lang/queryAstConstants'
 import { defaultSourceRange, sourceRangeFromRust } from '@src/lang/sourceRange'
-import {
-  type Artifact,
-  defaultArtifactGraph,
-} from '@src/lang/std/artifactGraph'
+import { defaultArtifactGraph } from '@src/lang/std/artifactGraph'
 import type { Coords2d } from '@src/lang/util'
 import { isTopLevelModule } from '@src/lang/util'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
@@ -47,25 +53,65 @@ import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import { distance2d } from '@src/lib/utils2d'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 
 export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
 export type {
-  Artifact,
-  Cap as CapArtifact,
   CodeRef,
   PrimitiveEdge as PrimitiveEdgeArtifact,
-  EdgeCut,
   GdtAnnotationArtifact,
   NamedViewArtifact as KclNamedViewArtifact,
   PrimitiveFace as PrimitiveFaceArtifact,
   Path as PathArtifact,
   Plane as PlaneArtifact,
-  Segment as SegmentArtifact,
   Solid2d as Solid2dArtifact,
-  Sweep as SweepArtifact,
-  SweepEdge,
-  Wall as WallArtifact,
 } from '@rust/kcl-lib/bindings/Artifact'
+export type SegmentArtifact = RustSegmentArtifact & {
+  edgeIds?: ArtifactId[]
+  commonSurfaceIds?: ArtifactId[]
+}
+export type SweepArtifact = RustSweepArtifact & {
+  edgeIds?: ArtifactId[]
+}
+export type WallArtifact = RustWallArtifact & {
+  edgeCutEdgeIds?: ArtifactId[]
+}
+export type CapArtifact = RustCapArtifact & {
+  edgeCutEdgeIds?: ArtifactId[]
+}
+export type EdgeCut = RustEdgeCut & {
+  consumedEdgeId?: ArtifactId | null
+  edgeIds?: ArtifactId[]
+}
+export type SweepEdgeArtifact = {
+  type: 'sweepEdge'
+  id: ArtifactId
+  segId: ArtifactId
+  sweepId?: ArtifactId
+  subType?: string
+  commonSurfaceIds?: ArtifactId[]
+  codeRef?: CodeRef
+}
+export type EdgeCutEdgeArtifact = {
+  type: 'edgeCutEdge'
+  id: ArtifactId
+  edgeCutId?: ArtifactId
+  segId?: ArtifactId
+  subType?: string
+  codeRef?: CodeRef
+}
+export type Artifact =
+  | Exclude<
+      RustArtifact,
+      { type: 'segment' | 'sweep' | 'wall' | 'cap' | 'edgeCut' }
+    >
+  | ({ type: 'segment' } & SegmentArtifact)
+  | ({ type: 'sweep' } & SweepArtifact)
+  | ({ type: 'wall' } & WallArtifact)
+  | ({ type: 'cap' } & CapArtifact)
+  | ({ type: 'edgeCut' } & EdgeCut)
+  | SweepEdgeArtifact
+  | EdgeCutEdgeArtifact
 export type { ArtifactId } from '@rust/kcl-lib/bindings/ArtifactId'
 export type { BinaryExpression } from '@rust/kcl-lib/bindings/BinaryExpression'
 export type { BinaryPart } from '@rust/kcl-lib/bindings/BinaryPart'
@@ -164,19 +210,25 @@ const splitErrors = (
   return { errors, warnings }
 }
 
+// Rust's root Program flattens the AST and adds kcl_version. The generated
+// Program type describes only the AST (also used for function bodies).
+export type RootProgram = Program & { kcl_version: KclVersion }
 export class ParseResult {
   program: Node<Program> | null
   errors: CompilationIssue[]
   warnings: CompilationIssue[]
+  kclVersion: KclVersion | null
 
   constructor(
     program: Node<Program> | null,
+    kclVersion: KclVersion | null,
     errors: CompilationIssue[],
     warnings: CompilationIssue[]
   ) {
     this.program = program
     this.errors = errors
     this.warnings = warnings
+    this.kclVersion = kclVersion
   }
 }
 
@@ -186,19 +238,24 @@ export class ParseResult {
  */
 class SuccessParseResult extends ParseResult {
   program: Node<Program>
+  kclVersion: KclVersion
 
   constructor(
     program: Node<Program>,
+    kclVersion: KclVersion,
     errors: CompilationIssue[],
     warnings: CompilationIssue[]
   ) {
-    super(program, errors, warnings)
+    super(program, kclVersion, errors, warnings)
     this.program = program
+    this.kclVersion = kclVersion
   }
 }
 
 export function resultIsOk(result: ParseResult): result is SuccessParseResult {
-  return !!result.program && result.errors.length === 0
+  return (
+    !!result.program && result.kclVersion !== null && result.errors.length === 0
+  )
 }
 
 export const parse = (
@@ -208,10 +265,15 @@ export const parse = (
   if (err(code)) return code
 
   try {
-    const parsed: [Node<Program>, CompilationIssue[]] =
+    const parsed: [Node<RootProgram> | null, CompilationIssue[]] =
       instance.parse_wasm(code)
     let errs = splitErrors(parsed[1])
-    return new ParseResult(parsed[0], errs.errors, errs.warnings)
+    return new ParseResult(
+      parsed[0],
+      parsed[0]?.kcl_version ?? null,
+      errs.errors,
+      errs.warnings
+    )
   } catch (e: any) {
     // throw e
     console.error(e.toString())
@@ -459,7 +521,7 @@ function artifactGraphFromRust(
   // Translate NodePath to PathToNode.
   for (const [_id, artifact] of artifactGraph) {
     if (!artifact) continue
-    if (!('codeRef' in artifact)) continue
+    if (!('codeRef' in artifact) || !artifact.codeRef) continue
     const pathToNode = pathToNodeFromRustNodePath(artifact.codeRef.nodePath)
     artifact.codeRef.pathToNode = pathToNode
   }
@@ -540,13 +602,11 @@ export const errFromErrWithOutputs = (e: any): KCLError => {
 
 export const kclLint = async (
   ast: Program,
-  instance: ModuleType,
-  enableZ0006 = false
+  instance: ModuleType
 ): Promise<Array<Discovered>> => {
   try {
     const discoveredFindings: Array<Discovered> = await instance.kcl_lint(
-      JSON.stringify(ast),
-      enableZ0006
+      JSON.stringify(ast)
     )
     return discoveredFindings
   } catch (e: any) {
@@ -708,9 +768,6 @@ function numericSuffixToUnitLength(suffix: NumericSuffix): UnitLength | null {
     case 'Unknown':
       return null
     default:
-      // this is more of a type completeness check
-      // rather then something we expect to hit at runtime
-      const _exhaustiveCheck: never = suffix
       return null
   }
 }
@@ -733,7 +790,6 @@ function unitLengthToNumericSuffix(unit: UnitLength): NumericSuffix {
     case 'yd':
       return 'Yd'
     default:
-      const _exhaustiveCheck: never = unit
       return 'Mm'
   }
 }
@@ -1011,8 +1067,6 @@ export function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
       case 'SketchVar':
         // TODO: sketch-api: implement initial.
         break
-      default:
-        const _exhaustiveCheck: never = step
     }
   }
   return pathToNode
@@ -1106,7 +1160,7 @@ export function changeDefaultUnits(
  */
 export function changeKclVersion(
   kcl: string,
-  version: string | null,
+  version: KclVersion | null,
   wasmInstance: ModuleType
 ): string | Error {
   try {

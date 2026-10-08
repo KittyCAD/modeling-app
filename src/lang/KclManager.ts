@@ -1,4 +1,5 @@
 import type { EntityType } from '@kittycad/lib'
+import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
@@ -924,12 +925,17 @@ export class KclManager extends File {
 
   /** The Abstract Syntax Tree generated from parsing the KCL code */
   private _ast = signal<Node<Program>>(createEmptyAst())
+  /** Effective language version from the last safeParse; null until parsed or on failure. */
+  private _kclProgramVersion = signal<KclVersion | null>(null)
   _lastAst: Node<Program> = createEmptyAst()
   get ast() {
     return this._ast.value
   }
   get astSignal() {
     return this._ast
+  }
+  get kclProgramVersionSignal() {
+    return this._kclProgramVersion
   }
   get lastGoodAst() {
     return this._lastAst
@@ -953,6 +959,7 @@ export class KclManager extends File {
    * subscribes here rather than to `execStateSignal`.
    */
   private _engineSceneGeneration = signal(0)
+  /** Incremented on every execution completion (success, failure, or cancel). Used so callers can wait for "next" run. */
   private _executionGeneration = 0
   private _lastExecutionCompletion: ExecutionCompletionResult = {
     generation: 0,
@@ -1313,12 +1320,20 @@ export class KclManager extends File {
       pendingFeatureTreeSourceSelection
   }
 
+  /**
+   * If the current code has fillet/chamfer calls with deprecated tags and we have
+   * execution metadata, apply the Z0006 fix (convert to edges), update the
+   * editor, and wait for the next run to complete. Used before opening the edit
+   * flow so P&C works (artifact graph no longer has sweepEdges).
+   * @returns Promise<true> if fix was applied and we waited for run; Promise<false> otherwise.
+   */
   async applyZ0006FixBeforeEdit(): Promise<boolean> {
     const execState = this.execState
     const hasMeta =
       (execState.edgeRefactorMetadata?.length ?? 0) > 0 ||
       (execState.directTagFilletMetadata?.length ?? 0) > 0
-    if (!hasMeta || !this.artifactGraph?.size) return false
+    if (!hasMeta) return false
+    if (!this.artifactGraph?.size) return false
 
     const instance = await this.wasmInstancePromise
     const newSource = refactorZ0006Unified(
@@ -1353,6 +1368,10 @@ export class KclManager extends File {
     )
   }
 
+  /**
+   * Returns a promise that resolves when an execution has completed after the given generation.
+   * Used by applyZ0006FixBeforeEdit to wait for the re-run after dispatching refactored code.
+   */
   private waitForExecutionGenerationAfter(
     afterGeneration: number
   ): Promise<ExecutionCompletionResult> {
@@ -1516,9 +1535,14 @@ export class KclManager extends File {
   set isExecuting(isExecuting) {
     this._isExecuting.value = isExecuting
     this.updateExecutionTimer(isExecuting)
-    // If we have finished executing, but the execute is stale, we should
-    // execute again.
-    if (!isExecuting && this.executeIsStale && this.sceneEntitiesManager) {
+    // If we have finished executing and reconnect is not pending,
+    // but the execute is stale, we should execute again.
+    if (
+      !isExecuting &&
+      this.executeIsStale &&
+      this.sceneEntitiesManager &&
+      !this.engineCommandManager.isReconnectPending
+    ) {
       const args = this.executeIsStale
       this.executeIsStale = null
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -1561,9 +1585,9 @@ export class KclManager extends File {
 
   set executeIsStale(executeIsStale) {
     this._executeIsStale = executeIsStale
-    // Next execution will be flagged as stale or not depending on this value.
+    // During reconnect, queue edits without interrupting the current execution.
     this.systemDeps.engineCommandManager.executionIsStale =
-      executeIsStale !== null
+      executeIsStale !== null && !this.engineCommandManager.isReconnectPending
   }
 
   get wasmInitFailed() {
@@ -1638,7 +1662,7 @@ export class KclManager extends File {
       if (newCode === '') {
         this.sendModelingEvent({
           type: 'Set selection',
-          data: { selection: undefined, selectionType: 'singleCodeCursor' },
+          data: { selection: {}, selectionType: 'singleCodeCursor' },
         })
       }
     }
@@ -1827,11 +1851,6 @@ export class KclManager extends File {
                 checkpointId: directEditCheckpointId,
               },
             })
-          } else {
-            console.debug(
-              'Error when executing after user edit:',
-              setProgramOutcome
-            )
           }
         } else {
           await this.executeCode(newCode)
@@ -2381,6 +2400,7 @@ export class KclManager extends File {
   }
 
   clearAst() {
+    this._kclProgramVersion.value = null
     this.ast = {
       type: 'Program',
       body: [],
@@ -2511,6 +2531,7 @@ export class KclManager extends File {
     this._astParseFailed = false
 
     if (err(result)) {
+      this._kclProgramVersion.value = null
       const kclError: KCLError = result as KCLError
       this.diagnostics = kclErrorsToDiagnostics([kclError], code)
       this._astParseFailed = true
@@ -2525,6 +2546,9 @@ export class KclManager extends File {
     // If we decouple safeParse from execution we need to move this application logic.
     this.errors = []
     this.logs = []
+    this._kclProgramVersion.value = resultIsOk(result)
+      ? result.kclVersion
+      : null
 
     this.addDiagnostics(compilationIssuesToDiagnostics(result.errors, code))
     this.addDiagnostics(compilationIssuesToDiagnostics(result.warnings, code))
@@ -2546,6 +2570,11 @@ export class KclManager extends File {
       console.warn('`executeAst` called before engine connection started')
       return
     }
+    if (this.engineCommandManager.isReconnectPending) {
+      // Keep latest requested execution for after reconnection.
+      this.executeIsStale = args
+      return
+    }
     if (this.isExecuting) {
       this.executeIsStale = args
 
@@ -2558,142 +2587,148 @@ export class KclManager extends File {
       return
     }
 
-    const ast = args.ast || this.ast
-    markOnce('code/startExecuteAst')
+    const finishExecution = this.engineCommandManager.trackExecution()
 
-    const currentExecutionId = args.executionId || Date.now()
-    this._cancelTokens.set(currentExecutionId, false)
+    try {
+      const ast = args.ast || this.ast
+      markOnce('code/startExecuteAst')
 
-    this.isExecuting = true
-    this.errors = []
-    this.logs = []
-    this.setSketchSolveDiagnostics([])
-    this.beginLiveOperationUpdates(currentExecutionId)
+      const currentExecutionId = args.executionId || Date.now()
+      this._cancelTokens.set(currentExecutionId, false)
 
-    const codeThatExecuted = this.code
-    const { logs, errors, execState, isInterrupted } = await executeAst({
-      ast,
-      path: this.path,
-      rustContext: this.rustContext,
-      callbacks: this.createExecutionCallbacks(currentExecutionId),
-    })
+      this.isExecuting = true
+      this.errors = []
+      this.logs = []
+      this.setSketchSolveDiagnostics([])
+      this.beginLiveOperationUpdates(currentExecutionId)
 
-    const livePathsToWatch = Object.values(execState.filenames)
-      .filter((file) => {
-        return file?.type === 'Local'
+      const codeThatExecuted = this.code
+      const { logs, errors, execState, isInterrupted } = await executeAst({
+        ast,
+        path: this.path,
+        rustContext: this.rustContext,
+        callbacks: this.createExecutionCallbacks(currentExecutionId),
       })
-      .map((file) => {
-        return file.value
-      })
-    this.livePathsToWatch.value = livePathsToWatch
 
-    // Program was not interrupted, setup the scene
-    // Do not send send scene commands if the program was interrupted, go to clean up
-    if (!isInterrupted) {
-      this.addDiagnostics(
-        await lintAst({
-          ast,
-          sourceCode: this.code,
-          instance: await this.systemDeps.wasmInstancePromise,
-          rustContext: this.rustContext,
-          legacyAngleRefactorMetadata: execState.legacyAngleRefactorMetadata,
-          edgeRefactorMetadata: execState.edgeRefactorMetadata,
-          directTagFilletMetadata: execState.directTagFilletMetadata,
-          artifactGraph: execState.artifactGraph,
+      const livePathsToWatch = Object.values(execState.filenames)
+        .filter((file) => {
+          return file?.type === 'Local'
         })
-      )
-      if (this.sceneEntitiesManager) {
-        setSelectionFilterToDefault({
-          engineCommandManager: this.engineCommandManager,
-          kclManager: this,
-          sceneEntitiesManager: this.sceneEntitiesManager,
-          wasmInstance: await this.systemDeps.wasmInstancePromise,
+        .map((file) => {
+          return file.value
         })
+      this.livePathsToWatch.value = livePathsToWatch
+
+      // Program was not interrupted, setup the scene
+      // Do not send send scene commands if the program was interrupted, go to clean up
+      if (!isInterrupted) {
+        this.addDiagnostics(
+          await lintAst({
+            ast,
+            sourceCode: this.code,
+            instance: await this.systemDeps.wasmInstancePromise,
+            rustContext: this.rustContext,
+            legacyAngleRefactorMetadata: execState.legacyAngleRefactorMetadata,
+            edgeRefactorMetadata: execState.edgeRefactorMetadata,
+            directTagFilletMetadata: execState.directTagFilletMetadata,
+            artifactGraph: execState.artifactGraph,
+          })
+        )
+        if (this.sceneEntitiesManager) {
+          setSelectionFilterToDefault({
+            engineCommandManager: this.engineCommandManager,
+            kclManager: this,
+            sceneEntitiesManager: this.sceneEntitiesManager,
+            wasmInstance: await this.systemDeps.wasmInstancePromise,
+          })
+        }
       }
-    }
 
-    this.isExecuting = false
+      this.isExecuting = false
 
-    // Check the cancellation token for this execution before applying side effects
-    if (this._cancelTokens.get(currentExecutionId)) {
-      this.endLiveOperationUpdates()
-      this._cancelTokens.delete(currentExecutionId)
-      markOnce('code/endExecuteAst')
-      this.notifyExecutionCompletion('cancelled')
-      return
-    }
-
-    let fileSettings = getSettingsAnnotation(
-      ast,
-      await this.wasmInstancePromise
-    )
-    if (err(fileSettings)) {
-      fileSettings = {}
-    }
-    this.fileSettings = fileSettings
-
-    this.logs = logs
-    this.errors = errors
-    if (!isInterrupted) {
-      this.markCodeAsExecuted(codeThatExecuted)
-    }
-    const code = this.code
-    // Do not add the errors since the program was interrupted and the error is not a real KCL error
-    this.addDiagnostics(
-      isInterrupted ? [] : kclErrorsToDiagnostics(errors, code)
-    )
-    // Add warnings and non-fatal errors
-    this.addDiagnostics(
-      isInterrupted
-        ? []
-        : compilationIssuesToDiagnostics(execState.issues, code)
-    )
-    this.execState = execState
-    if (!errors.length) {
-      this.lastSuccessfulVariables = execState.variables
-      this.lastSuccessfulOperations = execState.operations
-      this.lastSuccessfulCode = codeThatExecuted
-    }
-    this.endLiveOperationUpdates()
-    this.ast = structuredClone(ast)
-    // updateArtifactGraph relies on updated executeState/variables
-    await this.updateArtifactGraph(execState.artifactGraph)
-    this._engineSceneGeneration.value += 1
-    this.dispatchUpdateOperations(
-      getOperationsForCurrentFile({
-        operationsByModule: execState.operations,
-        filenames: execState.filenames,
-        currentPath: this.path,
-      })
-    )
-
-    if (!isInterrupted) {
-      this.sceneInfra.modelingSend({
-        type: 'code edit during sketch',
-      })
-    }
-    EngineDebugger.addLog({
-      label: 'executeAst',
-      message: 'execution done',
-    })
-    this.engineCommandManager.addCommandLog({
-      type: CommandLogType.ExecutionDone,
-      data: null,
-    })
-
-    this._cancelTokens.delete(currentExecutionId)
-    markOnce('code/endExecuteAst')
-    this.notifyExecutionCompletion('completed')
-
-    // Update project thumbnail after successful execution
-    if (!isInterrupted && errors.length === 0 && projectFsManager.dir) {
-      if (!this.fileOperations) {
+      // Check the cancellation token for this execution before applying side effects
+      if (this._cancelTokens.get(currentExecutionId)) {
+        this.endLiveOperationUpdates()
+        this._cancelTokens.delete(currentExecutionId)
+        markOnce('code/endExecuteAst')
+        this.notifyExecutionCompletion('cancelled')
         return
       }
-      createThumbnailPNGOnDesktop({
-        fileOperations: this.fileOperations,
-        projectDirectoryWithoutEndingSlash: projectFsManager.dir,
+
+      let fileSettings = getSettingsAnnotation(
+        ast,
+        await this.wasmInstancePromise
+      )
+      if (err(fileSettings)) {
+        fileSettings = {}
+      }
+      this.fileSettings = fileSettings
+
+      this.logs = logs
+      this.errors = errors
+      if (!isInterrupted) {
+        this.markCodeAsExecuted(codeThatExecuted)
+      }
+      const code = this.code
+      // Do not add the errors since the program was interrupted and the error is not a real KCL error
+      this.addDiagnostics(
+        isInterrupted ? [] : kclErrorsToDiagnostics(errors, code)
+      )
+      // Add warnings and non-fatal errors
+      this.addDiagnostics(
+        isInterrupted
+          ? []
+          : compilationIssuesToDiagnostics(execState.issues, code)
+      )
+      this.execState = execState
+      if (!errors.length) {
+        this.lastSuccessfulVariables = execState.variables
+        this.lastSuccessfulOperations = execState.operations
+        this.lastSuccessfulCode = codeThatExecuted
+      }
+      this.endLiveOperationUpdates()
+      this.ast = structuredClone(ast)
+      // updateArtifactGraph relies on updated executeState/variables
+      await this.updateArtifactGraph(execState.artifactGraph)
+      this._engineSceneGeneration.value += 1
+      this.dispatchUpdateOperations(
+        getOperationsForCurrentFile({
+          operationsByModule: execState.operations,
+          filenames: execState.filenames,
+          currentPath: this.path,
+        })
+      )
+
+      if (!isInterrupted) {
+        this.sceneInfra.modelingSend({
+          type: 'code edit during sketch',
+        })
+      }
+      EngineDebugger.addLog({
+        label: 'executeAst',
+        message: 'execution done',
       })
+      this.engineCommandManager.addCommandLog({
+        type: CommandLogType.ExecutionDone,
+        data: null,
+      })
+
+      this._cancelTokens.delete(currentExecutionId)
+      markOnce('code/endExecuteAst')
+      this.notifyExecutionCompletion('completed')
+
+      // Update project thumbnail after successful execution
+      if (!isInterrupted && errors.length === 0 && projectFsManager.dir) {
+        if (!this.fileOperations) {
+          return
+        }
+        createThumbnailPNGOnDesktop({
+          fileOperations: this.fileOperations,
+          projectDirectoryWithoutEndingSlash: projectFsManager.dir,
+        })
+      }
+    } finally {
+      finishExecution()
     }
   }
 
@@ -2706,8 +2741,9 @@ export class KclManager extends File {
    */
   executeAstCleanUp() {
     this.endLiveOperationUpdates()
-    this.isExecuting = false
+    // Discard queued execution before the setter can start it.
     this.executeIsStale = null
+    this.isExecuting = false
     this.notifyExecutionCompletion('cleanup')
     this.engineCommandManager.addCommandLog({
       type: CommandLogType.ExecutionDone,
@@ -3047,7 +3083,7 @@ export class KclManager extends File {
     this._isShiftDown = isShiftDown
   }
   private selectionsWithSafeEnds(
-    selection: Array<Selection['codeRef']['range']>
+    selection: Array<NonNullable<Selection['codeRef']>['range']>
   ): Array<[number, number]> {
     if (!this._editorView) {
       return selection.filter(isTopLevelModule).map((s): [number, number] => {
@@ -3086,7 +3122,9 @@ export class KclManager extends File {
   get highlightRange(): Array<[number, number]> {
     return this._highlightRange
   }
-  setHighlightRange(range: Array<Selection['codeRef']['range']>): void {
+  setHighlightRange(
+    range: Array<NonNullable<Selection['codeRef']>['range']>
+  ): void {
     const selectionsWithSafeEnds = this.selectionsWithSafeEnds(range).filter(
       (selection) => {
         // Only keep valid selections.
@@ -3179,7 +3217,6 @@ export class KclManager extends File {
       // Clear out any diagnostics that don't fit with the current document
       (d) => d.from <= docLength && d.to <= docLength
     )
-
     this._editorView.dispatch({
       effects: [setDiagnosticsEffect.of(diagnostics)],
       annotations: [
@@ -3195,14 +3232,13 @@ export class KclManager extends File {
   scrollToSelection() {
     if (!this._editorView || !this._selectionRanges.graphSelections[0]) return
     const firstSelection = this._selectionRanges.graphSelections[0]
+    const codeRef = firstSelection.codeRef
+    if (!codeRef?.range) return
     this._editorView.focus()
     this._editorView.dispatch({
       effects: [
         EditorView.scrollIntoView(
-          EditorSelection.range(
-            firstSelection.codeRef.range[0],
-            firstSelection.codeRef.range[1]
-          ),
+          EditorSelection.range(codeRef.range[0], codeRef.range[1]),
           { y: 'center' }
         ),
       ],
@@ -3487,17 +3523,24 @@ export class KclManager extends File {
       return EditorSelection.create([defaultCursor], 0)
     }
     for (const selection of selections.graphSelections) {
+      const cr = selection.codeRef
+      if (!cr?.range) continue
       const safeEnd = Math.min(
-        selection.codeRef.range[1],
-        this._editorView?.state.doc.length || selection.codeRef.range[1]
+        cr.range[1],
+        this._editorView?.state.doc.length || cr.range[1]
       )
-      codeBasedSelections.push(
-        EditorSelection.range(selection.codeRef.range[0], safeEnd)
-      )
+      codeBasedSelections.push(EditorSelection.range(cr.range[0], safeEnd))
     }
-    const end =
-      selections.graphSelections[selections.graphSelections.length - 1].codeRef
-        .range[1]
+    const lastSel =
+      selections.graphSelections[selections.graphSelections.length - 1]
+    const lastRange = lastSel?.codeRef?.range
+    if (!lastRange) {
+      const defaultCursor = EditorSelection.cursor(
+        this._editorView?.state.doc.length || 0
+      )
+      return EditorSelection.create([defaultCursor], 0)
+    }
+    const end = lastRange[1]
     const safeEnd = Math.min(end, this._editorView?.state.doc.length || end)
     codeBasedSelections.push(EditorSelection.cursor(safeEnd))
     return EditorSelection.create(codeBasedSelections, 1)

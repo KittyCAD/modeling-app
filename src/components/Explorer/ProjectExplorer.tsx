@@ -48,7 +48,10 @@ import {
   keymapService,
   PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE,
 } from '@src/registry/contracts/keymap'
-import { projectExplorerRowContextMenuItemsValueSpec } from '@src/registry/contracts/projectExplorer'
+import {
+  type ProjectExplorerRowContextMenuItemContext,
+  projectExplorerRowContextMenuItemsValueSpec,
+} from '@src/registry/contracts/projectExplorer'
 import { PROJECT_EXPLORER_COMMAND_IDS } from '@src/registry/extensions/keymap/defaultKeymap'
 import { useSelector } from '@xstate/react'
 import type { FocusEvent as ReactFocusEvent } from 'react'
@@ -201,6 +204,9 @@ export const ProjectExplorer = ({
   const rowContextMenuItems = registry.signal(
     projectExplorerRowContextMenuItemsValueSpec
   ).value
+  const rowContextMenuContext = useMemo<
+    Omit<ProjectExplorerRowContextMenuItemContext, 'row'>
+  >(() => ({ project, file, readOnly }), [project, file, readOnly])
   const { kclManager } = useSingletons()
   const isSystemIOIdle = useSelector(systemIOActor, (state) =>
     state.matches(SystemIOMachineStates.idle)
@@ -1614,6 +1620,7 @@ export const ProjectExplorer = ({
             isExternalDragOver={isExternalDragOver}
             highlightedEntry={highlightedEntry}
             rowContextMenuItems={rowContextMenuItems}
+            rowContextMenuContext={rowContextMenuContext}
             onDeleteEnd={() => {
               setIsDeleting(false)
             }}

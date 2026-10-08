@@ -27,11 +27,11 @@ dashmap = { version = "6.2.1" }
 http = "1"
 indexmap = "2.13.1"
 ezpz = "0.2.29"
-kittycad = { version = "0.5.2", default-features = false, features = [
+kittycad = { version = "0.5.4", default-features = false, features = [
   "js",
   "requests",
 ] }
-kittycad-modeling-cmds = { version = "0.2.240", features = [
+kittycad-modeling-cmds = { version = "0.2.250", features = [
   "ts-rs",
   "websocket",
 ] }
@@ -110,4 +110,4 @@ debug = "line-tables-only"
 # kittycad-modeling-cmds = { path = "../../modeling-api/modeling-cmds" }
 
 [patch.crates-io]
-kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api", rev = "5cec143a85642938dddc9a753c190e436cb6c15f" }
+kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api", rev = "305097d8a802a16fc15f3ae7e7638691c9b3826d" }

@@ -18,12 +18,12 @@ description: Physical properties usb-c.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 1991.7228061419048
+    "value": 1991.96990367001
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 1.9619375227289868
+    "value": 1.9624803522371816
   }
 }

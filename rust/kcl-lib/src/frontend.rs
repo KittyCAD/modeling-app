@@ -5549,7 +5549,7 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, 
                     downstream_composite_code_ref_for_source(artifact_graph, wall.sweep_id).unwrap_or(&sweep.code_ref);
                 let path_code_ref = artifact_graph
                     .get(&segment.path_id)
-                    .or_else(|| artifact_graph.get(&sweep.path_id))
+                    .or_else(|| sweep.path_id.and_then(|path_id| artifact_graph.get(&path_id)))
                     .and_then(|artifact| match artifact {
                         Artifact::Path(path) => Some(&path.code_ref),
                         _ => None,
@@ -7376,7 +7376,7 @@ mod tests {
             Artifact::Sweep(Sweep {
                 id,
                 sub_type: SweepSubType::Extrusion,
-                path_id: ArtifactId::new(Uuid::new_v4()),
+                path_id: Some(ArtifactId::new(Uuid::new_v4())),
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
                 code_ref: code_ref.clone(),
@@ -13913,11 +13913,11 @@ sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   line2 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 4mm])
   angleDimension(
-  lines = [line1, line2],
-  sector = 1,
-  inverse = true,
-  labelPosition = [-0.73mm, 0.75mm],
-) == 270deg
+    lines = [line1, line2],
+    sector = 1,
+    inverse = true,
+    labelPosition = [-0.73mm, 0.75mm],
+  ) == 270deg
 }
 "
         );

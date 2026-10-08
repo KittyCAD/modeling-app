@@ -8,6 +8,7 @@ import {
   encode as msgpackEncode,
 } from '@msgpack/msgpack'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
+import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { EngineCommand, ResponseMap } from '@src/lang/std/artifactGraph'
 import type { CommandLog } from '@src/lang/std/commandLog'
@@ -76,6 +77,8 @@ import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 
+const RECONNECT_CAMERA_CAPTURE_TIMEOUT_MS = 300
+
 export type ConnectionSystemDeps = {
   settingsActor: SettingsActorType
 }
@@ -107,6 +110,22 @@ export class ConnectionManager extends EventTarget {
   commandLogs: CommandLog[] = []
 
   connection: Connection | undefined
+  private reconnectingConnection: Connection | undefined
+  private prepareForReconnect:
+    | ((signal: AbortSignal) => Promise<undefined | Error>)
+    | undefined
+  private reconnectPreparation: AbortController | undefined
+  private reconnectPreparationFinished = false
+  private readonly activeExecutions = new Set<symbol>()
+  private readonly activeRecoveries = new Set<symbol>()
+
+  get isReconnectPending(): boolean {
+    return (
+      this.reconnectingConnection !== undefined &&
+      this.reconnectingConnection === this.connection
+    )
+  }
+
   lastConnectionError: EngineConnectionError | undefined
   private connectionStartedAt = performance.now()
   private shutdownReported = false
@@ -172,6 +191,145 @@ export class ConnectionManager extends EventTarget {
     this.lastConnectionError = undefined
   }
 
+  trackExecution(): () => void {
+    const execution = Symbol('execution')
+    this.activeExecutions.add(execution)
+
+    return () => {
+      if (this.activeExecutions.delete(execution)) {
+        this.tryReconnectWhenIdle()
+      }
+    }
+  }
+
+  // Capture existing execution identifiers and remove only those.
+  // Also capture pending modeling commands at the time of failure
+  // so cleanup cannot accidentally reject newer commands.
+  captureFailedExecutionCleanup(): () => void {
+    const recovery = Symbol('wasm recovery')
+    this.activeRecoveries.add(recovery)
+    const failedExecutions = [...this.activeExecutions]
+    const failedCommands = Object.entries(this.pendingCommands).filter(
+      ([, pending]) => !pending.isSceneCommand
+    )
+
+    return () => {
+      if (!this.activeRecoveries.has(recovery)) {
+        return
+      }
+      for (const [commandId, pending] of failedCommands) {
+        if (this.pendingCommands[commandId] !== pending) {
+          continue
+        }
+
+        pending.reject([
+          {
+            success: false,
+            errors: [
+              {
+                error_code: 'internal_api',
+                message:
+                  'KCL execution failed because the Wasm runtime crashed.',
+              },
+            ],
+          },
+        ])
+        delete this.pendingCommands[commandId]
+      }
+
+      for (const execution of failedExecutions) {
+        this.activeExecutions.delete(execution)
+      }
+      this.activeRecoveries.delete(recovery)
+      this.tryReconnectWhenIdle()
+    }
+  }
+
+  private resetReconnectState(): void {
+    this.reconnectingConnection = undefined
+    this.reconnectPreparationFinished = false
+    this.prepareForReconnect = undefined
+    this.reconnectPreparation?.abort()
+    this.reconnectPreparation = undefined
+    this.activeExecutions.clear()
+    this.activeRecoveries.clear()
+  }
+
+  private tryReconnectWhenIdle() {
+    const connection = this.reconnectingConnection
+    if (
+      !connection ||
+      connection !== this.connection ||
+      this.reconnectPreparation ||
+      this.activeExecutions.size > 0 ||
+      this.activeRecoveries.size > 0 ||
+      Object.keys(this.pendingCommands).length > 0
+    ) {
+      return
+    }
+
+    if (this.prepareForReconnect && !this.reconnectPreparationFinished) {
+      const controller = new AbortController()
+      this.reconnectPreparation = controller
+      this.prepareReconnect(
+        connection,
+        controller,
+        this.prepareForReconnect
+      ).catch(reportRejection)
+      return
+    }
+
+    connection.closeForReconnect()
+  }
+
+  private async prepareReconnect(
+    connection: Connection,
+    controller: AbortController,
+    prepare: (signal: AbortSignal) => Promise<undefined | Error>
+  ): Promise<void> {
+    let stopWaiting!: () => void
+    const cancelled = new Promise<void>((resolve) => {
+      stopWaiting = resolve
+    })
+
+    controller.signal.addEventListener('abort', stopWaiting, { once: true })
+    const timeout = setTimeout(() => {
+      controller.abort()
+    }, RECONNECT_CAMERA_CAPTURE_TIMEOUT_MS)
+
+    try {
+      const result = await Promise.race([prepare(controller.signal), cancelled])
+      if (result instanceof Error && !controller.signal.aborted) {
+        console.warn('Unable to capture camera before reconnect')
+      }
+    } catch {
+      if (!controller.signal.aborted) {
+        console.warn('Unable to capture camera before reconnect')
+      }
+    } finally {
+      clearTimeout(timeout)
+      controller.signal.removeEventListener('abort', stopWaiting)
+      controller.abort()
+
+      if (
+        this.connection === connection &&
+        this.reconnectPreparation === controller
+      ) {
+        this.reconnectPreparation = undefined
+        this.reconnectPreparationFinished = true
+        this.tryReconnectWhenIdle()
+      }
+    }
+  }
+
+  private handleReconnectRequested(connection: Connection) {
+    if (this.connection !== connection) {
+      return
+    }
+    this.reconnectingConnection = connection
+    this.tryReconnectWhenIdle()
+  }
+
   setInSequence(sequence: number) {
     this.inSequence = sequence
   }
@@ -189,6 +347,8 @@ export class ConnectionManager extends EventTarget {
     unitTestWebrtc,
     unitTestPool,
     rustContext,
+    kclVersion,
+    prepareForReconnect,
   }: {
     width: number
     height: number
@@ -198,6 +358,8 @@ export class ConnectionManager extends EventTarget {
     unitTestWebrtc?: boolean
     unitTestPool?: 'cpu'
     rustContext?: RustContext
+    kclVersion?: KclVersion
+    prepareForReconnect?: (signal: AbortSignal) => Promise<undefined | Error>
   }) {
     EngineDebugger.addLog({
       label: 'connectionManager',
@@ -225,6 +387,7 @@ export class ConnectionManager extends EventTarget {
     this.lastConnectionError = undefined
     this.connectionStartedAt = performance.now()
     this.shutdownReported = false
+    this.prepareForReconnect = prepareForReconnect
     this.started = true
     this.rejectAllPendingCommands()
 
@@ -235,13 +398,14 @@ export class ConnectionManager extends EventTarget {
 
     const handleMessage = this.createMessageHandler(rustContext)
 
-    const url = this.generateWebsocketURL()
+    const url = this.generateWebsocketURL(kclVersion)
     this.connection = new Connection({
       url,
       token,
       handleOnDataChannelMessage: this.handleOnDataChannelMessage.bind(this),
       recordShutdownTrigger: this.recordShutdownTrigger.bind(this),
       tearDownManager: this.tearDown.bind(this),
+      onReconnectRequested: this.handleReconnectRequested.bind(this),
       rejectPendingCommand: this.rejectPendingCommand.bind(this),
       callbackOnUnitTestingConnection,
       unitTestWebrtc,
@@ -383,29 +547,33 @@ export class ConnectionManager extends EventTarget {
   handleOnDataChannelMessage(event: MessageEvent<any>) {
     const result: UnreliableResponses = JSON.parse(event.data)
     Object.values(this.unreliableSubscriptions[result.type] || {}).forEach(
-      // TODO: There is only one response that uses the unreliable channel atm,
-      // highlight_set_entity, if there are more it's likely they will all have the same
-      // sequence logic, but I'm not sure if we use a single global sequence or a sequence
-      // per unreliable subscription.
+      // Hover/highlight responses may arrive out of order on the unreliable
+      // channel. Only apply the newest sequenced result we have seen.
       (callback) => {
+        const sequence = (result.data as { sequence?: number } | undefined)
+          ?.sequence
         if (
           result.type === 'highlight_set_entity' &&
-          result?.data?.sequence &&
-          result?.data.sequence > this.inSequence
+          typeof sequence === 'number'
         ) {
-          this.inSequence = result.data.sequence
-          callback(result)
-        } else if (result.type !== 'highlight_set_entity') {
+          if (sequence > this.inSequence) {
+            this.inSequence = sequence
+            callback(result)
+          }
+        } else {
           callback(result)
         }
       }
     )
   }
 
-  generateWebsocketURL() {
+  generateWebsocketURL(kclVersion: KclVersion | undefined) {
     let additionalSettings = this.settings.enableSSAO ? '&post_effect=ssao' : ''
     additionalSettings +=
       '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
+    if (kclVersion !== undefined) {
+      additionalSettings += `&kcl_version=${encodeURIComponent(kclVersion)}`
+    }
     const url = withKittycadWebSocketURL(
       `?video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}${additionalSettings}`
     )
@@ -754,13 +922,28 @@ export class ConnectionManager extends EventTarget {
 
     const { promise, resolve, reject } = promiseFactory<any>()
     let isSettled = false
+    const commandConnection = this.connection
+
+    const checkReconnectAfterSettlement = () => {
+      // The response handler resolves or rejects the command
+      // before deleting it from pendingCommands.
+      // Deferring the check lets that synchronous cleanup finish first.
+      queueMicrotask(() => {
+        if (this.connection === commandConnection) {
+          this.tryReconnectWhenIdle()
+        }
+      })
+    }
+
     const wrappedResolved = (value: any) => {
       resolve(value)
       isSettled = true
+      checkReconnectAfterSettlement()
     }
     const wrappedReject = (value: any) => {
       reject(value)
       isSettled = true
+      checkReconnectAfterSettlement()
     }
 
     if (this.pendingCommands[id]) {
@@ -798,7 +981,10 @@ export class ConnectionManager extends EventTarget {
           // TODO: Send this to a logging or error tracking service
           const errorMessage = `sendCommand rejected, you hit the timeout: ${JSON.stringify(message.command)}`
           console.error(errorMessage)
-          reject(errorMessage)
+          wrappedReject(errorMessage)
+          if (this.pendingCommands[id]?.promise === promise) {
+            delete this.pendingCommands[id]
+          }
         }
       }, PENDING_COMMAND_TIMEOUT)
     }
@@ -1003,9 +1189,6 @@ export class ConnectionManager extends EventTarget {
       setStreamIsReady: () => {
         console.warn('This is a NO OP. Should not be called in web.')
       },
-      callbackOnUnitTestingConnection: () => {
-        console.log('what is happening, why is rust doing this!')
-      },
     })
   }
 
@@ -1190,6 +1373,7 @@ export class ConnectionManager extends EventTarget {
     this.removeAllEventListeners()
     this.connection?.disconnectAll()
     this.connection = undefined
+    this.resetReconnectState()
 
     // It is possible all connections never even started, but we still want
     // to signal to the whole application we are "offline".
@@ -1207,7 +1391,13 @@ export class ConnectionManager extends EventTarget {
    * within the engine connection manager. This will reject a specific pendingCommand which will prevent it from
    * hanging forever
    */
-  rejectPendingCommand({ cmdId }: { cmdId: string }) {
+  rejectPendingCommand({
+    cmdId,
+    message = REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE,
+  }: {
+    cmdId: string
+    message?: string
+  }) {
     if (this.pendingCommands[cmdId]) {
       const pendingCommand = this.pendingCommands[cmdId]
       pendingCommand.reject([
@@ -1216,7 +1406,7 @@ export class ConnectionManager extends EventTarget {
           errors: [
             {
               error_code: 'connection_problem',
-              message: REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE,
+              message,
             },
           ],
         },

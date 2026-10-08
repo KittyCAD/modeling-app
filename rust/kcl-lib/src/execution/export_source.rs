@@ -266,7 +266,9 @@ mod tests {
         assert_eq!(exports.read().await.last(), Some(&Some(updated.clone())));
 
         let mut state = ExecState::new(&ctx);
-        ctx.send_clear_scene(&mut state, SourceRange::default()).await.unwrap();
+        ctx.send_clear_scene(Some(program.kcl_version), &mut state, SourceRange::default())
+            .await
+            .unwrap();
         ctx.export_step(true).await.unwrap();
         assert_eq!(exports.read().await.last(), Some(&None));
 

@@ -329,7 +329,7 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
       const bodyToggles = bodiesPane.getByTestId(
         'feature-tree-visibility-toggle'
       )
-      await bodyToggles.first().click()
+      await scene.waitForExecutionDoneAfter(() => bodyToggles.first().click())
     })
 
     await test.step('Verify extrude001 is still hidden via KCL', async () => {
@@ -340,7 +340,9 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
       const helixButton = await toolbar.getFeatureTreeOperation('helix001', 0)
       const helixRow = helixButton.locator('..')
       await helixRow.hover()
-      await helixRow.getByTestId('feature-tree-visibility-toggle').click()
+      await scene.waitForExecutionDoneAfter(() =>
+        helixRow.getByTestId('feature-tree-visibility-toggle').click()
+      )
     })
 
     await test.step('Verify helix001 is hidden via KCL', async () => {
@@ -353,7 +355,7 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
         .locator('..')
         .getByTestId('feature-tree-visibility-toggle')
       await bodyRow.hover()
-      await bodyToggle.click()
+      await scene.waitForExecutionDoneAfter(() => bodyToggle.click())
       await scene.settled()
     })
 
@@ -397,12 +399,14 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
     })
 
     await test.step('On an extrude face should *not* work', async () => {
-      // Tooltip is getting in the way of clicking, so I'm first closing the pane
       await toolbar.closeFeatureTreePane()
       await page.waitForTimeout(1000)
       await editor.replaceCode('91', '90')
       await page.waitForTimeout(2000)
-      await (await toolbar.getFeatureTreeOperation('Sketch', 1)).dblclick()
+      await toolbar.waitForFeatureTreeToBeBuilt()
+      const sketchOnFaceBtn = await toolbar.getFeatureTreeOperation('Sketch', 1)
+      await sketchOnFaceBtn.scrollIntoViewIfNeeded()
+      await sketchOnFaceBtn.dblclick()
 
       await expect(
         toolbar.exitSketchBtn,
@@ -510,7 +514,7 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
         },
         commandName: 'Extrude',
       })
-      await cmdBar.progressCmdBar()
+      await scene.waitForExecutionDoneAfter(() => cmdBar.progressCmdBar())
       await editor.expectState({
         highlightedCode: '',
         diagnostics: [],

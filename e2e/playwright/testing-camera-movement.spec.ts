@@ -1,7 +1,6 @@
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import { uuidv4 } from '@src/lib/utils'
 
-import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
@@ -21,33 +20,43 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
     beforePosition,
     retryCount = 0,
     page,
-    scene,
   }: {
     mouseActions: () => Promise<void>
     beforePosition: [number, number, number]
     afterPosition: [number, number, number]
     retryCount?: number
     page: Page
-    scene: SceneFixture
   }) => {
     const acceptableCamError = 5
     const u = await getUtils(page)
+    const setCameraPosition = async () => {
+      await u.openAndClearDebugPanel()
+      await u.sendCustomCmd({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_look_at',
+          vantage: {
+            x: beforePosition[0],
+            y: beforePosition[1],
+            z: beforePosition[2],
+          },
+          center: { x: 0, y: 0, z: 0 },
+          up: { x: 0, y: 0, z: 1 },
+        },
+      })
+      await u.waitForCmdReceive('default_camera_look_at')
+      await u.closeDebugPanel()
+    }
 
-    await test.step('Set up initial camera position', async () =>
-      await scene.moveCameraTo({
-        x: beforePosition[0],
-        y: beforePosition[1],
-        z: beforePosition[2],
-      }))
+    await test.step('Set up initial camera position', setCameraPosition)
 
-    await test.step('Do actions and watch for changes', async () =>
-      u.doAndWaitForImageDiff(async () => {
-        await mouseActions()
-
-        await u.openAndClearDebugPanel()
-        await u.closeDebugPanel()
-        await page.waitForTimeout(100)
-      }, 300))
+    await test.step('Do actions and wait for camera values', async () => {
+      await mouseActions()
+      await u.openAndClearDebugPanel()
+      await u.closeDebugPanel()
+      await page.waitForTimeout(100)
+    })
 
     await u.openAndClearDebugPanel()
     await expect(page.getByTestId('cam-x-position')).toBeAttached()
@@ -90,7 +99,6 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
         beforePosition: beforePosition,
         retryCount: retryCount + 1,
         page,
-        scene,
       })
     }
   }
@@ -99,10 +107,20 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
     page,
     homePage,
     scene,
-    cmdBar,
   }) => {
     const u = await getUtils(page)
     const camInitialPosition: [number, number, number] = [0, 85, 85]
+    const waitForDragResponse = async (
+      type: 'camera_drag_start' | 'camera_drag_end'
+    ) => {
+      await page.waitForFunction(
+        (type) =>
+          window.engineCommandManager.commandLogs.some(
+            (log) => log.type === 'receive-reliable' && log.cmd_type === type
+          ),
+        type
+      )
+    }
 
     await homePage.goToModelingScene()
     await scene.settled()
@@ -118,16 +136,16 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
           await page.keyboard.down('Shift')
           await page.mouse.move(dragStart.x, dragStart.y)
           await page.mouse.down({ button: 'right' })
+          await waitForDragResponse('camera_drag_start')
           // Gotcha: remove steps:2 from this 700,200 mouse move. This bricked the test on local host engine.
           await page.mouse.move(dragEnd.x, dragEnd.y)
           await page.mouse.up({ button: 'right' })
           await page.keyboard.up('Shift')
-          await page.waitForTimeout(200)
+          await waitForDragResponse('camera_drag_end')
         },
         afterPosition: [19, 85, 85],
         beforePosition: camInitialPosition,
         page,
-        scene,
       })
     })
 
@@ -139,6 +157,7 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
           await page.keyboard.down('Control')
           await page.mouse.move(dragStart.x, dragStart.y)
           await page.mouse.down({ button: 'right' })
+          await waitForDragResponse('camera_drag_start')
           await page.mouse.move(dragEnd.x, dragEnd.y)
           await page.mouse.up({ button: 'right' })
           await page.keyboard.up('Control')
@@ -146,7 +165,6 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
         afterPosition: [0, 118, 118],
         beforePosition: camInitialPosition,
         page,
-        scene,
       })
     })
 
@@ -174,7 +192,6 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
         afterPosition: [0, 42.5, 42.5],
         beforePosition: camInitialPosition,
         page,
-        scene,
       })
     })
   })
@@ -219,7 +236,6 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
         afterPosition: [-4, 10.5, 120],
         beforePosition: initialCamPosition,
         page,
-        scene,
       })
     })
 
@@ -259,35 +275,35 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
         afterPosition: [-12.78, 14.54, 118.64], // value on Linux
         beforePosition: initialCamPosition,
         page,
-        scene,
       })
     })
   })
 
-  test('Right-click opens context menu when not dragged', async ({
-    homePage,
-    page,
-  }) => {
-    const u = await getUtils(page)
+  test(
+    'Right-click opens context menu when not dragged',
+    { tag: '@web' },
+    async ({ homePage, page }) => {
+      const u = await getUtils(page)
 
-    await homePage.goToModelingScene()
-    await u.waitForPageLoad()
+      await homePage.goToModelingScene()
+      await u.waitForPageLoad()
 
-    await test.step(`The menu should not show if we drag the mouse`, async () => {
-      await page.mouse.move(900, 200)
-      await page.mouse.down({ button: 'right' })
-      await page.mouse.move(900, 300)
-      await page.mouse.up({ button: 'right' })
+      await test.step(`The menu should not show if we drag the mouse`, async () => {
+        await page.mouse.move(900, 200)
+        await page.mouse.down({ button: 'right' })
+        await page.mouse.move(900, 300)
+        await page.mouse.up({ button: 'right' })
 
-      await expect(page.getByTestId('view-controls-menu')).not.toBeVisible()
-    })
+        await expect(page.getByTestId('view-controls-menu')).not.toBeVisible()
+      })
 
-    await test.step(`The menu should show if we don't drag the mouse`, async () => {
-      await page.mouse.move(900, 200)
-      await page.mouse.down({ button: 'right' })
-      await page.mouse.up({ button: 'right' })
+      await test.step(`The menu should show if we don't drag the mouse`, async () => {
+        await page.mouse.move(900, 200)
+        await page.mouse.down({ button: 'right' })
+        await page.mouse.up({ button: 'right' })
 
-      await expect(page.getByTestId('view-controls-menu')).toBeVisible()
-    })
-  })
+        await expect(page.getByTestId('view-controls-menu')).toBeVisible()
+      })
+    }
+  )
 })

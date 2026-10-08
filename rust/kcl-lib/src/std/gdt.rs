@@ -58,7 +58,7 @@ const GDT_DOT_LEADER_REFERENCE_ENGINE_SCALE: f64 = 0.5;
 const GDT_FONT_SCALE_1_HEIGHT_MM: f64 = 8.0;
 
 fn gdt_font_scale(font_size: Option<&TyF64>, args: &Args) -> Result<f32, KclError> {
-    let requested_height_mm = font_size.map(TyF64::to_mm).unwrap_or(DEFAULT_GDT_FONT_SIZE_MM);
+    let requested_height_mm = font_size.map(TyF64::unwrap_to_mm).unwrap_or(DEFAULT_GDT_FONT_SIZE_MM);
     if requested_height_mm <= 0.0 {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "fontSize must be greater than 0.".to_owned(),
@@ -393,8 +393,8 @@ async fn inner_datum(
         .plane_id(frame_plane.id)
         .offset(if let Some(offset) = &frame_position {
             KPoint2d {
-                x: offset[0].to_mm(),
-                y: offset[1].to_mm(),
+                x: offset[0].unwrap_to_mm(),
+                y: offset[1].unwrap_to_mm(),
             }
         } else {
             KPoint2d { x: 100.0, y: 100.0 }
@@ -477,8 +477,8 @@ async fn inner_note(
         .plane_id(frame_plane.id)
         .offset(if let Some(offset) = &frame_position {
             KPoint2d {
-                x: offset[0].to_mm(),
-                y: offset[1].to_mm(),
+                x: offset[0].unwrap_to_mm(),
+                y: offset[1].unwrap_to_mm(),
             }
         } else {
             KPoint2d { x: 100.0, y: 100.0 }
@@ -1055,12 +1055,16 @@ async fn inner_distance(
             DistanceEndpoint {
                 entity_id,
                 edge_reference: edge_reference.clone(),
-                entity_pos: AnnotationMbdLeaderPosition::Centroid {},
+                entity_pos: AnnotationMbdLeaderPosition::NormalizedPos {
+                    pos: KPoint2d { x: 0.0, y: 0.0 },
+                },
             },
             DistanceEndpoint {
                 entity_id,
                 edge_reference,
-                entity_pos: AnnotationMbdLeaderPosition::Centroid {},
+                entity_pos: AnnotationMbdLeaderPosition::NormalizedPos {
+                    pos: KPoint2d { x: 1.0, y: 0.0 },
+                },
             },
             &tolerance,
             precision,
@@ -1106,7 +1110,7 @@ async fn create_basic_distance_annotation(
                 .tolerance(
                     tolerance
                         .as_ref()
-                        .map(|tol| tol.to_length_units(display_units))
+                        .map(|tol| tol.unwrap_to_length_units(display_units))
                         .unwrap_or_default(),
                 )
                 .build(),
@@ -1114,8 +1118,8 @@ async fn create_basic_distance_annotation(
         .plane_id(frame_plane_id)
         .offset(if let Some(offset) = frame_position {
             KPoint2d {
-                x: offset[0].to_mm(),
-                y: offset[1].to_mm(),
+                x: offset[0].unwrap_to_mm(),
+                y: offset[1].unwrap_to_mm(),
             }
         } else {
             KPoint2d { x: 100.0, y: 100.0 }
@@ -1555,7 +1559,7 @@ async fn create_feature_control_annotation(
     let control_frame = gdt_control_frame(
         symbol,
         diameter_symbol,
-        tolerance.to_length_units(display_units),
+        tolerance.unwrap_to_length_units(display_units),
         datums,
     );
     let feature_control = AnnotationFeatureControl::builder()
@@ -1567,8 +1571,8 @@ async fn create_feature_control_annotation(
         .plane_id(frame_plane_id)
         .offset(if let Some(offset) = frame_position {
             KPoint2d {
-                x: offset[0].to_mm(),
-                y: offset[1].to_mm(),
+                x: offset[0].unwrap_to_mm(),
+                y: offset[1].unwrap_to_mm(),
             }
         } else {
             KPoint2d { x: 100.0, y: 100.0 }
@@ -1664,8 +1668,8 @@ async fn create_annotation(
         .plane_id(frame_plane_id)
         .offset(if let Some(offset) = frame_position {
             KPoint2d {
-                x: offset[0].to_mm(),
-                y: offset[1].to_mm(),
+                x: offset[0].unwrap_to_mm(),
+                y: offset[1].unwrap_to_mm(),
             }
         } else {
             KPoint2d { x: 100.0, y: 100.0 }
@@ -1802,10 +1806,12 @@ region001 = region(point = [5mm, 5mm], sketch = sketch001)
 extrude001 = extrude(region001, length = 10mm)
 gdt::distance(
   edges = [
-    getCommonEdge(faces = [
+    {
+      sideFaces = [
       region001.tags.line4,
       region001.tags.line1
-    ])
+    ]
+    }
   ],
   tolerance = __TOLERANCE__,
   framePosition = __FRAME_POSITION__,
@@ -2130,6 +2136,33 @@ gdt::flatness(
                 .dimension
                 .as_ref()
                 .expect("expected new_annotation command to have a dimension");
+            // The fixture measures a face-API edge specifier, which is stored as
+            // an edge reference rather than a resolved engine entity id.
+            assert!(dimension.from_entity_id.is_none());
+            assert!(dimension.to_entity_id.is_none());
+            assert_eq!(dimension.from_edge_reference, dimension.to_edge_reference);
+            assert_eq!(
+                dimension
+                    .from_edge_reference
+                    .as_ref()
+                    .expect("expected from_edge_reference")
+                    .side_faces
+                    .len(),
+                2
+            );
+            // Edge length uses endpoints; the same centroid twice would give zero distance.
+            assert_eq!(
+                dimension.from_entity_leader_pos,
+                Some(AnnotationMbdLeaderPosition::NormalizedPos {
+                    pos: KPoint2d { x: 0.0, y: 0.0 },
+                })
+            );
+            assert_eq!(
+                dimension.to_entity_leader_pos,
+                Some(AnnotationMbdLeaderPosition::NormalizedPos {
+                    pos: KPoint2d { x: 1.0, y: 0.0 },
+                })
+            );
             assert_close(dimension.dimension.tolerance.unwrap(), expected_tolerance);
             assert_close(dimension.offset.x, expected_x);
             assert_close(dimension.offset.y, expected_y);
@@ -2246,6 +2279,20 @@ __GDT_CALL__
             .expect("expected new_annotation command to have a dimension");
         assert!(dimension.from_entity_id.is_none());
         assert!(dimension.to_entity_id.is_none());
+        assert_eq!(dimension.from_edge_reference, dimension.to_edge_reference);
+        // Edge length uses endpoints; the same centroid twice would give zero distance.
+        assert_eq!(
+            dimension.from_entity_leader_pos,
+            Some(AnnotationMbdLeaderPosition::NormalizedPos {
+                pos: KPoint2d { x: 0.0, y: 0.0 },
+            })
+        );
+        assert_eq!(
+            dimension.to_entity_leader_pos,
+            Some(AnnotationMbdLeaderPosition::NormalizedPos {
+                pos: KPoint2d { x: 1.0, y: 0.0 },
+            })
+        );
         assert_eq!(
             dimension
                 .from_edge_reference
@@ -2291,6 +2338,15 @@ __GDT_CALL__
             .expect("expected new_annotation command to have a dimension");
         assert!(dimension.from_entity_id.is_none());
         assert!(dimension.to_entity_id.is_none());
+        // `from`/`to` measures between entity centers, so both positions use centroids.
+        assert_eq!(
+            dimension.from_entity_leader_pos,
+            Some(AnnotationMbdLeaderPosition::Centroid {})
+        );
+        assert_eq!(
+            dimension.to_entity_leader_pos,
+            Some(AnnotationMbdLeaderPosition::Centroid {})
+        );
         assert_eq!(
             dimension
                 .from_edge_reference
@@ -2500,7 +2556,7 @@ blockProfile = sketch(on = XY) {
 }
 
 block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
-profileEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+profileEdge = { sideFaces = [block.sketch.tags.edge1, top] }
 gdt::profileLine(edges = [profileEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
 "#;
 
@@ -2523,7 +2579,7 @@ blockProfile = sketch(on = XY) {
 }
 
 block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
-profileEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+profileEdge = { sideFaces = [block.sketch.tags.edge1, top] }
 gdt::profile(edges = [profileEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
 "#;
 
@@ -2568,7 +2624,7 @@ blockProfile = sketch(on = XY) {
 }
 
 block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
-profileEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+profileEdge = { sideFaces = [block.sketch.tags.edge1, top] }
 gdt::profile(edges = [profileEdge], faces = [top], tolerance = 0.05mm)
 "#;
 
@@ -2672,7 +2728,7 @@ cylinderSketch = sketch(on = XY) {
 }
 
 cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm, tagEnd = $top)
-topEdge = getCommonEdge(faces = [cylinder.sketch.tags.perimeter, top])
+topEdge = { sideFaces = [cylinder.sketch.tags.perimeter, top] }
 gdt::circularity(edges = [topEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
 "#;
 
@@ -2742,7 +2798,7 @@ cylinderSketch = sketch(on = XY) {
 }
 
 cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm, tagEnd = $top)
-topEdge = getCommonEdge(faces = [cylinder.sketch.tags.perimeter, top])
+topEdge = { sideFaces = [cylinder.sketch.tags.perimeter, top] }
 gdt::cylindricity(edges = [topEdge], tolerance = 0.05mm, framePosition = [-12mm, 8mm], framePlane = XZ)
 "#;
 
@@ -2814,7 +2870,7 @@ referenceFeatureBSketch = sketch(on = XY) {
 
 referenceFeatureB = extrude(region(point = referenceFeatureBSketch.perimeter.center, sketch = referenceFeatureBSketch), length = 12mm, tagEnd = $endB)
   |> translate(z = -12mm)
-endEdgeB = getCommonEdge(faces = [referenceFeatureB.sketch.tags.perimeter, endB])
+endEdgeB = { sideFaces = [referenceFeatureB.sketch.tags.perimeter, endB] }
 
 gdt::datum(face = datumA.sketch.tags.perimeter, name = "A", framePosition = [10mm, -12mm], framePlane = XZ)
 gdt::concentricity(edges = [endEdgeB], tolerance = 0.2mm, datums = ["A"], framePosition = [-18mm, 12mm], framePlane = XZ)
@@ -2924,7 +2980,7 @@ latchProfile = sketch(on = XZ) {
 
 latchBlockRegion = region(point = [0mm, 0mm], sketch = latchProfile)
 latchBlock = extrude(latchBlockRegion, length = 12mm, tagEnd = $frontFace)
-grooveFloorFrontEdge = getCommonEdge(faces = [latchBlock.sketch.tags.grooveFloor, frontFace])
+grooveFloorFrontEdge = { sideFaces = [latchBlock.sketch.tags.grooveFloor, frontFace] }
 
 gdt::datum(face = latchBlock.sketch.tags.bottom, name = "A", framePosition = [0mm, -16mm], framePlane = XZ)
 gdt::symmetry(edges = [grooveFloorFrontEdge], tolerance = 0.2mm, datums = ["A"], framePosition = [-24mm, 14mm], framePlane = XZ)
@@ -2998,10 +3054,10 @@ controlledShaft = extrude(
   tagEnd = $controlledFreeEnd
 )
 
-controlledUpperShoulderEdge = getCommonEdge(faces = [
+controlledUpperShoulderEdge = { sideFaces = [
   controlledShaft.sketch.tags.upperPerimeter,
   controlledShoulder
-])
+] }
 
 datumSketch = sketch(on = YZ) {
   perimeter = circle(start = [var 18mm, var 0mm], center = [var 0mm, var 0mm])

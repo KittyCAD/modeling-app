@@ -1,5 +1,7 @@
+import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { useAppState } from '@src/AppState'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { getKclLanguageVersion } from '@src/lang/kclLanguageVersion'
 import type { KclManager } from '@src/lang/KclManager'
 import { useSingletons } from '@src/lib/boot'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
@@ -15,7 +17,7 @@ import {
   getSettingsFromActorContext,
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
-import { reportRejection } from '@src/lib/trap'
+import { isErr, reportRejection } from '@src/lib/trap'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import { useRef } from 'react'
 
@@ -30,7 +32,9 @@ const attemptToConnectToEngine = async ({
   setIsSceneReady,
   timeToConnect,
   engineCommandManager,
+  kclVersion,
   rustContext,
+  prepareForReconnect,
 }: {
   authToken: string
   videoWrapperRef: React.RefObject<HTMLDivElement | null>
@@ -39,7 +43,9 @@ const attemptToConnectToEngine = async ({
   setIsSceneReady: React.Dispatch<React.SetStateAction<boolean>>
   timeToConnect: number
   engineCommandManager: ConnectionManager
+  kclVersion?: KclVersion
   rustContext: RustContext
+  prepareForReconnect: (signal: AbortSignal) => Promise<undefined | Error>
 }) => {
   const codecError = await preflightEngineVideoCodecSupport()
   if (codecError) {
@@ -91,6 +97,8 @@ const attemptToConnectToEngine = async ({
             setAppState({ isStreamReady: true })
           },
           rustContext,
+          kclVersion,
+          prepareForReconnect,
         })
 
         if (!videoRef.current) {
@@ -149,6 +157,15 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
   kclManager: KclManager
   rustContext: RustContext
 }) => {
+  const connection = engineCommandManager.connection
+  const reconnectCameraState = sceneInfra.camControls.reconnectCameraState
+  sceneInfra.camControls.reconnectCameraState = undefined
+  if (!reconnectCameraState && sceneInfra.camControls.oldCameraState) {
+    // Idle reconnects honor projection settings changed while disconnected.
+    sceneInfra.camControls.overrideOldCameraStateToPreventDesync()
+  }
+  const cameraState =
+    reconnectCameraState ?? sceneInfra.camControls.oldCameraState
   const providedSettings = getSettingsFromActorContext(settingsActor)
   const settings = jsAppSettings(providedSettings)
   EngineDebugger.addLog({
@@ -164,32 +181,48 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
     settings,
     kclManager.path || undefined
   )
+  if (engineCommandManager.connection !== connection) {
+    return
+  }
+  if (cameraState) {
+    // Restore both idle and requested reconnect cameras before rebuilding.
+    await sceneInfra.camControls.setCameraView(cameraState)
+    if (engineCommandManager.connection !== connection) {
+      return
+    }
+  }
   EngineDebugger.addLog({
     label: 'onEngineConnectionReadyForRequests',
     message: 'kclManager.executeCode()',
   })
+  // Rebuild from current source instead of replaying a queued execution from previous connection.
+  kclManager.executeIsStale = null
   await kclManager.executeCode()
+  // This prevents an old rebuild from restoring its camera onto a replacement connection.
+  if (engineCommandManager.connection !== connection) {
+    return
+  }
   // TODO: resolve the ~12 remaining dependent playwright tests on this functions isPlaywright() check
   // Once zoom to fit and view isometric work on empty scenes (only grid planes) we can improve the functions
   // business logic
 
   // A named view outlives the connection that showed it, and the new connection
   // has neither its visibility nor its camera.
-  const restoredNamedViewCamera =
-    await reapplyActiveViewAfterReconnect(kclManager)
+  const restoredNamedViewCamera = await reapplyActiveViewAfterReconnect(
+    kclManager,
+    { restoreCamera: cameraState === undefined }
+  )
 
-  // Skipped when the view placed the camera, which both branches would undo.
-  if (!restoredNamedViewCamera) {
-    // This means you idled, otherwise you use the reset camera position
-    if (sceneInfra.camControls.oldCameraState) {
-      await sceneInfra.camControls.restoreRemoteCameraStateAndTriggerSync()
-    } else {
-      await resetCameraPosition({
-        sceneInfra,
-        engineCommandManager,
-        settingsActor,
-      })
-    }
+  if (engineCommandManager.connection !== connection) {
+    return
+  }
+
+  if (!cameraState && !restoredNamedViewCamera) {
+    await resetCameraPosition({
+      sceneInfra,
+      engineCommandManager,
+      settingsActor,
+    })
   }
 
   // Since you reconnected you are not idle, clear the old camera state
@@ -255,6 +288,8 @@ export async function tryConnecting({
           numberOfConnectionAttempts.current + 1
 
         try {
+          const instance = await rustContext.wasmInstancePromise
+          const kclVersion = getKclLanguageVersion(kclManager.code, instance)
           // Has a time to connect window, if it does not connect, it will go to the next attempt
           await attemptToConnectToEngine({
             authToken: authToken,
@@ -264,7 +299,11 @@ export async function tryConnecting({
             setIsSceneReady,
             timeToConnect,
             engineCommandManager,
+            // Invalid source can still connect; execution reports its diagnostics.
+            kclVersion: isErr(kclVersion) ? undefined : kclVersion,
             rustContext,
+            prepareForReconnect: (signal) =>
+              sceneInfra.camControls.captureCameraForReconnect(signal),
           })
 
           // Do not count the 30 second timer to connect within the kcl execution and scene setup

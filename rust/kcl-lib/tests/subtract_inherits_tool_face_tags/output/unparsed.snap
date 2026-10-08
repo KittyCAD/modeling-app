@@ -1,0 +1,59 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing subtract_inherits_tool_face_tags.kcl
+---
+@settings(kclVersion = "3.0-preview")
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 15.15mm, var 0mm])
+  line2 = line(start = [var 15.15mm, var 0mm], end = [var 15.15mm, var 15.87mm])
+  line3 = line(start = [var 15.15mm, var 15.87mm], end = [var 0mm, var 15.87mm])
+  line4 = line(start = [var 0mm, var 15.87mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+  coincident([line1.start, ORIGIN])
+}
+hidden001 = hide(sketch001)
+region001 = region(segments = [sketch001.line4, sketch001.line1])
+extrude001 = extrude(region001, length = 5)
+sketch002 = sketch(on = XY) {
+  line1 = line(start = [var -7.63mm, var 11.01mm], end = [var 17.36mm, var 11.01mm])
+  line2 = line(start = [var 17.36mm, var 11.01mm], end = [var 17.36mm, var 3.82mm])
+  line3 = line(start = [var 17.36mm, var 3.82mm], end = [var -7.63mm, var 3.82mm])
+  line4 = line(start = [var -7.63mm, var 3.82mm], end = [var -7.63mm, var 11.01mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+hidden002 = hide(sketch002)
+region002 = region(segments = [sketch002.line1, sketch002.line2], direction = CW)
+extrude002 = extrude(
+  region002,
+  length = 4,
+  method = NEW,
+  tagEnd = $tagEnd001,
+)
+solid001 = subtract(extrude001, tools = extrude002)
+fillet001 = fillet(
+  solid001,
+  edges = [
+    {
+      sideFaces = [
+        region002.tags.line3,
+        solid001.faces.tagEnd001
+      ]
+    }
+  ],
+  radius = 1,
+)
