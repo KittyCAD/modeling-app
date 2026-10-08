@@ -464,9 +464,23 @@ export const sketchSolveMachine = setup({
   },
   actors: {
     positionSketchCamera: fromPromise(
-      async ({ input, signal }: { input: KclManager; signal: AbortSignal }) => {
-        await input.sceneInfra.camControls.transitionToSketch(
-          input.sceneEntitiesManager.sketchSolveGroup,
+      async ({
+        input,
+        signal,
+      }: {
+        input: Pick<SketchSolveContext, 'kclManager' | 'initialPlane'>
+        signal: AbortSignal
+      }) => {
+        const { sceneEntitiesManager, sceneInfra } = input.kclManager
+        // An actor invoked by the initial state starts before the machine's
+        // entry actions run, so the sketch has to be oriented here first.
+        if (input.initialPlane) {
+          sceneEntitiesManager.initSketchSolveEntityOrientation(
+            input.initialPlane
+          )
+        }
+        await sceneInfra.camControls.transitionToSketch(
+          sceneEntitiesManager.sketchSolveGroup,
           signal
         )
       }
@@ -966,7 +980,10 @@ export const sketchSolveMachine = setup({
     'positioning camera': {
       invoke: {
         src: 'positionSketchCamera',
-        input: ({ context }) => context.kclManager,
+        input: ({ context }) => ({
+          kclManager: context.kclManager,
+          initialPlane: context.initialPlane,
+        }),
         onDone: 'move and select',
         onError: {
           target: 'exiting with cleanup',

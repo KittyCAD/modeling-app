@@ -2,6 +2,7 @@ import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import type { KclManager } from '@src/lang/KclManager'
 import { Themes } from '@src/lib/theme'
+import type { DefaultPlane } from '@src/machines/modelingSharedTypes'
 import { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 import { CHILD_TOOL_DONE_EVENT } from '@src/machines/sketchSolve/sketchSolveImpl'
 import {
@@ -89,7 +90,8 @@ function createSketchSolveHarness(
   geometryOnly = false,
   transitionToSketch = vi
     .fn<(sketch: Group, signal?: AbortSignal) => Promise<void>>()
-    .mockResolvedValue(undefined)
+    .mockResolvedValue(undefined),
+  initialSketchSolvePlane: DefaultPlane | null = null
 ) {
   const scene = new Group()
   const sketchSolveGroup = new Group()
@@ -120,6 +122,7 @@ function createSketchSolveHarness(
     theme: Themes.Light,
   }
   const rustContext = createMockRustContext()
+  const initSketchSolveEntityOrientation = vi.fn()
   const kclManager = {
     engineCommandManager: { geometryOnly },
     code: 'sketch001 = startSketchOn(XY)',
@@ -131,7 +134,7 @@ function createSketchSolveHarness(
     },
     sceneInfra,
     sceneEntitiesManager: {
-      initSketchSolveEntityOrientation: vi.fn(),
+      initSketchSolveEntityOrientation,
       sketchSolveGroup,
     },
     rustContext,
@@ -155,7 +158,7 @@ function createSketchSolveHarness(
     {
       input: {
         kclManager: kclManager as unknown as KclManager,
-        initialSketchSolvePlane: null,
+        initialSketchSolvePlane,
         sketchId: 0,
         initialSceneGraphDelta: createSceneGraphDelta(objects),
       },
@@ -170,6 +173,7 @@ function createSketchSolveHarness(
     scene,
     transitionToSketch,
     sketchSolveGroup,
+    initSketchSolveEntityOrientation,
   }
 }
 
@@ -185,6 +189,22 @@ describe('sketchSolveMachine camera entry', () => {
     await vi.waitFor(() =>
       expect(actor.getSnapshot().matches('move and select')).toBe(true)
     )
+  })
+
+  it('orients the sketch before framing the local camera', () => {
+    const plane: DefaultPlane = {
+      type: 'defaultPlane',
+      plane: 'XZ',
+      planeId: 'plane-id',
+      zAxis: [0, -1, 0],
+      yAxis: [0, 0, 1],
+    }
+    const { transitionToSketch, initSketchSolveEntityOrientation } =
+      createSketchSolveHarness([], true, undefined, plane)
+    expect(initSketchSolveEntityOrientation).toHaveBeenCalledWith(plane)
+    expect(
+      initSketchSolveEntityOrientation.mock.invocationCallOrder[0]
+    ).toBeLessThan(transitionToSketch.mock.invocationCallOrder[0])
   })
 
   it('does not schedule local framing for streamed mode', () => {
