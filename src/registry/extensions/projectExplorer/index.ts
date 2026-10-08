@@ -1,7 +1,6 @@
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
   provide,
 } from '@kittycad/registry'
 import { computed, signal } from '@preact/signals-core'
@@ -95,18 +94,16 @@ const importInCurrentFileExtension = defineRegistryItemFactory((ctx) => {
   })
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'project-explorer.import-in-current-file',
-      provides: [
-        provide(projectExplorerRowContextMenuItemsValueSpec, importItem, {
-          key: 'import-in-current-file',
-        }),
-      ],
-      dispose: () => {
-        disposed = true
-        stopWasmSubscription?.()
-      },
-    }),
+    id: 'project-explorer.import-in-current-file',
+    provides: [
+      provide(projectExplorerRowContextMenuItemsValueSpec, importItem, {
+        key: 'import-in-current-file',
+      }),
+    ],
+    dispose: () => {
+      disposed = true
+      stopWasmSubscription?.()
+    },
   }
 }, 'project-explorer.import-in-current-file')
 

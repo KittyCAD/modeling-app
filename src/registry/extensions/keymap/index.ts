@@ -1,7 +1,6 @@
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
   provide,
   provideService,
 } from '@kittycad/registry'
@@ -488,45 +487,43 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
   }
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'keymap-extension',
-      providesServices: [
-        provideService(commandScopeService, scopeServiceImpl),
-        provideService(keymapService, serviceImpl),
-      ],
-      provides: [
-        ...DEFAULT_COMMAND_SCOPES.map((scope) =>
-          provide(commandScopesValueSpec, scope, { key: scope.id })
+    id: 'keymap-extension',
+    providesServices: [
+      provideService(commandScopeService, scopeServiceImpl),
+      provideService(keymapService, serviceImpl),
+    ],
+    provides: [
+      ...DEFAULT_COMMAND_SCOPES.map((scope) =>
+        provide(commandScopesValueSpec, scope, { key: scope.id })
+      ),
+      provide(
+        statusBarLocalItemsValueSpec,
+        computed((): StatusBarItemType | null =>
+          partialMatch.value
+            ? {
+                id: 'keymap.partial-match',
+                component: PartialMatchStatusBarItem,
+                order: -100,
+              }
+            : null
         ),
-        provide(
-          statusBarLocalItemsValueSpec,
-          computed((): StatusBarItemType | null =>
-            partialMatch.value
-              ? {
-                  id: 'keymap.partial-match',
-                  component: PartialMatchStatusBarItem,
-                  order: -100,
-                }
-              : null
-          ),
-          { key: 'keymap.partial-match' }
-        ),
-      ],
-      dispose: () => {
-        clearPendingKeystrokes()
-        if (typeof window !== 'undefined') {
-          window.removeEventListener('keydown', handleGlobalKeyDown, {
-            capture: true,
-          })
-          window.removeEventListener('focusin', handleGlobalFocusIn, {
-            capture: true,
-          })
-          window.removeEventListener('pointerdown', handleGlobalPointerDown, {
-            capture: true,
-          })
-        }
-      },
-    }),
+        { key: 'keymap.partial-match' }
+      ),
+    ],
+    dispose: () => {
+      clearPendingKeystrokes()
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('keydown', handleGlobalKeyDown, {
+          capture: true,
+        })
+        window.removeEventListener('focusin', handleGlobalFocusIn, {
+          capture: true,
+        })
+        window.removeEventListener('pointerdown', handleGlobalPointerDown, {
+          capture: true,
+        })
+      }
+    },
   }
 }, 'keymap-extension')
 

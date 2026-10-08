@@ -1,7 +1,6 @@
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
   provideService,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
@@ -68,13 +67,11 @@ export const runtimeExtension = defineRegistryItemFactory(() => {
   }
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'runtime-extension',
-      providesServices: [provideService(runtimeService, serviceImpl)],
-      dispose: () => {
-        stopEnvironmentSync()
-      },
-    }),
+    id: 'runtime-extension',
+    providesServices: [provideService(runtimeService, serviceImpl)],
+    dispose: () => {
+      stopEnvironmentSync()
+    },
   }
 }, 'runtime-extension')
 
