@@ -193,19 +193,18 @@ export const ZookeeperConversationPane = (props: {
     reportingMigration,
     controller,
   ])
-  const persistedPromptIds = new Set(
-    conversation?.exchanges.flatMap((exchange) =>
-      exchange.responses.flatMap((response) =>
-        'end_of_stream' in response && response.end_of_stream.id
-          ? [response.end_of_stream.id]
-          : []
-      )
-    ) ?? []
-  )
+  const promptPositions = new Map<string, number>()
+  conversation?.exchanges.forEach((exchange, index) => {
+    for (const response of exchange.responses) {
+      if (!('end_of_stream' in response)) continue
+      const id = response.end_of_stream.id
+      if (id && !promptPositions.has(id)) promptPositions.set(id, index + 1)
+    }
+  })
   const persistedOperations = new Set(
     props.migrationHistory?.entries.value
       .filter(
-        (entry) => entry.prompt_id && persistedPromptIds.has(entry.prompt_id)
+        (entry) => entry.prompt_id && promptPositions.has(entry.prompt_id)
       )
       .map((entry) => entry.operation_id) ?? []
   )
@@ -269,7 +268,8 @@ export const ZookeeperConversationPane = (props: {
             id: entry.operation_id,
             afterExchange: migrationHistoryPosition(
               entry,
-              conversation?.exchanges ?? []
+              promptPositions,
+              conversation?.exchanges.length ?? 0
             ),
             content: (
               <KclMigrationHistoryEntry
