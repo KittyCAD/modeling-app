@@ -260,7 +260,9 @@ const withGdtDefaults = <
   })
 
 export const modelingCommandCodemods = {
-  'Named View': withArtifactGraph('Named View', addNamedView),
+  'Named View': withArtifactGraph('Named View', addNamedView, {
+    focusPath: false,
+  }),
   Extrude: withArtifactGraph('Extrude', addExtrude),
   Sweep: withArtifactGraph('Sweep', addSweep),
   Loft: withArtifactGraph('Loft', addLoft),

@@ -10,15 +10,12 @@ import { findUniqueName } from '@src/lang/create'
 import { createModelingCodemodCommand } from '@src/lang/modifyAst/modelingCodemod'
 import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
 import type { Artifact, PathToNode } from '@src/lang/wasm'
+import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import {
   modelingStdLibCommandArgs,
   modelingStdLibCommandStatus,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
-import {
-  namedViewLayout,
-  namedViewArgs,
-} from '@src/lib/commandBarConfigs/modelingCommands/namedView'
 import type {
   CommandArgumentConfig,
   KclCommandValue,
@@ -233,6 +230,12 @@ type WithCommandBarEditFlowArgs<Schema> = {
 const isEditingNode = (context: {
   argumentsToSubmit: Record<string, unknown>
 }) => Boolean(context.argumentsToSubmit.nodeToEdit)
+
+// Custom camera expressions remain untouched when editing a named view.
+const preserveNamedViewCamera = (context: {
+  argumentsToSubmit: Record<string, unknown>
+}) =>
+  isEditingNode(context) && context.argumentsToSubmit.orientation === undefined
 
 const isEditingNodeSelection = (context: {
   argumentsToSubmit: Record<string, unknown>
@@ -650,14 +653,77 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'namedView',
     status: modelingStdLibCommandStatus('Named View'),
     needsReview: true,
-    dialogLayout: namedViewLayout,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods['Named View']
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods['Named View']),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Named View']>(
       'Named View',
       {
-        overrides: namedViewArgs,
+        overrides: {
+          orientation: {
+            inputType: 'options',
+            required: (context) => !preserveNamedViewCamera(context),
+            hidden: preserveNamedViewCamera,
+            defaultValue: (context: CommandBarContext) =>
+              isEditingNode(context) ? undefined : 'Isometric',
+            options: [
+              { name: 'Isometric', value: 'Isometric', isCurrent: true },
+              { name: 'Front', value: 'Front' },
+              { name: 'Back', value: 'Back' },
+              { name: 'Left', value: 'Left' },
+              { name: 'Right', value: 'Right' },
+              { name: 'Top', value: 'Top' },
+              { name: 'Bottom', value: 'Bottom' },
+            ],
+          },
+          projection: {
+            inputType: 'options',
+            required: (context) => !preserveNamedViewCamera(context),
+            hidden: preserveNamedViewCamera,
+            defaultValue: 'Orthographic',
+            options: [
+              { name: 'Orthographic', value: 'Orthographic', isCurrent: true },
+              { name: 'Perspective', value: 'Perspective' },
+            ],
+          },
+          baseline: {
+            inputType: 'options',
+            required: true,
+            defaultValue: 'Show',
+            options: [
+              { name: 'Show all', value: 'Show', isCurrent: true },
+              { name: 'Hide all', value: 'Hide' },
+            ],
+          },
+          except: {
+            inputType: 'selection',
+            displayName: 'Exceptions',
+            selectionTypes: [
+              'path',
+              'pathRegion',
+              'sketchBlock',
+              'sweep',
+              'compositeSolid',
+              'gdtAnnotation',
+              'helix',
+              'plane',
+              'importedGeometry',
+            ],
+            multiple: true,
+            required: false,
+            dialog: { editableSelection: true },
+          },
+          target: {
+            inputType: 'vector3d',
+            required: false,
+            hidden: preserveNamedViewCamera,
+            dialog: { advanced: true },
+          },
+          distance: {
+            inputType: 'kcl',
+            required: false,
+            hidden: preserveNamedViewCamera,
+            dialog: { advanced: true },
+          },
+        },
       }
     ),
   },

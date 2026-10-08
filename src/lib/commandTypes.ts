@@ -209,7 +209,11 @@ export type CommandArgumentConfig<
   /** If `true`, this argument will be automatically prepopulated with default value, but may still be cleared */
   prepopulate?: boolean
   /** Collapse this field under Show more; its value is still submitted. */
-  dialog?: { advanced?: boolean }
+  dialog?: {
+    advanced?: boolean
+    /** Opt in when the codemod supports changing selections during edits. */
+    editableSelection?: boolean
+  }
   /** For showing a summary display of the current value, such as in
    *  the command bar's header
    */
@@ -404,7 +408,11 @@ export type CommandArgument<
   /** If `true`, this argument will be automatically prepopulated with default value, but may still be cleared */
   prepopulate?: boolean
   /** Collapse this field under Show more; its value is still submitted. */
-  dialog?: { advanced?: boolean }
+  dialog?: {
+    advanced?: boolean
+    /** Opt in when the codemod supports changing selections during edits. */
+    editableSelection?: boolean
+  }
   skip?: boolean
   machineActor?: Actor<T>
   /** For showing a summary display of the current value, such as in

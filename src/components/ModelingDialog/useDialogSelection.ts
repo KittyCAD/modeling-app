@@ -6,6 +6,7 @@ import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
   hasValue,
+  canEditSelection,
   isSelections,
   type DialogField,
   type SelectionArgument,
@@ -34,14 +35,16 @@ export function useDialogSelection(
 
   function select(name: string, arg: SelectionArgument) {
     if (activeName === name) return
-    if (context.argumentsToSubmit.nodeToEdit) return
+    if (!canEditSelection(context, arg)) return
     if (activeName) save(activeName, structuredClone(selectionRanges))
     const saved = Object.hasOwn(values, name)
       ? values[name]
       : context.argumentsToSubmit[name]
     const selection = isSelections(saved)
       ? saved
-      : arg.clearSelectionFirst || activated.current
+      : arg.clearSelectionFirst ||
+          activated.current ||
+          context.argumentsToSubmit.nodeToEdit
         ? emptySelection
         : selectionRanges
     commands.send({
