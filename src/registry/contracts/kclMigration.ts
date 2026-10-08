@@ -1,6 +1,6 @@
 import { defineContract, defineService } from '@kittycad/registry'
 import type { ReadonlySignal } from '@preact/signals-core'
-import type { ZDSProject } from '@src/lang/KclManager'
+import type { ZDSProject } from '@src/lib/projectSession'
 import type { MigrationController } from '@src/lib/kclMigration/controller'
 
 export interface MigrationTurn {

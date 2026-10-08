@@ -1,7 +1,7 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import { KclMigrationStart } from '@src/components/KclMigrationPanel'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
-import type { ZDSProject } from '@src/lang/KclManager'
+import type { ZDSProject } from '@src/lib/projectSession'
 import type { App } from '@src/lib/app'
 import { MigrationController } from '@src/lib/kclMigration/controller'
 import {

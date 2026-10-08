@@ -1,5 +1,5 @@
 import { Compartment, EditorState, StateEffect } from '@codemirror/state'
-import type { ZDSProject } from '@src/lang/KclManager'
+import type { ZDSProject } from '@src/lib/projectSession'
 import { kclSettings } from '@src/lang/wasm'
 import type { App } from '@src/lib/app'
 import { cloudSyncService } from '@src/lib/cloudSync/registry/contract'
