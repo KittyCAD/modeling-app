@@ -288,26 +288,31 @@ mod tests {
         result.variable("len").as_ty_f64().expect("`len` should be a number")
     }
 
+    /// The KCL versions every test runs under.
+    const VERSIONS: [&str; 2] = ["2.0", "3.0"];
+
     /// Draws a line along +X to [10, 0] and then `segment` (which must tag
     /// itself `$arc`), and checks `segLen(arc)` against `expected` for each
     /// case. The line gives the tangential arcs their starting direction.
     async fn assert_arc_lengths(cases: &[(&str, f64)]) {
-        for (segment, expected) in cases {
-            let code = format!(
-                "@settings(kclVersion = 2.0)
+        for version in VERSIONS {
+            for (segment, expected) in cases {
+                let code = format!(
+                    "@settings(kclVersion = {version})
 s = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
   |> {segment}
 len = segLen(arc)"
-            );
-            let len = seg_len_of(&code).await;
-            assert!(
-                (len.n - expected).abs() < 1e-9,
-                "expected segLen(arc) = {expected}, got {} for:\n{code}",
-                len.n
-            );
-            assert_eq!(len.ty, NumericType::length(UnitLength::Millimeters), "{code}");
+                );
+                let len = seg_len_of(&code).await;
+                assert!(
+                    (len.n - expected).abs() < 1e-9,
+                    "expected segLen(arc) = {expected}, got {} for:\n{code}",
+                    len.n
+                );
+                assert_eq!(len.ty, NumericType::length(UnitLength::Millimeters), "{code}");
+            }
         }
     }
 
@@ -437,46 +442,85 @@ len = segLen(arc)"
 
     #[tokio::test(flavor = "multi_thread")]
     async fn seg_len_of_a_circle_is_its_circumference() {
-        // p1, p2 and p3 lie on a circle of radius 5 * sqrt(2) centered at [5, 5].
-        let three_point = seg_len_of(
-            "@settings(kclVersion = 2.0)
+        for version in VERSIONS {
+            // p1, p2 and p3 lie on a circle of radius 5 * sqrt(2) centered at [5, 5].
+            let three_point = seg_len_of(&format!(
+                "@settings(kclVersion = {version})
 c = startSketchOn(XY)
   |> circleThreePoint(p1 = [0, 0], p2 = [10, 0], p3 = [0, 10], tag = $circ)
-len = segLen(circ)",
-        )
-        .await;
-        assert!(
-            (three_point.n - 10.0 * PI * 2f64.sqrt()).abs() < 1e-9,
-            "got {}",
-            three_point.n
-        );
+len = segLen(circ)"
+            ))
+            .await;
+            assert!(
+                (three_point.n - 10.0 * PI * 2f64.sqrt()).abs() < 1e-9,
+                "got {} in KCL {version}",
+                three_point.n
+            );
 
-        let by_radius = seg_len_of(
-            "@settings(kclVersion = 2.0)
+            let by_radius = seg_len_of(&format!(
+                "@settings(kclVersion = {version})
 c = startSketchOn(XY)
   |> circle(center = [0, 0], radius = 5, tag = $circ)
-len = segLen(circ)",
-        )
-        .await;
-        assert!((by_radius.n - 10.0 * PI).abs() < 1e-9, "got {}", by_radius.n);
+len = segLen(circ)"
+            ))
+            .await;
+            assert!(
+                (by_radius.n - 10.0 * PI).abs() < 1e-9,
+                "got {} in KCL {version}",
+                by_radius.n
+            );
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn seg_len_of_an_arc_keeps_the_sketch_units() {
         // A quarter turn of radius 10in is 5 * pi inches, however the radius
         // was written.
-        for radius in ["10", "254mm"] {
-            let code = format!(
-                "@settings(kclVersion = 2.0, defaultLengthUnit = in)
+        for version in VERSIONS {
+            for radius in ["10", "254mm"] {
+                let code = format!(
+                    "@settings(kclVersion = {version}, defaultLengthUnit = in)
 s = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
   |> tangentialArc(angle = 90deg, radius = {radius}, tag = $arc)
 len = segLen(arc)"
-            );
-            let len = seg_len_of(&code).await;
-            assert!((len.n - 5.0 * PI).abs() < 1e-9, "got {} for:\n{code}", len.n);
-            assert_eq!(len.ty, NumericType::length(UnitLength::Inches), "{code}");
+                );
+                let len = seg_len_of(&code).await;
+                assert!((len.n - 5.0 * PI).abs() < 1e-9, "got {} for:\n{code}", len.n);
+                assert_eq!(len.ty, NumericType::length(UnitLength::Inches), "{code}");
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn seg_len_of_a_tiny_arc_is_the_same_in_mm_and_m_files() {
+        // The same tiny arc, written in a mm file and in a m file. Its ends are
+        // about 1.7e-7 mm apart. That is more than the "same point" tolerance
+        // (about 2.3e-10 mm), so it is not a full circle in either file.
+        // Radius 1000mm, angle 1e-8 degrees.
+        let expected_mm = 1000.0 * 1e-8_f64.to_radians();
+        for version in VERSIONS {
+            for (unit, unit_length, line, radius, to_mm) in [
+                ("mm", UnitLength::Millimeters, 10000, 1000, 1.0),
+                ("m", UnitLength::Meters, 10, 1, 1000.0),
+            ] {
+                let code = format!(
+                    "@settings(kclVersion = {version}, defaultLengthUnit = {unit})
+s = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [{line}, 0])
+  |> tangentialArc(angle = 0.00000001deg, radius = {radius}, tag = $arc)
+len = segLen(arc)"
+                );
+                let len = seg_len_of(&code).await;
+                assert_eq!(len.ty, NumericType::length(unit_length), "{code}");
+                let got_mm = len.n * to_mm;
+                assert!(
+                    (got_mm - expected_mm).abs() < 1e-3 * expected_mm,
+                    "expected {expected_mm}mm, got {got_mm}mm for:\n{code}"
+                );
+            }
         }
     }
 }

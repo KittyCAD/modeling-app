@@ -2003,7 +2003,8 @@ impl Path {
             Self::TangentialArc { center, ccw, .. }
             | Self::TangentialArcTo { center, ccw, .. }
             | Self::Arc { center, ccw, .. } => {
-                Some(arc_length(&self.get_base().from, &self.get_base().to, center, *ccw))
+                let base = self.get_base();
+                Some(arc_length(&base.from, &base.to, center, *ccw, base.units))
             }
             Self::Circle { radius, .. } => Some(TAU * radius),
             Self::CircleThreePoint { p1, p2, p3, .. } => {
@@ -2013,7 +2014,7 @@ impl Path {
             Self::ArcThreePoint { p1, p2, p3, .. } => {
                 let circle = crate::std::utils::calculate_circle_from_3_points([*p1, *p2, *p3]);
                 let ccw = crate::std::utils::is_points_ccw(&[*p1, *p2, *p3]) > 0;
-                Some(arc_length(p1, p3, &circle.center, ccw))
+                Some(arc_length(p1, p3, &circle.center, ccw, self.get_base().units))
             }
             Self::Ellipse { .. } => {
                 // Not supported.
@@ -2125,11 +2126,14 @@ fn linear_distance(
 
 /// Length of the circular arc from `from` to `to` around `center`, going
 /// counterclockwise if `ccw` is true and clockwise otherwise. Coincident
-/// endpoints mean a full circle, not an empty arc.
-fn arc_length(from: &[f64; 2], to: &[f64; 2], center: &[f64; 2], ccw: bool) -> f64 {
+/// endpoints mean a full circle, not an empty arc. The points and the result
+/// are in `units`.
+fn arc_length(from: &[f64; 2], to: &[f64; 2], center: &[f64; 2], ccw: bool, units: UnitLength) -> f64 {
     // Both endpoints lie on the circle, so either one gives the radius.
     let radius = linear_distance(from, center);
-    let swept = if linear_distance(from, to) < EQUAL_POINTS_DIST_EPSILON {
+    // The tolerance is in mm, so compare the distance between the ends in mm.
+    let chord_mm = adjust_length(units, linear_distance(from, to), UnitLength::Millimeters).0;
+    let swept = if chord_mm < EQUAL_POINTS_DIST_EPSILON {
         TAU
     } else {
         let start = libm::atan2(from[1] - center[1], from[0] - center[0]);
