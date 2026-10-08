@@ -4412,7 +4412,7 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
     if is_callee_sketch_block(&fn_call.callee) && peek((opt(whitespace), open_brace)).parse_next(i).is_ok() {
         // We have `sketch() {`. Parse the block.
         ignore_whitespace(i);
-        let (_, body, close) = ParseContext::in_sketch_block(|| parse_block(i))?;
+        let (_, body, close) = ParseContext::in_sketch_block(|| parse_block(i)).map_err(|e| e.cut())?;
         let end = close.end;
 
         let Node {
@@ -6012,6 +6012,24 @@ mySk1 = startSketchOn(XY)
                 code = assert_statement_comma_error(&code, comma_start);
             }
             assert_no_err(&code);
+        }
+    }
+
+    #[test]
+    fn test_stray_token_in_sketch_block() {
+        // A stray token after a statement in a sketch block used to be reported at `sketch(`.
+        for version in ["2.0", "3.0"] {
+            for stray in [";", ")", "]"] {
+                let code = format!(
+                    "@settings(kclVersion = {version})
+s = sketch(on = XY) {{
+  s1 = line(start = [var 0, var 0], end = [var 1, var 0]){stray}
+  s2 = line(start = [var 1, var 0], end = [var 1, var 1])
+}}"
+                );
+                let start = code.find(&format!("]){stray}")).unwrap() + 2;
+                assert_err(&code, &format!("Unexpected token: {stray}"), [start, start + 1]);
+            }
         }
     }
 
