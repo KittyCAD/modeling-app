@@ -412,6 +412,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::path3d::arc3d(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::arc3d").reads_regions_locally(),
         ),
+        ("sketch", "filletCorner3d") => (
+            |e, a| Box::pin(crate::std::path3d::fillet_corner3d(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::sketch::filletCorner3d").reads_regions_locally(),
+        ),
         ("sketch", "tangentialArc3d") => (
             |e, a| Box::pin(crate::std::path3d::tangential_arc3d(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::sketch::tangentialArc3d").reads_regions_locally(),

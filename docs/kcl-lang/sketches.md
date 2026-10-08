@@ -38,6 +38,25 @@ exactly one of `end` or `endAbsolute`. The endpoint must be off the incoming
 tangent line. It keeps the start tangent when you move the preceding segment;
 a following line still needs to match the arc's exit direction.
 
+For a radius-defined corner that stays tangent to both legs when an endpoint
+changes, construct the whole section with `filletCorner3d`:
+
+```kcl
+@settings(kclVersion = 3.0, experimentalFeatures = allow)
+
+corner = [0mm, 0mm, 60mm]
+end = [15mm, 25mm, 65mm]
+route = startPath3d(at = [0mm, 0mm, 0mm])
+  |> filletCorner3d(cornerAbsolute = corner, endAbsolute = end, radius = 10mm)
+```
+
+This appends a line toward the corner, a circular arc, and a line to the
+endpoint. Both lines are shortened to meet the arc tangentially. The radius
+must leave nonzero straight portions on both legs; straight continuations
+and reversals are rejected. Existing segments are not trimmed, and tangency
+to an earlier path segment is not enforced. The resulting `Path3d` can be
+used as a `sweep` trajectory.
+
 Always pass the value returned by the most recent segment call. Complete the
 route before using it in `sweep`; a swept path cannot be extended. These paths
 are edited in code and appear as **3D Path** features. They do not create

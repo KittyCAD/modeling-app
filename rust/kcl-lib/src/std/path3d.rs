@@ -174,6 +174,129 @@ fn tangent_arc(
     Ok((interior, end_tangent))
 }
 
+struct CornerFillet {
+    entry: [f64; 3],
+    interior: [f64; 3],
+    exit: [f64; 3],
+    incoming: [f64; 3],
+    outgoing: [f64; 3],
+}
+
+/// Construct the whole corner before emitting any commands. Both straight
+/// portions must remain nonzero, and the arc must fit on both finite legs.
+fn corner_fillet(
+    start: [f64; 3],
+    corner: [f64; 3],
+    end: [f64; 3],
+    radius: f64,
+    range: SourceRange,
+) -> Result<CornerFillet, KclError> {
+    if !radius.is_finite() || radius <= POINT_TOLERANCE_MM {
+        return Err(argument_error(
+            "filletCorner3d requires a finite positive radius greater than the path tolerance.",
+            range,
+        ));
+    }
+    let a = delta(corner, start);
+    let b = delta(end, corner);
+    let a_len = length(a);
+    let b_len = length(b);
+    if !a_len.is_finite() || !b_len.is_finite() || !corner.iter().chain(end.iter()).all(|v| v.is_finite()) {
+        return Err(argument_error("3D path coordinates must be finite lengths.", range));
+    }
+    if a_len <= POINT_TOLERANCE_MM || b_len <= POINT_TOLERANCE_MM {
+        return Err(argument_error(
+            "filletCorner3d requires two nonzero corner legs.",
+            range,
+        ));
+    }
+    let incoming = a.map(|v| v / a_len);
+    let outgoing = b.map(|v| v / b_len);
+    let cosine = dot(incoming, outgoing).clamp(-1.0, 1.0);
+    let sine = length(cross(incoming, outgoing));
+    if sine <= 1.0e-8 {
+        return Err(argument_error(
+            "filletCorner3d requires a non-collinear corner, not a straight continuation or reversal.",
+            range,
+        ));
+    }
+    // Stable tan(turn/2), including turns approaching 180 degrees.
+    let tan_half = if cosine >= 0.0 {
+        sine / (1.0 + cosine)
+    } else {
+        (1.0 - cosine) / sine
+    };
+    let setback = radius * tan_half;
+    if !setback.is_finite() || a_len - setback <= POINT_TOLERANCE_MM || b_len - setback <= POINT_TOLERANCE_MM {
+        return Err(argument_error(
+            "filletCorner3d radius must leave a nonzero straight portion on both corner legs.",
+            range,
+        ));
+    }
+    let entry = std::array::from_fn(|i| corner[i] - setback * incoming[i]);
+    let exit = std::array::from_fn(|i| corner[i] + setback * outgoing[i]);
+    let (interior, _) = tangent_arc(entry, incoming, exit, range)?;
+    // World-coordinate rounding must not collapse either straight segment.
+    if length(delta(entry, start)) <= POINT_TOLERANCE_MM || length(delta(end, exit)) <= POINT_TOLERANCE_MM {
+        return Err(argument_error(
+            "The corner fillet cannot be represented with distinct tangent points.",
+            range,
+        ));
+    }
+    Ok(CornerFillet {
+        entry,
+        interior,
+        exit,
+        incoming,
+        outgoing,
+    })
+}
+
+pub async fn fillet_corner3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let mut path: Path3d = args.get_unlabeled_kw_arg("path", &RuntimeType::path3d(), exec_state)?;
+    validate_current_path(&path, exec_state, args.source_range)?;
+    let corner = point_mm(
+        args.get_kw_arg("cornerAbsolute", &RuntimeType::point3d(), exec_state)?,
+        args.source_range,
+    )?;
+    let end = point_mm(
+        args.get_kw_arg("endAbsolute", &RuntimeType::point3d(), exec_state)?,
+        args.source_range,
+    )?;
+    let radius: TyF64 = args.get_kw_arg("radius", &RuntimeType::length(), exec_state)?;
+    let fillet = corner_fillet(path.end, corner, end, radius.unwrap_to_mm(), args.source_range)?;
+    for (end, tangent, segment) in [
+        (
+            fillet.entry,
+            fillet.incoming,
+            PathSegment::Line {
+                end: engine_point(fillet.entry),
+                relative: false,
+            },
+        ),
+        (
+            fillet.exit,
+            fillet.outgoing,
+            PathSegment::ArcTo {
+                interior: engine_point(fillet.interior),
+                end: engine_point(fillet.exit),
+                relative: false,
+            },
+        ),
+        (
+            end,
+            fillet.outgoing,
+            PathSegment::Line {
+                end: engine_point(end),
+                relative: false,
+            },
+        ),
+    ] {
+        path = append_segment(path, end, tangent, segment, exec_state, args.clone()).await?;
+    }
+    Ok(KclValue::Path3d { value: Box::new(path) })
+}
+
 pub async fn tangential_arc3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let path: Path3d = args.get_unlabeled_kw_arg("path", &RuntimeType::path3d(), exec_state)?;
     validate_current_path(&path, exec_state, args.source_range)?;
@@ -347,13 +470,26 @@ pub async fn arc3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 }
 
 async fn append(
-    mut path: Path3d,
+    path: Path3d,
     end: [f64; 3],
     tangent: [f64; 3],
     segment: PathSegment,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<KclValue, KclError> {
+    Ok(KclValue::Path3d {
+        value: Box::new(append_segment(path, end, tangent, segment, exec_state, args).await?),
+    })
+}
+
+async fn append_segment(
+    mut path: Path3d,
+    end: [f64; 3],
+    tangent: [f64; 3],
+    segment: PathSegment,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Path3d, KclError> {
     let mut artifact = validate_current_path(&path, exec_state, args.source_range)?;
     if artifact.consumed {
         return Err(argument_error(
@@ -378,7 +514,7 @@ async fn append(
     path.segment_count += 1;
     artifact.seg_ids.push(id.into());
     exec_state.update_spatial_path_artifact(artifact);
-    Ok(KclValue::Path3d { value: Box::new(path) })
+    Ok(path)
 }
 
 pub(super) fn validate_current_path(
@@ -391,7 +527,7 @@ pub(super) fn validate_current_path(
         .ok_or_else(|| argument_error("The 3D path is no longer available in this execution.", range))?;
     if artifact.seg_ids.len() != path.segment_count {
         return Err(argument_error(
-            "This 3D path value is out of date. Use the result of the most recent line3d, arc3d, or tangentialArc3d call.",
+            "This 3D path value is out of date. Use the result of the most recent 3D path segment call.",
             range,
         ));
     }
@@ -417,6 +553,180 @@ mod tests {
     fn assert_point(actual: [f64; 3], expected: [f64; 3]) {
         for (actual, expected) in actual.into_iter().zip(expected) {
             assert!((actual - expected).abs() < 1.0e-9, "{actual} != {expected}");
+        }
+    }
+
+    fn assert_corner_tangency(start: [f64; 3], corner: [f64; 3], end: [f64; 3], radius: f64) -> CornerFillet {
+        let fillet = corner_fillet(start, corner, end, radius, SourceRange::default()).unwrap();
+        let normal = unit(cross(fillet.incoming, fillet.outgoing), SourceRange::default()).unwrap();
+        let radial = cross(normal, fillet.incoming);
+        let center = std::array::from_fn(|i| fillet.entry[i] + radius * radial[i]);
+        for point in [fillet.entry, fillet.interior, fillet.exit] {
+            assert!((length(delta(point, center)) - radius).abs() < 1.0e-8);
+        }
+        assert!(dot(delta(fillet.entry, center), fillet.incoming).abs() < 1.0e-8);
+        assert!(dot(delta(fillet.exit, center), fillet.outgoing).abs() < 1.0e-8);
+        assert_point(
+            arc_end_tangent(fillet.exit, fillet.interior, fillet.entry, SourceRange::default()).unwrap(),
+            fillet.incoming.map(|v| -v),
+        );
+        assert_point(
+            arc_end_tangent(fillet.entry, fillet.interior, fillet.exit, SourceRange::default()).unwrap(),
+            fillet.outgoing,
+        );
+        assert_point(
+            unit(delta(fillet.entry, start), SourceRange::default()).unwrap(),
+            fillet.incoming,
+        );
+        assert_point(
+            unit(delta(end, fillet.exit), SourceRange::default()).unwrap(),
+            fillet.outgoing,
+        );
+        fillet
+    }
+
+    #[test]
+    fn corner_fillet_recomputes_both_joins_when_endpoint_moves() {
+        let start = [0.0, 0.0, 0.0];
+        let corner = [0.0, 0.0, 60.0];
+        let original = assert_corner_tangency(start, corner, [0.0, 25.0, 60.0], 10.0);
+        assert_point(original.entry, [0.0, 0.0, 50.0]);
+        assert_point(original.exit, [0.0, 10.0, 60.0]);
+        let moved = assert_corner_tangency(start, corner, [15.0, 25.0, 65.0], 10.0);
+        assert_ne!(original.entry, moved.entry);
+        assert_ne!(original.exit, moved.exit);
+    }
+
+    #[test]
+    fn corner_fillet_supports_rotated_acute_and_obtuse_corners() {
+        let u = [1.0 / libm::sqrt(2.0), 1.0 / libm::sqrt(2.0), 0.0];
+        let corner = [17.0, -23.0, 31.0];
+        let start = std::array::from_fn(|i| corner[i] - 100.0 * u[i]);
+        for angle in [30.0_f64, 90.0, 150.0] {
+            let angle = angle.to_radians();
+            let v = [u[0] * libm::cos(angle), u[1] * libm::cos(angle), libm::sin(angle)];
+            let end = std::array::from_fn(|i| corner[i] + 100.0 * v[i]);
+            assert_corner_tangency(start, corner, end, 2.0);
+        }
+    }
+
+    #[test]
+    fn corner_fillet_rejects_nonfinite_geometry() {
+        for radius in [f64::NAN, f64::INFINITY, 0.0, -1.0] {
+            assert!(
+                corner_fillet(
+                    [0.0; 3],
+                    [0.0, 0.0, 60.0],
+                    [0.0, 25.0, 60.0],
+                    radius,
+                    SourceRange::default()
+                )
+                .is_err()
+            );
+        }
+        for end in [[0.0, f64::INFINITY, 60.0], [f64::NAN, 25.0, 60.0]] {
+            assert!(corner_fillet([0.0; 3], [0.0, 0.0, 60.0], end, 10.0, SourceRange::default()).is_err());
+        }
+    }
+
+    #[tokio::test]
+    async fn corner_fillet_pipeline_units_artifacts_and_following_arc() {
+        let mut result = parse_execute(&format!(
+            "{SETTINGS}
+base = startPath3d(at = [0mm, 0mm, 0mm])
+  |> filletCorner3d(cornerAbsolute = [0mm, 0mm, 100mm], endAbsolute = [0mm, 100mm, 100mm], radius = 1in)
+route = base |> tangentialArc3d(end = [10mm, 10mm, 0mm])
+"
+        ))
+        .await
+        .unwrap();
+        let KclValue::Path3d { value } = result.variable("route") else {
+            panic!("expected Path3d")
+        };
+        assert_eq!(value.segment_count, 4);
+        assert_point(value.end, [10.0, 110.0, 100.0]);
+        assert_point(value.end_tangent.unwrap(), [1.0, 0.0, 0.0]);
+        let segments: Vec<_> = result
+            .root_module_artifact_commands()
+            .iter()
+            .filter_map(|c| match &c.command {
+                ModelingCmd::ExtendPath(c) => Some(c.segment.clone()),
+                _ => None,
+            })
+            .collect();
+        assert_eq!(
+            segments[0],
+            PathSegment::Line {
+                end: engine_point([0.0, 0.0, 74.6]),
+                relative: false
+            }
+        );
+        let PathSegment::ArcTo {
+            interior,
+            end,
+            relative,
+        } = &segments[1]
+        else {
+            panic!("expected corner arc")
+        };
+        assert!(!*relative);
+        assert_point([end.x.0, end.y.0, end.z.0], [0.0, 25.4, 100.0]);
+        let diagonal = 25.4 / libm::sqrt(2.0);
+        assert_point(
+            [interior.x.0, interior.y.0, interior.z.0],
+            [0.0, 25.4 - diagonal, 74.6 + diagonal],
+        );
+        assert_eq!(
+            segments[2],
+            PathSegment::Line {
+                end: engine_point([0.0, 100.0, 100.0]),
+                relative: false
+            }
+        );
+        let graph = result.artifact_graph().await.unwrap();
+        let Some(Artifact::Path(path)) = graph.get(&value.artifact_id) else {
+            panic!("missing spatial path")
+        };
+        assert_eq!(path.seg_ids.len(), 4);
+        assert_eq!(path.plane_id, None);
+    }
+
+    #[tokio::test]
+    async fn corner_fillet_rejects_invalid_corners_stale_and_swept_paths() {
+        for (corner, end, radius, expected) in [
+            ("[0mm, 0mm, 0mm]", "[0mm, 25mm, 60mm]", "10mm", "nonzero corner legs"),
+            ("[0mm, 0mm, 60mm]", "[0mm, 0mm, 60mm]", "10mm", "nonzero corner legs"),
+            ("[0mm, 0mm, 60mm]", "[0mm, 0mm, 80mm]", "10mm", "non-collinear"),
+            ("[0mm, 0mm, 60mm]", "[0mm, 0mm, 0mm]", "10mm", "non-collinear"),
+            ("[0mm, 0mm, 60mm]", "[0mm, 25mm, 60mm]", "0mm", "positive radius"),
+            ("[0mm, 0mm, 60mm]", "[0mm, 25mm, 60mm]", "-1mm", "positive radius"),
+            ("[0mm, 0mm, 60mm]", "[0mm, 25mm, 60mm]", "25mm", "both corner legs"),
+            ("[0mm, 0mm, 5mm]", "[0mm, 25mm, 5mm]", "10mm", "both corner legs"),
+        ] {
+            let error = parse_execute(&format!("{SETTINGS}startPath3d(at = [0mm, 0mm, 0mm]) |> filletCorner3d(cornerAbsolute = {corner}, endAbsolute = {end}, radius = {radius})\n")).await.unwrap_err();
+            assert!(error.to_string().contains(expected), "{error}");
+        }
+        let error = parse_execute(&format!(
+            "{SETTINGS}
+base = startPath3d(at = [0mm, 0mm, 0mm])
+route = base |> filletCorner3d(cornerAbsolute = [0mm, 0mm, 60mm], endAbsolute = [0mm, 25mm, 60mm], radius = 10mm)
+base |> line3d(end = [0mm, 0mm, 1mm])
+"
+        ))
+        .await
+        .unwrap_err();
+        assert!(error.to_string().contains("out of date"), "{error}");
+        let error = parse_execute(&format!("{}\nroute |> filletCorner3d(cornerAbsolute = [30mm, 50mm, 65mm], endAbsolute = [30mm, 50mm, 100mm], radius = 5mm)\n", include_str!("path3d_fillet_corner.kcl"))).await.unwrap_err();
+        assert!(error.to_string().contains("cannot be extended"), "{error}");
+    }
+
+    #[tokio::test]
+    async fn engine_corner_fillet_sweeps_before_and_after_endpoint_edit() {
+        let code = include_str!("path3d_fillet_corner.kcl");
+        for code in [code.to_owned(), code.replace("[15mm, 25mm, 65mm]", "[0mm, 25mm, 60mm]")] {
+            crate::test_server::kcl_doc_execute_and_snapshot(&code, None, false, true)
+                .await
+                .unwrap();
         }
     }
 

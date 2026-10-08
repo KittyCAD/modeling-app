@@ -2320,6 +2320,69 @@ export default {
       }
     ]
   },
+  "filletCorner3d": {
+    "name": "filletCorner3d",
+    "preferredName": "filletCorner3d",
+    "qualName": "std::sketch::filletCorner3d",
+    "moduleName": "sketch",
+    "returnType": "Path3d",
+    "addedIn": null,
+    "summary": "Append two straight legs joined by a circular fillet of the given radius. The legs run from the current path position toward `cornerAbsolute`, then toward `endAbsolute`. Both are shortened to meet the arc tangentially. Changing either point recomputes the arc's plane and both tangent points. The radius must leave a nonzero straight portion on both legs. Collinear corners are rejected. Existing path segments are not modified, and this function does not enforce tangency to a segment preceding the new section.",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": true,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "path",
+        "ty": "Path3d",
+        "docs": null,
+        "required": true,
+        "special": true,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "cornerAbsolute",
+        "ty": "Point3d",
+        "docs": null,
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "endAbsolute",
+        "ty": "Point3d",
+        "docs": null,
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "radius",
+        "ty": "number(Length)",
+        "docs": null,
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      }
+    ]
+  },
   "flatten": {
     "name": "flatten",
     "preferredName": "flatten",
