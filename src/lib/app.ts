@@ -920,11 +920,6 @@ export class App implements AppSubsystems {
       this.singletons.kclManager.sceneEntitiesManager.updateSketchGrid()
     }
 
-    // Update line wrapping
-    this.singletons.kclManager.setEditorLineWrapping(
-      context.textEditor.textWrapping.current
-    )
-
     // Update engine highlighting
     const newHighlighting = context.modeling.highlightEdges.current
     if (

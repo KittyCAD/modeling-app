@@ -119,7 +119,13 @@ import {
   addLineHighlightEvent,
 } from '@src/editor/highlightextension'
 
-import { type Signal, computed, signal } from '@preact/signals-core'
+import {
+  type Signal,
+  computed,
+  effect,
+  signal,
+  untracked,
+} from '@preact/signals-core'
 import type {
   ApiFile,
   SceneGraphDelta,
@@ -2312,6 +2318,7 @@ export class KclManager extends File {
     this.settingsSubscription = this.systemDeps.settings.subscribe(() => {
       this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
     })
+    this.unwatchLineWrapping = this.watchLineWrapping()
     this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
     // TODO: Delete this._code, only derive from the editorView's doc
     this._code.value = initialCode
@@ -2352,6 +2359,7 @@ export class KclManager extends File {
     this.disposeGlobalHistorySubscription?.()
     this.flushRecoverySnapshot()
     this.unwatch()
+    this.unwatchLineWrapping?.()
   }
 
   private markFileCodeAsSynced(code: string) {
@@ -3178,6 +3186,26 @@ export class KclManager extends File {
         Transaction.addToHistory.of(false),
       ],
     })
+  }
+  private unwatchLineWrapping: (() => void) | undefined
+  private watchLineWrapping = () => {
+    // Settings loads replace Setting instances. Track the actor's current
+    // instance as well as changes to the value within that instance.
+    const setting = signal(
+      getSettingsFromActorContext(this.systemDeps.settings).textEditor
+        .textWrapping
+    )
+    const subscription = this.systemDeps.settings.subscribe((snapshot) => {
+      setting.value = snapshot.context.textEditor.textWrapping
+    })
+    const dispose = effect(() => {
+      const shouldWrap = setting.value.currentSignal.value
+      untracked(() => this.setEditorLineWrapping(shouldWrap))
+    })
+    return () => {
+      subscription.unsubscribe()
+      dispose()
+    }
   }
   setCursorBlinking(shouldBlink: boolean) {
     this._editorView.dispatch({

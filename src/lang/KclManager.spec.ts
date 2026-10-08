@@ -1,9 +1,11 @@
 import type { Diagnostic } from '@codemirror/lint'
+import { EditorView } from '@codemirror/view'
 import type {
   SceneGraphDelta,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+import { lineWrappingCompartment } from '@src/editor'
 import {
   artifactGraphField,
   setArtifactGraphEffect,
@@ -15,7 +17,9 @@ import {
 } from '@src/editor/plugins/operations'
 import { File, KclManager } from '@src/lang/KclManager'
 import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
+import { createSettings } from '@src/lib/settings/initialSettings'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { waitFor } from 'xstate'
 
 const clientErrorMocks = vi.hoisted(() => ({
   reportSystemIOError: vi.fn(),
@@ -139,6 +143,66 @@ afterEach(() => {
   vi.clearAllTimers()
   vi.useRealTimers()
   localStorage?.clear()
+})
+
+describe('KclManager line wrapping settings', () => {
+  it('follows replacement settings and stops watching when closed', async () => {
+    const { app, kclManager } = createKclManagerTestHarness()
+    const wrapsLines = () =>
+      lineWrappingCompartment.get(kclManager.editorView.state) ===
+      EditorView.lineWrapping
+    try {
+      await waitFor(app.settings.actor, (snapshot) => snapshot.matches('idle'))
+      const originalSetting =
+        app.settings.actor.getSnapshot().context.textEditor.textWrapping
+      originalSetting.user = true
+      expect(wrapsLines()).toBe(true)
+      originalSetting.user = false
+      expect(wrapsLines()).toBe(false)
+
+      const extensionSettings =
+        app.settings.actor.getSnapshot().context.extensionSettings
+      const replacement = createSettings(extensionSettings)
+      replacement.textEditor.textWrapping.user = true
+      app.settings.actor.send({
+        type: 'Set all settings',
+        settings: replacement,
+      })
+      await waitFor(
+        app.settings.actor,
+        (snapshot) =>
+          snapshot.context.textEditor.textWrapping ===
+          replacement.textEditor.textWrapping
+      )
+      expect(wrapsLines()).toBe(true)
+
+      // The effect must unsubscribe from the discarded Setting instance.
+      originalSetting.user = true
+      originalSetting.user = false
+      expect(wrapsLines()).toBe(true)
+      replacement.textEditor.textWrapping.user = false
+      expect(wrapsLines()).toBe(false)
+
+      kclManager.close()
+      const updateWrapping = vi.spyOn(kclManager, 'setEditorLineWrapping')
+      replacement.textEditor.textWrapping.user = true
+      const afterClose = createSettings(extensionSettings)
+      app.settings.actor.send({
+        type: 'Set all settings',
+        settings: afterClose,
+      })
+      await waitFor(
+        app.settings.actor,
+        (snapshot) =>
+          snapshot.context.textEditor.textWrapping ===
+          afterClose.textEditor.textWrapping
+      )
+      expect(updateWrapping).not.toHaveBeenCalled()
+    } finally {
+      kclManager.close()
+      app.dispose()
+    }
+  })
 })
 
 describe('KclManager live operation updates', () => {
