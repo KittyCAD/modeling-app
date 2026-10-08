@@ -5,7 +5,7 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
-import type { ZDSProject } from '@src/lang/KclManager'
+import type { ZDSProject } from '@src/lib/projectSession'
 import {
   projectSession,
   type ProjectSessionService,
