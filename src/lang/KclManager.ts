@@ -119,13 +119,7 @@ import {
   addLineHighlightEvent,
 } from '@src/editor/highlightextension'
 
-import {
-  type Signal,
-  computed,
-  effect,
-  signal,
-  untracked,
-} from '@preact/signals-core'
+import { computed, effect, signal, untracked } from '@preact/signals-core'
 import type {
   ApiFile,
   SceneGraphDelta,
