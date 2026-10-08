@@ -280,11 +280,7 @@ export default function ModelingDialog() {
             visible.filter(({ arg }) => !arg.dialog?.advanced).map(renderField)
           )}
           {!initializing && advanced.length > 0 && (
-            <details
-              open={advanced.some(({ name }) =>
-                hasValue(initialContext.current.argumentsToSubmit[name])
-              )}
-            >
+            <details>
               <summary className="cursor-pointer py-1">Show more</summary>
               <div className="flex flex-col gap-3 pt-2">
                 {advanced.map(renderField)}
