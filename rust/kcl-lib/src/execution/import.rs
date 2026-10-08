@@ -81,6 +81,14 @@ pub async fn import_foreign(
             .data(file_contents.clone())
             .build(),
     ];
+    // Retain the original paths and bytes alongside the command's local names.
+    // Export must describe the executed geometry even if project files change.
+    let mut source_files = vec![
+        ImportFile::builder()
+            .path(file_path.to_string())
+            .data(file_contents.clone())
+            .build(),
+    ];
 
     // In the case of a gltf importing a bin file we need to handle that! and figure out where the
     // file is relative to our current file.
@@ -109,6 +117,12 @@ pub async fn import_foreign(
                             KclError::new_semantic(KclErrorDetails::new(e.to_string(), vec![source_range]))
                         })?;
 
+                    source_files.push(
+                        ImportFile::builder()
+                            .path(bin_path.to_string())
+                            .data(bin_contents.clone())
+                            .build(),
+                    );
                     import_files.push(ImportFile::builder().path(uri.to_string()).data(bin_contents).build());
                 }
             }
@@ -117,10 +131,8 @@ pub async fn import_foreign(
     Ok(PreImportedGeometry {
         id: exec_state.next_uuid(),
         source_range,
-        command: mcmd::ImportFiles::builder()
-            .files(import_files.clone())
-            .format(format)
-            .build(),
+        source_files,
+        command: mcmd::ImportFiles::builder().files(import_files).format(format).build(),
     })
 }
 
@@ -293,6 +305,9 @@ pub struct PreImportedGeometry {
     id: Uuid,
     command: mcmd::ImportFiles,
     pub source_range: SourceRange,
+    /// Exact input bytes and resolved paths, retained with the execution cache.
+    #[serde(skip)]
+    pub(super) source_files: Vec<ImportFile>,
 }
 
 pub async fn send_to_engine(

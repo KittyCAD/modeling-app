@@ -1698,7 +1698,12 @@ format: OutputFormat3d,
 /**
  * KCL source to embed in formats that support source metadata.
  */
-kcl_source?: KclProject | null, };
+kcl_source?: KclProject | null, 
+/**
+ * Original imported files to embed in glTF source metadata.
+ * Paths are relative to the source project. Other export formats ignore these files.
+ */
+imported_files?: Array<ImportFile>, };
 
 /**
  * Export a sketch to a file.
@@ -1730,7 +1735,12 @@ format: OutputFormat3d,
 /**
  * KCL source to embed in formats that support source metadata.
  */
-kcl_source?: KclProject | null, };
+kcl_source?: KclProject | null, 
+/**
+ * Original imported files to embed in glTF source metadata.
+ * Paths are relative to the source project. Other export formats ignore these files.
+ */
+imported_files?: Array<ImportFile>, };
 
 /**
  * Extend a path by adding a new segment which starts at the path's "pen".

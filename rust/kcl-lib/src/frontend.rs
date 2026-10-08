@@ -2079,6 +2079,7 @@ impl FrontendState {
             refactor_metadata,
             issues: non_fatal,
             source_files,
+            imported_files: Default::default(),
             default_planes,
         })
     }
@@ -9283,6 +9284,7 @@ cylinder = startSketchOn(XY)
             issues: Default::default(),
             filenames: Default::default(),
             source_files: Default::default(),
+            imported_files: Default::default(),
             default_planes: Default::default(),
         };
 
@@ -9439,6 +9441,7 @@ sketch(on = XY) {
             issues: Default::default(),
             filenames: Default::default(),
             source_files: Default::default(),
+            imported_files: Default::default(),
             default_planes: Default::default(),
         }
     }
