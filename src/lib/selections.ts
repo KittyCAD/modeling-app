@@ -318,15 +318,10 @@ async function getSketchIdForEngineRegionEntity(
   )
   if (!parentEntityId) return null
 
-  const parentArtifact = artifactGraph.get(parentEntityId)
-  let sketch: Extract<Artifact, { type: 'sketchBlock' }> | undefined | null =
-    null
+  const path = artifactGraph.get(parentEntityId)
+  if (!path || path.type !== 'path') return null
 
-  if (parentArtifact?.type === 'path') {
-    sketch = getSketchBlockForPathArtifact(parentArtifact, artifactGraph)
-  } else if (parentArtifact?.type === 'sketchBlock') {
-    sketch = parentArtifact
-  }
+  const sketch = getSketchBlockForPathArtifact(path, artifactGraph)
   return sketch?.id ?? null
 }
 
