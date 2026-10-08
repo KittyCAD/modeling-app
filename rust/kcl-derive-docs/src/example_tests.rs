@@ -48,7 +48,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-sketch-line3d-0",
     "std-sketch-arc3d-0",
     "std-sketch-tangentialArc3d-0",
-    "std-sketch-filletCorner3d-0",
+    "std-sketch-fillet3d-0",
     "std-operation-facing-0",
     "std-appearance-hexString-0",
     "std-appearance-hexString-1",

@@ -193,7 +193,7 @@ fn corner_fillet(
 ) -> Result<CornerFillet, KclError> {
     if !radius.is_finite() || radius <= POINT_TOLERANCE_MM {
         return Err(argument_error(
-            "filletCorner3d requires a finite positive radius greater than the path tolerance.",
+            "fillet3d requires a finite positive radius greater than the path tolerance.",
             range,
         ));
     }
@@ -205,10 +205,7 @@ fn corner_fillet(
         return Err(argument_error("3D path coordinates must be finite lengths.", range));
     }
     if a_len <= POINT_TOLERANCE_MM || b_len <= POINT_TOLERANCE_MM {
-        return Err(argument_error(
-            "filletCorner3d requires two nonzero corner legs.",
-            range,
-        ));
+        return Err(argument_error("fillet3d requires two nonzero corner legs.", range));
     }
     let incoming = a.map(|v| v / a_len);
     let outgoing = b.map(|v| v / b_len);
@@ -216,7 +213,7 @@ fn corner_fillet(
     let sine = length(cross(incoming, outgoing));
     if sine <= 1.0e-8 {
         return Err(argument_error(
-            "filletCorner3d requires a non-collinear corner, not a straight continuation or reversal.",
+            "fillet3d requires a non-collinear corner, not a straight continuation or reversal.",
             range,
         ));
     }
@@ -229,7 +226,7 @@ fn corner_fillet(
     let setback = radius * tan_half;
     if !setback.is_finite() || a_len - setback <= POINT_TOLERANCE_MM || b_len - setback <= POINT_TOLERANCE_MM {
         return Err(argument_error(
-            "filletCorner3d radius must leave a nonzero straight portion on both corner legs.",
+            "fillet3d radius must leave a nonzero straight portion on both corner legs.",
             range,
         ));
     }
@@ -252,49 +249,135 @@ fn corner_fillet(
     })
 }
 
-pub async fn fillet_corner3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let mut path: Path3d = args.get_unlabeled_kw_arg("path", &RuntimeType::path3d(), exec_state)?;
-    validate_current_path(&path, exec_state, args.source_range)?;
-    let corner = point_mm(
-        args.get_kw_arg("cornerAbsolute", &RuntimeType::point3d(), exec_state)?,
-        args.source_range,
-    )?;
-    let end = point_mm(
-        args.get_kw_arg("endAbsolute", &RuntimeType::point3d(), exec_state)?,
-        args.source_range,
-    )?;
-    let radius: TyF64 = args.get_kw_arg("radius", &RuntimeType::length(), exec_state)?;
-    let fillet = corner_fillet(path.end, corner, end, radius.unwrap_to_mm(), args.source_range)?;
-    for (end, tangent, segment) in [
-        (
-            fillet.entry,
-            fillet.incoming,
-            PathSegment::Line {
-                end: engine_point(fillet.entry),
-                relative: false,
-            },
-        ),
-        (
-            fillet.exit,
-            fillet.outgoing,
-            PathSegment::ArcTo {
-                interior: engine_point(fillet.interior),
-                end: engine_point(fillet.exit),
-                relative: false,
-            },
-        ),
-        (
-            end,
-            fillet.outgoing,
-            PathSegment::Line {
-                end: engine_point(end),
-                relative: false,
-            },
-        ),
-    ] {
-        path = append_segment(path, end, tangent, segment, exec_state, args.clone()).await?;
+/// Plan every cut before creating the replacement path. Adjacent fillets must
+/// leave a positive straight portion on their shared segment.
+struct PlannedSegment {
+    end: [f64; 3],
+    tangent: [f64; 3],
+    segment: PathSegment,
+}
+
+fn fillet_polyline(path: &Path3d, radius: f64, range: SourceRange) -> Result<Vec<PlannedSegment>, KclError> {
+    if !radius.is_finite() || radius <= POINT_TOLERANCE_MM {
+        return Err(argument_error(
+            "fillet3d requires a finite positive radius greater than the path tolerance.",
+            range,
+        ));
     }
-    Ok(KclValue::Path3d { value: Box::new(path) })
+    if path.segments.len() < 2 {
+        return Err(argument_error(
+            "fillet3d requires at least two straight line segments.",
+            range,
+        ));
+    }
+    let mut points = vec![path.start];
+    for segment in &path.segments {
+        let PathSegment::Line { end, relative: false } = segment else {
+            return Err(argument_error(
+                "fillet3d currently accepts only straight line routes. Apply it before adding arcs.",
+                range,
+            ));
+        };
+        points.push([end.x.0, end.y.0, end.z.0]);
+    }
+    if length(delta(*points.last().unwrap_or(&path.start), path.start)) <= POINT_TOLERANCE_MM {
+        return Err(argument_error("fillet3d currently requires an open route.", range));
+    }
+    let mut corners = Vec::new();
+    for points in points.windows(3) {
+        let incoming = unit(delta(points[1], points[0]), range)?;
+        let outgoing = unit(delta(points[2], points[1]), range)?;
+        // Redundant vertices on a straight continuation need no fillet.
+        if length(cross(incoming, outgoing)) <= 1.0e-8 && dot(incoming, outgoing) > 0.0 {
+            corners.push(None);
+        } else {
+            corners.push(Some(corner_fillet(points[0], points[1], points[2], radius, range)?));
+        }
+    }
+    let mut segments = Vec::new();
+    let mut current = path.start;
+    for (i, corner) in corners.iter().enumerate() {
+        let (entry, exit) = match corner {
+            Some(corner) => (corner.entry, corner.exit),
+            None => (points[i + 1], points[i + 1]),
+        };
+        let direction = match corner {
+            Some(corner) => corner.incoming,
+            None => unit(delta(points[i + 1], points[i]), range)?,
+        };
+        if dot(delta(entry, current), direction) <= POINT_TOLERANCE_MM {
+            return Err(argument_error(
+                "fillet3d radius causes adjacent corner cuts to overlap or consume a straight segment.",
+                range,
+            ));
+        }
+        segments.push(PlannedSegment {
+            end: entry,
+            tangent: direction,
+            segment: PathSegment::Line {
+                end: engine_point(entry),
+                relative: false,
+            },
+        });
+        if let Some(corner) = corner {
+            segments.push(PlannedSegment {
+                end: exit,
+                tangent: corner.outgoing,
+                segment: PathSegment::ArcTo {
+                    interior: engine_point(corner.interior),
+                    end: engine_point(exit),
+                    relative: false,
+                },
+            });
+        }
+        current = exit;
+    }
+    let end = points[points.len() - 1];
+    segments.push(PlannedSegment {
+        end,
+        tangent: unit(delta(end, current), range)?,
+        segment: PathSegment::Line {
+            end: engine_point(end),
+            relative: false,
+        },
+    });
+    Ok(segments)
+}
+
+pub async fn fillet3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let path: Path3d = args.get_unlabeled_kw_arg("path", &RuntimeType::path3d(), exec_state)?;
+    let mut artifact = validate_current_path(&path, exec_state, args.source_range)?;
+    if artifact.consumed {
+        return Err(argument_error(
+            "A consumed 3D path cannot be filleted.",
+            args.source_range,
+        ));
+    }
+    let radius: TyF64 = args.get_kw_arg("radius", &RuntimeType::length(), exec_state)?;
+    let segments = fillet_polyline(&path, radius.unwrap_to_mm(), args.source_range)?;
+    let mut rounded = new_path3d(path.start, exec_state, args.clone()).await?;
+    for segment in segments {
+        rounded = append_segment(
+            rounded,
+            segment.end,
+            segment.tangent,
+            segment.segment,
+            exec_state,
+            args.clone(),
+        )
+        .await?;
+    }
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args(exec_state, &args),
+            ModelingCmd::from(mcmd::ObjectVisible::builder().object_id(path.id).hidden(true).build()),
+        )
+        .await?;
+    artifact.consumed = true;
+    exec_state.update_spatial_path_artifact(artifact);
+    Ok(KclValue::Path3d {
+        value: Box::new(rounded),
+    })
 }
 
 pub async fn tangential_arc3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -341,6 +424,12 @@ pub async fn start_path3d(exec_state: &mut ExecState, args: Args) -> Result<KclV
         args.get_kw_arg("at", &RuntimeType::point3d(), exec_state)?,
         args.source_range,
     )?;
+    Ok(KclValue::Path3d {
+        value: Box::new(new_path3d(at, exec_state, args).await?),
+    })
+}
+
+async fn new_path3d(at: [f64; 3], exec_state: &mut ExecState, args: Args) -> Result<Path3d, KclError> {
     let id = exec_state.next_uuid();
     let disable_id = exec_state.next_uuid();
     let move_id = exec_state.next_uuid();
@@ -385,16 +474,15 @@ pub async fn start_path3d(exec_state: &mut ExecState, args: Args) -> Result<KclV
         outer_path_id: None,
         pattern_ids: Vec::new(),
     }));
-    Ok(KclValue::Path3d {
-        value: Box::new(Path3d {
-            id,
-            artifact_id: id.into(),
-            start: at,
-            end: at,
-            segment_count: 0,
-            end_tangent: None,
-            meta: vec![args.source_range.into()],
-        }),
+    Ok(Path3d {
+        id,
+        artifact_id: id.into(),
+        start: at,
+        end: at,
+        segment_count: 0,
+        segments: Vec::new(),
+        end_tangent: None,
+        meta: vec![args.source_range.into()],
     })
 }
 
@@ -493,7 +581,7 @@ async fn append_segment(
     let mut artifact = validate_current_path(&path, exec_state, args.source_range)?;
     if artifact.consumed {
         return Err(argument_error(
-            "A 3D path used by a sweep cannot be extended. Complete the route before sweeping it.",
+            "A consumed 3D path cannot be extended. Complete the route before filleting or sweeping it.",
             args.source_range,
         ));
     }
@@ -512,6 +600,7 @@ async fn append_segment(
     path.end = end;
     path.end_tangent = Some(tangent);
     path.segment_count += 1;
+    path.segments.push(segment);
     artifact.seg_ids.push(id.into());
     exec_state.update_spatial_path_artifact(artifact);
     Ok(path)
@@ -553,6 +642,168 @@ mod tests {
     fn assert_point(actual: [f64; 3], expected: [f64; 3]) {
         for (actual, expected) in actual.into_iter().zip(expected) {
             assert!((actual - expected).abs() < 1.0e-9, "{actual} != {expected}");
+        }
+    }
+
+    fn polyline(points: &[[f64; 3]]) -> Path3d {
+        let segments: Vec<_> = points
+            .iter()
+            .skip(1)
+            .map(|point| PathSegment::Line {
+                end: engine_point(*point),
+                relative: false,
+            })
+            .collect();
+        Path3d {
+            id: uuid::Uuid::nil(),
+            artifact_id: uuid::Uuid::nil().into(),
+            start: points[0],
+            end: points[points.len() - 1],
+            segment_count: segments.len(),
+            segments,
+            end_tangent: None,
+            meta: Vec::new(),
+        }
+    }
+
+    #[test]
+    fn fillet_polyline_rebuilds_all_corners_with_continuous_tangents() {
+        let points = [
+            [0.0, 0.0, 0.0],
+            [0.0, 0.0, 60.0],
+            [70.0, 0.0, 60.0],
+            [70.0, 70.0, 100.0],
+            [-30.0, 70.0, 100.0],
+            [-30.0, -30.0, 140.0],
+            [50.0, -30.0, 180.0],
+            [50.0, 50.0, 210.0],
+            [-10.0, 50.0, 250.0],
+            [-10.0, -10.0, 280.0],
+        ];
+        let raw = polyline(&points);
+        let planned = fillet_polyline(&raw, 8.0, SourceRange::default()).unwrap();
+        assert_eq!(planned.len(), 17);
+        assert_eq!(raw.segments.len(), 9);
+        let mut start = raw.start;
+        let mut previous_tangent = None;
+        for (i, planned) in planned.iter().enumerate() {
+            let (start_tangent, end_tangent) = match planned.segment {
+                PathSegment::Line { .. } => {
+                    assert_eq!(i % 2, 0);
+                    let tangent = unit(delta(planned.end, start), SourceRange::default()).unwrap();
+                    (tangent, tangent)
+                }
+                PathSegment::ArcTo { interior, .. } => {
+                    assert_eq!(i % 2, 1);
+                    let interior = [interior.x.0, interior.y.0, interior.z.0];
+                    (
+                        arc_end_tangent(planned.end, interior, start, SourceRange::default())
+                            .unwrap()
+                            .map(|v| -v),
+                        arc_end_tangent(start, interior, planned.end, SourceRange::default()).unwrap(),
+                    )
+                }
+                _ => panic!("unexpected route segment"),
+            };
+            if let Some(previous) = previous_tangent {
+                assert_point(start_tangent, previous);
+            }
+            assert_point(end_tangent, planned.tangent);
+            previous_tangent = Some(end_tangent);
+            start = planned.end;
+        }
+        assert_point(start, raw.end);
+    }
+
+    #[test]
+    fn fillet_polyline_rejects_overlapping_cuts_and_keeps_straight_vertices() {
+        for shared_length in [15.0, 20.0] {
+            let raw = polyline(&[
+                [0.0; 3],
+                [0.0, 0.0, 60.0],
+                [0.0, shared_length, 60.0],
+                [30.0, shared_length, 60.0],
+            ]);
+            let error = fillet_polyline(&raw, 10.0, SourceRange::default()).err().unwrap();
+            assert!(error.to_string().contains("overlap"), "{error}");
+            assert_eq!(fillet_polyline(&raw, 7.0, SourceRange::default()).unwrap().len(), 5);
+        }
+        let raw = polyline(&[[0.0; 3], [0.0, 0.0, 30.0], [0.0, 0.0, 60.0]]);
+        let planned = fillet_polyline(&raw, 10.0, SourceRange::default()).unwrap();
+        assert_eq!(planned.len(), 2);
+        assert!(planned.iter().all(|p| matches!(p.segment, PathSegment::Line { .. })));
+    }
+
+    #[tokio::test]
+    async fn fillet_consumes_and_hides_input_but_returned_route_can_extend() {
+        let mut result = parse_execute(&format!(
+            "{SETTINGS}
+raw = startPath3d(at = [0mm, 0mm, 0mm])
+  |> line3d(endAbsolute = [0mm, 0mm, 60mm])
+  |> line3d(endAbsolute = [0mm, 25mm, 60mm])
+rounded = raw |> fillet3d(radius = 10mm)
+route = rounded |> line3d(end = [0mm, 5mm, 0mm])
+"
+        ))
+        .await
+        .unwrap();
+        let KclValue::Path3d { value: raw } = result.variable("raw") else {
+            panic!("expected input path")
+        };
+        let KclValue::Path3d { value: route } = result.variable("route") else {
+            panic!("expected rounded path")
+        };
+        assert_ne!(raw.id, route.id);
+        assert_eq!(route.segments.len(), 4);
+        assert_point(route.end, [0.0, 30.0, 60.0]);
+        let hidden: Vec<_> = result
+            .root_module_artifact_commands()
+            .iter()
+            .filter_map(|c| match &c.command {
+                ModelingCmd::ObjectVisible(c) if c.hidden => Some(c.object_id),
+                _ => None,
+            })
+            .collect();
+        assert!(hidden.contains(&raw.id));
+        let graph = result.artifact_graph().await.unwrap();
+        let Some(Artifact::Path(raw_artifact)) = graph.get(&raw.artifact_id) else {
+            panic!("missing input path")
+        };
+        assert!(raw_artifact.consumed);
+        let Some(Artifact::Path(route_artifact)) = graph.get(&route.artifact_id) else {
+            panic!("missing rounded path")
+        };
+        assert!(!route_artifact.consumed);
+        assert_eq!(route_artifact.seg_ids.len(), 4);
+        let code = format!(
+            "{SETTINGS}raw = startPath3d(at = [0mm, 0mm, 0mm]) |> line3d(endAbsolute = [0mm, 0mm, 60mm]) |> line3d(endAbsolute = [0mm, 25mm, 60mm])\nrounded = raw |> fillet3d(radius = 10mm)\n"
+        );
+        for operation in ["line3d(end = [0mm, 5mm, 0mm])", "fillet3d(radius = 5mm)"] {
+            let error = parse_execute(&format!("{code}raw |> {operation}\n")).await.unwrap_err();
+            assert!(error.to_string().contains("consumed"), "{error}");
+        }
+    }
+
+    #[tokio::test]
+    async fn fillet_rejects_incomplete_arc_and_reversing_routes() {
+        for (route, expected) in [
+            ("", "at least two"),
+            (" |> line3d(end = [0mm, 0mm, 60mm])", "at least two"),
+            (
+                " |> line3d(end = [0mm, 0mm, 60mm]) |> tangentialArc3d(end = [0mm, 10mm, 10mm])",
+                "only straight line",
+            ),
+            (
+                " |> line3d(end = [0mm, 0mm, 60mm]) |> line3d(endAbsolute = [0mm, 0mm, 20mm])",
+                "non-collinear",
+            ),
+        ] {
+            let error = parse_execute(&format!(
+                "{SETTINGS}startPath3d(at = [0mm, 0mm, 0mm]){route} |> fillet3d(radius = 10mm)\n"
+            ))
+            .await
+            .unwrap_err();
+            assert!(error.to_string().contains(expected), "{error}");
         }
     }
 
@@ -634,7 +885,9 @@ mod tests {
         let mut result = parse_execute(&format!(
             "{SETTINGS}
 base = startPath3d(at = [0mm, 0mm, 0mm])
-  |> filletCorner3d(cornerAbsolute = [0mm, 0mm, 100mm], endAbsolute = [0mm, 100mm, 100mm], radius = 1in)
+  |> line3d(endAbsolute = [0mm, 0mm, 100mm])
+  |> line3d(endAbsolute = [0mm, 100mm, 100mm])
+  |> fillet3d(radius = 1in)
 route = base |> tangentialArc3d(end = [10mm, 10mm, 0mm])
 "
         ))
@@ -650,7 +903,7 @@ route = base |> tangentialArc3d(end = [10mm, 10mm, 0mm])
             .root_module_artifact_commands()
             .iter()
             .filter_map(|c| match &c.command {
-                ModelingCmd::ExtendPath(c) => Some(c.segment),
+                ModelingCmd::ExtendPath(c) if c.path.as_ref() == &value.id => Some(c.segment),
                 _ => None,
             })
             .collect();
@@ -694,30 +947,34 @@ route = base |> tangentialArc3d(end = [10mm, 10mm, 0mm])
     #[tokio::test]
     async fn corner_fillet_rejects_invalid_corners_stale_and_swept_paths() {
         for (corner, end, radius, expected) in [
-            ("[0mm, 0mm, 0mm]", "[0mm, 25mm, 60mm]", "10mm", "nonzero corner legs"),
-            ("[0mm, 0mm, 60mm]", "[0mm, 0mm, 60mm]", "10mm", "nonzero corner legs"),
-            ("[0mm, 0mm, 60mm]", "[0mm, 0mm, 80mm]", "10mm", "non-collinear"),
-            ("[0mm, 0mm, 60mm]", "[0mm, 0mm, 0mm]", "10mm", "non-collinear"),
+            ("[0mm, 0mm, 0mm]", "[0mm, 25mm, 60mm]", "10mm", "endpoint different"),
+            ("[0mm, 0mm, 60mm]", "[0mm, 0mm, 60mm]", "10mm", "endpoint different"),
+            ("[0mm, 0mm, 60mm]", "[0mm, 0mm, 0mm]", "10mm", "open route"),
             ("[0mm, 0mm, 60mm]", "[0mm, 25mm, 60mm]", "0mm", "positive radius"),
             ("[0mm, 0mm, 60mm]", "[0mm, 25mm, 60mm]", "-1mm", "positive radius"),
             ("[0mm, 0mm, 60mm]", "[0mm, 25mm, 60mm]", "25mm", "both corner legs"),
             ("[0mm, 0mm, 5mm]", "[0mm, 25mm, 5mm]", "10mm", "both corner legs"),
         ] {
-            let error = parse_execute(&format!("{SETTINGS}startPath3d(at = [0mm, 0mm, 0mm]) |> filletCorner3d(cornerAbsolute = {corner}, endAbsolute = {end}, radius = {radius})\n")).await.unwrap_err();
+            let error = parse_execute(&format!("{SETTINGS}startPath3d(at = [0mm, 0mm, 0mm]) |> line3d(endAbsolute = {corner}) |> line3d(endAbsolute = {end}) |> fillet3d(radius = {radius})\n")).await.unwrap_err();
             assert!(error.to_string().contains(expected), "{error}");
         }
         let error = parse_execute(&format!(
             "{SETTINGS}
 base = startPath3d(at = [0mm, 0mm, 0mm])
-route = base |> filletCorner3d(cornerAbsolute = [0mm, 0mm, 60mm], endAbsolute = [0mm, 25mm, 60mm], radius = 10mm)
+route = base |> line3d(endAbsolute = [0mm, 0mm, 60mm]) |> line3d(endAbsolute = [0mm, 25mm, 60mm]) |> fillet3d(radius = 10mm)
 base |> line3d(end = [0mm, 0mm, 1mm])
 "
         ))
         .await
         .unwrap_err();
         assert!(error.to_string().contains("out of date"), "{error}");
-        let error = parse_execute(&format!("{}\nroute |> filletCorner3d(cornerAbsolute = [30mm, 50mm, 65mm], endAbsolute = [30mm, 50mm, 100mm], radius = 5mm)\n", include_str!("path3d_fillet_corner.kcl"))).await.unwrap_err();
-        assert!(error.to_string().contains("cannot be extended"), "{error}");
+        let error = parse_execute(&format!(
+            "{}\nroute |> fillet3d(radius = 5mm)\n",
+            include_str!("path3d_fillet_corner.kcl")
+        ))
+        .await
+        .unwrap_err();
+        assert!(error.to_string().contains("cannot be filleted"), "{error}");
     }
 
     #[tokio::test]

@@ -482,6 +482,10 @@ pub struct Path3d {
     pub start: [f64; 3],
     pub end: [f64; 3],
     pub segment_count: usize,
+    /// Authored geometry retained so route operations can rebuild the path.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub segments: Vec<kittycad_modeling_cmds::shared::PathSegment>,
     /// Incoming unit tangent, used to construct the next spatial arc.
     #[serde(skip)]
     #[ts(skip)]

@@ -3,7 +3,9 @@
 corner = [0mm, 0mm, 60mm]
 end = [15mm, 25mm, 65mm]
 route = startPath3d(at = [0mm, 0mm, 0mm])
-  |> filletCorner3d(cornerAbsolute = corner, endAbsolute = end, radius = 10mm)
+  |> line3d(endAbsolute = corner)
+  |> line3d(endAbsolute = end)
+  |> fillet3d(radius = 10mm)
 
 profile = sketch(on = XY) {
   section = circle(start = [2mm, 0mm], center = [0mm, 0mm])

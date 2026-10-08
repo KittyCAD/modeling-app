@@ -38,24 +38,26 @@ exactly one of `end` or `endAbsolute`. The endpoint must be off the incoming
 tangent line. It keeps the start tangent when you move the preceding segment;
 a following line still needs to match the arc's exit direction.
 
-For a radius-defined corner that stays tangent to both legs when an endpoint
-changes, construct the whole section with `filletCorner3d`:
+Author a route with straight lines, then round its interior corners with
+`fillet3d`. Endpoint edits recompute both tangent joins at each bend:
 
 ```kcl
 @settings(kclVersion = 3.0, experimentalFeatures = allow)
 
-corner = [0mm, 0mm, 60mm]
-end = [15mm, 25mm, 65mm]
 route = startPath3d(at = [0mm, 0mm, 0mm])
-  |> filletCorner3d(cornerAbsolute = corner, endAbsolute = end, radius = 10mm)
+  |> line3d(endAbsolute = [0mm, 0mm, 60mm])
+  |> line3d(endAbsolute = [15mm, 25mm, 65mm])
+  |> fillet3d(radius = 10mm)
 ```
 
-This appends a line toward the corner, a circular arc, and a line to the
-endpoint. Both lines are shortened to meet the arc tangentially. The radius
-must leave nonzero straight portions on both legs; straight continuations
-and reversals are rejected. Existing segments are not trimmed, and tangency
-to an earlier path segment is not enforced. The resulting `Path3d` can be
-used as a `sweep` trajectory.
+This trims both legs at each corner and inserts a circular arc. One radius
+applies to all interior corners. The radius must leave a nonzero straight
+portion on every segment, including segments shared by neighboring fillets.
+Straight continuations are retained; reversals, closed routes, and existing
+arcs are rejected. The original polyline is consumed and hidden; use the
+returned rounded `Path3d` for further segments or as a `sweep` trajectory.
+Sweeping complex rounded routes has a reported folding issue under
+investigation; successful execution alone does not establish shape correctness.
 
 Always pass the value returned by the most recent segment call. Complete the
 route before using it in `sweep`; a swept path cannot be extended. These paths
