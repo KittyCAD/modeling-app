@@ -1,0 +1,32 @@
+@settings(kclVersion = 3.0)
+
+treadSketch = sketch(on = YZ) {
+  // Declare circle first.
+  // This circle becomes an inner hole inside the final region.
+  circle1 = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  diameter(circle1) == 20
+  horizontal([circle1.start, circle1.center])
+
+  // The rest of the region, outside the circle.
+  line1 = line(start = [var -17mm, var -15mm], end = [var -17mm, var 25mm])
+  line2 = line(start = [var -17mm, var 25mm], end = [var 59mm, var 25mm])
+  coincident([line1.end, line2.start])
+  line21 = line(start = [var 6mm, var -15mm], end = [var -17mm, var -15mm])
+  horizontal(line2)
+  horizontal(line21)
+  coincident([line1.start, line21.end])
+  vertical(line1)
+  distance([line1.start, line1.end]) == 40
+  distance([line21.start, line21.end]) == 23
+  distance([circle1, line21]) == 5
+  distance([circle1, line1]) == 7
+  line3 = line(start = [var 59mm, var 25mm], end = [var 6mm, var -15mm])
+  coincident([line3.start, line2.end])
+  coincident([line21.start, line3.end])
+}
+
+hidden001 = hide(treadSketch)
+region001 = region(point = [-16.9975mm, 5mm], sketch = treadSketch)
+extrude001 = extrude(region001, length = 400, symmetric = true)
+face001 = faceOf(extrude001, face = END)

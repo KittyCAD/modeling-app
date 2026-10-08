@@ -1,0 +1,29 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Physical properties extrude_with_hole_first.kcl
+---
+{
+  "bounding_box": {
+    "center": {
+      "x": 0.0,
+      "y": 21.0,
+      "z": 5.0
+    },
+    "dimensions": {
+      "x": 400.0,
+      "y": 91.2,
+      "z": 48.0
+    },
+    "unit": "mm"
+  },
+  "surface_area": {
+    "unit": "mm2",
+    "value": 110588.22357608732
+  },
+  "weight": {
+    "material_density": 1000.0,
+    "material_density_unit": "kg:m3",
+    "unit": "g",
+    "value": 667.1422124213677
+  }
+}
