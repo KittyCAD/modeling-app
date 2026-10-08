@@ -99,7 +99,8 @@ export async function resolveArguments(
   context: CommandBarContext,
   values: Record<string, unknown>,
   rustContext: RustContext,
-  ast: Parameters<typeof getSelectionCountByType>[0]
+  ast: Parameters<typeof getSelectionCountByType>[0],
+  artifactGraph: Parameters<typeof getSelectionCountByType>[2]
 ): Promise<Record<string, unknown> | Error> {
   const resolved = { ...context.argumentsToSubmit, ...values }
   for (const field of getDialogFields({
@@ -121,7 +122,10 @@ export async function resolveArguments(
       if (
         (required && !selection) ||
         (selection &&
-          !canSubmitSelectionArg(getSelectionCountByType(ast, selection), arg))
+          !canSubmitSelectionArg(
+            getSelectionCountByType(ast, selection, artifactGraph),
+            arg
+          ))
       ) {
         return new Error(`Select ${arg.displayName || name}.`)
       }

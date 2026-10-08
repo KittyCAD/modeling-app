@@ -639,7 +639,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   Extrude: {
     icon: 'extrude',
-    useModelingDialog: true,
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
       modelingCommandCodemods.Extrude

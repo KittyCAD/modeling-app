@@ -145,9 +145,6 @@ export function createMachineCommand<
   if ('reviewValidation' in commandConfig) {
     command.reviewValidation = commandConfig.reviewValidation
   }
-  if ('useModelingDialog' in commandConfig) {
-    command.useModelingDialog = commandConfig.useModelingDialog
-  }
   if ('status' in commandConfig) {
     command.status = commandConfig.status
   }

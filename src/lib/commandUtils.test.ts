@@ -1,5 +1,9 @@
 import type { CommandWithDisabledState } from '@src/lib/commandUtils'
-import { commandKey, sortCommands } from '@src/lib/commandUtils'
+import {
+  canUseModelingDialog,
+  commandKey,
+  sortCommands,
+} from '@src/lib/commandUtils'
 import { GLOBAL_COMMAND_SCOPES } from '@src/registry/contracts/commands'
 import { describe, expect, it } from 'vitest'
 
@@ -65,4 +69,35 @@ describe('commandKey', () => {
       'zds.view.zoomToFit'
     )
   })
+})
+
+describe('canUseModelingDialog', () => {
+  const command = {
+    groupId: 'modeling',
+    args: {
+      profiles: { inputType: 'selection', hidden: () => false },
+      length: { inputType: 'kcl' },
+      metadata: { inputType: 'text', hidden: true },
+    },
+  }
+
+  it('accepts supported modeling inputs but ignores hidden metadata', () => {
+    expect(canUseModelingDialog(command)).toBe(true)
+    expect(canUseModelingDialog({ ...command, groupId: 'settings' })).toBe(
+      false
+    )
+    expect(canUseModelingDialog({ ...command, args: {} })).toBe(false)
+  })
+
+  it.each([{ inputType: 'selectionMixed' }, { inputType: 'kcl', skip: true }])(
+    'keeps unsupported controls and skipped flows on the palette: %o',
+    (arg) => {
+      expect(
+        canUseModelingDialog({
+          ...command,
+          args: { ...command.args, extra: arg },
+        })
+      ).toBe(false)
+    }
+  )
 })

@@ -9,6 +9,44 @@ region001 = region(segments = [sketch001.circle1])`
 test.describe('Modeling dialogs', { tag: '@web' }, () => {
   test.use({ userFeatures: ['modeling_dialogs'] })
 
+  test('Uses dialogs for supported commands and the palette for mixed selections', async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+  }) => {
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', profileCode)
+    )
+    await editor.selectText('region(')
+    await toolbar.revolveButton.click()
+
+    const dialog = page.getByTestId('modeling-dialog')
+    const submit = dialog.getByRole('button', { name: 'Submit', exact: true })
+    const axisMode = dialog.getByRole('combobox', { name: /axis or edge/i })
+    await expect(dialog).toBeVisible()
+    await axisMode.selectOption({ label: 'Edge' })
+    await expect(
+      dialog.getByRole('button', { name: 'Select Edge' })
+    ).toBeVisible()
+    await expect(submit).toBeDisabled()
+    await axisMode.selectOption({ label: 'Sketch Axis' })
+    await dialog.getByRole('textbox', { name: /^angle$/i }).fill('180deg')
+    await expect(submit).toBeEnabled()
+    await submit.click()
+    await expect(dialog).not.toBeAttached()
+    await editor.expectEditor.toContain('angle = 180deg')
+    await scene.settled()
+
+    await toolbar.translateButton.click()
+    await expect(page.getByTestId('command-bar')).toBeVisible()
+    await expect(dialog).not.toBeAttached()
+    await page.keyboard.press('Escape')
+  })
+
   test('Creates and edits Extrude without losing collapsed fields or selection drafts', async ({
     page,
     homePage,

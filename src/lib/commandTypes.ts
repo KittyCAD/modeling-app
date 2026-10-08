@@ -148,7 +148,7 @@ export type Command<
   /** App contexts where the command palette and keymap may expose this command. */
   scopes: CommandScopes
   disabled?: boolean
-  /** Eligible for the modeling_dialogs feature gate. */
+  /** Resolved from supported inputs and the modeling_dialogs feature gate. */
   useModelingDialog?: boolean
   status?: CommandStatus
 }
@@ -167,6 +167,7 @@ export type CommandConfig<
   | 'args'
   | 'needsReview'
   | 'scopes'
+  | 'useModelingDialog'
 > & {
   needsReview?: boolean
   status?: CommandStatus

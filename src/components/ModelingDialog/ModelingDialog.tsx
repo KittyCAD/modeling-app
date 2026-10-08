@@ -89,7 +89,8 @@ export default function ModelingDialog() {
         state.context,
         selection.draft,
         kclManager.rustContext,
-        kclManager.astSignal.value
+        kclManager.astSignal.value,
+        kclManager.artifactGraph
       )
       if (!mounted.current) return
       if (isErr(resolved)) {
