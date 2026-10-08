@@ -144,13 +144,6 @@ export class MigrationConversation {
           this.replayRevision.value += 1
           void this.refresh()
         }
-        this.entries.value = this.entries
-          .peek()
-          .map((entry) =>
-            entry.operation_id === operationId
-              ? { ...entry, application: response.application }
-              : entry
-          )
       }
     } catch (error: unknown) {
       // Keep the exact revision for retry when the server may have accepted a lost reply.

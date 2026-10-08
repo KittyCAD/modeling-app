@@ -239,5 +239,7 @@ it('refreshes model replay only after the selected conversation acknowledgement 
   expect(history.reportingApplication.value).toBe(false)
   link.reportApplication(entry.operation_id, 'undone')
   await vi.waitFor(() => expect(history.replayRevision.value).toBe(3))
-  expect(history.entries.value[0].application.status).toBe('undone')
+  await vi.waitFor(() =>
+    expect(history.entries.value[0].application.status).toBe('undone')
+  )
 })
