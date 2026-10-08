@@ -44,14 +44,6 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   21["Cap End"]
     %% face_code_ref=Missing NodePath
-  22["SweepEdge Opposite"]
-  23["SweepEdge Adjacent"]
-  24["SweepEdge Opposite"]
-  25["SweepEdge Adjacent"]
-  26["SweepEdge Opposite"]
-  27["SweepEdge Adjacent"]
-  28["SweepEdge Opposite"]
-  29["SweepEdge Adjacent"]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -66,49 +58,13 @@ flowchart LR
   9 --- 14
   9 ---- 15
   10 --- 19
-  10 x--> 20
-  10 --- 28
-  10 --- 29
   11 --- 18
-  11 x--> 20
-  11 --- 26
-  11 --- 27
   12 --- 17
-  12 x--> 20
-  12 --- 24
-  12 --- 25
   13 --- 16
-  13 x--> 20
-  13 --- 22
-  13 --- 23
   15 --- 16
   15 --- 17
   15 --- 18
   15 --- 19
   15 --- 20
   15 --- 21
-  15 --- 22
-  15 --- 23
-  15 --- 24
-  15 --- 25
-  15 --- 26
-  15 --- 27
-  15 --- 28
-  15 --- 29
-  16 --- 22
-  16 --- 23
-  25 <--x 16
-  17 --- 24
-  17 --- 25
-  27 <--x 17
-  18 --- 26
-  18 --- 27
-  29 <--x 18
-  23 <--x 19
-  19 --- 28
-  19 --- 29
-  22 <--x 21
-  24 <--x 21
-  26 <--x 21
-  28 <--x 21
 ```

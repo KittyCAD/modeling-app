@@ -34,10 +34,10 @@ flowchart LR
     14["Segment<br>[1018, 1098, 0]"]
       %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   end
-  subgraph path21 [Path]
-    21["Path<br>[1189, 1242, 0]<br>Consumed: true"]
+  subgraph path19 [Path]
+    19["Path<br>[1189, 1242, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    22["Segment<br>[1189, 1242, 0]"]
+    20["Segment<br>[1189, 1242, 0]"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   end
   1["Plane<br>[270, 455, 0]"]
@@ -52,70 +52,50 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   18["Cap End"]
     %% face_code_ref=Missing NodePath
-  19["SweepEdge Opposite"]
-  20["SweepEdge Adjacent"]
-  23["Sweep Sweep<br>[1189, 1242, 0]<br>Consumed: false"]
+  21["Sweep Sweep<br>[1189, 1242, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  24[Wall]
+  22[Wall]
     %% face_code_ref=Missing NodePath
-  25["Cap Start"]
+  23["Cap Start"]
     %% face_code_ref=Missing NodePath
-  26["Cap End"]
+  24["Cap End"]
     %% face_code_ref=Missing NodePath
-  27["SweepEdge Opposite"]
-  28["SweepEdge Adjacent"]
-  29["SketchBlock<br>[270, 455, 0]"]
+  25["SketchBlock<br>[270, 455, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  30["SketchBlock<br>[667, 842, 0]"]
+  26["SketchBlock<br>[667, 842, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   1 <--x 5
   1 <--x 7
-  1 <--x 29
+  1 <--x 25
   2 --- 3
   2 --- 4
   2 <--x 5
   2 <--x 7
-  29 --- 2
+  25 --- 2
   3 <--x 6
   4 <--x 8
   5 --- 6
   5 ---- 15
   6 --- 16
-  6 x--> 18
-  6 --- 19
-  6 --- 20
   7 --- 8
-  7 ---- 23
-  8 --- 24
-  8 x--> 26
-  8 --- 27
-  8 --- 28
+  7 ---- 21
+  8 --- 22
   9 --- 10
   9 --- 13
-  9 --- 21
-  9 <--x 30
+  9 --- 19
+  9 <--x 26
   10 --- 11
   10 --- 12
-  30 --- 10
+  26 --- 10
   13 --- 14
   13 ---- 15
   15 --- 16
   15 --- 17
   15 --- 18
-  15 --- 19
-  15 --- 20
-  16 --- 19
-  16 --- 20
-  19 <--x 17
+  19 --- 20
+  19 ---- 21
   21 --- 22
-  21 ---- 23
-  23 --- 24
-  23 --- 25
-  23 --- 26
-  23 --- 27
-  23 --- 28
-  24 --- 27
-  24 --- 28
-  27 <--x 25
+  21 --- 23
+  21 --- 24
 ```

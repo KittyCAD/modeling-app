@@ -380,15 +380,6 @@ description: Artifact commands weldment_gdt_distance.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "make_plane",
         "origin": {
           "x": 0.0,
