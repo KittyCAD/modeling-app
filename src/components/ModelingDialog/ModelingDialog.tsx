@@ -1,4 +1,6 @@
 import { useSignals } from '@preact/signals-react/runtime'
+import { Draggable } from '@kittycad/ui-components'
+import type { RefObject } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import decamelize from 'decamelize'
 import {
@@ -23,7 +25,11 @@ import {
 } from '@src/components/ModelingDialog/arguments'
 import { useDialogSelection } from '@src/components/ModelingDialog/useDialogSelection'
 
-export default function ModelingDialog() {
+export default function ModelingDialog({
+  containerRef,
+}: {
+  containerRef: RefObject<HTMLElement | null>
+}) {
   useSignals()
   const { commands } = useApp()
   const { kclManager } = useSingletons()
@@ -248,26 +254,34 @@ export default function ModelingDialog() {
   if (!command) return null
   const advanced = visible.filter(({ arg }) => arg.dialog?.advanced)
   return (
-    <section
+    <Draggable
+      containerRef={containerRef}
       data-testid="modeling-dialog"
+      role="region"
       aria-label={command.displayName || command.name}
-      className="pointer-events-auto flex min-h-0 max-h-full w-80 max-w-full flex-col rounded border border-chalkboard-30 bg-chalkboard-10 text-chalkboard-100 shadow-lg dark:border-chalkboard-70 dark:bg-chalkboard-100 dark:text-chalkboard-10"
+      className="pointer-events-auto min-h-0 max-h-full w-80 max-w-full overflow-hidden rounded border border-chalkboard-30 bg-chalkboard-10 text-chalkboard-100 shadow-lg dark:border-chalkboard-70 dark:bg-chalkboard-100 dark:text-chalkboard-10"
+      onContextMenu={(event) => event.stopPropagation()}
+      onDoubleClick={(event) => event.stopPropagation()}
+      onMouseDown={(event) => event.stopPropagation()}
+      Handle={
+        <header className="flex shrink-0 cursor-move select-none items-center justify-between border-b border-chalkboard-30 px-3 py-2 dark:border-chalkboard-70">
+          <span className="flex items-center gap-2 text-sm">
+            {command.icon && (
+              <CustomIcon name={command.icon} className="w-4 h-4" />
+            )}
+            {command.displayName || command.name}
+          </span>
+          <button
+            type="button"
+            onMouseDown={(event) => event.stopPropagation()}
+            onClick={() => commands.send({ type: 'Close' })}
+            className="m-0 border-0 bg-transparent p-0 text-xs"
+          >
+            Cancel
+          </button>
+        </header>
+      }
     >
-      <header className="flex items-center justify-between border-b border-chalkboard-30 px-3 py-2 dark:border-chalkboard-70">
-        <span className="flex items-center gap-2 text-sm">
-          {command.icon && (
-            <CustomIcon name={command.icon} className="w-4 h-4" />
-          )}
-          {command.displayName || command.name}
-        </span>
-        <button
-          type="button"
-          onClick={() => commands.send({ type: 'Close' })}
-          className="m-0 border-0 bg-transparent p-0 text-xs"
-        >
-          Cancel
-        </button>
-      </header>
       <form
         onSubmit={(event) => {
           void submit(event)
@@ -304,6 +318,6 @@ export default function ModelingDialog() {
           </button>
         </footer>
       </form>
-    </section>
+    </Draggable>
   )
 }
