@@ -10433,6 +10433,56 @@ export default {
       }
     ]
   },
+  "tangentialArc3d": {
+    "name": "tangentialArc3d",
+    "preferredName": "tangentialArc3d",
+    "qualName": "std::sketch::tangentialArc3d",
+    "moduleName": "sketch",
+    "returnType": "Path3d",
+    "addedIn": null,
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": true,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "path",
+        "ty": "Path3d",
+        "docs": null,
+        "required": true,
+        "special": true,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "end",
+        "ty": "Point3d",
+        "docs": null,
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "endAbsolute",
+        "ty": "Point3d",
+        "docs": null,
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      }
+    ]
+  },
   "translate": {
     "name": "translate",
     "preferredName": "translate",

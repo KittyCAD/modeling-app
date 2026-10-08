@@ -148,6 +148,7 @@ layout: manual
   * [`sweep`](/docs/kcl-std/functions/std-sketch-sweep)
   * [`tangentToEnd`](/docs/kcl-std/functions/std-sketch-tangentToEnd)
   * [`tangentialArc`](/docs/kcl-std/functions/std-sketch-tangentialArc)
+  * [`tangentialArc3d`](/docs/kcl-std/functions/std-sketch-tangentialArc3d) Experimental
   * [`xLine`](/docs/kcl-std/functions/std-sketch-xLine)
   * [`yLine`](/docs/kcl-std/functions/std-sketch-yLine)
 * [**std::solid**](/docs/kcl-std/modules/std-solid)

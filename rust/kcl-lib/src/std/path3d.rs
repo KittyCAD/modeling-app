@@ -77,7 +77,6 @@ fn validate_arc(start: [f64; 3], interior: [f64; 3], end: [f64; 3], range: Sourc
     Ok(())
 }
 
-
 fn dot(a: [f64; 3], b: [f64; 3]) -> f64 {
     a.iter().zip(b).map(|(a, b)| a * b).sum()
 }
@@ -93,7 +92,10 @@ fn cross(a: [f64; 3], b: [f64; 3]) -> [f64; 3] {
 fn unit(v: [f64; 3], range: SourceRange) -> Result<[f64; 3], KclError> {
     let len = length(v);
     if !len.is_finite() || len <= POINT_TOLERANCE_MM {
-        return Err(argument_error("The 3D arc cannot be represented with finite coordinates.", range));
+        return Err(argument_error(
+            "The 3D arc cannot be represented with finite coordinates.",
+            range,
+        ));
     }
     Ok(v.map(|v| v / len))
 }
@@ -157,7 +159,10 @@ fn tangent_arc(
     };
     let interior = std::array::from_fn(|i| start[i] + tangent[i] * (chord_len / 2.0) + v[i] * sideways);
     if !interior.iter().all(|v| v.is_finite()) {
-        return Err(argument_error("The 3D arc cannot be represented with finite coordinates.", range));
+        return Err(argument_error(
+            "The 3D arc cannot be represented with finite coordinates.",
+            range,
+        ));
     }
     validate_arc(start, interior, end, range)?;
     let cos_angle = cos_half * cos_half - sin_half * sin_half;
@@ -172,9 +177,9 @@ fn tangent_arc(
 pub async fn tangential_arc3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let path: Path3d = args.get_unlabeled_kw_arg("path", &RuntimeType::path3d(), exec_state)?;
     validate_current_path(&path, exec_state, args.source_range)?;
-    let tangent = path.end_tangent.ok_or_else(|| {
-        argument_error("tangentialArc3d requires a preceding line or arc.", args.source_range)
-    })?;
+    let tangent = path
+        .end_tangent
+        .ok_or_else(|| argument_error("tangentialArc3d requires a preceding line or arc.", args.source_range))?;
     let relative: Option<[TyF64; 3]> = args.get_kw_arg_opt("end", &RuntimeType::point3d(), exec_state)?;
     let absolute: Option<[TyF64; 3]> = args.get_kw_arg_opt("endAbsolute", &RuntimeType::point3d(), exec_state)?;
     let end = match (relative, absolute) {
@@ -409,7 +414,6 @@ mod tests {
 
     const SETTINGS: &str = "@settings(kclVersion = 3.0, defaultLengthUnit = mm, experimentalFeatures = allow)\n";
 
-
     fn assert_point(actual: [f64; 3], expected: [f64; 3]) {
         for (actual, expected) in actual.into_iter().zip(expected) {
             assert!((actual - expected).abs() < 1.0e-9, "{actual} != {expected}");
@@ -484,20 +488,17 @@ route = startPath3d(at = [0mm, 0mm, 0mm])
         );
         // Rotating the preceding line changes the circle while retaining the endpoint.
         let unit_diagonal = 1.0 / libm::sqrt(2.0);
-        let (_, tangent) = tangent_arc(
-            [0.0; 3],
-            [unit_diagonal, unit_diagonal, 0.0],
-            [0.0, 10.0, 0.0],
-            range,
-        )
-        .unwrap();
+        let (_, tangent) = tangent_arc([0.0; 3], [unit_diagonal, unit_diagonal, 0.0], [0.0, 10.0, 0.0], range).unwrap();
         assert_point(tangent, [-unit_diagonal, unit_diagonal, 0.0]);
     }
 
     #[tokio::test]
     async fn rejects_invalid_tangent_arcs() {
         let cases = [
-            ("route |> tangentialArc3d(end = [1mm, 1mm, 0mm])", "preceding line or arc"),
+            (
+                "route |> tangentialArc3d(end = [1mm, 1mm, 0mm])",
+                "preceding line or arc",
+            ),
             ("next |> tangentialArc3d()", "exactly one"),
             (
                 "next |> tangentialArc3d(end = [1mm, 1mm, 0mm], endAbsolute = [2mm, 2mm, 0mm])",

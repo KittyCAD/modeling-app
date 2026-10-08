@@ -68,6 +68,7 @@ This module contains functions for creating and manipulating sketches, and makin
 * [`sweep`](/docs/kcl-std/functions/std-sketch-sweep)
 * [`tangentToEnd`](/docs/kcl-std/functions/std-sketch-tangentToEnd)
 * [`tangentialArc`](/docs/kcl-std/functions/std-sketch-tangentialArc)
+* [`tangentialArc3d`](/docs/kcl-std/functions/std-sketch-tangentialArc3d)
 * [`xLine`](/docs/kcl-std/functions/std-sketch-xLine)
 * [`yLine`](/docs/kcl-std/functions/std-sketch-yLine)
 
