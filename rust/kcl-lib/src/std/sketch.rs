@@ -3550,9 +3550,13 @@ mod tests {
                 "hyperbolicPoint(y = 25.4mm, semiMajor = 1, semiMinor = 1)",
                 [2.0_f64.sqrt(), 1.0],
             ),
+            (
+                "hyperbolicPoint(x = -101.6mm, semiMajor = 50.8mm, semiMinor = 25.4mm)",
+                [-4.0, 3.0_f64.sqrt()],
+            ),
             ("parabolicPoint(x = 25.4mm, coefficients = [1, 0, 0])", [1.0, 1.0]),
             ("parabolicPoint(y = 25.4mm, coefficients = [1, 0, 0])", [1.0, 1.0]),
-            // Values without units are used as they are.
+            // Values without units written in this file keep their numbers.
             (
                 "ellipticPoint(x = 0.5, majorRadius = 2, minorRadius = 1)",
                 [0.5, 0.9375_f64.sqrt()],
