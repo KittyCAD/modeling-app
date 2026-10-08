@@ -74,6 +74,42 @@ const commandBarConfig = {
 } satisfies StateMachineCommandSetConfig<typeof testMachine, TestCommandSchema>
 
 describe('createMachineCommand', () => {
+  test('defaults missing descriptions while preserving overrides, including command arrays', () => {
+    const actor = createActor(testMachine).start()
+    const configs = {
+      Available: {},
+      ManyCommands: [{}, { description: 'Custom' }, { description: '' }],
+    } satisfies StateMachineCommandSetConfig<
+      typeof testMachine,
+      TestCommandSchema
+    >
+    const props = {
+      groupId: testMachine.id,
+      state: actor.getSnapshot(),
+      send: vi.fn(),
+      actor,
+      commandBarConfig: configs,
+      defaultScopes: GLOBAL_COMMAND_SCOPES,
+      getDefaultDescription: (type: string) => `Default ${type}`,
+    }
+
+    const command = createMachineCommand<typeof testMachine, TestCommandSchema>(
+      { ...props, type: 'Available' }
+    )
+    const commands = createMachineCommand<
+      typeof testMachine,
+      TestCommandSchema
+    >({ ...props, type: 'ManyCommands' })
+    actor.stop()
+
+    expect(command).toMatchObject({ description: 'Default Available' })
+    expect(commands).toMatchObject([
+      { description: 'Default ManyCommands' },
+      { description: 'Custom' },
+      { description: '' },
+    ])
+  })
+
   test('hides experimental commands by default', () => {
     const actor = createActor(testMachine).start()
 

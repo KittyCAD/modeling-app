@@ -1,7 +1,8 @@
 import type { Feature } from '@kittycad/lib'
+import type { KclRuntimeFlags } from '@rust/kcl-lib/bindings/KclRuntimeFlags'
 import { createLspService } from '@src/lang/lsp/service'
 import type { KclLspEditor } from '@src/lang/lsp/types'
-import { KCL_NEW_LEXER_PARSER_FEATURE_FLAG } from '@src/lib/constants'
+import type * as RuntimeFlagsModule from '@src/lib/kclRuntimeFlags'
 import {
   USER_FEATURES_SETTLE_TIMEOUT_MS,
   type UserFeaturesSettleSnapshot,
@@ -10,6 +11,11 @@ import {
 import type { AuthRegistryService } from '@src/registry/contracts/auth'
 import type { UserFeaturesRegistryService } from '@src/registry/contracts/userFeatures'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+type TestRuntimeFlags = KclRuntimeFlags & {
+  use_new_parser: 'Off'
+  test_flag: 'Off' | 'On'
+}
 
 type MockWorker = {
   onmessage: ((event: MessageEvent) => void) | null
@@ -31,8 +37,20 @@ type MockClient = {
 const mocks = vi.hoisted(() => ({
   attachKclLspToCodeMirror: vi.fn(() => vi.fn()),
   clients: [] as MockClient[],
+  runtimeFlags: undefined as TestRuntimeFlags | undefined,
   workers: [] as MockWorker[],
 }))
+
+vi.mock('@src/lib/kclRuntimeFlags', async (importOriginal) => {
+  const actual = await importOriginal<typeof RuntimeFlagsModule>()
+  return {
+    ...actual,
+    // Inject a test-only flag to exercise payload changes while the parser is disabled.
+    kclRuntimeFlagsFromUserFeatures: (
+      ...args: Parameters<typeof actual.kclRuntimeFlagsFromUserFeatures>
+    ) => mocks.runtimeFlags ?? actual.kclRuntimeFlagsFromUserFeatures(...args),
+  }
+})
 
 vi.mock('@src/lang/lsp/codeMirror', () => ({
   attachKclLspToCodeMirror: mocks.attachKclLspToCodeMirror,
@@ -180,6 +198,7 @@ describe('LSP runtime feature flags', () => {
   beforeEach(() => {
     mocks.workers.length = 0
     mocks.clients.length = 0
+    mocks.runtimeFlags = { use_new_parser: 'Off', test_flag: 'Off' }
     vi.clearAllMocks()
     vi.stubGlobal('Worker', class {})
   })
@@ -194,17 +213,13 @@ describe('LSP runtime feature flags', () => {
     attachService({ features })
 
     expect(mocks.workers).toHaveLength(0)
-    features.update(
-      UserFeaturesState.Ready,
-      new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG])
-    )
+    features.update(UserFeaturesState.Ready, new Set())
     await flushMicrotasks()
 
     expect(mocks.workers).toHaveLength(1)
     expect(initPayload(mocks.workers[0])).toMatchObject({
       token: 'token-a',
       kclRuntimeFlags: {
-        use_new_lexer_parser: 'On',
         use_new_parser: 'Off',
       },
     })
@@ -246,19 +261,21 @@ describe('LSP runtime feature flags', () => {
     await flushMicrotasks()
     expect(mocks.workers).toHaveLength(1)
 
-    features.update(
-      UserFeaturesState.Ready,
-      new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG])
-    )
+    mocks.runtimeFlags = { use_new_parser: 'Off', test_flag: 'On' }
+    features.update(UserFeaturesState.Ready, new Set())
     await flushMicrotasks()
     expect(mocks.workers).toHaveLength(2)
     expect(mocks.workers[0].terminate).toHaveBeenCalledTimes(1)
     expect(initPayload(mocks.workers[1])).toMatchObject({
       kclRuntimeFlags: {
-        use_new_lexer_parser: 'On',
         use_new_parser: 'Off',
+        test_flag: 'On',
       },
     })
+
+    features.update(UserFeaturesState.Ready, new Set())
+    await flushMicrotasks()
+    expect(mocks.workers).toHaveLength(2)
   })
 
   it('replays the workspace and latest file after a flag restart', async () => {
@@ -275,10 +292,8 @@ describe('LSP runtime feature flags', () => {
     lsp.service.onFileClose('/project/main.kcl', '/project')
     lsp.service.onFileOpen('/project/current.kcl', '/project')
 
-    features.update(
-      UserFeaturesState.Ready,
-      new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG])
-    )
+    mocks.runtimeFlags = { use_new_parser: 'Off', test_flag: 'On' }
+    features.update(UserFeaturesState.Ready, new Set())
     await flushMicrotasks()
     mocks.clients[1].finishInitialize()
 
@@ -305,10 +320,8 @@ describe('LSP runtime feature flags', () => {
     )
     lsp.service.onFileClose('/project/main.kcl', '/project')
 
-    features.update(
-      UserFeaturesState.Ready,
-      new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG])
-    )
+    mocks.runtimeFlags = { use_new_parser: 'Off', test_flag: 'On' }
+    features.update(UserFeaturesState.Ready, new Set())
     await flushMicrotasks()
     mocks.clients[1].finishInitialize()
 
@@ -318,7 +331,7 @@ describe('LSP runtime feature flags', () => {
     expect(mocks.clients[1].textDocumentDidOpen).not.toHaveBeenCalled()
   })
 
-  it('starts after timeout and restarts when late features differ', async () => {
+  it('starts after timeout and restarts only when late flags differ', async () => {
     vi.useFakeTimers()
     const features = createUserFeatures(UserFeaturesState.Idle)
     attachService({ features })
@@ -328,16 +341,19 @@ describe('LSP runtime feature flags', () => {
     expect(mocks.workers).toHaveLength(1)
     expect(initPayload(mocks.workers[0])).toMatchObject({
       kclRuntimeFlags: {
-        use_new_lexer_parser: 'Off',
         use_new_parser: 'Off',
       },
     })
 
-    features.update(
-      UserFeaturesState.Ready,
-      new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG])
-    )
+    features.update(UserFeaturesState.Ready, new Set())
+    await flushMicrotasks()
+    expect(mocks.workers).toHaveLength(1)
+    expect(mocks.workers[0].terminate).not.toHaveBeenCalled()
+
+    mocks.runtimeFlags = { use_new_parser: 'Off', test_flag: 'On' }
+    features.update(UserFeaturesState.Ready, new Set())
     await flushMicrotasks()
     expect(mocks.workers).toHaveLength(2)
+    expect(mocks.workers[0].terminate).toHaveBeenCalledTimes(1)
   })
 })

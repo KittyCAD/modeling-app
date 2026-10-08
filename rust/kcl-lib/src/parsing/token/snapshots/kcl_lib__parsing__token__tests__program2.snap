@@ -1,5 +1,5 @@
 ---
-source: kcl-lib/src/parsing/token/tokeniser.rs
+source: kcl-lib/src/parsing/token/mod.rs
 expression: actual.tokens
 ---
 [

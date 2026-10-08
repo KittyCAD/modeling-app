@@ -2,7 +2,7 @@ name: publish-apps
 
 on:
   release:
-    types: [published]
+    types: [published] # each job below is restricted to 'v<M.N.P>' app tags
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -10,6 +10,7 @@ concurrency:
 
 jobs:
   release-desktop:
+    if: startsWith(github.event.release.tag_name, 'v')
     runs-on: namespace-profile-ubuntu-2-cores
     permissions:
       contents: write
@@ -123,13 +124,22 @@ jobs:
           files: 'out/Zoo*'
 
   release-web:
+    if: startsWith(github.event.release.tag_name, 'v')
     runs-on: namespace-profile-ubuntu-2-cores
-    permissions: {}
+    permissions:
+      contents: write
     steps:
-      - name: Deploy to Vercel Production
-        run: curl --request POST "${{ secrets.VERCEL_DEPLOY_HOOK_URL }}"
+      - uses: actions/checkout@v7.0.1
+      - name: Sync production branch to release commit
+        shell: bash
+        run: |
+          git checkout production || git checkout -b production
+          git fetch origin
+          git reset --hard "${{ github.sha }}"
+          git push --force origin production
 
   announce-release:
+    if: startsWith(github.event.release.tag_name, 'v')
     needs: [release-desktop, release-web]
     runs-on: namespace-profile-ubuntu-2-cores
     steps:

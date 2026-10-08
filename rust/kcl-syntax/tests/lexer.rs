@@ -1,4 +1,5 @@
 use std::ops::Range;
+use std::path::Path;
 
 use kcl_syntax::syntax_kind::SyntaxKind;
 use proptest::prelude::*;
@@ -555,7 +556,7 @@ fn lexes_unknown_string_escapes_as_string_text() {
 fn recovers_string_escape_newline_at_line_boundary() {
     // An *unterminated* string with a trailing backslash still recovers at the
     // line boundary. (An escaped newline only continues a *closed* string --
-    // matching the legacy tokeniser -- see `lexes_multiline_strings`.)
+    // see `lexes_multiline_strings`.)
     assert_tokens(
         concat!("\"a\\", "\n"),
         &[
@@ -579,6 +580,108 @@ fn lexes_unicode_words_and_unknown_unicode_scalars() {
     );
 }
 
+#[test]
+fn representative_sources_are_lossless() {
+    for source in [
+        "const part001 = startSketchOn(XY)",
+        "import foo",
+        "import(3)",
+        "use",
+        "use(3)",
+        "use (3)",
+        "useful",
+        "import",
+        "import\tfoo",
+        "import\nfoo",
+        "import.foo",
+        "import::foo",
+        "import/*comment*/foo",
+        "const myArray = [0..10]",
+        "const myArray = [0..<10]",
+        "1_ 1_mm 1m 1inch .5 0.25rad",
+        "1?foo",
+        "1_foo",
+        "1_mmfoo",
+        "1.2.3",
+        "1toot",
+        "1..2",
+        ".foo",
+        "...",
+        ".1",
+        "\"with escaped \\\" quote\" 'with escaped \\\' quote'",
+        r#""a\q""#,
+        concat!("\"a\\", "\n", "\""),
+        "\"line one\nline two\"",
+        "'multi\nline string'",
+        "\"// a comment\nstill in the string\"",
+        "\"unterminated",
+        "'unterminated",
+        "\"a",
+        "'a",
+        "\"",
+        "'",
+        "// this is a line comment\n/* this is a block comment */",
+        "/* unterminated",
+        "# ! $ ? @ ; :: : . , { } ( ) [ ]",
+        ">= <= == => != |> * + - / % = < > \\ ^ || && | &",
+        "12 ~ 8",
+        "a\u{00A0}b",
+        "a\u{1680}b",
+        "a\u{2003}b",
+        "a\u{3000}b",
+        "a🙂b",
+        "a\u{200B}b",
+        "a∴b",
+        "a©b",
+        "亞當 = 1",
+        "亞當~ = 1",
+    ] {
+        assert_lossless(source);
+    }
+}
+
+#[test]
+fn corpus_sources_are_lossless() {
+    let manifest = Path::new(env!("CARGO_MANIFEST_DIR"));
+    let repo_root = manifest.join("..").join("..");
+    let mut roots = vec![
+        repo_root.join("rust").join("kcl-lib"),
+        repo_root.join("public").join("kcl-samples"),
+        repo_root.join("rust").join("kcl-python-bindings"),
+    ];
+    if let Ok(external) = std::env::var("KCL_CORPUS_DIR") {
+        roots.push(std::path::PathBuf::from(external));
+    }
+    let mut checked = 0;
+    let mut divergences = Vec::new();
+    for root in &roots {
+        if !root.exists() {
+            continue;
+        }
+        for entry in walkdir::WalkDir::new(root).into_iter().filter_map(Result::ok) {
+            let path = entry.path();
+            if !path.is_file() || path.extension().is_none_or(|extension| extension != "kcl") {
+                continue;
+            }
+            let Ok(source) = std::fs::read_to_string(path) else {
+                continue;
+            };
+            checked += 1;
+            if let Err(error) = check_lossless(&source) {
+                divergences.push((path.display().to_string(), error));
+            }
+        }
+    }
+    eprintln!(
+        "[corpus] checked {checked} .kcl files; {} lossless tokenization failures",
+        divergences.len()
+    );
+    for (path, error) in divergences.iter().take(50) {
+        eprintln!("[corpus] {path}\n{error}\n");
+    }
+    assert!(divergences.is_empty(), "{} corpus failures", divergences.len());
+}
+
 proptest! {
     #![proptest_config(ProptestConfig {
         failure_persistence: None,
@@ -587,11 +690,7 @@ proptest! {
 
     #[test]
     fn lex_preserves_source_text(source in kclish_source()) {
-        let reconstructed: String = kcl_syntax::lexer::lex(&source)
-            .into_iter()
-            .map(|token| token.text())
-            .collect();
-        prop_assert_eq!(reconstructed, source);
+        assert_lossless(&source);
     }
 
     #[test]
@@ -619,6 +718,36 @@ fn assert_tokens(source: &str, expected: &[(SyntaxKind, &str, Range<usize>)]) {
     assert_eq!(actual, expected);
 }
 
+fn assert_lossless(source: &str) {
+    if let Err(error) = check_lossless(source) {
+        panic!("source:\n{source}\n{error}");
+    }
+}
+
+fn check_lossless(source: &str) -> Result<(), String> {
+    let lexed = kcl_syntax::lexer::lex(source);
+    let mut offset = 0;
+    for token in lexed.tokens() {
+        let range = token.range();
+        if range.start != offset
+            || range.end < range.start
+            || range.end > source.len()
+            || !source.is_char_boundary(range.start)
+            || !source.is_char_boundary(range.end)
+        {
+            return Err(format!("invalid token range: {token:?}"));
+        }
+        if &source[range.clone()] != token.text() {
+            return Err(format!("token text differs from source: {token:?}"));
+        }
+        offset = range.end;
+    }
+    if offset != source.len() {
+        return Err(format!("tokens end at {offset}, source ends at {}", source.len()));
+    }
+    Ok(())
+}
+
 fn kclish_source() -> impl Strategy<Value = String> {
     prop::collection::vec(kclish_piece(), 0..128).prop_map(|pieces| pieces.concat())
 }
@@ -638,37 +767,7 @@ fn kclish_piece() -> impl Strategy<Value = String> {
 }
 
 fn keyword() -> impl Strategy<Value = &'static str> {
-    prop::sample::select(&[
-        "if",
-        "else",
-        "for",
-        "while",
-        "return",
-        "break",
-        "continue",
-        "fn",
-        "let",
-        "mut",
-        "as",
-        "loop",
-        "true",
-        "false",
-        "nil",
-        "and",
-        "or",
-        "not",
-        "var",
-        "const",
-        "import",
-        "export",
-        "type",
-        "interface",
-        "new",
-        "self",
-        "record",
-        "struct",
-        "object",
-    ])
+    prop::sample::select(kcl_syntax::keywords::KEYWORDS)
 }
 
 fn word() -> impl Strategy<Value = String> {

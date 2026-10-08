@@ -139,7 +139,7 @@ function runTestForTheme(mode: Themes) {
       await scene.settled()
       await expect(
         page.getByRole('tooltip').filter({
-          hasText: 'Pull a sketch into 3D along its normal or perpendicular.',
+          hasText: 'Extrude',
         })
       ).toBeVisible()
 
