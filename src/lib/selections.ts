@@ -2519,31 +2519,6 @@ function getEngineEntityIdForSelection(
     return selection.engineEntityId
   }
 
-  const entityRef = selection.entityRef
-  if (entityRef) {
-    switch (entityRef.type) {
-      case 'solid3d':
-        return entityRef.solid3d_id
-      case 'solid2d':
-        return entityRef.solid2d_id
-      case 'face':
-        return entityRef.face_id
-      case 'plane':
-        return entityRef.plane_id
-      case 'solid2d_edge':
-        return entityRef.edge_id
-      case 'segment':
-        return entityRef.segment_id
-      case 'helix':
-        return entityRef.helix_id
-      case 'region':
-        return entityRef.region_id
-      case 'edge':
-      case 'vertex':
-        break
-    }
-  }
-
   return resolveToCodeRef(selection, artifactGraph)?.artifact?.id
 }
 

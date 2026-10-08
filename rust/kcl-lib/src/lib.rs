@@ -149,7 +149,6 @@ pub mod lsp_support {
         }
 
         pub mod token {
-            pub use crate::parsing::token::LexerMode;
             pub use crate::parsing::token::RESERVED_WORDS;
             pub use crate::parsing::token::TokenStream;
             pub use crate::parsing::token::lex;

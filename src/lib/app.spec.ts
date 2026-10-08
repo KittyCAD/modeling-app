@@ -3,10 +3,7 @@ import { pluginsValueSpec } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import { File, type KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
-import {
-  IS_PLAYWRIGHT_KEY,
-  KCL_NEW_LEXER_PARSER_FEATURE_FLAG,
-} from '@src/lib/constants'
+import { IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import {
@@ -196,9 +193,8 @@ function createRuntimeFlagsWasmInstance() {
   }
 }
 
-function expectedRuntimeFlags(useNewLexerParser: 'On' | 'Off') {
+function expectedRuntimeFlags() {
   return JSON.stringify({
-    use_new_lexer_parser: useNewLexerParser,
     use_new_parser: 'Off',
   })
 }
@@ -399,7 +395,7 @@ describe('project system', () => {
       await wasmPromise
 
       expect(wasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
-        expectedRuntimeFlags('Off')
+        expectedRuntimeFlags()
       )
     } finally {
       app.dispose()
@@ -420,34 +416,10 @@ describe('project system', () => {
       await wasmPromise
       wasmInstance.set_kcl_runtime_flags.mockClear()
 
-      userFeatures.setFeatureIds(new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG]))
+      userFeatures.setFeatureIds(new Set())
 
       expect(wasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
-        expectedRuntimeFlags('On')
-      )
-    } finally {
-      app.dispose()
-    }
-  })
-
-  it('updates the new lexer runtime flag when the feature is enabled', async () => {
-    const userFeatures = createUserFeaturesForTest(new Set())
-    const wasmInstance = createRuntimeFlagsWasmInstance()
-    const wasmPromise = Promise.resolve(wasmInstance)
-    const app = createAppForTest({
-      userFeatures,
-      wasmPromise,
-      registryOverrides: [createTestWasmRegistryItem(wasmPromise)],
-    })
-
-    try {
-      await wasmPromise
-      wasmInstance.set_kcl_runtime_flags.mockClear()
-
-      userFeatures.setFeatureIds(new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG]))
-
-      expect(wasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
-        expectedRuntimeFlags('On')
+        expectedRuntimeFlags()
       )
     } finally {
       app.dispose()
@@ -455,9 +427,7 @@ describe('project system', () => {
   })
 
   it('sets KCL runtime flags on lifecycle-announced wasm instances', async () => {
-    const userFeatures = createUserFeaturesForTest(
-      new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG])
-    )
+    const userFeatures = createUserFeaturesForTest(new Set())
     const initialWasmInstance = createRuntimeFlagsWasmInstance()
     const nextWasmInstance = createRuntimeFlagsWasmInstance()
     const wasmPromise = Promise.resolve(initialWasmInstance)
@@ -473,7 +443,7 @@ describe('project system', () => {
       await notifyActiveWasmInstance(nextWasmInstance)
 
       expect(nextWasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
-        expectedRuntimeFlags('On')
+        expectedRuntimeFlags()
       )
     } finally {
       app.dispose()

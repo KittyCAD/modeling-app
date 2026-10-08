@@ -21,6 +21,8 @@ import { reportRejection } from '@src/lib/trap'
 
 const MODELING_BACKEND_DISCONNECTED_MESSAGE =
   'modeling connection interrupted; please reconnect and retry'
+// Grafana's "average worst" WebRTC RTT is about 2 seconds; report larger outliers.
+const SLOW_PING_PONG_MS = 10_000
 
 /**
  * 4 different event listeners to clean up
@@ -138,6 +140,7 @@ export const createOnWebSocketMessage = ({
   tearDownManager: (options: ManagerTearDown) => void
   requestReconnect: () => void
 }) => {
+  let pingPongNumber = 0
   const onWebSocketMessage = (event: MessageEvent<any>) => {
     // In the EngineConnection, we're looking for messages to/from
     // the server that relate to the ICE handshake, or WebRTC
@@ -226,12 +229,28 @@ export const createOnWebSocketMessage = ({
 
     // Message is successful, lets process the websocket message
     switch (resp.type) {
-      case 'pong':
+      case 'pong': {
         const pong = Date.now()
         setPong(pong)
+        const sentAt = ping()
+        if (sentAt !== undefined) {
+          pingPongNumber += 1
+          const durationMs = pong - sentAt
+          if (pingPongNumber === 1 || durationMs > SLOW_PING_PONG_MS) {
+            void reportClientError({
+              code: ClientErrorCode.EnginePingPongTiming,
+              message: 'Engine ping-pong timing',
+              extra: {
+                ...getConnectionContext(),
+                pingPongNumber,
+                durationMs,
+              },
+            }).catch(reportRejection)
+          }
+        }
         dispatchEvent(
           new CustomEvent(EngineConnectionEvents.PingPongChanged, {
-            detail: Math.min(999, Math.floor(pong - (ping() ?? 0))),
+            detail: Math.min(999, Math.floor(pong - (sentAt ?? 0))),
           })
         )
         setPing(undefined)
@@ -239,6 +258,7 @@ export const createOnWebSocketMessage = ({
           onWebSocketReady()
         }
         break
+      }
       case 'modeling_session_data':
         const apiCallId = resp.data.session.api_call_id
         setApiCallId(apiCallId)
