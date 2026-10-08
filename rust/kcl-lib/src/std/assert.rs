@@ -52,7 +52,9 @@ pub async fn assert(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 /// operators (`actual > bound` and friends) do, and return the two numbers to
 /// compare along with their common type. Like the operators, this warns when
 /// the units are unknown or incompatible (for example a length and an angle)
-/// and then compares the raw numbers.
+/// and then compares the raw numbers. A number without units only matches a
+/// value in the file's units: in a mm file, `1in` against `20` is not
+/// converted, so the raw numbers 1 and 20 are compared, with the warning.
 fn coerce_bound(actual: &TyF64, bound: TyF64, exec_state: &mut ExecState, args: &Args) -> (f64, f64, NumericType) {
     let (actual, bound, ty) = NumericType::combine_eq(actual.clone(), bound, exec_state, args.source_range);
     if ty == NumericType::Unknown {
@@ -74,6 +76,35 @@ fn with_units(n: f64, ty: &NumericType) -> String {
         NumericType::Known(UnitType::Angle(unit)) => format!("{n}{unit}"),
         _ => n.to_string(),
     }
+}
+
+const DEFAULT_TOLERANCE: f64 = 0.0000000001;
+
+/// Bring the tolerance into the units of the compared values (`actual` with
+/// type `ty`), like [`coerce_bound`]. Returns the tolerance to use and how to
+/// show it in an error message. If its units cannot be converted, the raw
+/// number is used, and the message shows the units the tolerance was written
+/// in and says so, rather than claiming a conversion happened.
+fn coerce_tolerance(
+    tolerance: Option<&TyF64>,
+    actual: f64,
+    ty: NumericType,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> (f64, String) {
+    let Some(tolerance) = tolerance else {
+        return (DEFAULT_TOLERANCE, with_units(DEFAULT_TOLERANCE, &ty));
+    };
+    let (_, n, tolerance_ty) = coerce_bound(&TyF64::new(actual, ty), tolerance.clone(), exec_state, args);
+    let shown = if tolerance_ty == NumericType::Unknown {
+        format!(
+            "{} (its units could not be converted, so the raw number {n} was used)",
+            with_units(tolerance.n, &tolerance.ty)
+        )
+    } else {
+        with_units(n, &tolerance_ty)
+    };
+    (n, shown)
 }
 
 async fn inner_assert_is(actual: bool, error: Option<String>, args: &Args) -> Result<(), KclError> {
@@ -184,22 +215,15 @@ async fn inner_assert(
         )
         .await?;
     }
-    const DEFAULT_TOLERANCE: f64 = 0.0000000001;
-    // The tolerance is converted to the same units as the compared values.
-    let tolerance_in = |ty: NumericType, actual: f64, exec_state: &mut ExecState| match &tolerance {
-        Some(tol) => coerce_bound(&TyF64::new(actual, ty), tol.clone(), exec_state, args).1,
-        None => DEFAULT_TOLERANCE,
-    };
     if let Some(exp) = is_equal_to {
         let (actual, exp, ty) = coerce_bound(&actual, exp, exec_state, args);
-        let tolerance = tolerance_in(ty, actual, exec_state);
+        let (tolerance, tolerance_shown) = coerce_tolerance(tolerance.as_ref(), actual, ty, exec_state, args);
         _assert(
             (actual - exp).abs() < tolerance,
             &format!(
-                "Expected {} to be equal to {} using tolerance {} but it wasn't{suffix}",
+                "Expected {} to be equal to {} using tolerance {tolerance_shown} but it wasn't{suffix}",
                 with_units(actual, &ty),
                 with_units(exp, &ty),
-                with_units(tolerance, &ty)
             ),
             args,
         )
@@ -207,14 +231,13 @@ async fn inner_assert(
     }
     if let Some(exp) = is_not_equal_to {
         let (actual, exp, ty) = coerce_bound(&actual, exp, exec_state, args);
-        let tolerance = tolerance_in(ty, actual, exec_state);
+        let (tolerance, tolerance_shown) = coerce_tolerance(tolerance.as_ref(), actual, ty, exec_state, args);
         _assert(
             (actual - exp).abs() >= tolerance,
             &format!(
-                "Expected {} to not be equal to {} using tolerance {} but it was{suffix}",
+                "Expected {} to not be equal to {} using tolerance {tolerance_shown} but it was{suffix}",
                 with_units(actual, &ty),
                 with_units(exp, &ty),
-                with_units(tolerance, &ty)
             ),
             args,
         )
@@ -227,35 +250,76 @@ async fn inner_assert(
 mod tests {
     use crate::execution::parse_execute;
 
-    /// Runs `code` in a mm file and returns the warnings it produced, or the
-    /// error message if it failed.
-    async fn run(code: &str) -> Result<Vec<String>, String> {
-        let code = format!("@settings(kclVersion = 2.0, defaultLengthUnit = mm)\n{code}");
+    /// Every case runs under each of these KCL versions. The comparison has
+    /// no version gate, so the results must be the same.
+    const KCL_VERSIONS: [&str; 2] = ["2.0", "3.0"];
+
+    const UNKNOWN_UNITS: &str = "Calling `assert` on numbers which have unknown or incompatible units";
+    const ANGLE_UNITS: &str = "Prefer to use explicit units for angles";
+
+    /// Runs `code` in a file with default length unit `unit` and KCL version
+    /// `version`, and returns the warnings it produced, or the error message
+    /// if it failed.
+    async fn run(unit: &str, version: &str, code: &str) -> Result<Vec<String>, String> {
+        let code = format!("@settings(kclVersion = {version}, defaultLengthUnit = {unit})\n{code}");
         match parse_execute(&code).await {
             Ok(result) => Ok(result.issues().iter().map(|issue| issue.message.clone()).collect()),
             Err(e) => Err(e.message().to_owned()),
         }
     }
 
-    async fn assert_passes(code: &str) {
-        match run(code).await {
-            Ok(warnings) => assert!(warnings.is_empty(), "unexpected warnings {warnings:?} for:\n{code}"),
-            Err(e) => panic!("expected to pass, got `{e}` for:\n{code}"),
+    /// Checks that `code` passes in a file with default length unit `unit`,
+    /// under every KCL version, and that it reports one warning for each entry
+    /// of `warnings`, containing that text. `&[]` means no warnings.
+    async fn assert_passes_in(unit: &str, code: &str, warnings: &[&str]) {
+        for version in KCL_VERSIONS {
+            match run(unit, version, code).await {
+                Ok(actual) => {
+                    assert_eq!(
+                        actual.len(),
+                        warnings.len(),
+                        "expected warnings {warnings:?}, got {actual:?} under KCL {version} for:\n{code}"
+                    );
+                    for (actual, expected) in actual.iter().zip(warnings) {
+                        assert!(
+                            actual.contains(expected),
+                            "expected warning `{expected}`, got `{actual}` under KCL {version} for:\n{code}"
+                        );
+                    }
+                }
+                Err(e) => panic!("expected to pass, got `{e}` under KCL {version} for:\n{code}"),
+            }
         }
     }
 
-    /// Checks that `code` fails and that every fragment appears in the error
+    /// Checks that `code` passes with no warnings in a mm file.
+    async fn assert_passes(code: &str) {
+        assert_passes_in("mm", code, &[]).await;
+    }
+
+    /// Checks that `code` fails in a file with default length unit `unit`,
+    /// under every KCL version, and that every fragment appears in the error
     /// message. Fragments stop short of the last digits of converted values,
     /// since those depend on floating-point rounding.
-    async fn assert_fails_with(code: &str, fragments: &[&str]) {
-        match run(code).await {
-            Ok(_) => panic!("expected to fail for:\n{code}"),
-            Err(e) => {
-                for fragment in fragments {
-                    assert!(e.contains(fragment), "expected `{fragment}` in `{e}` for:\n{code}");
+    async fn assert_fails_in(unit: &str, code: &str, fragments: &[&str]) {
+        for version in KCL_VERSIONS {
+            match run(unit, version, code).await {
+                Ok(_) => panic!("expected to fail under KCL {version} for:\n{code}"),
+                Err(e) => {
+                    for fragment in fragments {
+                        assert!(
+                            e.contains(fragment),
+                            "expected `{fragment}` in `{e}` under KCL {version} for:\n{code}"
+                        );
+                    }
                 }
             }
         }
+    }
+
+    /// Checks that `code` fails in a mm file, as [`assert_fails_in`].
+    async fn assert_fails_with(code: &str, fragments: &[&str]) {
+        assert_fails_in("mm", code, fragments).await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -354,7 +418,9 @@ mod tests {
     async fn assert_with_matching_or_no_units_is_unchanged() {
         assert_passes("assert(25.4mm, isGreaterThan = 20mm, isLessThan = 30mm, isEqualTo = 25.4mm)").await;
         assert_passes("assert(90deg, isEqualTo = 90deg, tolerance = 0.001deg)").await;
-        // A bound or tolerance without units takes the units of the file.
+        // A bound or tolerance without units matches a value in the file's
+        // units (mm here). Against other units it is not converted; see
+        // `assert_does_not_convert_a_number_without_units_to_other_units`.
         assert_passes("assert(25.4mm, isEqualTo = 25.4, tolerance = 0.001)").await;
         assert_passes("assert(25.4, isEqualTo = 25.4mm, tolerance = 0.001mm)").await;
         assert_passes("assert(10, isGreaterThan = 5, isLessThan = 20, isNotEqualTo = 7)").await;
@@ -375,19 +441,92 @@ mod tests {
     async fn assert_warns_on_incompatible_units() {
         // A length cannot be converted to an angle, so, like `30in > 20deg`,
         // the raw numbers are compared and a warning is reported.
-        let warnings = run("assert(30in, isGreaterThan = 20deg)").await.unwrap();
-        assert_eq!(warnings.len(), 1, "{warnings:?}");
-        assert!(
-            warnings[0].contains("Calling `assert` on numbers which have unknown or incompatible units"),
-            "{warnings:?}"
-        );
+        assert_passes_in("mm", "assert(30in, isGreaterThan = 20deg)", &[UNKNOWN_UNITS]).await;
         assert_fails_with(
             "assert(1in, isGreaterThan = 20deg)",
             &["Expected 1 to be greater than 20 but it wasn't"],
         )
         .await;
         // The tolerance is checked the same way, and the warning is reported once.
-        let warnings = run("assert(90deg, isEqualTo = 90deg, tolerance = 1mm)").await.unwrap();
-        assert_eq!(warnings.len(), 1, "{warnings:?}");
+        assert_passes_in(
+            "mm",
+            "assert(90deg, isEqualTo = 90deg, tolerance = 1mm)",
+            &[UNKNOWN_UNITS],
+        )
+        .await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn assert_shows_an_incompatible_tolerance_in_its_own_units() {
+        // 1mm cannot be converted to degrees, so the raw number 1 is used as
+        // the tolerance. The message must say so, not claim it was 1deg.
+        assert_fails_with(
+            "assert(90deg, isEqualTo = 92deg, tolerance = 1mm)",
+            &["Expected 90deg to be equal to 92deg using tolerance 1mm (its units could not be converted, so the raw number 1 was used) but it wasn't"],
+        )
+        .await;
+        assert_fails_with(
+            "assert(90deg, isNotEqualTo = 90.5deg, tolerance = 1mm)",
+            &["Expected 90deg to not be equal to 90.5deg using tolerance 1mm (its units could not be converted, so the raw number 1 was used) but it was"],
+        )
+        .await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn assert_does_not_convert_a_number_without_units_to_other_units() {
+        // Like the operators, a number without units only takes the file's
+        // units when the other value is in the file's units too. Against a
+        // different unit it is not converted: the raw numbers are compared,
+        // with a warning. So in a mm file, `1in` against `20` compares 1 with
+        // 20 (like `1in > 20`), not 25.4mm with 20mm.
+        assert_fails_with(
+            "assert(1in, isGreaterThan = 20)",
+            &["Expected 1 to be greater than 20 but it wasn't"],
+        )
+        .await;
+        assert_passes_in("mm", "assert(1in, isLessThan = 20)", &[UNKNOWN_UNITS]).await;
+        // The same for the tolerance: 1in and 1.02in differ by 0.02in
+        // (0.508mm), and the raw tolerance 0.1 is used, not 0.1mm.
+        assert_passes_in(
+            "mm",
+            "assert(1in, isEqualTo = 1.02in, tolerance = 0.1)",
+            &[UNKNOWN_UNITS],
+        )
+        .await;
+        assert_fails_with(
+            "assert(1in, isEqualTo = 1.2in, tolerance = 0.1)",
+            &["Expected 1in to be equal to 1.2in using tolerance 0.1 (its units could not be converted, so the raw number 0.1 was used) but it wasn't"],
+        )
+        .await;
+
+        // In an inch file, numbers without units match inches, not mm.
+        assert_passes_in("in", "assert(1in, isEqualTo = 1, tolerance = 0.001)", &[]).await;
+        assert_passes_in("in", "assert(25.4mm, isEqualTo = 1in)", &[]).await;
+        assert_fails_in(
+            "in",
+            "assert(25.4mm, isLessThan = 2)",
+            &["Expected 25.4 to be less than 2 but it wasn't"],
+        )
+        .await;
+        assert_passes_in("in", "assert(25.4mm, isGreaterThan = 2)", &[UNKNOWN_UNITS]).await;
+
+        // A count matches a plain number, but never a length.
+        assert_passes_in("mm", "assert(2_, isEqualTo = 2)", &[]).await;
+        assert_passes_in("mm", "assert(2_, isEqualTo = 2mm)", &[UNKNOWN_UNITS]).await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn assert_warns_about_angles_without_units_like_the_operators() {
+        // A number without units against degrees gets the operators' angle
+        // warning, not the unknown-units one. The bound and the tolerance are
+        // each checked, so today the same warning is reported once for each.
+        for version in KCL_VERSIONS {
+            let code = "assert(90deg, isEqualTo = 90, tolerance = 0.1)";
+            let warnings = run("mm", version, code).await.unwrap();
+            assert!(
+                !warnings.is_empty() && warnings.iter().all(|w| w.contains(ANGLE_UNITS)),
+                "expected only angle warnings, got {warnings:?} under KCL {version} for:\n{code}"
+            );
+        }
     }
 }
