@@ -926,7 +926,7 @@ export class LocalRenderer {
     renderer.toneMappingExposure = 1
     renderer.setPixelRatio(window.devicePixelRatio)
     renderer.domElement.className =
-      'absolute inset-0 z-20 h-full w-full pointer-events-none'
+      'absolute inset-0 h-full w-full pointer-events-none'
     container.appendChild(renderer.domElement)
 
     const scene = new Scene()

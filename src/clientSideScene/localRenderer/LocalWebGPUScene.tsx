@@ -104,7 +104,7 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
     <>
       <div
         ref={containerRef}
-        className="pointer-events-none absolute inset-0 z-20 h-full w-full transition-opacity duration-200 opacity-0"
+        className="pointer-events-none absolute inset-0 h-full w-full transition-opacity duration-200 opacity-0"
       />
       {isLoadingModel && (
         <output
