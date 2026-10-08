@@ -23,10 +23,8 @@ export function KclMigration({
 }) {
   useSignals()
   const project = app.projectSignal.value
-  // Compare runtime IDs until the SDK publishes the new Feature union member.
-  const enabled = [...app.userFeatures.contextSignal.value.featureIds].some(
-    (id: string) => id === MIGRATION_FEATURE
-  )
+  const enabled =
+    app.userFeatures.contextSignal.value.featureIds.has(MIGRATION_FEATURE)
   if (!project) return null
   return (
     <ProjectMigration

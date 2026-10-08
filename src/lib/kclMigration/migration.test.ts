@@ -160,7 +160,8 @@ describe('project migration', () => {
       path.join(fixture.root, 'oversized.bin'),
       new Uint8Array(8 * 1024 * 1024)
     )
-    await expect(fixture.project.capture()).rejects.toThrow('8 MiB')
+    const larger = await fixture.project.capture()
+    expect(larger.files.get('oversized.bin')?.byteLength).toBe(8 * 1024 * 1024)
   })
 
   it('preserves distinct filenames that differ only by case', async ({

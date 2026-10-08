@@ -20,8 +20,6 @@ export type MigrationProgress = Extract<
 
 export const MIGRATION_FEATURE = 'zookeeper_kcl_migration'
 export const MIGRATION_TARGET = '3.0'
-export const MAX_FILES = 256
-export const MAX_BYTES = 8 * 1024 * 1024
 
 const statuses = new Set<string>([
   'running',
@@ -34,13 +32,10 @@ const statuses = new Set<string>([
 ])
 
 function isFiles(value: unknown): value is Record<string, number[]> {
-  if (!isRecord(value) || Object.keys(value).length > MAX_FILES) return false
-  let bytes = 0
-  return Object.values(value).every((file) => {
-    if (!isArray(file)) return false
-    bytes += file.length
-    return (
-      bytes <= MAX_BYTES &&
+  if (!isRecord(value)) return false
+  return Object.values(value).every(
+    (file) =>
+      isArray(file) &&
       file.every(
         (byte) =>
           typeof byte === 'number' &&
@@ -48,8 +43,7 @@ function isFiles(value: unknown): value is Record<string, number[]> {
           byte >= 0 &&
           byte <= 255
       )
-    )
-  })
+  )
 }
 
 function isResult(value: unknown): value is MigrationResult {

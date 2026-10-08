@@ -1,7 +1,6 @@
 import { INTERNAL_OPFS_META_FILE } from '@src/lib/cloudSync/paths'
 import { PROJECT_IMAGE_NAME } from '@src/lib/constants'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
-import { MAX_BYTES, MAX_FILES } from '@src/lib/kclMigration/protocol'
 import { webSafePathSplit } from '@src/lib/pathUtils'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
@@ -54,8 +53,6 @@ export async function readProjectFiles(
     )
   }
   const files: ProjectFiles = new Map()
-  let bytes = 0
-  let entries = 0
   async function visit(directory: string): Promise<void> {
     for (const name of (await io.readDirectory(directory)).toSorted()) {
       if (name === '.git' || name === INTERNAL_OPFS_META_FILE) continue
@@ -68,12 +65,6 @@ export async function readProjectFiles(
           new Error(`Unsupported project path: ${relative}`)
         )
       }
-      entries += 1
-      if (entries > MAX_FILES * 4) {
-        return Promise.reject(
-          new Error('The project has too many directory entries to migrate.')
-        )
-      }
       const stat = await io.stat(absolute, { followSymlinks: false })
       if (stat.symbolicLink) {
         return Promise.reject(
@@ -83,20 +74,7 @@ export async function readProjectFiles(
       if (stat.kind === 'directory') {
         await visit(absolute)
       } else {
-        if (files.size >= MAX_FILES || bytes + stat.size > MAX_BYTES) {
-          return Promise.reject(
-            new Error(
-              'Migration supports up to 256 files and 8 MiB per project.'
-            )
-          )
-        }
         const contents = new Uint8Array(await io.readFile(absolute))
-        bytes += contents.byteLength
-        if (bytes > MAX_BYTES) {
-          return Promise.reject(
-            new Error('Migration supports up to 8 MiB per project.')
-          )
-        }
         files.set(relative, contents)
       }
     }
@@ -114,14 +92,6 @@ export function withEditorBuffers(
     if (!result.has(path))
       return new Error(`Open file ${path} is no longer in the project.`)
     result.set(path, new TextEncoder().encode(code))
-  }
-  if (
-    [...result.values()].reduce((size, file) => size + file.byteLength, 0) >
-    MAX_BYTES
-  ) {
-    return new Error(
-      'Migration supports up to 8 MiB per project, including unsaved edits.'
-    )
   }
   return result
 }
