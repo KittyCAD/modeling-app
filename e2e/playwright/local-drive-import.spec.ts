@@ -60,7 +60,7 @@ test.describe('Local Drive picker', { tag: '@web' }, () => {
   }) => {
     await homePage.createAndGoToProject('local-kcl')
     await toolbar.openPane(DefaultLayoutPaneID.Code)
-    const code = '@settings(kclVersion = 2.0)\n// Selected from Local Drive\n'
+    const code = '@settings(kclVersion = 3.0)\n// Selected from Local Drive\n'
 
     await toolbar.loadButton.click()
     const chooserPromise = page.waitForEvent('filechooser')
