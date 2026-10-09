@@ -1,4 +1,3 @@
-import { BillingDialog } from '@kittycad/ui-components'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ActionButton } from '@src/components/ActionButton'
 import { Announcements } from '@src/components/Announcements'
@@ -313,8 +312,6 @@ const Home = () => {
   const apiToken = auth.useToken()
   const networkMachineStatus = useNetworkMachineStatus()
   const billingContext = billing.useContext()
-  const hasUnlimitedCredits = billingContext.balance === Infinity
-  const openBillingLinkExternally = openExternalBrowserIfDesktop()
 
   const projects = useFolders()
   const homeProjectEntries = registry.signal(homeProjectEntriesValueSpec).value
@@ -697,21 +694,6 @@ const Home = () => {
             </li>
           </ul>
           <ul className="flex flex-col">
-            {!hasUnlimitedCredits && (
-              <li className="contents">
-                <div className="my-2">
-                  <BillingDialog
-                    upgradeHref={withSiteBaseURL('/design-studio-pricing')}
-                    accountHref={withSiteBaseURL('/account/billing')}
-                    billingClick={openBillingLinkExternally}
-                    error={billingContext.error}
-                    balance={billingContext.balance}
-                    allowance={billingContext.allowance}
-                    userPaymentBalance={billingContext.userPaymentBalance}
-                  />
-                </div>
-              </li>
-            )}
             <li className="contents">
               <Announcements token={apiToken} />
             </li>
