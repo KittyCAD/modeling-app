@@ -1,8 +1,5 @@
 import type { OkModelingCmdResponse } from '@kittycad/lib'
-import {
-  registerLocalSelectionCommandProvider,
-  type LocalSelectionCommandProvider,
-} from '@src/clientSideScene/localSelectionCommandProxy'
+import type { LocalSelectionCommandHandler } from '@src/clientSideScene/localSelectionCommandProxy'
 import {
   LOCAL_WEBGPU_GTAO_SAMPLES,
   LOCAL_WEBGPU_GTAO_USE_DENOISE,
@@ -281,7 +278,7 @@ export class LocalRenderer {
     return reference?.type === 'helix' ? undefined : reference
   }
 
-  private readonly handleLocalSelectionCommand: LocalSelectionCommandProvider['handleCommand'] =
+  private readonly handleLocalSelectionCommand: LocalSelectionCommandHandler =
     async (command, { streamDimensions }) => {
       if (command.type !== 'modeling_cmd_req') return null
       const { cmd } = command
@@ -994,11 +991,13 @@ export class LocalRenderer {
     this.envMapLoader = envMapLoader
 
     this.rebuildPlaneTargets()
-    const unregisterProvider = registerLocalSelectionCommandProvider({
-      isActive: () =>
-        !this.disposed && !this.forceHide && this.planeInteractionEnabled,
-      handleCommand: this.handleLocalSelectionCommand,
-    })
+    const removeSelectionHandler =
+      kclManager.engineCommandManager.setLocalSelectionCommandHandler(
+        (command, context) =>
+          !this.disposed && !this.forceHide && this.planeInteractionEnabled
+            ? this.handleLocalSelectionCommand(command, context)
+            : null
+      )
     const inputCanvas = kclManager.sceneInfra.camControls.domElement
     this.pointerOverCanvas = inputCanvas.matches(':hover')
     const onEnter = () => {
@@ -1011,7 +1010,7 @@ export class LocalRenderer {
     inputCanvas.addEventListener('pointerenter', onEnter)
     inputCanvas.addEventListener('pointerleave', onLeave)
     this.unregisterPlanePicking = () => {
-      unregisterProvider()
+      removeSelectionHandler()
       inputCanvas.removeEventListener('pointerenter', onEnter)
       inputCanvas.removeEventListener('pointerleave', onLeave)
     }

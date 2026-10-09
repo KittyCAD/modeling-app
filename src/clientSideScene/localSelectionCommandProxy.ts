@@ -16,34 +16,12 @@ export type LocalSelectionCommandResult = {
   websocketResponse?: WebSocketResponse | null
 }
 
-export interface LocalSelectionCommandProvider {
-  isActive(): boolean
-  handleCommand(
-    command: WebSocketRequest,
-    context: { streamDimensions: StreamDimensions }
-  ): Promise<LocalSelectionCommandResult | null>
-}
-
-let registeredProvider: LocalSelectionCommandProvider | null = null
-
-export function registerLocalSelectionCommandProvider(
-  provider: LocalSelectionCommandProvider
-) {
-  registeredProvider = provider
-  return () => {
-    if (registeredProvider === provider) {
-      registeredProvider = null
-    }
-  }
-}
-
-export async function maybeHandleLocalSelectionCommand(
+/**
+ * Lets the local renderer answer a scene command in place of the engine.
+ * Returns null straight away, without a promise, when the command is not its
+ * to answer, so the caller can still send it in the same step.
+ */
+export type LocalSelectionCommandHandler = (
   command: WebSocketRequest,
   context: { streamDimensions: StreamDimensions }
-): Promise<LocalSelectionCommandResult | null> {
-  if (!registeredProvider?.isActive()) {
-    return null
-  }
-
-  return registeredProvider.handleCommand(command, context)
-}
+) => Promise<LocalSelectionCommandResult | null> | null

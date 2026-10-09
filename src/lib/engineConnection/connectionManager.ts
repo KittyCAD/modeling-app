@@ -7,7 +7,7 @@ import {
   decode as msgpackDecode,
   encode as msgpackEncode,
 } from '@msgpack/msgpack'
-import { maybeHandleLocalSelectionCommand } from '@src/clientSideScene/localSelectionCommandProxy'
+import type { LocalSelectionCommandHandler } from '@src/clientSideScene/localSelectionCommandProxy'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import { defaultSourceRange } from '@src/lang/sourceRange'
@@ -117,6 +117,7 @@ export class ConnectionManager extends EventTarget {
     | undefined
   private reconnectPreparation: AbortController | undefined
   private reconnectPreparationFinished = false
+  private localSelectionCommandHandler: LocalSelectionCommandHandler | undefined
   private readonly activeExecutions = new Set<symbol>()
   private readonly activeRecoveries = new Set<symbol>()
 
@@ -832,24 +833,43 @@ export class ConnectionManager extends EventTarget {
     debugLog('done')
   }
 
+  /**
+   * Lets the local renderer answer selection commands in place of the engine.
+   * Returns a function that removes the handler again.
+   */
+  setLocalSelectionCommandHandler(handler: LocalSelectionCommandHandler) {
+    this.localSelectionCommandHandler = handler
+    return () => {
+      if (this.localSelectionCommandHandler === handler) {
+        this.localSelectionCommandHandler = undefined
+      }
+    }
+  }
+
   async sendSceneCommand(
     command: EngineCommand,
     forceWebsocket = false
   ): Promise<WebSocketResponse | [WebSocketResponse] | null> {
-    const localSelectionResult = await maybeHandleLocalSelectionCommand(
-      command,
-      { streamDimensions: this.streamDimensions }
-    )
-    if (localSelectionResult) {
-      if (localSelectionResult.unreliableModelingResponse) {
-        this.dispatchUnreliableSubscribers(
-          localSelectionResult.unreliableModelingResponse as UnreliableResponses
-        )
+    // The handler declines without a promise, so a command it does not want
+    // (or any command when there is no handler) is still sent in this step.
+    const localSelection = this.localSelectionCommandHandler?.(command, {
+      streamDimensions: this.streamDimensions,
+    })
+    if (localSelection) {
+      const localSelectionResult = await localSelection
+      if (localSelectionResult) {
+        if (localSelectionResult.unreliableModelingResponse) {
+          this.dispatchUnreliableSubscribers(
+            localSelectionResult.unreliableModelingResponse as UnreliableResponses
+          )
+        }
+        if (localSelectionResult.modelingResponse) {
+          this.dispatchReliableSubscribers(
+            localSelectionResult.modelingResponse
+          )
+        }
+        return Promise.resolve(localSelectionResult.websocketResponse ?? null)
       }
-      if (localSelectionResult.modelingResponse) {
-        this.dispatchReliableSubscribers(localSelectionResult.modelingResponse)
-      }
-      return Promise.resolve(localSelectionResult.websocketResponse ?? null)
     }
 
     if (

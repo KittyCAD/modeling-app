@@ -1,6 +1,6 @@
 import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
-import type { LocalSelectionCommandProvider } from '@src/clientSideScene/localSelectionCommandProxy'
+import type { LocalSelectionCommandHandler } from '@src/clientSideScene/localSelectionCommandProxy'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 import { Signal } from '@src/lib/signal'
 import { Themes } from '@src/lib/theme'
@@ -42,7 +42,7 @@ type RendererInternals = {
   modelLoadSettledAfterRender: boolean
   previewCamera: PerspectiveCamera | OrthographicCamera | null
   syncPreviewCameraFromShared(): void
-  handleLocalSelectionCommand: LocalSelectionCommandProvider['handleCommand']
+  handleLocalSelectionCommand: LocalSelectionCommandHandler
   clearPlaneHover(): void
   rebuildPlaneTargets(): void
   baseRenderDirty: boolean
