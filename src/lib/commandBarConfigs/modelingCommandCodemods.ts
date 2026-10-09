@@ -1,4 +1,5 @@
 import { resolveDistanceSelections } from '@src/lib/gdtDistanceSelections'
+import { getDimensionFunction } from '@src/lib/gdtDimension'
 import { isErr } from '@src/lib/trap'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
@@ -321,6 +322,12 @@ export const modelingCommandCodemods = {
             kclManager.engineCommandManager
           )
       if (isErr(resolved)) return resolved
+      const dimensionFunction = args.nodeToEdit
+        ? (args.dimensionFunction ?? 'distance')
+        : await getDimensionFunction(
+            resolved.selections,
+            kclManager.engineCommandManager
+          )
       const data = await withDefaultGdtFrameDefaults({
         data: { ...args, objects: resolved.selections },
         ast,
@@ -329,7 +336,7 @@ export const modelingCommandCodemods = {
         sourceCode: kclManager.code,
         outputUnit: kclManager.fileSettings.defaultLengthUnit,
         wasmInstance,
-        distance: true,
+        distance: dimensionFunction === 'distance',
       })
       return addDistanceGdt({
         ...data,
@@ -337,6 +344,7 @@ export const modelingCommandCodemods = {
         artifactGraph: kclManager.artifactGraph,
         wasmInstance,
         edgeFaceSelections: resolved.faces,
+        dimensionFunction,
       })
     },
   }),

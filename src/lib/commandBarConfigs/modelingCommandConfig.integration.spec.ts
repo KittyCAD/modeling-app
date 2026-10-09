@@ -102,6 +102,7 @@ describe('GDT tolerance defaults', () => {
     const command = modelingMachineCommandConfig['GDT Distance']
     if (!command || isArray(command))
       throw new Error('Expected distance command')
+    expect(command.displayName).toBe('Dimension')
     expect(command.args?.tolerance?.required).toBe(false)
     expect(command.args?.tolerance?.prepopulate).toBeFalsy()
     expect(command.args?.tolerance?.skip).toBeFalsy()
@@ -110,7 +111,10 @@ describe('GDT tolerance defaults', () => {
       throw new Error('Expected plane options')
     expect(framePlane.defaultValue).toBeUndefined()
     expect(command.args?.objects).toMatchObject({
-      selectionTypes: expect.arrayContaining(['enginePrimitiveEdge']),
+      selectionTypes: expect.arrayContaining([
+        'enginePrimitiveEdge',
+        'enginePrimitiveFace',
+      ]),
     })
   })
   it('accepts two engine primitive edges as distance targets', () => {

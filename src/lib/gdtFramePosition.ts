@@ -828,8 +828,8 @@ async function getDistanceGeometryPlane(
   return undefined
 }
 
-async function getCircularEdgeCenter(
-  engine: ConnectionManager,
+export async function getCircularEdgeCenter(
+  engine: Pick<ConnectionManager, 'sendSceneCommand'>,
   id: ArtifactId,
   outputUnit: UnitLength
 ): Promise<Point3d | undefined> {
