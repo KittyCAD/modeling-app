@@ -1,5 +1,4 @@
 import env from '@src/env'
-import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import type { App } from '@src/lib/app'
 import type { Command } from '@src/lib/commandTypes'
 import {
@@ -319,16 +318,7 @@ export function createApplicationCommands({
         },
         required: (commandContext) =>
           ['local'].includes(commandContext.argumentsToSubmit.source as string),
-        filters: [
-          {
-            name: `Import ${relevantFileExtensions(wasmInstance).map((f) => ` .${f}`)}`,
-            extensions: relevantFileExtensions(wasmInstance),
-          },
-          {
-            name: 'All files',
-            extensions: ['*'],
-          },
-        ],
+        filters: [],
       },
     },
   }

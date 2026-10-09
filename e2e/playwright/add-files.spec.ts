@@ -1,8 +1,9 @@
+import { writeFile } from 'node:fs/promises'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
-test.describe('Local Drive picker', { tag: '@web' }, () => {
-  test('opens the picker and adds a local model file', async ({
+test.describe('Add files', { tag: '@web' }, () => {
+  test('opens the picker and adds a local file', async ({
     page,
     homePage,
     toolbar,
@@ -13,8 +14,8 @@ test.describe('Local Drive picker', { tag: '@web' }, () => {
     await toolbar.openPane(DefaultLayoutPaneID.Code)
     await toolbar.openPane(DefaultLayoutPaneID.Files)
 
-    const fileName = 'part.step'
-    const content = 'Imported model file'
+    const fileName = 'notes.txt'
+    const content = 'Imported local file'
     await cmdBar.openCmdBar()
     await cmdBar.chooseCommand('Add file to project')
     const chooserPromise = page.waitForEvent('filechooser')
@@ -63,3 +64,40 @@ test.describe('Local Drive picker', { tag: '@web' }, () => {
     await editor.expectEditor.toContain('Selected from Local Drive')
   })
 })
+
+test(
+  'adds a local file through the desktop picker',
+  { tag: '@desktop' },
+  async ({ page, homePage, toolbar, cmdBar, fs, tronApp }, testInfo) => {
+    if (!tronApp) throw new Error('Desktop app is required')
+    const fileName = 'notes.txt'
+    const content = 'Imported local file'
+    const sourcePath = testInfo.outputPath(fileName)
+    await writeFile(sourcePath, content)
+    await homePage.createAndGoToProject('local-drive')
+    await toolbar.openPane(DefaultLayoutPaneID.Code)
+    await toolbar.openPane(DefaultLayoutPaneID.Files)
+
+    await toolbar.loadButton.click()
+    await cmdBar.selectOption({ name: 'Local Drive', exact: true }).click()
+    await tronApp.electron.evaluate(({ dialog }, selectedPath) => {
+      const originalOpenDialog = dialog.showOpenDialog.bind(dialog)
+      dialog.showOpenDialog = async () => {
+        dialog.showOpenDialog = originalOpenDialog
+        return { canceled: false, filePaths: [selectedPath] }
+      }
+    }, sourcePath)
+    await page.getByTestId('cmd-bar-arg-file-button').click()
+    await expect(cmdBar.currentArgumentInput).toHaveValue(sourcePath)
+    await cmdBar.progressCmdBar()
+    await cmdBar.toBeClosed()
+
+    await expect(
+      page.getByRole('treeitem', { name: fileName, exact: true })
+    ).toBeVisible()
+    const projectPath = await page.evaluate(() => window.app.project?.path)
+    if (!projectPath) throw new Error('No project is open')
+    const filePath = await fs.join(projectPath, fileName)
+    await expect.poll(() => fs.readFile(filePath, 'utf8')).toBe(content)
+  }
+)
