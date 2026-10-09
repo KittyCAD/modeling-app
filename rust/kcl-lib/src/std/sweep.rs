@@ -87,7 +87,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         exec_state.warn(
             CompilationIssue::err(
                 arg.source_range,
-                "`sectional` has no effect on `sweep` in KCL 3 because sweep v2 does not support it. Remove this argument."
+                "Sectional sweeps are not supported in KCL 3. The `sectional` argument has no effect; remove it."
                     .to_owned(),
             ),
             annotations::WARN_NOT_YET_SUPPORTED,
@@ -500,7 +500,7 @@ mod tests {
                 let warnings: Vec<_> = result
                     .issues()
                     .iter()
-                    .filter(|issue| issue.message.contains("`sectional` has no effect on `sweep`"))
+                    .filter(|issue| issue.message.contains("Sectional sweeps are not supported in KCL 3"))
                     .collect();
                 assert_eq!(warnings.len(), 1, "issues: {:#?}", result.issues());
                 assert_eq!(warnings[0].severity, Severity::Warning);
@@ -510,7 +510,7 @@ mod tests {
                 result
                     .issues()
                     .iter()
-                    .all(|issue| !issue.message.contains("`sectional` has no effect"))
+                    .all(|issue| !issue.message.contains("Sectional sweeps are not supported"))
             );
         }
 
@@ -519,7 +519,7 @@ mod tests {
             result
                 .issues()
                 .iter()
-                .all(|issue| !issue.message.contains("`sectional` has no effect"))
+                .all(|issue| !issue.message.contains("Sectional sweeps are not supported"))
         );
     }
 
