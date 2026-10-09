@@ -5,7 +5,6 @@ import { getStringAfterLastSeparator } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { FileEntry, Project } from '@src/lib/project'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
@@ -97,6 +96,8 @@ export class ZDSProject {
     // TODO: Clear current executing editor's execution status
 
     if (newPath === null) {
+      this.executingEditor.peek()?.setSceneSettingsActive(false)
+      this.#executingPath.value = null
       return
     }
     const foundPathSignal = this.findEditor(newPath)
@@ -107,7 +108,9 @@ export class ZDSProject {
     if (found) {
       // TODO: Reconfigure the editor to be an executing one
     }
+    this.executingEditor.peek()?.setSceneSettingsActive(false)
     this.#executingPath.value = foundPathSignal[0]
+    found.setSceneSettingsActive(true)
   }
   findEditor(path: string) {
     return Array.from(this.editors.entries()).find(([p]) => p.value === path)
@@ -193,15 +196,6 @@ export class ZDSProject {
     if (newEditor.path !== path) {
       newEditor.path = path
     }
-
-    // Initialize the editor theme
-    // Subsequent changes are listened for within app.onSettingsUpdate()
-    // TODO: Disassemble onSettingsUpdate, subscribe to changes from subsystems
-    newEditor
-      .updateTheme(
-        getSettingsFromActorContext(this.app.settings.actor).app.theme.current
-      )
-      .catch(reportRejection)
 
     if (!foundEditor) {
       this.set(signal(path), newEditor)
