@@ -12,6 +12,21 @@ export const MARKED_OPTIONS: MarkedOptions = {
   escape,
 }
 
+export function renderSafeMarkdown(markdown: string): string {
+  return Marked.parse(markdown, {
+    renderer: new SafeRenderer(MARKED_OPTIONS),
+    ...MARKED_OPTIONS,
+  })
+}
+
+export function markdownMessageElement(message: string): HTMLElement {
+  const element = document.createElement('div')
+  element.className = 'parsed-markdown'
+  element.innerHTML = renderSafeMarkdown(message)
+  attachSafeLinkHandler(element)
+  return element
+}
+
 /** Command descriptions use plain text, not Markdown formatting or link URLs. */
 export function markdownToPlainText(markdown: string): string {
   const template = document.createElement('template')
