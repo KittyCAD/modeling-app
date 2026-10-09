@@ -2941,7 +2941,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.191"
+version = "0.1.192"
 dependencies = [
  "anyhow",
  "console_error_panic_hook",

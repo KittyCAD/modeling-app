@@ -15,6 +15,11 @@ if [ "${VERCEL_ENV:-}" = "preview" ]; then
 fi
 wasm-pack "${wasm_pack_args[@]}"
 
+# Keep the stable filenames used by the app while publishing hash-named files.
+for artifact in kcl-wasm-lib/pkg/kcl_wasm_lib_"$COMMIT_HASH"*; do
+  cp "$artifact" "${artifact/kcl_wasm_lib_${COMMIT_HASH}/kcl_wasm_lib}"
+done
+
 cp -R kcl-lib/expected-bindings/ts-rs kcl-lib/bindings
 
 cp kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm ../public
