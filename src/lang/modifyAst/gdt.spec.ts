@@ -1529,7 +1529,9 @@ plate = extrude(plateRegion, length = 5mm)`
               response.resp.data.modeling_response.type !==
                 'solid3d_get_common_edge'
             )
-              throw new Error('Missing hole rim edge')
+              throw new Error(
+                `Missing hole rim edge: ${JSON.stringify(response)}`
+              )
             const id = response.resp.data.modeling_response.data.edge
             if (!id) throw new Error('Missing hole rim edge ID')
             objects.otherSelections.push({
