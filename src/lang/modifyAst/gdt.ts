@@ -44,7 +44,11 @@ import { err } from '@src/lib/trap'
 import type { DistanceFaceSelections } from '@src/lib/gdtDistanceSelections'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
+import type {
+  EnginePrimitiveSelection,
+  Selection,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
 
 const GDT_LABELED_SELECTION_ARG_NAMES = [
   'faces',
@@ -52,6 +56,7 @@ const GDT_LABELED_SELECTION_ARG_NAMES = [
   'from',
   'to',
   'face',
+  'target',
 ] as const
 
 function setCallInAst(args: Parameters<typeof setBaseCallInAst>[0]) {
@@ -1291,6 +1296,7 @@ export function addDistanceGdt({
   fontSize,
   nodeToEdit,
   edgeFaceSelections,
+  dimensionFunction = 'distance',
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
@@ -1304,6 +1310,7 @@ export function addDistanceGdt({
   leaderScale?: KclCommandValue
   fontSize?: KclCommandValue
   edgeFaceSelections?: DistanceFaceSelections
+  dimensionFunction?: 'distance' | 'diameter' | 'radius'
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   let modifiedAst = structuredClone(ast)
@@ -1337,12 +1344,35 @@ export function addDistanceGdt({
               resolveToCodeRef(selection, artifactGraph)?.artifact
           )
       )
-  if (!mNodeToEdit && targetSelections.length === 0)
+  const primitiveFaces = selections.otherSelections.filter(
+    (selection): selection is EnginePrimitiveSelection =>
+      typeof selection === 'object' &&
+      'type' in selection &&
+      selection.type === 'enginePrimitive' &&
+      selection.primitiveType === 'face'
+  )
+  if (
+    !mNodeToEdit &&
+    targetSelections.length === 0 &&
+    primitiveFaces.length === 0
+  )
     return new Error('No valid distance selections found.')
 
   const targets: Array<{ kind: 'face' | 'edge'; expr: Expr }> = mNodeToEdit
     ? [{ kind: 'edge', expr: createLocalName('selection') }]
     : []
+  if (!mNodeToEdit && primitiveFaces.length) {
+    const result = insertFacePrimitiveVariablesAndOffsetPathToNode({
+      enginePrimitives: primitiveFaces,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(result)) return result
+    targets.push(
+      ...result.faceExprs.map((expr) => ({ kind: 'face' as const, expr }))
+    )
+  }
   for (const selection of targetSelections) {
     const payload = getEdgeRefPayloadFromSelection(selection)
     if (
@@ -1461,7 +1491,14 @@ export function addDistanceGdt({
     return new Error('No valid distance targets could be generated')
   }
 
-  if (targets.length === 1 && targets[0].kind !== 'edge') {
+  if (dimensionFunction !== 'distance' && targets.length !== 1) {
+    return new Error('Diameter and radius require exactly one face or edge.')
+  }
+  if (
+    dimensionFunction === 'distance' &&
+    targets.length === 1 &&
+    targets[0].kind !== 'edge'
+  ) {
     return new Error(
       'A single distance selection must be an edge. Select two faces or edges to measure between entities.'
     )
@@ -1508,12 +1545,14 @@ export function addDistanceGdt({
   }
 
   const labeledArgs: LabeledArg[] =
-    edgeLengthExprs.length > 0
-      ? [createLabeledArg('edges', createArrayExpression(edgeLengthExprs))]
-      : [
-          createLabeledArg('from', targets[0].expr),
-          createLabeledArg('to', targets[1].expr),
-        ]
+    dimensionFunction !== 'distance'
+      ? [createLabeledArg('target', targets[0].expr)]
+      : edgeLengthExprs.length > 0
+        ? [createLabeledArg('edges', createArrayExpression(edgeLengthExprs))]
+        : [
+            createLabeledArg('from', targets[0].expr),
+            createLabeledArg('to', targets[1].expr),
+          ]
 
   if (tolerance !== undefined) {
     labeledArgs.push(createLabeledArg('tolerance', valueOrVariable(tolerance)))
@@ -1527,7 +1566,7 @@ export function addDistanceGdt({
   const stdLibCall = modelingStdLibCallWithModulePath('GDT Distance')
 
   const call = createCallExpressionStdLibKw(
-    stdLibCall.name,
+    dimensionFunction === 'distance' ? stdLibCall.name : dimensionFunction,
     null,
     labeledArgs,
     undefined,

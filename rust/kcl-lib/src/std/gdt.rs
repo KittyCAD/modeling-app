@@ -948,6 +948,323 @@ pub async fn position(exec_state: &mut ExecState, args: Args) -> Result<KclValue
     Ok(annotations.into())
 }
 
+pub async fn diameter(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    circular_dimension(MbdSymbol::Diameter, exec_state, args).await
+}
+
+pub async fn radius(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    circular_dimension(MbdSymbol::Radius, exec_state, args).await
+}
+
+// Engine curve queries return the quadratic control polygon of circular arcs.
+// Its even vertices lie on the circle; odd vertices are tangent intersections.
+fn circular_curve_radius(points: &[nalgebra_glm::DVec3]) -> Option<f64> {
+    if points.len() < 3 || points.len() % 2 != 1 || points.iter().any(|p| p.iter().any(|v| !v.is_finite())) {
+        return None;
+    }
+    let start_tangent = points[1] - points[0];
+    let end_tangent = points[1] - points[2];
+    let normal = start_tangent.cross(&end_tangent);
+    let direction = normal.cross(&start_tangent);
+    let denominator = direction.dot(&end_tangent);
+    if denominator.abs() <= direction.norm() * end_tangent.norm() * 1e-12 {
+        return None;
+    }
+    let center = points[0] + direction * ((points[2] - points[0]).dot(&end_tangent) / denominator);
+    let radius = (points[0] - center).norm();
+    if !radius.is_finite() || radius <= 0.0 {
+        return None;
+    }
+    for triple in points.windows(3).step_by(2) {
+        for (endpoint, tangent) in [(triple[0], triple[1] - triple[0]), (triple[2], triple[1] - triple[2])] {
+            let radial = endpoint - center;
+            if (radial.norm() - radius).abs() > radius * 1e-5
+                || radial.dot(&tangent).abs() > radius * tangent.norm() * 1e-5
+                || radial.dot(&normal).abs() > radius * normal.norm() * 1e-5
+            {
+                return None;
+            }
+        }
+    }
+    Some(radius)
+}
+
+fn circular_section_radius(points: &[nalgebra_glm::DVec3]) -> Option<f64> {
+    if points.len() < 5 {
+        return None;
+    }
+    let a = points[2] - points[0];
+    let b = points[4] - points[0];
+    let normal = a.cross(&b);
+    if normal.norm_squared() <= a.norm_squared() * b.norm_squared() * 1e-12 {
+        return None;
+    }
+    let center = points[0]
+        + (b.cross(&normal) * a.norm_squared() + normal.cross(&a) * b.norm_squared()) / (2.0 * normal.norm_squared());
+    let radius = (points[0] - center).norm();
+    if !radius.is_finite()
+        || radius <= 0.0
+        || points.iter().any(|p| {
+            let radial = p - center;
+            !radial.norm().is_finite()
+                || (radial.norm() - radius).abs() > radius * 1e-5
+                || radial.dot(&normal).abs() > radius * normal.norm() * 1e-5
+        })
+    {
+        return None;
+    }
+    Some(radius)
+}
+
+fn cylindrical_axis_matches(tangent: nalgebra_glm::DVec3, normal: nalgebra_glm::DVec3) -> bool {
+    tangent.iter().all(|v| v.is_finite())
+        && tangent.norm() > 0.0
+        && tangent.cross(&normal).norm() <= tangent.norm() * normal.norm() * 1e-5
+}
+
+async fn measure_circular_radius(
+    target: &DistanceEntity,
+    endpoint: &DistanceEndpoint,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<f64, KclError> {
+    // Engineless execution cannot evaluate geometry, but must still build the AST/artifacts.
+    if args.ctx.no_engine_commands().await {
+        return Ok(0.0);
+    }
+    let invalid = || {
+        KclError::new_semantic(KclErrorDetails::new(
+            "Cannot measure target: expected a circular edge or cylindrical face.".to_owned(),
+            vec![args.source_range],
+        ))
+    };
+    let mut entity_id = endpoint.entity_id;
+    if let Some(reference) = &endpoint.edge_reference {
+        let [first, second] = reference.side_faces.as_slice() else {
+            return Err(invalid());
+        };
+        let parent = exec_state
+            .send_modeling_cmd(
+                ModelingCmdMeta::from_args(exec_state, args),
+                mcmd::EntityGetParentId::builder().entity_id(*first).build().into(),
+            )
+            .await?;
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::EntityGetParentId(parent),
+        } = parent
+        else {
+            return Err(invalid());
+        };
+        let common = exec_state
+            .send_modeling_cmd(
+                ModelingCmdMeta::from_args(exec_state, args),
+                mcmd::Solid3dGetCommonEdge::builder()
+                    .object_id(parent.entity_id)
+                    .face_ids([*first, *second])
+                    .build()
+                    .into(),
+            )
+            .await?;
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::Solid3dGetCommonEdge(common),
+        } = common
+        else {
+            return Err(invalid());
+        };
+        entity_id = common.edge;
+    }
+    let entity_id = entity_id.ok_or_else(invalid)?;
+    if matches!(target, DistanceEntity::Face(_) | DistanceEntity::TaggedFace(_)) {
+        // Use native surface coordinates. Two translated circular sections
+        // distinguish cylindrical faces from cones, spheres and planar faces.
+        for swap in [false, true] {
+            let mut sections = Vec::new();
+            for v in [0.25, 0.75] {
+                let mut points = Vec::new();
+                for i in 0..9 {
+                    let u = i as f64 / 8.0;
+                    let uv = if swap {
+                        KPoint2d { x: v, y: u }
+                    } else {
+                        KPoint2d { x: u, y: v }
+                    };
+                    let response = exec_state
+                        .send_modeling_cmd(
+                            ModelingCmdMeta::from_args(exec_state, args),
+                            mcmd::FaceGetPosition::builder()
+                                .object_id(entity_id)
+                                .uv(uv)
+                                .build()
+                                .into(),
+                        )
+                        .await?;
+                    let OkWebSocketResponseData::Modeling {
+                        modeling_response: OkModelingCmdResponse::FaceGetPosition(position),
+                    } = response
+                    else {
+                        return Err(invalid());
+                    };
+                    points.push(nalgebra_glm::vec3(position.pos.x.0, position.pos.y.0, position.pos.z.0));
+                }
+                sections.push(points);
+            }
+            if let Some(radius) = circular_section_radius(&sections[0]) {
+                let translation = sections[1][0] - sections[0][0];
+                let normal = (sections[0][2] - sections[0][0]).cross(&(sections[0][4] - sections[0][0]));
+                if translation.norm() > radius * 1e-5
+                    && translation.cross(&normal).norm() <= translation.norm() * normal.norm() * 1e-5
+                    && sections[0]
+                        .iter()
+                        .zip(&sections[1])
+                        .all(|(a, b)| ((b - a) - translation).norm() <= radius * 1e-5)
+                {
+                    let response = exec_state
+                        .send_modeling_cmd(
+                            ModelingCmdMeta::from_args(exec_state, args),
+                            mcmd::FaceGetGradient::builder()
+                                .object_id(entity_id)
+                                .uv(KPoint2d { x: 0.25, y: 0.25 })
+                                .build()
+                                .into(),
+                        )
+                        .await?;
+                    let OkWebSocketResponseData::Modeling {
+                        modeling_response: OkModelingCmdResponse::FaceGetGradient(gradient),
+                    } = response
+                    else {
+                        return Err(invalid());
+                    };
+                    let tangent = if swap { gradient.df_du } else { gradient.df_dv };
+                    if cylindrical_axis_matches(nalgebra_glm::vec3(tangent.x, tangent.y, tangent.z), normal) {
+                        return Ok(radius);
+                    }
+                }
+            }
+        }
+    } else {
+        let response = exec_state
+            .send_modeling_cmd(
+                ModelingCmdMeta::from_args(exec_state, args),
+                mcmd::CurveGetControlPoints::builder()
+                    .curve_id(entity_id)
+                    .build()
+                    .into(),
+            )
+            .await?;
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::CurveGetControlPoints(curve),
+        } = response
+        else {
+            return Err(invalid());
+        };
+        let points: Vec<_> = curve
+            .control_points
+            .iter()
+            .map(|p| nalgebra_glm::vec3(p.x, p.y, p.z))
+            .collect();
+        if let Some(radius) = circular_curve_radius(&points) {
+            return Ok(radius);
+        }
+    }
+    Err(invalid())
+}
+
+async fn circular_dimension(symbol: MbdSymbol, exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let target = parse_distance_entity_arg("target", exec_state, &args)
+        .await?
+        .ok_or_else(|| {
+            KclError::new_semantic(KclErrorDetails::new(
+                "Diameter and radius require a circular edge or cylindrical face as `target`.".to_owned(),
+                vec![args.source_range],
+            ))
+        })?;
+    let endpoint = target.to_endpoint(exec_state, &args).await?;
+    let radius_mm = measure_circular_radius(&target, &endpoint, exec_state, &args).await?;
+    let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
+    let precision = resolve_precision(
+        args.get_kw_arg_opt("precision", &RuntimeType::count(), exec_state)?,
+        &args,
+    )?;
+    let frame_position: Option<[TyF64; 2]> =
+        args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
+    let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
+    let leader_scale: Option<TyF64> = args.get_kw_arg_opt("leaderScale", &RuntimeType::count(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
+    let mut plane = if let Some(plane) = frame_plane {
+        plane
+    } else {
+        xy_plane(exec_state, &args).await?
+    };
+    ensure_sketch_plane_in_engine(
+        &mut plane,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+        args.node_path.clone(),
+    )
+    .await?;
+    let display_units = exec_state.length_unit();
+    let feature_control = AnnotationFeatureControl::builder()
+        .maybe_entity_id(endpoint.entity_id)
+        .maybe_edge_reference(endpoint.edge_reference)
+        .entity_leader_pos(AnnotationMbdLeaderPosition::NormalizedPos {
+            pos: KPoint2d { x: 0.5, y: 0.5 },
+        })
+        .leader_type(AnnotationLineEnd::Arrow)
+        .dimension(
+            AnnotationMbdBasicDimension::builder()
+                .symbol(symbol)
+                .dimension(
+                    crate::execution::types::adjust_length(
+                        kcl_api::UnitLength::Millimeters,
+                        radius_mm * if symbol == MbdSymbol::Diameter { 2.0 } else { 1.0 },
+                        display_units,
+                    )
+                    .0,
+                )
+                .maybe_tolerance(tolerance.as_ref().map(|tol| tol.unwrap_to_length_units(display_units)))
+                .build(),
+        )
+        .plane_id(plane.id)
+        .offset(
+            frame_position
+                .map(|p| KPoint2d {
+                    x: p[0].unwrap_to_mm(),
+                    y: p[1].unwrap_to_mm(),
+                })
+                .unwrap_or(KPoint2d { x: 20.0, y: 20.0 }),
+        )
+        .precision(precision)
+        .font_scale(gdt_font_scale(font_size.as_ref(), &args)?)
+        .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
+        .leader_scale(gdt_dimension_leader_scale(leader_scale.as_ref(), &args)?)
+        .build();
+    let options = AnnotationOptions::builder()
+        .feature_control(feature_control)
+        .units(display_units.to_kcmc())
+        .maybe_name(gdt_annotation_name(exec_state, &args)?)
+        .build();
+    let annotation_id = exec_state.next_uuid();
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(exec_state, &args, annotation_id),
+            mcmd::NewAnnotation::builder()
+                .options(options)
+                .clobber(false)
+                .annotation_type(AnnotationType::T3D)
+                .build()
+                .into(),
+        )
+        .await?;
+    add_gdt_annotation_artifact(exec_state, &args, annotation_id);
+    Ok(KclValue::GdtAnnotation {
+        value: Box::new(GdtAnnotation {
+            id: annotation_id,
+            meta: vec![Metadata::from(args.source_range)],
+        }),
+    })
+}
+
 pub async fn distance(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let from = parse_distance_entity_arg("from", exec_state, &args).await?;
     let to = parse_distance_entity_arg("to", exec_state, &args).await?;
@@ -1935,6 +2252,113 @@ gdt::flatness(
             .iter()
             .map(|artifact_command| artifact_command.command.clone())
             .collect()
+    }
+
+    #[test]
+    fn circular_measurements_use_circle_geometry_and_display_units() {
+        assert!(cylindrical_axis_matches(
+            nalgebra_glm::vec3(0.0, 0.0, 10.0),
+            nalgebra_glm::vec3(0.0, 0.0, 1.0)
+        ));
+        // Equal-radius spherical cross sections still have non-axial tangents.
+        assert!(!cylindrical_axis_matches(
+            nalgebra_glm::vec3(5.0, 0.0, 5.0),
+            nalgebra_glm::vec3(0.0, 0.0, 1.0)
+        ));
+        let circle: Vec<_> = [
+            [5.0, 0.0],
+            [5.0, 5.0],
+            [0.0, 5.0],
+            [-5.0, 5.0],
+            [-5.0, 0.0],
+            [-5.0, -5.0],
+            [0.0, -5.0],
+            [5.0, -5.0],
+            [5.0, 0.0],
+        ]
+        .into_iter()
+        .map(|[x, y]| nalgebra_glm::vec3(x, y, 0.0))
+        .collect();
+        assert_close(circular_curve_radius(&circle).unwrap(), 5.0);
+        assert_close(circular_curve_radius(&circle[..3]).unwrap(), 5.0);
+        let ellipse: Vec<_> = circle.iter().map(|p| nalgebra_glm::vec3(p.x, p.y * 2.0, p.z)).collect();
+        assert!(circular_curve_radius(&ellipse).is_none());
+        let transformed: Vec<_> = circle
+            .iter()
+            .map(|p| nalgebra_glm::vec3(100.0 + p.x, 20.0, -30.0 + p.y))
+            .collect();
+        assert_close(circular_curve_radius(&transformed).unwrap(), 5.0);
+        let section: Vec<_> = (0..9)
+            .map(|i| {
+                let t = i as f64 / 8.0;
+                nalgebra_glm::vec3(100.0 + 25.4 * libm::cos(t), -20.0 + 25.4 * libm::sin(t), 12.0)
+            })
+            .collect();
+        let radius_mm = circular_section_radius(&section).unwrap();
+        assert_close(
+            crate::execution::types::adjust_length(
+                kcl_api::UnitLength::Millimeters,
+                radius_mm,
+                kcl_api::UnitLength::Inches,
+            )
+            .0,
+            1.0,
+        );
+        assert_close(
+            crate::execution::types::adjust_length(
+                kcl_api::UnitLength::Millimeters,
+                radius_mm * 2.0,
+                kcl_api::UnitLength::Inches,
+            )
+            .0,
+            2.0,
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn circular_dimensions_preserve_symbols_and_style_in_mock_execution() -> Result<(), KclError> {
+        for (function, symbol, target) in [
+            ("diameter", MbdSymbol::Diameter, "solid.sketch.tags.rim"),
+            (
+                "radius",
+                MbdSymbol::Radius,
+                "{ sideFaces = [solid.sketch.tags.rim, solid.faces.top] }",
+            ),
+        ] {
+            for tolerance in ["", ", tolerance = 0.005in"] {
+                let code = format!(
+                    r#"
+@settings(kclVersion = 2.0, defaultLengthUnit = in)
+profile = sketch(on = XY) {{
+  rim = circle(start = [var 1in, var 0in], center = [var 0in, var 0in])
+}}
+solid = extrude(region(segments = [profile.rim]), length = 0.5in, tagEnd = $top)
+gdt::{function}(target = {target}, precision = 0, framePosition = [1in, -2in],
+  framePlane = XZ, leaderScale = 2, fontSize = 0.1in, annotationName = "size"{tolerance})
+"#
+                );
+                let commands = gdt_commands(&code).await;
+                let index = new_annotation_command_index(&commands)?;
+                let options = annotation_options(&commands[index])?;
+                assert_eq!(options.units, Some(UnitLength::Inches));
+                assert_eq!(options.name.as_deref(), Some("size"));
+                let annotation = feature_control(&commands[index])?;
+                let dimension = annotation.dimension.as_ref().unwrap();
+                assert_eq!(dimension.symbol, Some(symbol));
+                assert_eq!(dimension.dimension, Some(0.0));
+                assert_eq!(
+                    dimension.tolerance,
+                    if tolerance.is_empty() { None } else { Some(0.005) }
+                );
+                assert_eq!(annotation.precision, 0);
+                assert_eq!(annotation.leader_type, AnnotationLineEnd::Arrow);
+                assert_close(annotation.offset.x, 25.4);
+                assert_close(annotation.offset.y, -50.8);
+                assert_eq!(annotation.leader_scale, 2.0);
+                assert_eq!(annotation.edge_reference.is_some(), function == "radius");
+            }
+        }
+        Ok(())
     }
 
     fn annotation_options(command: &ModelingCmd) -> Result<&AnnotationOptions, KclError> {
