@@ -13,6 +13,7 @@ import {
 import { Menu } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { CodeChangesPreview } from '@src/components/CodeChangesPreview'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import {
@@ -29,6 +30,10 @@ import {
   scheduleActiveTextFileWrite,
 } from '@src/lib/activeTextFile'
 import { useApp, useSingletons } from '@src/lib/boot'
+import {
+  clearCodeChangesPreview,
+  codeChangesPreviewSignal,
+} from '@src/lib/codeChangesPreview'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { getResolvedTheme } from '@src/lib/theme'
@@ -79,6 +84,7 @@ export const KclEditorPaneContents = () => {
   useSignals()
   const { kclManager } = useSingletons()
   const activeTextFile = activeTextFileSignal.value
+  const preview = codeChangesPreviewSignal.value
   const editorParent = useRef<HTMLDivElement>(null)
 
   // When this pane unmounts (e.g. the Code pane is closed), stop showing the
@@ -86,6 +92,8 @@ export const KclEditorPaneContents = () => {
   useEffect(() => {
     return () => {
       clearActiveTextFile()
+      const preview = codeChangesPreviewSignal.peek()
+      if (preview) clearCodeChangesPreview(preview.owner)
     }
   }, [])
 
@@ -96,17 +104,24 @@ export const KclEditorPaneContents = () => {
     editorParent.current?.appendChild(kclManager.editorView.dom)
   }, [activeTextFile, kclManager.editorView.dom])
 
-  if (activeTextFile) {
-    return <TextFileEditor activeTextFile={activeTextFile} />
-  }
-
   return (
     <div className="relative h-full">
-      <div
-        id="code-mirror-override"
-        className="absolute inset-0 pr-1"
-        ref={editorParent}
-      />
+      <div className={preview ? 'hidden' : 'absolute inset-0'}>
+        {activeTextFile ? (
+          <TextFileEditor activeTextFile={activeTextFile} />
+        ) : (
+          <div
+            id="code-mirror-override"
+            className="absolute inset-0 pr-1"
+            ref={editorParent}
+          />
+        )}
+      </div>
+      {preview && (
+        <div className="absolute inset-0">
+          <CodeChangesPreview preview={preview} />
+        </div>
+      )}
     </div>
   )
 }
@@ -281,7 +296,7 @@ export const KclEditorMenu = () => {
   useSignals()
   // The KCL-specific menu items (format, convert to variable, KCL docs, add KCL
   // file) don't apply when a plain text/markdown file is open in the pane.
-  if (activeTextFileSignal.value) {
+  if (activeTextFileSignal.value || codeChangesPreviewSignal.value) {
     return null
   }
   return <KclEditorKclMenu />

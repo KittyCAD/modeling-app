@@ -133,6 +133,37 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     await expect(submit).toBeDisabled()
     await length.fill('12mm')
     await expect(submit).toBeEnabled()
+    const codeBeforePreview = await page.evaluate(
+      () => window.app.singletons.kclManager.code
+    )
+    const codeChanges = dialog.getByRole('button', {
+      name: 'Code changes',
+      exact: true,
+    })
+    const preview = page.getByRole('region', {
+      name: 'Code changes',
+      exact: true,
+    })
+    await codeChanges.click()
+    await expect(preview.getByTestId('code-changes-diff')).toContainText(
+      'length = 12mm'
+    )
+    expect(
+      await page.evaluate(() => window.app.singletons.kclManager.code)
+    ).toBe(codeBeforePreview)
+    await length.fill('16mm')
+    await expect(preview.getByTestId('code-changes-diff')).toContainText(
+      'length = 16mm'
+    )
+    await length.fill('missingLength')
+    await expect(preview.getByTestId('code-changes-diff')).not.toBeAttached()
+    await length.fill('12mm')
+    await expect(preview.getByTestId('code-changes-diff')).toContainText(
+      'length = 12mm'
+    )
+    await preview.getByRole('button', { name: 'Close code changes' }).click()
+    await expect(codeChanges).toHaveAttribute('aria-pressed', 'false')
+    await expect(page.locator('#code-mirror-override')).toContainText('region(')
     const initialPosition = await dialog.boundingBox()
     if (!initialPosition) throw new Error('Modeling dialog is not visible')
     await page.mouse.move(initialPosition.x + 20, initialPosition.y + 15)
@@ -181,8 +212,14 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     await more.click()
     await expect(tagStart).toHaveValue('startFace')
     await length.fill('99mm')
+    await codeChanges.click()
+    await expect(preview.getByTestId('code-changes-diff')).toContainText(
+      'length = 99mm'
+    )
     await dialog.getByRole('button', { name: 'Cancel', exact: true }).click()
     await expect(dialog).not.toBeAttached()
+    await expect(preview).not.toBeAttached()
+    await editor.expectEditor.toContain('length = 12mm')
     await operation.dblclick()
     await expect(length).toHaveText('12mm')
     await expect(tagStart).toBeHidden()

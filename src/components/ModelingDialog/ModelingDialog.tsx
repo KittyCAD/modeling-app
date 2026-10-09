@@ -24,6 +24,7 @@ import {
   type DialogField,
 } from '@src/components/ModelingDialog/arguments'
 import { useDialogSelection } from '@src/components/ModelingDialog/useDialogSelection'
+import { useCodePreview } from '@src/components/ModelingDialog/useCodePreview'
 
 export default function ModelingDialog({
   containerRef,
@@ -85,6 +86,13 @@ export default function ModelingDialog({
       return validity[name]?.isChecking || validity[name]?.canSubmit === false
     return required && !hasValue(context.argumentsToSubmit[name])
   })
+  const codePreview = useCodePreview(
+    state.context,
+    values,
+    selection.activeName,
+    selection.selectionRanges,
+    initializing || invalid
+  )
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -304,6 +312,16 @@ export default function ModelingDialog({
           )}
         </div>
         <footer className="flex shrink-0 items-center justify-between gap-2 border-t border-chalkboard-30 p-3 dark:border-chalkboard-70">
+          {codePreview.available && (
+            <button
+              type="button"
+              aria-pressed={codePreview.open}
+              className="m-0 shrink-0 rounded-sm border border-chalkboard-30 px-2 py-1 aria-pressed:border-primary aria-pressed:text-primary dark:border-chalkboard-70"
+              onClick={codePreview.toggle}
+            >
+              Code changes
+            </button>
+          )}
           <span
             role={state.context.reviewValidationError ? 'alert' : undefined}
           >
