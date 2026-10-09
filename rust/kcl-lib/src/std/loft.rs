@@ -388,4 +388,89 @@ lofted = loft([
             solid.id
         );
     }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn loft_updates_region_edge_tags_to_faces() {
+        for upper_profile in [
+            r#"line1 = line(start = [var 0mm, var 0mm], end = [var 8mm, var 0mm])
+  line2 = line(start = [var 8mm, var 0mm], end = [var 4mm, var 8mm])
+  line3 = line(start = [var 4mm, var 8mm], end = [var 0mm, var 0mm])"#,
+            r#"line1 = line(start = [var 0mm, var 0mm], end = [var 8mm, var 0mm])
+  line2 = line(start = [var 8mm, var 0mm], end = [var 8mm, var 8mm])
+  line3 = line(start = [var 8mm, var 8mm], end = [var 0mm, var 8mm])
+  line4 = line(start = [var 0mm, var 8mm], end = [var 0mm, var 0mm])"#,
+        ] {
+            let upper_constraints = if upper_profile.contains("line4") {
+                "coincident([line3.end, line4.start])\n  coincident([line4.end, line1.start])"
+            } else {
+                "coincident([line3.end, line1.start])"
+            };
+            let program = format!(
+                r#"@settings(kclVersion = 3.0)
+lower = sketch(on = XY) {{
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  line2 = line(start = [var 10mm, var 0mm], end = [var 5mm, var 10mm])
+  line3 = line(start = [var 5mm, var 10mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line1.start])
+}}
+upper = sketch(on = offsetPlane(XY, offset = 10mm)) {{
+  {upper_profile}
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  {upper_constraints}
+}}
+lowerRegion = region(segments = [lower.line1, lower.line2], direction = CW)
+upperRegion = region(segments = [upper.line1, upper.line2], direction = CW)
+body = loft([lowerRegion, upperRegion])
+gdt::annotation(faces = [lowerRegion.tags.line1], annotation = "EDGE", fontSize = 2mm)
+"#
+            );
+            let result = parse_execute(&program).await.expect("loft edge tag resolves to a face");
+            let KclValue::Sketch { value: region } = result.variable("lowerRegion") else {
+                panic!("lowerRegion is not a sketch");
+            };
+            assert!(region.tags["line1"].get_cur_info().unwrap().surface.is_some());
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn loft_face_and_edge_annotations_resolve() {
+        parse_execute(
+            r#"@settings(kclVersion = 3.0)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -16.5mm, var -9.16mm], end = [var -12.95mm, var 21.02mm])
+  line2 = line(start = [var -12.95mm, var 21.02mm], end = [var 28.04mm, var 7.59mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 28.04mm, var 7.59mm], end = [var -16.5mm, var -9.16mm])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line1.start])
+}
+plane001 = offsetPlane(XY, offset = 15)
+sketch002 = sketch(on = plane001) {
+  line1 = line(start = [var -21.29mm, var 13.79mm], end = [var 12.63mm, var 22.51mm])
+  line2 = line(start = [var 12.63mm, var 22.51mm], end = [var 24.51mm, var 0mm])
+  coincident([line1.end, line2.start])
+  horizontal([line2.end, ORIGIN])
+  line3 = line(start = [var 24.51mm, var 0mm], end = [var -6.03mm, var -12.36mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var -6.03mm, var -12.36mm], end = [var -21.29mm, var 13.79mm])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+region001 = region(segments = [sketch001.line1, sketch001.line2], direction = CW)
+region002 = region(segments = [sketch002.line1, sketch002.line2], direction = CW)
+loft001 = loft([region001, region002], tagStart = $capStart001, tagEnd = $capEnd001)
+
+gdt::annotation(faces = [region001.tags.line3], annotation = "loft face", fontSize = 2.8572mm)
+gdt::annotation(edges = [{ sideFaces = [region001.tags.line3, capStart001] }], annotation = "loft bottom edge", fontSize = 2.8572mm)
+gdt::annotation(edges = [{ sideFaces = [region001.tags.line3, capEnd001] }], annotation = "loft top edge", fontSize = 2.8572mm)
+gdt::annotation(edges = [{ sideFaces = [region001.tags.line1, region001.tags.line3] }], annotation = "loft vertical edge", fontSize = 2.8572mm)
+"#,
+        )
+        .await
+        .expect("loft face and edge annotations resolve");
+    }
 }

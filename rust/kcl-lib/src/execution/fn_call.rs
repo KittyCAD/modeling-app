@@ -943,8 +943,13 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                     return Ok(());
                 }
                 let sketch_tags: Vec<_> = sketch.tags.values().cloned().collect();
+                // Loft gives the retained sketch the new body's topology ID, while
+                // its artifact ID still identifies the source region in memory.
+                let source_sketch_id: uuid::Uuid = sketch.artifact_id.into();
                 let sketches_to_update: Vec<_> = exec_state.stack().find_keys_in_current_env(|v| match v {
-                    KclValue::Sketch { value: sk } => sk.original_id == sketch.original_id,
+                    KclValue::Sketch { value: sk } => {
+                        sk.original_id == sketch.original_id || sk.original_id == source_sketch_id
+                    }
                     _ => false,
                 })?;
 
