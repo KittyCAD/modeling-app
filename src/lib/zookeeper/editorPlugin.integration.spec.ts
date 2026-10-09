@@ -1,5 +1,6 @@
 import { isolateHistory } from '@codemirror/commands'
-import { File, KclManager, type ZDSProject } from '@src/lang/KclManager'
+import { KclManager } from '@src/lang/KclManager'
+import { File, type ZDSProject } from '@src/lib/projectSession'
 import { App } from '@src/lib/app'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'

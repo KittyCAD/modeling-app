@@ -1911,7 +1911,7 @@ export fn sweep(
   @sketches: [Sketch | Face | TaggedFace | Segment; 1+],
   /// The path to sweep the sketch along.
   path: Sketch | Helix | Path3d | [Segment; 1+],
-  /// If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components.
+  /// In KCL 2, if true, the sweep is broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components. Sectional sweeps are not supported in KCL 3, so this argument has no effect and produces a warning.
   sectional?: bool,
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
