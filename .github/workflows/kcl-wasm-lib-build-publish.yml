@@ -50,6 +50,8 @@ jobs:
           workspaces: rust
 
       - name: Build Wasm
+        env:
+          KCL_WASM_PUBLISH: "1"
         run: npm run build:wasm
 
       - name: Check if version changed
