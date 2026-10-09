@@ -3,4 +3,4 @@
 /**
  * Which KCL versions does Zoo support?
  */
-export type KclVersion = "1.0" | "2.0" | "3.0-preview" | "3.0";
+export type KclVersion = "1.0" | "2.0" | "3.0-preview" | "3.0" | "4.0-preview";
