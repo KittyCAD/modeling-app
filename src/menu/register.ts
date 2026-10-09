@@ -151,6 +151,7 @@ export function modelingMenuCallbackMostActions({
           name: 'add-kcl-file-to-project',
           groupId: 'application',
           argDefaultValues: {
+            method: 'existingProject',
             projectName: currentProject?.name,
           },
         },

@@ -45,12 +45,14 @@ import type { ActorRefFrom } from 'xstate'
 
 function onSubmitKCLSampleCreation({
   sample,
-  projectName,
+  uniqueNameIfNeeded,
   systemIOActor,
+  isProjectNew,
 }: {
   sample: string
-  projectName: string
+  uniqueNameIfNeeded: string
   systemIOActor: ActorRefFrom<typeof systemIOMachine>
+  isProjectNew: boolean
 }) {
   void downloadKclSample(sample, {
     assetUrlPrefix: isDesktop() ? '.' : '',
@@ -60,28 +62,30 @@ function onSubmitKCLSampleCreation({
         (file) => ({
           requestedCode: new TextDecoder().decode(file.requestedData),
           requestedFileName: file.requestedFileName,
-          requestedProjectName: projectName,
+          requestedProjectName: uniqueNameIfNeeded,
         })
       )
 
       /**
        * When adding assemblies to an existing project create the assembly into a unique sub directory
        */
-      requestedFiles.forEach((requestedFile) => {
-        const subDirectoryName = projectPathPart
-        const firstLevelDirectories = getAllSubDirectoriesAtProjectRoot(
-          systemIOActor.getSnapshot().context,
-          { projectFolderName: requestedFile.requestedProjectName }
-        )
-        const uniqueSubDirectoryName = getUniqueProjectName(
-          subDirectoryName,
-          firstLevelDirectories
-        )
-        requestedFile.requestedProjectName = joinOSPaths(
-          requestedFile.requestedProjectName,
-          uniqueSubDirectoryName
-        )
-      })
+      if (!isProjectNew) {
+        requestedFiles.forEach((requestedFile) => {
+          const subDirectoryName = projectPathPart
+          const firstLevelDirectories = getAllSubDirectoriesAtProjectRoot(
+            systemIOActor.getSnapshot().context,
+            { projectFolderName: requestedFile.requestedProjectName }
+          )
+          const uniqueSubDirectoryName = getUniqueProjectName(
+            subDirectoryName,
+            firstLevelDirectories
+          )
+          requestedFile.requestedProjectName = joinOSPaths(
+            requestedFile.requestedProjectName,
+            uniqueSubDirectoryName
+          )
+        })
+      }
 
       if (requestedFiles.length === 1) {
         systemIOActor.send({
@@ -100,7 +104,7 @@ function onSubmitKCLSampleCreation({
           type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
           data: {
             files: requestedFiles,
-            requestedProjectName: projectName,
+            requestedProjectName: uniqueNameIfNeeded,
           },
         })
       }
@@ -126,18 +130,15 @@ export function createApplicationCommands({
     createProjectLibraryOptions()[0]?.value ?? ''
 
   const addKCLFileToProject: Command = {
-    scopes: FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
+    scopes: GLOBAL_COMMAND_SCOPES,
     name: 'add-kcl-file-to-project',
     displayName: 'Add file to project',
-    description: 'Add a KCL file, Zoo sample, or 3D model to a project.',
+    description:
+      'Add KCL file, Zoo sample, or 3D model to new or existing project.',
     needsReview: false,
     icon: 'importFile',
     groupId: 'application',
     async onSubmit(data) {
-      if (!app.project) {
-        toast.error('Open a project before adding files.')
-        return
-      }
       if (data) {
         /** TODO: Make a new machine for models. This is only a temporary location
          * to move it to the global application level. To reduce its footprint
@@ -146,7 +147,12 @@ export function createApplicationCommands({
          * KCL samples
          */
         const error = "The command couldn't be submitted, check the arguments."
-        const projectName = data.projectName
+        const folders = app.systemIOActor.getSnapshot().context.folders
+        const isProjectNew = !!data.newProjectName
+        const requestedProjectName = data.newProjectName || data.projectName
+        const uniqueNameIfNeeded = isProjectNew
+          ? getUniqueProjectName(requestedProjectName, folders ?? [])
+          : requestedProjectName
 
         if (data.source === 'kcl-samples') {
           const kclSample = findKclSample(data.sample)
@@ -155,8 +161,9 @@ export function createApplicationCommands({
           } else {
             onSubmitKCLSampleCreation({
               sample: data.sample,
-              projectName,
+              uniqueNameIfNeeded,
               systemIOActor: app.systemIOActor,
+              isProjectNew,
             })
           }
         } else if (data.source === 'local') {
@@ -189,7 +196,7 @@ export function createApplicationCommands({
               app.systemIOActor.send({
                 type: SystemIOMachineEvents.importFileFromURL,
                 data: {
-                  requestedProjectName: projectName,
+                  requestedProjectName: uniqueNameIfNeeded,
                   requestedFileNameWithExtension: fileNameWithExtension,
                   requestedCode: new TextDecoder().decode(content),
                 },
@@ -198,7 +205,7 @@ export function createApplicationCommands({
               const { path } = await getNextFileName({
                 fileOperations,
                 entryName: fileNameWithExtension,
-                baseDir: joinOSPaths(projectDirectoryPath, projectName),
+                baseDir: joinOSPaths(projectDirectoryPath, uniqueNameIfNeeded),
                 wasmInstance,
                 preserveUnknownExtension: true,
               })
@@ -262,15 +269,37 @@ export function createApplicationCommands({
           })
         },
       },
-      projectName: {
+      method: {
         inputType: 'options',
         required: true,
+        skip: true,
+        defaultValue: window.electron ? undefined : 'existingProject',
+        options: window.electron
+          ? [
+              { name: 'New project', value: 'newProject', isCurrent: true },
+              { name: 'Existing project', value: 'existingProject' },
+            ]
+          : [{ name: 'Existing project', value: 'existingProject' }],
+        valueSummary(value) {
+          return value === 'newProject' ? 'New project' : 'Existing project'
+        },
+      },
+      projectName: {
+        inputType: 'options',
+        required: (commandsContext) =>
+          commandsContext.argumentsToSubmit.method === 'existingProject',
         skip: true,
         defaultValue: () => app.project?.name,
         options: (_, _context) => {
           const { folders } = app.systemIOActor.getSnapshot().context
           return getProjectDirectoryOptions(folders)
         },
+      },
+      newProjectName: {
+        inputType: 'string',
+        required: (commandsContext) =>
+          commandsContext.argumentsToSubmit.method === 'newProject',
+        skip: true,
       },
       files: {
         inputType: 'path',
@@ -655,6 +684,7 @@ export function sendAddFileToProjectCommandForCurrentProject(
       name: 'add-kcl-file-to-project',
       groupId: 'application',
       argDefaultValues: {
+        method: 'existingProject',
         projectName: currentProject?.name,
       },
     },

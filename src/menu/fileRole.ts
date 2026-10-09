@@ -42,6 +42,12 @@ export const projectFileRole = (
       // Appears to be only Windows and Mac OS specific. Linux does not have support
       { type: 'separator' },
       {
+        label: 'Add File to Project',
+        id: 'File.Add file to project',
+        click: sendMenuAction(mainWindow, 'File.Add file to project'),
+      },
+      { type: 'separator' },
+      {
         label: 'Preferences',
         submenu: [
           {

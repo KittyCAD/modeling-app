@@ -2,26 +2,13 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 test.describe('Local Drive picker', { tag: '@web' }, () => {
-  test('adds a local model file only from an open project', async ({
+  test('opens the picker and adds a local model file', async ({
     page,
     homePage,
     toolbar,
     cmdBar,
     fs,
   }) => {
-    await homePage.projectsLoaded()
-    await cmdBar.openCmdBar()
-    await cmdBar.cmdSearchInput.fill('Add file to project')
-    await expect(
-      cmdBar.selectOption({ name: 'Add file to project' })
-    ).toHaveCount(0)
-    await cmdBar.closeCmdBar()
-    await page.goto(
-      page.url() +
-        '?cmd=add-kcl-file-to-project&groupId=application&source=local&projectName=browser'
-    )
-    await expect(page).not.toHaveURL(/[?&]cmd=/)
-    await cmdBar.toBeClosed()
     await homePage.createAndGoToProject('local-drive')
     await toolbar.openPane(DefaultLayoutPaneID.Code)
     await toolbar.openPane(DefaultLayoutPaneID.Files)
