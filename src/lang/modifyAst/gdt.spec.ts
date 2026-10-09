@@ -1512,6 +1512,21 @@ plate = extrude(plateRegion, length = 5mm)`
             entityRef: { type: 'edge', side_faces: [cap!.id, wall.id] },
           }))
         } else {
+          // A sweep artifact identifies the extrusion command; a region's
+          // engine body can retain the sketch ID instead.
+          const parent = unwrapSceneCommandResponse(
+            await engineCommandManagerInThisFile.sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: crypto.randomUUID(),
+              cmd: { type: 'entity_get_parent_id', entity_id: cap!.id },
+            })
+          )
+          if (
+            !isModelingResponse(parent) ||
+            parent.resp.data.modeling_response.type !== 'entity_get_parent_id'
+          )
+            throw new Error(`Missing hole rim body: ${JSON.stringify(parent)}`)
+          const bodyId = parent.resp.data.modeling_response.data.entity_id
           for (const wall of walls.slice(1)) {
             const response = unwrapSceneCommandResponse(
               await engineCommandManagerInThisFile.sendSceneCommand({
@@ -1519,7 +1534,7 @@ plate = extrude(plateRegion, length = 5mm)`
                 cmd_id: crypto.randomUUID(),
                 cmd: {
                   type: 'solid3d_get_common_edge',
-                  object_id: bodies[0].id,
+                  object_id: bodyId,
                   face_ids: [cap!.id, wall.id],
                 },
               })
@@ -1538,7 +1553,7 @@ plate = extrude(plateRegion, length = 5mm)`
               type: 'enginePrimitive',
               primitiveType: 'edge',
               primitiveIndex: 0,
-              parentEntityId: bodies[0].id,
+              parentEntityId: bodyId,
               entityId: id,
             })
           }
