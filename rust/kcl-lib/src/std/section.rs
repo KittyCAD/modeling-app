@@ -208,6 +208,8 @@ pub async fn section_view(exec_state: &mut ExecState, args: Args) -> Result<KclV
             args.clone(),
         )
         .await?;
+        // Keep the disposable profile out of the viewport before extruding it.
+        hide_cutter(sketch.id, exec_state, &args).await?;
         let cutters = super::extrude::inner_extrude(
             vec![sketch.into()],
             Some(mm(2.0 * reach)),
@@ -230,6 +232,9 @@ pub async fn section_view(exec_state: &mut ExecState, args: Args) -> Result<KclV
             args.clone(),
         )
         .await?;
+        for cutter in &cutters {
+            hide_cutter(cutter.id, exec_state, &args).await?;
+        }
         let outputs = inner_subtract(
             vec![target],
             cutters,
@@ -253,6 +258,15 @@ pub async fn section_view(exec_state: &mut ExecState, args: Args) -> Result<KclV
         result.extend(outputs);
     }
     Ok(result.into())
+}
+
+async fn hide_cutter(object_id: uuid::Uuid, exec_state: &mut ExecState, args: &Args) -> Result<(), KclError> {
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args(exec_state, args),
+            ModelingCmd::from(mcmd::ObjectVisible::builder().object_id(object_id).hidden(true).build()),
+        )
+        .await
 }
 
 #[cfg(test)]
@@ -330,6 +344,49 @@ cutPlane = offsetPlane(XY, offset = 10mm)
             assert_eq!(&expected, *output);
             assert_ne!(source.object_id, output.object_id);
         }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn section_view_hides_cutter_profile_and_body_before_subtraction() {
+        let result = parse_execute(&format!("{MODEL}\ncut = sectionView(plane = cutPlane)"))
+            .await
+            .unwrap();
+        let commands = result.root_module_artifact_commands();
+        let profiles = commands
+            .iter()
+            .enumerate()
+            .filter_map(|(index, c)| match &c.command {
+                ModelingCmd::ClosePath(path) => Some((index, path.path_id)),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        // The internal circle uses ClosePath; the model's v2 sketches do not.
+        assert_eq!(profiles.len(), 2);
+        for &(created, profile_id) in &profiles {
+            let hidden = commands
+                .iter()
+                .enumerate()
+                .filter_map(|(index, c)| match &c.command {
+                    ModelingCmd::ObjectVisible(visibility) if visibility.object_id == profile_id => {
+                        assert!(visibility.hidden);
+                        Some(index)
+                    }
+                    _ => None,
+                })
+                .collect::<Vec<_>>();
+            assert_eq!(hidden.len(), 2, "hide both the sketch and its extruded body");
+            assert_eq!(hidden[0], created + 1, "hide the sketch immediately after creation");
+            assert!(
+                commands[hidden[0] + 1..hidden[1]]
+                    .iter()
+                    .any(|c| matches!(c.command, ModelingCmd::Extrude(_)))
+            );
+            assert!(matches!(
+                commands[hidden[1] + 1].command,
+                ModelingCmd::ObjectSetMaterialParamsPbr(_)
+            ));
+        }
+        assert_eq!(count_solids(result.variable("cut")), 2);
     }
 
     #[tokio::test(flavor = "multi_thread")]
