@@ -1,5 +1,5 @@
 import { ApiError, Client } from '@kittycad/lib'
-import type { Announcement, ProjectShareLinkResponse } from '@kittycad/lib'
+import type { Announcement } from '@kittycad/lib'
 import { listClientItems } from '@src/lib/apiPagination'
 import { describe, expect, test, vi } from 'vitest'
 
@@ -115,7 +115,7 @@ describe('API list compatibility', () => {
     {},
     [],
   ])(
-    'rejects malformed or changed continuation instead of returning an empty share list',
+    'rejects malformed or changed continuation instead of returning incomplete announcements',
     async (secondPage) => {
       const transport = vi
         .fn<typeof fetch>()
@@ -127,16 +127,13 @@ describe('API list compatibility', () => {
       })
 
       await expect(
-        listClientItems<ProjectShareLinkResponse>(
-          client,
-          '/user/projects/project-1/share-links'
-        )
+        listClientItems<Announcement>(client, '/announcements')
       ).rejects.toBeInstanceOf(Error)
       expect(transport).toHaveBeenCalledTimes(2)
     }
   )
 
-  test('preserves HTTP status for cleanup handling without converting failure to an empty list', async () => {
+  test('preserves HTTP status without converting failure to empty announcements', async () => {
     const client = new Client({
       baseUrl: 'https://api.example.test',
       fetch: vi
@@ -146,17 +143,14 @@ describe('API list compatibility', () => {
         ),
     })
     await expect(
-      listClientItems<ProjectShareLinkResponse>(
-        client,
-        '/user/projects/missing/share-links'
-      )
+      listClientItems<Announcement>(client, '/announcements')
     ).rejects.toMatchObject({
       name: 'ApiError',
       status: 404,
       message: 'Not found',
     })
     await expect(
-      listClientItems(client, '/user/projects/missing/share-links')
+      listClientItems(client, '/announcements')
     ).rejects.toBeInstanceOf(ApiError)
   })
 })
