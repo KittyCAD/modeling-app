@@ -408,11 +408,11 @@ describe('KclManager diagnostics', () => {
     ])
 
     const [diagnostic] = getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)
-    const message = diagnostic.renderMessage?.(kclManager.editorView)
-    expect(message).toBeInstanceOf(HTMLElement)
-    if (!(message instanceof HTMLElement)) return
-    expect(message.querySelector('code')?.textContent).toBe('circle')
-    expect(message.querySelector('a')?.getAttribute('href')).toBe(
+    const view = diagnostic.renderMessage?.(kclManager.editorView)
+    expect(view).toBeInstanceOf(HTMLElement)
+    if (!(view instanceof HTMLElement)) return
+    expect(view.querySelector('code')?.textContent).toBe('circle')
+    expect(view.querySelector('a')?.getAttribute('href')).toBe(
       'https://zoo.dev/docs'
     )
   })
