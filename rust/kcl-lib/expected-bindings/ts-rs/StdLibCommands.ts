@@ -8437,6 +8437,57 @@ export default {
       }
     ]
   },
+  "sectionCut": {
+    "name": "sectionCut",
+    "preferredName": "sectionCut",
+    "qualName": "std::solid::sectionCut",
+    "moduleName": "solid",
+    "returnType": "[Solid]",
+    "addedIn": null,
+    "summary": "Cut all active native solid bodies on one side of a plane.",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": false,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "plane",
+        "ty": "Plane",
+        "docs": "Cutting plane. The normal follows the right-hand rule of its X and Y axes.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "reverse",
+        "ty": "bool",
+        "docs": "Remove the negative-normal side instead.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "padding",
+        "ty": "number(Length)",
+        "docs": "Positive clearance added to the cutter radius and reach.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      }
+    ]
+  },
   "segAng": {
     "name": "segAng",
     "preferredName": "segAng",

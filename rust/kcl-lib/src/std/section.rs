@@ -420,26 +420,4 @@ cut = sectionCut(plane = cutPlane)
             assert!(err.to_string().contains("padding must be finite and greater than zero"));
         }
     }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn section_cut_after_cached_execution_keeps_scene() {
-        use crate::execution::ExecutorContext;
-        use crate::execution::KclValueView;
-        use crate::execution::cache;
-        let ctx = ExecutorContext::new_mock(None).await;
-        cache::bust_cache().await;
-        let program = crate::Program::parse_no_errs(MODEL).unwrap();
-        ctx.run_with_caching(program.clone()).await.unwrap();
-        ctx.run_with_caching(program).await.unwrap();
-        let changed = crate::Program::parse_no_errs(&format!(
-            "{MODEL}\ncut = sectionCut(plane = cutPlane)\nbodyCount = count(cut)"
-        ))
-        .unwrap();
-        let outcome = ctx.run_with_caching(changed).await.unwrap();
-        assert!(
-            matches!(outcome.variables.get("bodyCount"), Some(KclValueView::Number { value, .. }) if *value == 2.0)
-        );
-        cache::bust_cache().await;
-        ctx.close().await;
-    }
 }

@@ -2,6 +2,7 @@
 
 use indexmap::IndexMap;
 use indexmap::IndexSet;
+use itertools::Itertools;
 use kittycad_modeling_cmds::ModelingCmd;
 use kittycad_modeling_cmds::each_cmd::ObjectSetMaterialParamsPbr;
 use uuid::Uuid;
@@ -81,7 +82,7 @@ impl ExecState {
                 }
             }
             KclValue::Object { value, .. } => {
-                for (_, item) in value.iter() {
+                for (_, item) in value.iter().sorted_by(|(left, _), (right, _)| left.cmp(right)) {
                     self.track_section_value(item);
                 }
             }
@@ -111,12 +112,74 @@ impl ExecState {
             }
             ModelingCmd::EntityClone(clone) => self.copy_section_material(clone.entity_id, command.cmd_id),
             ModelingCmd::RemoveSceneObjects(remove) => {
-                for id in &remove.object_ids {
+                for id in remove.object_ids.iter().sorted() {
                     self.mod_local.artifacts.section_scene.deleted.insert(*id);
                     self.mod_local.artifacts.section_scene.bodies.insert(*id, None);
                 }
             }
             _ => {}
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::execution::ConsumedSolidInfo;
+    use crate::execution::ConsumedSolidOperation;
+    use crate::execution::ExecutorContext;
+    use crate::execution::MockConfig;
+    use crate::execution::parse_execute;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn section_cut_cached_artifacts_preserve_bodies_materials_and_tombstones() {
+        let result = parse_execute(
+            r##"
+@settings(kclVersion = 2.0)
+profile = sketch(on = XY) {
+  outline = circle(center = [0mm, 0mm], start = [10mm, 0mm])
+}
+body = extrude(region(segments = [profile.outline]), length = 20mm)
+appearance(body, color = "#cc7733", opacity = 60)
+"##,
+        )
+        .await
+        .unwrap();
+        let value = result.variable("body");
+        let KclValue::Solid { value: body } = &value else {
+            panic!("expected a solid");
+        };
+        let material_command = result
+            .root_module_artifact_commands()
+            .iter()
+            .find(|command| matches!(command.command, ModelingCmd::ObjectSetMaterialParamsPbr(_)))
+            .unwrap();
+        let ctx = ExecutorContext::new_mock(None).await;
+        let mut state = ExecState::new_mock(&ctx, &MockConfig::default());
+        state.track_section_value(&value);
+        state.track_section_command(material_command);
+        let material = state.section_material(body.id).unwrap();
+
+        // Cached artifacts are cloned, then extended with a newly executed suffix.
+        let mut restored = ExecState::new_mock(&ctx, &MockConfig::default());
+        restored.global.root_module_artifacts = state.mod_local.artifacts.clone();
+        assert_eq!(restored.section_bodies().len(), 1);
+        assert_eq!(restored.section_material(body.id), Some(material));
+        let key = ConsumedSolidKey::new(body.id, body.value_id);
+        let info = ConsumedSolidInfo::new(ConsumedSolidOperation::Subtract, vec![]);
+        restored.mark_solid_consumed(key, info.clone());
+        restored.mark_solid_id_consumed(body.id, info);
+        restored
+            .global
+            .root_module_artifacts
+            .extend(std::mem::take(&mut restored.mod_local.artifacts));
+        restored.mod_local.consumed_solids.clear();
+        restored.mod_local.consumed_solid_ids.clear();
+        // Returning an old alias from another module must not resurrect a consumed body.
+        restored.track_section_value(&value);
+        assert!(restored.section_bodies().is_empty());
+        restored.global.root_module_artifacts.clear();
+        assert!(restored.section_material(body.id).is_none());
+        ctx.close().await;
     }
 }
