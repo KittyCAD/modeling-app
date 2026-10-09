@@ -927,7 +927,7 @@ export default {
       {
         "name": "edges",
         "ty": "[any]",
-        "docs": "Array of edge references; each element is an object with: - `sideFaces`: [Face | Tag; 1+] - Adjacent faces that share the edge(s) to chamfer - `endFaces?`: [Face | Tag] - Optional faces to disambiguate when multiple edges share the same two faces - `index?`: number(Count) - Optional index when multiple edges share the same faces (0-based)",
+        "docs": "Preferred for KCL 3. Required unless legacy `tags` is provided. Do not provide both. Array of edge references; each element is an object with: - `sideFaces`: array of one or more face tags or face UUIDs. Adjacent faces that share the edge(s) to chamfer. - `endFaces?`: array of face tags or face UUIDs. Optional faces to disambiguate when multiple edges share the same two faces. - `index?`: number(Count). Optional index when multiple edges share the same faces (0-based).",
         "required": false,
         "special": false,
         "experimental": false,
@@ -987,7 +987,7 @@ export default {
       {
         "name": "version",
         "ty": "number(_)",
-        "docs": "What version of the fillet algorithm to use. 0 means \"let the Zoo engine choose whichever version is best\", 1 is the original Zoo fillet algorithm, 2 is the newer algorithm (supports rolling ball fillets). On KCL 2.0 and before, the default is 1. KCL 3.0 and later always use the newest algorithm.",
+        "docs": "What version of the fillet algorithm to use. 0 means \"let the Zoo engine choose whichever version is best\", 1 is the original Zoo fillet algorithm, 2 is the newer algorithm (supports rolling ball fillets). On KCL 2.0 and before, the default is 1. Use KCL 3.0 or later for the newest algorithm without setting `version`.",
         "required": false,
         "special": false,
         "experimental": true,
@@ -2198,7 +2198,7 @@ export default {
       {
         "name": "edges",
         "ty": "[any]",
-        "docs": "Array of edge references; each element is an object with: - `sideFaces`: [Face | Tag; 1+] - Adjacent faces that share the edge(s) to fillet - `endFaces?`: [Face | Tag] - Optional faces to disambiguate when multiple edges share the same two faces - `index?`: number(Count) - Optional index when multiple edges share the same faces (0-based)",
+        "docs": "Preferred for KCL 3. Required unless legacy `tags` is provided. Do not provide both. Array of edge references; each element is an object with: - `sideFaces`: array of one or more face tags or face UUIDs. Adjacent faces that share the edge(s) to fillet. - `endFaces?`: array of face tags or face UUIDs. Optional faces to disambiguate when multiple edges share the same two faces. - `index?`: number(Count). Optional index when multiple edges share the same faces (0-based).",
         "required": false,
         "special": false,
         "experimental": false,
@@ -2222,7 +2222,7 @@ export default {
       {
         "name": "tag",
         "ty": "TagDecl",
-        "docs": "Create a new tag which refers to this fillet",
+        "docs": "Create a new tag which refers to this fillet. For multiple edges, omit `tag` or tag each edge in a separate call.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -2246,7 +2246,7 @@ export default {
       {
         "name": "version",
         "ty": "number(_)",
-        "docs": "What version of the fillet algorithm to use. 0 means \"let the Zoo engine choose whichever version is best\", 1 is the original Zoo fillet algorithm, 2 is the newer algorithm (supports rolling ball fillets). On KCL 2.0 and before, the default is 1. KCL 3.0 and later always use the newest algorithm.",
+        "docs": "What version of the fillet algorithm to use. 0 means \"let the Zoo engine choose whichever version is best\", 1 is the original Zoo fillet algorithm, 2 is the newer algorithm (supports rolling ball fillets). On KCL 2.0 and before, the default is 1. Use KCL 3.0 or later for the newest algorithm without setting `version`. `edges` does not require `version = 2`.",
         "required": false,
         "special": false,
         "experimental": true,
