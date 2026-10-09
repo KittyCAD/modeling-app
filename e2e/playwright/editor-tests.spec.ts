@@ -6,6 +6,7 @@ import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
 import {
   TEST_COLORS,
   executorInputPath,
+  expectRenderedDiagnosticText,
   getUtils,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
@@ -876,9 +877,8 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       ).toBeVisible()
 
       await page.locator('.cm-lint-marker.cm-lint-marker-error').hover()
-      await expect(page.locator('.cm-diagnosticText').first()).toBeVisible()
-      await expect(page.locator('.cm-diagnosticText').first()).toHaveJSProperty(
-        'innerText',
+      await expectRenderedDiagnosticText(
+        page.locator('.cm-diagnosticText').first(),
         'Cannot redefine topAng'
       )
       await expect(page.locator('.cm-diagnosticText code').first()).toHaveText(

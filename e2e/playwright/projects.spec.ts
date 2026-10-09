@@ -15,6 +15,7 @@ import {
   closeOnboardingModalIfPresent,
   createProject,
   executorInputPath,
+  expectRenderedDiagnosticText,
   expectKeybindingsSettingsVisible,
   getUtils,
   isOutOfViewInScrollContainer,
@@ -218,9 +219,8 @@ test(
           const error = page
             .locator('.cm-tooltip-lint .cm-diagnosticText')
             .first()
-          await expect(error).toBeVisible()
-          await expect(error).toHaveJSProperty(
-            'innerText',
+          await expectRenderedDiagnosticText(
+            error,
             'tag requires a value with type TagDecl, but found a value with type string.'
           )
         })
@@ -391,9 +391,8 @@ test(
           const error = page
             .locator('.cm-tooltip-lint .cm-diagnosticText')
             .first()
-          await expect(error).toBeVisible()
-          await expect(error).toHaveJSProperty(
-            'innerText',
+          await expectRenderedDiagnosticText(
+            error,
             'tag requires a value with type TagDecl, but found a value with type string.'
           )
         })
@@ -443,10 +442,10 @@ test(
     // error text on hover
     await page.locator('.cm-lint-marker-error').hover()
     const error = page.locator('.cm-tooltip-lint .cm-diagnosticText').first()
-    await expect(error).toBeVisible({ timeout: 15_000 })
-    await expect(error).toHaveJSProperty(
-      'innerText',
-      'tag requires a value with type TagDecl, but found a value with type string.'
+    await expectRenderedDiagnosticText(
+      error,
+      'tag requires a value with type TagDecl, but found a value with type string.',
+      { timeout: 15_000 }
     )
     await expect(error.locator('code')).toHaveText(['TagDecl', 'string'])
   }

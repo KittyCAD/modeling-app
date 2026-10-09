@@ -32,6 +32,24 @@ dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
 export const token =
   process.env.VITE_ZOO_API_TOKEN || process.env.VITE_KITTYCAD_API_TOKEN || ''
 
+export async function expectRenderedDiagnosticText(
+  diagnostic: Locator,
+  text: string,
+  options?: { timeout?: number }
+) {
+  await expect(diagnostic).toBeVisible(options)
+  await expect
+    .poll(
+      async () =>
+        (await diagnostic.innerText())
+          .replace(/\r\n?/g, '\n')
+          .replace(/\n{2,}/g, '\n\n')
+          .trim(),
+      options
+    )
+    .toBe(text)
+}
+
 /** A string version of a RegExp to get a number that may include a decimal point */
 export const NUMBER_REGEXP = '((-)?\\d+(\\.\\d+)?)'
 

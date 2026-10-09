@@ -2,7 +2,11 @@ import { join } from 'path'
 import fsp from 'fs/promises'
 
 import { TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW } from '@e2e/playwright/storageStates'
-import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
+import {
+  executorInputPath,
+  expectRenderedDiagnosticText,
+  getUtils,
+} from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
@@ -127,9 +131,8 @@ middle(0)
         .getByLabel('Diagnostics')
         .locator('.cm-diagnosticText')
         .filter({ hasText: 'assert failed' })
-      await expect(error).toBeVisible()
-      await expect(error).toHaveJSProperty(
-        'innerText',
+      await expectRenderedDiagnosticText(
+        error,
         `assert failed: Expected 0 to be greater than 0 but it wasn't
 
 Backtrace:
@@ -195,9 +198,8 @@ middle()`
       .getByLabel('Diagnostics')
       .locator('.cm-diagnosticText')
       .filter({ hasText: 'missingName' })
-    await expect(error).toBeVisible()
-    await expect(error).toHaveJSProperty(
-      'innerText',
+    await expectRenderedDiagnosticText(
+      error,
       `missingName is not defined
 
 Backtrace:
