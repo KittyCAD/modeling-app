@@ -79,6 +79,32 @@ function bodyTypeRequiredForCommand(
     : bodyTypeArg.required
 }
 
+it('opts unsupported modeling flows out of dialogs', () => {
+  const supportedInputs = [
+    'kcl',
+    'selection',
+    'options',
+    'boolean',
+    'string',
+    'tagDeclarator',
+    'vector2d',
+    'vector3d',
+  ]
+  for (const [name, config] of Object.entries(modelingMachineCommandConfig)) {
+    for (const command of isArray(config) ? config : [config]) {
+      if (!command || command.forceCommandBar) continue
+      const args = Object.values<CommandArgumentConfig<unknown>>(
+        command.args ?? {}
+      ).filter((arg) => arg.hidden !== true)
+      expect(args.length, name).toBeGreaterThan(0)
+      for (const arg of args) {
+        expect(arg.skip, name).not.toBe(true)
+        expect(supportedInputs, name).toContain(arg.inputType)
+      }
+    }
+  }
+})
+
 describe('GDT Datum Default Name', () => {
   it('should work with command bar when datum A already exists', async () => {
     // Test command bar integration with existing datum

@@ -119,6 +119,7 @@ export function createMachineCommand<
       }
     },
     disabled: forceDisable,
+    forceCommandBar: commandConfig.forceCommandBar,
   }
 
   if (commandConfig.args) {
