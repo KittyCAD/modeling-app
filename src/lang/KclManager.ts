@@ -50,8 +50,9 @@ import {
   DEFAULT_EXPERIMENTAL_FEATURES,
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
 } from '@src/lib/constants'
-import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
 import { getOperationKey } from '@src/lib/featureTreeOperationTree'
+import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
+import { markdownMessageElement } from '@src/lib/markdown'
 import { markOnce } from '@src/lib/performance'
 import type RustContext from '@src/lib/rustContext'
 import type {
@@ -2789,7 +2790,16 @@ export class KclManager extends File {
       (d) => d.from <= docLength && d.to <= docLength
     )
     this._editorView.dispatch({
-      effects: [setDiagnosticsEffect.of(diagnostics)],
+      effects: [
+        setDiagnosticsEffect.of(
+          diagnostics.map((diagnostic) => ({
+            ...diagnostic,
+            renderMessage:
+              diagnostic.renderMessage ??
+              (() => markdownMessageElement(diagnostic.message)),
+          }))
+        ),
+      ],
       annotations: [
         setDiagnosticsEvent,
         updateOutsideEditorEvent,
