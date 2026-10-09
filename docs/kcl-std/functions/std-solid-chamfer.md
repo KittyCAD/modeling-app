@@ -26,6 +26,15 @@ Chamfer is similar in function and use to a fillet, except
 a fillet will blend the transition along an edge, rather than cut
 a sharp, straight transitional edge.
 
+### Face references
+
+In `edges`, `sideFaces` and `endFaces` contain face tags or face UUIDs, not raw sketch segments.
+For a side face created by extruding `profile.line1`, use `profileRegion.tags.line1` or
+`body.sketch.tags.line1`, where `profileRegion` is the extruded region and `body` is the resulting solid.
+For extrusion caps, declare `tagStart = $startCap` or `tagEnd = $endCap`, then refer to
+`startCap` or `endCap`. Use `$` only when declaring the tag.
+See [Face API Edge References](/docs/kcl-lang/edge-references) for selection examples.
+
 ### Arguments
 
 | Name | Type | Description | Required |
@@ -33,7 +42,7 @@ a sharp, straight transitional edge.
 | `solid` | [`Solid`](/docs/kcl-std/types/std-types-Solid) | The solid whose edges should be chamfered | Yes |
 | `length` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Chamfering cuts away two faces to create a third face. This is the length to chamfer away from each face. The larger this length to chamfer away, the larger the new face will be. | Yes |
 | `tags` | [[`Edge`](/docs/kcl-std/types/std-types-Edge); 1+] | The paths you want to chamfer (legacy API) | No |
-| `edges` | [[`any`](/docs/kcl-std/types/std-types-any)] | Array of edge references; each element is an object with: - `sideFaces`: [Face \| Tag; 1+] - Adjacent faces that share the edge(s) to chamfer - `endFaces?`: [Face \| Tag] - Optional faces to disambiguate when multiple edges share the same two faces - `index?`: number(Count) - Optional index when multiple edges share the same faces (0-based) | No |
+| `edges` | [[`any`](/docs/kcl-std/types/std-types-any)] | Array of edge references; each element is an object with: - `sideFaces`: array of one or more face tags or face UUIDs - Adjacent faces that share the edge(s) to chamfer - `endFaces?`: array of face tags or face UUIDs - Optional faces to disambiguate when multiple edges share the same two faces - `index?`: number(Count) - Optional index when multiple edges share the same faces (0-based) | No |
 | `secondLength` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Chamfering cuts away two faces to create a third face. If this argument isn't given, the lengths chamfered away from both the first and second face are both given by `length`. If this argument _is_ given, it determines how much is cut away from the second face. Incompatible with `angle`. | No |
 | `angle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | Chamfering cuts away two faces to create a third face. This argument determines the angle between the two cut edges. Requires `length`, incompatible with `secondLength`. The valid range is 0deg < angle < 90deg. | No |
 | `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this chamfer | No |
