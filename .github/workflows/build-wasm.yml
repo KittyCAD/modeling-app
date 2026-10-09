@@ -2,6 +2,12 @@ name: Build Wasm
 
 on:
   workflow_call:
+    inputs:
+      skip_wasm_opt:
+        description: Use '--no-opt' for callers that do not run the app.
+        type: boolean
+        required: false
+        default: false
     secrets:
       TAB_API_KEY:
         required: false
@@ -47,6 +53,8 @@ jobs:
 
       - name: Build Wasm
         shell: bash
+        env:
+          SKIP_WASM_OPT: ${{ inputs.skip_wasm_opt && 'true' || '' }}
         run: ./scripts/build-wasm.sh
 
       - name: Use committed TypeScript bindings
