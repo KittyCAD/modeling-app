@@ -373,6 +373,7 @@ export fn fillet(
   /// The paths you want to fillet (legacy API)
   @(includeInSnippet = true)
   tags?: [Edge; 1+],
+  /// Preferred for KCL 3. Required unless legacy `tags` is provided. Do not provide both.
   /// Array of edge references; each element is an object with:
   /// - `sideFaces`: array of one or more face tags or face UUIDs - Adjacent faces that share the edge(s) to fillet
   /// - `endFaces?`: array of face tags or face UUIDs - Optional faces to disambiguate when multiple edges share the same two faces
@@ -721,6 +722,7 @@ export fn chamfer(
   length: number(Length),
   /// The paths you want to chamfer (legacy API)
   tags?: [Edge; 1+],
+  /// Preferred for KCL 3. Required unless legacy `tags` is provided. Do not provide both.
   /// Array of edge references; each element is an object with:
   /// - `sideFaces`: array of one or more face tags or face UUIDs - Adjacent faces that share the edge(s) to chamfer
   /// - `endFaces?`: array of face tags or face UUIDs - Optional faces to disambiguate when multiple edges share the same two faces

@@ -927,7 +927,7 @@ export default {
       {
         "name": "edges",
         "ty": "[any]",
-        "docs": "Array of edge references; each element is an object with: - `sideFaces`: array of one or more face tags or face UUIDs - Adjacent faces that share the edge(s) to chamfer - `endFaces?`: array of face tags or face UUIDs - Optional faces to disambiguate when multiple edges share the same two faces - `index?`: number(Count) - Optional index when multiple edges share the same faces (0-based)",
+        "docs": "Preferred for KCL 3. Required unless legacy `tags` is provided. Do not provide both. Array of edge references; each element is an object with: - `sideFaces`: array of one or more face tags or face UUIDs - Adjacent faces that share the edge(s) to chamfer - `endFaces?`: array of face tags or face UUIDs - Optional faces to disambiguate when multiple edges share the same two faces - `index?`: number(Count) - Optional index when multiple edges share the same faces (0-based)",
         "required": false,
         "special": false,
         "experimental": false,
@@ -2198,7 +2198,7 @@ export default {
       {
         "name": "edges",
         "ty": "[any]",
-        "docs": "Array of edge references; each element is an object with: - `sideFaces`: array of one or more face tags or face UUIDs - Adjacent faces that share the edge(s) to fillet - `endFaces?`: array of face tags or face UUIDs - Optional faces to disambiguate when multiple edges share the same two faces - `index?`: number(Count) - Optional index when multiple edges share the same faces (0-based)",
+        "docs": "Preferred for KCL 3. Required unless legacy `tags` is provided. Do not provide both. Array of edge references; each element is an object with: - `sideFaces`: array of one or more face tags or face UUIDs - Adjacent faces that share the edge(s) to fillet - `endFaces?`: array of face tags or face UUIDs - Optional faces to disambiguate when multiple edges share the same two faces - `index?`: number(Count) - Optional index when multiple edges share the same faces (0-based)",
         "required": false,
         "special": false,
         "experimental": false,
