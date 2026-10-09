@@ -49,7 +49,14 @@ it('starts migration, automatically applies a validated result and retains the r
     fixture.send(successfulOperation(fixture.request))
   })
   await waitFor(() =>
-    expect(screen.getByRole('status')).toHaveTextContent('Migrated to KCL 3.0')
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Updated main.kcl to KCL 3.0, preserving the geometry.'
+    )
+  )
+  expect(screen.getByText('main.kcl').tagName).toBe('STRONG')
+  expect(screen.getByRole('heading', { name: 'Verification' })).toBeVisible()
+  expect(screen.getByRole('listitem')).toHaveTextContent(
+    'Physical and visual checks passed.'
   )
   expect(await fixture.readMain()).toBe(targetCode)
   expect(screen.queryByRole('button', { name: 'Apply Migration' })).toBeNull()
@@ -60,7 +67,9 @@ it('starts migration, automatically applies a validated result and retains the r
   ).toBeNull()
   view.unmount()
   render(<MigrationView />)
-  expect(screen.getByRole('status')).toHaveTextContent('Migrated to KCL 3.0')
+  expect(screen.getByRole('status')).toHaveTextContent(
+    'Updated main.kcl to KCL 3.0, preserving the geometry.'
+  )
 })
 
 it('waits for ordinary chat before starting a migration', () => {
@@ -100,7 +109,9 @@ it('shows live Zookeeper reasoning before migration finishes', async () => {
     fixture.send(successfulOperation(fixture.request))
   })
   await waitFor(() =>
-    expect(screen.getByRole('status')).toHaveTextContent('Migrated to KCL 3.0')
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Updated main.kcl to KCL 3.0, preserving the geometry.'
+    )
   )
   expect(screen.getByRole('button', { name: 'See reasoning' })).toHaveAttribute(
     'aria-expanded',

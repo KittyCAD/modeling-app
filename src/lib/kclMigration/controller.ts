@@ -137,7 +137,12 @@ export class MigrationController {
             return
           }
           this.conversation?.completed()
-          this.detail.value = operation.result?.detail ?? ''
+          this.detail.value = [
+            operation.result?.detail,
+            operation.result?.validation?.summary,
+          ]
+            .filter(Boolean)
+            .join('\n\n')
           if (operation.result?.conversion_not_started === true) {
             this.detail.value +=
               ' This attempt did not count toward your daily migration limit.'
@@ -206,16 +211,11 @@ export class MigrationController {
             operationId,
             direction === 'undo' ? 'undone' : 'applied'
           )
-        if (this.current())
-          this.detail.value =
-            direction === 'undo' ? 'Migration undone.' : 'Migration reapplied.'
       })
       if (operationId) conversation?.reportApplication(operationId, 'applied')
       if (this.current()) {
         this.phase.value = 'applied'
-        this.detail.value =
-          warning ||
-          'Migrated to KCL 3.0. Use Undo to restore the previous project.'
+        if (warning) this.detail.value += `\n\n${warning}`
         this.original = undefined
         this.request = undefined
       }

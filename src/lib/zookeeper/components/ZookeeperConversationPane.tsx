@@ -222,6 +222,7 @@ export const ZookeeperConversationPane = (props: {
     props.migrationHistory?.entries.value.filter(
       (entry) =>
         entry.conversation_id === conversationId &&
+        !persistedOperations.has(entry.operation_id) &&
         !activeIds.has(entry.operation_id)
     ) ?? []
 
@@ -274,7 +275,6 @@ export const ZookeeperConversationPane = (props: {
             content: (onClickClearChat?: () => void) => (
               <KclMigrationHistoryEntry
                 entry={entry}
-                transcriptPresent={persistedOperations.has(entry.operation_id)}
                 userAvatar={props.userAvatarSrc}
                 onClickClearChat={onClickClearChat}
               />
