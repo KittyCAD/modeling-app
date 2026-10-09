@@ -7,7 +7,9 @@ rm -rf rust/kcl-lib/bindings
 
 cd rust
 
-wasm_pack_args=(build kcl-wasm-lib --release --target=web --out-dir=pkg --scope=kittycad)
+COMMIT_HASH=$(git rev-parse --short HEAD 2>/dev/null || echo dev)
+
+wasm_pack_args=(build kcl-wasm-lib --release --target=web --out-dir=pkg --out-name="kcl_wasm_lib_$COMMIT_HASH" --scope=kittycad)
 if [ "${VERCEL_ENV:-}" = "preview" ]; then
   wasm_pack_args+=(--no-opt)
 fi
