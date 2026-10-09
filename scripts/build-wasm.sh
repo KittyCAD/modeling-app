@@ -7,20 +7,19 @@ rm -rf rust/kcl-lib/bindings
 
 cd rust
 
-COMMIT_HASH=$(git rev-parse --short HEAD 2>/dev/null || echo dev)
-
-wasm_pack_args=(build kcl-wasm-lib --release --target=web --out-dir=pkg --out-name="kcl_wasm_lib_$COMMIT_HASH" --scope=kittycad)
+wasm_pack_args=(build kcl-wasm-lib --release --target=web --out-dir=pkg --scope=kittycad)
+if [ "${KCL_WASM_PUBLISH:-}" = "1" ]; then
+  commit_hash=$(git rev-parse --short HEAD)
+  wasm_pack_args+=(--out-name="kcl_wasm_lib_$commit_hash")
+fi
 if [ "${VERCEL_ENV:-}" = "preview" ]; then
   wasm_pack_args+=(--no-opt)
 fi
 wasm-pack "${wasm_pack_args[@]}"
 
-# Keep the stable filenames used by the app while publishing hash-named files.
-for artifact in kcl-wasm-lib/pkg/kcl_wasm_lib_"$COMMIT_HASH"*; do
-  cp "$artifact" "${artifact/kcl_wasm_lib_${COMMIT_HASH}/kcl_wasm_lib}"
-done
-
 cp -R kcl-lib/expected-bindings/ts-rs kcl-lib/bindings
 
-cp kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm ../public
+if [ "${KCL_WASM_PUBLISH:-}" != "1" ]; then
+  cp kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm ../public
+fi
 cp kcl-wasm-lib/README.md kcl-wasm-lib/pkg/README.md
