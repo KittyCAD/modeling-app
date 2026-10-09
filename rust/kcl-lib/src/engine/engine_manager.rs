@@ -94,6 +94,10 @@ pub struct EngineManager {
 
     #[builder(default)]
     async_tasks: AsyncTasks,
+
+    /// Source of the last successful execution in this engine session.
+    #[builder(default)]
+    pub(crate) export_source: RwLock<Option<kcmc::shared::KclProject>>,
 }
 
 impl std::fmt::Debug for EngineManager {
@@ -135,6 +139,7 @@ impl EngineManager {
             websocket_upgrade_request_id: None,
             stats: Default::default(),
             async_tasks: Default::default(),
+            export_source: Default::default(),
         }
     }
 
@@ -181,6 +186,7 @@ impl EngineManager {
             websocket_upgrade_request_id: request_id,
             stats: Default::default(),
             async_tasks: Default::default(),
+            export_source: Default::default(),
         }
     }
 
@@ -205,6 +211,7 @@ impl EngineManager {
             websocket_upgrade_request_id: None,
             stats: Default::default(),
             async_tasks: Default::default(),
+            export_source: Default::default(),
         }
     }
 
@@ -226,6 +233,7 @@ impl EngineManager {
         kcl_version: Option<KclVersion>,
         geometry_only: bool,
     ) -> Result<(), crate::errors::KclError> {
+        *self.export_source.write().await = None;
         // Clear any batched commands leftover from previous scenes.
         self.clear_queues(batch_context).await;
 
@@ -985,6 +993,7 @@ impl EngineManager {
     }
 
     pub async fn close(&self) {
+        *self.export_source.write().await = None;
         let _ = self.transport.close().await;
     }
 }

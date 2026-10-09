@@ -16,6 +16,8 @@ use kcl_lib::front::SceneGraphDelta;
 use kcl_lib::wasm_engine::FileManager;
 use wasm_bindgen::prelude::*;
 
+use crate::execution_path::ExecutionPath;
+
 pub(crate) const TRUE_BUG: &str = "This is a bug in KCL and not in your code, please report this to Zoo.";
 
 #[wasm_bindgen]
@@ -48,6 +50,7 @@ pub struct Context {
     engine: Arc<kcl_lib::wasm_engine::EngineConnection>,
     response_context: Arc<kcl_lib::wasm_engine::ResponseContext>,
     fs: kcl_lib::FileSystemHandle,
+    execution_path: ExecutionPath,
     mock_engine: Arc<kcl_lib::wasm_engine::EngineConnection>,
     geometry_only: bool,
     execution_callbacks: Option<JsExecutionCallbacks>,
@@ -80,6 +83,7 @@ impl Context {
                 response_context.clone(),
             )),
             fs: kcl_lib::new_file_system_handle(FileManager::new(fs_manager)),
+            execution_path: ExecutionPath::default(),
             mock_engine: Arc::new(kcl_lib::wasm_engine::EngineConnection::new_mock()),
             geometry_only: geometry_only.unwrap_or_default(),
             execution_callbacks,
@@ -95,6 +99,7 @@ impl Context {
             engine: self.engine.clone(),
             response_context: self.response_context.clone(),
             fs: self.fs.clone(),
+            execution_path: self.execution_path.clone(),
             mock_engine: self.mock_engine.clone(),
             geometry_only: self.geometry_only,
             execution_callbacks: Some(execution_callbacks),
@@ -110,14 +115,24 @@ impl Context {
         is_mock: bool,
     ) -> Result<kcl_lib::ExecutorContext, String> {
         let config: kcl_lib::Configuration = serde_json::from_str(settings).map_err(|e| e.to_string())?;
-        let mut settings: kcl_lib::ExecutorSettings = config.into();
+        let settings = self.execution_path.for_execution(config, path, is_mock)?;
+        Ok(self.executor_ctx(settings, is_mock))
+    }
+
+    pub(crate) fn create_current_executor_ctx(
+        &self,
+        settings: &str,
+        is_mock: bool,
+    ) -> Result<kcl_lib::ExecutorContext, String> {
+        let config: kcl_lib::Configuration = serde_json::from_str(settings).map_err(|e| e.to_string())?;
+        let settings = self.execution_path.for_current_scene(config)?;
+        Ok(self.executor_ctx(settings, is_mock))
+    }
+
+    fn executor_ctx(&self, mut settings: kcl_lib::ExecutorSettings, is_mock: bool) -> kcl_lib::ExecutorContext {
         if !is_mock {
             settings.geometry_only = self.geometry_only;
         }
-        if let Some(path_src) = path {
-            settings.with_current_file(kcl_lib::TypedPath::from(&path_src));
-        }
-
         let mut ctx = if is_mock {
             kcl_lib::ExecutorContext::new_mock(self.mock_engine.clone(), self.fs.clone(), settings)
         } else {
@@ -128,7 +143,7 @@ impl Context {
             .execution_callbacks
             .clone()
             .map(|callbacks| Arc::new(callbacks) as Arc<dyn ExecutionCallbacks>);
-        Ok(ctx)
+        ctx
     }
 
     /// Execute a program.
@@ -255,7 +270,7 @@ impl Context {
         let format: kittycad_modeling_cmds::format::OutputFormat3d =
             serde_json::from_str(format_json).map_err(|e| e.to_string())?;
 
-        let ctx = self.create_executor_ctx(settings, None, false)?;
+        let ctx = self.create_current_executor_ctx(settings, false)?;
 
         match ctx.export(format).await {
             // The serde-wasm-bindgen does not work here because of weird HashMap issues.

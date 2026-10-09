@@ -31,7 +31,7 @@ kittycad = { version = "0.5.4", default-features = false, features = [
   "js",
   "requests",
 ] }
-kittycad-modeling-cmds = { version = "0.2.248", features = [
+kittycad-modeling-cmds = { version = "0.2.250", features = [
   "ts-rs",
   "websocket",
 ] }
@@ -117,3 +117,6 @@ kcl-error = { path = "kcl-error" }
 # [patch.crates-io]
 # ezpz = { git = "https://github.com/KittyCAD/ezpz.git", branch = "david/circle-circle-tangent" }
 # kittycad-modeling-cmds = { path = "../../modeling-api/modeling-cmds" }
+
+[patch.crates-io]
+kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api", rev = "305097d8a802a16fc15f3ae7e7638691c9b3826d" }

@@ -162,6 +162,7 @@ pub(crate) use artifact::mermaid_tests::ArtifactGraphMermaidExt;
 pub(crate) mod cache;
 mod cad_op;
 pub(crate) mod exec_ast;
+mod export_source;
 pub mod fn_call;
 #[cfg(test)]
 mod freedom_analysis_tests;
@@ -1625,6 +1626,8 @@ impl ExecutorContext {
     /// frames are not held underneath deep KCL execution in debug builds.
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(!self.is_mock());
+        *self.engine.export_source.write().await = None;
+        let entrypoint_source = program.original_file_contents.clone();
         let exec_fut = self.run_with_caching_inner(program);
         let result = if self.configure_engine_render {
             self.with_engine_execution(Box::pin(exec_fut)).await
@@ -1634,6 +1637,12 @@ impl ExecutorContext {
 
         if result.is_err() {
             cache::bust_cache().await;
+        }
+        if let Ok(outcome) = &result
+            && outcome.errors().next().is_none()
+        {
+            *self.engine.export_source.write().await =
+                export_source::collect(&outcome.source_files, &self.settings, &entrypoint_source);
         }
         result
     }
@@ -1669,7 +1678,11 @@ impl ExecutorContext {
                 GridScaleBehavior::ScaleWithZoom
             };
 
-            let (program, exec_state, universe_info, preserve_mem) = match cache::read_old_ast().await {
+            let cached_state = cache::read_old_ast().await.filter(|cached| {
+                cached.settings.current_file == self.settings.current_file
+                    && cached.settings.project_directory == self.settings.project_directory
+            });
+            let (program, exec_state, universe_info, preserve_mem) = match cached_state {
                 Some(mut cached_state) => {
                     let old = CacheInformation {
                         ast: &cached_state.main.ast,
@@ -1932,8 +1945,20 @@ impl ExecutorContext {
         program: &crate::Program,
         exec_state: &mut ExecState,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
-        self.run_concurrent(program, exec_state, None, PreserveMem::Normal)
-            .await
+        if !self.is_mock() {
+            *self.engine.export_source.write().await = None;
+        }
+        let result = self
+            .run_concurrent(program, exec_state, None, PreserveMem::Normal)
+            .await?;
+        if !self.is_mock() && !exec_state.global.issues.iter().any(|issue| issue.is_err()) {
+            *self.engine.export_source.write().await = export_source::collect(
+                &exec_state.global.id_to_source,
+                &self.settings,
+                &program.original_file_contents,
+            );
+        }
+        Ok(result)
     }
 
     /// Perform the execution of a program using a concurrent
@@ -2570,6 +2595,7 @@ impl ExecutorContext {
                     kittycad_modeling_cmds::Export::builder()
                         .entity_ids(vec![])
                         .format(format)
+                        .maybe_kcl_source(self.engine.export_source.read().await.clone())
                         .build(),
                 ),
             )
