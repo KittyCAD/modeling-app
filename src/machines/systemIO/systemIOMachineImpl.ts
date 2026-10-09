@@ -682,11 +682,13 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       const requestedFileNameWithExtension =
         input.requestedFileNameWithExtension
       const requestedCode = input.requestedCode
-      const folders = input.context.folders
-
-      if (!folders) {
-        return Promise.reject(new Error('no folders'))
-      }
+      const folders =
+        input.context.folders ??
+        (await readProjectsFromProjectDirectory({
+          fileOperations: fileOperations(input.context),
+          projectDirectoryPath: input.context.projectDirectoryPath,
+          wasmInstancePromise: input.context.wasmInstancePromise,
+        }))
 
       let newProjectName = requestedProjectName
 

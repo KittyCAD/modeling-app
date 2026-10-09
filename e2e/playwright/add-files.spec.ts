@@ -54,8 +54,10 @@ test.describe('Local Drive picker', () => {
         mimeType: 'text/plain',
         buffer: Buffer.from(code),
       })
+      await expect(cmdBar.currentArgumentInput).toHaveValue('picked.kcl')
       await cmdBar.progressCmdBar()
-      await expect(page).toHaveURL(/picked\.kcl$/)
+      await cmdBar.toBeClosed()
+      await expect(page).toHaveURL(/picked\.kcl$/, { timeout: 30_000 })
       await editor.expectEditor.toContain('Selected from Local Drive')
     }
   )

@@ -4,6 +4,7 @@ import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
 import { File } from '@src/lib/projectSession'
 import { App } from '@src/lib/app'
+import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
@@ -667,6 +668,34 @@ describe('project system', () => {
       app.dispose()
       userAgentSpy.mockRestore()
       window.electron = previousElectron
+    }
+  })
+
+  it('allows adding a file to the open project before the project list loads', async () => {
+    const app = createAppForTest()
+
+    try {
+      await app.openProject(mockProject)
+      expect(app.systemIOActor.getSnapshot().context.folders ?? []).toEqual([])
+      const context = app.commands.actor.getSnapshot().context
+      const command = createApplicationCommands({
+        app,
+        wasmInstance: await app.wasmPromise,
+      }).find((command) => command.name === 'add-kcl-file-to-project')
+      const projectName = command?.args?.projectName
+      if (
+        projectName?.inputType !== 'options' ||
+        typeof projectName.options !== 'function'
+      ) {
+        throw new Error('Missing project name options')
+      }
+
+      expect(projectName.options(context)).toEqual([
+        { name: mockProject.name, value: mockProject.name, isCurrent: false },
+      ])
+    } finally {
+      await waitForAuthSettled(app)
+      app.dispose()
     }
   })
 

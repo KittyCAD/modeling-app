@@ -291,7 +291,15 @@ export function createApplicationCommands({
         defaultValue: () => app.project?.name,
         options: (_, _context) => {
           const { folders } = app.systemIOActor.getSnapshot().context
-          return getProjectDirectoryOptions(folders)
+          const projects = [...(folders ?? [])]
+          const currentProject = app.project?.projectIORefSignal.value
+          if (
+            currentProject &&
+            !projects.some((project) => project.name === currentProject.name)
+          ) {
+            projects.push(currentProject)
+          }
+          return getProjectDirectoryOptions(projects)
         },
       },
       newProjectName: {
