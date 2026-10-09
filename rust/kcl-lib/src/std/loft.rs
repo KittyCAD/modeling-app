@@ -245,6 +245,7 @@ mod tests {
 
     use super::*;
     use crate::execution::AbstractSegment;
+    use crate::execution::Geometry;
     use crate::execution::KclValue;
     use crate::execution::Plane;
     use crate::execution::Segment;
@@ -433,6 +434,54 @@ gdt::annotation(faces = [lowerRegion.tags.line1], annotation = "EDGE", fontSize 
             };
             assert!(region.tags["line1"].get_cur_info().unwrap().surface.is_some());
         }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn loft_updates_linearly_patterned_region_tags_to_faces() {
+        let code = r#"@settings(kclVersion = 3.0, experimentalFeatures = allow)
+lower = sketch(on = XY) {
+  edge = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+}
+upper = sketch(on = offsetPlane(XY, offset = 10mm)) {
+  edge = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+lowerRegion = region(segments = [lower.edge])
+upperRegion = region(segments = [upper.edge])
+patterned = patternLinear2d(lowerRegion, instances = 2, distance = 20mm, axis = X)
+lowerCopy = patterned[1]
+lowerCopyAlias = lowerCopy
+body = loft([lowerCopy, upperRegion])
+"#;
+        let result = parse_execute(code).await.expect("loft of patterned region executes");
+        let KclValue::Solid { value: body } = result.variable("body") else {
+            panic!("body is not a solid");
+        };
+        let KclValue::Sketch { value: original } = result.variable("lowerRegion") else {
+            panic!("lowerRegion is not a sketch");
+        };
+
+        for name in ["lowerCopy", "lowerCopyAlias"] {
+            let KclValue::Sketch { value: copy } = result.variable(name) else {
+                panic!("{name} is not a sketch");
+            };
+            assert_eq!(copy.original_id, original.original_id);
+            assert_ne!(copy.artifact_id, original.artifact_id);
+            let info = copy.tags["edge"].get_cur_info().expect("pattern copy has a tag");
+            assert!(info.surface.is_some(), "{name} should identify a loft face");
+            let Geometry::Solid(tagged_body) = &info.geometry else {
+                panic!("{name} does not have a solid face tag");
+            };
+            assert_eq!(tagged_body.id, body.id);
+        }
+
+        assert!(
+            original.tags["edge"]
+                .get_cur_info()
+                .expect("original region has a tag")
+                .surface
+                .is_none(),
+            "lofting a pattern copy should preserve the original region's sketch tag"
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
