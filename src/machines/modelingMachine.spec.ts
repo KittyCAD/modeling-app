@@ -14,7 +14,7 @@ import {
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
 /** Engine-using integration tests of modelingMachine.
- * For engineless unit tests, see modelingMachine.test.ts */
+ * For selection synchronization tests, see modelingMachineSelection.spec.ts */
 import {
   type Artifact,
   type ArtifactGraph,

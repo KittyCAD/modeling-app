@@ -2,6 +2,9 @@ import { modelingMachine } from '@src/machines/modelingMachine'
 import { modelingMachineInitialInternalContext } from '@src/machines/modelingSharedContext'
 import { describe, expect, it, vi } from 'vitest'
 import { createActor } from 'xstate'
+
+// Importing the modeling machine requires generated Rust/WASM bindings, so this
+// fixture belongs to the integration suite even though it does not use an engine.
 describe('selection synchronization', () => {
   it('synchronizes default plane selection with the engine and editor', () => {
     const code = 'body001 = extrude(region001, length = 10)'
