@@ -10226,7 +10226,7 @@ export default {
       {
         "name": "sectional",
         "ty": "bool",
-        "docs": "If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components.",
+        "docs": "In KCL 2, if true, the sweep is broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components. Sweep v2 does not support this in KCL 3, so this argument has no effect and produces a warning.",
         "required": false,
         "special": false,
         "experimental": false,
