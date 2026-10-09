@@ -5,11 +5,7 @@ import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfigu
 import type { JsonValue } from '@rust/kcl-lib/bindings/serde_json/JsonValue'
 import env, { getEnvironmentNameFromEnv } from '@src/env'
 import { newKclFile } from '@src/lang/project'
-import {
-  defaultAppSettings,
-  parseAppSettings,
-  parseProjectSettings,
-} from '@src/lang/wasm'
+import { parseProjectSettings } from '@src/lang/wasm'
 import { getAppFolderName as getAppFolderNameFromMetadata } from '@src/lib/appFolderName'
 import type { EnvironmentConfiguration } from '@src/lib/constants'
 import {
@@ -53,12 +49,14 @@ import {
   preserveProjectTomlMetadataInProjectSettingsContents,
   setProjectTitleInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
-import { err } from '@src/lib/trap'
+import { appConfigurationFromToml } from '@src/lib/settings/appConfigurationFromToml'
+import { err, isErr } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { getInVariableCase, isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import { IS_STAGING, IS_STAGING_OR_DEBUG } from '@src/routes/utils'
+import { parse as parseToml } from 'smol-toml'
 
 const textDecoder = new TextDecoder()
 
@@ -295,7 +293,7 @@ export async function createNewProjectDirectory(
   projectTitle = projectName
 ): Promise<Project> {
   if (!configuration) {
-    configuration = await readAppSettingsFile(fileOperations, wasmInstance)
+    configuration = await readAppSettingsFile(fileOperations)
   }
 
   if (err(configuration)) {
@@ -399,10 +397,7 @@ export async function listProjects(
   const wasmInstance = await initPromise
 
   if (configuration === undefined) {
-    configuration = await readAppSettingsFile(
-      fileOperations,
-      wasmInstance
-    ).catch((e) => {
+    configuration = await readAppSettingsFile(fileOperations).catch((e) => {
       console.error(e)
       return e
     })
@@ -614,10 +609,7 @@ export async function getDefaultKclFileForDir(
           }
         }
         // If we didn't find a kcl file, create one.
-        const configuration = await readAppSettingsFile(
-          fileOperations,
-          wasmInstance
-        )
+        const configuration = await readAppSettingsFile(fileOperations)
         if (err(configuration)) {
           return Promise.reject(configuration)
         }
@@ -714,7 +706,7 @@ export async function getProjectInfo(
     projectPath
   )
 
-  const appSettings = await readAppSettingsFile(fileOperations, wasmInstance)
+  const appSettings = await readAppSettingsFile(fileOperations)
   const showAllFiles = appSettings.settings?.app?.show_all_files === true
 
   const gitignoreStack = await createInitialGitignoreStackWithFs(
@@ -991,9 +983,8 @@ export const readProjectSettingsFile = async (
  * carries a section of its own.
  */
 const withPlaywrightSeededPlugins = (
-  configuration: DeepPartial<Configuration>,
-  wasmInstance: ModuleType
-): DeepPartial<Configuration> => {
+  configuration: DeepPartial<Configuration>
+): DeepPartial<Configuration> | Error => {
   if (isDesktop() || !isPlaywright() || configuration.settings?.plugins) {
     return configuration
   }
@@ -1003,10 +994,11 @@ const withPlaywrightSeededPlugins = (
     return configuration
   }
 
-  const seededConfiguration = parseAppSettings(seededToml, wasmInstance)
-  if (err(seededConfiguration)) {
-    return configuration
-  }
+  const seededConfiguration = appConfigurationFromToml(
+    parseToml(seededToml, { integersAsBigInt: false })
+  )
+
+  if (isErr(seededConfiguration)) return seededConfiguration
 
   const plugins = seededConfiguration.settings?.plugins
   if (!plugins || typeof plugins !== 'object' || isArray(plugins)) {
@@ -1023,26 +1015,28 @@ const withPlaywrightSeededPlugins = (
 }
 
 /**
- * Read the app settings file, or creates an initial one if it doesn't exist.
+ * Read app settings, falling back to an initial configuration if unavailable.
  */
 export const readAppSettingsFile = async (
-  fileOperations: FileOperationsRegistryService,
-  wasmInstance: ModuleType
+  fileOperations: FileOperationsRegistryService
 ): Promise<DeepPartial<Configuration>> => {
-  const configuration = await readPersistedAppSettingsFile(
-    fileOperations,
-    wasmInstance
-  )
-  return withPlaywrightSeededPlugins(configuration, wasmInstance)
+  const configuration = await readPersistedAppSettingsFile(fileOperations)
+  const seededConfiguration = withPlaywrightSeededPlugins(configuration)
+  return isErr(seededConfiguration)
+    ? Promise.reject(seededConfiguration)
+    : seededConfiguration
 }
 
 const readPersistedAppSettingsFile = async (
-  fileOperations: FileOperationsRegistryService,
-  wasmInstance: ModuleType
+  fileOperations: FileOperationsRegistryService
 ): Promise<DeepPartial<Configuration>> => {
   const settingsPath = await getAppSettingsFilePath()
   const initialProjectDirConfig: { [key: string]: JsonValue } = {
     directory: await getInitialDefaultDir(),
+  }
+
+  const initialConfiguration: DeepPartial<Configuration> = {
+    settings: { project: initialProjectDirConfig },
   }
 
   // The file exists, read it and parse it.
@@ -1051,10 +1045,11 @@ const readPersistedAppSettingsFile = async (
     const configToml = textDecoder.decode(
       await fileOperations.readFile(settingsPath)
     )
-    const parsedAppConfig = parseAppSettings(configToml, wasmInstance)
-    if (err(parsedAppConfig)) {
-      return Promise.reject(parsedAppConfig)
-    }
+    const parsedAppConfig = appConfigurationFromToml(
+      parseToml(configToml, { integersAsBigInt: false })
+    )
+
+    if (isErr(parsedAppConfig)) return initialConfiguration
 
     const hasProjectDirectorySetting =
       getProjectDirectorySetting(parsedAppConfig)
@@ -1080,25 +1075,9 @@ const readPersistedAppSettingsFile = async (
   } catch (_e: unknown) {
     console.log('creating default app settings')
 
-    // The file doesn't exist, create a new one.
-    const defaultAppConfig = defaultAppSettings(wasmInstance)
-    if (err(defaultAppConfig)) {
-      return Promise.reject(defaultAppConfig)
-    }
-
-    // inject the default project directory setting
-    const mergedDefaultConfig: DeepPartial<Configuration> = {
-      ...defaultAppConfig,
-      settings: {
-        ...defaultAppConfig.settings,
-        project: Object.assign(
-          {},
-          getProjectSettingsSection(defaultAppConfig),
-          initialProjectDirConfig
-        ),
-      },
-    }
-    return mergedDefaultConfig
+    // The default app configuration is empty; setting defaults are applied by
+    // the settings registry after the file has been read.
+    return initialConfiguration
   }
 }
 
