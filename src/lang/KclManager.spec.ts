@@ -327,6 +327,14 @@ describe('KclManager file switching', () => {
 })
 
 describe('KclManager diagnostics', () => {
+  // Compare the diagnostic data exactly; renderMessage only changes its display.
+  const withoutRenderMessage = (diagnostics: Diagnostic[]) =>
+    diagnostics.map((diagnostic) => {
+      const data = { ...diagnostic }
+      delete data.renderMessage
+      return data
+    })
+
   it('filters out duplicated diagnostics', () => {
     const { kclManager } = createKclManagerTestHarness()
 
@@ -395,8 +403,10 @@ describe('KclManager diagnostics', () => {
     kclManager.setDiagnostics([validDiagnostic, staleDiagnostic])
 
     expect(
-      getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)
-    ).toMatchObject([validDiagnostic])
+      withoutRenderMessage(
+        getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)
+      )
+    ).toEqual([validDiagnostic])
   })
 
   it('renders Markdown in dispatched diagnostic messages', () => {
@@ -449,8 +459,10 @@ describe('KclManager diagnostics', () => {
     ).not.toThrow()
 
     expect(
-      getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)
-    ).toMatchObject([baseDiagnostic, sketchSolveDiagnostic])
+      withoutRenderMessage(
+        getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)
+      )
+    ).toEqual([baseDiagnostic, sketchSolveDiagnostic])
   })
 
   it('deduplicates identical diagnostics across base and sketch-solve layers', () => {
@@ -463,8 +475,10 @@ describe('KclManager diagnostics', () => {
     kclManager.setSketchSolveDiagnostics([duplicateDiagnostic])
 
     expect(
-      getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)
-    ).toMatchObject([duplicateDiagnostic])
+      withoutRenderMessage(
+        getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)
+      )
+    ).toEqual([duplicateDiagnostic])
   })
 
   it('clears sketch-solve diagnostics without persisting them into the base diagnostics layer', () => {
@@ -483,8 +497,10 @@ describe('KclManager diagnostics', () => {
     kclManager.setSketchSolveDiagnostics([])
 
     expect(
-      getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)
-    ).toMatchObject([baseDiagnostic])
+      withoutRenderMessage(
+        getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)
+      )
+    ).toEqual([baseDiagnostic])
   })
 
   it('writes to file when the code is unchanged and shouldWriteToDisk is true', () => {

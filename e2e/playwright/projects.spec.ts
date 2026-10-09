@@ -215,9 +215,12 @@ test(
           })
           // error text on hover
           await page.hover('.cm-lint-marker-error')
-          await expect(
-            page.locator('.cm-tooltip-lint .cm-diagnosticText').first()
-          ).toContainText(
+          const error = page
+            .locator('.cm-tooltip-lint .cm-diagnosticText')
+            .first()
+          await expect(error).toBeVisible()
+          await expect(error).toHaveJSProperty(
+            'innerText',
             'tag requires a value with type TagDecl, but found a value with type string.'
           )
         })
@@ -385,9 +388,12 @@ test(
           })
           // error text on hover
           await page.hover('.cm-lint-marker-error')
-          await expect(
-            page.locator('.cm-tooltip-lint .cm-diagnosticText').first()
-          ).toContainText(
+          const error = page
+            .locator('.cm-tooltip-lint .cm-diagnosticText')
+            .first()
+          await expect(error).toBeVisible()
+          await expect(error).toHaveJSProperty(
+            'innerText',
             'tag requires a value with type TagDecl, but found a value with type string.'
           )
         })
@@ -436,12 +442,13 @@ test(
 
     // error text on hover
     await page.locator('.cm-lint-marker-error').hover()
-    await expect(
-      page.locator('.cm-tooltip-lint .cm-diagnosticText').first()
-    ).toContainText(
-      'tag requires a value with type TagDecl, but found a value with type string.',
-      { timeout: 15_000 }
+    const error = page.locator('.cm-tooltip-lint .cm-diagnosticText').first()
+    await expect(error).toBeVisible({ timeout: 15_000 })
+    await expect(error).toHaveJSProperty(
+      'innerText',
+      'tag requires a value with type TagDecl, but found a value with type string.'
     )
+    await expect(error.locator('code')).toHaveText(['TagDecl', 'string'])
   }
 )
 

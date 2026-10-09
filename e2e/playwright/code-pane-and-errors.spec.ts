@@ -127,13 +127,16 @@ middle(0)
         .getByLabel('Diagnostics')
         .locator('.cm-diagnosticText')
         .filter({ hasText: 'assert failed' })
-      await expect(error).toContainText(
-        "assert failed: Expected 0 to be greater than 0 but it wasn't"
+      await expect(error).toBeVisible()
+      await expect(error).toHaveJSProperty(
+        'innerText',
+        `assert failed: Expected 0 to be greater than 0 but it wasn't
+
+Backtrace:
+assert()
+check()
+middle()`
       )
-      await expect(error).toContainText('Backtrace:')
-      for (const frame of ['assert()', 'check()', 'middle()']) {
-        await expect(error).toContainText(frame)
-      }
       // There should be one hint inside middle() and one at the top level.
       await expect(page.getByText('Part of the error backtrace')).toHaveCount(2)
     }
@@ -192,11 +195,16 @@ middle(0)
       .getByLabel('Diagnostics')
       .locator('.cm-diagnosticText')
       .filter({ hasText: 'missingName' })
-    await expect(error).toContainText('missingName is not defined')
+    await expect(error).toBeVisible()
+    await expect(error).toHaveJSProperty(
+      'innerText',
+      `missingName is not defined
+
+Backtrace:
+import broken.kcl
+import assembly.kcl`
+    )
     await expect(error.locator('code')).toHaveText('missingName')
-    await expect(error).toContainText('Backtrace:')
-    await expect(error).toContainText('import broken.kcl')
-    await expect(error).toContainText('import assembly.kcl')
     // The import frames are in other files and the top-level frame is the
     // error's own range, so there are no backtrace hint diagnostics.
     await expect(page.getByText('Part of the error backtrace')).toHaveCount(0)
