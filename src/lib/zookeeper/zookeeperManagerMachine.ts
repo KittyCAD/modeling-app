@@ -19,7 +19,14 @@ import { withZookeeperWebSocketURL } from '@src/lib/withBaseURL'
 import { S, transitions, xstateEventError } from '@src/machines/utils'
 import ms from 'ms'
 import type { ActorRefFrom } from 'xstate'
-import { assertEvent, assign, createActor, fromPromise, setup } from 'xstate'
+import {
+  and,
+  assertEvent,
+  assign,
+  createActor,
+  fromPromise,
+  setup,
+} from 'xstate'
 
 // Uncomment and switch WebSocket below with this MockSocket for development.
 // import { MockSocket } from '@src/mocks/copilot'
@@ -2181,13 +2188,23 @@ export const zookeeperManagerMachine = setup({
           initial: S.Await,
           states: {
             [S.Await]: {
-              on: transitions([
-                ZookeeperManagerTransitions.MessageSend,
-                ZookeeperManagerTransitions.Cancel,
-                ZookeeperManagerTransitions.Interrupt,
-                ZookeeperManagerTransitions.ConversationClose,
-                ZookeeperManagerTransitions.AbruptClose,
-              ]),
+              on: {
+                [ZookeeperManagerTransitions.CacheSetupAndConnect]: {
+                  guard: and([
+                    'hasApiToken',
+                    ({ context }) => !context.awaitingResponse,
+                  ]),
+                  target: '#zookeeper-setup',
+                  actions: ['prepareSetup'],
+                },
+                ...transitions([
+                  ZookeeperManagerTransitions.MessageSend,
+                  ZookeeperManagerTransitions.Cancel,
+                  ZookeeperManagerTransitions.Interrupt,
+                  ZookeeperManagerTransitions.ConversationClose,
+                  ZookeeperManagerTransitions.AbruptClose,
+                ]),
+              },
             },
             [ZookeeperManagerTransitions.ConversationClose]: {
               type: 'final',
