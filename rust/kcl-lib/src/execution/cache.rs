@@ -5,11 +5,11 @@ use std::sync::Arc;
 use indexmap::IndexMap;
 use itertools::EitherOrBoth;
 use itertools::Itertools;
+use kittycad_modeling_cmds::KclVersion;
 use tokio::sync::RwLock;
 
 use crate::ExecOutcome;
 use crate::ExecutorContext;
-use crate::KclVersion;
 use crate::SourceRange;
 use crate::errors::KclError;
 use crate::execution::ConstraintKey;
