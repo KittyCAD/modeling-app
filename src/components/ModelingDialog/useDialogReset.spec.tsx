@@ -7,6 +7,7 @@ import ModelingDialog from '@src/components/ModelingDialog/ModelingDialog'
 import * as dialogArguments from '@src/components/ModelingDialog/arguments'
 import { useDialogReset } from '@src/components/ModelingDialog/useDialogReset'
 import type { Command } from '@src/lib/commandTypes'
+import { defaultLayoutConfig } from '@src/lib/layout'
 import { GLOBAL_COMMAND_SCOPES } from '@src/registry/contracts/commands'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
@@ -55,6 +56,13 @@ function Harness() {
             useSettings: () => settings,
           }}
           wasmPromise={Promise.resolve(world.instance)}
+          layout={{
+            signal: signal(defaultLayoutConfig),
+            get: () => defaultLayoutConfig,
+            set: () => {},
+            reset: () => {},
+            applyContributions: () => [],
+          }}
           selectionRanges={{ graphSelections: [], otherSelections: [] }}
           modelingSend={() => {}}
         />

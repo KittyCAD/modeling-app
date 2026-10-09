@@ -7,7 +7,10 @@ import {
 } from '@src/lang/modelingWorkflows'
 import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
 import { recast, type PathToNode, type Program } from '@src/lang/wasm'
-import type { CommandReviewValidationError } from '@src/lib/commandTypes'
+import type {
+  CommandReviewValidationDetails,
+  CommandReviewValidationError,
+} from '@src/lib/commandTypes'
 import { EXECUTION_TYPE_REAL } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
 import { err, isErr } from '@src/lib/trap'
@@ -131,23 +134,56 @@ export async function runModelingCodemod<CommandArgs>({
   })
 }
 
+type CodemodCommandContext = {
+  argumentsToSubmit: Record<string, unknown>
+  wasmInstancePromise: Promise<ModuleType>
+}
+
+type CodemodModelingActor = {
+  getSnapshot: () => {
+    context: {
+      engineCommandManager: ConnectionManager
+      kclManager: KclManager
+      rustContext: RustContext
+    }
+  }
+}
+
+/** The same codemod supplies review validation and a read-only code proposal. */
+export function createModelingCodemodCommand<CommandArgs>(
+  codemod: ModelingCodemod<CommandArgs>
+) {
+  return {
+    reviewValidation: createModelingCodemodReviewValidation(codemod),
+    codePreview: async (
+      context: CodemodCommandContext,
+      modelingActor?: CodemodModelingActor
+    ): Promise<CommandReviewValidationDetails | Error> => {
+      if (!modelingActor) return new Error('modelingMachine not found')
+      const { kclManager } = modelingActor.getSnapshot().context
+      const wasmInstance = await context.wasmInstancePromise
+      const sourceSnapshot = { ast: kclManager.ast, code: kclManager.code }
+      const result = await runModelingCodemod({
+        codemod,
+        commandArgs: context.argumentsToSubmit as CommandArgs,
+        kclManager,
+        wasmInstance,
+        sourceSnapshot,
+      })
+      if (isErr(result)) return result
+      const proposedCode = recast(result.modifiedAst, wasmInstance)
+      if (isErr(proposedCode)) return proposedCode
+      return { type: 'codemod', currentCode: sourceSnapshot.code, proposedCode }
+    },
+  }
+}
+
 export function createModelingCodemodReviewValidation<CommandArgs>(
   codemod: ModelingCodemod<CommandArgs>
 ) {
   return async (
-    context: {
-      argumentsToSubmit: Record<string, unknown>
-      wasmInstancePromise: Promise<ModuleType>
-    },
-    modelingActor?: {
-      getSnapshot: () => {
-        context: {
-          engineCommandManager: ConnectionManager
-          kclManager: KclManager
-          rustContext: RustContext
-        }
-      }
-    }
+    context: CodemodCommandContext,
+    modelingActor?: CodemodModelingActor
   ): Promise<undefined | CommandReviewValidationError> => {
     if (!modelingActor) {
       return new Error('modelingMachine not found')

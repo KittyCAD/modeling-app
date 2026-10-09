@@ -10,7 +10,11 @@ import {
 import { CustomIcon } from '@src/components/CustomIcon'
 import { MarkdownText } from '@src/components/MarkdownText'
 import type { KclManager } from '@src/lang/KclManager'
-import type { AppCommandSystem, AppSettingsSystem } from '@src/lib/app'
+import type {
+  AppCommandSystem,
+  AppLayoutSystem,
+  AppSettingsSystem,
+} from '@src/lib/app'
 import { getSelectionTypeDisplayText, isSelections } from '@src/lib/selections'
 import { isErr, trap } from '@src/lib/trap'
 import { capitaliseFC } from '@src/lib/utils'
@@ -27,12 +31,14 @@ import {
   type DialogField,
 } from '@src/components/ModelingDialog/arguments'
 import { useDialogSelection } from '@src/components/ModelingDialog/useDialogSelection'
+import { useCodePreview } from '@src/components/ModelingDialog/useCodePreview'
 
 export default function ModelingDialog({
   containerRef,
   kclManager,
   commands,
   settings,
+  layout,
   wasmPromise,
   commandScopes,
   selectionRanges,
@@ -42,6 +48,7 @@ export default function ModelingDialog({
   kclManager: KclManager
   commands: AppCommandSystem
   settings: AppSettingsSystem
+  layout: AppLayoutSystem
   wasmPromise: Promise<ModuleType>
   commandScopes?: CommandScopeService
   selectionRanges: Selections
@@ -112,6 +119,15 @@ export default function ModelingDialog({
   const invalid = visible.some(({ name, arg, required }) => {
     if (arg.inputType === 'kcl') return validity[name] === false
     return required && !hasValue(context.argumentsToSubmit[name])
+  })
+  const codePreview = useCodePreview({
+    context: state.context,
+    values,
+    activeName: selection.activeName,
+    selectionRanges: selection.selectionRanges,
+    incomplete: initializing || invalid,
+    kclManager,
+    layout,
   })
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
@@ -350,6 +366,16 @@ export default function ModelingDialog({
           )}
         </div>
         <footer className="flex shrink-0 items-center justify-between gap-2 border-t border-chalkboard-30 p-3 dark:border-chalkboard-70">
+          {codePreview.available && (
+            <button
+              type="button"
+              aria-pressed={codePreview.open}
+              className="m-0 shrink-0 rounded-sm border border-chalkboard-30 px-2 py-1 aria-pressed:border-primary aria-pressed:text-primary dark:border-chalkboard-70"
+              onClick={codePreview.toggle}
+            >
+              Code changes
+            </button>
+          )}
           <span
             role={state.context.reviewValidationError ? 'alert' : undefined}
           >

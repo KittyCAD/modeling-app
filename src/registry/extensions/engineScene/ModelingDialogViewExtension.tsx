@@ -14,7 +14,7 @@ export function ModelingDialogViewExtension({
   modelingSend,
 }: EngineSceneViewExtensionProps) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const { commands, settings, wasmPromise, registry } = useApp()
+  const { commands, settings, layout, wasmPromise, registry } = useApp()
   const state = commands.useState()
   const resetting = useDialogReset(commands.actor)
   if (
@@ -34,6 +34,7 @@ export function ModelingDialogViewExtension({
           kclManager={modelingState.context.kclManager}
           commands={commands}
           settings={settings}
+          layout={layout}
           wasmPromise={wasmPromise}
           commandScopes={registry.optional(commandScopeService)}
           selectionRanges={modelingState.context.selectionRanges}
