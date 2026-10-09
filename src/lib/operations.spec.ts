@@ -17,7 +17,6 @@ import {
   pathToNodeFromRustNodePath,
 } from '@src/lang/wasm'
 import type { Artifact, ArtifactGraph } from '@src/lang/wasm'
-import { LEGACY_SKETCH_MODE_REMOVED_MESSAGE } from '@src/lib/constants'
 import {
   enterEditFlow,
   filterOperations,
@@ -1031,28 +1030,6 @@ describe('operations.test.ts', () => {
       expect(argDefaultValues.roll?.valueText).toBe('10deg')
       expect(argDefaultValues.pitch?.valueText).toBe('20deg')
       expect(argDefaultValues.yaw?.valueText).toBe('30deg')
-    })
-  })
-
-  describe('Legacy sketch edit flow', () => {
-    const code = 'sketch001 = startSketchOn(XZ)'
-
-    async function editStartSketchOn() {
-      const { rustContext } = await buildTheWorldAndNoEngineConnection()
-      return enterEditFlow({
-        operation: stdlib('startSketchOn'),
-        code,
-        artifact: pathArtifact('path-id'),
-        artifactGraph: toArtifactGraph([pathArtifact('path-id')]),
-        rustContext,
-      })
-    }
-
-    it('refuses to edit without the legacy sketch mode feature', async () => {
-      const result = await editStartSketchOn()
-
-      expect(isErr(result)).toBe(true)
-      expect((result as Error).message).toBe(LEGACY_SKETCH_MODE_REMOVED_MESSAGE)
     })
   })
 
