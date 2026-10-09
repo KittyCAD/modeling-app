@@ -7,7 +7,7 @@ import type {
 
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { findUniqueName } from '@src/lang/create'
-import { createModelingCodemodReviewValidation } from '@src/lang/modifyAst/modelingCodemod'
+import { createModelingCodemodCommand } from '@src/lang/modifyAst/modelingCodemod'
 import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
 import type { Artifact, PathToNode } from '@src/lang/wasm'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
@@ -699,9 +699,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   Extrude: {
     icon: 'extrude',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods.Extrude
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods.Extrude),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Extrude']>(
       'Extrude',
       {
@@ -782,9 +780,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   Sweep: {
     icon: 'sweep',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods.Sweep
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods.Sweep),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Sweep']>('Sweep', {
       overrides: {
         sketches: {
@@ -847,9 +843,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   Loft: {
     icon: 'loft',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods.Loft
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods.Loft),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Loft']>('Loft', {
       overrides: {
         sketches: {
@@ -876,9 +870,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   Revolve: {
     icon: 'revolve',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods.Revolve
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods.Revolve),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Revolve']>(
       'Revolve',
       {
@@ -952,9 +944,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   Shell: {
     icon: 'shell',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods.Shell
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods.Shell),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Shell']>('Shell', {
       overrides: {
         faces: {
@@ -974,9 +964,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     needsReview: true,
     reviewMessage:
       'The argument cutAt specifies where to place the hole given as absolute coordinates in the global scene. Point selection will be allowed in the future, and more hole bottoms and hole types are coming soon.',
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods.Hole
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods.Hole),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Hole']>('Hole', {
       overrides: {
         face: {
@@ -1095,7 +1083,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   'Boolean Subtract': {
     icon: 'booleanSubtract',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
+    ...createModelingCodemodCommand(
       modelingCommandCodemods['Boolean Subtract']
     ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Boolean Subtract']>(
@@ -1120,9 +1108,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   'Boolean Union': {
     icon: 'booleanUnion',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods['Boolean Union']
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods['Boolean Union']),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Boolean Union']>(
       'Boolean Union',
       {
@@ -1140,7 +1126,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   'Boolean Intersect': {
     icon: 'booleanIntersect',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
+    ...createModelingCodemodCommand(
       modelingCommandCodemods['Boolean Intersect']
     ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Boolean Intersect']>(
@@ -1160,9 +1146,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   'Boolean Split': {
     icon: 'split',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods['Boolean Split']
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods['Boolean Split']),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Boolean Split']>(
       'Boolean Split',
       {
@@ -1186,9 +1170,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'plane',
     displayName: 'Offset Plane',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods['Offset plane']
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods['Offset plane']),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Offset plane']>(
       'Offset plane',
       {
@@ -1217,9 +1199,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   Helix: {
     icon: 'helix',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods.Helix
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods.Helix),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Helix']>('Helix', {
       overrides: {
         mode: {
@@ -1295,9 +1275,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'gear',
     needsReview: true,
     status: modelingStdLibCommandStatus('Helical Gear'),
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods['Helical Gear']
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods['Helical Gear']),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Helical Gear']>(
       'Helical Gear',
       {
@@ -1325,7 +1303,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'gear',
     needsReview: true,
     status: modelingStdLibCommandStatus('Herringbone Gear'),
-    reviewValidation: createModelingCodemodReviewValidation(
+    ...createModelingCodemodCommand(
       modelingCommandCodemods['Herringbone Gear']
     ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Herringbone Gear']>(
@@ -1355,9 +1333,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'gear',
     needsReview: true,
     status: modelingStdLibCommandStatus('Spur Gear'),
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods['Spur Gear']
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods['Spur Gear']),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Spur Gear']>(
       'Spur Gear',
       {
@@ -1382,9 +1358,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'gear',
     needsReview: true,
     status: modelingStdLibCommandStatus('Ring Gear'),
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods['Ring Gear']
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods['Ring Gear']),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Ring Gear']>(
       'Ring Gear',
       {
@@ -1411,9 +1385,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   Fillet: {
     icon: 'fillet3d',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods.Fillet
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods.Fillet),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Fillet']>('Fillet', {
       overrides: {
         selection: {
@@ -1443,9 +1415,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   Chamfer: {
     icon: 'chamfer3d',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods.Chamfer
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods.Chamfer),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Chamfer']>(
       'Chamfer',
       {
@@ -1572,9 +1542,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   Appearance: {
     icon: 'extrude',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods.Appearance
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods.Appearance),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Appearance']>(
       'Appearance',
       {
@@ -1595,9 +1563,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'trash',
     needsReview: true,
     status: modelingStdLibCommandStatus('Delete'),
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods.Delete
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods.Delete),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Delete']>('Delete', {
       overrides: {
         objects: {
@@ -1610,9 +1576,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   Translate: {
     icon: 'move',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods.Translate
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods.Translate),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Translate']>(
       'Translate',
       {
@@ -1644,9 +1608,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   Rotate: {
     icon: 'rotate',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods.Rotate
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods.Rotate),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Rotate']>('Rotate', {
       overrides: {
         objects: {
@@ -1684,9 +1646,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   Scale: {
     icon: 'scale',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods.Scale
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods.Scale),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Scale']>('Scale', {
       overrides: {
         objects: {
@@ -1714,9 +1674,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   Clone: {
     icon: 'clone',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods.Clone
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods.Clone),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Clone']>('Clone', {
       overrides: {
         objects: {
@@ -1762,9 +1720,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'mirror3d',
     displayName: 'Mirror',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods['Mirror 3D']
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods['Mirror 3D']),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Mirror 3D']>(
       'Mirror 3D',
       {
@@ -1795,7 +1751,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   'Pattern Circular 3D': {
     icon: 'patternCircular3d',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
+    ...createModelingCodemodCommand(
       modelingCommandCodemods['Pattern Circular 3D']
     ),
     args: modelingStdLibCommandArgs<
@@ -1832,7 +1788,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   'Pattern Linear 3D': {
     icon: 'patternLinear3d',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
+    ...createModelingCodemodCommand(
       modelingCommandCodemods['Pattern Linear 3D']
     ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Pattern Linear 3D']>(
@@ -1866,9 +1822,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   'GDT Flatness': {
     icon: 'gdtFlatness',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods['GDT Flatness']
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods['GDT Flatness']),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Flatness']>(
       'GDT Flatness',
       {
@@ -1888,7 +1842,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   'GDT Straightness': {
     icon: 'gdtStraightness',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
+    ...createModelingCodemodCommand(
       modelingCommandCodemods['GDT Straightness']
     ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Straightness']>(
@@ -1911,9 +1865,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   'GDT Circularity': {
     icon: 'gdtCircularity',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods['GDT Circularity']
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods['GDT Circularity']),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Circularity']>(
       'GDT Circularity',
       {
@@ -1934,7 +1886,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   'GDT Cylindricity': {
     icon: 'gdtCylindricity',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
+    ...createModelingCodemodCommand(
       modelingCommandCodemods['GDT Cylindricity']
     ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Cylindricity']>(
@@ -1957,9 +1909,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   'GDT Datum': {
     icon: 'gdtDatum',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods['GDT Datum']
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods['GDT Datum']),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Datum']>(
       'GDT Datum',
       {
@@ -1984,9 +1934,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   'GDT Position': {
     icon: 'gdtPosition',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods['GDT Position']
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods['GDT Position']),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Position']>(
       'GDT Position',
       {
@@ -2012,9 +1960,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       'Add profile geometric dimensioning & tolerancing annotation to faces or edges.',
     icon: 'gdtProfile',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods['GDT Profile']
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods['GDT Profile']),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Profile']>(
       'GDT Profile',
       {
@@ -2036,9 +1982,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   'GDT Distance': {
     icon: 'dimension',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods['GDT Distance']
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods['GDT Distance']),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Distance']>(
       'GDT Distance',
       {
@@ -2059,7 +2003,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   'GDT Perpendicularity': {
     icon: 'perpendicular',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
+    ...createModelingCodemodCommand(
       modelingCommandCodemods['GDT Perpendicularity']
     ),
     args: modelingStdLibCommandArgs<
@@ -2082,9 +2026,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   'GDT Angularity': {
     icon: 'angle',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods['GDT Angularity']
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods['GDT Angularity']),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Angularity']>(
       'GDT Angularity',
       {
@@ -2106,7 +2048,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   'GDT Concentricity': {
     icon: 'gdtConcentricity',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
+    ...createModelingCodemodCommand(
       modelingCommandCodemods['GDT Concentricity']
     ),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Concentricity']>(
@@ -2133,9 +2075,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   'GDT Symmetry': {
     icon: 'gdtSymmetry',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods['GDT Symmetry']
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods['GDT Symmetry']),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Symmetry']>(
       'GDT Symmetry',
       {
@@ -2160,9 +2100,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   'GDT Runout': {
     icon: 'gdtRunout',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods['GDT Runout']
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods['GDT Runout']),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Runout']>(
       'GDT Runout',
       {
@@ -2187,9 +2125,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   'GDT Parallelism': {
     icon: 'parallel',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods['GDT Parallelism']
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods['GDT Parallelism']),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Parallelism']>(
       'GDT Parallelism',
       {
@@ -2212,9 +2148,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     forceCommandBar: true,
     icon: 'text',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods['GDT Annotation']
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods['GDT Annotation']),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Annotation']>(
       'GDT Annotation',
       {
@@ -2239,9 +2173,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     forceCommandBar: true,
     icon: 'note',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods['GDT Note']
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods['GDT Note']),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Note']>(
       'GDT Note',
       {
@@ -2260,9 +2192,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   'Flip Surface': {
     icon: 'flipSurface',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods['Flip Surface']
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods['Flip Surface']),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Flip Surface']>(
       'Flip Surface',
       {
@@ -2278,9 +2208,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   'Join Surfaces': {
     icon: 'joinSurfaces',
     needsReview: true,
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods['Join Surfaces']
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods['Join Surfaces']),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Join Surfaces']>(
       'Join Surfaces',
       {
@@ -2297,9 +2225,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'deleteFace',
     needsReview: true,
     status: 'experimental',
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods['Delete Face']
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods['Delete Face']),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Delete Face']>(
       'Delete Face',
       {
@@ -2324,9 +2250,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'blend',
     needsReview: true,
     status: 'experimental',
-    reviewValidation: createModelingCodemodReviewValidation(
-      modelingCommandCodemods.Blend
-    ),
+    ...createModelingCodemodCommand(modelingCommandCodemods.Blend),
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Blend']>('Blend', {
       overrides: {
         edges: {
