@@ -375,9 +375,9 @@ export fn fillet(
   tags?: [Edge; 1+],
   /// Preferred for KCL 3. Required unless legacy `tags` is provided. Do not provide both.
   /// Array of edge references; each element is an object with:
-  /// - `sideFaces`: array of one or more face tags or face UUIDs - Adjacent faces that share the edge(s) to fillet
-  /// - `endFaces?`: array of face tags or face UUIDs - Optional faces to disambiguate when multiple edges share the same two faces
-  /// - `index?`: number(Count) - Optional index when multiple edges share the same faces (0-based)
+  /// - `sideFaces`: array of one or more face tags or face UUIDs. Adjacent faces that share the edge(s) to fillet.
+  /// - `endFaces?`: array of face tags or face UUIDs. Optional faces to disambiguate when multiple edges share the same two faces.
+  /// - `index?`: number(Count). Optional index when multiple edges share the same faces (0-based).
   edges?: [any],
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
@@ -393,8 +393,8 @@ export fn fillet(
   /// 1 is the original Zoo fillet algorithm,
   /// 2 is the newer algorithm (supports rolling ball fillets).
   /// On KCL 2.0 and before, the default is 1.
-  /// KCL 3.0 and later always use the newest algorithm.
-  /// `edges` does not require `version = 2`. In KCL 2.0, use `@settings(experimentalFeatures = allow)` to opt in when setting `version`.
+  /// Use KCL 3.0 or later for the newest algorithm without setting `version`.
+  /// `edges` does not require `version = 2`.
   @(experimental = true, removed_in = "3.0") version?: number(Count),
   /// If true, also fillet edges that are tangent to the selected edges.
   /// Defaults to true.
@@ -724,9 +724,9 @@ export fn chamfer(
   tags?: [Edge; 1+],
   /// Preferred for KCL 3. Required unless legacy `tags` is provided. Do not provide both.
   /// Array of edge references; each element is an object with:
-  /// - `sideFaces`: array of one or more face tags or face UUIDs - Adjacent faces that share the edge(s) to chamfer
-  /// - `endFaces?`: array of face tags or face UUIDs - Optional faces to disambiguate when multiple edges share the same two faces
-  /// - `index?`: number(Count) - Optional index when multiple edges share the same faces (0-based)
+  /// - `sideFaces`: array of one or more face tags or face UUIDs. Adjacent faces that share the edge(s) to chamfer.
+  /// - `endFaces?`: array of face tags or face UUIDs. Optional faces to disambiguate when multiple edges share the same two faces.
+  /// - `index?`: number(Count). Optional index when multiple edges share the same faces (0-based).
   edges?: [any],
   /// Chamfering cuts away two faces to create a third face.
   /// If this argument isn't given, the lengths chamfered away from both
@@ -751,7 +751,7 @@ export fn chamfer(
   /// 1 is the original Zoo fillet algorithm,
   /// 2 is the newer algorithm (supports rolling ball fillets).
   /// On KCL 2.0 and before, the default is 1.
-  /// KCL 3.0 and later always use the newest algorithm.
+  /// Use KCL 3.0 or later for the newest algorithm without setting `version`.
   @(experimental = true, removed_in = "3.0") version?: number(Count),
   /// If true, also chamfer edges that are tangent to the selected edges.
   /// Defaults to true.
