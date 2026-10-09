@@ -17,31 +17,34 @@ use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::ConsumedSolidOperation;
 use crate::execution::ExecState;
+use crate::execution::ExecutorContext;
+use crate::execution::GeometryWithImportedGeometry;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::Solid;
 use crate::execution::annotations;
+use crate::execution::types::ArrayLen;
 use crate::execution::types::RuntimeType;
 use crate::std::Args;
 use crate::std::patterns::GeometryTrait;
 
 /// Union two or more solids into a single solid.
 pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solids: Vec<Solid> =
-        args.get_unlabeled_kw_arg("solids", &RuntimeType::Union(vec![RuntimeType::solids()]), exec_state)?;
+    let solids: Vec<GeometryWithImportedGeometry> =
+        args.get_unlabeled_kw_arg("solids", &solid_or_imported_array_type(2), exec_state)?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
     let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyMethod", &RuntimeType::bool(), exec_state)?;
     let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
 
     if solids.len() < 2 {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "At least two solids are required for a union operation.".to_string(),
+            "At least two solids or imported geometries are required for a union operation.".to_string(),
             vec![args.source_range],
         )));
     }
 
     let solids = inner_union(solids, tolerance, csg_algorithm, exec_state, args).await?;
-    Ok(solids.into())
+    Ok(csg_geometries_to_kcl_value(solids))
 }
 
 pub enum CsgAlgorithm {
@@ -58,6 +61,77 @@ impl CsgAlgorithm {
             CsgAlgorithm::Latest => false,
             CsgAlgorithm::Legacy => true,
         }
+    }
+}
+
+fn solid_or_imported_array_type(min_len: usize) -> RuntimeType {
+    RuntimeType::Array(
+        Box::new(RuntimeType::Union(vec![RuntimeType::solid(), RuntimeType::imported()])),
+        ArrayLen::Minimum(min_len),
+    )
+}
+
+fn native_solids(geometries: &[GeometryWithImportedGeometry]) -> Vec<Solid> {
+    geometries
+        .iter()
+        .filter_map(|geometry| match geometry {
+            GeometryWithImportedGeometry::Solid(solid) => Some(solid.clone()),
+            GeometryWithImportedGeometry::Sketch(_) | GeometryWithImportedGeometry::ImportedGeometry(_) => None,
+        })
+        .collect()
+}
+
+async fn geometry_ids(
+    geometries: &mut [GeometryWithImportedGeometry],
+    ctx: &ExecutorContext,
+) -> Result<Vec<uuid::Uuid>, KclError> {
+    let mut ids = Vec::with_capacity(geometries.len());
+    for geometry in geometries {
+        ids.push(geometry.id(ctx).await?);
+    }
+    Ok(ids)
+}
+
+fn csg_output_geometry(
+    template: &GeometryWithImportedGeometry,
+    output_id: uuid::Uuid,
+    value_id: uuid::Uuid,
+    inherited_solids: &[Solid],
+    args: &Args,
+) -> Result<GeometryWithImportedGeometry, KclError> {
+    match template {
+        GeometryWithImportedGeometry::Solid(solid) => {
+            let mut new_solid = solid.clone();
+            inherit_face_tags(&mut new_solid, inherited_solids.iter());
+            new_solid.set_id(output_id);
+            new_solid.value_id = value_id;
+            new_solid.become_new_body(output_id, output_id.into());
+            Ok(GeometryWithImportedGeometry::Solid(new_solid))
+        }
+        GeometryWithImportedGeometry::ImportedGeometry(imported) => {
+            let mut new_imported = imported.as_ref().clone();
+            new_imported.id = output_id;
+            Ok(GeometryWithImportedGeometry::ImportedGeometry(Box::new(new_imported)))
+        }
+        GeometryWithImportedGeometry::Sketch(_) => Err(KclError::new_internal(KclErrorDetails::new(
+            "CSG operations cannot output sketches.".to_string(),
+            vec![args.source_range],
+        ))),
+    }
+}
+
+pub(crate) fn csg_geometries_to_kcl_value(geometries: Vec<GeometryWithImportedGeometry>) -> KclValue {
+    if geometries
+        .iter()
+        .all(|geometry| matches!(geometry, GeometryWithImportedGeometry::Solid(_)))
+    {
+        geometries
+            .into_iter()
+            .filter_map(GeometryWithImportedGeometry::into_solid)
+            .collect::<Vec<_>>()
+            .into()
+    } else {
+        geometries.into()
     }
 }
 
@@ -103,31 +177,44 @@ where
 }
 
 pub(crate) async fn inner_union(
-    solids: Vec<Solid>,
+    solids: Vec<GeometryWithImportedGeometry>,
     tolerance: Option<TyF64>,
     csg_algorithm: CsgAlgorithm,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<Vec<Solid>, KclError> {
-    validate_solids_not_consumed(&solids, exec_state, args.source_range)?;
+) -> Result<Vec<GeometryWithImportedGeometry>, KclError> {
+    let input_solids = native_solids(&solids);
+    validate_solids_not_consumed(&input_solids, exec_state, args.source_range)?;
 
     let solid_out_id = exec_state.next_uuid();
 
-    let mut solid = solids[0].clone();
-    inherit_face_tags(&mut solid, solids.iter());
-    solid.set_id(solid_out_id);
-    solid.become_new_body(solid_out_id, solid_out_id.into());
-    let mut new_solids = vec![solid.clone()];
-
     if args.ctx.no_engine_commands().await {
-        record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Union, &new_solids);
-        return Ok(new_solids);
+        let new_geometries = vec![csg_output_geometry(
+            &solids[0],
+            solid_out_id,
+            solid_out_id,
+            &input_solids,
+            &args,
+        )?];
+        let new_solids = native_solids(&new_geometries);
+        record_consumed_solids(exec_state, &input_solids, ConsumedSolidOperation::Union, &new_solids);
+        return Ok(new_geometries);
     }
 
     // Flush the fillets for the solids.
     exec_state
-        .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), &solids)
+        .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), &input_solids)
         .await?;
+
+    let mut solids_for_command = solids.clone();
+    let solid_ids = geometry_ids(&mut solids_for_command, &args.ctx).await?;
+    let mut new_geometries = vec![csg_output_geometry(
+        &solids_for_command[0],
+        solid_out_id,
+        solid_out_id,
+        &input_solids,
+        &args,
+    )?];
 
     let result = exec_state
         .send_modeling_cmd(
@@ -135,7 +222,7 @@ pub(crate) async fn inner_union(
             ModelingCmd::from(
                 mcmd::BooleanUnion::builder()
                     .use_legacy(csg_algorithm.is_legacy())
-                    .solid_ids(solids.iter().map(|s| s.id).collect())
+                    .solid_ids(solid_ids)
                     .tolerance(LengthUnit(
                         tolerance.map(|t| t.unwrap_to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
                     ))
@@ -169,63 +256,85 @@ pub(crate) async fn inner_union(
         if extra_solid_id == solid_out_id {
             continue;
         }
-        let mut new_solid = solid.clone();
-        new_solid.set_id(extra_solid_id);
-        new_solid.value_id = solid_out_id;
-        new_solid.become_new_body(extra_solid_id, extra_solid_id.into());
-        new_solids.push(new_solid);
+        new_geometries.push(csg_output_geometry(
+            &solids_for_command[0],
+            extra_solid_id,
+            solid_out_id,
+            &input_solids,
+            &args,
+        )?);
     }
 
-    record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Union, &new_solids);
+    let new_solids = native_solids(&new_geometries);
+    record_consumed_solids(exec_state, &input_solids, ConsumedSolidOperation::Union, &new_solids);
 
-    Ok(new_solids)
+    Ok(new_geometries)
 }
 
 /// Intersect returns the shared volume between multiple solids, preserving only
 /// overlapping regions.
 pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solids: Vec<Solid> = args.get_unlabeled_kw_arg("solids", &RuntimeType::solids(), exec_state)?;
+    let solids: Vec<GeometryWithImportedGeometry> =
+        args.get_unlabeled_kw_arg("solids", &solid_or_imported_array_type(2), exec_state)?;
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
     let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyMethod", &RuntimeType::bool(), exec_state)?;
     let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
 
     if solids.len() < 2 {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "At least two solids are required for an intersect operation.".to_string(),
+            "At least two solids or imported geometries are required for an intersect operation.".to_string(),
             vec![args.source_range],
         )));
     }
 
     let solids = inner_intersect(solids, tolerance, csg_algorithm, exec_state, args).await?;
-    Ok(solids.into())
+    Ok(csg_geometries_to_kcl_value(solids))
 }
 
 pub(crate) async fn inner_intersect(
-    solids: Vec<Solid>,
+    solids: Vec<GeometryWithImportedGeometry>,
     tolerance: Option<TyF64>,
     csg_algorithm: CsgAlgorithm,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<Vec<Solid>, KclError> {
-    validate_solids_not_consumed(&solids, exec_state, args.source_range)?;
+) -> Result<Vec<GeometryWithImportedGeometry>, KclError> {
+    let input_solids = native_solids(&solids);
+    validate_solids_not_consumed(&input_solids, exec_state, args.source_range)?;
 
     let solid_out_id = exec_state.next_uuid();
 
-    let mut solid = solids[0].clone();
-    inherit_face_tags(&mut solid, solids.iter());
-    solid.set_id(solid_out_id);
-    solid.become_new_body(solid_out_id, solid_out_id.into());
-    let mut new_solids = vec![solid.clone()];
-
     if args.ctx.no_engine_commands().await {
-        record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Intersect, &new_solids);
-        return Ok(new_solids);
+        let new_geometries = vec![csg_output_geometry(
+            &solids[0],
+            solid_out_id,
+            solid_out_id,
+            &input_solids,
+            &args,
+        )?];
+        let new_solids = native_solids(&new_geometries);
+        record_consumed_solids(
+            exec_state,
+            &input_solids,
+            ConsumedSolidOperation::Intersect,
+            &new_solids,
+        );
+        return Ok(new_geometries);
     }
 
     // Flush the fillets for the solids.
     exec_state
-        .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), &solids)
+        .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), &input_solids)
         .await?;
+
+    let mut solids_for_command = solids.clone();
+    let solid_ids = geometry_ids(&mut solids_for_command, &args.ctx).await?;
+    let mut new_geometries = vec![csg_output_geometry(
+        &solids_for_command[0],
+        solid_out_id,
+        solid_out_id,
+        &input_solids,
+        &args,
+    )?];
 
     let result = exec_state
         .send_modeling_cmd(
@@ -233,7 +342,7 @@ pub(crate) async fn inner_intersect(
             ModelingCmd::from(
                 mcmd::BooleanIntersection::builder()
                     .use_legacy(csg_algorithm.is_legacy())
-                    .solid_ids(solids.iter().map(|s| s.id).collect())
+                    .solid_ids(solid_ids)
                     .tolerance(LengthUnit(
                         tolerance.map(|t| t.unwrap_to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
                     ))
@@ -266,76 +375,91 @@ pub(crate) async fn inner_intersect(
         if extra_solid_id == solid_out_id {
             continue;
         }
-        let mut new_solid = solid.clone();
-        new_solid.set_id(extra_solid_id);
-        new_solid.value_id = solid_out_id;
-        new_solid.become_new_body(extra_solid_id, extra_solid_id.into());
-        new_solids.push(new_solid);
+        new_geometries.push(csg_output_geometry(
+            &solids_for_command[0],
+            extra_solid_id,
+            solid_out_id,
+            &input_solids,
+            &args,
+        )?);
     }
 
-    record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Intersect, &new_solids);
+    let new_solids = native_solids(&new_geometries);
+    record_consumed_solids(
+        exec_state,
+        &input_solids,
+        ConsumedSolidOperation::Intersect,
+        &new_solids,
+    );
 
-    Ok(new_solids)
+    Ok(new_geometries)
 }
 
 /// Subtract removes tool solids from base solids, leaving the remaining material.
 pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solids: Vec<Solid> = args.get_unlabeled_kw_arg("solids", &RuntimeType::solids(), exec_state)?;
-    let tools: Vec<Solid> = args.get_kw_arg("tools", &RuntimeType::solids(), exec_state)?;
+    let solids: Vec<GeometryWithImportedGeometry> =
+        args.get_unlabeled_kw_arg("solids", &solid_or_imported_array_type(1), exec_state)?;
+    let tools: Vec<GeometryWithImportedGeometry> =
+        args.get_kw_arg("tools", &solid_or_imported_array_type(1), exec_state)?;
 
     let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
     let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyMethod", &RuntimeType::bool(), exec_state)?;
     let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
 
     let solids = inner_subtract(solids, tools, tolerance, csg_algorithm, exec_state, args).await?;
-    Ok(solids.into())
+    Ok(csg_geometries_to_kcl_value(solids))
 }
 
 pub(crate) async fn inner_subtract(
-    solids: Vec<Solid>,
-    tools: Vec<Solid>,
+    solids: Vec<GeometryWithImportedGeometry>,
+    tools: Vec<GeometryWithImportedGeometry>,
     tolerance: Option<TyF64>,
     csg_algorithm: CsgAlgorithm,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<Vec<Solid>, KclError> {
-    let combined_solids = solids.iter().chain(tools.iter()).cloned().collect::<Vec<Solid>>();
+) -> Result<Vec<GeometryWithImportedGeometry>, KclError> {
+    let input_solids = native_solids(&solids);
+    let tool_solids = native_solids(&tools);
+    let combined_solids = input_solids
+        .iter()
+        .chain(tool_solids.iter())
+        .cloned()
+        .collect::<Vec<Solid>>();
     validate_solids_not_consumed(&combined_solids, exec_state, args.source_range)?;
 
     let solid_out_id = exec_state.next_uuid();
-    let target_ids = solids.iter().map(|s| s.id).collect::<Vec<_>>();
-    let tool_ids = tools.iter().map(|s| s.id).collect::<Vec<_>>();
 
     if args.ctx.no_engine_commands().await {
-        // Output N new bodies, where N is the number of input target bodies.
-        let new_solids = solids
+        // Output one new body per input target, matching the normal execution path.
+        let new_geometries = solids
             .iter()
             .enumerate()
             .map(|(index, solid)| {
-                // The first ID is set by the user, subsequent IDs are not.
-                // This matches the usual production normal execution path.
                 let output_id = if index == 0 {
                     solid_out_id
                 } else {
                     exec_state.next_uuid()
                 };
-                let mut new_solid = solid.clone();
-                let first = vec![solid];
-                inherit_face_tags(&mut new_solid, first.into_iter().chain(tools.iter()));
-                new_solid.set_id(output_id);
-                new_solid.become_new_body(output_id, output_id.into());
-                new_solid
+                let mut inherited_solids = native_solids(std::slice::from_ref(solid));
+                inherited_solids.extend(tool_solids.iter().cloned());
+                csg_output_geometry(solid, output_id, output_id, &inherited_solids, &args)
             })
-            .collect::<Vec<_>>();
-        record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Subtract, &new_solids);
-        record_consumed_solids(exec_state, &tools, ConsumedSolidOperation::Subtract, &[]);
-        return Ok(new_solids);
+            .collect::<Result<Vec<_>, _>>()?;
+        let new_solids = native_solids(&new_geometries);
+        record_consumed_solids(exec_state, &input_solids, ConsumedSolidOperation::Subtract, &new_solids);
+        record_consumed_solids(exec_state, &tool_solids, ConsumedSolidOperation::Subtract, &[]);
+        return Ok(new_geometries);
     }
 
     // Flush the fillets for the solids and the tools.
     exec_state
         .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), &combined_solids)
         .await?;
+
+    let mut targets_for_command = solids.clone();
+    let target_ids = geometry_ids(&mut targets_for_command, &args.ctx).await?;
+    let mut tools_for_command = tools.clone();
+    let tool_ids = geometry_ids(&mut tools_for_command, &args.ctx).await?;
 
     let result = exec_state
         .send_modeling_cmd(
@@ -374,23 +498,26 @@ pub(crate) async fn inner_subtract(
     }
 
     let output_ids = subtract_output_ids(solid_out_id, &target_ids, &tool_ids, &boolean_resp.extra_solid_ids);
-    let new_solids = output_ids
+    let mut inherited_solids = native_solids(&targets_for_command[..1]);
+    inherited_solids.extend(tool_solids.iter().cloned());
+    let new_geometries = output_ids
         .into_iter()
         .map(|output_id| {
-            let mut new_solid = solids[0].clone();
-            let first = solids.first().map(|s| vec![s]).unwrap_or_default();
-            inherit_face_tags(&mut new_solid, first.into_iter().chain(tools.iter()));
-            new_solid.set_id(output_id);
-            new_solid.value_id = solid_out_id;
-            new_solid.become_new_body(output_id, output_id.into());
-            new_solid
+            csg_output_geometry(
+                &targets_for_command[0],
+                output_id,
+                solid_out_id,
+                &inherited_solids,
+                &args,
+            )
         })
-        .collect::<Vec<_>>();
+        .collect::<Result<Vec<_>, _>>()?;
 
-    record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Subtract, &new_solids);
-    record_consumed_solids(exec_state, &tools, ConsumedSolidOperation::Subtract, &[]);
+    let new_solids = native_solids(&new_geometries);
+    record_consumed_solids(exec_state, &input_solids, ConsumedSolidOperation::Subtract, &new_solids);
+    record_consumed_solids(exec_state, &tool_solids, ConsumedSolidOperation::Subtract, &[]);
 
-    Ok(new_solids)
+    Ok(new_geometries)
 }
 
 /// Split a target body into two parts: the part that overlaps with the tool, and the part that doesn't.
@@ -536,13 +663,23 @@ pub(crate) async fn inner_imprint(
 
 #[cfg(test)]
 mod tests {
+    use indexmap::IndexMap;
     use uuid::Uuid;
 
+    use super::intersect;
+    use super::subtract;
     use super::subtract_output_ids;
+    use super::union;
+    use crate::SourceRange;
     use crate::errors::KclError;
+    use crate::execution::ExecState;
+    use crate::execution::ImportedGeometry;
     use crate::execution::KclValue;
     use crate::execution::MockConfig;
+    use crate::execution::fn_call::Arg;
+    use crate::execution::fn_call::Args;
     use crate::execution::parse_execute;
+    use crate::execution::types::RuntimeType;
 
     const FACE_TAG_INPUTS: &str = r#"@settings(kclVersion = 2.0)
 fn profile(@plane) {
@@ -679,6 +816,64 @@ secondCap = second.faces.cap
         Uuid::from_u128(id)
     }
 
+    fn imported_geometry(id: Uuid, path: &str) -> KclValue {
+        KclValue::ImportedGeometry(ImportedGeometry::new(
+            id,
+            vec![path.to_owned()],
+            vec![SourceRange::default().into()],
+        ))
+    }
+
+    fn imported_geometry_array(geometries: impl IntoIterator<Item = (Uuid, &'static str)>) -> KclValue {
+        KclValue::HomArray {
+            value: geometries
+                .into_iter()
+                .map(|(id, path)| imported_geometry(id, path))
+                .collect(),
+            ty: RuntimeType::imported(),
+        }
+    }
+
+    fn csg_args(ctx: crate::ExecutorContext, function_name: &str, inputs: KclValue, tools: Option<KclValue>) -> Args {
+        let source_range = SourceRange::default();
+        let mut args = Args::new_no_args(source_range, None, ctx, Some(function_name.to_owned()));
+        args.unlabeled.push((None, Arg::new(inputs, source_range)));
+        if let Some(tools) = tools {
+            args.labeled = IndexMap::from([("tools".to_owned(), Arg::new(tools, source_range))]);
+        }
+        args
+    }
+
+    fn assert_imported_result(result: KclValue, expected_path: &str, input_ids: &[Uuid]) {
+        let KclValue::ImportedGeometry(result) = result else {
+            panic!("expected imported geometry result, got {result:?}");
+        };
+        assert_eq!(result.value, vec![expected_path.to_owned()]);
+        assert!(!input_ids.contains(&result.id));
+    }
+
+    async fn assert_imported_csg_kcl_executes(code: &str) {
+        let current_file = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests")
+            .join("inputs")
+            .join("main.kcl");
+        let mut settings = crate::execution::ExecutorSettings::default();
+        settings.with_current_file(crate::TypedPath(current_file));
+        let ctx = crate::ExecutorContext::new_mock(Some(settings)).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let result = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+
+        assert!(
+            matches!(
+                result.variables.get("result"),
+                Some(crate::execution::KclValueView::ImportedGeometry(_))
+            ),
+            "expected CSG on an imported target to return imported geometry"
+        );
+
+        ctx.close().await;
+    }
+
     #[test]
     fn subtract_output_ids_single_target_uses_command_id() {
         let output_id = test_uuid(100);
@@ -711,6 +906,105 @@ secondCap = second.faces.cap
         let output_ids = subtract_output_ids(output_id, &[target_id], &[target_id], &[]);
 
         assert!(output_ids.is_empty());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn union_accepts_imported_geometry() {
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new_mock(&ctx, &MockConfig::default());
+        let input_ids = [test_uuid(1), test_uuid(2)];
+        let args = csg_args(
+            ctx.clone(),
+            "union",
+            imported_geometry_array([(input_ids[0], "left.step"), (input_ids[1], "right.step")]),
+            None,
+        );
+
+        let result = union(&mut exec_state, args).await.unwrap();
+        ctx.close().await;
+
+        assert_imported_result(result, "left.step", &input_ids);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn intersect_accepts_imported_geometry() {
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new_mock(&ctx, &MockConfig::default());
+        let input_ids = [test_uuid(1), test_uuid(2)];
+        let args = csg_args(
+            ctx.clone(),
+            "intersect",
+            imported_geometry_array([(input_ids[0], "left.step"), (input_ids[1], "right.step")]),
+            None,
+        );
+
+        let result = intersect(&mut exec_state, args).await.unwrap();
+        ctx.close().await;
+
+        assert_imported_result(result, "left.step", &input_ids);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn subtract_accepts_imported_geometry() {
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new_mock(&ctx, &MockConfig::default());
+        let input_ids = [test_uuid(1), test_uuid(2)];
+        let args = csg_args(
+            ctx.clone(),
+            "subtract",
+            imported_geometry_array([(input_ids[0], "target.step")]),
+            Some(imported_geometry_array([(input_ids[1], "tool.step")])),
+        );
+
+        let result = subtract(&mut exec_state, args).await.unwrap();
+        ctx.close().await;
+
+        assert_imported_result(result, "target.step", &input_ids);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn union_imported_geometry_from_kcl() {
+        assert_imported_csg_kcl_executes(
+            r#"import "cube.step" as cube
+
+cylinder = startSketchOn(XY)
+  |> circle(center = [400, 500], radius = 300)
+  |> extrude(length = 1000, symmetric = true)
+
+result = union([cube, cylinder])
+"#,
+        )
+        .await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn intersect_imported_geometry_from_kcl() {
+        assert_imported_csg_kcl_executes(
+            r#"import "cube.step" as cube
+
+cylinder = startSketchOn(XY)
+  |> circle(center = [0, 500], radius = 600)
+  |> extrude(length = 800, symmetric = true)
+
+result = intersect([cube, cylinder])
+"#,
+        )
+        .await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn subtract_imported_geometry_from_kcl() {
+        assert_imported_csg_kcl_executes(
+            r#"import "cube.step" as cube
+
+hole = startSketchOn(XY)
+  |> circle(center = [0, 500], radius = 250)
+  |> extrude(length = 1200, symmetric = true)
+
+result = subtract([cube], tools = [hole])
+"#,
+        )
+        .await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
