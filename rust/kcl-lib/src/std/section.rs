@@ -75,7 +75,7 @@ async fn bounds(solids: &[Solid], exec_state: &mut ExecState, args: &Args) -> Re
     } = response
     else {
         return Err(KclError::new_internal(KclErrorDetails::new(
-            "Could not obtain model bounds for sectionCut.".to_owned(),
+            "Could not obtain model bounds for sectionView.".to_owned(),
             vec![args.source_range],
         )));
     };
@@ -87,14 +87,14 @@ async fn bounds(solids: &[Solid], exec_state: &mut ExecState, args: &Args) -> Re
         || result.dimensions.iter().any(|x| *x < 0.0)
     {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "sectionCut requires finite model bounds.".to_owned(),
+            "sectionView requires finite model bounds.".to_owned(),
             vec![args.source_range],
         )));
     }
     Ok(result)
 }
 
-pub async fn section_cut(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+pub async fn section_view(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let surface: SketchOrSurface = args.get_kw_arg("plane", &RuntimeType::plane(), exec_state)?;
     let padding: TyF64 = args
         .get_kw_arg_opt("padding", &RuntimeType::length(), exec_state)?
@@ -105,13 +105,13 @@ pub async fn section_cut(exec_state: &mut ExecState, args: Args) -> Result<KclVa
     let padding = padding.unwrap_to_mm();
     if !padding.is_finite() || padding <= 0.0 {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "sectionCut padding must be finite and greater than zero.".to_owned(),
+            "sectionView padding must be finite and greater than zero.".to_owned(),
             vec![args.source_range],
         )));
     }
     let SketchOrSurface::SketchSurface(SketchSurface::Plane(mut plane)) = surface else {
         return Err(KclError::new_type(KclErrorDetails::new(
-            "sectionCut requires a plane.".to_owned(),
+            "sectionView requires a plane.".to_owned(),
             vec![args.source_range],
         )));
     };
@@ -153,7 +153,7 @@ pub async fn section_cut(exec_state: &mut ExecState, args: Args) -> Result<KclVa
     };
     if !(2.0 * reach).is_finite() || !origin.iter().chain(&normal).all(|v| v.is_finite()) {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "sectionCut requires a finite plane and cutter size.".to_owned(),
+            "sectionView requires a finite plane and cutter size.".to_owned(),
             vec![args.source_range],
         )));
     }
@@ -284,7 +284,7 @@ cutPlane = offsetPlane(XY, offset = 10mm)
     }
 
     #[test]
-    fn section_cut_cutter_covers_every_corner_for_offset_oblique_plane() {
+    fn section_view_cutter_covers_every_corner_for_offset_oblique_plane() {
         let bounds = Bounds {
             center: [80.0, -40.0, 10.0],
             dimensions: [100.0, 20.0, 30.0],
@@ -310,8 +310,8 @@ cutPlane = offsetPlane(XY, offset = 10mm)
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn section_cut_discovers_bodies_and_reapplies_each_material() {
-        let result = parse_execute(&format!("{MODEL}\ncut = sectionCut(plane = cutPlane)"))
+    async fn section_view_discovers_bodies_and_reapplies_each_material() {
+        let result = parse_execute(&format!("{MODEL}\ncut = sectionView(plane = cutPlane)"))
             .await
             .unwrap();
         assert_eq!(count_solids(result.variable("cut")), 2);
@@ -333,15 +333,15 @@ cutPlane = offsetPlane(XY, offset = 10mm)
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn section_cut_deduplicates_aliases_and_excludes_consumed_deleted_bodies() {
+    async fn section_view_deduplicates_aliases_and_excludes_consumed_deleted_bodies() {
         let result = parse_execute(&format!(
             r#"{MODEL}
 alias = a
 joined = union([a, b])
 unused = part()
 delete(unused)
-cut = sectionCut(plane = cutPlane)
-second = sectionCut(plane = cutPlane, reverse = true)
+cut = sectionView(plane = cutPlane)
+second = sectionView(plane = cutPlane, reverse = true)
 "#
         ))
         .await
@@ -351,19 +351,19 @@ second = sectionCut(plane = cutPlane, reverse = true)
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn section_cut_includes_unassigned_bodies_created_inside_functions() {
-        let result = parse_execute(&format!("{MODEL}\npart()\ncut = sectionCut(plane = cutPlane)"))
+    async fn section_view_includes_unassigned_bodies_created_inside_functions() {
+        let result = parse_execute(&format!("{MODEL}\npart()\ncut = sectionView(plane = cutPlane)"))
             .await
             .unwrap();
         assert_eq!(count_solids(result.variable("cut")), 3);
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn section_cut_discovers_imported_kcl_modules() {
+    async fn section_view_discovers_imported_kcl_modules() {
         let dir = tempfile::tempdir().unwrap();
         std::fs::write(dir.path().join("part.kcl"), format!("{MODEL}\nexport bodies = [a, b]")).unwrap();
         let result = crate::execution::parse_execute_with_project_dir(
-            "@settings(kclVersion = 2.0)\nimport \"part.kcl\" as parts\ncut = sectionCut(plane = offsetPlane(XY, offset = 10mm))",
+            "@settings(kclVersion = 2.0)\nimport \"part.kcl\" as parts\ncut = sectionView(plane = offsetPlane(XY, offset = 10mm))",
             Some(crate::TypedPath(dir.path().to_path_buf())),
         ).await.unwrap();
         assert_eq!(count_solids(result.variable("cut")), 2);
@@ -380,12 +380,12 @@ second = sectionCut(plane = cutPlane, reverse = true)
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn section_cut_preserves_clone_and_pattern_materials() {
+    async fn section_view_preserves_clone_and_pattern_materials() {
         let result = parse_execute(&format!(
             r#"{MODEL}
 copies = clone(a)
 patterned = patternLinear3d(b, instances = 3, distance = 30mm, axis = [1, 0, 0])
-cut = sectionCut(plane = cutPlane)
+cut = sectionView(plane = cutPlane)
 "#
         ))
         .await
@@ -408,13 +408,13 @@ cut = sectionCut(plane = cutPlane)
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn section_cut_empty_scene_and_invalid_padding() {
-        let result = parse_execute("@settings(kclVersion = 2.0)\ncut = sectionCut(plane = XY)")
+    async fn section_view_empty_scene_and_invalid_padding() {
+        let result = parse_execute("@settings(kclVersion = 2.0)\ncut = sectionView(plane = XY)")
             .await
             .unwrap();
         assert_eq!(count_solids(result.variable("cut")), 0);
         for padding in ["0mm", "-1mm"] {
-            let err = parse_execute(&format!("sectionCut(plane = XY, padding = {padding})"))
+            let err = parse_execute(&format!("sectionView(plane = XY, padding = {padding})"))
                 .await
                 .unwrap_err();
             assert!(err.to_string().contains("padding must be finite and greater than zero"));

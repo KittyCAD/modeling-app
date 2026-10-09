@@ -8437,10 +8437,10 @@ export default {
       }
     ]
   },
-  "sectionCut": {
-    "name": "sectionCut",
-    "preferredName": "sectionCut",
-    "qualName": "std::solid::sectionCut",
+  "sectionView": {
+    "name": "sectionView",
+    "preferredName": "sectionView",
+    "qualName": "std::solid::sectionView",
     "moduleName": "solid",
     "returnType": "[Solid]",
     "addedIn": null,

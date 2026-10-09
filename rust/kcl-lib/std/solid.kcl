@@ -27,10 +27,10 @@ import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, Tagge
 /// }
 /// body = extrude(region(segments = [profile.outline]), length = 20mm)
 /// appearance(body, color = "#cc7733", metalness = 80, roughness = 30)
-/// sectioned = sectionCut(plane = offsetPlane(XY, offset = 10mm))
+/// sectioned = sectionView(plane = offsetPlane(XY, offset = 10mm))
 /// ```
 @(impl = std_rust, feature_tree = true)
-export fn sectionCut(
+export fn sectionView(
   /// Cutting plane. The normal follows the right-hand rule of its X and Y axes.
   plane: Plane,
   /// Remove the negative-normal side instead.

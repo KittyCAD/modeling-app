@@ -512,9 +512,9 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::csg::subtract(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solid::subtract"),
         ),
-        ("solid", "sectionCut") => (
-            |e, a| Box::pin(crate::std::section::section_cut(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::solid::sectionCut"),
+        ("solid", "sectionView") => (
+            |e, a| Box::pin(crate::std::section::section_view(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solid::sectionView"),
         ),
         ("solid", "patternTransform") => (
             |e, a| Box::pin(crate::std::patterns::pattern_transform(e, a)),

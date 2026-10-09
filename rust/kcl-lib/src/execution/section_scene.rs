@@ -132,7 +132,7 @@ mod tests {
     use crate::execution::parse_execute;
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn section_cut_cached_artifacts_preserve_bodies_materials_and_tombstones() {
+    async fn section_view_cached_artifacts_preserve_bodies_materials_and_tombstones() {
         let result = parse_execute(
             r##"
 @settings(kclVersion = 2.0)

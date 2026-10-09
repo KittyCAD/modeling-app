@@ -372,7 +372,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-solid-union-1",
     "std-solid-union-2",
     "std-solid-subtract-0",
-    "std-solid-sectionCut-0",
+    "std-solid-sectionView-0",
     "std-solid-subtract-1",
     "std-solid-deleteFace-0",
     "std-solid-deleteFace-1",

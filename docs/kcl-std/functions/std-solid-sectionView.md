@@ -1,5 +1,5 @@
 ---
-title: "sectionCut"
+title: "sectionView"
 subtitle: "Function in std::solid"
 excerpt: "Cut all active native solid bodies on one side of a plane."
 layout: manual
@@ -8,7 +8,7 @@ layout: manual
 Cut all active native solid bodies on one side of a plane.
 
 ```kcl
-sectionCut(
+sectionView(
   plane: Plane,
   reverse?: bool,
   padding?: number(Length),
@@ -55,18 +55,18 @@ appearance(
   metalness = 80,
   roughness = 30,
 )
-sectioned = sectionCut(plane = offsetPlane(XY, offset = 10mm))
+sectioned = sectionView(plane = offsetPlane(XY, offset = 10mm))
 
 ```
 
 
 <model-viewer
   class="kcl-example"
-  alt="Example showing a rendered KCL program that uses the sectionCut function"
-  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-sectionCut0_output.glb"
+  alt="Example showing a rendered KCL program that uses the sectionView function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-sectionView0_output.glb"
   ar
   environment-image="/moon_1k.hdr"
-  poster="/kcl-test-outputs/serial_test_example_fn_std-solid-sectionCut0.png"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solid-sectionView0.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"
