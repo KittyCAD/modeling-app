@@ -394,9 +394,27 @@ describe('KclManager diagnostics', () => {
 
     kclManager.setDiagnostics([validDiagnostic, staleDiagnostic])
 
-    expect(getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)).toEqual([
-      validDiagnostic,
+    expect(
+      getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)
+    ).toMatchObject([validDiagnostic])
+  })
+
+  it('renders Markdown in dispatched diagnostic messages', () => {
+    const { kclManager } = createKclManagerTestHarness('abcd')
+    const dispatchSpy = vi.spyOn(kclManager.editorView, 'dispatch')
+
+    kclManager.setDiagnostics([
+      createDiagnostic(0, 2, 'Use `circle`: https://zoo.dev/docs'),
     ])
+
+    const [diagnostic] = getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)
+    const message = diagnostic.renderMessage?.(kclManager.editorView)
+    expect(message).toBeInstanceOf(HTMLElement)
+    if (!(message instanceof HTMLElement)) return
+    expect(message.querySelector('code')?.textContent).toBe('circle')
+    expect(message.querySelector('a')?.getAttribute('href')).toBe(
+      'https://zoo.dev/docs'
+    )
   })
 
   it('drops stale diagnostics after deleting code while diagnostics are present', () => {
@@ -430,10 +448,9 @@ describe('KclManager diagnostics', () => {
       })
     ).not.toThrow()
 
-    expect(getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)).toEqual([
-      baseDiagnostic,
-      sketchSolveDiagnostic,
-    ])
+    expect(
+      getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)
+    ).toMatchObject([baseDiagnostic, sketchSolveDiagnostic])
   })
 
   it('deduplicates identical diagnostics across base and sketch-solve layers', () => {
@@ -445,9 +462,9 @@ describe('KclManager diagnostics', () => {
     kclManager.diagnostics = [duplicateDiagnostic]
     kclManager.setSketchSolveDiagnostics([duplicateDiagnostic])
 
-    expect(getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)).toEqual([
-      duplicateDiagnostic,
-    ])
+    expect(
+      getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)
+    ).toMatchObject([duplicateDiagnostic])
   })
 
   it('clears sketch-solve diagnostics without persisting them into the base diagnostics layer', () => {
@@ -465,9 +482,9 @@ describe('KclManager diagnostics', () => {
     kclManager.setSketchSolveDiagnostics([sketchSolveDiagnostic])
     kclManager.setSketchSolveDiagnostics([])
 
-    expect(getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)).toEqual([
-      baseDiagnostic,
-    ])
+    expect(
+      getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)
+    ).toMatchObject([baseDiagnostic])
   })
 
   it('writes to file when the code is unchanged and shouldWriteToDisk is true', () => {
