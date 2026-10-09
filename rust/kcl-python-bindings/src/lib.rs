@@ -569,7 +569,7 @@ async fn execute_and_snapshot_views_impl(
 ) -> PyResult<Vec<Vec<u8>>> {
     let geometry_only = true;
     let ExecutedKcl { ctx, mut state, .. } = run_kcl(input, false, highlight_edges, geometry_only).await?;
-    let result = take_snaps(&ctx, &mut state, image_format, snapshot_options, zoom, geometry_only).await;
+    let result = take_snaps(&ctx, &mut state, image_format, snapshot_options, zoom).await;
     ctx.close().await;
     result
 }
@@ -822,7 +822,7 @@ async fn import_and_snapshot_views(
             ctx.close().await;
             return Err(e);
         }
-        let result = take_snaps(&ctx, &mut state, image_format, snapshot_options, zoom, geometry_only).await;
+        let result = take_snaps(&ctx, &mut state, image_format, snapshot_options, zoom).await;
         ctx.close().await;
         result
     })
@@ -975,9 +975,8 @@ async fn take_snaps(
     image_format: ImageFormat,
     snapshot_options: Vec<SnapshotOptions>,
     zoom: bool,
-    is_geometry_only_connection: bool,
 ) -> PyResult<Vec<Vec<u8>>> {
-    if is_geometry_only_connection {
+    if ctx.settings.geometry_only {
         ctx.enable_engine_graphics(exec_state).await.map_err(to_py_exception)?;
         let res = take_snaps_inner(ctx, image_format, snapshot_options, zoom).await;
         ctx.disable_engine_graphics(exec_state).await.map_err(to_py_exception)?;
