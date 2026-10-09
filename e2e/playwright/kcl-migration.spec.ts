@@ -12,6 +12,9 @@ test.use({ userFeatures: ['zookeeper_kcl_migration'] })
 
 const source = '@settings(kclVersion = 2.0)\nlength = 10mm\n'
 const candidate = '@settings(kclVersion = "3.0")\nlength = 11mm\n'
+const migrationSummary =
+  'Updated **main.kcl** to KCL 3.0, preserving the geometry.'
+const verification = '### Verification\n\n- Physical and visual checks passed.'
 
 test.describe(
   'Sponsored KCL project migration',
@@ -26,6 +29,46 @@ test.describe(
       let received: MigrationClientMessage | undefined
       const history = new Map<string, MigrationHistoryEntry>()
       const applicationStates: string[] = []
+      await page.routeWebSocket('**/ws/ml/copilot**', (socket) => {
+        socket.onMessage((data) => {
+          const message: { type: string } = JSON.parse(data.toString())
+          if (message.type === 'ping') socket.send(JSON.stringify({ pong: {} }))
+          if (message.type !== 'list_modes') return
+          const messages = [...history.values()]
+            .filter((entry) => entry.status !== 'running')
+            .flatMap((entry) => [
+              { type: 'user', content: 'Migrate this project to KCL 3.0.' },
+              ...(entry.status === 'succeeded'
+                ? [
+                    {
+                      reasoning: {
+                        type: 'text',
+                        content: 'Checking matching views.',
+                      },
+                    },
+                  ]
+                : []),
+              {
+                end_of_stream: {
+                  id: entry.prompt_id,
+                  whole_response:
+                    entry.status === 'succeeded'
+                      ? `${entry.detail}\n${verification}`
+                      : 'Migration cancelled.',
+                },
+              },
+            ])
+            .map((message) =>
+              Array.from(new TextEncoder().encode(JSON.stringify(message)))
+            )
+          socket.send(JSON.stringify({ replay: { messages } }))
+          socket.send(
+            JSON.stringify({
+              conversation_id: { conversation_id: conversationId },
+            })
+          )
+        })
+      })
       let release: () => void = () => {
         throw new Error('Migration has not started')
       }
@@ -88,6 +131,7 @@ test.describe(
           expect(request.conversation_id).toBe(conversationId)
           const entry: MigrationHistoryEntry = {
             operation_id: request.request_id,
+            prompt_id: request.request_id,
             conversation_id: conversationId,
             status: 'running',
             created_at: new Date().toISOString(),
@@ -117,6 +161,7 @@ test.describe(
           )
           release = () => {
             entry.status = 'succeeded'
+            entry.detail = migrationSummary
             socket.send(
               JSON.stringify({
                 type: 'operation',
@@ -125,7 +170,7 @@ test.describe(
                   status: 'succeeded',
                   result: {
                     status: 'succeeded',
-                    detail: 'Validation passed.',
+                    detail: migrationSummary,
                     files: {
                       ...request.current_files,
                       [request.entrypoint]: Array.from(
@@ -137,8 +182,7 @@ test.describe(
                       target: '3.0',
                       runtime_version: '0.3.186',
                       rules_revision: 'test-guide',
-                      summary:
-                        'Physical properties and parameter checks passed.',
+                      summary: verification,
                       source_executed: true,
                       target_executed: true,
                       geometry_preserved: true,
@@ -251,7 +295,7 @@ test.describe(
       await expect(cancel).toBeVisible()
       await cancel.click()
       await expect(
-        page.getByRole('status').filter({ hasText: 'Migration cancelled.' })
+        page.getByText('Migration cancelled.', { exact: true })
       ).toBeVisible()
       await expect(cancel).toBeHidden()
       await migrate.click()
@@ -284,29 +328,25 @@ test.describe(
       await expect.poll(() => applicationStates).toEqual(['applied'])
       await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
       await expect(
-        page.getByRole('status').filter({ hasText: 'Migrated to KCL 3' })
+        page.getByText('Updated main.kcl to KCL 3.0, preserving the geometry.')
       ).toBeVisible()
       expect(await editorCode()).toBe(candidate)
       await expect(cancel).toBeHidden()
-      const completedMigration = page
-        .getByRole('region', { name: 'KCL migration', exact: true })
-        .filter({ hasText: 'Migrated to KCL 3.0.' })
-      const reasoning = completedMigration.getByRole('button', {
-        name: 'See reasoning',
-      })
+      await expect(
+        page.getByRole('region', { name: 'KCL migration', exact: true })
+      ).toHaveCount(0)
+      const reasoning = page.getByRole('button', { name: 'See reasoning' })
       await expect(reasoning).toHaveAttribute('aria-expanded', 'false')
       await reasoning.click()
       await expect(page.getByText('Checking matching views.')).toBeVisible()
-      await completedMigration
-        .getByRole('button', { name: 'Collapse', exact: true })
-        .click()
+      await page.getByRole('button', { name: 'Collapse', exact: true }).click()
       await page.screenshot({
         path: testInfo.outputPath('migration-applied.png'),
       })
       await toolbar.closePane(DefaultLayoutPaneID.Zookeeper)
       await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
       await expect(
-        page.getByRole('status').filter({ hasText: 'Migrated to KCL 3' })
+        page.getByText('Updated main.kcl to KCL 3.0, preserving the geometry.')
       ).toBeVisible()
       await scene.waitForExecutionDoneAfter(() =>
         page
@@ -351,10 +391,21 @@ test.describe(
       await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
       await expect(
         page.getByRole('region', { name: 'Past KCL migration' })
-      ).toHaveCount(2)
+      ).toHaveCount(0)
       await expect(
-        page.getByText('Last reported: migration applied.')
+        page.getByText('Updated main.kcl to KCL 3.0, preserving the geometry.')
       ).toBeVisible()
+      await expect(
+        page.getByRole('heading', { name: 'Verification' })
+      ).toBeVisible()
+      await expect(
+        page.getByText('Last reported:', { exact: false })
+      ).toHaveCount(0)
+      await expect(
+        page.getByRole('button', { name: /Clear chat$/ })
+      ).toHaveCount(1)
+      await page.getByRole('button', { name: 'See reasoning' }).click()
+      await expect(page.getByText('Checking matching views.')).toBeVisible()
       await expect.poll(editorCode).toBe(laterCode)
       expect(applicationStates).toEqual(['applied', 'undone', 'applied'])
     })

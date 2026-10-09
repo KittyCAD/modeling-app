@@ -229,28 +229,30 @@ describe('ZookeeperConversation', () => {
         queue: [],
         onRemoveFromQueue: () => {},
         onSteer: () => {},
-        localExchanges: [
-          {
-            id: 'restored-migration',
-            afterExchange: 1,
-            content: (onClickClearChat?: () => void) => (
-              <KclMigrationHistoryEntry
-                entry={{
-                  operation_id: 'restored-migration',
-                  conversation_id: 'conversation',
-                  created_at: '2026-10-08T12:00:00Z',
-                  status,
-                  detail: 'Migration finished.',
-                  application: { status: 'not_applied', revision: 0 },
-                }}
-                transcriptPresent={transcriptPresent}
-                onClickClearChat={onClickClearChat}
-              />
-            ),
-          },
-        ],
+        localExchanges: transcriptPresent
+          ? []
+          : [
+              {
+                id: 'restored-migration',
+                afterExchange: 1,
+                content: (onClickClearChat?: () => void) => (
+                  <KclMigrationHistoryEntry
+                    entry={{
+                      operation_id: 'restored-migration',
+                      conversation_id: 'conversation',
+                      created_at: '2026-10-08T12:00:00Z',
+                      status,
+                      detail: 'Migration finished.',
+                      application: { status: 'not_applied', revision: 0 },
+                    }}
+                    onClickClearChat={onClickClearChat}
+                  />
+                ),
+              },
+            ],
       }
       const { rerender } = render(<ZookeeperConversation {...props} />)
+      expect(screen.queryByText(/Last reported:/)).not.toBeInTheDocument()
       fireEvent.click(screen.getByRole('button', { name: /Clear chat/ }))
       expect(onClickClearChat).toHaveBeenCalledTimes(1)
 
