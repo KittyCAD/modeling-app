@@ -15,6 +15,14 @@ const section = (z: number, sweep = 2 * Math.PI, rx = 5, ry = rx) =>
   }))
 
 describe('circular dimension classification', () => {
+  it('rejects symmetric spherical sections whose tangent is not axial', () => {
+    expect(
+      classifyCylindricalFace(section(-5), section(5), { x: 5, y: 0, z: 5 })
+    ).toBe('distance')
+    expect(
+      classifyCylindricalFace(section(-5), section(5), { x: 0, y: 0, z: 10 })
+    ).toBe('diameter')
+  })
   it('recognizes rational circular arc control polygons and rejects ellipses', () => {
     expect(
       isCircularArc([
@@ -180,6 +188,11 @@ describe('Dimension selection routing', () => {
           const cmd = command.cmd
           if (cmd.type !== 'face_get_position') {
             const responses = {
+              face_get_gradient: {
+                df_du: swap ? { x: 0, y: 0, z: 10 } : { x: 1, y: 0, z: 0 },
+                df_dv: swap ? { x: 1, y: 0, z: 0 } : { x: 0, y: 0, z: 10 },
+                normal: { x: 0, y: 1, z: 0 },
+              },
               entity_get_parent_id: { entity_id: 'imported-body' },
               entity_get_all_child_uuids: { entity_ids: ['rim'] },
               get_entity_type: { entity_type: 'edge' },

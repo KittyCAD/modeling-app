@@ -67,6 +67,11 @@ solid = extrude(profileRegion, length = 5mm)`,
           const cmd = command.cmd
           if (cmd.type !== 'face_get_position') {
             const responses = {
+              face_get_gradient: {
+                df_du: { x: 1, y: 0, z: 0 },
+                df_dv: { x: 0, y: 0, z: 5 },
+                normal: { x: 0, y: 1, z: 0 },
+              },
               entity_get_parent_id: { entity_id: sweep.id },
               entity_get_all_child_uuids: { entity_ids: ['rim'] },
               get_entity_type: { entity_type: 'edge' },

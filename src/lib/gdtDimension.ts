@@ -58,12 +58,13 @@ export function isCircularArc(points: Point3d[]): boolean {
   return true
 }
 
-/** Verify two circular cross sections translated along their common axis.
- * Checking both sections rejects cones, spheres, ellipses and planar faces.
+/** Verify circular cross sections and an axial surface tangent.
+ * The tangent rejects spheres with two symmetric, equal-radius sections.
  */
 export function classifyCylindricalFace(
   first: Point3d[],
-  second: Point3d[]
+  second: Point3d[],
+  axialTangent?: Point3d
 ): DimensionFunction {
   if (
     first.length !== 9 ||
@@ -76,6 +77,14 @@ export function classifyCylindricalFace(
   const normal = cross(a, b)
   const normalSquared = dot(normal, normal)
   if (normalSquared <= dot(a, a) * dot(b, b) * 1e-12) return 'distance'
+  if (
+    axialTangent &&
+    (![axialTangent.x, axialTangent.y, axialTangent.z].every(Number.isFinite) ||
+      !length(axialTangent) ||
+      length(cross(axialTangent, normal)) >
+        length(axialTangent) * length(normal) * 1e-5)
+  )
+    return 'distance'
   const bxN = cross(b, normal),
     nxA = cross(normal, a)
   const center: Point3d = {
@@ -230,6 +239,31 @@ export async function getDimensionFunction(
       )
       const kind = classifyCylindricalFace(sections[0], sections[1])
       if (kind !== 'distance') {
+        const gradient = unwrapSceneCommandResponse(
+          await engine.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: {
+              type: 'face_get_gradient',
+              object_id: id,
+              uv: { x: 0.25, y: 0.25 },
+            },
+          })
+        )
+        if (
+          !isModelingResponse(gradient) ||
+          gradient.resp.data.modeling_response.type !== 'face_get_gradient'
+        )
+          return 'distance'
+        const { df_du, df_dv } = gradient.resp.data.modeling_response.data
+        if (
+          classifyCylindricalFace(
+            sections[0],
+            sections[1],
+            swap ? df_du : df_dv
+          ) === 'distance'
+        )
+          continue
         // UVs are native surface parameters, not a normalized trim domain.
         // Determine closure from the face's boundary topology instead.
         const query = async (cmd: ModelingCmd) => {

@@ -1016,6 +1016,12 @@ fn circular_section_radius(points: &[nalgebra_glm::DVec3]) -> Option<f64> {
     Some(radius)
 }
 
+fn cylindrical_axis_matches(tangent: nalgebra_glm::DVec3, normal: nalgebra_glm::DVec3) -> bool {
+    tangent.iter().all(|v| v.is_finite())
+        && tangent.norm() > 0.0
+        && tangent.cross(&normal).norm() <= tangent.norm() * normal.norm() * 1e-5
+}
+
 async fn measure_circular_radius(
     target: &DistanceEntity,
     endpoint: &DistanceEndpoint,
@@ -1112,7 +1118,26 @@ async fn measure_circular_radius(
                         .zip(&sections[1])
                         .all(|(a, b)| ((b - a) - translation).norm() <= radius * 1e-5)
                 {
-                    return Ok(radius);
+                    let response = exec_state
+                        .send_modeling_cmd(
+                            ModelingCmdMeta::from_args(exec_state, args),
+                            mcmd::FaceGetGradient::builder()
+                                .object_id(entity_id)
+                                .uv(KPoint2d { x: 0.25, y: 0.25 })
+                                .build()
+                                .into(),
+                        )
+                        .await?;
+                    let OkWebSocketResponseData::Modeling {
+                        modeling_response: OkModelingCmdResponse::FaceGetGradient(gradient),
+                    } = response
+                    else {
+                        return Err(invalid());
+                    };
+                    let tangent = if swap { gradient.df_du } else { gradient.df_dv };
+                    if cylindrical_axis_matches(nalgebra_glm::vec3(tangent.x, tangent.y, tangent.z), normal) {
+                        return Ok(radius);
+                    }
                 }
             }
         }
@@ -2231,6 +2256,15 @@ gdt::flatness(
 
     #[test]
     fn circular_measurements_use_circle_geometry_and_display_units() {
+        assert!(cylindrical_axis_matches(
+            nalgebra_glm::vec3(0.0, 0.0, 10.0),
+            nalgebra_glm::vec3(0.0, 0.0, 1.0)
+        ));
+        // Equal-radius spherical cross sections still have non-axial tangents.
+        assert!(!cylindrical_axis_matches(
+            nalgebra_glm::vec3(5.0, 0.0, 5.0),
+            nalgebra_glm::vec3(0.0, 0.0, 1.0)
+        ));
         let circle: Vec<_> = [
             [5.0, 0.0],
             [5.0, 5.0],
