@@ -45,6 +45,7 @@ pub struct KclSession {
 
 struct SessionState {
     ctx: Mutex<Option<kcl_lib::ExecutorContext>>,
+    state: Mutex<kcl_lib::ExecState>,
     program: kcl_lib::Program,
     outcome: ExecOutcome,
 }
@@ -165,8 +166,10 @@ impl KclSession {
     ) -> PyResult<Vec<Vec<u8>>> {
         let ctx = self.executed_kcl.context().await?;
         let geometry_only = self.geometry_only;
+        let executed_kcl = self.executed_kcl.clone();
         spawn_py(async move {
-            let result = take_snaps(&ctx, image_format, snapshot_options, zoom, geometry_only).await;
+            let mut state = executed_kcl.state.lock().await;
+            let result = take_snaps(&ctx, &mut state, image_format, snapshot_options, zoom, geometry_only).await;
             ctx.engine.take_responses().await;
             result
         })
@@ -314,7 +317,7 @@ async fn new_kcl_session_impl(input: KclInput, mut params: crate::ContextParams)
     let api_call_id = modeling_session_data.map(|session| session.api_call_id);
     let websocket_upgrade_request_id = ctx.engine.websocket_upgrade_request_id().map(str::to_owned);
 
-    let outcome = match state.into_exec_outcome(env_ref, &ctx).await {
+    let outcome = match state.clone().into_exec_outcome(env_ref, &ctx).await {
         Ok(inner) => ExecOutcome {
             inner: Arc::new(inner),
             code: code.into(),
@@ -332,6 +335,7 @@ async fn new_kcl_session_impl(input: KclInput, mut params: crate::ContextParams)
     // Execution succeeded, return the data.
     let executed_kcl = Arc::new(SessionState {
         ctx: Mutex::new(Some(ctx)),
+        state: Mutex::new(state),
         program,
         outcome,
     });
