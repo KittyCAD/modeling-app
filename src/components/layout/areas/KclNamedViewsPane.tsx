@@ -225,7 +225,7 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
       })
   }
 
-  const deleteViews = async (views: KclNamedView[]) => {
+  const removeViews = async (views: KclNamedView[]) => {
     if (views.length === 0) return
 
     setIsChangingSource(true)
@@ -257,16 +257,16 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
           },
         })
       }
-      const deletedKeys = new Set(views.map((view) => view.artifact.id))
+      const removedKeys = new Set(views.map((view) => view.artifact.id))
       setSelectedKeys(
         (current) =>
-          new Set([...current].filter((key) => !deletedKeys.has(key)))
+          new Set([...current].filter((key) => !removedKeys.has(key)))
       )
     } catch (reason) {
       toast.error(
         reason instanceof Error
           ? reason.message
-          : 'Could not delete the selected named views.'
+          : 'Could not remove the selected named views.'
       )
     } finally {
       setIsChangingSource(false)
@@ -357,10 +357,10 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
             />
             <PaneIconButton
               icon="trash"
-              label="Delete selected named views"
-              testId="named-view-delete-selected"
+              label="Remove selected named views"
+              testId="named-view-remove-selected"
               disabled={actionsDisabled || selectedViews.length === 0}
-              onClick={() => void deleteViews(selectedViews)}
+              onClick={() => void removeViews(selectedViews)}
             />
           </div>
         }
@@ -415,7 +415,7 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                 </span>
                 <button
                   type="button"
-                  className="grid h-6 w-6 shrink-0 place-items-center text-chalkboard-70 hover:text-primary disabled:cursor-default disabled:opacity-50 dark:text-chalkboard-30"
+                  className="reset grid h-6 w-6 shrink-0 place-items-center text-chalkboard-70 hover:text-primary disabled:cursor-default disabled:opacity-50 dark:text-chalkboard-30"
                   aria-label={
                     isActive ? `${row.label} is active` : `Apply ${row.label}`
                   }
@@ -433,7 +433,7 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                 </button>
                 <button
                   type="button"
-                  className="flex min-w-0 flex-1 items-baseline gap-2 self-stretch text-left"
+                  className="reset flex min-w-0 flex-1 items-center gap-2 self-stretch text-left !text-xs"
                   aria-pressed={isSelected}
                   onClick={(event) => {
                     const toggleKey = event.metaKey || event.ctrlKey
@@ -495,7 +495,7 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                     <NamedViewRowMenu
                       disabled={rowActionsDisabled}
                       onEdit={() => editView(manageableView)}
-                      onDelete={() => void deleteViews([manageableView])}
+                      onRemove={() => void removeViews([manageableView])}
                     />
                   </div>
                 ) : row.target.kind === 'declared' ? (
@@ -562,7 +562,7 @@ function PaneIconButton({
         iconClassName: '!text-current',
         bgClassName: 'bg-transparent dark:bg-transparent',
       }}
-      className="!p-0 !bg-transparent hover:text-primary border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 !outline-none disabled:opacity-40"
+      className="h-6 w-6 shrink-0 justify-center !p-0 !bg-transparent hover:text-primary border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 !outline-none disabled:opacity-40"
       onClick={onClick}
     />
   )
@@ -582,13 +582,13 @@ function CameraUpdateButton({
       title="Update from current camera"
       data-testid="named-view-update-camera"
       disabled={disabled}
-      className="relative grid h-6 w-6 place-items-center rounded-sm text-chalkboard-70 hover:text-primary disabled:opacity-35 dark:text-chalkboard-30"
+      className="reset relative grid h-6 w-6 shrink-0 place-items-center rounded-sm text-chalkboard-70 hover:text-primary disabled:opacity-35 dark:text-chalkboard-30"
       onClick={onClick}
     >
       <CustomIcon name="camera" className="h-5 w-5" aria-hidden />
       <span
         aria-hidden
-        className="absolute -right-0.5 -top-0.5 grid h-2.5 w-2.5 place-items-center rounded-full bg-chalkboard-10 text-[9px] font-bold leading-none dark:bg-chalkboard-90"
+        className="absolute right-0 top-0 grid h-2.5 w-2.5 place-items-center rounded-full bg-chalkboard-10 text-[9px] font-bold leading-none dark:bg-chalkboard-90"
       >
         +
       </span>
@@ -599,11 +599,11 @@ function CameraUpdateButton({
 function NamedViewRowMenu({
   disabled,
   onEdit,
-  onDelete,
+  onRemove,
 }: {
   disabled: boolean
   onEdit: () => void
-  onDelete: () => void
+  onRemove: () => void
 }) {
   const triggerRef = useRef<HTMLButtonElement>(null)
 
@@ -622,7 +622,7 @@ function NamedViewRowMenu({
           iconClassName: '!text-current',
           bgClassName: 'bg-transparent dark:bg-transparent',
         }}
-        className="!p-0 !bg-transparent border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 !outline-none"
+        className="h-6 w-6 shrink-0 justify-center !p-0 !bg-transparent border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 !outline-none"
       />
       <ContextMenu
         event="mouseup"
@@ -637,13 +637,12 @@ function NamedViewRowMenu({
             Edit
           </ContextMenuItem>,
           <ContextMenuItem
-            key="delete"
-            icon="trash"
-            data-testid="named-view-delete"
-            onClick={onDelete}
+            key="remove"
+            data-testid="named-view-remove"
+            onClick={onRemove}
             disabled={disabled}
           >
-            Delete
+            Remove
           </ContextMenuItem>,
         ]}
       />
