@@ -1,3 +1,4 @@
+import { unwrapSceneCommandResponse } from '@src/lib/engineConnection/utils'
 import type { BoundingBox, FaceIsPlanar, Point3d } from '@kittycad/lib'
 
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
@@ -606,14 +607,16 @@ async function getPlanarFace(
   entityId: ArtifactId
 ): Promise<FaceIsPlanar | undefined> {
   try {
-    const response = await engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'face_is_planar',
-        object_id: entityId,
-      },
-    })
+    const response = unwrapSceneCommandResponse(
+      await engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'face_is_planar',
+          object_id: entityId,
+        },
+      })
+    )
 
     if (!isModelingResponse(response)) {
       return undefined
@@ -678,15 +681,17 @@ async function getBoundingBoxForGdtEntities({
   }
 
   try {
-    const response = await engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'bounding_box',
-        entity_ids: entityIds,
-        output_unit: outputUnit,
-      },
-    })
+    const response = unwrapSceneCommandResponse(
+      await engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'bounding_box',
+          entity_ids: entityIds,
+          output_unit: outputUnit,
+        },
+      })
+    )
 
     if (!isModelingResponse(response)) {
       return undefined
@@ -724,11 +729,13 @@ async function getDistanceGeometryPlane(
     const id = edges[0].engineEntityId ?? edges[0].artifact?.id
     if (id) {
       try {
-        const response = await engine.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: { type: 'curve_get_end_points', curve_id: id },
-        })
+        const response = unwrapSceneCommandResponse(
+          await engine.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: { type: 'curve_get_end_points', curve_id: id },
+          })
+        )
         if (
           isModelingResponse(response) &&
           response.resp.data.modeling_response.type === 'curve_get_end_points'
@@ -827,11 +834,13 @@ async function getCircularEdgeCenter(
   outputUnit: UnitLength
 ): Promise<Point3d | undefined> {
   try {
-    const type = await engine.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: { type: 'curve_get_type', curve_id: id },
-    })
+    const type = unwrapSceneCommandResponse(
+      await engine.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: { type: 'curve_get_type', curve_id: id },
+      })
+    )
     if (
       !isModelingResponse(type) ||
       type.resp.data.modeling_response.type !== 'curve_get_type' ||
@@ -840,11 +849,13 @@ async function getCircularEdgeCenter(
       )
     )
       return undefined
-    const endpoints = await engine.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: { type: 'curve_get_end_points', curve_id: id },
-    })
+    const endpoints = unwrapSceneCommandResponse(
+      await engine.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: { type: 'curve_get_end_points', curve_id: id },
+      })
+    )
     if (
       !isModelingResponse(endpoints) ||
       endpoints.resp.data.modeling_response.type !== 'curve_get_end_points'
@@ -853,11 +864,13 @@ async function getCircularEdgeCenter(
     const { start, end } = endpoints.resp.data.modeling_response.data
     if (Math.hypot(start.x - end.x, start.y - end.y, start.z - end.z) > 1e-6)
       return undefined
-    const response = await engine.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: { type: 'curve_get_control_points', curve_id: id },
-    })
+    const response = unwrapSceneCommandResponse(
+      await engine.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: { type: 'curve_get_control_points', curve_id: id },
+      })
+    )
     if (
       !isModelingResponse(response) ||
       response.resp.data.modeling_response.type !== 'curve_get_control_points'
@@ -921,11 +934,13 @@ async function getDistanceFaceCenter(
   outputUnit: UnitLength
 ): Promise<Point3d | undefined> {
   try {
-    const response = await engine.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: { type: 'face_get_center', object_id: id },
-    })
+    const response = unwrapSceneCommandResponse(
+      await engine.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: { type: 'face_get_center', object_id: id },
+      })
+    )
     if (
       !isModelingResponse(response) ||
       response.resp.data.modeling_response.type !== 'face_get_center'
@@ -1080,11 +1095,13 @@ async function getOutsideSetbackForSelections({
       )
     if (!isEdge) return undefined
     try {
-      const response = await engine.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: { type: 'curve_get_end_points', curve_id: entityIds[0] },
-      })
+      const response = unwrapSceneCommandResponse(
+        await engine.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: { type: 'curve_get_end_points', curve_id: entityIds[0] },
+        })
+      )
       if (
         isModelingResponse(response) &&
         response.resp.data.modeling_response.type === 'curve_get_end_points'
@@ -1123,11 +1140,13 @@ async function getOutsideSetbackForSelections({
       (face?.type === 'cap' || face?.type === 'wall' ? face.sweepId : undefined)
     if (!parent) {
       try {
-        const response = await engine.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: { type: 'entity_get_parent_id', entity_id: id },
-        })
+        const response = unwrapSceneCommandResponse(
+          await engine.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: { type: 'entity_get_parent_id', entity_id: id },
+          })
+        )
         if (
           isModelingResponse(response) &&
           response.resp.data.modeling_response.type === 'entity_get_parent_id'

@@ -1,3 +1,4 @@
+import { unwrapSceneCommandResponse } from '@src/lib/engineConnection/utils'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import type { ArtifactGraph } from '@src/lang/wasm'
@@ -33,15 +34,17 @@ export async function resolveDistanceSelections(
       }
       if (!selection.parentEntityId)
         return new Error('The selected distance edge has no owning body.')
-      const response = await engine.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'solid3d_get_all_edge_faces',
-          object_id: selection.parentEntityId,
-          edge_id: selection.entityId,
-        },
-      })
+      const response = unwrapSceneCommandResponse(
+        await engine.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'solid3d_get_all_edge_faces',
+            object_id: selection.parentEntityId,
+            edge_id: selection.entityId,
+          },
+        })
+      )
       if (
         !isModelingResponse(response) ||
         response.resp.data.modeling_response.type !==
@@ -75,27 +78,31 @@ export async function resolveDistanceSelections(
         // Recover an unambiguous edge for placement queries; retain the face
         // specifier for KCL. Missing/ambiguous geometry keeps the fallback.
         try {
-          const parent = await engine.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'entity_get_parent_id',
-              entity_id: selection.entityRef.side_faces[0],
-            },
-          })
+          const parent = unwrapSceneCommandResponse(
+            await engine.sendSceneCommand({
+              type: 'modeling_cmd_req',
+              cmd_id: uuidv4(),
+              cmd: {
+                type: 'entity_get_parent_id',
+                entity_id: selection.entityRef.side_faces[0],
+              },
+            })
+          )
           if (
             isModelingResponse(parent) &&
             parent.resp.data.modeling_response.type === 'entity_get_parent_id'
           ) {
-            const response = await engine.sendSceneCommand({
-              type: 'modeling_cmd_req',
-              cmd_id: uuidv4(),
-              cmd: {
-                type: 'solid3d_get_common_edge',
-                object_id: parent.resp.data.modeling_response.data.entity_id,
-                face_ids: selection.entityRef.side_faces,
-              },
-            })
+            const response = unwrapSceneCommandResponse(
+              await engine.sendSceneCommand({
+                type: 'modeling_cmd_req',
+                cmd_id: uuidv4(),
+                cmd: {
+                  type: 'solid3d_get_common_edge',
+                  object_id: parent.resp.data.modeling_response.data.entity_id,
+                  face_ids: selection.entityRef.side_faces,
+                },
+              })
+            )
             if (
               isModelingResponse(response) &&
               response.resp.data.modeling_response.type ===
@@ -121,11 +128,13 @@ export async function resolveDistanceSelections(
           (graph.has(id) && graph.get(id)?.type !== 'primitiveFace')
         )
           continue
-        const response = await engine.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: { type: 'entity_get_primitive_index', entity_id: id },
-        })
+        const response = unwrapSceneCommandResponse(
+          await engine.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: { type: 'entity_get_primitive_index', entity_id: id },
+          })
+        )
         if (
           !isModelingResponse(response) ||
           response.resp.data.modeling_response.type !==
@@ -143,11 +152,13 @@ export async function resolveDistanceSelections(
           return new Error(
             'The engine returned an invalid face index for a distance edge.'
           )
-        const parent = await engine.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: { type: 'entity_get_parent_id', entity_id: id },
-        })
+        const parent = unwrapSceneCommandResponse(
+          await engine.sendSceneCommand({
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: { type: 'entity_get_parent_id', entity_id: id },
+          })
+        )
         if (
           !isModelingResponse(parent) ||
           parent.resp.data.modeling_response.type !== 'entity_get_parent_id'

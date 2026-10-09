@@ -1,3 +1,4 @@
+import { unwrapSceneCommandResponse } from '@src/lib/engineConnection/utils'
 import { resolveDistanceSelections } from '@src/lib/gdtDistanceSelections'
 import type { KclManager } from '@src/lang/KclManager'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
@@ -1512,7 +1513,7 @@ plate = extrude(plateRegion, length = 5mm)`
           }))
         } else {
           for (const wall of walls.slice(1)) {
-            const response =
+            const response = unwrapSceneCommandResponse(
               await engineCommandManagerInThisFile.sendSceneCommand({
                 type: 'modeling_cmd_req',
                 cmd_id: crypto.randomUUID(),
@@ -1522,6 +1523,7 @@ plate = extrude(plateRegion, length = 5mm)`
                   face_ids: [cap!.id, wall.id],
                 },
               })
+            )
             if (
               !isModelingResponse(response) ||
               response.resp.data.modeling_response.type !==

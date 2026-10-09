@@ -497,11 +497,13 @@ plate = extrude(region(point = [0mm, 10mm], sketch = holeSketch), length = 5mm)`
               }
             }
           } else throw new Error('Unexpected command')
-          return {
-            success: true,
-            request_id: 'test',
-            resp: { type: 'modeling', data: { modeling_response: response } },
-          }
+          return [
+            {
+              success: true,
+              request_id: 'test',
+              resp: { type: 'modeling', data: { modeling_response: response } },
+            },
+          ]
         })
       const result = await modelingCommandCodemods['GDT Distance'].run({
         ast,
