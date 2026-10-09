@@ -37,6 +37,7 @@ use crate::to_py_exception;
 #[pyo3_stub_gen::derive::gen_stub_pyclass]
 #[pyclass(from_py_object)]
 pub struct KclSession {
+    geometry_only: bool,
     executed_kcl: Arc<SessionState>,
     api_call_id: Option<String>,
     websocket_upgrade_request_id: Option<String>,
@@ -286,6 +287,8 @@ async fn new_kcl_session_impl(input: KclInput, mut params: crate::ContextParams)
     } = load_and_parse(input).await?;
     params.current_file = path;
 
+    let geometry_only = params.geometry_only;
+
     // Connect to the engine.
     // If you can't even connect to the engine, just raise an exception.
     // So it's fine to use ? here.
@@ -335,6 +338,7 @@ async fn new_kcl_session_impl(input: KclInput, mut params: crate::ContextParams)
         executed_kcl,
         api_call_id,
         websocket_upgrade_request_id,
+        geometry_only,
     })
 }
 

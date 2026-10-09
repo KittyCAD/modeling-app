@@ -971,7 +971,12 @@ async fn take_snaps(
     image_format: ImageFormat,
     snapshot_options: Vec<SnapshotOptions>,
     zoom: bool,
+    // TODO: Add this param and thread it through everywhere necessary.
+    // geometry_only_connection: bool,
 ) -> PyResult<Vec<Vec<u8>>> {
+    // TODO: Enable gfx if geometry_only_connection,
+    // via ToggleGraphics command.
+    // Must disable it before you early return via ?.
     if snapshot_options.is_empty() {
         let data_bytes = snapshot(ctx, image_format, 0.1, zoom).await?;
         return Ok(vec![data_bytes]);
@@ -996,6 +1001,7 @@ async fn take_snaps(
         let data_bytes = snapshot(ctx, image_format, pre_snap.padding, zoom).await?;
         snaps.push(data_bytes);
     }
+    // TODO: Disable gfx if geometry_only_connection
     Ok(snaps)
 }
 
