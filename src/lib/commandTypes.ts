@@ -148,7 +148,9 @@ export type Command<
   /** App contexts where the command palette and keymap may expose this command. */
   scopes: CommandScopes
   disabled?: boolean
-  /** Resolved from supported inputs and the modeling_dialogs feature gate. */
+  /** Keep unsupported modeling flows in the command bar instead of a dialog. */
+  forceCommandBar?: boolean
+  /** Resolved from forceCommandBar and the modeling_dialogs feature gate. */
   useModelingDialog?: boolean
   status?: CommandStatus
 }
