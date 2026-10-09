@@ -1208,15 +1208,10 @@ impl ExecutorContext {
         Self::new_with_engine_and_fs(engine, crate::fs::new_file_system_handle(FileManager::new()), settings)
     }
 
+    /// Toggle on engine graphics.
+    /// Make sure to disable them again when you're done.
     pub async fn enable_engine_graphics(&self, exec_state: &mut ExecState) -> Result<()> {
         let source_range = Default::default();
-        let grid_scale_unit = if self.settings.fixed_size_grid {
-            GridScaleBehavior::Fixed(Some(exec_state.length_unit()))
-        } else {
-            GridScaleBehavior::ScaleWithZoom
-        };
-
-        // First, enable graphics.
         self.engine
             .send_modeling_cmd(
                 &self.engine_batch,
@@ -1227,8 +1222,16 @@ impl ExecutorContext {
             .await
             .map(|_| ())?;
 
-        // Then tell the engine what graphics settings to use,
-        // because it's likely the engine never applied any graphics settings before this.
+        Ok(())
+    }
+
+    pub async fn enable_engine_graphics_settings(&self, exec_state: &mut ExecState) -> Result<()> {
+        let source_range = Default::default();
+        let grid_scale_unit = if self.settings.fixed_size_grid {
+            GridScaleBehavior::Fixed(Some(exec_state.length_unit()))
+        } else {
+            GridScaleBehavior::ScaleWithZoom
+        };
         self.engine
             .apply_graphics_settings(
                 &self.engine_batch,

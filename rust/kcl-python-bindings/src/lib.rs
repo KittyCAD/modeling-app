@@ -977,10 +977,20 @@ async fn take_snaps(
     zoom: bool,
 ) -> PyResult<Vec<Vec<u8>>> {
     if ctx.settings.geometry_only {
+        // Once we call this, we have to be careful to disable graphics again before we
+        // early terminate.
         ctx.enable_engine_graphics(exec_state).await.map_err(to_py_exception)?;
-        let res = take_snaps_inner(ctx, image_format, snapshot_options, zoom).await;
+        if let Err(e) = ctx
+            .enable_engine_graphics_settings(exec_state)
+            .await
+            .map_err(to_py_exception)
+        {
+            ctx.disable_engine_graphics(exec_state).await.map_err(to_py_exception)?;
+            return Err(e);
+        }
+        let snapshot_res = take_snaps_inner(ctx, image_format, snapshot_options, zoom).await;
         ctx.disable_engine_graphics(exec_state).await.map_err(to_py_exception)?;
-        res
+        snapshot_res
     } else {
         take_snaps_inner(ctx, image_format, snapshot_options, zoom).await
     }
