@@ -12,8 +12,8 @@ use std::sync::Arc;
 use std::sync::Mutex;
 
 use anyhow::Result;
-use kcl_api::KclVersion;
 pub use kcl_api::ast::ItemVisibility;
+use kittycad_modeling_cmds::KclVersion;
 use parse_display::Display;
 use parse_display::FromStr;
 pub use path::NodePath;

@@ -1,6 +1,6 @@
 import { defineContract, defineService } from '@kittycad/registry'
 import type { Signal } from '@preact/signals-core'
-import type { ZDSProject } from '@src/lang/KclManager'
+import type { ZDSProject } from '@src/lib/projectSession'
 
 /**
  * Owns the currently opened project session.

@@ -496,7 +496,7 @@ async fn kcl_test_cache_empty_file_pop_cache_empty_file_planes_work() {
     // Get the current working directory.
     let code = "";
 
-    let ctx = kcl_lib::ExecutorContext::new_geometry_only_with_version(kcl_api::KclVersion::V2)
+    let ctx = kcl_lib::ExecutorContext::new_geometry_only_with_version(kittycad_modeling_cmds::KclVersion::V2)
         .await
         .unwrap();
     let program = kcl_lib::Program::parse_no_errs(code).unwrap();
@@ -1030,7 +1030,7 @@ view002 = view::named(
 "#
     );
 
-    let ctx = kcl_lib::ExecutorContext::new_geometry_only_with_version(kcl_api::KclVersion::V2)
+    let ctx = kcl_lib::ExecutorContext::new_geometry_only_with_version(kittycad_modeling_cmds::KclVersion::V2)
         .await
         .unwrap();
     bust_cache().await;

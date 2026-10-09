@@ -5,9 +5,9 @@ use std::sync::Arc;
 use ahash::AHashMap;
 use anyhow::Result;
 use indexmap::IndexMap;
-pub use kcl_api::KclVersion;
 use kcl_api::UnitAngle;
 use kcl_api::UnitLength;
+pub use kittycad_modeling_cmds::KclVersion;
 use serde::Deserialize;
 use serde::Serialize;
 use uuid::Uuid;
@@ -2013,7 +2013,9 @@ impl MetaSettings {
                 }
                 annotations::SETTINGS_VERSION => {
                     let value = annotations::expect_kcl_version(&p.inner.value)?;
-                    self.kcl_version = value.parse()?;
+                    self.kcl_version = value.parse::<KclVersion>().map_err(|err| {
+                        KclError::new_semantic(KclErrorDetails::new(err.to_string(), p.as_source_ranges()))
+                    })?;
                 }
                 annotations::SETTINGS_EXPERIMENTAL_FEATURES => {
                     let value = annotations::expect_ident(&p.inner.value)?;

@@ -5,9 +5,12 @@ import UAParser from 'ua-parser-js'
 import { ActionButton } from '@src/components/ActionButton'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { isDesktop } from '@src/lib/isDesktop'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import { isErr, reportRejection } from '@src/lib/trap'
 import { refreshPage } from '@src/lib/utils'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
 
 const BROWSER_UPDATE_URL = 'https://browser-update.org/update-browser.html'
 const ITERATOR_TO_ARRAY_ERROR = '.toArray is not a function'
@@ -49,6 +52,7 @@ function browserDetails() {
 export const ErrorPage = () => {
   const error = useRouteError()
   const browserCompatibilityError = isBrowserCompatibilityError(error)
+  const latestDownloadUrl = withSiteBaseURL(`/${APP_DOWNLOAD_PATH}`)
   // We log the error to the console no matter what
   console.error('error', error)
 
@@ -160,6 +164,19 @@ export const ErrorPage = () => {
             </>
           )}
         </div>
+        {isDesktop() && (
+          <p className="mt-8 w-full overflow-auto">
+            If the problem persists, please try reinstalling the{' '}
+            <a
+              className="underline underline-offset-2"
+              href={latestDownloadUrl}
+              onClick={openExternalBrowserIfDesktop(latestDownloadUrl)}
+            >
+              latest version
+            </a>{' '}
+            of the app.
+          </p>
+        )}
       </section>
     </div>
   )
