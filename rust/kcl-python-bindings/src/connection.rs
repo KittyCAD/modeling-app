@@ -28,6 +28,7 @@ use crate::load_and_parse;
 use crate::measure_model_properties;
 use crate::new_context_state;
 use crate::spawn_py;
+use crate::spawn_snapshot_task;
 use crate::take_snaps;
 use crate::to_py_exception;
 
@@ -155,6 +156,9 @@ impl KclSession {
     }
 
     /// Get 2D images of the model.
+    /// CPU-only sessions temporarily enable graphics for the entire batch.
+    /// Cancellation stops snapshotting, but cleanup finishes before the session can be reused.
+    /// If graphics cannot be disabled, the session is closed.
     /// It is NOT safe to concurrently call methods on this object. Only call one of measure, export, etc at a time.
     #[pyo3(signature = (image_format, snapshot_options, *, zoom=true))]
     pub async fn snapshots(
@@ -163,11 +167,31 @@ impl KclSession {
         snapshot_options: Vec<SnapshotOptions>,
         zoom: bool,
     ) -> PyResult<Vec<Vec<u8>>> {
-        let ctx = self.executed_kcl.context().await?;
-        spawn_py(async move {
-            let result = take_snaps(&ctx, image_format, snapshot_options, zoom).await;
+        let executed_kcl = self.executed_kcl.clone();
+        let geometry_only = self.geometry_only;
+        spawn_snapshot_task(async move |cancelled| {
+            // Keep the context locked through cleanup, including after Python
+            // cancellation, so follow-up calls and close() wait for it.
+            let mut context = executed_kcl.ctx.lock().await;
+            let ctx = context
+                .as_ref()
+                .ok_or_else(|| PyException::new_err("Connection already closed"))?;
+            let result = take_snaps(ctx, image_format, snapshot_options, zoom, geometry_only, async {
+                let _ = cancelled.await;
+            })
+            .await;
             ctx.engine.take_responses().await;
-            result
+            match result {
+                Ok(images) => Ok(images),
+                Err(error) => {
+                    if error.graphics_cleanup_failed
+                        && let Some(ctx) = context.take()
+                    {
+                        ctx.close().await;
+                    }
+                    Err(error.exception)
+                }
+            }
         })
         .await
     }
@@ -365,5 +389,95 @@ mod tests {
         session.close().await.unwrap();
         session.executed_kcl.context().await.unwrap_err();
         assert!(session.outcome().report_all().is_empty());
+    }
+
+    #[tokio::test]
+    async fn snapshot_cancellation_waits_for_cleanup_before_session_reuse() {
+        use std::time::Duration;
+
+        use crate::snapshot_tests::SnapshotTransport;
+
+        for cancelled_at in ["enable", "camera", "snapshot", "disable"] {
+            let mut session = new_kcl_session_impl(
+                KclInput::Code("@settings(kclVersion = 2.0)\nvalue = 1".to_owned()),
+                crate::ContextParams {
+                    mock: true,
+                    geometry_only: true,
+                    ..Default::default()
+                },
+            )
+            .await
+            .unwrap();
+            let (mut transport, mut started) = SnapshotTransport::new();
+            Arc::get_mut(&mut transport).unwrap().block = vec![cancelled_at, "disable"];
+            session.executed_kcl.ctx.lock().await.as_mut().unwrap().engine = transport.engine();
+
+            let snapshot_session = session.clone();
+            let caller =
+                tokio::spawn(async move { snapshot_session.snapshots(ImageFormat::Png, Vec::new(), true).await });
+            assert_eq!(started.recv().await, Some(cancelled_at));
+            caller.abort();
+            assert!(caller.await.unwrap_err().is_cancelled());
+            if cancelled_at == "enable" {
+                // Enabling must finish before disabling can start.
+                transport.resume.add_permits(1);
+            }
+            if cancelled_at != "disable" {
+                assert_eq!(started.recv().await, Some("disable"));
+            }
+
+            let state = session.executed_kcl.clone();
+            let mut follow_up = tokio::spawn(async move { state.context().await });
+            tokio::time::timeout(Duration::from_millis(20), &mut follow_up)
+                .await
+                .expect_err("session reused before graphics cleanup finished");
+            transport.resume.add_permits(1);
+            tokio::time::timeout(Duration::from_secs(1), follow_up)
+                .await
+                .unwrap()
+                .unwrap()
+                .unwrap();
+            assert_eq!(transport.stages().last(), Some(&"disable"));
+            let ctx = session.executed_kcl.context().await.unwrap();
+            assert!(ctx.engine.take_responses().await.is_empty());
+            session.close().await.unwrap();
+        }
+    }
+
+    #[tokio::test]
+    async fn failed_graphics_cleanup_closes_session_even_after_cancellation() {
+        use crate::snapshot_tests::SnapshotTransport;
+
+        for cancel in [false, true] {
+            let session = new_kcl_session_impl(
+                KclInput::Code("@settings(kclVersion = 2.0)\nvalue = 1".to_owned()),
+                crate::ContextParams {
+                    mock: true,
+                    geometry_only: true,
+                    ..Default::default()
+                },
+            )
+            .await
+            .unwrap();
+            let (mut transport, mut started) = SnapshotTransport::new();
+            let config = Arc::get_mut(&mut transport).unwrap();
+            config.fail.push("disable");
+            if cancel {
+                config.block.push("snapshot");
+            }
+            session.executed_kcl.ctx.lock().await.as_mut().unwrap().engine = transport.engine();
+            let snapshot_session = session.clone();
+            let caller =
+                tokio::spawn(async move { snapshot_session.snapshots(ImageFormat::Png, Vec::new(), true).await });
+            if cancel {
+                assert_eq!(started.recv().await, Some("snapshot"));
+                caller.abort();
+                assert!(caller.await.unwrap_err().is_cancelled());
+            } else {
+                assert!(caller.await.unwrap().unwrap_err().to_string().contains("disable"));
+            }
+            let error = session.executed_kcl.context().await.unwrap_err();
+            assert!(error.to_string().contains("Connection already closed"));
+        }
     }
 }

@@ -47,7 +47,7 @@ Omitted values use the client's existing environment defaults (`ZOO_API_TOKEN`
 or `KITTYCAD_API_TOKEN` for the token; `ZOO_HOST` or `KITTYCAD_HOST` for the API
 origin). Mock sessions do not create an API client.
 
-For exports and measurements that do not need images, pass `geometry_only=True`
+To execute using the CPU engine pool, pass `geometry_only=True`
 to either constructor. This selects the CPU engine pool and skips rendering setup:
 
 ```python
@@ -56,6 +56,11 @@ async with await kcl.new_kcl_session(
 ) as session:
     files = await session.export(kcl.FileExportFormat.Step)
 ```
+
+CPU-only sessions also support `snapshots()`. Graphics are enabled temporarily
+for the entire snapshot batch and disabled afterward, including on errors and
+cancellation. Follow-up calls wait for cancellation cleanup to finish.
+If disabling graphics fails, the session is closed.
 
 `session.outcome` is an `ExecOutcome` with the same diagnostics, constraint reports,
 and sketch rendering methods returned by `execute()`. Accessing it shares the

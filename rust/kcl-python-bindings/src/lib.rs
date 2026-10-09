@@ -55,6 +55,8 @@ const HEARTBEAT_INTERVAL_SECONDS: u64 = 5;
 
 mod bridge;
 mod connection;
+#[cfg(test)]
+mod snapshot_tests;
 
 fn tokio() -> &'static tokio::runtime::Runtime {
     use std::sync::OnceLock;
@@ -78,6 +80,20 @@ where
     let task = tokio().spawn(future);
     // Python cancellation drops this future; the native task must stop with it.
     let _abort_on_drop = AbortOnDrop(task.abort_handle());
+    task.await.map_err(|err| PyException::new_err(err.to_string()))?
+}
+
+/// Unlike ordinary native tasks, snapshot tasks must finish their graphics cleanup
+/// when Python cancels. Dropping the caller signals cancellation without aborting
+/// the worker; the worker decides where it is safe to stop.
+async fn spawn_snapshot_task<T, F, Fut>(operation: F) -> PyResult<T>
+where
+    T: Send + 'static,
+    F: FnOnce(tokio::sync::oneshot::Receiver<()>) -> Fut,
+    Fut: Future<Output = PyResult<T>> + Send + 'static,
+{
+    let (_cancel_on_drop, cancelled) = tokio::sync::oneshot::channel();
+    let task = tokio().spawn(operation(cancelled));
     task.await.map_err(|err| PyException::new_err(err.to_string()))?
 }
 
@@ -567,7 +583,16 @@ async fn execute_and_snapshot_views_impl(
     highlight_edges: Option<bool>,
 ) -> PyResult<Vec<Vec<u8>>> {
     let ExecutedKcl { ctx, .. } = run_kcl(input, false, highlight_edges, false).await?;
-    let result = take_snaps(&ctx, image_format, snapshot_options, zoom).await;
+    let result = take_snaps(
+        &ctx,
+        image_format,
+        snapshot_options,
+        zoom,
+        false,
+        std::future::pending(),
+    )
+    .await
+    .map_err(|error| error.exception);
     ctx.close().await;
     result
 }
@@ -819,7 +844,16 @@ async fn import_and_snapshot_views(
             ctx.close().await;
             return Err(e);
         }
-        let result = take_snaps(&ctx, image_format, snapshot_options, zoom).await;
+        let result = take_snaps(
+            &ctx,
+            image_format,
+            snapshot_options,
+            zoom,
+            false,
+            std::future::pending(),
+        )
+        .await
+        .map_err(|error| error.exception);
         ctx.close().await;
         result
     })
@@ -966,17 +1000,100 @@ impl SnapshotOptions {
     }
 }
 
+#[derive(Debug)]
+struct SnapshotError {
+    exception: PyErr,
+    graphics_cleanup_failed: bool,
+}
+
 async fn take_snaps(
     ctx: &ExecutorContext,
     image_format: ImageFormat,
     snapshot_options: Vec<SnapshotOptions>,
     zoom: bool,
-    // TODO: Add this param and thread it through everywhere necessary.
-    // geometry_only_connection: bool,
+    geometry_only: bool,
+    cancelled: impl Future<Output = ()>,
+) -> Result<Vec<Vec<u8>>, SnapshotError> {
+    // Do not cancel an in-flight toggle: its response tells us when it is safe
+    // to send the next command. Also attempt cleanup if enabling fails, since
+    // the engine might have enabled graphics before returning an error.
+    let enabled = if geometry_only {
+        toggle_graphics(ctx, true).await
+    } else {
+        Ok(())
+    };
+    let result = match enabled {
+        Ok(()) => tokio::select! {
+            biased;
+            () = cancelled => Err(PyException::new_err("Snapshot cancelled")),
+            result = take_snaps_inner(ctx, image_format, snapshot_options, zoom) => result,
+        },
+        Err(error) => Err(error),
+    };
+    if geometry_only && let Err(cleanup_error) = toggle_graphics(ctx, false).await {
+        if let Err(snapshot_error) = result {
+            Python::attach(|py| cleanup_error.set_cause(py, Some(snapshot_error)));
+        }
+        return Err(SnapshotError {
+            exception: cleanup_error,
+            graphics_cleanup_failed: true,
+        });
+    }
+    result.map_err(|exception| SnapshotError {
+        exception,
+        graphics_cleanup_failed: false,
+    })
+}
+
+async fn toggle_graphics(ctx: &ExecutorContext, enabled: bool) -> PyResult<()> {
+    ctx.engine
+        .send_modeling_cmd(
+            &ctx.engine_batch,
+            Uuid::new_v4(),
+            Default::default(),
+            &ModelingCmd::ToggleGraphics(kcmc::ToggleGraphics::enabled(enabled)),
+        )
+        .await
+        .map_err(into_kcl_exception)?;
+    Ok(())
+}
+
+async fn take_snaps_inner(
+    ctx: &ExecutorContext,
+    image_format: ImageFormat,
+    snapshot_options: Vec<SnapshotOptions>,
+    zoom: bool,
 ) -> PyResult<Vec<Vec<u8>>> {
-    // TODO: Enable gfx if geometry_only_connection,
-    // via ToggleGraphics command.
-    // Must disable it before you early return via ?.
+    if ctx.settings.geometry_only {
+        // Geometry-only execution skips rendering settings. Apply the relevant
+        // settings now that graphics are available, including explicit edge visibility.
+        ctx.engine
+            .send_modeling_cmd(
+                &ctx.engine_batch,
+                Uuid::new_v4(),
+                Default::default(),
+                &ModelingCmd::EdgeLinesVisible(
+                    kcmc::EdgeLinesVisible::builder()
+                        .hidden(!ctx.settings.highlight_edges)
+                        .build(),
+                ),
+            )
+            .await
+            .map_err(into_kcl_exception)?;
+        if ctx.settings.enable_ssao {
+            ctx.engine
+                .send_modeling_cmd(
+                    &ctx.engine_batch,
+                    Uuid::new_v4(),
+                    Default::default(),
+                    &ModelingCmd::SetOrderIndependentTransparency(
+                        kcmc::SetOrderIndependentTransparency::builder().enabled(false).build(),
+                    ),
+                )
+                .await
+                .map_err(into_kcl_exception)?;
+        }
+    }
     if snapshot_options.is_empty() {
         let data_bytes = snapshot(ctx, image_format, 0.1, zoom).await?;
         return Ok(vec![data_bytes]);
@@ -1001,7 +1118,6 @@ async fn take_snaps(
         let data_bytes = snapshot(ctx, image_format, pre_snap.padding, zoom).await?;
         snaps.push(data_bytes);
     }
-    // TODO: Disable gfx if geometry_only_connection
     Ok(snaps)
 }
 

@@ -295,7 +295,8 @@ async def test_kcl_session_explicit_close():
 
 @requires_engine
 @pytest.mark.asyncio
-async def test_kcl_session_reuses_execution_for_tools(tmp_path):
+@pytest.mark.parametrize("geometry_only", [False, True])
+async def test_kcl_session_reuses_execution_for_tools(tmp_path, geometry_only):
     source = tmp_path / "main.kcl"
     source.write_text("""
 @settings(kclVersion = 2.0)
@@ -306,7 +307,10 @@ disk = region(point = [0mm, 0mm], sketch = profile)
 solid = extrude(disk, length = 10mm)
 """)
     async with await execute_with_retries(
-        kcl.new_kcl_session, str(source), highlight_edges=False
+        kcl.new_kcl_session,
+        str(source),
+        highlight_edges=False,
+        geometry_only=geometry_only,
     ) as session:
         # All four tools use the executed model after its source is removed.
         source.unlink()
@@ -317,6 +321,16 @@ solid = extrude(disk, length = 10mm)
         images = await session.snapshots(kcl.ImageFormat.Png, [])
         assert len(images) == 1
         assert bytes(images[0]).startswith(b"\x89PNG\r\n\x1a\n")
+
+        images = await session.snapshots(
+            kcl.ImageFormat.Png,
+            [
+                kcl.SnapshotOptions.isometric_view(0),
+                kcl.SnapshotOptions.isometric_view(0.2),
+            ],
+        )
+        assert len(images) == 2
+        assert all(bytes(image).startswith(b"\x89PNG\r\n\x1a\n") for image in images)
 
         files = await session.export(kcl.FileExportFormat.Step)
         assert files
