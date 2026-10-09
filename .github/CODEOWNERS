@@ -37,6 +37,3 @@ CONTRIBUTING.md                   @KittyCAD/frontend @KittyCAD/kcl
 _typos.toml                       @KittyCAD/frontend @KittyCAD/kcl
 flake.nix                         @KittyCAD/frontend @KittyCAD/kcl
 flake.lock                        @KittyCAD/frontend @KittyCAD/kcl
-
-# Tests
-/e2e/playwright/benchmark/        @KittyCAD/mech

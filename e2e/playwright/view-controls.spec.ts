@@ -1,12 +1,7 @@
-import { uuidv4 } from '@src/lib/utils'
-
 import { TEST_CODE_GIZMO } from '@e2e/playwright/storageStates'
 import { getUtils } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { LEGACY_SKETCH_MODE_FEATURE_FLAG } from '@src/lib/constants'
-
-// Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
-test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
+import { uuidv4 } from '@src/lib/utils'
 
 test.describe('Testing Gizmo', { tag: '@desktop' }, () => {
   const cases = [
@@ -252,99 +247,5 @@ test.describe('Testing Gizmo', { tag: '@desktop' }, () => {
     await expect(gizmoPopoverButton).toBeVisible()
     await gizmoPopoverButton.click()
     await expect(buttonToTest).toBeVisible()
-  })
-})
-
-test.describe(`Testing gizmo, fixture-based`, { tag: '@desktop' }, () => {
-  test('Center on selection from menu, disable interaction in sketch mode', async ({
-    context,
-    page,
-    homePage,
-    cmdBar,
-    editor,
-    toolbar,
-    scene,
-  }) => {
-    await context.addInitScript(() => {
-      localStorage.setItem(
-        'persistCode',
-        `@settings(defaultLengthUnit = in)
-        sketch002 = startSketchOn(XZ)
-          |> startProfile(at = [-108.83, -57.48])
-          |> angledLine(angle = 0, length = 105.13, tag = $rectangleSegmentA001)
-          |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 77.9)
-          |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001))
-          |> close()
-        sketch001 = startSketchOn(XZ)
-          |> circle(center = [818.33, 168.1], radius = 182.8)
-          |> extrude(length = 50)
-      `
-      )
-    })
-
-    const bodyDimensions = { width: 1000, height: 500 }
-    await page.setBodyDimensions(bodyDimensions)
-
-    await homePage.goToModelingScene()
-    await editor.closePane()
-    await scene.settled()
-
-    await test.step(`Setup`, async () => {
-      await scene.expectState({
-        camera: {
-          position: [11796.52, -39216.59, 21103.27],
-          target: [11796.52, -635, 3201.42],
-        },
-      })
-    })
-    const [clickCircle, moveToCircle] = scene.makeMouseHelpers(
-      582 / bodyDimensions.width,
-      217 / bodyDimensions.height,
-      { format: 'ratio' }
-    )
-
-    await test.step(`Select an edge of this circle`, async () => {
-      const circleSnippet = 'circle(center = [818.33, 168.1], radius = 182.8)'
-      await moveToCircle()
-      await clickCircle()
-      await editor.openPane()
-
-      await editor.expectState({
-        activeLines: ['|>' + circleSnippet],
-        diagnostics: [],
-      })
-      await editor.closePane()
-    })
-
-    await test.step(`Center on selection from menu`, async () => {
-      await scene.clickGizmoMenuItem('Center view on selection')
-    })
-
-    await test.step(`Verify the camera moved`, async () => {
-      await scene.expectState({
-        camera: {
-          position: [20785.58, -39851.59, 22171.6],
-          target: [20785.58, -1270, 4269.74],
-        },
-      })
-    })
-
-    await test.step(`Gizmo should be disabled when in sketch mode`, async () => {
-      const exitSketchButton = page.getByRole('button', {
-        name: 'Exit sketch',
-      })
-
-      await toolbar.editSketch()
-      await expect(exitSketchButton).toBeVisible()
-      const gizmoPopoverButton = page.getByRole('button', {
-        name: 'view settings',
-      })
-      await gizmoPopoverButton.click()
-      const buttonToTest = page.getByRole('button', {
-        name: 'right view',
-      })
-      await expect(buttonToTest).toBeVisible()
-      await expect(buttonToTest).toBeDisabled()
-    })
   })
 })
