@@ -602,6 +602,40 @@ describe('zookeeperManagerMachine', () => {
     stopZookeeperManagerActor(actor)
   })
 
+  it.each([
+    { request: S.Await, awaitingResponse: false, canReconnect: true },
+    { request: S.Await, awaitingResponse: true, canReconnect: false },
+    {
+      request: ZookeeperManagerTransitions.MessageSend,
+      awaitingResponse: false,
+      canReconnect: false,
+    },
+  ])(
+    'only reconnects an idle chat (request=$request, awaitingResponse=$awaitingResponse)',
+    ({ request, awaitingResponse, canReconnect }) => {
+      const actor = createActor(zookeeperManagerMachine, {
+        input: { apiToken: 'api-token' },
+      })
+      const snapshot = zookeeperManagerMachine.resolveState({
+        value: {
+          [ZookeeperManagerStates.Ready]: {
+            [ZookeeperManagerStates.Request]: request,
+            [ZookeeperManagerStates.Response]: S.Await,
+          },
+        },
+        context: { ...actor.getSnapshot().context, awaitingResponse },
+      })
+
+      expect(
+        snapshot.can({
+          type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+          refParentSend: (event) => actor.send(event),
+          conversationId: 'existing-conversation',
+        })
+      ).toBe(canReconnect)
+    }
+  )
+
   afterEach(() => {
     stopClientErrorReporting?.()
     stopClientErrorReporting = undefined

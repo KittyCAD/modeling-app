@@ -31,7 +31,7 @@ export function successfulOperation(
     deadline: new Date(Date.now() + 20 * 60_000).toISOString(),
     result: {
       status: 'succeeded',
-      detail: 'Conversion and validation passed.',
+      detail: 'Updated **main.kcl** to KCL 3.0, preserving the geometry.',
       files: {
         ...request.current_files,
         'main.kcl': Array.from(new TextEncoder().encode(targetCode)),
@@ -41,7 +41,7 @@ export function successfulOperation(
         target: '3.0',
         runtime_version: '0.3.186',
         rules_revision: 'migration-guide-test',
-        summary: 'Physical properties and parameter checks passed.',
+        summary: '### Verification\n\n- Physical and visual checks passed.',
         source_executed: true,
         target_executed: true,
         geometry_preserved: true,

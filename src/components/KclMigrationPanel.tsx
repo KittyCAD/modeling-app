@@ -106,19 +106,21 @@ export function KclMigrationPanel({
         userAvatar={<div className="h-7 w-7 avatar bg-img-mel" />}
         className="py-3 whitespace-normal"
       >
-        <p role="status" aria-live="polite">
-          {phase === 'capturing'
-            ? 'Capturing the project...'
-            : phase === 'connecting'
-              ? 'Connecting...'
-              : phase === 'running'
-                ? 'Converting and validating the project...'
-                : phase === 'cancelling'
-                  ? 'Cancelling...'
-                  : phase === 'applying'
-                    ? 'Applying project changes...'
-                    : controller.detail.value}
-        </p>
+        <div role="status" aria-live="polite">
+          {phase === 'capturing' ? (
+            'Capturing the project...'
+          ) : phase === 'connecting' ? (
+            'Connecting...'
+          ) : phase === 'running' ? (
+            'Converting and validating the project...'
+          ) : phase === 'cancelling' ? (
+            'Cancelling...'
+          ) : phase === 'applying' ? (
+            'Applying project changes...'
+          ) : (
+            <MarkdownText text={controller.detail.value} />
+          )}
+        </div>
         {phase === 'disconnected' && (
           <button
             type="button"

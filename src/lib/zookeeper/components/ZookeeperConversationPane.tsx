@@ -5,6 +5,14 @@ import {
   SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
 } from '@src/lib/constants'
 import type { MigrationController } from '@src/lib/kclMigration/controller'
+import {
+  KclMigrationHistoryEntry,
+  KclMigrationHistoryStatus,
+} from '@src/components/KclMigrationHistory'
+import {
+  migrationHistoryPosition,
+  type MigrationConversation,
+} from '@src/lib/kclMigration/conversation'
 import type { MigrationTurn } from '@src/registry/contracts/kclMigration'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { ZookeeperConversation } from '@src/lib/zookeeper/components/ZookeeperConversation'
@@ -28,6 +36,7 @@ export const ZookeeperConversationPane = (props: {
   migrationController?: MigrationController
   migrationContent?: (chatBusy: boolean, afterExchange: number) => ReactNode
   migrationTurns?: readonly MigrationTurn[]
+  migrationHistory?: MigrationConversation
   renderMigrationTurn?: (
     turn: MigrationTurn,
     onClickClearChat?: () => void
@@ -163,6 +172,59 @@ export const ZookeeperConversationPane = (props: {
     isClearingChat ||
     isResumingInterruptedTurn ||
     controller.queue.value.length > 0
+  const replayRevision = props.migrationHistory?.replayRevision.value ?? 0
+  const reportingMigration =
+    props.migrationHistory?.reportingApplication.value ?? false
+  const replayedMigrationRevision = useRef(0)
+  useEffect(() => {
+    if (
+      replayRevision !== replayedMigrationRevision.current &&
+      !chatBusy &&
+      !props.migrationController?.busy &&
+      !reportingMigration
+    ) {
+      replayedMigrationRevision.current = replayRevision
+      controller.reconnect()
+    }
+  }, [
+    replayRevision,
+    chatBusy,
+    props.migrationController?.busy,
+    reportingMigration,
+    controller,
+  ])
+  const promptPositions = new Map<string, number>()
+  conversation?.exchanges.forEach((exchange, index) => {
+    for (const response of exchange.responses) {
+      if (!('end_of_stream' in response)) continue
+      const id = response.end_of_stream.id
+      if (id && !promptPositions.has(id)) promptPositions.set(id, index + 1)
+    }
+  })
+  const persistedOperations = new Set(
+    props.migrationHistory?.entries.value
+      .filter(
+        (entry) => entry.prompt_id && promptPositions.has(entry.prompt_id)
+      )
+      .map((entry) => entry.operation_id) ?? []
+  )
+  const turns =
+    props.migrationTurns?.filter(
+      (turn) =>
+        (!turn.conversationId || turn.conversationId === conversationId) &&
+        (turn.controller.busy ||
+          !persistedOperations.has(turn.controller.operationId.value ?? ''))
+    ) ?? []
+  const activeIds = new Set(
+    turns.map((turn) => turn.controller.operationId.value)
+  )
+  const historyEntries =
+    props.migrationHistory?.entries.value.filter(
+      (entry) =>
+        entry.conversation_id === conversationId &&
+        !persistedOperations.has(entry.operation_id) &&
+        !activeIds.has(entry.operation_id)
+    ) ?? []
 
   return (
     <>
@@ -202,24 +264,46 @@ export const ZookeeperConversationPane = (props: {
           })
         }}
         welcomeMessage={<ZookeeperConversationWelcome />}
-        localExchanges={props.migrationTurns?.map((turn) => ({
-          id: turn.id,
-          afterExchange: turn.afterExchange,
-          content: props.renderMigrationTurn?.(
-            turn,
-            turn === props.migrationTurns?.at(-1) &&
-              turn.afterExchange >= (conversation?.exchanges.length ?? 0)
-              ? () => setIsConfirmingClearChat(true)
-              : undefined
-          ),
-        }))}
+        localExchanges={[
+          ...historyEntries.map((entry) => ({
+            id: entry.operation_id,
+            afterExchange: migrationHistoryPosition(
+              entry,
+              promptPositions,
+              conversation?.exchanges.length ?? 0
+            ),
+            content: (onClickClearChat?: () => void) => (
+              <KclMigrationHistoryEntry
+                entry={entry}
+                userAvatar={props.userAvatarSrc}
+                onClickClearChat={onClickClearChat}
+              />
+            ),
+          })),
+          ...turns.map((turn) => ({
+            id: turn.id,
+            afterExchange: turn.afterExchange,
+            content: (onClickClearChat?: () => void) =>
+              props.renderMigrationTurn?.(turn, onClickClearChat),
+          })),
+        ]}
+        afterMessages={
+          props.migrationHistory && (
+            <KclMigrationHistoryStatus history={props.migrationHistory} />
+          )
+        }
         toolbarActions={props.migrationContent?.(
           chatBusy,
           conversation?.exchanges.length ?? 0
         )}
         onProcess={(prompt, mode, attachments) => {
-          if (!props.migrationController?.busy)
+          if (!props.migrationController?.busy && !reportingMigration) {
+            if (replayedMigrationRevision.current !== replayRevision) {
+              replayedMigrationRevision.current = replayRevision
+              controller.reconnect()
+            }
             controller.sendOrQueue(prompt, mode, attachments)
+          }
         }}
         onClickClearChat={() => {
           setIsConfirmingClearChat(true)
@@ -248,6 +332,7 @@ export const ZookeeperConversationPane = (props: {
           else controller.cancel()
         }}
         disabled={
+          reportingMigration ||
           props.migrationController?.busy ||
           needsReconnect ||
           isClearingChat ||

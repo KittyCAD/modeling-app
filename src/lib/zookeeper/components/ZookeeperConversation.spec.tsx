@@ -52,7 +52,9 @@ vi.mock('@src/lib/screenshot', async (importOriginal) => {
 import { Registry } from '@kittycad/registry'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ExchangeCard } from '@src/components/ExchangeCard'
+import { KclMigrationHistoryEntry } from '@src/components/KclMigrationHistory'
 import { MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY } from '@src/components/MakeathonAnnouncement'
+import type { MigrationHistoryEntry } from '@src/lib/kclMigration/protocol'
 import { ZookeeperConversation } from '@src/lib/zookeeper/components/ZookeeperConversation'
 import { takeViewportScreenshot } from '@src/lib/screenshot'
 import type * as ScreenshotModule from '@src/lib/screenshot'
@@ -151,7 +153,7 @@ describe('ZookeeperConversation', () => {
         {
           id: 'migration-turn',
           afterExchange: 1,
-          content: <p>Migration completed</p>,
+          content: () => <p>Migration completed</p>,
         },
       ],
     }
@@ -190,6 +192,89 @@ describe('ZookeeperConversation', () => {
     )
     expect(screen.queryByText('Migration completed')).toBeNull()
   })
+
+  test.each<{
+    status: MigrationHistoryEntry['status']
+    transcriptPresent: boolean
+  }>([
+    { status: 'succeeded', transcriptPresent: true },
+    { status: 'failed', transcriptPresent: true },
+    { status: 'succeeded', transcriptPresent: false },
+  ])(
+    'keeps one Clear chat action for restored migration ($status, transcript=$transcriptPresent)',
+    ({ status, transcriptPresent }) => {
+      const onClickClearChat = vi.fn()
+      const conversation: Conversation = {
+        exchanges: [
+          {
+            request: { type: 'user', content: 'Migrate this project' },
+            responses: [
+              { end_of_stream: { whole_response: 'Migration finished.' } },
+            ],
+            deltasAggregated: 'Migration finished.',
+          },
+        ],
+      }
+      const props = {
+        isLoading: false,
+        conversation,
+        contexts: [],
+        onProcess: () => {},
+        onCancel: () => {},
+        onClickClearChat,
+        onReconnect: () => {},
+        needsReconnect: false,
+        hasPromptCompleted: true,
+        isProcessing: false,
+        queue: [],
+        onRemoveFromQueue: () => {},
+        onSteer: () => {},
+        localExchanges: transcriptPresent
+          ? []
+          : [
+              {
+                id: 'restored-migration',
+                afterExchange: 1,
+                content: (onClickClearChat?: () => void) => (
+                  <KclMigrationHistoryEntry
+                    entry={{
+                      operation_id: 'restored-migration',
+                      conversation_id: 'conversation',
+                      created_at: '2026-10-08T12:00:00Z',
+                      status,
+                      detail: 'Migration finished.',
+                      application: { status: 'not_applied', revision: 0 },
+                    }}
+                    onClickClearChat={onClickClearChat}
+                  />
+                ),
+              },
+            ],
+      }
+      const { rerender } = render(<ZookeeperConversation {...props} />)
+      expect(screen.queryByText(/Last reported:/)).not.toBeInTheDocument()
+      fireEvent.click(screen.getByRole('button', { name: /Clear chat/ }))
+      expect(onClickClearChat).toHaveBeenCalledTimes(1)
+
+      rerender(
+        <ZookeeperConversation
+          {...props}
+          conversation={{
+            exchanges: [
+              ...conversation.exchanges,
+              {
+                request: { type: 'user', content: 'Continue editing' },
+                responses: [],
+                deltasAggregated: '',
+              },
+            ],
+          }}
+        />
+      )
+      fireEvent.click(screen.getByRole('button', { name: /Clear chat/ }))
+      expect(onClickClearChat).toHaveBeenCalledTimes(2)
+    }
+  )
 
   test('shows recovery actions after conversation loading gives up', () => {
     const onReconnect = vi.fn()

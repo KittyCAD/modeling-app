@@ -7,11 +7,54 @@ import type {
 } from '@kittycad/lib'
 import { isArray, isRecord } from '@src/lib/utils'
 
-export type MigrationRequest = KclMigrationRequest
 export type MigrationOperation = KclMigrationOperation
 export type MigrationResult = KclMigrationResult
-export type MigrationClientMessage = KclMigrationClientMessage
-export type MigrationServerMessage = KclMigrationServerMessage
+
+// API #4812 additions, until the SDK publishes the conversation contract.
+export interface MigrationRequest extends KclMigrationRequest {
+  conversation_id?: string | null
+}
+
+export type MigrationApplicationStatus = 'applied' | 'undone'
+export interface MigrationApplication {
+  status: MigrationApplicationStatus | 'not_applied'
+  revision: number
+}
+
+export interface MigrationHistoryEntry {
+  operation_id: string
+  conversation_id: string
+  prompt_id?: string | null
+  after_prompt_id?: string | null
+  created_at: string
+  status: MigrationOperation['status']
+  application: MigrationApplication
+  detail: string
+}
+
+export type MigrationClientMessage =
+  | Exclude<KclMigrationClientMessage, { type: 'start' }>
+  | { type: 'start'; request: MigrationRequest }
+  | { type: 'history'; conversation_id: string }
+  | {
+      type: 'application'
+      operation_id: string
+      status: MigrationApplicationStatus
+      expected_revision: number
+    }
+
+export type MigrationServerMessage =
+  | KclMigrationServerMessage
+  | {
+      type: 'history'
+      conversation_id: string
+      entries: MigrationHistoryEntry[]
+    }
+  | {
+      type: 'application'
+      operation_id: string
+      application: MigrationApplication
+    }
 
 export type MigrationProgress = Extract<
   MigrationServerMessage,
@@ -123,10 +166,61 @@ function isProgress(value: unknown): value is MigrationProgress {
   }
 }
 
+function isApplication(value: unknown): value is MigrationApplication {
+  return (
+    isRecord(value) &&
+    ['not_applied', 'applied', 'undone'].includes(String(value.status)) &&
+    typeof value.revision === 'number' &&
+    Number.isInteger(value.revision) &&
+    value.revision >= 0 &&
+    value.revision <= 0xffffffff
+  )
+}
+
+function isHistoryEntry(value: unknown): value is MigrationHistoryEntry {
+  return (
+    isRecord(value) &&
+    typeof value.operation_id === 'string' &&
+    typeof value.conversation_id === 'string' &&
+    (value.prompt_id == null || typeof value.prompt_id === 'string') &&
+    (value.after_prompt_id == null ||
+      typeof value.after_prompt_id === 'string') &&
+    typeof value.created_at === 'string' &&
+    Number.isFinite(Date.parse(value.created_at)) &&
+    typeof value.status === 'string' &&
+    statuses.has(value.status) &&
+    typeof value.detail === 'string' &&
+    isApplication(value.application)
+  )
+}
+
 export function parseMigrationMessage(
   value: unknown
 ): MigrationServerMessage | Error {
   if (isRecord(value)) {
+    if (
+      value.type === 'history' &&
+      typeof value.conversation_id === 'string' &&
+      isArray(value.entries) &&
+      value.entries.every(isHistoryEntry)
+    ) {
+      return {
+        type: 'history',
+        conversation_id: value.conversation_id,
+        entries: [...value.entries],
+      }
+    }
+    if (
+      value.type === 'application' &&
+      typeof value.operation_id === 'string' &&
+      isApplication(value.application)
+    ) {
+      return {
+        type: 'application',
+        operation_id: value.operation_id,
+        application: value.application,
+      }
+    }
     if (
       value.type === 'progress' &&
       typeof value.operation_id === 'string' &&

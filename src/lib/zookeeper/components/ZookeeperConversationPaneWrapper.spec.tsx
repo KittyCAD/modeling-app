@@ -92,7 +92,9 @@ vi.mock('@src/hooks/useModelingContext', () => ({
 vi.mock('@src/lib/boot', () => ({
   useApp: () => ({
     registry,
+    projectSignal: { value: undefined },
     auth: {
+      token: { value: '' },
       useUser: () => mocks.user,
     },
     settings: {
@@ -110,13 +112,15 @@ vi.mock('@src/lib/zookeeper/zookeeperManagerMachine', () => ({
   ZookeeperConversationToMarkdown: mocks.markdown,
 }))
 
+const snapshot = {
+  context: {
+    conversation: mocks.conversation,
+    conversationId: 'conversation-123',
+  },
+}
 const actor = {
-  getSnapshot: () => ({
-    context: {
-      conversation: mocks.conversation,
-      conversationId: 'conversation-123',
-    },
-  }),
+  subscribe: () => ({ unsubscribe: () => undefined }),
+  getSnapshot: () => snapshot,
 }
 const controller = { actor } as unknown as ZookeeperSessionController
 
