@@ -512,7 +512,7 @@ class KclSession:
         r"""
         Get 2D images of the model.
         CPU-only sessions temporarily enable graphics for the entire batch.
-        Cancellation stops snapshotting, but cleanup finishes before the session can be reused.
+        If Python cancels, the batch and cleanup finish before the session can be reused.
         If graphics cannot be disabled, the session is closed.
         It is NOT safe to concurrently call methods on this object. Only call one of measure, export, etc at a time.
         """

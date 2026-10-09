@@ -59,7 +59,8 @@ async with await kcl.new_kcl_session(
 
 CPU-only sessions also support `snapshots()`. Graphics are enabled temporarily
 for the entire snapshot batch and disabled afterward, including on errors and
-cancellation. Follow-up calls wait for cancellation cleanup to finish.
+cancellation. If Python cancels, the batch continues in the background;
+follow-up calls wait for the entire batch and cleanup to finish.
 If disabling graphics fails, the session is closed.
 
 The one-shot `execute_and_snapshot`, `execute_and_snapshot_views`,

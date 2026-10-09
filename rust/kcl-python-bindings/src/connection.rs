@@ -157,7 +157,7 @@ impl KclSession {
 
     /// Get 2D images of the model.
     /// CPU-only sessions temporarily enable graphics for the entire batch.
-    /// Cancellation stops snapshotting, but cleanup finishes before the session can be reused.
+    /// If Python cancels, the batch and cleanup finish before the session can be reused.
     /// If graphics cannot be disabled, the session is closed.
     /// It is NOT safe to concurrently call methods on this object. Only call one of measure, export, etc at a time.
     #[pyo3(signature = (image_format, snapshot_options, *, zoom=true))]
@@ -169,17 +169,14 @@ impl KclSession {
     ) -> PyResult<Vec<Vec<u8>>> {
         let executed_kcl = self.executed_kcl.clone();
         let geometry_only = self.geometry_only;
-        spawn_snapshot_task(async move |cancelled| {
+        spawn_snapshot_task(async move {
             // Keep the context locked through cleanup, including after Python
             // cancellation, so follow-up calls and close() wait for it.
             let mut context = executed_kcl.ctx.lock().await;
             let ctx = context
                 .as_ref()
                 .ok_or_else(|| PyException::new_err("Connection already closed"))?;
-            let result = take_snaps(ctx, image_format, snapshot_options, zoom, geometry_only, async {
-                let _ = cancelled.await;
-            })
-            .await;
+            let result = take_snaps(ctx, image_format, snapshot_options, zoom, geometry_only).await;
             ctx.engine.take_responses().await;
             match result {
                 Ok(images) => Ok(images),
@@ -392,7 +389,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn snapshot_cancellation_waits_for_cleanup_before_session_reuse() {
+    async fn snapshot_cancellation_finishes_batch_before_session_reuse() {
         use std::time::Duration;
 
         use crate::snapshot_tests::SnapshotTransport;
@@ -409,35 +406,32 @@ mod tests {
             .await
             .unwrap();
             let (mut transport, mut started) = SnapshotTransport::new();
-            Arc::get_mut(&mut transport).unwrap().block = vec![cancelled_at, "disable"];
+            Arc::get_mut(&mut transport).unwrap().block = vec![cancelled_at];
             session.executed_kcl.ctx.lock().await.as_mut().unwrap().engine = transport.engine();
 
             let snapshot_session = session.clone();
-            let caller =
-                tokio::spawn(async move { snapshot_session.snapshots(ImageFormat::Png, Vec::new(), true).await });
+            let caller = tokio::spawn(async move {
+                snapshot_session
+                    .snapshots(ImageFormat::Png, vec![SnapshotOptions::isometric_view(0.1); 2], true)
+                    .await
+            });
             assert_eq!(started.recv().await, Some(cancelled_at));
             caller.abort();
             assert!(caller.await.unwrap_err().is_cancelled());
-            if cancelled_at == "enable" {
-                // Enabling must finish before disabling can start.
-                transport.resume.add_permits(1);
-            }
-            if cancelled_at != "disable" {
-                assert_eq!(started.recv().await, Some("disable"));
-            }
-
             let state = session.executed_kcl.clone();
             let mut follow_up = tokio::spawn(async move { state.context().await });
             tokio::time::timeout(Duration::from_millis(20), &mut follow_up)
                 .await
                 .expect_err("session reused before graphics cleanup finished");
-            transport.resume.add_permits(1);
+            // Release both snapshots' camera/snapshot commands if needed.
+            transport.resume.add_permits(2);
             tokio::time::timeout(Duration::from_secs(1), follow_up)
                 .await
                 .unwrap()
                 .unwrap()
                 .unwrap();
             assert_eq!(transport.stages().last(), Some(&"disable"));
+            assert_eq!(transport.stages().iter().filter(|&&s| s == "snapshot").count(), 2);
             let ctx = session.executed_kcl.context().await.unwrap();
             assert!(ctx.engine.take_responses().await.is_empty());
             session.close().await.unwrap();
@@ -473,6 +467,7 @@ mod tests {
                 assert_eq!(started.recv().await, Some("snapshot"));
                 caller.abort();
                 assert!(caller.await.unwrap_err().is_cancelled());
+                transport.resume.add_permits(1);
             } else {
                 assert!(caller.await.unwrap().unwrap_err().to_string().contains("disable"));
             }

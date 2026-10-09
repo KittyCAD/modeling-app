@@ -83,17 +83,14 @@ where
     task.await.map_err(|err| PyException::new_err(err.to_string()))?
 }
 
-/// Unlike ordinary native tasks, snapshot tasks must finish their graphics cleanup
-/// when Python cancels. Dropping the caller signals cancellation without aborting
-/// the worker; the worker decides where it is safe to stop.
-async fn spawn_snapshot_task<T, F, Fut>(operation: F) -> PyResult<T>
+/// Dropping the caller detaches this task, allowing the snapshot batch and its
+/// graphics cleanup to finish even when Python cancels.
+async fn spawn_snapshot_task<T, Fut>(future: Fut) -> PyResult<T>
 where
     T: Send + 'static,
-    F: FnOnce(tokio::sync::oneshot::Receiver<()>) -> Fut,
     Fut: Future<Output = PyResult<T>> + Send + 'static,
 {
-    let (_cancel_on_drop, cancelled) = tokio::sync::oneshot::channel();
-    let task = tokio().spawn(operation(cancelled));
+    let task = tokio().spawn(future);
     task.await.map_err(|err| PyException::new_err(err.to_string()))?
 }
 
@@ -992,19 +989,10 @@ async fn snapshot_and_close(
     snapshot_options: Vec<SnapshotOptions>,
     zoom: bool,
 ) -> PyResult<Vec<Vec<u8>>> {
-    spawn_snapshot_task(async move |cancelled| {
-        let result = take_snaps(
-            &ctx,
-            image_format,
-            snapshot_options,
-            zoom,
-            ctx.settings.geometry_only,
-            async {
-                let _ = cancelled.await;
-            },
-        )
-        .await
-        .map_err(|error| error.exception);
+    spawn_snapshot_task(async move {
+        let result = take_snaps(&ctx, image_format, snapshot_options, zoom, ctx.settings.geometry_only)
+            .await
+            .map_err(|error| error.exception);
         ctx.close().await;
         result
     })
@@ -1017,22 +1005,16 @@ async fn take_snaps(
     snapshot_options: Vec<SnapshotOptions>,
     zoom: bool,
     geometry_only: bool,
-    cancelled: impl Future<Output = ()>,
 ) -> Result<Vec<Vec<u8>>, SnapshotError> {
-    // Do not cancel an in-flight toggle: its response tells us when it is safe
-    // to send the next command. Also attempt cleanup if enabling fails, since
-    // the engine might have enabled graphics before returning an error.
+    // Also attempt cleanup if enabling fails, since the engine might have
+    // enabled graphics before returning an error.
     let enabled = if geometry_only {
         toggle_graphics(ctx, true).await
     } else {
         Ok(())
     };
     let result = match enabled {
-        Ok(()) => tokio::select! {
-            biased;
-            () = cancelled => Err(PyException::new_err("Snapshot cancelled")),
-            result = take_snaps_inner(ctx, image_format, snapshot_options, zoom) => result,
-        },
+        Ok(()) => take_snaps_inner(ctx, image_format, snapshot_options, zoom).await,
         Err(error) => Err(error),
     };
     if geometry_only && let Err(cleanup_error) = toggle_graphics(ctx, false).await {
