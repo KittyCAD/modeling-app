@@ -566,8 +566,9 @@ async fn execute_and_snapshot_views_impl(
     zoom: bool,
     highlight_edges: Option<bool>,
 ) -> PyResult<Vec<Vec<u8>>> {
-    let ExecutedKcl { ctx, .. } = run_kcl(input, false, highlight_edges, false).await?;
-    let result = take_snaps(&ctx, image_format, snapshot_options, zoom).await;
+    let geometry_only = true;
+    let ExecutedKcl { ctx, .. } = run_kcl(input, false, highlight_edges, geometry_only).await?;
+    let result = take_snaps(&ctx, image_format, snapshot_options, zoom, geometry_only).await;
     ctx.close().await;
     result
 }
@@ -803,13 +804,14 @@ async fn import_and_snapshot_views(
     highlight_edges: Option<bool>,
 ) -> PyResult<Vec<Vec<u8>>> {
     let zoom = zoom.unwrap_or(true);
+    let geometry_only = true;
     spawn_py(async move {
         let (ctx, _state) = new_context_state(
             kcl_lib::KclVersion::default(),
             ContextParams {
                 mock: false,
                 highlight_edges,
-                geometry_only: false,
+                geometry_only,
                 ..Default::default()
             },
         )
@@ -819,7 +821,7 @@ async fn import_and_snapshot_views(
             ctx.close().await;
             return Err(e);
         }
-        let result = take_snaps(&ctx, image_format, snapshot_options, zoom).await;
+        let result = take_snaps(&ctx, image_format, snapshot_options, zoom, geometry_only).await;
         ctx.close().await;
         result
     })
@@ -966,7 +968,46 @@ impl SnapshotOptions {
     }
 }
 
+async fn enable_engine_graphics(ctx: &ExecutorContext) -> PyResult<()> {
+    toggle_engine_graphics(ctx, true).await
+}
+
+async fn disable_engine_graphics(ctx: &ExecutorContext) -> PyResult<()> {
+    toggle_engine_graphics(ctx, false).await
+}
+
+/// Send the ToggleGraphics modeling command.
+async fn toggle_engine_graphics(ctx: &ExecutorContext, enabled: bool) -> PyResult<()> {
+    ctx.engine
+        .send_modeling_cmd(
+            &ctx.engine_batch,
+            Uuid::new_v4(),
+            Default::default(),
+            &ModelingCmd::ToggleGraphics(kcmc::ToggleGraphics::enabled(enabled)),
+        )
+        .await
+        .map_err(into_kcl_exception)?;
+    Ok(())
+}
+
 async fn take_snaps(
+    ctx: &ExecutorContext,
+    image_format: ImageFormat,
+    snapshot_options: Vec<SnapshotOptions>,
+    zoom: bool,
+    is_geometry_only_connection: bool,
+) -> PyResult<Vec<Vec<u8>>> {
+    if is_geometry_only_connection {
+        enable_engine_graphics(ctx).await?;
+        let res = take_snaps_inner(ctx, image_format, snapshot_options, zoom).await;
+        disable_engine_graphics(ctx).await?;
+        res
+    } else {
+        take_snaps_inner(ctx, image_format, snapshot_options, zoom).await
+    }
+}
+
+async fn take_snaps_inner(
     ctx: &ExecutorContext,
     image_format: ImageFormat,
     snapshot_options: Vec<SnapshotOptions>,
@@ -996,6 +1037,7 @@ async fn take_snaps(
         let data_bytes = snapshot(ctx, image_format, pre_snap.padding, zoom).await?;
         snaps.push(data_bytes);
     }
+    // TODO: Disable gfx if geometry_only_connection
     Ok(snaps)
 }
 
