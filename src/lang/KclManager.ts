@@ -2299,12 +2299,6 @@ export class KclManager extends File {
           }
         )
       )
-      console.info('[KclManager] dispatched execution-done', {
-        successful: !isInterrupted && errors.length === 0,
-        isInterrupted,
-        hasErrors: errors.length > 0,
-        codeLength: codeThatExecuted.length,
-      })
     } finally {
       finishExecution()
     }
