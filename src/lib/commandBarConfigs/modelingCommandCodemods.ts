@@ -337,6 +337,7 @@ export const modelingCommandCodemods = {
         outputUnit: kclManager.fileSettings.defaultLengthUnit,
         wasmInstance,
         distance: dimensionFunction === 'distance',
+        circular: dimensionFunction !== 'distance',
       })
       return addDistanceGdt({
         ...data,

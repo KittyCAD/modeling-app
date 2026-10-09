@@ -8,14 +8,27 @@ import { enginelessExecutor } from '@src/lib/testHelpers'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 
 describe('circular dimensions', () => {
-  it.each(['diameter', 'radius'] as const)(
-    'generates and edits a %s annotation for a selected cylindrical face',
-    async (kind) => {
+  it.each(
+    ['diameter', 'radius'].flatMap((kind) =>
+      ['XY', 'XZ', 'YZ'].map((plane) => ({
+        kind: kind as 'diameter' | 'radius',
+        plane,
+      }))
+    )
+  )(
+    'generates and edits a $kind annotation in $plane for a selected cylindrical face',
+    async ({ kind, plane }) => {
+      const point = (x: number, y: number, z: number) =>
+        plane === 'XY'
+          ? { x, y, z }
+          : plane === 'XZ'
+            ? { x, y: z, z: y }
+            : { x: z, y: x, z: y }
       const { instance, kclManager, engineCommandManager, rustContext } =
         await buildTheWorldAndNoEngineConnection()
       const ast = assertParse(
         `@settings(kclVersion = 2.0)
-profile = sketch(on = XY) {
+profile = sketch(on = ${plane}) {
   rim = ${
     kind === 'diameter'
       ? 'circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])'
@@ -69,7 +82,7 @@ solid = extrude(profileRegion, length = 5mm)`,
             const responses = {
               face_get_gradient: {
                 df_du: { x: 1, y: 0, z: 0 },
-                df_dv: { x: 0, y: 0, z: 5 },
+                df_dv: point(0, 0, 5),
                 normal: { x: 0, y: 1, z: 0 },
               },
               entity_get_parent_id: { entity_id: sweep.id },
@@ -88,7 +101,15 @@ solid = extrude(profileRegion, length = 5mm)`,
                   { x: 0, y: 10, z: 0 },
                   { x: -10, y: 10, z: 0 },
                   { x: -10, y: 0, z: 0 },
-                ],
+                  ...(kind === 'diameter'
+                    ? [
+                        { x: -10, y: -10, z: 0 },
+                        { x: 0, y: -10, z: 0 },
+                        { x: 10, y: -10, z: 0 },
+                        { x: 10, y: 0, z: 0 },
+                      ]
+                    : []),
+                ].map((p) => point(p.x, p.y, p.z)),
               },
             }
             return {
@@ -116,11 +137,11 @@ solid = extrude(profileRegion, length = 5mm)`,
                 modeling_response: {
                   type: 'face_get_position',
                   data: {
-                    pos: {
-                      x: 10 * Math.cos(angle),
-                      y: 10 * Math.sin(angle),
-                      z: y * 5,
-                    },
+                    pos: point(
+                      10 * Math.cos(angle),
+                      10 * Math.sin(angle),
+                      y * 5
+                    ),
                   },
                 },
               },
@@ -147,6 +168,10 @@ solid = extrude(profileRegion, length = 5mm)`,
       const code = recast(result.modifiedAst, instance)
       expect(code).toContain(`gdt::${kind}(`)
       expect(code).toContain('target = profileRegion.tags.rim')
+      expect(code).toContain(`framePlane = ${plane}`)
+      expect(code).toContain(
+        `framePosition = [${kind === 'diameter' ? -12 : 12}, 7.5]`
+      )
       expect(code).not.toContain('tolerance =')
       await enginelessExecutor(result.modifiedAst, rustContext)
 

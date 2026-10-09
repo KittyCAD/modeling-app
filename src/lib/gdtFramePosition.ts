@@ -23,6 +23,10 @@ import {
 } from '@src/lib/constants'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { getDistanceFramePlaneFromKcl } from '@src/lib/gdtDistanceKclPlane'
+import {
+  getCircularFrameGeometryForEntity,
+  getCircularFramePosition,
+} from '@src/lib/gdtCircularFrame'
 import { baseUnitToMm, isArray, roundOff, uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -1199,6 +1203,7 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   outputUnit = DEFAULT_DEFAULT_LENGTH_UNIT,
   wasmInstance,
   distance = false,
+  circular = false,
 }: {
   data: T
   engineCommandManager: ConnectionManager
@@ -1208,6 +1213,7 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   outputUnit?: UnitLength
   wasmInstance: ModuleType
   distance?: boolean
+  circular?: boolean
 }): Promise<T> {
   const selections = getSelectionsFromGdtData(data)
   const entityIds = getEngineEntityIdsForGdtSelections(selections)
@@ -1222,10 +1228,41 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
           fontSize: existingFontSize,
         }
   let hasResolvedFramePlane = Boolean(nextData.framePlane)
+  const isCircularEdge = Boolean(
+    selections?.graphSelections.some(
+      (selection) =>
+        selection.entityRef?.type === 'edge' ||
+        selection.artifact?.type === 'segment' ||
+        selection.artifact?.type === 'sweepEdge'
+    ) ||
+      selections?.otherSelections.some(
+        (selection) =>
+          typeof selection === 'object' &&
+          'primitiveType' in selection &&
+          selection.primitiveType === 'edge'
+      )
+  )
+  const circularGeometry =
+    circular &&
+    entityIds.length === 1 &&
+    (!nextData.framePlane || !nextData.framePosition)
+      ? await getCircularFrameGeometryForEntity(
+          engineCommandManager,
+          entityIds[0],
+          isCircularEdge
+        )
+      : undefined
   const kclFramePlane =
-    distance && !nextData.framePlane
+    (distance || circular) && !nextData.framePlane
       ? getDistanceFramePlaneFromKcl(ast, artifactGraph, selections)
       : undefined
+  if (circular && !nextData.framePlane) {
+    const framePlane = circularGeometry?.framePlane ?? kclFramePlane
+    if (framePlane) {
+      nextData = { ...nextData, framePlane }
+      hasResolvedFramePlane = true
+    }
+  }
   if (distance && !nextData.framePlane) {
     const framePlane = await getDistanceGeometryPlane(
       engineCommandManager,
@@ -1310,7 +1347,7 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   }
   let framePositionSigns: GdtFramePositionSigns | undefined
   const shouldQueryNormalDefaults =
-    !distance && (!nextData.framePlane || !nextData.framePosition)
+    !distance && !circular && (!nextData.framePlane || !nextData.framePosition)
 
   if (shouldQueryNormalDefaults) {
     const defaultsFromNormal =
@@ -1352,11 +1389,15 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
   if (!hasResolvedFramePlane && selectionBoundingBox) {
     const framePlaneFromBoundingBox = distance
       ? getDistanceFramePlaneFromDirection(selectionBoundingBox.dimensions)
-      : getDefaultGdtFramePlaneFromBoundingBox(selectionBoundingBox.dimensions)
+      : circular
+        ? getFlatFeaturePlane(selectionBoundingBox.dimensions)
+        : getDefaultGdtFramePlaneFromBoundingBox(
+            selectionBoundingBox.dimensions
+          )
 
     if (framePlaneFromBoundingBox) {
       hasResolvedFramePlane = true
-      if (distance || framePlaneFromBoundingBox !== KCL_PLANE_XY) {
+      if (distance || circular || framePlaneFromBoundingBox !== KCL_PLANE_XY) {
         nextData = {
           ...nextData,
           framePlane: framePlaneFromBoundingBox,
@@ -1438,6 +1479,28 @@ export async function withDefaultGdtFrameDefaults<T extends GdtCommandData>({
 
   if (distance && !nextData.framePlane) {
     nextData = { ...nextData, framePlane: KCL_PLANE_XY }
+  }
+
+  if (
+    circularGeometry &&
+    !data.framePosition &&
+    typeof nextData.framePlane === 'string'
+  ) {
+    const position = getCircularFramePosition(
+      circularGeometry,
+      nextData.framePlane,
+      baseUnitToMm(outputUnit),
+      getGdtFontHeight(nextData.fontSize, outputUnit)
+    )
+    if (position)
+      nextData = {
+        ...nextData,
+        framePosition: createFramePositionCommandValue(
+          roundOff(position[0], 4),
+          roundOff(position[1], 4),
+          wasmInstance
+        ),
+      }
   }
 
   return nextData
