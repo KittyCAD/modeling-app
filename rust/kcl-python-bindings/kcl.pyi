@@ -511,6 +511,9 @@ class KclSession:
     async def snapshots(self, image_format: ImageFormat, snapshot_options: typing.Sequence[SnapshotOptions], *, zoom: builtins.bool = ...) -> builtins.list[builtins.list[builtins.int]]:
         r"""
         Get 2D images of the model.
+        CPU-only sessions temporarily enable graphics for the entire batch.
+        Cancellation stops snapshotting, but cleanup finishes before the session can be reused.
+        If graphics cannot be disabled, the session is closed.
         It is NOT safe to concurrently call methods on this object. Only call one of measure, export, etc at a time.
         """
     async def export(self, export_format: FileExportFormat) -> builtins.list[RawFile]:
