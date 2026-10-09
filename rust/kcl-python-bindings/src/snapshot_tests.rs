@@ -18,6 +18,7 @@ pub(crate) struct SnapshotTransport {
     pub block: Vec<&'static str>,
     pub started: mpsc::UnboundedSender<&'static str>,
     pub resume: Semaphore,
+    pub closed: tokio::sync::Notify,
 }
 
 impl SnapshotTransport {
@@ -30,6 +31,7 @@ impl SnapshotTransport {
                 block: Vec::new(),
                 started,
                 resume: Semaphore::new(0),
+                closed: tokio::sync::Notify::new(),
             }),
             receiver,
         )
@@ -118,6 +120,7 @@ impl EngineTransport for RecordingTransport {
     }
 
     async fn close(&self) -> Result<(), TransportCloseError> {
+        self.closed.notify_one();
         Ok(())
     }
 }
@@ -206,4 +209,31 @@ async fn cleanup_failure_preserves_the_snapshot_error_as_its_cause() {
     .exception;
     assert!(error.to_string().contains("disable"));
     Python::attach(|py| assert!(error.cause(py).unwrap().to_string().contains("snapshot")));
+}
+
+#[tokio::test]
+async fn cancelled_snapshot_helper_disables_graphics_and_closes_connection() {
+    for cancelled_at in ["enable", "camera", "snapshot", "disable"] {
+        let (mut transport, mut started) = SnapshotTransport::new();
+        Arc::get_mut(&mut transport).unwrap().block = vec![cancelled_at, "disable"];
+        let ctx = context(&transport, true);
+        // Reproduce the outer execution/import task being aborted by Python.
+        let caller = tokio::spawn(spawn_py(async move {
+            snapshot_and_close(ctx, ImageFormat::Png, Vec::new(), true).await
+        }));
+        assert_eq!(started.recv().await, Some(cancelled_at));
+        caller.abort();
+        assert!(caller.await.unwrap_err().is_cancelled());
+        if cancelled_at == "enable" {
+            transport.resume.add_permits(1);
+        }
+        if cancelled_at != "disable" {
+            assert_eq!(started.recv().await, Some("disable"));
+        }
+        transport.resume.add_permits(1);
+        tokio::time::timeout(std::time::Duration::from_secs(1), transport.closed.notified())
+            .await
+            .expect("cancelled snapshot helper did not close its connection");
+        assert_eq!(transport.stages().last(), Some(&"disable"));
+    }
 }

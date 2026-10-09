@@ -269,6 +269,46 @@ async def test_kcl_session_mock_with_explicit_credentials(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "entrypoint",
+    [
+        "execute_and_snapshot",
+        "execute_and_snapshot_views",
+        "import_and_snapshot",
+        "import_and_snapshot_views",
+    ],
+)
+async def test_snapshot_helpers_use_cpu_geometry_only_connections(
+    entrypoint, modeling_api, monkeypatch, tmp_path
+):
+    base_url, requests = modeling_api
+    monkeypatch.setenv("ZOO_API_TOKEN", "snapshot-test-token")
+    monkeypatch.setenv("ZOO_HOST", base_url)
+    if entrypoint.startswith("execute"):
+        source = tmp_path / "main.kcl"
+        source.write_text("@settings(kclVersion = 2.0)\nvalue = 1")
+        args = [str(source), kcl.ImageFormat.Png]
+    else:
+        args = [
+            [cube_step_file],
+            kcl.InputFormat3d.Step(kcl.StepImportOptions()),
+            kcl.ImageFormat.Png,
+        ]
+    if entrypoint.endswith("_views"):
+        args.append([])
+    async with asyncio.timeout(10):
+        with pytest.raises(Exception, match="401"):
+            await getattr(kcl, entrypoint)(*args)
+    assert len(requests) == 1
+    path, authorization = requests[0]
+    assert authorization == "Bearer snapshot-test-token"
+    query = parse_qs(urlsplit(path).query)
+    assert query["pool"] == ["cpu"]
+    assert query["geometry_only"] == ["true"]
+    assert query["post_effect"] == ["ssao"]
+
+
+@pytest.mark.asyncio
 async def test_kcl_session_context_manager_propagates_exception():
     session = await kcl.new_kcl_session_code(
         "@settings(kclVersion = 2.0)\nvalue = 1", mock=True

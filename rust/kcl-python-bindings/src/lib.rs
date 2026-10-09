@@ -582,19 +582,8 @@ async fn execute_and_snapshot_views_impl(
     zoom: bool,
     highlight_edges: Option<bool>,
 ) -> PyResult<Vec<Vec<u8>>> {
-    let ExecutedKcl { ctx, .. } = run_kcl(input, false, highlight_edges, false).await?;
-    let result = take_snaps(
-        &ctx,
-        image_format,
-        snapshot_options,
-        zoom,
-        false,
-        std::future::pending(),
-    )
-    .await
-    .map_err(|error| error.exception);
-    ctx.close().await;
-    result
+    let ExecutedKcl { ctx, .. } = run_kcl(input, false, highlight_edges, true).await?;
+    snapshot_and_close(ctx, image_format, snapshot_options, zoom).await
 }
 
 async fn execute_and_measure_impl(
@@ -834,7 +823,7 @@ async fn import_and_snapshot_views(
             ContextParams {
                 mock: false,
                 highlight_edges,
-                geometry_only: false,
+                geometry_only: true,
                 ..Default::default()
             },
         )
@@ -844,18 +833,7 @@ async fn import_and_snapshot_views(
             ctx.close().await;
             return Err(e);
         }
-        let result = take_snaps(
-            &ctx,
-            image_format,
-            snapshot_options,
-            zoom,
-            false,
-            std::future::pending(),
-        )
-        .await
-        .map_err(|error| error.exception);
-        ctx.close().await;
-        result
+        snapshot_and_close(ctx, image_format, snapshot_options, zoom).await
     })
     .await
 }
@@ -1004,6 +982,33 @@ impl SnapshotOptions {
 struct SnapshotError {
     exception: PyErr,
     graphics_cleanup_failed: bool,
+}
+
+/// Snapshot helpers own their connection. Keep both graphics cleanup and
+/// connection closure alive when the outer execution/import task is cancelled.
+async fn snapshot_and_close(
+    ctx: ExecutorContext,
+    image_format: ImageFormat,
+    snapshot_options: Vec<SnapshotOptions>,
+    zoom: bool,
+) -> PyResult<Vec<Vec<u8>>> {
+    spawn_snapshot_task(async move |cancelled| {
+        let result = take_snaps(
+            &ctx,
+            image_format,
+            snapshot_options,
+            zoom,
+            ctx.settings.geometry_only,
+            async {
+                let _ = cancelled.await;
+            },
+        )
+        .await
+        .map_err(|error| error.exception);
+        ctx.close().await;
+        result
+    })
+    .await
 }
 
 async fn take_snaps(

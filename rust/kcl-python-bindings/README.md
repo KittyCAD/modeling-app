@@ -62,6 +62,11 @@ for the entire snapshot batch and disabled afterward, including on errors and
 cancellation. Follow-up calls wait for cancellation cleanup to finish.
 If disabling graphics fails, the session is closed.
 
+The one-shot `execute_and_snapshot`, `execute_and_snapshot_views`,
+`import_and_snapshot`, and `import_and_snapshot_views` helpers automatically use
+CPU-only connections. They execute or import with graphics disabled, enable
+graphics for the snapshot batch, then disable graphics and close the connection.
+
 `session.outcome` is an `ExecOutcome` with the same diagnostics, constraint reports,
 and sketch rendering methods returned by `execute()`. Accessing it shares the
 saved result without copying the execution state or running KCL again. Use
