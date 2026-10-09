@@ -241,7 +241,7 @@ test.describe('Named View dialog', { tag: '@web' }, () => {
     userFeatures: ['modeling_dialogs', NAMED_VIEWS_UI_FEATURE_FLAG],
   })
 
-  test('Creates, edits visibility, and deletes from the pane', async ({
+  test('Creates, edits visibility, and removes from the pane', async ({
     page,
     homePage,
     scene,
@@ -315,7 +315,7 @@ test.describe('Named View dialog', { tag: '@web' }, () => {
     ).toHaveCount(0)
     await row.getByTestId('named-view-actions').click()
     await scene.waitForExecutionDoneAfter(() =>
-      page.getByTestId('named-view-delete').click()
+      page.getByRole('button', { name: 'Remove', exact: true }).click()
     )
     await expect(row).not.toBeAttached()
     await editor.expectEditor.not.toContain('view::named(')
