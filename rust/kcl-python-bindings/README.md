@@ -47,6 +47,16 @@ Omitted values use the client's existing environment defaults (`ZOO_API_TOKEN`
 or `KITTYCAD_API_TOKEN` for the token; `ZOO_HOST` or `KITTYCAD_HOST` for the API
 origin). Mock sessions do not create an API client.
 
+For exports and measurements that do not need images, pass `geometry_only=True`
+to either constructor. This selects the CPU engine pool and skips rendering setup:
+
+```python
+async with await kcl.new_kcl_session(
+    "main.kcl", geometry_only=True, token=api_token, base_url=api_origin
+) as session:
+    files = await session.export(kcl.FileExportFormat.Step)
+```
+
 `session.outcome` is an `ExecOutcome` with the same diagnostics, constraint reports,
 and sketch rendering methods returned by `execute()`. Accessing it shares the
 saved result without copying the execution state or running KCL again. Use

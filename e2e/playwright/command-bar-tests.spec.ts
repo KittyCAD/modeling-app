@@ -259,7 +259,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     await expect(cmdSearchBar).toBeVisible()
 
     // Search for extrude command and choose it
-    await cmdBar.cmdOptions.getByText('Extrude').click()
+    await cmdBar.cmdOptions.getByText('Extrude', { exact: true }).click()
 
     // Assert that we're on the selection step
     await cmdBar.expectState({
@@ -441,7 +441,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     ).toBeVisible()
     await expect(
       page.getByRole('option', {
-        name: 'Pull a sketch into 3D',
+        name: 'Extrude',
         exact: false,
       })
     ).toHaveCount(0)
@@ -844,7 +844,7 @@ export exported = 2`,
     await scene.settled()
 
     await cmdBar.openCmdBar()
-    await cmdBar.chooseCommand('Extrude')
+    await cmdBar.cmdOptions.getByText('Extrude', { exact: true }).click()
     await cmdBar.expectState({
       stage: 'arguments',
       commandName: 'Extrude',
