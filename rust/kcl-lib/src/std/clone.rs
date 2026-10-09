@@ -67,6 +67,7 @@ async fn inner_clone(
         let new_id = exec_state.next_uuid();
         let mut geometry = g.clone();
         let old_id = geometry.id(&args.ctx).await?;
+        exec_state.copy_section_material(old_id, new_id);
         // Pattern copies have a new top-level entity ID, but their KCL
         // geometry still describes the source topology. Map that source
         // topology directly to the clone so paths and tagged faces receive

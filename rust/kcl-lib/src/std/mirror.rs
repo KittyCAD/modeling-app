@@ -59,6 +59,7 @@ async fn inner_mirror_3d(
         let mut unmapped_mirrored_bodies = unmapped_mirrored_bodies;
         for mirrored_body in &mut unmapped_mirrored_bodies {
             let id = exec_state.next_uuid();
+            exec_state.copy_section_material(mirrored_body.id, id);
             mirrored_body.set_id(id);
             mirrored_body.become_new_body(id, id.into());
         }
@@ -154,6 +155,7 @@ async fn inner_mirror_3d(
         .zip(mirror_info.entity_face_edge_ids.iter())
     {
         let old_id = mirrored_body.id;
+        exec_state.copy_section_material(old_id, info.object_id);
         let source_topology_id = mirrored_body.topology_id();
         mirrored_body.id = info.object_id;
         mirrored_body.become_new_body(info.object_id, info.object_id.into());
