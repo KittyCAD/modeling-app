@@ -2257,7 +2257,7 @@ gdt::flatness(
         let section: Vec<_> = (0..9)
             .map(|i| {
                 let t = i as f64 / 8.0;
-                nalgebra_glm::vec3(100.0 + 25.4 * t.cos(), -20.0 + 25.4 * t.sin(), 12.0)
+                nalgebra_glm::vec3(100.0 + 25.4 * libm::cos(t), -20.0 + 25.4 * libm::sin(t), 12.0)
             })
             .collect();
         let radius_mm = circular_section_radius(&section).unwrap();
