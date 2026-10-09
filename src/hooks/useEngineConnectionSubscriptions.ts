@@ -240,10 +240,27 @@ export function useEngineConnectionSubscriptions() {
           })
           // Check state again, in case it changed before
           // getEventForQueryEntityTypeWithPoint returned.
-          if (stateRef.current.matches('sketchSolveMode')) {
+          if (
+            stateRef.current.matches('sketchSolveMode') ||
+            selectingSketchPlane !== stateRef.current.matches('Sketch no face')
+          ) {
             return
           }
           if (event) send(event)
+          if (selectingSketchPlane) {
+            const entityId = (
+              engineEvent.data as typeof engineEvent.data & {
+                entity_id?: string
+              }
+            ).entity_id
+            if (entityId) {
+              await selectSketchPlane(
+                entityId,
+                context.store.useSketchSolveMode?.current,
+                kclManager
+              )
+            }
+          }
         })().catch(reportRejection)
       },
     })
