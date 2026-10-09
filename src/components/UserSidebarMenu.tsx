@@ -14,6 +14,7 @@ import { PATHS } from '@src/lib/paths'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { Fragment, useEffect, useMemo, useState } from 'react'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: user-menu navigation and route-derived context (useLocation, useNavigate).
 import { useLocation, useNavigate } from 'react-router-dom'
 
 let didListEnvironments = false

@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: route-loader error presentation (useRouteError).
 import { isRouteErrorResponse, useRouteError } from 'react-router-dom'
 import UAParser from 'ua-parser-js'
 
