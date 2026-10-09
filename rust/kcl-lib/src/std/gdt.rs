@@ -1098,7 +1098,7 @@ async fn measure_circular_radius(
                     else {
                         return Err(invalid());
                     };
-                    points.push(nalgebra_glm::vec3(position.pos.x, position.pos.y, position.pos.z));
+                    points.push(nalgebra_glm::vec3(position.pos.x.0, position.pos.y.0, position.pos.z.0));
                 }
                 sections.push(points);
             }
