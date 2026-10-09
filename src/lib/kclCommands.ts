@@ -104,6 +104,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           } else {
             commandProps.kclManager.updateCodeEditor(newCode, {
               shouldExecute: true,
+              shouldExecuteImmediately: true,
               shouldResetCamera: true,
             })
             toast.success(`Updated per-file units to ${data.unit}.`)
@@ -391,6 +392,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
 
         commandProps.kclManager.updateCodeEditor(newCode, {
           shouldExecute: true,
+          shouldExecuteImmediately: true,
           shouldWriteToDisk: true,
           shouldAddToHistory: true,
         })

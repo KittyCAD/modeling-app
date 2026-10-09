@@ -102,6 +102,7 @@ export async function deleteSelectionPromise({
 
     systemDeps.kclManager.updateCodeEditor(result.kclSource.text, {
       shouldExecute: true,
+      shouldExecuteImmediately: true,
       shouldWriteToDisk: true,
     })
     clearSelectionAfterDelete(systemDeps.kclManager)

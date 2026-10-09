@@ -609,6 +609,30 @@ describe('KclManager diagnostics', () => {
     expect(executeCodeSpy).toHaveBeenCalledWith('abc')
   })
 
+  it('executes newer code immediately and consumes the pending debounced run', async () => {
+    vi.useFakeTimers()
+    const { kclManager } = createKclManagerTestHarness(
+      '@settings(kclVersion = 3.0)\nx = 1'
+    )
+    const executeCodeSpy = vi
+      .spyOn(kclManager, 'executeCode')
+      .mockResolvedValue(undefined)
+
+    kclManager.scheduleCurrentCodeExecution(false)
+    expect(executeCodeSpy).not.toHaveBeenCalled()
+
+    const latestCode = '@settings(kclVersion = 3.0)\nx = 2'
+    kclManager.updateCodeEditor(latestCode, {
+      shouldExecute: true,
+      shouldExecuteImmediately: true,
+      shouldWriteToDisk: false,
+    })
+
+    expect(executeCodeSpy).toHaveBeenCalledExactlyOnceWith(latestCode)
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(executeCodeSpy).toHaveBeenCalledTimes(1)
+  })
+
   it('coalesces scheduled project reloads and executes with automatic rendering disabled', async () => {
     vi.useFakeTimers()
 
