@@ -350,7 +350,6 @@ sketch001 = extrude(region001, length = -12)`
 
     // Locators
     const faceLocation = { x: 630, y: 290 }
-    const timeout = 150
 
     // Setup
     await test.step(`Initial test setup`, async () => {
@@ -369,88 +368,82 @@ sketch001 = extrude(region001, length = -12)`
     await test.step('Select the face (Shift-click)', async () => {
       await page.keyboard.down('Shift')
       await clickOnFace()
-      await page.waitForTimeout(timeout)
-      await page.keyboard.up('Shift')
       await expect(toolbar.selectionStatus).toContainText('1 face')
+      await page.keyboard.up('Shift')
     })
     await test.step('Deselect the face (Shift-click)', async () => {
       await page.keyboard.down('Shift')
       await clickOnFace()
-      await page.waitForTimeout(timeout)
-      await page.keyboard.up('Shift')
       await expect(toolbar.selectionStatus).not.toContainText('1 face')
+      await page.keyboard.up('Shift')
     })
   })
 
-  test(`Offset plane point-and-click`, async ({
-    context,
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    const expectedOutput = `plane001 = offsetPlane(XZ, offset = 5)`
-    await homePage.goToModelingScene()
-    await scene.settled()
-
-    await test.step(`Go through the command bar flow`, async () => {
-      await toolbar.offsetPlaneButton.click()
-      await expect
-        .poll(() => page.getByText('Please select one').count())
-        .toBe(1)
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'plane',
-        currentArgValue: '',
-        headerArguments: { Plane: '', Offset: '' },
-        highlightedHeaderArg: 'plane',
-        commandName: 'Offset plane',
-      })
-      await toolbar.selectDefaultPlane('Front plane')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        currentArgKey: 'offset',
-        currentArgValue: '5',
-        headerArguments: { Plane: '1 plane', Offset: '' },
-        highlightedHeaderArg: 'offset',
-        commandName: 'Offset plane',
-      })
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: { Plane: '1 plane', Offset: '5' },
-        reviewValidationError: undefined,
-        commandName: 'Offset plane',
-      })
-      await cmdBar.submit()
-    })
-
-    await test.step(`Confirm code is added to the editor`, async () => {
-      await editor.expectEditor.toContain(expectedOutput)
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: [expectedOutput],
-        highlightedCode: '',
-      })
-    })
-
-    await test.step('Delete offset plane via feature tree selection', async () => {
-      await editor.closePane()
-      const operationButton = await toolbar.getFeatureTreeOperation(
-        'plane001',
-        0
-      )
-      await operationButton.click({ button: 'left' })
-      await expect(toolbar.selectionStatus).not.toContainText('No selection')
-      await toolbar.removeFeatureTreeOperation(operationButton)
+  test(
+    `Offset plane point-and-click`,
+    { tag: '@web' },
+    async ({ context, page, homePage, scene, editor, toolbar, cmdBar }) => {
+      const expectedOutput = `plane001 = offsetPlane(XZ, offset = 5)`
+      await homePage.goToModelingScene()
       await scene.settled()
-      await expect(toolbar.selectionStatus).toContainText('No selection')
-      await editor.expectEditor.not.toContain(expectedOutput)
-    })
-  })
+
+      await test.step(`Go through the command bar flow`, async () => {
+        await toolbar.offsetPlaneButton.click()
+        await expect
+          .poll(() => page.getByText('Please select one').count())
+          .toBe(1)
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'plane',
+          currentArgValue: '',
+          headerArguments: { Plane: '', Offset: '' },
+          highlightedHeaderArg: 'plane',
+          commandName: 'Offset Plane',
+        })
+        await toolbar.selectDefaultPlane('Front plane')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          currentArgKey: 'offset',
+          currentArgValue: '5',
+          headerArguments: { Plane: '1 plane', Offset: '' },
+          highlightedHeaderArg: 'offset',
+          commandName: 'Offset Plane',
+        })
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          headerArguments: { Plane: '1 plane', Offset: '5' },
+          reviewValidationError: undefined,
+          commandName: 'Offset Plane',
+        })
+        await cmdBar.submit()
+      })
+
+      await test.step(`Confirm code is added to the editor`, async () => {
+        await editor.expectEditor.toContain(expectedOutput)
+        await editor.expectState({
+          diagnostics: [],
+          activeLines: [expectedOutput],
+          highlightedCode: '',
+        })
+      })
+
+      await test.step('Delete offset plane via feature tree selection', async () => {
+        await editor.closePane()
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'plane001',
+          0
+        )
+        await operationButton.click({ button: 'left' })
+        await expect(toolbar.selectionStatus).not.toContainText('No selection')
+        await toolbar.removeFeatureTreeOperation(operationButton)
+        await scene.settled()
+        await expect(toolbar.selectionStatus).toContainText('No selection')
+        await editor.expectEditor.not.toContain(expectedOutput)
+      })
+    }
+  )
 
   test(`Mirror point-and-click`, async ({
     context,
@@ -635,7 +628,7 @@ extrude001 = extrude(region001, length = 100)`
         `
         helix001 = helix(
           axis = {
-            sideFaces = [capEnd001, region001.tags.line3]
+            sideFaces = [region001.tags.line3, capEnd001]
           },
           revolutions = 20,
           angleStart = 0,
@@ -710,7 +703,7 @@ extrude001 = extrude(region001, length = 100)`
         `
         helix001 = helix(
           axis = {
-            sideFaces = [capEnd001, region001.tags.line3]
+            sideFaces = [region001.tags.line3, capEnd001]
           },
           revolutions = 20,
           angleStart = 0,
@@ -1031,7 +1024,7 @@ region001 = region(segments = [sketch001.circle1])`
 hide(sketch001)
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = -12)`
-    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[extrude001.faces.capEnd001,region001.tags.line2]}], radius=5,)`
+    const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capEnd001]}], radius=5,)`
     const secondFilletDeclaration = `fillet002 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capStart001]}], radius=5,)`
 
     // Locators
@@ -1112,7 +1105,10 @@ extrude001 = extrude(region001, length = -12)`
       oldValue: string,
       newValue: string
     ) {
+      await scene.settled()
+      // await scene.waitForExecutionDoneAfter(async () =>
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+      // )
       const operationButton = await toolbar.getFeatureTreeOperation(
         'Fillet',
         featureTreeIndex
@@ -1130,6 +1126,7 @@ extrude001 = extrude(region001, length = -12)`
       })
       await page.keyboard.insertText(newValue)
       await cmdBar.progressCmdBar()
+      // await page.pause()
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: {
@@ -1758,7 +1755,7 @@ extrude001 = extrude(region001, length = 5)`
 
       expect(normalizedCode).toContain('fillet001=fillet(extrude001,')
       expect(normalizedCode).toContain(
-        'edges=[{sideFaces=[region001.tags.line3,region001.tags.line1]}]'
+        'edges=[{sideFaces=[region001.tags.line1,region001.tags.line3]}]'
       )
       expect(normalizedCode).toContain('radius=1000,')
       expect(normalizedCode).not.toContain('tags=[')
@@ -2270,6 +2267,7 @@ extrude001 = extrude(profile001, length = 500)`
         commandName: 'Shell',
       })
       await clickOnCap()
+      await toolbar.expectSelection('1 face')
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'arguments',
@@ -2373,6 +2371,7 @@ extrude001 = extrude(profile001, length = 500)`
       })
 
       await clickOnDebugCap()
+      await toolbar.expectSelection('1 face')
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'arguments',
@@ -2450,6 +2449,7 @@ extrude001 = extrude(region001, length = 30)`
         commandName: 'Delete Face',
       })
       await clickOnCap()
+      await toolbar.expectSelection('1 face')
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
@@ -2518,6 +2518,7 @@ chamfer001 = chamfer(
     })
     await toolbar.selectSurface('delete-face')
     await clickChamferFace()
+    await toolbar.expectSelection('1 face')
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'review',
@@ -2577,6 +2578,7 @@ hide(sketch001)`
     })
     await toolbar.selectSurface('delete-face')
     await clickChamferFace()
+    await toolbar.expectSelection('1 face')
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'review',
@@ -2638,6 +2640,7 @@ hide(sketch001)`
     })
     await toolbar.selectSurface('delete-face')
     await clickFilletFace()
+    await toolbar.expectSelection('1 face')
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'review',
@@ -2685,14 +2688,14 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
   region002,
   angle = 360deg,
   axis = {
-    sideFaces = [capEnd001, region001.tags.line1]
+    sideFaces = [region001.tags.line1, capEnd001]
   },
 )`
     const newCodeToFindAfterEdit = `revolve001 = revolve(
   region002,
   angle = 360deg,
   axis = {
-    sideFaces = [capEnd001, region001.tags.line1]
+    sideFaces = [region001.tags.line1, capEnd001]
   },
 )`
 
@@ -2829,68 +2832,65 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
     })
   })
 
-  test(`Translate helix point-and-click`, async ({
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    const initialCode = `helix001 = helix(
+  test(
+    `Translate helix point-and-click`,
+    { tag: '@web' },
+    async ({ page, homePage, scene, editor, toolbar, cmdBar }) => {
+      const initialCode = `helix001 = helix(
   axis = Z,
   radius = 5,
   length = 10,
   revolutions = 5,
   angleStart = 0,
     )`
-    const expectedTranslateCode = `translate(helix001, x = 20)`
+      const expectedTranslateCode = `translate(helix001, x = 20)`
 
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-    await homePage.goToModelingScene()
-    await editor.replaceCode('', initialCode)
-    await scene.settled()
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+      await editor.replaceCode('', initialCode)
+      await scene.settled()
 
-    const operationButton = await toolbar.getFeatureTreeOperation('Helix', 0)
-    await operationButton.click({ button: 'right' })
-    await page.getByTestId('context-menu-set-translate').click()
+      const operationButton = await toolbar.getFeatureTreeOperation('Helix', 0)
+      await operationButton.click({ button: 'right' })
+      await page.getByTestId('context-menu-set-translate').click()
 
-    await cmdBar.expectState({
-      commandName: 'Translate',
-      currentArgKey: 'objects',
-      currentArgValue: '',
-      headerArguments: {
-        Objects: '',
-        X: '5',
-      },
-      highlightedHeaderArg: 'objects',
-      stage: 'arguments',
-    })
-    await expect(page.getByText('1 helix selected')).toBeVisible()
-    await cmdBar.progressCmdBar()
-    await cmdBar.expectState({
-      commandName: 'Translate',
-      currentArgKey: 'x',
-      currentArgValue: '5',
-      headerArguments: {
-        Objects: '1 helix',
-        X: '5',
-      },
-      highlightedHeaderArg: 'x',
-      stage: 'arguments',
-    })
-    await page.keyboard.insertText('20')
-    await cmdBar.progressCmdBar()
-    await cmdBar.submit()
-    await scene.settled()
+      await cmdBar.expectState({
+        commandName: 'Translate',
+        currentArgKey: 'objects',
+        currentArgValue: '',
+        headerArguments: {
+          Objects: '',
+          X: '5',
+        },
+        highlightedHeaderArg: 'objects',
+        stage: 'arguments',
+      })
+      await expect(page.getByText('1 helix selected')).toBeVisible()
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        commandName: 'Translate',
+        currentArgKey: 'x',
+        currentArgValue: '5',
+        headerArguments: {
+          Objects: '1 helix',
+          X: '5',
+        },
+        highlightedHeaderArg: 'x',
+        stage: 'arguments',
+      })
+      await page.keyboard.insertText('20')
+      await cmdBar.progressCmdBar()
+      await cmdBar.submit()
+      await scene.settled()
 
-    await editor.expectEditor.toContain(expectedTranslateCode)
-    await editor.expectState({
-      diagnostics: [],
-      activeLines: [expectedTranslateCode],
-      highlightedCode: '',
-    })
-  })
+      await editor.expectEditor.toContain(expectedTranslateCode)
+      await editor.expectState({
+        diagnostics: [],
+        activeLines: [expectedTranslateCode],
+        highlightedCode: '',
+      })
+    }
+  )
 
   test('Blend point-and-click', async ({
     context,
@@ -4186,6 +4186,7 @@ extrude001 = extrude(region001, length = 30)`
             highlightedHeaderArg: 'faces',
           })
           await clickOnCap()
+          await toolbar.expectSelection('1 face')
         })
 
         await test.step('Configure tolerance', async () => {
@@ -4644,6 +4645,7 @@ extrude001 = extrude(region001, length = 30)`
             highlightedHeaderArg: 'faces',
           })
           await clickOnCap()
+          await toolbar.expectSelection('1 face')
         })
 
         await test.step('Configure name', async () => {
@@ -4993,6 +4995,7 @@ extrude001 = extrude(region001, length = 10)`
         highlightedHeaderArg: 'face',
       })
       await clickOnCap()
+      await toolbar.expectSelection('1 face')
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'arguments',
@@ -5264,622 +5267,614 @@ hole001 = hole::hole(
     })
   })
 
-  test('Helical gear point-and-click with edit and delete', async ({
-    context,
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow)`
+  test(
+    'Helical gear point-and-click with edit and delete',
+    { tag: '@web' },
+    async ({ context, page, homePage, scene, editor, toolbar, cmdBar }) => {
+      const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow)`
 
-    const selectGearCommand = async (
-      item: 'gear-helical' | 'gear-spur' | 'gear-ring'
-    ) => {
-      await page.locator('[data-onboarding-id="gears-dropdown-button"]').click()
-      await expect(page.getByTestId(`dropdown-${item}`)).toBeVisible()
-      await page.getByTestId(`dropdown-${item}`).click()
-    }
+      const selectGearCommand = async (
+        item: 'gear-helical' | 'gear-spur' | 'gear-ring'
+      ) => {
+        await page
+          .locator('[data-onboarding-id="gears-dropdown-button"]')
+          .click()
+        await expect(page.getByTestId(`dropdown-${item}`)).toBeVisible()
+        await page.getByTestId(`dropdown-${item}`).click()
+      }
 
-    const fillCurrentKclArg = async (value: string) => {
-      await cmdBar.currentArgumentInput.locator('.cm-content').fill(value)
-      await cmdBar.progressCmdBar()
-    }
+      const fillCurrentKclArg = async (value: string) => {
+        await cmdBar.currentArgumentInput.locator('.cm-content').fill(value)
+        await cmdBar.progressCmdBar()
+      }
 
-    await test.step('Settle the scene', async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled()
-      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-    })
-
-    await test.step('Create helical gear via toolbar group', async () => {
-      await selectGearCommand('gear-helical')
-      await cmdBar.expectState({
-        stage: 'arguments',
-        commandName: 'Helical Gear',
-        currentArgKey: 'nTeeth',
-        currentArgValue: '10',
-        headerArguments: {
-          NTeeth: '',
-          Module: '',
-          PressureAngle: '',
-          HelixAngle: '',
-          GearHeight: '',
-        },
-        highlightedHeaderArg: 'nTeeth',
+      await test.step('Settle the scene', async () => {
+        await context.addInitScript((initialCode) => {
+          localStorage.setItem('persistCode', initialCode)
+        }, initialCode)
+        await page.setBodyDimensions({ width: 1200, height: 500 })
+        await homePage.goToModelingScene()
+        await scene.settled()
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
       })
-      await fillCurrentKclArg('12')
-      await fillCurrentKclArg('2.2')
-      await fillCurrentKclArg('25deg')
-      await fillCurrentKclArg('30deg')
-      await fillCurrentKclArg('8')
-      await cmdBar.expectState({
-        stage: 'review',
-        commandName: 'Helical Gear',
-        headerArguments: {
-          NTeeth: '12',
-          Module: '2.2',
-          PressureAngle: '25deg',
-          HelixAngle: '30deg',
-          GearHeight: '8',
-        },
-      })
-      await cmdBar.submit()
-      await scene.settled()
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain(
-        `gear001 = gear::helical(
+
+      await test.step('Create helical gear via toolbar group', async () => {
+        await selectGearCommand('gear-helical')
+        await cmdBar.expectState({
+          stage: 'arguments',
+          commandName: 'Helical Gear',
+          currentArgKey: 'nTeeth',
+          currentArgValue: '10',
+          headerArguments: {
+            NTeeth: '',
+            Module: '',
+            PressureAngle: '',
+            HelixAngle: '',
+            GearHeight: '',
+          },
+          highlightedHeaderArg: 'nTeeth',
+        })
+        await fillCurrentKclArg('12')
+        await fillCurrentKclArg('2.2')
+        await fillCurrentKclArg('25deg')
+        await fillCurrentKclArg('30deg')
+        await fillCurrentKclArg('8')
+        await cmdBar.expectState({
+          stage: 'review',
+          commandName: 'Helical Gear',
+          headerArguments: {
+            NTeeth: '12',
+            Module: '2.2',
+            PressureAngle: '25deg',
+            HelixAngle: '30deg',
+            GearHeight: '8',
+          },
+        })
+        await cmdBar.submit()
+        await scene.settled()
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.toContain(
+          `gear001 = gear::helical(
   nTeeth = 12,
   module = 2.2,
   pressureAngle = 25deg,
   helixAngle = 30deg,
   gearHeight = 8,
 )`,
-        { shouldNormalise: true }
-      )
-    })
+          { shouldNormalise: true }
+        )
+      })
 
-    await test.step('Edit helical gear via feature tree', async () => {
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      const operationButton = await toolbar.getFeatureTreeOperation(
-        'gear001',
-        0
-      )
-      await operationButton.dblclick({ button: 'left' })
-      await cmdBar.expectState({
-        stage: 'arguments',
-        commandName: 'Helical Gear',
-        currentArgKey: 'gearHeight',
-        currentArgValue: '8',
-        headerArguments: {
-          NTeeth: '12',
-          Module: '2.2',
-          PressureAngle: '25deg',
-          HelixAngle: '30deg',
-          GearHeight: '8',
-        },
-        highlightedHeaderArg: 'gearHeight',
-      })
-      await page.getByRole('button', { name: 'Helix angle' }).click()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        commandName: 'Helical Gear',
-        currentArgKey: 'helixAngle',
-        currentArgValue: '30deg',
-        headerArguments: {
-          NTeeth: '12',
-          Module: '2.2',
-          PressureAngle: '25deg',
-          HelixAngle: '30deg',
-          GearHeight: '8',
-        },
-        highlightedHeaderArg: 'helixAngle',
-      })
-      await cmdBar.currentArgumentInput.locator('.cm-content').fill('15deg')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        commandName: 'Helical Gear',
-        headerArguments: {
-          NTeeth: '12',
-          Module: '2.2',
-          PressureAngle: '25deg',
-          HelixAngle: '15deg',
-          GearHeight: '8',
-        },
-      })
-      await cmdBar.submit()
-      await scene.settled()
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain(
-        `gear001 = gear::helical(
+      await test.step('Edit helical gear via feature tree', async () => {
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'gear001',
+          0
+        )
+        await operationButton.dblclick({ button: 'left' })
+        await cmdBar.expectState({
+          stage: 'arguments',
+          commandName: 'Helical Gear',
+          currentArgKey: 'gearHeight',
+          currentArgValue: '8',
+          headerArguments: {
+            NTeeth: '12',
+            Module: '2.2',
+            PressureAngle: '25deg',
+            HelixAngle: '30deg',
+            GearHeight: '8',
+          },
+          highlightedHeaderArg: 'gearHeight',
+        })
+        await page.getByRole('button', { name: 'Helix angle' }).click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          commandName: 'Helical Gear',
+          currentArgKey: 'helixAngle',
+          currentArgValue: '30deg',
+          headerArguments: {
+            NTeeth: '12',
+            Module: '2.2',
+            PressureAngle: '25deg',
+            HelixAngle: '30deg',
+            GearHeight: '8',
+          },
+          highlightedHeaderArg: 'helixAngle',
+        })
+        await cmdBar.currentArgumentInput.locator('.cm-content').fill('15deg')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          commandName: 'Helical Gear',
+          headerArguments: {
+            NTeeth: '12',
+            Module: '2.2',
+            PressureAngle: '25deg',
+            HelixAngle: '15deg',
+            GearHeight: '8',
+          },
+        })
+        await cmdBar.submit()
+        await scene.settled()
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.toContain(
+          `gear001 = gear::helical(
   nTeeth = 12,
   module = 2.2,
   pressureAngle = 25deg,
   helixAngle = 15deg,
   gearHeight = 8,
 )`,
-        { shouldNormalise: true }
-      )
-    })
-
-    await test.step('Delete helical gear via feature tree', async () => {
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-      const operationButton = await toolbar.getFeatureTreeOperation(
-        'gear001',
-        0
-      )
-      await operationButton.click({ button: 'left' })
-      await page.keyboard.press('Delete')
-      await scene.settled()
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.not.toContain('gear::helical(')
-      await expect(
-        await toolbar.getFeatureTreeOperation('gear001', 0)
-      ).not.toBeVisible()
-    })
-  })
-
-  test('Spur gear point-and-click with edit and delete', async ({
-    context,
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow)`
-
-    const selectGearCommand = async (
-      item: 'gear-helical' | 'gear-spur' | 'gear-ring'
-    ) => {
-      await page.locator('[data-onboarding-id="gears-dropdown-button"]').click()
-      await expect(page.getByTestId(`dropdown-${item}`)).toBeVisible()
-      await page.getByTestId(`dropdown-${item}`).click()
-    }
-
-    const fillCurrentKclArg = async (value: string) => {
-      await cmdBar.currentArgumentInput.locator('.cm-content').fill(value)
-      await cmdBar.progressCmdBar()
-    }
-
-    await test.step('Settle the scene', async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled()
-      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-    })
-
-    await test.step('Create spur gear via toolbar group', async () => {
-      await selectGearCommand('gear-spur')
-      await cmdBar.expectState({
-        stage: 'arguments',
-        commandName: 'Spur Gear',
-        currentArgKey: 'nTeeth',
-        currentArgValue: '21',
-        headerArguments: {
-          NTeeth: '',
-          Module: '',
-          PressureAngle: '',
-          GearHeight: '',
-        },
-        highlightedHeaderArg: 'nTeeth',
+          { shouldNormalise: true }
+        )
       })
-      await fillCurrentKclArg('22')
-      await fillCurrentKclArg('1.8')
-      await fillCurrentKclArg('16deg')
-      await fillCurrentKclArg('6')
-      await cmdBar.expectState({
-        stage: 'review',
-        commandName: 'Spur Gear',
-        headerArguments: {
-          NTeeth: '22',
-          Module: '1.8',
-          PressureAngle: '16deg',
-          GearHeight: '6',
-        },
+
+      await test.step('Delete helical gear via feature tree', async () => {
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'gear001',
+          0
+        )
+        await operationButton.click({ button: 'left' })
+        await page.keyboard.press('Delete')
+        await scene.settled()
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.not.toContain('gear::helical(')
+        await expect(
+          await toolbar.getFeatureTreeOperation('gear001', 0)
+        ).not.toBeVisible()
       })
-      await cmdBar.submit()
-      await scene.settled()
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain(
-        `gear001 = gear::spur(
+    }
+  )
+
+  test(
+    'Spur gear point-and-click with edit and delete',
+    { tag: '@web' },
+    async ({ context, page, homePage, scene, editor, toolbar, cmdBar }) => {
+      const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow)`
+
+      const selectGearCommand = async (
+        item: 'gear-helical' | 'gear-spur' | 'gear-ring'
+      ) => {
+        await page
+          .locator('[data-onboarding-id="gears-dropdown-button"]')
+          .click()
+        await expect(page.getByTestId(`dropdown-${item}`)).toBeVisible()
+        await page.getByTestId(`dropdown-${item}`).click()
+      }
+
+      const fillCurrentKclArg = async (value: string) => {
+        await cmdBar.currentArgumentInput.locator('.cm-content').fill(value)
+        await cmdBar.progressCmdBar()
+      }
+
+      await test.step('Settle the scene', async () => {
+        await context.addInitScript((initialCode) => {
+          localStorage.setItem('persistCode', initialCode)
+        }, initialCode)
+        await page.setBodyDimensions({ width: 1200, height: 500 })
+        await homePage.goToModelingScene()
+        await scene.settled()
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+      })
+
+      await test.step('Create spur gear via toolbar group', async () => {
+        await selectGearCommand('gear-spur')
+        await cmdBar.expectState({
+          stage: 'arguments',
+          commandName: 'Spur Gear',
+          currentArgKey: 'nTeeth',
+          currentArgValue: '21',
+          headerArguments: {
+            NTeeth: '',
+            Module: '',
+            PressureAngle: '',
+            GearHeight: '',
+          },
+          highlightedHeaderArg: 'nTeeth',
+        })
+        await fillCurrentKclArg('22')
+        await fillCurrentKclArg('1.8')
+        await fillCurrentKclArg('16deg')
+        await fillCurrentKclArg('6')
+        await cmdBar.expectState({
+          stage: 'review',
+          commandName: 'Spur Gear',
+          headerArguments: {
+            NTeeth: '22',
+            Module: '1.8',
+            PressureAngle: '16deg',
+            GearHeight: '6',
+          },
+        })
+        await cmdBar.submit()
+        await scene.settled()
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.toContain(
+          `gear001 = gear::spur(
   nTeeth = 22,
   module = 1.8,
   pressureAngle = 16deg,
   gearHeight = 6,
 )`,
-        { shouldNormalise: true }
-      )
-    })
+          { shouldNormalise: true }
+        )
+      })
 
-    await test.step('Edit spur gear via feature tree', async () => {
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      const operationButton = await toolbar.getFeatureTreeOperation(
-        'gear001',
-        0
-      )
-      await operationButton.dblclick({ button: 'left' })
-      await cmdBar.expectState({
-        stage: 'arguments',
-        commandName: 'Spur Gear',
-        currentArgKey: 'gearHeight',
-        currentArgValue: '6',
-        headerArguments: {
-          NTeeth: '22',
-          Module: '1.8',
-          PressureAngle: '16deg',
-          GearHeight: '6',
-        },
-        highlightedHeaderArg: 'gearHeight',
-      })
-      await cmdBar.currentArgumentInput.locator('.cm-content').fill('7')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        commandName: 'Spur Gear',
-        headerArguments: {
-          NTeeth: '22',
-          Module: '1.8',
-          PressureAngle: '16deg',
-          GearHeight: '7',
-        },
-      })
-      await cmdBar.submit()
-      await scene.settled()
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain(
-        `gear001 = gear::spur(
+      await test.step('Edit spur gear via feature tree', async () => {
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'gear001',
+          0
+        )
+        await operationButton.dblclick({ button: 'left' })
+        await cmdBar.expectState({
+          stage: 'arguments',
+          commandName: 'Spur Gear',
+          currentArgKey: 'gearHeight',
+          currentArgValue: '6',
+          headerArguments: {
+            NTeeth: '22',
+            Module: '1.8',
+            PressureAngle: '16deg',
+            GearHeight: '6',
+          },
+          highlightedHeaderArg: 'gearHeight',
+        })
+        await cmdBar.currentArgumentInput.locator('.cm-content').fill('7')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          commandName: 'Spur Gear',
+          headerArguments: {
+            NTeeth: '22',
+            Module: '1.8',
+            PressureAngle: '16deg',
+            GearHeight: '7',
+          },
+        })
+        await cmdBar.submit()
+        await scene.settled()
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.toContain(
+          `gear001 = gear::spur(
   nTeeth = 22,
   module = 1.8,
   pressureAngle = 16deg,
   gearHeight = 7,
 )`,
-        { shouldNormalise: true }
-      )
-    })
-
-    await test.step('Delete spur gear via feature tree', async () => {
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-      const operationButton = await toolbar.getFeatureTreeOperation(
-        'gear001',
-        0
-      )
-      await operationButton.click({ button: 'left' })
-      await page.keyboard.press('Delete')
-      await scene.settled()
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.not.toContain('gear::spur(')
-      await expect(
-        await toolbar.getFeatureTreeOperation('gear001', 0)
-      ).not.toBeVisible()
-    })
-  })
-
-  test('Herringbone gear point-and-click with edit and delete', async ({
-    context,
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow)`
-
-    const selectGearCommand = async (
-      item: 'gear-helical' | 'gear-herringbone' | 'gear-spur' | 'gear-ring'
-    ) => {
-      await page.locator('[data-onboarding-id="gears-dropdown-button"]').click()
-      await expect(page.getByTestId(`dropdown-${item}`)).toBeVisible()
-      await page.getByTestId(`dropdown-${item}`).click()
-    }
-
-    const fillCurrentKclArg = async (value: string) => {
-      await cmdBar.currentArgumentInput.locator('.cm-content').fill(value)
-      await cmdBar.progressCmdBar()
-    }
-
-    await test.step('Settle the scene', async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled()
-      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-    })
-
-    await test.step('Create herringbone gear via toolbar group', async () => {
-      await selectGearCommand('gear-herringbone')
-      await cmdBar.expectState({
-        stage: 'arguments',
-        commandName: 'Herringbone Gear',
-        currentArgKey: 'nTeeth',
-        currentArgValue: '10',
-        headerArguments: {
-          NTeeth: '',
-          Module: '',
-          PressureAngle: '',
-          GearHeight: '',
-          HelixAngle: '',
-        },
-        highlightedHeaderArg: 'nTeeth',
+          { shouldNormalise: true }
+        )
       })
-      await fillCurrentKclArg('11')
-      await fillCurrentKclArg('2.3')
-      await fillCurrentKclArg('24deg')
-      await fillCurrentKclArg('6')
-      await fillCurrentKclArg('35deg')
-      await cmdBar.expectState({
-        stage: 'review',
-        commandName: 'Herringbone Gear',
-        headerArguments: {
-          NTeeth: '11',
-          Module: '2.3',
-          PressureAngle: '24deg',
-          GearHeight: '6',
-          HelixAngle: '35deg',
-        },
+
+      await test.step('Delete spur gear via feature tree', async () => {
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'gear001',
+          0
+        )
+        await operationButton.click({ button: 'left' })
+        await page.keyboard.press('Delete')
+        await scene.settled()
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.not.toContain('gear::spur(')
+        await expect(
+          await toolbar.getFeatureTreeOperation('gear001', 0)
+        ).not.toBeVisible()
       })
-      await cmdBar.submit()
-      await scene.settled()
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain(
-        `gear001 = gear::herringbone(
+    }
+  )
+
+  test(
+    'Herringbone gear point-and-click with edit and delete',
+    { tag: '@web' },
+    async ({ context, page, homePage, scene, editor, toolbar, cmdBar }) => {
+      const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow)`
+
+      const selectGearCommand = async (
+        item: 'gear-helical' | 'gear-herringbone' | 'gear-spur' | 'gear-ring'
+      ) => {
+        await page
+          .locator('[data-onboarding-id="gears-dropdown-button"]')
+          .click()
+        await expect(page.getByTestId(`dropdown-${item}`)).toBeVisible()
+        await page.getByTestId(`dropdown-${item}`).click()
+      }
+
+      const fillCurrentKclArg = async (value: string) => {
+        await cmdBar.currentArgumentInput.locator('.cm-content').fill(value)
+        await cmdBar.progressCmdBar()
+      }
+
+      await test.step('Settle the scene', async () => {
+        await context.addInitScript((initialCode) => {
+          localStorage.setItem('persistCode', initialCode)
+        }, initialCode)
+        await page.setBodyDimensions({ width: 1200, height: 500 })
+        await homePage.goToModelingScene()
+        await scene.settled()
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+      })
+
+      await test.step('Create herringbone gear via toolbar group', async () => {
+        await selectGearCommand('gear-herringbone')
+        await cmdBar.expectState({
+          stage: 'arguments',
+          commandName: 'Herringbone Gear',
+          currentArgKey: 'nTeeth',
+          currentArgValue: '10',
+          headerArguments: {
+            NTeeth: '',
+            Module: '',
+            PressureAngle: '',
+            GearHeight: '',
+            HelixAngle: '',
+          },
+          highlightedHeaderArg: 'nTeeth',
+        })
+        await fillCurrentKclArg('11')
+        await fillCurrentKclArg('2.3')
+        await fillCurrentKclArg('24deg')
+        await fillCurrentKclArg('6')
+        await fillCurrentKclArg('35deg')
+        await cmdBar.expectState({
+          stage: 'review',
+          commandName: 'Herringbone Gear',
+          headerArguments: {
+            NTeeth: '11',
+            Module: '2.3',
+            PressureAngle: '24deg',
+            GearHeight: '6',
+            HelixAngle: '35deg',
+          },
+        })
+        await cmdBar.submit()
+        await scene.settled()
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.toContain(
+          `gear001 = gear::herringbone(
   nTeeth = 11,
   module = 2.3,
   pressureAngle = 24deg,
   gearHeight = 6,
   helixAngle = 35deg,
 )`,
-        { shouldNormalise: true }
-      )
-    })
+          { shouldNormalise: true }
+        )
+      })
 
-    await test.step('Edit herringbone gear via feature tree', async () => {
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      const operationButton = await toolbar.getFeatureTreeOperation(
-        'gear001',
-        0
-      )
-      await operationButton.dblclick({ button: 'left' })
-      await cmdBar.expectState({
-        stage: 'arguments',
-        commandName: 'Herringbone Gear',
-        currentArgKey: 'helixAngle',
-        currentArgValue: '35deg',
-        headerArguments: {
-          NTeeth: '11',
-          Module: '2.3',
-          PressureAngle: '24deg',
-          GearHeight: '6',
-          HelixAngle: '35deg',
-        },
-        highlightedHeaderArg: 'helixAngle',
-      })
-      await cmdBar.currentArgumentInput.locator('.cm-content').fill('20deg')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        commandName: 'Herringbone Gear',
-        headerArguments: {
-          NTeeth: '11',
-          Module: '2.3',
-          PressureAngle: '24deg',
-          GearHeight: '6',
-          HelixAngle: '20deg',
-        },
-      })
-      await cmdBar.submit()
-      await scene.settled()
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain(
-        `gear001 = gear::herringbone(
+      await test.step('Edit herringbone gear via feature tree', async () => {
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'gear001',
+          0
+        )
+        await operationButton.dblclick({ button: 'left' })
+        await cmdBar.expectState({
+          stage: 'arguments',
+          commandName: 'Herringbone Gear',
+          currentArgKey: 'helixAngle',
+          currentArgValue: '35deg',
+          headerArguments: {
+            NTeeth: '11',
+            Module: '2.3',
+            PressureAngle: '24deg',
+            GearHeight: '6',
+            HelixAngle: '35deg',
+          },
+          highlightedHeaderArg: 'helixAngle',
+        })
+        await cmdBar.currentArgumentInput.locator('.cm-content').fill('20deg')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          commandName: 'Herringbone Gear',
+          headerArguments: {
+            NTeeth: '11',
+            Module: '2.3',
+            PressureAngle: '24deg',
+            GearHeight: '6',
+            HelixAngle: '20deg',
+          },
+        })
+        await cmdBar.submit()
+        await scene.settled()
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.toContain(
+          `gear001 = gear::herringbone(
   nTeeth = 11,
   module = 2.3,
   pressureAngle = 24deg,
   gearHeight = 6,
   helixAngle = 20deg,
 )`,
-        { shouldNormalise: true }
-      )
-    })
-
-    await test.step('Delete herringbone gear via feature tree', async () => {
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-      const operationButton = await toolbar.getFeatureTreeOperation(
-        'gear001',
-        0
-      )
-      await operationButton.click({ button: 'left' })
-      await page.keyboard.press('Delete')
-      await scene.settled()
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.not.toContain('gear::herringbone(')
-      await expect(
-        await toolbar.getFeatureTreeOperation('gear001', 0)
-      ).not.toBeVisible()
-    })
-  })
-
-  test('Ring gear point-and-click with edit and delete', async ({
-    context,
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow)`
-
-    const selectGearCommand = async (
-      item: 'gear-helical' | 'gear-spur' | 'gear-ring'
-    ) => {
-      await page.locator('[data-onboarding-id="gears-dropdown-button"]').click()
-      await expect(page.getByTestId(`dropdown-${item}`)).toBeVisible()
-      await page.getByTestId(`dropdown-${item}`).click()
-    }
-
-    const fillCurrentKclArg = async (value: string) => {
-      await cmdBar.currentArgumentInput.locator('.cm-content').fill(value)
-      await cmdBar.progressCmdBar()
-    }
-
-    await test.step('Settle the scene', async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled()
-      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-    })
-
-    await test.step('Create ring gear via toolbar group', async () => {
-      await selectGearCommand('gear-ring')
-      await cmdBar.expectState({
-        stage: 'arguments',
-        commandName: 'Ring Gear',
-        currentArgKey: 'nTeeth',
-        currentArgValue: '40',
-        headerArguments: {
-          NTeeth: '',
-          Module: '',
-          PressureAngle: '',
-          HelixAngle: '',
-          GearHeight: '',
-        },
-        highlightedHeaderArg: 'nTeeth',
+          { shouldNormalise: true }
+        )
       })
-      await fillCurrentKclArg('42')
-      await fillCurrentKclArg('1.3')
-      await fillCurrentKclArg('14deg')
-      await fillCurrentKclArg('-20deg')
-      await fillCurrentKclArg('5')
-      await cmdBar.expectState({
-        stage: 'review',
-        commandName: 'Ring Gear',
-        headerArguments: {
-          NTeeth: '42',
-          Module: '1.3',
-          PressureAngle: '14deg',
-          HelixAngle: '-20deg',
-          GearHeight: '5',
-        },
+
+      await test.step('Delete herringbone gear via feature tree', async () => {
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'gear001',
+          0
+        )
+        await operationButton.click({ button: 'left' })
+        await page.keyboard.press('Delete')
+        await scene.settled()
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.not.toContain('gear::herringbone(')
+        await expect(
+          await toolbar.getFeatureTreeOperation('gear001', 0)
+        ).not.toBeVisible()
       })
-      await cmdBar.submit()
-      await scene.settled()
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain(
-        `gear001 = gear::ring(
+    }
+  )
+
+  test(
+    'Ring gear point-and-click with edit and delete',
+    { tag: '@web' },
+    async ({ context, page, homePage, scene, editor, toolbar, cmdBar }) => {
+      const initialCode = `@settings(defaultLengthUnit = mm, experimentalFeatures = allow)`
+
+      const selectGearCommand = async (
+        item: 'gear-helical' | 'gear-spur' | 'gear-ring'
+      ) => {
+        await page
+          .locator('[data-onboarding-id="gears-dropdown-button"]')
+          .click()
+        await expect(page.getByTestId(`dropdown-${item}`)).toBeVisible()
+        await page.getByTestId(`dropdown-${item}`).click()
+      }
+
+      const fillCurrentKclArg = async (value: string) => {
+        await cmdBar.currentArgumentInput.locator('.cm-content').fill(value)
+        await cmdBar.progressCmdBar()
+      }
+
+      await test.step('Settle the scene', async () => {
+        await context.addInitScript((initialCode) => {
+          localStorage.setItem('persistCode', initialCode)
+        }, initialCode)
+        await page.setBodyDimensions({ width: 1200, height: 500 })
+        await homePage.goToModelingScene()
+        await scene.settled()
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+      })
+
+      await test.step('Create ring gear via toolbar group', async () => {
+        await selectGearCommand('gear-ring')
+        await cmdBar.expectState({
+          stage: 'arguments',
+          commandName: 'Ring Gear',
+          currentArgKey: 'nTeeth',
+          currentArgValue: '40',
+          headerArguments: {
+            NTeeth: '',
+            Module: '',
+            PressureAngle: '',
+            HelixAngle: '',
+            GearHeight: '',
+          },
+          highlightedHeaderArg: 'nTeeth',
+        })
+        await fillCurrentKclArg('42')
+        await fillCurrentKclArg('1.3')
+        await fillCurrentKclArg('14deg')
+        await fillCurrentKclArg('-20deg')
+        await fillCurrentKclArg('5')
+        await cmdBar.expectState({
+          stage: 'review',
+          commandName: 'Ring Gear',
+          headerArguments: {
+            NTeeth: '42',
+            Module: '1.3',
+            PressureAngle: '14deg',
+            HelixAngle: '-20deg',
+            GearHeight: '5',
+          },
+        })
+        await cmdBar.submit()
+        await scene.settled()
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.toContain(
+          `gear001 = gear::ring(
   nTeeth = 42,
   module = 1.3,
   pressureAngle = 14deg,
   helixAngle = -20deg,
   gearHeight = 5,
 )`,
-        { shouldNormalise: true }
-      )
-    })
+          { shouldNormalise: true }
+        )
+      })
 
-    await test.step('Edit ring gear via feature tree', async () => {
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-      await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-      const operationButton = await toolbar.getFeatureTreeOperation(
-        'gear001',
-        0
-      )
-      await operationButton.dblclick({ button: 'left' })
-      await cmdBar.expectState({
-        stage: 'arguments',
-        commandName: 'Ring Gear',
-        currentArgKey: 'gearHeight',
-        currentArgValue: '5',
-        headerArguments: {
-          NTeeth: '42',
-          Module: '1.3',
-          PressureAngle: '14deg',
-          HelixAngle: '-20deg',
-          GearHeight: '5',
-        },
-        highlightedHeaderArg: 'gearHeight',
-      })
-      await page.getByRole('button', { name: 'N teeth' }).click()
-      await cmdBar.expectState({
-        stage: 'arguments',
-        commandName: 'Ring Gear',
-        currentArgKey: 'nTeeth',
-        currentArgValue: '42',
-        headerArguments: {
-          NTeeth: '42',
-          Module: '1.3',
-          PressureAngle: '14deg',
-          HelixAngle: '-20deg',
-          GearHeight: '5',
-        },
-        highlightedHeaderArg: 'nTeeth',
-      })
-      await cmdBar.currentArgumentInput.locator('.cm-content').fill('48')
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        commandName: 'Ring Gear',
-        headerArguments: {
-          NTeeth: '48',
-          Module: '1.3',
-          PressureAngle: '14deg',
-          HelixAngle: '-20deg',
-          GearHeight: '5',
-        },
-      })
-      await cmdBar.submit()
-      await scene.settled()
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain(
-        `gear001 = gear::ring(
+      await test.step('Edit ring gear via feature tree', async () => {
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'gear001',
+          0
+        )
+        await operationButton.dblclick({ button: 'left' })
+        await cmdBar.expectState({
+          stage: 'arguments',
+          commandName: 'Ring Gear',
+          currentArgKey: 'gearHeight',
+          currentArgValue: '5',
+          headerArguments: {
+            NTeeth: '42',
+            Module: '1.3',
+            PressureAngle: '14deg',
+            HelixAngle: '-20deg',
+            GearHeight: '5',
+          },
+          highlightedHeaderArg: 'gearHeight',
+        })
+        await page.getByRole('button', { name: 'N teeth' }).click()
+        await cmdBar.expectState({
+          stage: 'arguments',
+          commandName: 'Ring Gear',
+          currentArgKey: 'nTeeth',
+          currentArgValue: '42',
+          headerArguments: {
+            NTeeth: '42',
+            Module: '1.3',
+            PressureAngle: '14deg',
+            HelixAngle: '-20deg',
+            GearHeight: '5',
+          },
+          highlightedHeaderArg: 'nTeeth',
+        })
+        await cmdBar.currentArgumentInput.locator('.cm-content').fill('48')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          stage: 'review',
+          commandName: 'Ring Gear',
+          headerArguments: {
+            NTeeth: '48',
+            Module: '1.3',
+            PressureAngle: '14deg',
+            HelixAngle: '-20deg',
+            GearHeight: '5',
+          },
+        })
+        await cmdBar.submit()
+        await scene.settled()
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.toContain(
+          `gear001 = gear::ring(
   nTeeth = 48,
   module = 1.3,
   pressureAngle = 14deg,
   helixAngle = -20deg,
   gearHeight = 5,
 )`,
-        { shouldNormalise: true }
-      )
-    })
+          { shouldNormalise: true }
+        )
+      })
 
-    await test.step('Delete ring gear via feature tree', async () => {
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-      const operationButton = await toolbar.getFeatureTreeOperation(
-        'gear001',
-        0
-      )
-      await operationButton.click({ button: 'left' })
-      await page.keyboard.press('Delete')
-      await scene.settled()
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.not.toContain('gear::ring(')
-      await expect(
-        await toolbar.getFeatureTreeOperation('gear001', 0)
-      ).not.toBeVisible()
-    })
-  })
+      await test.step('Delete ring gear via feature tree', async () => {
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
+        const operationButton = await toolbar.getFeatureTreeOperation(
+          'gear001',
+          0
+        )
+        await operationButton.click({ button: 'left' })
+        await page.keyboard.press('Delete')
+        await scene.settled()
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.not.toContain('gear::ring(')
+        await expect(
+          await toolbar.getFeatureTreeOperation('gear001', 0)
+        ).not.toBeVisible()
+      })
+    }
+  )
 })

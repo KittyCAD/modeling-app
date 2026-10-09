@@ -8,7 +8,8 @@ import {
 } from '@kittycad/registry'
 import { effect, type Signal, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
-import { File, KclManager, ZDSProject } from '@src/lang/KclManager'
+import { KclManager } from '@src/lang/KclManager'
+import { File, ZDSProject } from '@src/lib/projectSession'
 import { lspService } from '@src/lang/lsp/registry/contract'
 import { type BillingRegistryService, billingService } from '@src/lib/billing'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
@@ -385,6 +386,8 @@ export class App implements AppSubsystems {
     }
   }
 
+  private unsubscribeSystemIO: Subscription | undefined
+
   async openProject(
     projectIORef: Project,
     assertCurrent: () => void = () => {}
@@ -396,10 +399,14 @@ export class App implements AppSubsystems {
     assertCurrent()
 
     const projectIORefSignal = signal(ownedProject)
+
     const nextProject = await ZDSProject.open(projectIORefSignal, this)
     assertCurrent()
 
     this.disposeProjectHistoryExtensions?.()
+    // We only ever allow one project to be open at a time in the app,
+    // so we gotta clean up after ourselves and close any open project.
+    this.project?.close()
     this.project = nextProject
     this.setCloudSyncOpenedProject(ownedProject)
 
@@ -458,7 +465,8 @@ export class App implements AppSubsystems {
 
     // TODO: Rework the systemIOActor to fit into the system better,
     // so that the project doesn't need to subscribe to it.
-    this.systemIOActor.subscribe(({ context }) => {
+    this.unsubscribeSystemIO?.unsubscribe()
+    this.unsubscribeSystemIO = this.systemIOActor.subscribe(({ context }) => {
       const foundProject = (context.folders ?? []).find(
         (p) =>
           p.name === projectIORefSignal.value.name &&
@@ -521,6 +529,8 @@ export class App implements AppSubsystems {
     this.disposeProjectHistoryExtensions = undefined
     this.unsubscribeFromSettings?.unsubscribe()
     this.unsubscribeFromSettings = undefined
+    this.unsubscribeSystemIO?.unsubscribe()
+    this.unsubscribeSystemIO = undefined
     this.setCloudSyncOpenedProject(undefined)
     this.project?.close()
     this.project = undefined
@@ -910,11 +920,6 @@ export class App implements AppSubsystems {
     if (sketchGridSettingsChanged) {
       this.singletons.kclManager.sceneEntitiesManager.updateSketchGrid()
     }
-
-    // Update line wrapping
-    this.singletons.kclManager.setEditorLineWrapping(
-      context.textEditor.textWrapping.current
-    )
 
     // Update engine highlighting
     const newHighlighting = context.modeling.highlightEdges.current

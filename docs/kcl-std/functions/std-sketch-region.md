@@ -61,7 +61,7 @@ to a different consuming operation.
 ### Examples
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 // `region` traces counterclockwise by default.
 triangle = sketch(on = XY) {
@@ -95,7 +95,7 @@ extrude(r, length = 5)
 </model-viewer>
 
 ```kcl
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 // Set `direction = CW` when the segments trace the boundary clockwise.
 trapezoid = sketch(on = XY) {

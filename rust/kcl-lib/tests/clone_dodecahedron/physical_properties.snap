@@ -18,12 +18,12 @@ description: Physical properties clone_dodecahedron.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 956017100.8110046
+    "value": 956017094.8505402
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 526924338.69838715
+    "value": 526924344.8575338
   }
 }

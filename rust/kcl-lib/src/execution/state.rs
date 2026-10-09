@@ -1691,6 +1691,16 @@ pub(crate) fn declared_kcl_version(program: &Node<Program>) -> Result<Option<(Kc
     Ok(Some((version, property.as_source_range())))
 }
 
+/// The effective kclVersion that a program will be run with. If there's an
+/// error parsing, the default is used.
+pub(crate) fn computed_kcl_version(program: &Node<Program>) -> KclVersion {
+    match declared_kcl_version(program) {
+        Ok(Some((version, _))) => version,
+        Ok(None) => KclVersion::default(),
+        Err(_) => KclVersion::default(),
+    }
+}
+
 impl GlobalState {
     fn new(settings: &ExecutorSettings, segment_ids_edited: AhashIndexSet<ObjectId>) -> Self {
         let mut global = GlobalState {
@@ -2099,6 +2109,7 @@ mod tests {
     fn kcl_version_serializes_as_canonical_setting_value() {
         assert_eq!(serde_json::to_string(&KclVersion::V1).unwrap(), r#""1.0""#);
         assert_eq!(serde_json::to_string(&KclVersion::V2).unwrap(), r#""2.0""#);
+        assert_eq!(serde_json::to_string(&KclVersion::V3).unwrap(), r#""3.0""#);
         assert_eq!(
             serde_json::to_string(&KclVersion::V3Preview).unwrap(),
             r#""3.0-preview""#

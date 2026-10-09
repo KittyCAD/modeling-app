@@ -90,36 +90,6 @@ export default class Client extends jsrpc.JSONRPCServerAndClient {
   }
 
   async start(): Promise<void> {
-    // process "window/logMessage": client <- server
-    this.addMethod(LSP.LogMessageNotification.type.method, (params) => {
-      const { type, message } = params as {
-        type: LSP.MessageType
-        message: string
-      }
-      let messageString = ''
-      switch (type) {
-        case LSP.MessageType.Error: {
-          messageString += '[error] '
-          break
-        }
-        case LSP.MessageType.Warning: {
-          messageString += ' [warn] '
-          break
-        }
-        case LSP.MessageType.Info: {
-          messageString += ' [info] '
-          break
-        }
-        case LSP.MessageType.Log: {
-          messageString += '  [log] '
-          break
-        }
-      }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      messageString += message
-      return
-    })
-
     // process "client/registerCapability": client <- server
     this.addMethod(LSP.RegistrationRequest.type.method, (params) => {
       // Register a server capability.

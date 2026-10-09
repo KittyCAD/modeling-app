@@ -79,6 +79,7 @@ pub(crate) use state::PendingEdgeRefactorMeta;
 pub(crate) use state::PendingLegacyAngleRefactorMeta;
 pub use state::RefactorMetadata;
 pub(crate) use state::TangencyMode;
+pub(crate) use state::computed_kcl_version;
 pub(crate) use state::declared_kcl_version;
 
 use crate::CompilationIssue;
@@ -97,6 +98,7 @@ use crate::execution::cache::CacheResult;
 use crate::execution::cad_op::OperationExt;
 use crate::execution::import_graph::Universe;
 use crate::execution::import_graph::UniverseMap;
+use crate::execution::modeling::kcl_version_to_modeling_cmd;
 use crate::execution::typed_path::TypedPath;
 use crate::front::Number;
 use crate::front::Object;
@@ -1240,6 +1242,7 @@ impl ExecutorContext {
                     KclVersion::V1 => kittycad::types::KclVersion::One0,
                     KclVersion::V2 => kittycad::types::KclVersion::Two0,
                     KclVersion::V3Preview => kittycad::types::KclVersion::Three0Preview,
+                    KclVersion::V3 => kittycad::types::KclVersion::Three0,
                 }),
             })
             .await?;
@@ -1428,6 +1431,7 @@ impl ExecutorContext {
 
     pub async fn send_clear_scene(
         &self,
+        kcl_version: Option<KclVersion>,
         exec_state: &mut ExecState,
         source_range: crate::execution::SourceRange,
     ) -> Result<(), KclError> {
@@ -1437,11 +1441,14 @@ impl ExecutorContext {
         exec_state.global.root_module_artifacts.clear();
         exec_state.global.artifacts.clear();
 
+        let modeling_kcl_version = kcl_version.map(kcl_version_to_modeling_cmd);
+
         self.engine
             .clear_scene(
                 &self.engine_batch,
                 &mut exec_state.mod_local.id_generator,
                 source_range,
+                modeling_kcl_version,
                 self.settings.geometry_only,
             )
             .await?;
@@ -1458,6 +1465,8 @@ impl ExecutorContext {
         Ok(())
     }
 
+    /// Clear the KCL-lib internal cache and clear the entire engine scene.
+    /// This cache is shared across all executors.
     pub async fn bust_cache_and_reset_scene(&self) -> Result<ExecOutcome, KclErrorWithOutputs> {
         cache::bust_cache().await;
 
@@ -1468,6 +1477,12 @@ impl ExecutorContext {
         let outcome = self.run_with_caching(crate::Program::empty()).await?;
 
         Ok(outcome)
+    }
+
+    /// Clear the KCL-lib internal cache.
+    /// This cache is shared across all executors.
+    pub async fn bust_cache(&self) {
+        cache::bust_cache().await;
     }
 
     async fn prepare_mem(&self, exec_state: &mut ExecState) -> Result<(), KclErrorWithOutputs> {
@@ -1659,10 +1674,12 @@ impl ExecutorContext {
                     let old = CacheInformation {
                         ast: &cached_state.main.ast,
                         settings: &cached_state.settings,
+                        kcl_version: cached_state.kcl_version,
                     };
                     let new = CacheInformation {
                         ast: &program.ast,
                         settings: &self.settings,
+                        kcl_version: program.kcl_version,
                     };
 
                     // Get the program that actually changed from the old and new information.
@@ -1690,6 +1707,7 @@ impl ExecutorContext {
                                 (
                                     clear_scene,
                                     crate::Program {
+                                        kcl_version: program.kcl_version,
                                         ast: changed_program,
                                         original_file_contents: program.original_file_contents,
                                     },
@@ -1762,6 +1780,7 @@ impl ExecutorContext {
                                 (
                                     true,
                                     crate::Program {
+                                        kcl_version: program.kcl_version,
                                         ast: changed_program,
                                         original_file_contents: program.original_file_contents,
                                     },
@@ -1821,7 +1840,7 @@ impl ExecutorContext {
                     let (exec_state, universe_info, preserve_mem) = match import_check_info {
                         Some((new_universe, new_universe_map, mut new_exec_state)) => {
                             // Clear the scene if the imports changed.
-                            self.send_clear_scene(&mut new_exec_state, Default::default())
+                            self.send_clear_scene(Some(program.kcl_version), &mut new_exec_state, Default::default())
                                 .await
                                 .map_err(KclErrorWithOutputs::no_outputs)?;
 
@@ -1836,7 +1855,7 @@ impl ExecutorContext {
                             let mut exec_state = cached_state.reconstitute_exec_state(self);
                             exec_state.reset(self);
 
-                            self.send_clear_scene(&mut exec_state, Default::default())
+                            self.send_clear_scene(Some(program.kcl_version), &mut exec_state, Default::default())
                                 .await
                                 .map_err(KclErrorWithOutputs::no_outputs)?;
 
@@ -1857,7 +1876,7 @@ impl ExecutorContext {
                 }
                 None => {
                     let mut exec_state = ExecState::new(self);
-                    self.send_clear_scene(&mut exec_state, Default::default())
+                    self.send_clear_scene(Some(program.kcl_version), &mut exec_state, Default::default())
                         .await
                         .map_err(KclErrorWithOutputs::no_outputs)?;
 
@@ -1891,6 +1910,7 @@ impl ExecutorContext {
             cache::write_old_ast(GlobalState::new(
                 (*exec_state).clone(),
                 self.settings.clone(),
+                original_program.kcl_version,
                 original_program.ast,
                 result.0,
             ))
@@ -1981,7 +2001,7 @@ impl ExecutorContext {
         exec_state.entry_point_version_is_v3_or_higher().then(|| {
             let tolerance = kcmc::shared::Tolerance::builder()
                 .point_point_2d_coincident(kcmc::length_unit::LengthUnit(
-                    crate::std::solver::POINT_POINT_2D_COINCIDENT_TOLERANCE_MM,
+                    crate::std::solver::POINT_POINT_2D_COINCIDENT_EUCLIDEAN_TOLERANCE_MM,
                 ))
                 .build();
             ModelingCmd::from(mcmd::SetDefaultSystemProperties::builder().tolerance(tolerance).build())
@@ -2778,6 +2798,8 @@ mod tests {
             ("@settings(defaultLengthUnit = mm)", "1.0"),
             ("@settings(kclVersion = 2.0)", "2.0"),
             ("@settings(kclVersion = \"3.0-preview\")", "3.0-preview"),
+            ("@settings(kclVersion = 3.0)", "3.0"),
+            ("@settings(kclVersion = \"3.0\")", "3.0"),
         ] {
             let program = crate::Program::parse_no_errs(source).unwrap();
             let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
@@ -2819,6 +2841,113 @@ mod tests {
                 .map(|(_, value)| value.into_owned())
                 .collect();
             assert_eq!(versions, vec![expected]);
+        }
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    #[tokio::test]
+    async fn scene_reset_sends_entrypoint_kcl_version() {
+        use std::collections::HashMap;
+
+        use kcmc::websocket::WebSocketRequest;
+        use kcmc::websocket::WebSocketResponse;
+        use tokio::sync::RwLock;
+        use uuid::Uuid;
+
+        use crate::engine::engine_manager::EngineTransport;
+        use crate::engine::engine_manager::TransportCloseError;
+
+        struct RecordingTransport {
+            inner: Arc<Box<dyn EngineTransport>>,
+            requests: Arc<RwLock<Vec<WebSocketRequest>>>,
+        }
+
+        #[async_trait::async_trait]
+        impl EngineTransport for RecordingTransport {
+            async fn inner_fire_modeling_cmd(
+                &self,
+                cmd_id: Uuid,
+                source_range: SourceRange,
+                cmd: WebSocketRequest,
+                id_to_source_range: HashMap<Uuid, SourceRange>,
+            ) -> Result<(), KclError> {
+                self.requests.write().await.push(cmd.clone());
+                self.inner
+                    .inner_fire_modeling_cmd(cmd_id, source_range, cmd, id_to_source_range)
+                    .await
+            }
+
+            async fn inner_send_modeling_cmd(
+                &self,
+                cmd_id: Uuid,
+                source_range: SourceRange,
+                cmd: WebSocketRequest,
+                id_to_source_range: HashMap<Uuid, SourceRange>,
+            ) -> Result<WebSocketResponse, KclError> {
+                self.requests.write().await.push(cmd.clone());
+                self.inner
+                    .inner_send_modeling_cmd(cmd_id, source_range, cmd, id_to_source_range)
+                    .await
+            }
+
+            async fn close(&self) -> Result<(), TransportCloseError> {
+                self.inner.close().await
+            }
+        }
+
+        for (source, expected) in [
+            ("", "1.0"),
+            ("@settings(kclVersion = 2.0)", "2.0"),
+            ("@settings(kclVersion = \"3.0-preview\")", "3.0-preview"),
+            ("@settings(kclVersion = 3.0)", "3.0"),
+        ] {
+            let requests = Arc::new(RwLock::new(Vec::new()));
+            let mut engine = EngineManager::new_mock();
+            engine.transport = Arc::new(Box::new(RecordingTransport {
+                inner: engine.transport.clone(),
+                requests: requests.clone(),
+            }));
+            let ctx = ExecutorContext::new_with_engine(
+                Arc::new(engine),
+                ExecutorSettings {
+                    geometry_only: true,
+                    ..Default::default()
+                },
+            );
+            let program = crate::Program::parse_no_errs(source).unwrap();
+            let mut exec_state = ExecState::new(&ctx);
+
+            ctx.send_clear_scene(
+                Some(program.language_version().unwrap()),
+                &mut exec_state,
+                Default::default(),
+            )
+            .await
+            .unwrap();
+
+            let version_commands: Vec<_> = {
+                let requests = requests.read().await;
+                requests
+                    .iter()
+                    .flat_map(|request| match request {
+                        WebSocketRequest::ModelingCmdReq(request) => vec![&request.cmd],
+                        WebSocketRequest::ModelingCmdBatchReq(batch) => {
+                            batch.requests.iter().map(|request| &request.cmd).collect()
+                        }
+                        _ => vec![],
+                    })
+                    .filter_map(|cmd| match cmd {
+                        kcmc::ModelingCmd::SetKclVersion(_) => Some(serde_json::to_value(cmd).unwrap()),
+                        _ => None,
+                    })
+                    .collect()
+            };
+            assert_eq!(
+                version_commands,
+                vec![serde_json::json!({"type": "set_kcl_version", "kcl_version": expected})],
+                "{source}"
+            );
+            ctx.close().await;
         }
     }
 
@@ -5580,7 +5709,7 @@ startSketchOn(XY)
             let tolerance = properties.tolerance.expect("expected KCL 3 tolerance");
             approx::assert_relative_eq!(
                 tolerance.point_point_2d_coincident.0,
-                1e-8,
+                1e-8 * std::f64::consts::SQRT_2,
                 epsilon = 0.0,
                 max_relative = 1e-12
             );
@@ -5911,6 +6040,8 @@ face = disc()
 
     const V3_MAIN_IMPORTING_DEP: &str =
         "@settings(kclVersion = \"3.0-preview\")\nimport width from \"dep.kcl\"\nx = width\n";
+    const V3_STABLE_MAIN_IMPORTING_DEP: &str =
+        "@settings(kclVersion = 3.0)\nimport width from \"dep.kcl\"\nx = width\n";
 
     fn dep_declaring(version: &str) -> String {
         format!("@settings(kclVersion = {version})\nexport width = 10\n")
@@ -5935,7 +6066,7 @@ face = disc()
     /// site in the entry point as its outer frame.
     #[tokio::test(flavor = "multi_thread")]
     async fn imported_module_kcl_version_must_match_v3_entry_point() {
-        for dep_version in ["2.0", "1.0"] {
+        for dep_version in ["2.0", "1.0", "3.0"] {
             let dep = dep_declaring(dep_version);
             let error = run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", &dep)])
                 .await
@@ -5969,13 +6100,15 @@ face = disc()
     /// under the entry point's version, as before.
     #[tokio::test(flavor = "multi_thread")]
     async fn imported_module_without_kcl_version_is_allowed_under_v3_entry_point() {
-        for dep in [
-            "export width = 10\n",
-            "@settings(defaultLengthUnit = in)\nexport width = 10\n",
-        ] {
-            run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", dep)])
-                .await
-                .unwrap_or_else(|err| panic!("dep={dep:?}: {err:#?}"));
+        for main in [V3_MAIN_IMPORTING_DEP, V3_STABLE_MAIN_IMPORTING_DEP] {
+            for dep in [
+                "export width = 10\n",
+                "@settings(defaultLengthUnit = in)\nexport width = 10\n",
+            ] {
+                run_versioned_modules(main, &[("dep.kcl", dep)])
+                    .await
+                    .unwrap_or_else(|err| panic!("main={main:?}, dep={dep:?}: {err:#?}"));
+            }
         }
     }
 
@@ -5983,11 +6116,37 @@ face = disc()
     /// a match.
     #[tokio::test(flavor = "multi_thread")]
     async fn imported_module_matching_v3_kcl_version_is_allowed() {
-        for dep_version in ["\"3.0-preview\"", "\"3-preview\"", "\"3.0.0-preview\""] {
+        for (main, dep_versions) in [
+            (
+                V3_MAIN_IMPORTING_DEP,
+                ["\"3.0-preview\"", "\"3-preview\"", "\"3.0.0-preview\""],
+            ),
+            (V3_STABLE_MAIN_IMPORTING_DEP, ["3.0", "3", "\"3.0.0\""]),
+        ] {
+            for dep_version in dep_versions {
+                let dep = dep_declaring(dep_version);
+                run_versioned_modules(main, &[("dep.kcl", &dep)])
+                    .await
+                    .unwrap_or_else(|err| panic!("main={main:?}, dep={dep_version}: {err:#?}"));
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn stable_v3_entry_point_rejects_other_import_versions() {
+        for dep_version in ["1.0", "2.0", "\"3.0-preview\""] {
             let dep = dep_declaring(dep_version);
-            run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", &dep)])
+            let error = run_versioned_modules(V3_STABLE_MAIN_IMPORTING_DEP, &[("dep.kcl", &dep)])
                 .await
-                .unwrap_or_else(|err| panic!("dep={dep_version}: {err:#?}"));
+                .expect_err("mismatched kclVersion should be rejected");
+            assert!(matches!(error, KclError::Semantic { .. }), "{error:#?}");
+            let expected_dep_version = dep_version.trim_matches('"');
+            assert_eq!(
+                error.message(),
+                format!(
+                    "Mixing KCL versions in a single program is not allowed. The entry point `/zma-kcl-version-mismatch/main.kcl` declares kclVersion 3.0, but the imported file `/zma-kcl-version-mismatch/dep.kcl` declares kclVersion {expected_dep_version}. Update the kclVersion setting in one of these files to match the other."
+                )
+            );
         }
     }
 
@@ -6238,21 +6397,23 @@ face = disc()
         let dep_v2 = format!("@settings(kclVersion = 2.0)\n{dep}");
         run_versioned_modules(main_v1, &[("dep.kcl", &dep_v2)]).await.unwrap();
 
-        for dep in [
-            dep.to_owned(),
-            format!("@settings(kclVersion = \"3.0-preview\")\n{dep}"),
+        for (main, version) in [
+            (V3_MAIN_IMPORTING_DEP, "\"3.0-preview\""),
+            (V3_STABLE_MAIN_IMPORTING_DEP, "3.0"),
         ] {
-            let error = run_versioned_modules(V3_MAIN_IMPORTING_DEP, &[("dep.kcl", &dep)])
-                .await
-                .expect_err("V3 imports must reject a use identifier");
-            assert!(matches!(error, KclError::Syntax { .. }), "{error:#?}");
-            assert_eq!(error.message(), crate::parsing::RESERVED_USE_MESSAGE);
-            let ranges = error.source_ranges();
-            assert_eq!(ranges.len(), 2, "{ranges:#?}");
-            let start = dep.find("use =").unwrap();
-            assert_eq!((ranges[0].start(), ranges[0].end()), (start, start + 3));
-            assert!(!ranges[0].module_id().is_top_level());
-            assert!(ranges[1].module_id().is_top_level());
+            for dep in [dep.to_owned(), format!("@settings(kclVersion = {version})\n{dep}")] {
+                let error = run_versioned_modules(main, &[("dep.kcl", &dep)])
+                    .await
+                    .expect_err("V3 imports must reject a use identifier");
+                assert!(matches!(error, KclError::Syntax { .. }), "{error:#?}");
+                assert_eq!(error.message(), crate::parsing::RESERVED_USE_MESSAGE);
+                let ranges = error.source_ranges();
+                assert_eq!(ranges.len(), 2, "{ranges:#?}");
+                let start = dep.find("use =").unwrap();
+                assert_eq!((ranges[0].start(), ranges[0].end()), (start, start + 3));
+                assert!(!ranges[0].module_id().is_top_level());
+                assert!(ranges[1].module_id().is_top_level());
+            }
         }
     }
 
@@ -6324,8 +6485,9 @@ face = disc()
     #[tokio::test(flavor = "multi_thread")]
     async fn never_type_resolution_rejects_an_unvalidated_v2_ast() {
         let source = "@settings(kclVersion = 2.0)\nfn stop(): never {}\n";
-        let (ast, _) = crate::parsing::parse_str_syntax(source, ModuleId::default()).unwrap();
+        let (kcl_version, ast, _) = crate::parsing::parse_str_syntax(source, ModuleId::default()).unwrap();
         let program = crate::Program {
+            kcl_version,
             ast,
             original_file_contents: source.to_owned(),
         };
@@ -9554,6 +9716,7 @@ f = newFn
             ("2.0", "1.0"),
             ("2.0", "2.0"),
             ("\"3.0-preview\"", "3.0"),
+            ("3.0", "3.0"),
         ] {
             let body = format!("@(added_in = \"{added_in}\")\nfn newFn() {{ return 1 }}\nx = newFn()\n");
             assert_eq!(
@@ -9798,7 +9961,13 @@ x = [1, 2]: NewT
             },
         );
 
-        let cached = cache::GlobalState::new(exec_state, ctx.settings.clone(), program.ast.clone(), main_ref);
+        let cached = cache::GlobalState::new(
+            exec_state,
+            ctx.settings.clone(),
+            program.kcl_version,
+            program.ast.clone(),
+            main_ref,
+        );
         let mem = cached.mock_memory_state().unwrap();
         assert_eq!(mem.std_not_yet_added["cube"].added_in, version("3.0"));
 

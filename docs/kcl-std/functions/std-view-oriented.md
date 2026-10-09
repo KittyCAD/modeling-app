@@ -52,7 +52,7 @@ resolve. A `target` is a point, so its coordinates may be negative.
 ### Examples
 
 ```kcl
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 isoView = view::oriented(view::Orientation::Isometric)
 

@@ -10,6 +10,7 @@ import {
   getConstraintToolbarToggleEvent,
   getDefaultRecentToolbarItemIds,
   getSketchSolveToolIconMap,
+  getToolbarItemDescription,
   isLegacySketchEditRequest,
   isSketchSolveConstraintToolActive,
   isSketchToolbarTransitioning,
@@ -20,7 +21,9 @@ import {
   type ToolbarDropdown,
   type ToolbarItem,
 } from '@src/lib/toolbar'
+import type { Command } from '@src/lib/commandTypes'
 import type { modelingMachine } from '@src/machines/modelingMachine'
+import { TOOLBAR_COMMAND_IDS } from '@src/registry/extensions/commands/toolbarCommandIds'
 import { defaultKeymap } from '@src/registry/extensions/keymap/defaultKeymap'
 
 const stubModelingState = (
@@ -93,6 +96,31 @@ function getToolbarItems(
 }
 
 describe('toolbar state helpers', () => {
+  test('uses registered command descriptions with toolbar text as a fallback', () => {
+    const item = {
+      command: 'test:Available',
+      description: 'Toolbar fallback',
+    }
+    const command: Command = {
+      groupId: 'test',
+      name: 'Available',
+      description: 'Command description',
+      needsReview: false,
+      onSubmit: vi.fn(),
+      scopes: ['base'],
+    }
+
+    expect(getToolbarItemDescription(item, [command])).toBe(command.description)
+    expect(
+      getToolbarItemDescription({ command: item.command }, [command])
+    ).toBe(command.description)
+    expect(getToolbarItemDescription({ command: item.command }, [])).toBe('')
+    expect(getToolbarItemDescription(item, [])).toBe(item.description)
+    expect(
+      getToolbarItemDescription(item, [{ ...command, description: '' }])
+    ).toBe('')
+  })
+
   test('keeps the sketch solve toolbar visible while animating into sketch solve', () => {
     expect(
       modelingMachineStateToToolbarModeName(
@@ -563,31 +591,13 @@ describe('toolbar state helpers', () => {
     ).toEqual(['vertical', 'coincident', 'Tangent'])
   })
 
-  test('has a default keymap binding for every command-backed toolbar item', () => {
-    const toolbarConfig = buildToolbarConfig(
-      {
-        send: () => {},
-      },
-      { showExperimentalFeatures: true }
-    )
+  test('has a default keymap binding for every dedicated toolbar command', () => {
     const defaultKeymapCommands = new Set(
       defaultKeymap.bindings.map((binding) => binding.command)
     )
 
-    const toolbarCommands = Object.values(toolbarConfig).flatMap((mode) =>
-      mode.items.flatMap((item) => {
-        if (item === 'break') {
-          return []
-        }
-
-        if ('array' in item) {
-          return item.array.flatMap((dropdownItem) =>
-            dropdownItem.command ? [dropdownItem.command] : []
-          )
-        }
-
-        return item.command ? [item.command] : []
-      })
+    const toolbarCommands = Object.values(TOOLBAR_COMMAND_IDS).flatMap((mode) =>
+      Object.values(mode)
     )
 
     expect(

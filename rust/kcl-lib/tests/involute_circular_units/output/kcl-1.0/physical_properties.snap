@@ -18,12 +18,12 @@ description: Physical properties involute_circular_units.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 19695.62892524973
+    "value": 19675.171504330017
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 26.598668324272023
+    "value": 26.640158619350327
   }
 }

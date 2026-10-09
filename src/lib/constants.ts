@@ -31,10 +31,6 @@ export const FILE_EXT = '.kcl'
 export const EDITABLE_TEXT_FILE_EXTENSIONS = ['.md', '.txt'] as const
 export const EXPERIMENTAL_POINT_AND_CLICK_FLAG: Feature =
   'sketch_experimental_features'
-export const SEGMENTS_BASED_REGIONS_FEATURE_FLAG: Feature =
-  'segments_based_regions'
-export const KCL_CEK_EXECUTOR_FEATURE_FLAG: Feature = 'kcl_cek_executor'
-export const KCL_NEW_LEXER_PARSER_FEATURE_FLAG: Feature = 'kcl_new_lexer_parser'
 /** Gates named view changes to ZDS UI */
 export const NAMED_VIEWS_UI_FEATURE_FLAG: Feature = 'named_views_ui'
 /** Allows legacy sketches to be edited using point-and-click */
@@ -232,9 +228,6 @@ export const MAKE_TOAST_MESSAGES = {
   ERROR_STARTING_PRINT: 'Error while starting print.',
   SUCCESS: 'Started print successfully.',
 }
-
-/** Toast id for the insert foreign part toast */
-export const INSERT_FOREIGN_TOAST_ID = 'insert-foreign-toast'
 
 /** Toast id for the onboarding */
 export const ONBOARDING_TOAST_ID = 'onboarding-toast'

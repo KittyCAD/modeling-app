@@ -2,6 +2,9 @@
 import asyncio
 import os
 import sys
+from http.server import BaseHTTPRequestHandler, HTTPServer
+from threading import Thread
+from urllib.parse import parse_qs, urlsplit
 
 import kcl
 import pytest
@@ -140,6 +143,129 @@ async def test_kcl_session_context_manager(tmp_path, from_file):
         await session.export(kcl.FileExportFormat.Step)
     with pytest.raises(Exception, match="Connection already closed"):
         await session.sketch_constraint_report()
+
+
+@pytest.fixture
+def modeling_api():
+    requests = []
+
+    class Handler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            requests.append((self.path, self.headers.get("Authorization")))
+            # Capture the real native client's handshake without needing an engine.
+            self.send_response(401)
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+
+        def log_message(self, format: str, *_args: object) -> None:
+            pass
+
+    server = HTTPServer(("127.0.0.1", 0), Handler)
+    thread = Thread(
+        target=server.serve_forever, kwargs={"poll_interval": 0.01}, daemon=True
+    )
+    thread.start()
+    try:
+        yield f"http://127.0.0.1:{server.server_port}", requests
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=5)
+
+
+@pytest.fixture(params=["code", "file"])
+def session_constructor(request, tmp_path):
+    code = "@settings(kclVersion = 2.0)\nvalue = 1"
+    if request.param == "code":
+        return kcl.new_kcl_session_code, code
+    source = tmp_path / "main.kcl"
+    source.write_text(code)
+    return kcl.new_kcl_session, str(source)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("environment_configured", [False, True])
+@pytest.mark.parametrize("geometry_only", [False, True])
+async def test_kcl_session_explicit_credentials(
+    session_constructor,
+    modeling_api,
+    monkeypatch,
+    environment_configured,
+    geometry_only,
+):
+    for name in ("ZOO_API_TOKEN", "KITTYCAD_API_TOKEN", "ZOO_HOST", "KITTYCAD_HOST"):
+        monkeypatch.delenv(name, raising=False)
+    if environment_configured:
+        monkeypatch.setenv("ZOO_API_TOKEN", "environment-token")
+        monkeypatch.setenv("KITTYCAD_API_TOKEN", "conflicting-environment-token")
+        monkeypatch.setenv("ZOO_HOST", "http://127.0.0.1:1")
+        monkeypatch.setenv("KITTYCAD_HOST", "http://127.0.0.1:2")
+    before = dict(os.environ)
+    constructor, source = session_constructor
+    base_url, requests = modeling_api
+
+    async def connect(token):
+        async with asyncio.timeout(10):
+            with pytest.raises(Exception, match="401"):
+                await constructor(
+                    source,
+                    geometry_only=geometry_only,
+                    token=token,
+                    base_url=base_url,
+                )
+
+    await asyncio.gather(
+        connect("first-session-token"), connect("second-session-token")
+    )
+    assert len(requests) == 2
+    assert all(path.startswith("/ws/modeling/commands?") for path, _ in requests)
+    assert {authorization for _, authorization in requests} == {
+        "Bearer first-session-token",
+        "Bearer second-session-token",
+    }
+    for path, _ in requests:
+        query = parse_qs(urlsplit(path).query)
+        assert query["geometry_only"] == [str(geometry_only).lower()]
+        assert query.get("pool") == (["cpu"] if geometry_only else None)
+    assert dict(os.environ) == before
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("token_variable", ["ZOO_API_TOKEN", "KITTYCAD_API_TOKEN"])
+@pytest.mark.parametrize("explicit_none", [False, True])
+async def test_kcl_session_credentials_environment_fallback(
+    session_constructor, modeling_api, monkeypatch, token_variable, explicit_none
+):
+    for name in ("ZOO_API_TOKEN", "KITTYCAD_API_TOKEN", "ZOO_HOST", "KITTYCAD_HOST"):
+        monkeypatch.delenv(name, raising=False)
+    constructor, source = session_constructor
+    base_url, requests = modeling_api
+    monkeypatch.setenv(token_variable, "environment-token")
+    monkeypatch.setenv("ZOO_HOST", base_url)
+    kwargs = {"token": None, "base_url": None} if explicit_none else {}
+    async with asyncio.timeout(10):
+        with pytest.raises(Exception, match="401"):
+            await constructor(source, **kwargs)
+    assert len(requests) == 1
+    path, authorization = requests[0]
+    assert path.startswith("/ws/modeling/commands?")
+    assert authorization == "Bearer environment-token"
+    query = parse_qs(urlsplit(path).query)
+    assert query["geometry_only"] == ["false"]
+    assert "pool" not in query
+
+
+@pytest.mark.asyncio
+async def test_kcl_session_mock_with_explicit_credentials(
+    session_constructor, modeling_api
+):
+    constructor, source = session_constructor
+    base_url, requests = modeling_api
+    async with await constructor(
+        source, mock=True, token="mock-token", base_url=base_url
+    ) as session:
+        assert session.outcome.issues() == []
+    assert requests == []
 
 
 @pytest.mark.asyncio

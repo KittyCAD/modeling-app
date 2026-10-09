@@ -18,12 +18,12 @@ description: Physical properties cpu-cooler.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 672872.7215840691
+    "value": 672887.3099792018
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 522.5486175726365
+    "value": 522.5809850984241
   }
 }

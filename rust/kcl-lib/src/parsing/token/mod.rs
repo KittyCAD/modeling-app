@@ -1,14 +1,12 @@
 // Clippy does not agree with rustc here for some reason.
 #![allow(clippy::needless_lifetimes)]
 
-use std::env;
 use std::fmt;
 use std::iter::Enumerate;
 use std::num::NonZeroUsize;
 use std::str::FromStr;
 
 use anyhow::Result;
-use kcl_error::KclErrorDetails;
 use parse_display::Display;
 use serde::Deserialize;
 use serde::Serialize;
@@ -19,28 +17,15 @@ use winnow::{self};
 
 use crate::CompilationIssue;
 use crate::ModuleId;
-use crate::RuntimeFlag;
 use crate::SourceRange;
 use crate::errors::KclError;
-use crate::kcl_runtime_flags;
 use crate::parsing::ast::types::ItemVisibility;
 use crate::parsing::ast::types::VariableKind;
-use crate::runtime_flags::RuntimeFlagResolve;
-use crate::runtime_flags::resolve_from_sources;
-
-mod tokeniser;
 
 #[doc(hidden)]
 pub mod adapter;
 
-#[cfg(test)]
-mod compat_tests;
-
-#[cfg(test)]
-mod error_matrix_tests;
-
-pub(crate) use tokeniser::RESERVED_SKETCH_BLOCK_WORDS;
-pub use tokeniser::RESERVED_WORDS;
+pub use kcl_syntax::keywords::KEYWORDS as RESERVED_WORDS;
 
 // Note the ordering, it's important that `m` comes after `mm` and `cm`.
 pub const NUM_SUFFIXES: [&str; 10] = ["mm", "cm", "m", "inch", "in", "ft", "yd", "deg", "rad", "?"];
@@ -614,345 +599,336 @@ impl From<&Token> for SourceRange {
     }
 }
 
-/// Environment variable selecting which lexer implementation [`lex`] uses.
-pub(crate) const KCL_LEXER_ENV_VAR: &str = "KCL_LEXER";
-
-/// Which lexer implementation [`lex`] uses: the old winnow `tokeniser` (`Old`) or
-/// the new `kcl-syntax` logos lexer (`New`). Selected at runtime via the
-/// `KCL_LEXER` environment variable, so a process can pick either lexer without a
-/// rebuild.
-///
-/// Precedence: runtime flags > test override > `KCL_LEXER` >
-/// [`LexerMode::DEFAULT`].
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum LexerMode {
-    Old,
-    New,
-}
-
-impl RuntimeFlagResolve for LexerMode {
-    fn on() -> Self {
-        Self::New
-    }
-
-    fn off() -> Self {
-        Self::Old
-    }
-
-    fn resolve_default() -> Self {
-        Self::DEFAULT
-    }
-
-    fn parse_env_var(value: &str) -> Self {
-        Self::parse(value)
-    }
-}
-
-impl LexerMode {
-    /// The mode used when `KCL_LEXER` is unset.
-    const DEFAULT: Self = Self::New;
-
-    /// Resolve the active lexer mode (see precedence on [`LexerMode`]).
-    pub fn resolve() -> Self {
-        let env_value = match env::var(KCL_LEXER_ENV_VAR) {
-            Ok(value) => Some(value),
-            Err(env::VarError::NotPresent) => None,
-            Err(env::VarError::NotUnicode(value)) => {
-                // Invalid-unicode env var: warn and fall back rather than crash.
-                Self::warn_once(|| {
-                    format!(
-                        "{KCL_LEXER_ENV_VAR} must be valid unicode; got `{}`. Defaulting to `new`.",
-                        value.to_string_lossy()
-                    )
-                });
-                None
-            }
-        };
-
-        Self::resolve_from_sources(
-            kcl_runtime_flags().use_new_lexer_parser,
-            Self::test_override_for_resolve(),
-            env_value.as_deref(),
-        )
-    }
-
-    fn resolve_from_sources(runtime_flag: RuntimeFlag, test_override: Option<Self>, env_value: Option<&str>) -> Self {
-        resolve_from_sources(runtime_flag, test_override, env_value)
-    }
-
-    #[cfg(any(test, feature = "lsp-test-util"))]
-    fn test_override_for_resolve() -> Option<Self> {
-        Self::test_override()
-    }
-
-    #[cfg(not(any(test, feature = "lsp-test-util")))]
-    fn test_override_for_resolve() -> Option<Self> {
-        None
-    }
-
-    fn parse(value: &str) -> Self {
-        let value = value.trim();
-        if value.eq_ignore_ascii_case("old") {
-            return Self::Old;
-        }
-        if value.eq_ignore_ascii_case("new") {
-            return Self::New;
-        }
-
-        // A mistyped `KCL_LEXER` should not crash the process: warn and fall back
-        // to the new lexer (the conservative choice for a misconfiguration).
-        Self::warn_once(|| {
-            format!("Unsupported {KCL_LEXER_ENV_VAR} value `{value}`; expected `old` or `new`. Defaulting to `new`.")
-        });
-        Self::New
-    }
-
-    /// Emit a one-time configuration warning through `crate::log` (gated on
-    /// `ZOO_LOG`). `resolve`/`parse` run on every `lex`, so a misconfigured
-    /// `KCL_LEXER` must not warn -- or allocate the message -- on every call. One
-    /// guard suffices: only one kind of misconfiguration can occur per process,
-    /// since the env var holds a single value.
-    fn warn_once(make_message: impl FnOnce() -> String) {
-        static WARNED: std::sync::Once = std::sync::Once::new();
-        WARNED.call_once(|| crate::log::log(make_message()));
-    }
-
-    #[cfg(any(test, feature = "lsp-test-util"))]
-    fn test_override_value(self) -> u8 {
-        match self {
-            Self::Old => 1,
-            Self::New => 2,
-        }
-    }
-
-    #[cfg(any(test, feature = "lsp-test-util"))]
-    fn test_override() -> Option<Self> {
-        match TEST_LEXER_MODE_OVERRIDE.load(std::sync::atomic::Ordering::SeqCst) {
-            1 => Some(Self::Old),
-            2 => Some(Self::New),
-            _ => None,
-        }
-    }
-
-    /// Override the lexer mode for the lifetime of the returned guard.
-    ///
-    /// This uses a process-global atomic, so it is only race-free under test
-    /// runners that isolate tests in separate processes (e.g. `cargo nextest`).
-    /// Under in-process parallel `cargo test`, prefer driving the lexer with an
-    /// explicit mode; reserve this guard for dispatch/integration tests.
-    #[cfg(any(test, feature = "lsp-test-util"))]
-    pub fn override_for_test(mode: Self) -> LexerModeOverrideGuard {
-        let previous = TEST_LEXER_MODE_OVERRIDE.swap(mode.test_override_value(), std::sync::atomic::Ordering::SeqCst);
-        LexerModeOverrideGuard { previous }
-    }
-}
-
-#[cfg(any(test, feature = "lsp-test-util"))]
-static TEST_LEXER_MODE_OVERRIDE: std::sync::atomic::AtomicU8 = std::sync::atomic::AtomicU8::new(0);
-
-#[cfg(any(test, feature = "lsp-test-util"))]
-pub struct LexerModeOverrideGuard {
-    previous: u8,
-}
-
-#[cfg(any(test, feature = "lsp-test-util"))]
-impl Drop for LexerModeOverrideGuard {
-    fn drop(&mut self) {
-        TEST_LEXER_MODE_OVERRIDE.store(self.previous, std::sync::atomic::Ordering::SeqCst);
-    }
-}
-
-// `lex` dispatches on the runtime `LexerMode`. `Old` runs the winnow
-// `tokeniser`; `New` runs the `kcl-syntax` adapter and folds any fatal lexical
-// diagnostics into a single lexical `KclError`, preserving the public `Result`
-// contract. (The LSP consumes the richer `LexResult` directly so it can keep
-// tokens for highlighting while reporting diagnostics.)
+/// Tokenizes source using `kcl-syntax`.
 pub fn lex(s: &str, module_id: ModuleId) -> Result<TokenStream, KclError> {
-    match LexerMode::resolve() {
-        LexerMode::Old => lex_legacy(s, module_id),
-        LexerMode::New => {
-            let result = adapter::lex_with_diagnostics(s, module_id);
-            match result.to_lexical_error() {
-                Some(err) => Err(err),
-                None => Ok(result.tokens),
-            }
-        }
+    let result = adapter::lex_with_diagnostics(s, module_id);
+    match result.to_lexical_error() {
+        Some(err) => Err(err),
+        None => Ok(result.tokens),
     }
-}
-
-fn lex_legacy(s: &str, module_id: ModuleId) -> Result<TokenStream, KclError> {
-    tokeniser::lex(s, module_id).map_err(|err| {
-        let (input, offset): (Vec<char>, usize) = (err.input().chars().collect(), err.offset());
-        let module_id = err.input().state.module_id;
-
-        if offset >= input.len() {
-            // From the winnow docs:
-            //
-            // This is an offset, not an index, and may point to
-            // the end of input (input.len()) on eof errors.
-
-            return KclError::new_lexical(KclErrorDetails::new(
-                "unexpected EOF while parsing".to_owned(),
-                vec![SourceRange::new(offset, offset, module_id)],
-            ));
-        }
-
-        // TODO: Add the Winnow tokenizer context to the error.
-        // See https://github.com/KittyCAD/modeling-app/issues/784
-        let bad_token = &input[offset];
-        // TODO: Add the Winnow parser context to the error.
-        // See https://github.com/KittyCAD/modeling-app/issues/784
-        KclError::new_lexical(KclErrorDetails::new(
-            format!("found unknown token '{bad_token}'"),
-            vec![SourceRange::new(offset, offset + 1, module_id)],
-        ))
-    })
 }
 
 #[cfg(test)]
-mod lexer_mode_tests {
-    use super::LexerMode;
+mod tests {
+    use super::Token;
+    use super::TokenSlice;
+    use super::TokenType;
     use super::lex;
-    use crate::KclRuntimeFlags;
     use crate::ModuleId;
-    use crate::RuntimeFlag;
-
-    fn set_runtime_lexer_flag(flag: RuntimeFlag) {
-        crate::set_kcl_runtime_flags(KclRuntimeFlags {
-            use_new_lexer_parser: flag,
-            ..Default::default()
-        });
-    }
-
-    fn reset_runtime_lexer_flags() {
-        crate::set_kcl_runtime_flags(KclRuntimeFlags::DEFAULT);
-    }
 
     #[test]
-    fn default_mode_is_new() {
-        reset_runtime_lexer_flags();
-        assert_eq!(LexerMode::DEFAULT, LexerMode::New);
-    }
-
-    #[test]
-    fn parse_accepts_known_values_case_insensitively() {
-        assert_eq!(LexerMode::parse("old"), LexerMode::Old);
-        assert_eq!(LexerMode::parse("  NEW  "), LexerMode::New);
-    }
-
-    #[test]
-    fn parse_falls_back_to_new_on_unknown_value() {
-        // An unknown value warns and defaults to the new lexer instead of panicking.
-        assert_eq!(LexerMode::parse("rowan"), LexerMode::New);
-    }
-
-    #[test]
-    fn override_guard_sets_and_restores_mode() {
-        reset_runtime_lexer_flags();
-        // Reserved for dispatch/integration tests; relies on the process-global
-        // atomic, which is race-free under nextest's process isolation.
-        {
-            let _guard = LexerMode::override_for_test(LexerMode::New);
-            assert_eq!(LexerMode::resolve(), LexerMode::New);
-        }
-        let _guard = LexerMode::override_for_test(LexerMode::Old);
-        assert_eq!(LexerMode::resolve(), LexerMode::Old);
-    }
-
-    #[test]
-    fn runtime_flags_default_to_unset() {
-        reset_runtime_lexer_flags();
-        assert_eq!(
-            crate::kcl_runtime_flags(),
-            KclRuntimeFlags {
-                use_new_lexer_parser: RuntimeFlag::Unset,
-                ..Default::default()
-            }
-        );
-    }
-
-    #[test]
-    fn runtime_flag_on_selects_new_lexer() {
-        reset_runtime_lexer_flags();
-        set_runtime_lexer_flag(RuntimeFlag::On);
-        assert_eq!(LexerMode::resolve(), LexerMode::New);
-    }
-
-    #[test]
-    fn runtime_flag_off_selects_old_lexer() {
-        reset_runtime_lexer_flags();
-        set_runtime_lexer_flag(RuntimeFlag::Off);
-        assert_eq!(LexerMode::resolve(), LexerMode::Old);
-    }
-
-    #[test]
-    fn runtime_flag_takes_priority_over_test_override_and_env() {
-        assert_eq!(
-            LexerMode::resolve_from_sources(RuntimeFlag::Off, Some(LexerMode::New), Some("new")),
-            LexerMode::Old
-        );
-        assert_eq!(
-            LexerMode::resolve_from_sources(RuntimeFlag::On, Some(LexerMode::Old), Some("old")),
-            LexerMode::New
-        );
-    }
-
-    #[test]
-    fn unset_runtime_flag_allows_env_to_select_lexer() {
-        assert_eq!(
-            LexerMode::resolve_from_sources(RuntimeFlag::Unset, None, Some("new")),
-            LexerMode::New
-        );
-        assert_eq!(
-            LexerMode::resolve_from_sources(RuntimeFlag::Unset, None, Some("old")),
-            LexerMode::Old
-        );
-    }
-
-    #[test]
-    fn unset_runtime_flag_and_missing_env_selects_default_lexer() {
-        assert_eq!(
-            LexerMode::resolve_from_sources(RuntimeFlag::Unset, None, None),
-            LexerMode::DEFAULT
-        );
-    }
-
-    #[test]
-    fn test_override_takes_priority_over_env() {
-        assert_eq!(
-            LexerMode::resolve_from_sources(RuntimeFlag::Unset, Some(LexerMode::Old), Some("new")),
-            LexerMode::Old
-        );
-        assert_eq!(
-            LexerMode::resolve_from_sources(RuntimeFlag::Unset, Some(LexerMode::New), Some("old")),
-            LexerMode::New
-        );
-    }
-
-    /// Exercises the `New` arm of `lex` in default CI: no `KCL_LEXER` env var is
-    /// set; the new lexer is selected via the process-global test override (which
-    /// is race-free under nextest's process-per-test isolation).
-    ///
-    /// The unterminated-string assertion is deliberately a *distinguishing* one:
-    /// the new lexer folds the recovery token into the message "unterminated
-    /// string literal", whereas the old lexer reports `found unknown token '"'`.
-    /// Asserting the new-lexer-only message proves `lex` took the `New` arm --
-    /// not merely that some lexer ran.
-    #[test]
-    fn lex_dispatches_to_new_lexer() {
-        reset_runtime_lexer_flags();
-        let _guard = LexerMode::override_for_test(LexerMode::New);
-        assert_eq!(LexerMode::resolve(), LexerMode::New);
-
+    fn lex_uses_syntax_lexer() {
         let module_id = ModuleId::default();
+        let tokens = lex("x = 1", module_id).expect("valid input should produce tokens");
+        assert!(!tokens.is_empty());
 
-        // Valid input flows through the New arm and yields a token stream.
-        let tokens = lex("x = 1", module_id).expect("new lexer should tokenize valid input");
-        assert!(!tokens.is_empty(), "expected a non-empty token stream");
-
-        // Unterminated string: the new-lexer-only message (see doc comment).
         let err = lex("\"abc", module_id).expect_err("unterminated string is a lexical error");
         assert_eq!(err.error_type(), "lexical");
         assert_eq!(err.message(), "unterminated string literal");
+    }
+
+    #[test]
+    fn test_program2() {
+        let program = r#"const part001 = startSketchOn(XY)
+    |> startProfileAt([0.0000000000, 5.0000000000], %)
+    |> line([0.4900857016, -0.0240763666], %)
+
+const part002 = "part002"
+const things = [part001, 0.0]
+let blah = 1
+const foo = false
+let baz = {a: 1, part001: "thing"}
+
+fn ghi = (part001) => {
+  return part001
+}
+
+show(part001)"#;
+        let module_id = ModuleId::from_usize(1);
+        let actual = lex(program, module_id).unwrap();
+        insta::assert_debug_snapshot!(actual.tokens);
+    }
+
+    #[track_caller]
+    fn assert_tokens(expected: &[(TokenType, usize, usize)], actual: TokenSlice) {
+        let mut e = 0;
+        let mut issues = vec![];
+        for a in actual {
+            if expected[e].0 != a.token_type {
+                if a.token_type == TokenType::Whitespace {
+                    continue;
+                }
+                issues.push(format!(
+                    "Type mismatch: expected `{}`, found `{}` (`{a:?}`), at index {e}",
+                    expected[e].0, a.token_type
+                ));
+            }
+
+            if expected[e].1 != a.start || expected[e].2 != a.end {
+                issues.push(format!(
+                    "Source range mismatch: expected {}-{}, found {}-{} (`{a:?}`), at index {e}",
+                    expected[e].1, expected[e].2, a.start, a.end
+                ));
+            }
+
+            e += 1;
+        }
+        if e < expected.len() {
+            issues.push(format!("Expected `{}` tokens, found `{e}`", expected.len()));
+        }
+        assert!(issues.is_empty(), "{}", issues.join("\n"));
+    }
+
+    #[test]
+    fn test_program0() {
+        let program = "const a=5";
+        let module_id = ModuleId::from_usize(1);
+        let actual = lex(program, module_id).unwrap();
+
+        use TokenType::*;
+        assert_tokens(
+            &[(Keyword, 0, 5), (Word, 6, 7), (Operator, 7, 8), (Number, 8, 9)],
+            actual.as_slice(),
+        );
+    }
+
+    #[test]
+    fn test_program1() {
+        let program = "54 + 22500 + 6";
+        let module_id = ModuleId::from_usize(1);
+        let actual = lex(program, module_id).unwrap();
+
+        use TokenType::*;
+        assert_tokens(
+            &[
+                (Number, 0, 2),
+                (Operator, 3, 4),
+                (Number, 5, 10),
+                (Operator, 11, 12),
+                (Number, 13, 14),
+            ],
+            actual.as_slice(),
+        );
+    }
+
+    #[test]
+    fn test_program3() {
+        let program = r#"
+// this is a comment
+const yo = { a: { b: { c: '123' } } }
+
+const key = 'c'
+const things = "things"
+
+// this is also a comment"#;
+        let module_id = ModuleId::from_usize(1);
+        let actual = lex(program, module_id).unwrap();
+
+        use TokenType::*;
+        assert_tokens(
+            &[
+                (Whitespace, 0, 1),
+                (LineComment, 1, 21),
+                (Whitespace, 21, 22),
+                (Keyword, 22, 27),
+                (Whitespace, 27, 28),
+                (Word, 28, 30),
+                (Whitespace, 30, 31),
+                (Operator, 31, 32),
+                (Whitespace, 32, 33),
+                (Brace, 33, 34),
+                (Whitespace, 34, 35),
+                (Word, 35, 36),
+                (Colon, 36, 37),
+                (Whitespace, 37, 38),
+                (Brace, 38, 39),
+                (Whitespace, 39, 40),
+                (Word, 40, 41),
+                (Colon, 41, 42),
+                (Whitespace, 42, 43),
+                (Brace, 43, 44),
+                (Whitespace, 44, 45),
+                (Word, 45, 46),
+                (Colon, 46, 47),
+                (Whitespace, 47, 48),
+                (String, 48, 53),
+                (Whitespace, 53, 54),
+                (Brace, 54, 55),
+                (Whitespace, 55, 56),
+                (Brace, 56, 57),
+                (Whitespace, 57, 58),
+                (Brace, 58, 59),
+                (Whitespace, 59, 61),
+                (Keyword, 61, 66),
+                (Whitespace, 66, 67),
+                (Word, 67, 70),
+                (Whitespace, 70, 71),
+                (Operator, 71, 72),
+                (Whitespace, 72, 73),
+                (String, 73, 76),
+                (Whitespace, 76, 77),
+                (Keyword, 77, 82),
+                (Whitespace, 82, 83),
+                (Word, 83, 89),
+                (Whitespace, 89, 90),
+                (Operator, 90, 91),
+                (Whitespace, 91, 92),
+                (String, 92, 100),
+                (Whitespace, 100, 102),
+                (LineComment, 102, 127),
+            ],
+            actual.as_slice(),
+        );
+    }
+
+    #[test]
+    fn test_program4() {
+        let program = "const myArray = [0..10]";
+        let module_id = ModuleId::from_usize(1);
+        let actual = lex(program, module_id).unwrap();
+
+        use TokenType::*;
+        assert_tokens(
+            &[
+                (Keyword, 0, 5),
+                (Word, 6, 13),
+                (Operator, 14, 15),
+                (Brace, 16, 17),
+                (Number, 17, 18),
+                (DoublePeriod, 18, 20),
+                (Number, 20, 22),
+                (Brace, 22, 23),
+            ],
+            actual.as_slice(),
+        );
+    }
+
+    #[test]
+    fn test_lexer_negative_word() {
+        let module_id = ModuleId::from_usize(1);
+        let actual = lex("-legX", module_id).unwrap();
+
+        use TokenType::*;
+        assert_tokens(&[(Operator, 0, 1), (Word, 1, 5)], actual.as_slice());
+    }
+
+    #[test]
+    fn not_eq() {
+        let module_id = ModuleId::from_usize(1);
+        let actual = lex("!=", module_id).unwrap();
+        let expected = vec![Token {
+            token_type: TokenType::Operator,
+            value: "!=".to_owned(),
+            start: 0,
+            end: 2,
+            module_id,
+        }];
+        assert_eq!(actual.tokens, expected);
+    }
+
+    #[test]
+    fn import_keyword() {
+        let module_id = ModuleId::from_usize(1);
+        let actual = lex("import foo", module_id).unwrap();
+        let expected = Token {
+            token_type: TokenType::Keyword,
+            value: "import".to_owned(),
+            start: 0,
+            end: 6,
+            module_id,
+        };
+        assert_eq!(actual.tokens[0], expected);
+    }
+
+    #[test]
+    fn import_function() {
+        let module_id = ModuleId::from_usize(1);
+        let actual = lex("import(3)", module_id).unwrap();
+        let expected = Token {
+            token_type: TokenType::Word,
+            value: "import".to_owned(),
+            start: 0,
+            end: 6,
+            module_id,
+        };
+        assert_eq!(actual.tokens[0], expected);
+    }
+
+    #[test]
+    fn use_keyword_and_function_name() {
+        let module_id = ModuleId::default();
+        for (source, expected_type) in [
+            ("use", TokenType::Keyword),
+            ("use = 1", TokenType::Keyword),
+            ("use(3)", TokenType::Word),
+            ("use (3)", TokenType::Keyword),
+            ("useful", TokenType::Word),
+        ] {
+            let tokens = lex(source, module_id).unwrap();
+            assert_eq!(tokens.tokens[0].token_type, expected_type, "{source}");
+        }
+    }
+
+    #[test]
+    fn test_is_code_token() {
+        let module_id = ModuleId::default();
+        let actual = lex("foo (4/* comment */ +,2,\"sdfsdf\") // comment", module_id).unwrap();
+        let non_code = [1, 4, 5, 12, 13];
+        for i in 0..14 {
+            if non_code.contains(&i) {
+                assert!(
+                    !actual.tokens[i].is_code_token(),
+                    "failed test {i}: {:?}",
+                    actual.tokens[i],
+                );
+            } else {
+                assert!(
+                    actual.tokens[i].is_code_token(),
+                    "failed test {i}: {:?}",
+                    actual.tokens[i],
+                );
+            }
+        }
+    }
+    #[test]
+    fn test_boolean_literal() {
+        let module_id = ModuleId::default();
+        let actual = lex("true", module_id).unwrap();
+        let expected = Token {
+            token_type: TokenType::Keyword,
+            value: "true".to_owned(),
+            start: 0,
+            end: 4,
+            module_id,
+        };
+        assert_eq!(actual.tokens[0], expected);
+    }
+
+    #[test]
+    fn test_word_starting_with_keyword() {
+        let module_id = ModuleId::default();
+        let actual = lex("truee", module_id).unwrap();
+        let expected = Token {
+            token_type: TokenType::Word,
+            value: "truee".to_owned(),
+            start: 0,
+            end: 5,
+            module_id,
+        };
+        assert_eq!(actual.tokens[0], expected);
+    }
+
+    #[test]
+    fn non_english_identifiers() {
+        let module_id = ModuleId::default();
+        let actual = lex("亞當", module_id).unwrap();
+        let expected = Token {
+            token_type: TokenType::Word,
+            value: "亞當".to_owned(),
+            start: 0,
+            end: 6,
+            module_id,
+        };
+        assert_eq!(actual.tokens[0], expected);
     }
 }

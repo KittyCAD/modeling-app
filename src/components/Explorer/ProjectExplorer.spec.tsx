@@ -41,8 +41,7 @@ beforeAll(async () => {
 const projectName = 'project-001'
 const applicationDirectory = 'applicationDirectory'
 
-// Actual wasmInstance not used by these tests, only when drag and dropping external files,
-// so no real wasmInstance used here as it would make these tests unnecessarily heavier -
+// These tests do not exercise external file drops, which need Wasm.
 const wasmInstance = {} as ModuleType
 const createFile = (name: string, parent?: string): FileEntry => {
   return {

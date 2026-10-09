@@ -34,6 +34,7 @@ import type {
 import {
   getDefaultRecentToolbarItemIds,
   getToolbarDropdownDisplay,
+  getToolbarItemDescription,
   isSketchToolbarTransitioning,
   isToolbarItemResolvedDropdown,
   modelingMachineStateToToolbarModeName,
@@ -80,6 +81,10 @@ const Toolbar_ = memo(
   (props: ToolbarProps) => {
     useSignals()
     const app = useApp()
+    const registeredCommands = useSelector(
+      app.commands.actor,
+      (state) => state.context.commands
+    )
     const keymap = app.registry.get(keymapService)
     const keymapTree = keymap.keymap.value
     const { kclManager } = useSingletons()
@@ -299,7 +304,10 @@ const Toolbar_ = memo(
           title,
           tooltipTitle,
           iconColor,
-          description: maybeIconConfig.description,
+          description: getToolbarItemDescription(
+            maybeIconConfig,
+            registeredCommands
+          ),
           links: maybeIconConfig.links || [],
           isActive: itemIsActive,
           hotkey: getToolbarItemHotkey(maybeIconConfig.command),
@@ -338,6 +346,7 @@ const Toolbar_ = memo(
       showNonVisualConstraints,
       sketchSolveSelectedIdsKey,
       keymapTree,
+      registeredCommands,
     ])
 
     // To remember the last selected item in a standard ActionButtonDropdown

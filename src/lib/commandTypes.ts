@@ -181,6 +181,8 @@ export type CommandArgumentConfig<
   OutputType,
   C = ContextFrom<AnyStateMachine>,
 > = {
+  /** Whether to offer this argument in the current machine context. */
+  available?: (context: C) => boolean
   displayName?: string
   description?: string
   status?: CommandArgumentStatus
