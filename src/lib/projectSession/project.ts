@@ -5,7 +5,6 @@ import { getStringAfterLastSeparator } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { FileEntry, Project } from '@src/lib/project'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
@@ -143,7 +142,7 @@ export class ZDSProject {
       return found
     }
 
-    const systemDeps: SystemDeps = {
+    const systemDeps: ProjectSystemDeps = {
       wasmInstancePromise: this.app.wasmPromise,
       commandBar: this.app.commands.actor,
       settings: this.app.settings.actor,
