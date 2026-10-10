@@ -1289,6 +1289,13 @@ pub struct Solid {
     #[serde(skip)]
     #[ts(skip)]
     pub(crate) topology_id: uuid::Uuid,
+    /// Source sketch or region whose tags receive this body's face information
+    /// in caller memory. Match this against the source's artifact ID, independently
+    /// of the body's topology. Modifications preserve it; independent copies clear it.
+    /// When unset, tag updates use the retained sketch's original topology ID.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub(crate) tag_update_source_artifact_id: Option<ArtifactId>,
     /// The semantic body artifact from which a pattern copy was created.
     /// Pattern commands replace `artifact_id` with the copy's engine entity
     /// ID, so retain this to distinguish Sweep-backed bodies from composites.
@@ -1415,6 +1422,7 @@ impl Solid {
     pub(crate) fn become_pattern_copy(&mut self, copy_engine_id: uuid::Uuid) {
         self.pattern_source_artifact_id.get_or_insert(self.artifact_id);
         self.artifact_id = ArtifactId::new(copy_engine_id);
+        self.tag_update_source_artifact_id = None;
     }
 
     pub(crate) fn get_all_edge_cut_ids(&self) -> impl Iterator<Item = uuid::Uuid> + '_ {

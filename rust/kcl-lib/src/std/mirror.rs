@@ -61,6 +61,7 @@ async fn inner_mirror_3d(
             let id = exec_state.next_uuid();
             mirrored_body.set_id(id);
             mirrored_body.become_new_body(id, id.into());
+            mirrored_body.tag_update_source_artifact_id = None;
         }
         return Ok(unmapped_mirrored_bodies);
     }
@@ -157,6 +158,7 @@ async fn inner_mirror_3d(
         let source_topology_id = mirrored_body.topology_id();
         mirrored_body.id = info.object_id;
         mirrored_body.become_new_body(info.object_id, info.object_id.into());
+        mirrored_body.tag_update_source_artifact_id = None;
         let mut new_geometry = GeometryWithImportedGeometry::Solid(mirrored_body);
         fix_tags_and_references(&mut new_geometry, old_id, source_topology_id, exec_state, &args)
             .await
