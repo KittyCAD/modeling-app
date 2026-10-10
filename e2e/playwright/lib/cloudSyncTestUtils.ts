@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto'
+import { createHash, randomUUID } from 'node:crypto'
 import type { BrowserContext, Page, Route } from '@playwright/test'
 import { PROJECT_FOLDER } from '@src/lib/constants'
 import JSZip from 'jszip'
@@ -101,6 +101,7 @@ export function cloudProjectResponse(project: CloudProject) {
     id: project.id,
     title: project.title,
     description: project.description ?? '',
+    access: { can_edit: true },
     category_ids: project.categoryIds ?? [],
     revision: project.revision,
     files: Object.entries(project.files).map(([relative_path, contents]) => ({
@@ -116,6 +117,101 @@ export function cloudProjectResponse(project: CloudProject) {
       feedback: project.feedback,
     },
   }
+}
+
+export async function mockCloudUser(context: BrowserContext) {
+  await context.route('**/user', (route) =>
+    route.fulfill({
+      json: {
+        id: '12902000-0000-4000-8000-000000000002',
+        name: 'Playwright User',
+        username: 'playwright',
+        email: 'playwright@example.com',
+        image: '',
+        created_at: '2026-09-01T12:00:00Z',
+        updated_at: '2026-09-01T12:00:00Z',
+      },
+    })
+  )
+}
+
+/** Cloud storage for ordinary web UI tests; cloud-sync contract tests supply their own API. */
+export async function routeWritableCloudProjects(context: BrowserContext) {
+  await mockCloudUser(context)
+  type StoredProject = {
+    project: CloudProject
+    files: Map<string, Buffer>
+    entrypoint?: string
+  }
+  const projects = new Map<string, StoredProject>()
+  const response = (stored: StoredProject) => ({
+    ...cloudProjectResponse(stored.project),
+    entrypoint_path: stored.entrypoint,
+    files: [...stored.files].map(([relative_path, contents]) => ({
+      relative_path,
+      byte_size: contents.length,
+      sha256: createHash('sha256').update(contents).digest('hex'),
+    })),
+  })
+  await context.route('**/user/projects**', async (route) => {
+    const request = route.request()
+    const pathname = new URL(request.url()).pathname
+    const id = pathname.match(/\/user\/projects\/([^/]+)/)?.[1]
+    let stored = id ? projects.get(id) : undefined
+    if (request.method() === 'GET' && pathname === '/user/projects') {
+      await route.fulfill({ json: [...projects.values()].map(response) })
+      return
+    }
+    if (
+      (request.method() === 'POST' && pathname === '/user/projects') ||
+      (request.method() === 'PUT' && stored)
+    ) {
+      const form = await new Response(
+        new Uint8Array(request.postDataBuffer() ?? []),
+        {
+          headers: { 'content-type': request.headers()['content-type'] },
+        }
+      ).formData()
+      const body = JSON.parse(await (form.get('body') as Blob).text())
+      stored ??= {
+        project: { id: randomUUID(), title: '', revision: '', files: {} },
+        files: new Map(),
+      }
+      stored.project.title = body.title
+      stored.project.description = body.description
+      stored.project.categoryIds = body.category_ids
+      stored.project.revision = randomUUID()
+      stored.entrypoint = body.entrypoint_path
+      for (const [name, file] of form) {
+        if (name !== 'body' && typeof file !== 'string')
+          stored.files.set(name, Buffer.from(await file.arrayBuffer()))
+      }
+      for (const path of body.deleted_paths ?? []) stored.files.delete(path)
+      projects.set(stored.project.id, stored)
+      await route.fulfill({ json: response(stored) })
+      return
+    }
+    if (stored && request.method() === 'DELETE') {
+      projects.delete(stored.project.id)
+      await route.fulfill({ status: 204 })
+      return
+    }
+    if (stored && request.method() === 'GET') {
+      if (pathname.endsWith('/download')) {
+        const archive = new JSZip()
+        for (const [name, contents] of stored.files)
+          archive.file(name, contents)
+        await route.fulfill({
+          contentType: 'application/zip',
+          body: await archive.generateAsync({ type: 'nodebuffer' }),
+        })
+      } else {
+        await route.fulfill({ json: response(stored) })
+      }
+      return
+    }
+    await route.fulfill({ status: 404, json: { message: 'not found' } })
+  })
 }
 
 export async function routeCloudProjects(
@@ -152,6 +248,7 @@ export async function routeCloudProjects(
   const remoteListGate = options.remoteListGate ?? createRemoteListGate(true)
   const listedProjects = options.listedProjects ?? options.remoteProjects
   const brokenArchiveProjectIds = new Set(options.brokenArchiveProjectIds ?? [])
+  const createdProjects = new Map<string, CloudProject>()
   const calls = {
     creates: [] as string[],
     downloads: [] as string[],
@@ -184,18 +281,18 @@ export async function routeCloudProjects(
     if (pathname === '/user/projects' && request.method() === 'POST') {
       const postData = request.postData() || ''
       calls.creates.push(postData)
-      const createdProject = await options.createProject?.(postData)
-      await fulfillJson(
-        route,
-        cloudProjectResponse(
-          createdProject ?? {
-            id: 'created-project',
-            title: 'Created project',
-            revision: 'created-rev-1',
-            files: {},
-          }
-        )
+      const createdProject = (await options.createProject?.(postData)) ?? {
+        id: 'created-project',
+        title: 'Created project',
+        revision: 'created-rev-1',
+        files: {},
+      }
+      createdProjects.set(createdProject.id, createdProject)
+      remoteArchives.set(
+        createdProject.id,
+        await zipProject(createdProject.files)
       )
+      await fulfillJson(route, cloudProjectResponse(createdProject))
       return
     }
 
@@ -229,6 +326,11 @@ export async function routeCloudProjects(
         await fulfillJson(route, response.body, response.status)
         return
       }
+      const createdProject = createdProjects.get(projectId)
+      if (createdProject) {
+        await fulfillJson(route, cloudProjectResponse(createdProject))
+        return
+      }
     }
 
     if (projectId && pathname.endsWith('/download')) {
@@ -247,9 +349,9 @@ export async function routeCloudProjects(
       return
     }
 
-    const remoteProject = options.remoteProjects.find(
-      (project) => project.id === projectId
-    )
+    const remoteProject =
+      options.remoteProjects.find((project) => project.id === projectId) ??
+      (projectId ? createdProjects.get(projectId) : undefined)
     if (remoteProject && request.method() === 'GET') {
       await fulfillJson(route, cloudProjectResponse(remoteProject))
       return

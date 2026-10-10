@@ -1,3 +1,4 @@
+import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useSignalEffect } from '@preact/signals-react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { AppHeader } from '@src/components/AppHeader'
@@ -181,10 +182,9 @@ export function OpenedProject() {
     registry.signal(statusBarLocalItemsValueSpec).value,
     ['file']
   )
-  const executingPath = project?.executingPathSignal.value?.value
-  const activeFileRoutePath = executingPath
-    ? PATHS.FILE + '/' + encodeURIComponent(executingPath)
-    : undefined
+  const activeFileRoutePath = useAbsoluteFilePath({
+    warnIfNoExecutingPath: false,
+  })
   const authToken = auth.useToken()
   const onboardingStatus =
     settingsValues.app.onboardingStatus.current ||

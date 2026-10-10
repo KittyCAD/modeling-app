@@ -30,6 +30,7 @@ import {
   projectExplorerProjectBreadcrumbBadgesValueSpec,
   projectExplorerProjectMenuItemsValueSpec,
 } from '@src/registry/contracts/projectExplorer'
+import { routerService } from '@src/registry/contracts/router'
 import { useSelector } from '@xstate/react'
 import {
   Fragment,
@@ -39,8 +40,7 @@ import {
   useRef,
   useState,
 } from 'react'
-// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: project-menu navigation (useNavigate).
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import type { SnapshotFrom } from 'xstate'
 
 interface ProjectSidebarMenuProps extends React.PropsWithChildren {
@@ -193,7 +193,9 @@ function ProjectMenuPopover({
   const { machineManager, commands, settings } = app
   const machineApiEnabled = settings.useSettings().app.machineApi.current
   const platform = usePlatform()
-  const navigate = useNavigate()
+  const router = app.registry.get(routerService)
+  const navigate = router.navigate
+  const location = router.location.value
   const keymap = app.registry.optional(keymapService)
   const projectSettingsKeybinding = keymapKeystrokesDisplay(
     keymap
@@ -264,6 +266,17 @@ function ProjectMenuPopover({
             </>
           ),
           onClick: () => {
+            if (project?.cloudSource) {
+              const search = new URLSearchParams(location.search)
+              search.set(
+                'tab',
+                project.cloudSource.canEdit ? 'project' : 'user'
+              )
+              void navigate(
+                `${PATHS.PROJECT}/${encodeURIComponent(project.cloudSource.id)}${PATHS.SETTINGS}?${search}`
+              )
+              return
+            }
             const targetPath =
               filePath !== undefined
                 ? filePath + PATHS.SETTINGS_PROJECT
@@ -503,6 +516,7 @@ function ProjectMenuPopover({
       filePath,
       machineCount,
       navigate,
+      location.search,
       projectSettingsKeybinding,
       settings.actor,
     ]

@@ -1,5 +1,5 @@
 import { useApp } from '@src/lib/boot'
-import { PATHS } from '@src/lib/paths'
+import { getProjectFileUrl } from '@src/lib/projectNavigation'
 
 const defaultOptions = {
   warnIfNoExecutingPath: true,
@@ -17,5 +17,8 @@ export function useAbsoluteFilePath(options = defaultOptions) {
     return
   }
 
-  return PATHS.FILE + '/' + encodeURIComponent(executingPath)
+  return (
+    app.project &&
+    getProjectFileUrl(app.project.projectIORefSignal.value, executingPath)
+  )
 }

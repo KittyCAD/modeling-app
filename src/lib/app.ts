@@ -1,4 +1,9 @@
 import {
+  resolveProjectFileUrl,
+  type ProjectRouteSource,
+} from '@src/lib/projectNavigation'
+import { cloudProjectRelationshipsService } from '@src/registry/contracts/cloudSync'
+import {
   defineRegistryItem,
   pluginsValueSpec,
   Registry,
@@ -571,6 +576,22 @@ export class App implements AppSubsystems {
     return targets
   }
 
+  getProjectUrl = (
+    project: ProjectRouteSource,
+    filePath: string,
+    search = ''
+  ) =>
+    resolveProjectFileUrl({
+      project,
+      filePath,
+      search,
+      libraries: this.settings.get().app.libraries.current,
+      cloudSync: this.registry.get(cloudSyncService),
+      getRelationships: () =>
+        this.registry.optional(cloudProjectRelationshipsService)?.relationships
+          .value ?? [],
+    })
+
   syncAppCommands = () => {
     this.registry.reconfigure(appCommandsSlot, [
       defineRegistryItem({
@@ -592,6 +613,7 @@ export class App implements AppSubsystems {
                 this.settings.actor.getSnapshot().context.app.libraries.current
               ),
             getCreateProjectLibraryTargets: this.getCreateProjectLibraryTargets,
+            getProjectUrl: this.getProjectUrl,
             getHomeProjectActions: () =>
               this.registry.get(homeProjectActionsService),
             getHomeProjectEntries: () =>

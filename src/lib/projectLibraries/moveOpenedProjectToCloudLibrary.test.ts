@@ -41,6 +41,7 @@ test('moves an open directory project before navigating directly to its new file
   } as HomeProjectMoveToLibraryTarget
   const moveToLibrary = vi.fn().mockResolvedValue({
     defaultFile: '/cloud/example/main.kcl',
+    url: '/project/remote-synced?file=main.kcl',
     localProjectPath: '/cloud/example',
   })
   const actions = {
@@ -84,6 +85,6 @@ test('moves an open directory project before navigating directly to its new file
   )
   expect(moveToLibrary).toHaveBeenCalledWith(homeProject, 'personal-cloud')
   expect(navigate).toHaveBeenCalledOnce()
-  expect(navigate).toHaveBeenCalledWith('/file/%2Fcloud%2Fexample%2Fmain.kcl')
+  expect(navigate).toHaveBeenCalledWith('/project/remote-synced?file=main.kcl')
   expect(moveToLibrary).toHaveBeenCalledBefore(navigate)
 })

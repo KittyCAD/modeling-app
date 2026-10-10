@@ -1,3 +1,4 @@
+import { withProjectSubRoute } from '@src/lib/projectNavigation'
 import { Popover } from '@headlessui/react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
@@ -132,7 +133,7 @@ export function HelpMenu() {
               onClick={() => {
                 const targetPath =
                   filePath !== undefined
-                    ? filePath + PATHS.SETTINGS_KEYBINDINGS
+                    ? withProjectSubRoute(filePath, PATHS.SETTINGS_KEYBINDINGS)
                     : PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS
                 void navigate(targetPath)
               }}
