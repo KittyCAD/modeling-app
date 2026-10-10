@@ -3104,7 +3104,7 @@ export default {
       {
         "name": "from",
         "ty": "Face | TaggedFace | Edge | any",
-        "docs": "The face or edge to measure from. Must be used with `to`. The default position is the entity center. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.",
+        "docs": "The face or edge to measure from. Must be used with `to`. The default position is the entity center. Edges can be specified by their adjacent faces with `{ sideFaces = [...], endFaces = [...], index = 0 }`; `endFaces` and `index` are optional. Point-and-click uses these references instead of deprecated edge lookup calls.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3116,7 +3116,7 @@ export default {
       {
         "name": "to",
         "ty": "Face | TaggedFace | Edge | any",
-        "docs": "The face or edge to measure to. Must be used with `from`. The default position is the entity center. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.",
+        "docs": "The face or edge to measure to. Must be used with `from`. The default position is the entity center. Edges can be specified by their adjacent faces with `{ sideFaces = [...], endFaces = [...], index = 0 }`; `endFaces` and `index` are optional. Point-and-click uses these references instead of deprecated edge lookup calls.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3128,7 +3128,7 @@ export default {
       {
         "name": "edges",
         "ty": "[Edge | any; 1+]",
-        "docs": "The edges whose lengths are annotated. Cannot be combined with `from` or `to`. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.",
+        "docs": "The edges whose lengths are annotated. Cannot be combined with `from` or `to`. Edges can be specified by their adjacent faces with `{ sideFaces = [...], endFaces = [...], index = 0 }`; `endFaces` and `index` are optional. Point-and-click uses these references instead of deprecated edge lookup calls.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3152,7 +3152,7 @@ export default {
       {
         "name": "framePosition",
         "ty": "Point2d",
-        "docs": "The position of the distance label relative to the measured geometry. The default is `[100mm, 100mm]`.",
+        "docs": "The distance label's local offset `[along, setback]`, in length units. `along` moves the label from the measurement midpoint, positive toward `from` and negative toward `to`; `0` centers it when the text fits. `setback` sets the perpendicular leader extent in `framePlane`; the dimension line lies at 80% of this extent. Its sign chooses the side. When omitted, the label is centered with a setback equal to the average of the positive dimensions of the measured entities' bounding box, matching the scale used by other GD&T annotations. If the selected bounds are unavailable, the model bounds are used, then `[0mm, 20mm]` as a fallback. Point-and-click writes the calculated position as literal lengths. Explicit positions are preserved, including `[0, 0]`.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3164,7 +3164,7 @@ export default {
       {
         "name": "framePlane",
         "ty": "Plane",
-        "docs": "The plane in which to display the distance. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The distance may be displayed in a plane parallel to the given plane.",
+        "docs": "The plane in which to display the distance. Handwritten KCL defaults to `XY` when omitted. Point-and-click uses the common face plane for hole spacing and a plane containing the edge direction for edge lengths, then falls back to selected KCL topology and writes the plane explicitly. For measurements along Z, use `XZ` or `YZ` so the dimension is visible. The distance may be displayed in a plane parallel to the given plane.",
         "required": false,
         "special": false,
         "experimental": false,

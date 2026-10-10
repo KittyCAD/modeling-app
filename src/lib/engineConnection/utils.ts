@@ -15,6 +15,13 @@ export const PING_INTERVAL_MS = 1_000
 
 export type ModelTypes = OkModelingCmdResponse['type']
 
+/** Scene commands can return either a single response or a one-element array. */
+export function unwrapSceneCommandResponse(
+  response: WebSocketResponse | [WebSocketResponse] | null
+): WebSocketResponse | null {
+  return isArray(response) ? response[0] : response
+}
+
 /** Normalized result for engine commands whose successful response carries data. */
 export type ModelingDataResult =
   | { type: 'data'; data: unknown }
