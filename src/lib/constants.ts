@@ -33,8 +33,6 @@ export const EXPERIMENTAL_POINT_AND_CLICK_FLAG: Feature =
   'sketch_experimental_features'
 /** Gates named view changes to ZDS UI */
 export const NAMED_VIEWS_UI_FEATURE_FLAG: Feature = 'named_views_ui'
-/** Allows legacy sketches to be edited using point-and-click */
-export const LEGACY_SKETCH_MODE_FEATURE_FLAG: Feature = 'legacy_sketch_mode'
 export const LEGACY_SKETCH_MODE_REMOVED_MESSAGE =
   'Editing of KCL 1.0 sketches is no longer supported.'
 /** Default file to open when a project is opened */

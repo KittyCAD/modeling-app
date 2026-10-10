@@ -7,6 +7,7 @@ use std::sync::Arc;
 use anyhow::Result;
 use kcl_api::UnitAngle;
 use kcl_api::UnitLength;
+use kcl_lib::ExecState;
 use kcl_lib::ExecutorContext;
 use kcl_lib::IsRetryable;
 use kcl_lib::Program;
@@ -566,8 +567,9 @@ async fn execute_and_snapshot_views_impl(
     zoom: bool,
     highlight_edges: Option<bool>,
 ) -> PyResult<Vec<Vec<u8>>> {
-    let ExecutedKcl { ctx, .. } = run_kcl(input, false, highlight_edges, false).await?;
-    let result = take_snaps(&ctx, image_format, snapshot_options, zoom).await;
+    let geometry_only = true;
+    let ExecutedKcl { ctx, mut state, .. } = run_kcl(input, false, highlight_edges, geometry_only).await?;
+    let result = take_snaps(&ctx, &mut state, image_format, snapshot_options, zoom).await;
     ctx.close().await;
     result
 }
@@ -803,13 +805,14 @@ async fn import_and_snapshot_views(
     highlight_edges: Option<bool>,
 ) -> PyResult<Vec<Vec<u8>>> {
     let zoom = zoom.unwrap_or(true);
+    let geometry_only = true;
     spawn_py(async move {
-        let (ctx, _state) = new_context_state(
+        let (ctx, mut state) = new_context_state(
             kcl_lib::KclVersion::default(),
             ContextParams {
                 mock: false,
                 highlight_edges,
-                geometry_only: false,
+                geometry_only,
                 ..Default::default()
             },
         )
@@ -819,7 +822,7 @@ async fn import_and_snapshot_views(
             ctx.close().await;
             return Err(e);
         }
-        let result = take_snaps(&ctx, image_format, snapshot_options, zoom).await;
+        let result = take_snaps(&ctx, &mut state, image_format, snapshot_options, zoom).await;
         ctx.close().await;
         result
     })
@@ -968,6 +971,33 @@ impl SnapshotOptions {
 
 async fn take_snaps(
     ctx: &ExecutorContext,
+    exec_state: &mut ExecState,
+    image_format: ImageFormat,
+    snapshot_options: Vec<SnapshotOptions>,
+    zoom: bool,
+) -> PyResult<Vec<Vec<u8>>> {
+    if ctx.settings.geometry_only {
+        // Once we call this, we have to be careful to disable graphics again before we
+        // early terminate.
+        ctx.enable_engine_graphics(exec_state).await.map_err(to_py_exception)?;
+        if let Err(e) = ctx
+            .enable_engine_graphics_settings(exec_state)
+            .await
+            .map_err(to_py_exception)
+        {
+            ctx.disable_engine_graphics(exec_state).await.map_err(to_py_exception)?;
+            return Err(e);
+        }
+        let snapshot_res = take_snaps_inner(ctx, image_format, snapshot_options, zoom).await;
+        ctx.disable_engine_graphics(exec_state).await.map_err(to_py_exception)?;
+        snapshot_res
+    } else {
+        take_snaps_inner(ctx, image_format, snapshot_options, zoom).await
+    }
+}
+
+async fn take_snaps_inner(
+    ctx: &ExecutorContext,
     image_format: ImageFormat,
     snapshot_options: Vec<SnapshotOptions>,
     zoom: bool,
@@ -996,6 +1026,7 @@ async fn take_snaps(
         let data_bytes = snapshot(ctx, image_format, pre_snap.padding, zoom).await?;
         snaps.push(data_bytes);
     }
+    // TODO: Disable gfx if geometry_only_connection
     Ok(snaps)
 }
 

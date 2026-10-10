@@ -11,7 +11,6 @@ import {
   getDefaultRecentToolbarItemIds,
   getSketchSolveToolIconMap,
   getToolbarItemDescription,
-  isLegacySketchEditRequest,
   isSketchSolveConstraintToolActive,
   isSketchToolbarTransitioning,
   modelingMachineStateToToolbarModeName,
@@ -397,78 +396,6 @@ describe('toolbar state helpers', () => {
       type: 'Select sketch solve plane',
       data: 'default-plane-xy',
     })
-  })
-
-  test('does not enter legacy sketch edit without the feature flag', () => {
-    const modelingSend = vi.fn()
-    const sketchItem = findModelingToolbarItem('sketch')
-    const modelingState = {
-      context: {
-        kclManager: { artifactGraph: new Map() },
-        selectionRanges: {
-          graphSelections: [],
-          otherSelections: [],
-        },
-      },
-    } as unknown as StateFrom<typeof modelingMachine>
-    const props = {
-      modelingSend,
-      modelingState,
-      sketchPathId: 'path-001',
-      editorHasFocus: true,
-      isActive: false,
-      keepSelection: false,
-    }
-
-    expect(isLegacySketchEditRequest(props)).toBe(true)
-    expect(sketchItem.disabled?.(modelingState, {} as never, props)).toBe(true)
-    sketchItem.onClick(props)
-    expect(modelingSend).not.toHaveBeenCalled()
-  })
-
-  test('still edits sketch blocks without the legacy sketch mode flag', () => {
-    const modelingSend = vi.fn()
-    const sketchItem = findModelingToolbarItem('sketch')
-    const sketchBlock = {
-      type: 'sketchBlock' as const,
-      id: 'sketch-block-1',
-      codeRef: {
-        range: [0, 0, 0] as [number, number, number],
-        pathToNode: [['body', 'Program']] as [string, string][],
-        nodePath: { steps: [] },
-      },
-      planeId: 'plane-1',
-      sketchId: 1,
-    }
-    const modelingState = {
-      context: {
-        kclManager: {
-          artifactGraph: new Map([[sketchBlock.id, sketchBlock]]),
-        },
-        selectionRanges: {
-          graphSelections: [
-            {
-              artifact: sketchBlock,
-              codeRef: sketchBlock.codeRef,
-            },
-          ],
-          otherSelections: [],
-        },
-      },
-    } as unknown as StateFrom<typeof modelingMachine>
-    const props = {
-      modelingSend,
-      modelingState,
-      sketchPathId: false as const,
-      editorHasFocus: false,
-      isActive: false,
-      keepSelection: false,
-    }
-
-    expect(isLegacySketchEditRequest(props)).toBe(false)
-    expect(sketchItem.disabled?.(modelingState, {} as never, props)).toBe(false)
-    sketchItem.onClick(props)
-    expect(modelingSend).toHaveBeenCalledWith({ type: 'Enter sketch' })
   })
 
   test('keeps the sketch-solve constraints dropdown on its default visible items before use', () => {

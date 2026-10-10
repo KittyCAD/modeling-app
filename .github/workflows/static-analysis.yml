@@ -53,6 +53,8 @@ jobs:
 
   build-wasm:
     uses: ./.github/workflows/build-wasm.yml
+    with:
+      skip_wasm_opt: true
     secrets:
       TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
 

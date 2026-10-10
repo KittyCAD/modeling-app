@@ -1208,6 +1208,56 @@ impl ExecutorContext {
         Self::new_with_engine_and_fs(engine, crate::fs::new_file_system_handle(FileManager::new()), settings)
     }
 
+    /// Toggle on engine graphics.
+    /// Make sure to disable them again when you're done.
+    pub async fn enable_engine_graphics(&self, exec_state: &mut ExecState) -> Result<()> {
+        let source_range = Default::default();
+        self.engine
+            .send_modeling_cmd(
+                &self.engine_batch,
+                exec_state.next_uuid(),
+                source_range,
+                &ModelingCmd::ToggleGraphics(kcmc::ToggleGraphics::enabled(true)),
+            )
+            .await
+            .map(|_| ())?;
+
+        Ok(())
+    }
+
+    pub async fn enable_engine_graphics_settings(&self, exec_state: &mut ExecState) -> Result<()> {
+        let source_range = Default::default();
+        let grid_scale_unit = if self.settings.fixed_size_grid {
+            GridScaleBehavior::Fixed(Some(exec_state.length_unit()))
+        } else {
+            GridScaleBehavior::ScaleWithZoom
+        };
+        self.engine
+            .apply_graphics_settings(
+                &self.engine_batch,
+                &self.settings,
+                source_range,
+                exec_state.id_generator(),
+                grid_scale_unit,
+            )
+            .await?;
+        Ok(())
+    }
+
+    pub async fn disable_engine_graphics(&self, exec_state: &mut ExecState) -> Result<()> {
+        let source_range = Default::default();
+        self.engine
+            .send_modeling_cmd(
+                &self.engine_batch,
+                exec_state.next_uuid(),
+                source_range,
+                &ModelingCmd::ToggleGraphics(kcmc::ToggleGraphics::enabled(false)),
+            )
+            .await
+            .map(|_| ())?;
+        Ok(())
+    }
+
     /// Open an engine session for the entrypoint's resolved `Program::language_version()`.
     /// The version is fixed for the lifetime of this connection.
     #[cfg(not(target_arch = "wasm32"))]
