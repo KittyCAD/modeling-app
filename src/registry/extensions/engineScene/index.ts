@@ -36,6 +36,7 @@ import { saveViewportScreenshot } from './saveViewportScreenshot'
 import {
   EngineSceneGizmoViewExtension,
   EngineSceneToolbarViewExtension,
+  EngineSceneModelingDialogViewExtension,
   SketchBackgroundOpacityViewExtension,
   SketchConstraintsToggleViewExtension,
 } from './viewExtensionControls'
@@ -225,6 +226,14 @@ const sketchConstraintsToggleViewExtension = defineEngineSceneViewExtension({
   shouldRegister: isSketchSolveMode,
 })
 
+const modelingDialogViewExtension = defineEngineSceneViewExtension({
+  id: 'engine-scene.modeling-dialog',
+  zone: 'overlay',
+  order: 0,
+  Component: EngineSceneModelingDialogViewExtension,
+  wrapperClassName: '!pointer-events-none',
+})
+
 const gizmoViewExtension = defineEngineSceneViewExtension({
   id: 'engine-scene.gizmo',
   zone: 'bottom-right',
@@ -398,6 +407,13 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
         provide(engineSceneViewExtensionsValueSpec, gizmoViewExtension, {
           key: gizmoViewExtension.id,
         }),
+        provide(
+          engineSceneViewExtensionsValueSpec,
+          modelingDialogViewExtension,
+          {
+            key: modelingDialogViewExtension.id,
+          }
+        ),
       ],
       uses: [executionIndicator],
     }),

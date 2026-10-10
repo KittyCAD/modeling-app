@@ -119,6 +119,7 @@ export function createMachineCommand<
       }
     },
     disabled: forceDisable,
+    forceCommandBar: commandConfig.forceCommandBar,
   }
 
   if (commandConfig.args) {
@@ -212,6 +213,7 @@ export function buildCommandArgument<
     skip: arg.skip,
     machineActor,
     valueSummary: arg.valueSummary,
+    dialog: arg.dialog,
   } satisfies Omit<CommandArgument<O, T>, 'inputType'>
 
   if (arg.inputType === 'options') {
