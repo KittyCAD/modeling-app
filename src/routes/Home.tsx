@@ -1,4 +1,3 @@
-import { BillingDialog } from '@kittycad/ui-components'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ActionButton } from '@src/components/ActionButton'
 import { Announcements } from '@src/components/Announcements'
@@ -76,6 +75,7 @@ import {
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
+import { HomeBillingReminder } from '@src/routes/HomeBillingReminder'
 import { HomeHeader } from '@src/routes/HomeHeader'
 import {
   type ProjectCardDragProps,
@@ -312,10 +312,9 @@ const Home = () => {
   const readWriteProjectDir = useCanReadWriteProjectDirectory()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const apiToken = auth.useToken()
+  const user = auth.useUser()
   const networkMachineStatus = useNetworkMachineStatus()
   const billingContext = billing.useContext()
-  const hasUnlimitedCredits = billingContext.balance === Infinity
-  const openBillingLinkExternally = openExternalBrowserIfDesktop()
 
   const projects = useFolders()
   const homeProjectEntries = registry.signal(homeProjectEntriesValueSpec).value
@@ -700,19 +699,12 @@ const Home = () => {
             </li>
           </ul>
           <ul className="flex flex-col">
-            {!hasUnlimitedCredits && (
+            {user && (
               <li className="contents">
-                <div className="my-2">
-                  <BillingDialog
-                    upgradeHref={withSiteBaseURL('/design-studio-pricing')}
-                    accountHref={withSiteBaseURL('/account/billing')}
-                    billingClick={openBillingLinkExternally}
-                    error={billingContext.error}
-                    balance={billingContext.balance}
-                    allowance={billingContext.allowance}
-                    userPaymentBalance={billingContext.userPaymentBalance}
-                  />
-                </div>
+                <HomeBillingReminder
+                  userId={user.id}
+                  billingContext={billingContext}
+                />
               </li>
             )}
             <li className="contents">
