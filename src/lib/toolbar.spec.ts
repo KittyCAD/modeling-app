@@ -426,34 +426,6 @@ describe('toolbar state helpers', () => {
     expect(modelingSend).not.toHaveBeenCalled()
   })
 
-  test('enters legacy sketch edit when the feature flag is present', () => {
-    const modelingSend = vi.fn()
-    const sketchItem = findModelingToolbarItem('sketch', {
-      hasLegacySketchMode: true,
-    })
-    const modelingState = {
-      context: {
-        kclManager: { artifactGraph: new Map() },
-        selectionRanges: {
-          graphSelections: [],
-          otherSelections: [],
-        },
-      },
-    } as unknown as StateFrom<typeof modelingMachine>
-    const props = {
-      modelingSend,
-      modelingState,
-      sketchPathId: 'path-001',
-      editorHasFocus: true,
-      isActive: false,
-      keepSelection: false,
-    }
-
-    expect(sketchItem.disabled?.(modelingState, {} as never, props)).toBe(false)
-    sketchItem.onClick(props)
-    expect(modelingSend).toHaveBeenCalledWith({ type: 'Enter sketch' })
-  })
-
   test('still edits sketch blocks without the legacy sketch mode flag', () => {
     const modelingSend = vi.fn()
     const sketchItem = findModelingToolbarItem('sketch')

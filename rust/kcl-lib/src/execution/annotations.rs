@@ -3,6 +3,7 @@
 use std::fmt;
 use std::str::FromStr;
 
+use kittycad_modeling_cmds::KclVersion;
 use kittycad_modeling_cmds::coord::KITTYCAD;
 use kittycad_modeling_cmds::coord::OPENGL;
 use kittycad_modeling_cmds::coord::System;
@@ -11,7 +12,6 @@ use serde::Deserialize;
 use serde::Serialize;
 
 use crate::KclError;
-use crate::KclVersion;
 use crate::SourceRange;
 use crate::errors::KclErrorDetails;
 use crate::errors::Severity;

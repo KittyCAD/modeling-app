@@ -12,8 +12,8 @@ use std::sync::Arc;
 use std::sync::Mutex;
 
 use anyhow::Result;
-use kcl_api::KclVersion;
 pub use kcl_api::ast::ItemVisibility;
+use kittycad_modeling_cmds::KclVersion;
 use parse_display::Display;
 use parse_display::FromStr;
 pub use path::NodePath;
@@ -506,7 +506,9 @@ fn kcl_version_expr(kcl_version: KclVersion) -> Result<Expr, KclError> {
             },
             "2.0".to_owned(),
         ),
-        crate::KclVersion::V3Preview => (
+        crate::KclVersion::V3Preview | crate::KclVersion::V4Preview => (
+            // These have their own handling because they're string literals,
+            // not numeric literals.
             LiteralValue::String(kcl_version.as_str().to_owned()),
             format!("\"{}\"", kcl_version.as_str()),
         ),
