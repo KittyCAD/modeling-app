@@ -134,6 +134,11 @@ export type Command<
     context: CommandBarContext,
     machineActor?: ActorRefFrom<T>
   ) => Promise<undefined | CommandReviewValidationError>
+  /** Generate proposed code without applying or executing the command. */
+  codePreview?: (
+    context: CommandBarContext,
+    machineActor?: ActorRefFrom<T>
+  ) => Promise<CommandReviewValidationDetails | Error>
   machineActor?: Actor<T>
   onSubmit: (data?: CommandSchema, wasmInstance?: ModuleType) => unknown
   onCancel?: () => void

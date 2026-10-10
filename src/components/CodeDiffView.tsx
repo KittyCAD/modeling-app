@@ -1,5 +1,5 @@
 import { markdown } from '@codemirror/lang-markdown'
-import { MergeView } from '@codemirror/merge'
+import { MergeView, unifiedMergeView } from '@codemirror/merge'
 import { EditorState, type Extension } from '@codemirror/state'
 import { EditorView, lineNumbers } from '@codemirror/view'
 import { kcl } from '@kittycad/codemirror-lang-kcl'
@@ -23,6 +23,8 @@ type CodeDiffViewProps = {
   compact?: boolean
   vividChanges?: boolean
   testId?: string
+  layout?: 'split' | 'unified'
+  fullHeight?: boolean
 }
 
 export type CodeDiffLanguage = 'kcl' | 'markdown' | 'plain'
@@ -174,6 +176,8 @@ export function CodeDiffView({
   compact = false,
   vividChanges = false,
   testId,
+  layout = 'split',
+  fullHeight = false,
 }: CodeDiffViewProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const beforeLabelId = useId()
@@ -182,6 +186,31 @@ export function CodeDiffView({
   useEffect(() => {
     if (!containerRef.current) {
       return
+    }
+
+    if (layout === 'unified') {
+      const view = new EditorView({
+        doc: afterText,
+        extensions: [
+          ...diffEditorExtensions(
+            language,
+            resolvedTheme,
+            afterLabelId,
+            compact,
+            false
+          ),
+          unifiedMergeView({
+            original: beforeText,
+            mergeControls: false,
+            collapseUnchanged: { margin: 3, minSize: 8 },
+            diffConfig: { timeout: 1000 },
+          }),
+          EditorView.lineWrapping,
+          fullHeight ? EditorView.theme({ '&': { height: '100%' } }) : [],
+        ],
+        parent: containerRef.current,
+      })
+      return () => view.destroy()
     }
 
     const mergeView = new MergeView({
@@ -230,18 +259,32 @@ export function CodeDiffView({
     language,
     resolvedTheme,
     vividChanges,
+    layout,
+    fullHeight,
   ])
 
   return (
     <>
-      <div className="mb-2 grid grid-cols-2 gap-3 text-xs font-medium text-chalkboard-70 dark:text-chalkboard-30">
-        <span id={beforeLabelId}>{beforeLabel}</span>
-        <span id={afterLabelId}>{afterLabel}</span>
+      <div
+        className={`mb-2 shrink-0 gap-3 text-xs font-medium text-chalkboard-70 dark:text-chalkboard-30 ${layout === 'split' ? 'grid grid-cols-2' : 'flex justify-between'}`}
+      >
+        <span id={beforeLabelId}>
+          {layout === 'unified' && (
+            <span className="mr-1 text-red-600 dark:text-red-400">-</span>
+          )}
+          {beforeLabel}
+        </span>
+        <span id={afterLabelId}>
+          {layout === 'unified' && (
+            <span className="mr-1 text-green-700 dark:text-green-400">+</span>
+          )}
+          {afterLabel}
+        </span>
       </div>
       <div
         ref={containerRef}
         data-testid={testId}
-        className="max-h-[18rem] min-h-32 w-full max-w-full min-w-0 overflow-auto rounded border border-chalkboard-20 dark:border-chalkboard-70 [&_.cm-editor]:max-w-full [&_.cm-editor]:min-w-0 [&_.cm-mergeView]:max-h-[18rem] [&_.cm-mergeView]:max-w-full [&_.cm-mergeView]:min-w-0 [&_.cm-mergeView]:overflow-auto [&_.cm-mergeView]:w-full [&_.cm-mergeViewEditor]:max-w-full [&_.cm-mergeViewEditor]:min-w-0 [&_.cm-mergeViewEditors]:max-w-full [&_.cm-mergeViewEditors]:min-w-0 [&_.cm-mergeViewEditors]:w-full [&_.cm-scroller]:overflow-auto"
+        className={`w-full max-w-full min-w-0 overflow-auto rounded border border-chalkboard-20 dark:border-chalkboard-70 [&_.cm-editor]:max-w-full [&_.cm-editor]:min-w-0 [&_.cm-mergeView]:max-w-full [&_.cm-mergeView]:min-w-0 [&_.cm-mergeView]:overflow-auto [&_.cm-mergeView]:w-full [&_.cm-mergeViewEditor]:max-w-full [&_.cm-mergeViewEditor]:min-w-0 [&_.cm-mergeViewEditors]:max-w-full [&_.cm-mergeViewEditors]:min-w-0 [&_.cm-mergeViewEditors]:w-full [&_.cm-scroller]:overflow-auto ${fullHeight ? 'min-h-0 flex-1' : 'max-h-[18rem] min-h-32 [&_.cm-mergeView]:max-h-[18rem]'}`}
       />
     </>
   )
