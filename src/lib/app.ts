@@ -8,7 +8,8 @@ import {
 } from '@kittycad/registry'
 import { effect, type Signal, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
-import { File, KclManager, ZDSProject } from '@src/lang/KclManager'
+import { KclManager } from '@src/lang/KclManager'
+import { File, ZDSProject } from '@src/lib/projectSession'
 import { lspService } from '@src/lang/lsp/registry/contract'
 import { type BillingRegistryService, billingService } from '@src/lib/billing'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
@@ -30,7 +31,6 @@ import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import {
   getAllCurrentSettings,
   jsAppSettings,
-  watchSettingsFileWhileIdle,
 } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
@@ -280,14 +280,6 @@ export class App implements AppSubsystems {
     )
     void this.wasmPromise
       .then(this.setActiveWasmInstance)
-      .then(async () => {
-        // Subscribe to user settings file changes while the settings actor is idle
-        // for the duration of the App's life.
-        this.settings
-          .userFilePath()
-          .then((path) => watchSettingsFileWhileIdle(this.settings.actor, path))
-          .catch(reportRejection)
-      })
       .catch(reportRejection)
     this.syncUserFeaturesFromAuth(this.auth.actor.getSnapshot())
 
@@ -928,11 +920,6 @@ export class App implements AppSubsystems {
     if (sketchGridSettingsChanged) {
       this.singletons.kclManager.sceneEntitiesManager.updateSketchGrid()
     }
-
-    // Update line wrapping
-    this.singletons.kclManager.setEditorLineWrapping(
-      context.textEditor.textWrapping.current
-    )
 
     // Update engine highlighting
     const newHighlighting = context.modeling.highlightEdges.current

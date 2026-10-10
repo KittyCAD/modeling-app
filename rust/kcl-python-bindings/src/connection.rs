@@ -44,6 +44,7 @@ pub struct KclSession {
 
 struct SessionState {
     ctx: Mutex<Option<kcl_lib::ExecutorContext>>,
+    state: Mutex<kcl_lib::ExecState>,
     program: kcl_lib::Program,
     outcome: ExecOutcome,
 }
@@ -163,8 +164,10 @@ impl KclSession {
         zoom: bool,
     ) -> PyResult<Vec<Vec<u8>>> {
         let ctx = self.executed_kcl.context().await?;
+        let executed_kcl = self.executed_kcl.clone();
         spawn_py(async move {
-            let result = take_snaps(&ctx, image_format, snapshot_options, zoom).await;
+            let mut state = executed_kcl.state.lock().await;
+            let result = take_snaps(&ctx, &mut state, image_format, snapshot_options, zoom).await;
             ctx.engine.take_responses().await;
             result
         })
@@ -195,14 +198,17 @@ impl KclSession {
 /// Execute this KCL project.
 /// Return an executed KCL project with its connection still available.
 /// You can call follow-up methods, like exporting or snapshotting or measuring, on the returned session.
+/// `geometry_only` uses the CPU engine pool without initializing rendering.
 /// `token` and `base_url` override the client environment settings for this session.
 /// Omitted values retain the client's existing environment defaults.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[gen_stub(override_return_type(type_repr = "KclSession"))]
-#[pyfunction(signature = (path, *, mock=false, highlight_edges=None, video_res_width=None, video_res_height=None, token=None, base_url=None))]
+#[pyfunction(signature = (path, *, mock=false, geometry_only=false, highlight_edges=None, video_res_width=None, video_res_height=None, token=None, base_url=None))]
+#[allow(clippy::too_many_arguments)] // Independent Python keyword options.
 pub async fn new_kcl_session(
     path: String,
     mock: bool,
+    geometry_only: bool,
     highlight_edges: Option<bool>,
     video_res_width: Option<u32>,
     video_res_height: Option<u32>,
@@ -213,12 +219,16 @@ pub async fn new_kcl_session(
     spawn_py(async move {
         new_kcl_session_impl(
             input,
-            mock,
-            highlight_edges,
-            video_res_width,
-            video_res_height,
-            token,
-            base_url,
+            crate::ContextParams {
+                mock,
+                geometry_only,
+                highlight_edges,
+                video_res_width,
+                video_res_height,
+                token,
+                base_url,
+                ..Default::default()
+            },
         )
         .await
     })
@@ -228,14 +238,17 @@ pub async fn new_kcl_session(
 /// Execute this KCL source code string.
 /// Return an executed KCL project with its connection still available.
 /// You can call follow-up methods, like exporting or snapshotting or measuring, on the returned session.
+/// `geometry_only` uses the CPU engine pool without initializing rendering.
 /// `token` and `base_url` override the client environment settings for this session.
 /// Omitted values retain the client's existing environment defaults.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[gen_stub(override_return_type(type_repr = "KclSession"))]
-#[pyfunction(signature = (code, *, mock=false, highlight_edges=None, video_res_width=None, video_res_height=None, token=None, base_url=None))]
+#[pyfunction(signature = (code, *, mock=false, geometry_only=false, highlight_edges=None, video_res_width=None, video_res_height=None, token=None, base_url=None))]
+#[allow(clippy::too_many_arguments)] // Independent Python keyword options.
 pub async fn new_kcl_session_code(
     code: String,
     mock: bool,
+    geometry_only: bool,
     highlight_edges: Option<bool>,
     video_res_width: Option<u32>,
     video_res_height: Option<u32>,
@@ -246,12 +259,16 @@ pub async fn new_kcl_session_code(
     spawn_py(async move {
         new_kcl_session_impl(
             input,
-            mock,
-            highlight_edges,
-            video_res_width,
-            video_res_height,
-            token,
-            base_url,
+            crate::ContextParams {
+                mock,
+                geometry_only,
+                highlight_edges,
+                video_res_width,
+                video_res_height,
+                token,
+                base_url,
+                ..Default::default()
+            },
         )
         .await
     })
@@ -260,15 +277,7 @@ pub async fn new_kcl_session_code(
 
 /// Execute this KCL project.
 /// Return an executed KCL project with its connection still available.
-pub async fn new_kcl_session_impl(
-    input: KclInput,
-    mock: bool,
-    highlight_edges: Option<bool>,
-    video_res_width: Option<u32>,
-    video_res_height: Option<u32>,
-    token: Option<String>,
-    base_url: Option<String>,
-) -> PyResult<KclSession> {
+async fn new_kcl_session_impl(input: KclInput, mut params: crate::ContextParams) -> PyResult<KclSession> {
     // I/O or parse failures should raise an exception.
     // There's no more useful data to include.
     // So it's fine to use ? here.
@@ -278,22 +287,16 @@ pub async fn new_kcl_session_impl(
         path,
         filename,
     } = load_and_parse(input).await?;
+    params.current_file = path;
 
     // Connect to the engine.
     // If you can't even connect to the engine, just raise an exception.
     // So it's fine to use ? here.
     let (ctx, mut state) = new_context_state(
-        path,
-        mock,
-        highlight_edges,
-        false,
-        video_res_width,
-        video_res_height,
         program
             .language_version()
             .map_err(|err| into_miette_for_parse(&filename, &code, err))?,
-        token,
-        base_url,
+        params,
     )
     .await
     .map_err(to_py_exception)?;
@@ -310,7 +313,7 @@ pub async fn new_kcl_session_impl(
     let api_call_id = modeling_session_data.map(|session| session.api_call_id);
     let websocket_upgrade_request_id = ctx.engine.websocket_upgrade_request_id().map(str::to_owned);
 
-    let outcome = match state.into_exec_outcome(env_ref, &ctx).await {
+    let outcome = match state.clone().into_exec_outcome(env_ref, &ctx).await {
         Ok(inner) => ExecOutcome {
             inner: Arc::new(inner),
             code: code.into(),
@@ -328,6 +331,7 @@ pub async fn new_kcl_session_impl(
     // Execution succeeded, return the data.
     let executed_kcl = Arc::new(SessionState {
         ctx: Mutex::new(Some(ctx)),
+        state: Mutex::new(state),
         program,
         outcome,
     });
@@ -346,12 +350,10 @@ mod tests {
     async fn follow_up_error_drains_responses_and_close_releases_context() {
         let mut session = new_kcl_session_impl(
             KclInput::Code("@settings(kclVersion = 2.0)\nvalue = 1".to_owned()),
-            true,
-            None,
-            None,
-            None,
-            None,
-            None,
+            crate::ContextParams {
+                mock: true,
+                ..Default::default()
+            },
         )
         .await
         .unwrap();

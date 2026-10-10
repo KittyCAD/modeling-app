@@ -198,13 +198,13 @@ dependencies = [
 
 [[package]]
 name = "async-recursion"
-version = "1.1.1"
+version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3b43422f69d8ff38f95f1b2bb76517c91589a924d1559a0e935d7c8ce0274c11"
+checksum = "4f8abc12baad266b1c8cec146854c195b5864b4221d4b2ca7296a7ae82d9e451"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.119",
+ "syn 3.0.6",
 ]
 
 [[package]]
@@ -347,7 +347,7 @@ dependencies = [
  "rand 0.10.2",
  "rand_distr",
  "serde",
- "thiserror 2.0.20",
+ "thiserror 2.0.21",
  "variadics_please",
 ]
 
@@ -396,7 +396,7 @@ dependencies = [
  "glam 0.32.1",
  "serde",
  "smol_str",
- "thiserror 2.0.20",
+ "thiserror 2.0.21",
  "uuid",
  "variadics_please",
  "wgpu-types",
@@ -492,18 +492,18 @@ dependencies = [
 
 [[package]]
 name = "bon"
-version = "3.10.1"
+version = "3.10.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "60eafe0d77c3a2fc292c1d1346c3041b33c0a108085a2afabf672b70f69dbbc9"
+checksum = "214f5df094ce551a10a30ffb9c70243d61f121a3d985a6495933e181dee6a7d2"
 dependencies = [
  "bon-macros",
 ]
 
 [[package]]
 name = "bon-macros"
-version = "3.10.1"
+version = "3.10.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bd0f9631d8aaaee112c41985d675ef269e02acbd4f33122836af4f0c5f699ff6"
+checksum = "2706da6c749998cc555d04184909608956a69ad3f8ab1a076fbc867b4a3c3ce5"
 dependencies = [
  "darling 0.24.1",
  "ident_case",
@@ -744,7 +744,7 @@ version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0fa961b519f0b462e3a3b4a34b64d119eeaca1d59af726fe450bbba07a9fc0a1"
 dependencies = [
- "thiserror 2.0.20",
+ "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -1474,7 +1474,7 @@ dependencies = [
  "indexmap 2.14.2",
  "libm",
  "mutants",
- "thiserror 2.0.20",
+ "thiserror 2.0.21",
  "winnow",
 ]
 
@@ -2017,7 +2017,7 @@ dependencies = [
  "pest_derive",
  "serde",
  "serde_json",
- "thiserror 2.0.20",
+ "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -2413,7 +2413,7 @@ dependencies = [
  "image",
  "itertools 0.14.0",
  "rayon",
- "thiserror 2.0.20",
+ "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -2425,7 +2425,7 @@ dependencies = [
  "image",
  "itertools 0.14.0",
  "rayon",
- "thiserror 2.0.20",
+ "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -2491,9 +2491,9 @@ dependencies = [
 
 [[package]]
 name = "insta"
-version = "1.48.0"
+version = "1.49.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "86f0f8fee8c926415c58d6ae43a08523a26faccb2323f5e6b644fe7dd4ef6b82"
+checksum = "b67d3d2e287e4b86c10b3f3b641033d1f89b74bdb39d05f34952e2b9a6fe21cd"
 dependencies = [
  "console 0.16.3",
  "once_cell",
@@ -2631,7 +2631,7 @@ dependencies = [
  "jni-sys",
  "log",
  "simd_cesu8",
- "thiserror 2.0.20",
+ "thiserror 2.0.21",
  "walkdir",
  "windows-link",
 ]
@@ -2693,33 +2693,12 @@ dependencies = [
 
 [[package]]
 name = "kcl-api"
-version = "0.2.189"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4feba97feb51c92360305dfb483b648fd4a5a979652e7793b53d9b52b2255403"
-dependencies = [
- "euler",
- "indexmap 2.14.2",
- "kcl-error 0.2.189",
- "kittycad-measurements",
- "kittycad-point 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "kittycad-unit-conversion-derive",
- "parse-display",
- "parse-display-derive",
- "schemars 0.8.22",
- "serde",
- "serde_json",
- "ts-rs",
- "uuid",
-]
-
-[[package]]
-name = "kcl-api"
-version = "0.2.190"
+version = "0.2.191"
 dependencies = [
  "arbitrary",
  "euler",
  "indexmap 2.14.2",
- "kcl-error 0.2.190",
+ "kcl-error",
  "kittycad-measurements",
  "kittycad-point 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "kittycad-unit-conversion-derive",
@@ -2736,7 +2715,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.190"
+version = "0.1.191"
 dependencies = [
  "anyhow",
  "clap",
@@ -2747,7 +2726,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.2.190"
+version = "0.2.191"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2756,7 +2735,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.190"
+version = "0.1.191"
 dependencies = [
  "convert_case",
  "proc-macro2",
@@ -2766,7 +2745,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-engine-codec"
-version = "0.2.190"
+version = "0.2.191"
 dependencies = [
  "kittycad-modeling-cmds",
  "rmp-serde",
@@ -2775,34 +2754,20 @@ dependencies = [
 
 [[package]]
 name = "kcl-error"
-version = "0.2.189"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7688d60126de4866b18360b9bd29ab5cd1f6e48b05b6c284c241f22d4aff3fb2"
-dependencies = [
- "miette",
- "schemars 0.8.22",
- "serde",
- "serde_json",
- "thiserror 2.0.20",
- "ts-rs",
-]
-
-[[package]]
-name = "kcl-error"
-version = "0.2.190"
+version = "0.2.191"
 dependencies = [
  "miette",
  "pyo3",
  "schemars 0.8.22",
  "serde",
  "serde_json",
- "thiserror 2.0.20",
+ "thiserror 2.0.21",
  "ts-rs",
 ]
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.190"
+version = "0.2.191"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2833,7 +2798,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.190"
+version = "0.1.191"
 dependencies = [
  "anyhow",
  "clap",
@@ -2853,7 +2818,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.190"
+version = "0.2.191"
 dependencies = [
  "ahash",
  "anyhow",
@@ -2886,11 +2851,11 @@ dependencies = [
  "insta",
  "itertools 0.15.0",
  "js-sys",
- "kcl-api 0.2.190",
+ "kcl-api",
  "kcl-derive-docs",
  "kcl-directory-test-macro",
  "kcl-engine-codec",
- "kcl-error 0.2.190",
+ "kcl-error",
  "kcl-syntax",
  "kittycad",
  "kittycad-modeling-cmds",
@@ -2914,7 +2879,7 @@ dependencies = [
  "serde_json",
  "sha2 0.11.0",
  "tempfile",
- "thiserror 2.0.20",
+ "thiserror 2.0.21",
  "tokio",
  "tokio-tungstenite",
  "toml",
@@ -2937,10 +2902,10 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.190"
+version = "0.3.191"
 dependencies = [
  "anyhow",
- "kcl-api 0.2.190",
+ "kcl-api",
  "kcl-lib",
  "kittycad-modeling-cmds",
  "miette",
@@ -2954,15 +2919,16 @@ dependencies = [
 
 [[package]]
 name = "kcl-syntax"
-version = "0.2.190"
+version = "0.2.191"
 dependencies = [
  "logos",
  "proptest",
+ "walkdir",
 ]
 
 [[package]]
 name = "kcl-test-server"
-version = "0.2.190"
+version = "0.2.191"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -2975,7 +2941,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.190"
+version = "0.1.191"
 dependencies = [
  "anyhow",
  "console_error_panic_hook",
@@ -2985,7 +2951,7 @@ dependencies = [
  "getrandom 0.3.4",
  "gloo-utils",
  "js-sys",
- "kcl-api 0.2.190",
+ "kcl-api",
  "kcl-language-server",
  "kcl-lib",
  "kittycad",
@@ -3006,9 +2972,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad"
-version = "0.5.3"
+version = "0.5.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b5fc45c8dff0cdc792b13d9fb20c6cc9029d3eb6a0bf28b401788e1e5e88910b"
+checksum = "b3dbe3157584108d4769845ae50980d692726de21ac3a8379f94b522b99e0679"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3035,7 +3001,7 @@ dependencies = [
  "serde_bytes",
  "serde_json",
  "serde_urlencoded",
- "thiserror 2.0.20",
+ "thiserror 2.0.21",
  "tokio",
  "tracing",
  "url",
@@ -3053,9 +3019,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.248"
+version = "0.2.250"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "708b7d0e30a1dc3ee35a143d81d9b81c70ffc127a21484b3bfb0bae654b519b2"
+checksum = "06412005b5b2b40b6a2e039ba7baff82276d6b5a47ac45bd4379fe4ab4043995"
 dependencies = [
  "anyhow",
  "bon",
@@ -3066,7 +3032,7 @@ dependencies = [
  "euler",
  "http 1.5.0",
  "indexmap 2.14.2",
- "kcl-api 0.2.189",
+ "kcl-api",
  "kittycad-measurements",
  "kittycad-modeling-cmds-macros",
  "kittycad-point 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -3151,9 +3117,9 @@ checksum = "507460a910eb7b32ee961886ff48539633b788a36b65692b95f225b844c82553"
 
 [[package]]
 name = "lazy_static"
-version = "1.5.0"
+version = "1.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bbd2bcb4c963f2ddae06a2efc7e9f3591312473c50c6685e1f298068316e66fe"
+checksum = "20870f649af7073d53e38067b2a84312175d56ea15217e1b15bc83506ec50afb"
 
 [[package]]
 name = "libbz2-rs-sys"
@@ -3941,7 +3907,7 @@ dependencies = [
  "serde",
  "serde_derive",
  "strum",
- "thiserror 2.0.20",
+ "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -4203,9 +4169,9 @@ dependencies = [
 
 [[package]]
 name = "pyo3"
-version = "0.29.2"
+version = "0.29.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4688ddedf473e32662b9b067670129a8afb8c18e351482c70d62ba4a88171e8b"
+checksum = "700d18fa267b73b9b521fd7e13580e2f446916f176cacee1ab63fcc8191f1655"
 dependencies = [
  "libc",
  "once_cell",
@@ -4218,18 +4184,18 @@ dependencies = [
 
 [[package]]
 name = "pyo3-build-config"
-version = "0.29.2"
+version = "0.29.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f41027e41b4bd03f6e60f9f417fe24a6341a6bb744edd62b6f709f2a52ea30e9"
+checksum = "7b3fc0c4d08f6bb10e71fe39dfb9e2f59c6eb6854e22ec8092f50c69a4499adb"
 dependencies = [
  "target-lexicon",
 ]
 
 [[package]]
 name = "pyo3-ffi"
-version = "0.29.2"
+version = "0.29.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e591a95526fead067432c3b3a33fc74770b87b1e04e73671090d9c2055a2b327"
+checksum = "dfc0b8e19df29aad7086cf977bb0c2a2f143e30567eb113e9cf72b62ca698330"
 dependencies = [
  "libc",
  "pyo3-build-config",
@@ -4237,9 +4203,9 @@ dependencies = [
 
 [[package]]
 name = "pyo3-macros"
-version = "0.29.2"
+version = "0.29.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "73225868fc1cd84eef2c3c230ddb91273bf1de46aeb8a4248da76d32a0924a1c"
+checksum = "6100e8a4b5eba53afaa5ed078364851a0b2499c553a44c31026b929049b49dc6"
 dependencies = [
  "proc-macro2",
  "pyo3-macros-backend",
@@ -4249,9 +4215,9 @@ dependencies = [
 
 [[package]]
 name = "pyo3-macros-backend"
-version = "0.29.2"
+version = "0.29.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "571575aa3749fa6216757dd47d2a3e7ef360f329a40f0666a9fbd14889024952"
+checksum = "6143877a16e82b5a727b7127ff4cd86858a24a28d745d72f43e6f227c7b1bdb3"
 dependencies = [
  "heck",
  "proc-macro2",
@@ -4261,16 +4227,16 @@ dependencies = [
 
 [[package]]
 name = "pyo3-stub-gen"
-version = "0.23.0"
+version = "0.23.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a267ea4da9a831f534def7f1d8e14f581d5640d3e5af6527072724f216f4dbbf"
+checksum = "0f0a0f9bd0305226d63aa45a5e7d51e54a6648eb1cba47d38ec0aca6a8fd6f6c"
 dependencies = [
  "anyhow",
  "chrono",
  "either",
  "indexmap 2.14.2",
  "inventory",
- "itertools 0.14.0",
+ "itertools 0.15.0",
  "log",
  "maplit",
  "num-complex",
@@ -4287,16 +4253,16 @@ dependencies = [
 
 [[package]]
 name = "pyo3-stub-gen-derive"
-version = "0.23.0"
+version = "0.23.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6573423a5e8cc43ec7565eccccbc2dd35e1fc9032d9ca404afab875429eb8cf0"
+checksum = "6b4b8aba4df490324d0e2fee5e32034dccf65ebd97940f588bfc1d0800b1ee63"
 dependencies = [
  "heck",
  "indexmap 2.14.2",
  "proc-macro2",
  "quote",
  "rustpython-parser",
- "syn 2.0.119",
+ "syn 3.0.6",
 ]
 
 [[package]]
@@ -4340,7 +4306,7 @@ dependencies = [
  "rustc-hash 2.1.1",
  "rustls",
  "socket2 0.6.3",
- "thiserror 2.0.20",
+ "thiserror 2.0.21",
  "tokio",
  "tracing",
  "web-time",
@@ -4363,7 +4329,7 @@ dependencies = [
  "rustls",
  "rustls-pki-types",
  "slab",
- "thiserror 2.0.20",
+ "thiserror 2.0.21",
  "tinyvec",
  "tracing",
  "web-time",
@@ -5686,11 +5652,11 @@ dependencies = [
 
 [[package]]
 name = "thiserror"
-version = "2.0.20"
+version = "2.0.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ec86235f5fcc2a73650310756d2ac5b138a5780bbbdfae3eeccec992c435ba4f"
+checksum = "09e52cb86a36cede5cb101bf8908837b3e4c6e5e59fe7fd85c23fb56200d189e"
 dependencies = [
- "thiserror-impl 2.0.20",
+ "thiserror-impl 2.0.21",
 ]
 
 [[package]]
@@ -5706,9 +5672,9 @@ dependencies = [
 
 [[package]]
 name = "thiserror-impl"
-version = "2.0.20"
+version = "2.0.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bc04cd3e1236dd4a98afca4569f2deb3f120e5422a4023be2cb683f8486292af"
+checksum = "fe5197923287db20a58125f0bc85c062f7f2c892de97b18c356f9efb14b28524"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -5807,9 +5773,9 @@ checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
 
 [[package]]
 name = "tokio"
-version = "1.53.1"
+version = "1.53.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "202caea871b69668250d242070849eb495be178ed697a3e98aebce5bc81a0bed"
+checksum = "e95f91fcc7a621e8b030f6aa23c71fe9838ae2fb4d8118b75602a328f5144044"
 dependencies = [
  "bytes",
  "libc",
@@ -6103,7 +6069,7 @@ dependencies = [
  "chrono",
  "indexmap 2.14.2",
  "serde_json",
- "thiserror 2.0.20",
+ "thiserror 2.0.21",
  "ts-rs-macros",
  "url",
  "uuid",
@@ -6136,7 +6102,7 @@ dependencies = [
  "rustls",
  "rustls-pki-types",
  "sha1",
- "thiserror 2.0.20",
+ "thiserror 2.0.21",
 ]
 
 [[package]]
@@ -6332,9 +6298,9 @@ checksum = "06abde3611657adf66d383f00b093d7faecc7fa57071cce2578660c9f1010821"
 
 [[package]]
 name = "uuid"
-version = "1.26.1"
+version = "1.28.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2ef6dac1e96601b4fb3acccccff2139741fcb757cb9a36089bf5be91cfb285ce"
+checksum = "7cc1186384beb7dd8eedea376413fd654937285ea6c9cfbb928dc3043ea4b606"
 dependencies = [
  "arbitrary",
  "getrandom 0.4.3",

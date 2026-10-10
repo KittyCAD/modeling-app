@@ -16,11 +16,7 @@ import {
   isRequestedFileLoaded,
 } from '@src/lib/routeLoaderNavigation'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
-import type {
-  FileLoaderData,
-  HomeLoaderData,
-  IndexLoaderData,
-} from '@src/lib/types'
+import type { HomeLoaderData } from '@src/lib/types'
 import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
@@ -34,7 +30,6 @@ import { settingsValueSpec } from '@src/registry/contracts/settings'
 import type { LoaderFunction } from 'react-router-dom'
 import { redirect } from 'react-router-dom'
 import { waitFor } from 'xstate'
-import { markOnce } from '@src/lib/performance'
 
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
 
@@ -81,8 +76,7 @@ export const baseLoader =
 
 export const fileLoader =
   ({ app }: { app: App }): LoaderFunction =>
-  async (routerData): Promise<FileLoaderData | Response> => {
-    markOnce('code/willLoadFile')
+  async (routerData) => {
     const assertCurrent = app.beginFileRouteLoad(routerData.request.signal)
     const {
       settings: { actor: settingsActor },
@@ -90,11 +84,9 @@ export const fileLoader =
     const { kclManager } = app.singletons
     const { params } = routerData
 
-    // Must basically remain for all eternity, until the last person
-    // who's ever used ZDS on web before this point has died.
+    // Old web bookmarks encode /browser/... as the file route's id. These
+    // paths no longer identify projects, so return home before filesystem I/O.
     if (params.id?.startsWith('/browser')) {
-      // Pop us back home, which will cause a default project to be
-      // created.
       return redirect(PATHS.HOME)
     }
 
@@ -220,7 +212,7 @@ export const fileLoader =
     assertCurrent()
 
     const projectRef = await app.openProject(project, assertCurrent)
-    const editor = await projectRef.openEditor(
+    await projectRef.openEditor(
       currentFilePath || PROJECT_ENTRYPOINT,
       app.singletons.kclManager,
       // If persistCode in localStorage is present, it'll persist that code
@@ -265,20 +257,6 @@ export const fileLoader =
         },
       })
     }
-
-    const projectData: IndexLoaderData = {
-      code: editor.code,
-      project,
-      file: {
-        name: currentFileName || '',
-        path: currentFilePath || '',
-        children: [],
-      },
-    }
-
-    return {
-      ...projectData,
-    }
   }
 
 // Loads the settings and by extension the projects in the default directory
@@ -288,6 +266,5 @@ export const fileLoader =
 export const homeLoader =
   ({ app }: { app: App }): LoaderFunction =>
   async (): Promise<HomeLoaderData | Response> => {
-    markOnce('code/willLoadHome')
     return loadHomeProjects(app)
   }

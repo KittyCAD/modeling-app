@@ -18,12 +18,12 @@ description: Physical properties sweep_profile_defaults_v3.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 3301.3344503389776
+    "value": 3301.3346122290345
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 7.057245166623242
+    "value": 7.057237483287793
   }
 }

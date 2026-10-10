@@ -113,8 +113,8 @@ async fn inner_revolve(
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
     if let Axis2dOrEdgeReference::Axis { direction, .. } = &axis
-        && direction[0].to_mm() == 0.0
-        && direction[1].to_mm() == 0.0
+        && direction[0].unwrap_to_mm() == 0.0
+        && direction[1].unwrap_to_mm() == 0.0
     {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "The axis of revolution cannot be the zero vector.".to_owned(),
@@ -134,7 +134,7 @@ async fn inner_revolve(
         }
     }
 
-    let bidirectional_angle = bidirectional_angle.map(|n| n.to_degrees(exec_state, args.source_range));
+    let bidirectional_angle = bidirectional_angle.map(|n| n.unwrap_to_degrees(exec_state, args.source_range));
     if let Some(bidirectional_angle) = bidirectional_angle {
         // Return an error if the angle is zero.
         // We don't use validate() here because we want to return a specific error message that is
@@ -182,7 +182,10 @@ async fn inner_revolve(
     let mut solids = Vec::new();
     for sketch in &sketches {
         let new_solid_id = exec_state.next_uuid();
-        let tolerance = tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM);
+        let tolerance = tolerance
+            .as_ref()
+            .map(|t| t.unwrap_to_mm())
+            .unwrap_or(DEFAULT_TOLERANCE_MM);
 
         let direction = match &axis {
             Axis2dOrEdgeReference::Axis { direction, origin } => {
@@ -194,13 +197,13 @@ async fn inner_revolve(
                                 .angle(angle)
                                 .target(sketch.id.into())
                                 .axis(Point3d {
-                                    x: direction[0].to_mm(),
-                                    y: direction[1].to_mm(),
+                                    x: direction[0].unwrap_to_mm(),
+                                    y: direction[1].unwrap_to_mm(),
                                     z: 0.0,
                                 })
                                 .origin(Point3d {
-                                    x: LengthUnit(origin[0].to_mm()),
-                                    y: LengthUnit(origin[1].to_mm()),
+                                    x: LengthUnit(origin[0].unwrap_to_mm()),
+                                    y: LengthUnit(origin[1].unwrap_to_mm()),
                                     z: LengthUnit(0.0),
                                 })
                                 .tolerance(LengthUnit(tolerance))
@@ -211,7 +214,7 @@ async fn inner_revolve(
                         ),
                     )
                     .await?;
-                glm::DVec2::new(direction[0].to_mm(), direction[1].to_mm())
+                glm::DVec2::new(direction[0].unwrap_to_mm(), direction[1].unwrap_to_mm())
             }
             Axis2dOrEdgeReference::Edge(edge) => {
                 let edge_id = edge.get_engine_id(exec_state, &args)?;
@@ -557,5 +560,42 @@ body = revolve(profile, axis = Y, angle = 90deg, bidirectionalAngle = 7rad)
                 .contains("Expected bidirectional angle to be between -360 and 360"),
             "{err:?}"
         );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn revolve_panic_with_direction_unknown_units() {
+        // Regression test for https://github.com/KittyCAD/modeling-app/issues/14328
+        for code in [
+            // Case with non-length units in direction
+            r#"@settings(kclVersion = 2.0)
+profile = sketch(on = XY) {
+  circle1 = circle(center = [10mm, 0mm], start = [11mm, 0mm])
+}
+body = revolve(region(segments = [profile.circle1]),
+axis = { direction = [0, 1rad], origin = [1mm, 0mm] })
+"#,
+            // Case with non-length units in origin
+            r#"@settings(kclVersion = 2.0)
+profile = sketch(on = XY) {
+  circle1 = circle(center = [10mm, 0mm], start = [11mm, 0mm])
+}
+body = revolve(region(segments = [profile.circle1]),
+axis = { direction = [0, 1], origin = [1mm + 1deg, 0mm] })
+"#,
+        ] {
+            let program = crate::Program::parse_no_errs(code).unwrap();
+            let ctx = ExecutorContext::new_mock(None).await;
+            let outcome = ctx.run_mock(&program, &crate::MockConfig::default()).await;
+            ctx.close().await;
+            let err = outcome.expect_err("This should not have passed").error;
+            let KclError::Type { details } = err else {
+                panic!("Expected Type error, got {err}");
+            };
+            // Error message should be something like
+            // axis must be an Edge, Axis2d, Segment, or an object with 'sideFaces' (edge reference)
+            assert!(details.message.contains("Edge"));
+            assert!(details.message.contains("Axis2d"));
+            assert!(details.message.contains("Segment"));
+        }
     }
 }

@@ -1,18 +1,9 @@
-//! Adapts the `kcl-syntax` (logos) lexer onto the legacy `TokenType` token
-//! stream, plus a rich lexical-diagnostic pass. Used under `LexerMode::New`;
-//! `LexerMode::Old` runs the winnow `tokeniser`.
+//! Adapts the `kcl-syntax` lexer to the parser's `TokenType` stream.
 //!
-//! Three separable pieces:
-//! 1. [`syntax_kind_to_token_type`] -- a pure, total, mechanical mapping. Every
-//!    recovery kind (`Unknown`, `UnterminatedString`, `UnterminatedBlockComment`)
-//!    maps to `TokenType::Unknown`, never `String`/`BlockComment`, so invalid
-//!    input can never be silently accepted as trivia by the parser.
-//! 2. the rich diagnostic pass in [`lex_with_diagnostics`], which produces
-//!    [`LexDiagnostic`]s from the raw `SyntaxKind` stream *before* the mapping
-//!    above collapses the recovery kinds and loses the distinction.
-//! 3. [`keyword_before_paren_as_word`] -- the parser accepts `import(` and
-//!    `use(` as function names. The adapter classifies those tokens as `Word`
-//!    to match the winnow tokeniser.
+//! - [`syntax_kind_to_token_type`] maps lexer kinds to parser token types.
+//!   Recovery kinds map to `TokenType::Unknown` so invalid input is not accepted as trivia.
+//! - [`lex_with_diagnostics`] records lexical errors before recovery kinds are mapped to `Unknown`.
+//! - [`keyword_before_paren_as_word`] classifies adjacent `import(` and `use(` tokens as function names.
 
 use kcl_error::KclErrorDetails;
 use kcl_syntax::syntax_kind::SyntaxKind;
@@ -256,25 +247,84 @@ pub(crate) fn syntax_kind_to_token_type(kind: SyntaxKind) -> TokenType {
 
 #[cfg(test)]
 mod tests {
+    use std::ops::Range;
+
     use super::*;
 
     #[test]
-    fn use_keyword_and_function_name() {
-        let module_id = ModuleId::default();
-        for (source, expected_type) in [
-            ("use", TokenType::Keyword),
-            ("use = 1", TokenType::Keyword),
-            ("use(3)", TokenType::Word),
-            ("use (3)", TokenType::Keyword),
-            ("useful", TokenType::Word),
+    fn adapter_preserves_source_text_and_ranges() {
+        let source = "use(3)\n亞當 = 🙂\n\"unterminated";
+        let lexed = kcl_syntax::lexer::lex(source);
+        let result = lex_with_diagnostics(source, ModuleId::default());
+        let expected: Vec<_> = lexed
+            .tokens()
+            .iter()
+            .map(|token| (token.text(), token.range()))
+            .collect();
+        let actual: Vec<_> = result
+            .tokens
+            .iter()
+            .map(|token| (token.value.as_str(), token.start..token.end))
+            .collect();
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn unknown_token_errors_report_source_byte_ranges() {
+        for (source, expected_message, expected_range) in [
+            ("~", "found unknown token '~'", 0..1),
+            ("12 ~ 8", "found unknown token '~'", 3..4),
+            ("a\u{00A0}b", "found unknown token '\u{00A0}'", 1..3),
+            ("a\u{1F642}b", "found unknown token '\u{1F642}'", 1..5),
+            ("~ \u{4E9E}", "found unknown token '~'", 0..1),
         ] {
-            let result = lex_with_diagnostics(source, module_id);
-            assert!(result.issues.is_empty(), "{source}");
-            assert_eq!(
-                result.tokens.iter().next().unwrap().token_type,
-                expected_type,
-                "{source}"
-            );
+            assert_lexical_error(source, expected_message, expected_range);
         }
+    }
+
+    #[test]
+    fn unterminated_string_errors_report_source_byte_ranges() {
+        for (source, expected_range) in [
+            ("\"abc", 0..4),
+            ("\"", 0..1),
+            ("{\"\u{78E}\u{78E}\0\0\0\"\".", 10..12),
+            ("(/=e\"\u{616}\u{75D}\"\"", 10..11),
+        ] {
+            assert_lexical_error(source, "unterminated string literal", expected_range);
+        }
+    }
+
+    #[test]
+    fn unterminated_block_comment_error_reports_source_byte_range() {
+        assert_lexical_error("/* abc", "unterminated block comment", 0..6);
+    }
+
+    #[test]
+    fn valid_strings_are_single_tokens_without_lexical_issues() {
+        for source in ["\"line one\nline two\"", "\"// a comment\""] {
+            let result = lex_with_diagnostics(source, ModuleId::default());
+            assert!(result.issues.is_empty(), "{source:?}");
+            let tokens: Vec<_> = result
+                .tokens
+                .iter()
+                .map(|token| (token.token_type, token.start, token.end))
+                .collect();
+            assert_eq!(tokens, vec![(TokenType::String, 0, source.len())], "{source:?}");
+        }
+    }
+
+    fn assert_lexical_error(source: &str, expected_message: &str, expected_range: Range<usize>) {
+        let module_id = ModuleId::default();
+        let result = lex_with_diagnostics(source, module_id);
+        let error = result
+            .to_lexical_error()
+            .expect("invalid input should produce a lexical error");
+        assert_eq!(error.error_type(), "lexical", "{source:?}");
+        assert_eq!(error.message(), expected_message, "{source:?}");
+        assert_eq!(
+            error.source_ranges(),
+            vec![SourceRange::new(expected_range.start, expected_range.end, module_id)],
+            "{source:?}"
+        );
     }
 }

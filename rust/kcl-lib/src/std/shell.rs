@@ -95,7 +95,7 @@ async fn inner_shell(
                     .hollow(false)
                     .face_ids(face_ids)
                     .object_id(solids[0].id)
-                    .shell_thickness(LengthUnit(thickness.to_mm()))
+                    .shell_thickness(LengthUnit(thickness.unwrap_to_mm()))
                     .build(),
             ),
         )
@@ -133,7 +133,7 @@ async fn inner_hollow(
                     .hollow(true)
                     .face_ids(Vec::new()) // This is empty because we want to hollow the entire object.
                     .object_id(solid.id)
-                    .shell_thickness(LengthUnit(thickness.to_mm()))
+                    .shell_thickness(LengthUnit(thickness.unwrap_to_mm()))
                     .build(),
             ),
         )

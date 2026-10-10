@@ -21,7 +21,7 @@ fn bench_edit_segments(c: &mut Criterion) {
         let rt = tokio::runtime::Runtime::new().unwrap();
         let (mut frontend, mock_ctx, version, sketch_id, segments) = rt.block_on(async {
             let mut frontend = FrontendState::new();
-            let ctx = ExecutorContext::new_with_version(kcl_api::KclVersion::V2)
+            let ctx = ExecutorContext::new_with_version(kittycad_modeling_cmds::KclVersion::V2)
                 .await
                 .unwrap();
             let mock_ctx = ExecutorContext::new_mock(None).await;

@@ -18,12 +18,12 @@ description: Physical properties extrude_split.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 110617.59211931132
+    "value": 110617.59449947315
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 1738.034284615016
+    "value": 1738.034397522062
   }
 }

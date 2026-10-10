@@ -4,10 +4,10 @@ import os
 import sys
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from threading import Thread
-
-import pytest
+from urllib.parse import parse_qs, urlsplit
 
 import kcl
+import pytest
 from kcl import Point3d
 
 # Get the path to this script's parent directory.
@@ -185,8 +185,13 @@ def session_constructor(request, tmp_path):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("environment_configured", [False, True])
+@pytest.mark.parametrize("geometry_only", [False, True])
 async def test_kcl_session_explicit_credentials(
-    session_constructor, modeling_api, monkeypatch, environment_configured
+    session_constructor,
+    modeling_api,
+    monkeypatch,
+    environment_configured,
+    geometry_only,
 ):
     for name in ("ZOO_API_TOKEN", "KITTYCAD_API_TOKEN", "ZOO_HOST", "KITTYCAD_HOST"):
         monkeypatch.delenv(name, raising=False)
@@ -202,7 +207,12 @@ async def test_kcl_session_explicit_credentials(
     async def connect(token):
         async with asyncio.timeout(10):
             with pytest.raises(Exception, match="401"):
-                await constructor(source, token=token, base_url=base_url)
+                await constructor(
+                    source,
+                    geometry_only=geometry_only,
+                    token=token,
+                    base_url=base_url,
+                )
 
     await asyncio.gather(
         connect("first-session-token"), connect("second-session-token")
@@ -213,6 +223,10 @@ async def test_kcl_session_explicit_credentials(
         "Bearer first-session-token",
         "Bearer second-session-token",
     }
+    for path, _ in requests:
+        query = parse_qs(urlsplit(path).query)
+        assert query["geometry_only"] == [str(geometry_only).lower()]
+        assert query.get("pool") == (["cpu"] if geometry_only else None)
     assert dict(os.environ) == before
 
 
@@ -236,6 +250,9 @@ async def test_kcl_session_credentials_environment_fallback(
     path, authorization = requests[0]
     assert path.startswith("/ws/modeling/commands?")
     assert authorization == "Bearer environment-token"
+    query = parse_qs(urlsplit(path).query)
+    assert query["geometry_only"] == ["false"]
+    assert "pool" not in query
 
 
 @pytest.mark.asyncio
@@ -313,6 +330,37 @@ solid = extrude(disk, length = 10mm)
         assert response.get_volume_unit() == kcl.UnitVolume.CubicMillimeters
         # Reporting neither consumes the saved state nor closes the connection.
         assert (await session.sketch_constraint_report()).total_sketches() == 1
+
+
+@requires_engine
+@pytest.mark.asyncio
+@pytest.mark.parametrize("geometry_only", [False, True])
+async def test_kcl_session_snapshots_respect_highlight_edges(geometry_only):
+    # Regression test. graphics-on-CPU-only mode was ignoring the graphics settings,
+    # e.g. whether to highlight edges or not.
+    code = """
+@settings(kclVersion = 2.0)
+profile = sketch(on = XY) {
+  circle001 = circle(center = [var 0mm, var 0mm], start = [var 5mm, var 0mm])
+}
+disk = region(point = [0mm, 0mm], sketch = profile)
+solid = extrude(disk, length = 10mm)
+"""
+    images = []
+    for highlight_edges in [False, True]:
+        async with await execute_with_retries(
+            kcl.new_kcl_session_code,
+            code,
+            geometry_only=geometry_only,
+            highlight_edges=highlight_edges,
+        ) as session:
+            snapshots = await session.snapshots(kcl.ImageFormat.Png, [])
+            assert len(snapshots) == 1
+            image = bytes(snapshots[0])
+            assert image.startswith(b"\x89PNG\r\n\x1a\n")
+            images.append(image)
+
+    assert images[0] != images[1], "highlight_edges must change the rendered image"
 
 
 @pytest.mark.asyncio

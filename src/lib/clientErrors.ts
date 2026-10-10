@@ -44,6 +44,7 @@ export enum ClientErrorCode {
   ZookeeperWebsocketBinaryDecodeError = 'zookeeper_websocket_binary_decode_error',
   ZookeeperWebsocketJsonParseError = 'zookeeper_websocket_json_parse_error',
   EngineTeardown = 'engine_teardown',
+  EnginePingPongTiming = 'engine_ping_pong_timing',
 }
 
 const reportedClientErrors = new Set<string>()

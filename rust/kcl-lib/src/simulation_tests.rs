@@ -6,7 +6,7 @@ use std::path::PathBuf;
 use std::str::FromStr;
 
 use indexmap::IndexMap;
-use kcl_api::KclVersion;
+use kittycad_modeling_cmds::KclVersion;
 use kittycad_modeling_cmds::ModelingCmd;
 use kittycad_modeling_cmds::each_cmd as mcmd;
 use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
@@ -446,7 +446,7 @@ fn assert_physical_properties_snapshot(test: &Test, actual: serde_json::Value) {
     // Missing, unreadable, or materially different snapshots use Insta's normal
     // failure reporting and update policy, including .snap.new review files.
     assert_snapshot(test, "Physical properties", || {
-        insta::assert_json_snapshot!("physical_properties", actual)
+        insta::assert_json_snapshot!("physical_properties", actual);
     });
 }
 
@@ -832,7 +832,7 @@ async fn execute_once(test: &Test, kcl_version: Option<KclVersion>) {
 
             let ok_snap = catch_unwind(AssertUnwindSafe(|| {
                 assert_snapshot(test, "Execution success", || {
-                    insta::assert_json_snapshot!("execution_success", ())
+                    insta::assert_json_snapshot!("execution_success", ());
                 })
             }));
 
@@ -899,7 +899,9 @@ async fn execute_once(test: &Test, kcl_version: Option<KclVersion>) {
                     panic!("Missing lints");
                 }
             } else {
-                assert_snapshot(test, "Lints", || insta::assert_json_snapshot!("lints", lint_findings));
+                assert_snapshot(test, "Lints", || {
+                    insta::assert_json_snapshot!("lints", lint_findings);
+                });
             }
 
             for result in snapshot_results {
@@ -987,14 +989,14 @@ fn common_snapshots(
         assert_snapshot(test, "Variables in memory after executing", || {
             insta::assert_json_snapshot!("program_memory", variables, {
                  ".**.sourceRange" => Vec::new(),
-            })
+            });
         })
     }));
     #[cfg(feature = "snapshot-engine-responses")]
     let responses_result_option = responses.map(|responses| {
         catch_unwind(AssertUnwindSafe(|| {
             assert_snapshot(test, "Root module engine responses", || {
-                insta::assert_json_snapshot!("root_module_engine_responses", responses)
+                insta::assert_json_snapshot!("root_module_engine_responses", responses);
             })
         }))
     });

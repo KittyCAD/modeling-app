@@ -30,6 +30,7 @@ use super::DeprecationKind;
 use super::ast::types::AscribedExpression;
 use super::ast::types::ImportPath;
 use super::ast::types::LabelledExpression;
+use super::sketch_reserved_names::SKETCH_BLOCK_RESERVED_WORDS;
 use super::token::NumericSuffix;
 use super::token::RESERVED_WORDS;
 use crate::IMPORT_FILE_EXTENSIONS;
@@ -109,7 +110,6 @@ use crate::parsing::ast::types::VariableDeclarator;
 use crate::parsing::ast::types::VariableKind;
 use crate::parsing::ast::types::fill_node_paths;
 use crate::parsing::math::BinaryExpressionToken;
-use crate::parsing::token::RESERVED_SKETCH_BLOCK_WORDS;
 use crate::parsing::token::Token;
 use crate::parsing::token::TokenSlice;
 use crate::parsing::token::TokenType;
@@ -1254,7 +1254,7 @@ pub(crate) fn array_elem_by_elem(i: &mut TokenSlice) -> ModalResult<Node<ArrayEx
                 // array, otherwise we could seek to find a closing bracket until the end of the
                 // file
                 RESERVED_WORDS
-                    .keys()
+                    .iter()
                     .chain([",,", "{", "}", "["].iter())
                     .any(|word| *word == token.value)
             })
@@ -1504,7 +1504,7 @@ pub(crate) fn object(i: &mut TokenSlice) -> ModalResult<Node<ObjectExpression>> 
                 // object, otherwise we could seek to find a closing brace until the end of the
                 // file
                 RESERVED_WORDS
-                    .keys()
+                    .iter()
                     .chain([",,", "[", "]", "{"].iter())
                     .any(|word| *word == token.value)
             })
@@ -1712,10 +1712,14 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
         return if_with_no_else(cond, then_val, else_ifs);
     }
     ignore_whitespace(i);
-    let Ok(final_else) = program.parse_next(i).map(BoxNode::new) else {
-        ParseContext::err(CompilationIssue::err(else_range, IF_ELSE_CANNOT_BE_EMPTY));
-        let _ = opt(close_brace).parse_next(i);
-        return if_with_no_else(cond, then_val, else_ifs);
+    let final_else = match program.parse_next(i).map(BoxNode::new) {
+        Ok(final_else) => final_else,
+        Err(ErrMode::Backtrack(_)) => {
+            ParseContext::err(CompilationIssue::err(else_range, IF_ELSE_CANNOT_BE_EMPTY));
+            let _ = opt(close_brace).parse_next(i);
+            return if_with_no_else(cond, then_val, else_ifs);
+        }
+        Err(e) => return Err(e),
     };
     ignore_whitespace(i);
 
@@ -2104,6 +2108,17 @@ fn function_body(i: &mut TokenSlice) -> ModalResult<Node<Block>> {
     // The solution is that this parser should check if the last matched body item was an empty line,
     // and if so, then ignore the separator parser for the current iteration.
     loop {
+        // Preserve the comma's source range when an enclosing expression parser can backtrack.
+        if let Ok((_, comma)) = peek((opt(whitespace), one_of(TokenType::Comma))).parse_next(i) {
+            return Err(ErrMode::Cut(
+                CompilationIssue::fatal(
+                    comma.as_source_range(),
+                    "Unexpected comma after a statement. Remove the comma; statements are separated by newlines.",
+                )
+                .into(),
+            ));
+        }
+
         let last_match_was_empty_line = things_within_body.last().map(|wf| wf.is_newline()).unwrap_or(false);
 
         use winnow::stream::Stream;
@@ -4336,7 +4351,7 @@ fn optional_after_required(params: &[Parameter]) -> Result<(), CompilationIssue>
 }
 
 fn is_safe_sketch_block_binding_name(name: &str) -> bool {
-    !ParseContext::is_in_sketch_block() || !RESERVED_SKETCH_BLOCK_WORDS.contains(name) && !name.starts_with("__")
+    !ParseContext::is_in_sketch_block() || !SKETCH_BLOCK_RESERVED_WORDS.contains(name) && !name.starts_with("__")
 }
 
 fn is_safe_binding_name_anywhere(name: &str) -> bool {
@@ -4721,7 +4736,7 @@ e
 
     #[test]
     fn reserved_sketch_block_words() {
-        for word in crate::parsing::token::RESERVED_SKETCH_BLOCK_WORDS.iter().sorted() {
+        for word in SKETCH_BLOCK_RESERVED_WORDS.iter().sorted() {
             let code = format!(
                 "sketch() {{
   {word} = 5
@@ -4752,7 +4767,7 @@ e
         // The default parser uses KCL 1.0, where `use` remains an identifier.
         // Sort the other reserved words for deterministic assertion order.
         for word in crate::parsing::token::RESERVED_WORDS
-            .keys()
+            .iter()
             .filter(|word| **word != "use")
             .sorted()
         {
@@ -5955,6 +5970,129 @@ mySk1 = startSketchOn(XY)
             .expect("Expected an error but found none")
             .message;
         assert!(err.contains(expected), "actual='{err}'");
+    }
+
+    #[track_caller]
+    fn assert_statement_comma_error(code: &str, comma_start: usize) -> String {
+        let (program, issues) = crate::parsing::top_level_parse(code).0.unwrap();
+        assert!(program.is_none(), "Unexpected AST for `{code}`");
+        assert_eq!(issues.len(), 1, "Unexpected diagnostics for `{code}`: {issues:#?}");
+        let issue = &issues[0];
+        assert_eq!(issue.severity, Severity::Fatal);
+        assert_eq!(
+            issue.message,
+            "Unexpected comma after a statement. Remove the comma; statements are separated by newlines."
+        );
+        assert_eq!(
+            issue.source_range,
+            SourceRange::new(comma_start, comma_start + 1, ModuleId::default()),
+            "Incorrect comma range for `{code}`"
+        );
+        assert_eq!(&code[comma_start..comma_start + 1], ",");
+        format!("{}{}", &code[..comma_start], &code[comma_start + 1..])
+    }
+
+    #[test]
+    fn test_statement_comma_issue_13876() {
+        let body = r#"plateSketch = sketch(on = XY) {
+  s1 = line(start = [var 0, var 0], end = [var 1, var 0]),
+  s2 = line(start = [var 1, var 0], end = [var 1, var 1]),
+  s3 = line(start = [var 1, var 1], end = [var 0, var 1]),
+  s4 = line(start = [var 0, var 1], end = [var 0, var 0]),
+  distance([s1.start, s1.end]) == plateDim,
+  distance([s2.start, s2.end]) == plateDim,
+  distance([s3.start, s3.end]) == plateDim,
+  distance([s4.start, s4.end]) == plateDim,
+}"#;
+        for version in ["2.0", "3.0"] {
+            let mut code = format!("@settings(kclVersion = {version})\n{body}");
+            // Check the diagnostic for the comma after every statement in the reported source.
+            for _ in 0..8 {
+                let comma_start = code.find(",\n").unwrap();
+                code = assert_statement_comma_error(&code, comma_start);
+            }
+            assert_no_err(&code);
+        }
+    }
+
+    #[test]
+    fn test_statement_comma_body_contexts() {
+        for version in ["2.0", "3.0"] {
+            for body in [
+                "x = 1,\n",
+                "f(),\n",
+                "fn f() {\n  x = 1,\n  return x\n}",
+                "fn f() {\n  return 1,\n}",
+                "f = fn() {\n  return 1,\n}",
+                "s = sketch(on = XY) {\n  distance([a, b]) == 1,\n}",
+                "x = if true {\n  1,\n} else {\n  2\n}",
+                "x = if true {\n  1\n} else if false {\n  2,\n} else {\n  3\n}",
+                "x = if true {\n  1\n} else {\n  2,\n}",
+            ] {
+                let code = format!("@settings(kclVersion = {version})\n{body}");
+                let comma_start = code.rfind(',').unwrap();
+                let corrected = assert_statement_comma_error(&code, comma_start);
+                assert_no_err(&corrected);
+            }
+        }
+    }
+
+    #[test]
+    fn test_statement_comma_whitespace_and_comments() {
+        for version in ["2.0", "3.0"] {
+            for (statement, marker) in [
+                ("x = 1  ,\n", ",\n"),
+                ("x = 1,\r\n", ",\r\n"),
+                ("x = 1\n  ,\n", ",\n"),
+                (
+                    "x = 1, // Commas, including this one, are permitted in comments.\n",
+                    ", //",
+                ),
+                (
+                    "x = 1 /* Commas, including this one, are permitted in comments. */ ,\n",
+                    ",\n",
+                ),
+                (
+                    "x = 1\n// Commas, including this one, are permitted in comments.\n,\n",
+                    "\n,\n",
+                ),
+            ] {
+                let code = format!("@settings(kclVersion = {version})\ns = sketch(on = XY) {{\n{statement}}}");
+                let comma_start = code.find(marker).unwrap() + marker.find(',').unwrap();
+                let corrected = assert_statement_comma_error(&code, comma_start);
+                assert_no_err(&corrected);
+            }
+        }
+    }
+
+    #[test]
+    fn test_statement_comma_valid_expression_commas() {
+        for version in ["2.0", "3.0"] {
+            for body in [
+                "values = [1, 2,]\n",
+                "properties = {x = 1, y = 2,}\n",
+                "value = f(1, x = 2,)\n",
+                "fn f(a, b) { return a }\n",
+                "values = [fn() { return 1 }, fn() { return 2 },]\n",
+                "sketches = [sketch(on = XY) { x = 1 },]\n",
+                "s = sketch(on = XY) {\n  x = f(a = [1, 2,], b = {c = 3,})\n}\n",
+                "s = sketch(on = XY) {\n  x = 1 // Commas, including this one, are permitted in comments.\n}\n",
+            ] {
+                let code = format!("@settings(kclVersion = {version})\n{body}");
+                assert_no_err(&code);
+            }
+        }
+    }
+
+    #[test]
+    fn test_statement_comma_empty_else_recovery() {
+        for version in ["2.0", "3.0"] {
+            let code = format!("@settings(kclVersion = {version})\nx = if true {{ 1 }} else {{}}");
+            let (_, issues) = assert_no_fatal(&code);
+            assert_eq!(issues.len(), 1);
+            assert_eq!(issues[0].message, IF_ELSE_CANNOT_BE_EMPTY);
+            assert_eq!(issues[0].severity, Severity::Error);
+        }
     }
 
     #[test]

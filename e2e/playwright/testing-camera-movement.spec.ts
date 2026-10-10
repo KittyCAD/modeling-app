@@ -110,6 +110,17 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
   }) => {
     const u = await getUtils(page)
     const camInitialPosition: [number, number, number] = [0, 85, 85]
+    const waitForDragResponse = async (
+      type: 'camera_drag_start' | 'camera_drag_end'
+    ) => {
+      await page.waitForFunction(
+        (type) =>
+          window.engineCommandManager.commandLogs.some(
+            (log) => log.type === 'receive-reliable' && log.cmd_type === type
+          ),
+        type
+      )
+    }
 
     await homePage.goToModelingScene()
     await scene.settled()
@@ -125,11 +136,12 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
           await page.keyboard.down('Shift')
           await page.mouse.move(dragStart.x, dragStart.y)
           await page.mouse.down({ button: 'right' })
+          await waitForDragResponse('camera_drag_start')
           // Gotcha: remove steps:2 from this 700,200 mouse move. This bricked the test on local host engine.
           await page.mouse.move(dragEnd.x, dragEnd.y)
           await page.mouse.up({ button: 'right' })
           await page.keyboard.up('Shift')
-          await page.waitForTimeout(200)
+          await waitForDragResponse('camera_drag_end')
         },
         afterPosition: [19, 85, 85],
         beforePosition: camInitialPosition,
@@ -145,6 +157,7 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
           await page.keyboard.down('Control')
           await page.mouse.move(dragStart.x, dragStart.y)
           await page.mouse.down({ button: 'right' })
+          await waitForDragResponse('camera_drag_start')
           await page.mouse.move(dragEnd.x, dragEnd.y)
           await page.mouse.up({ button: 'right' })
           await page.keyboard.up('Control')

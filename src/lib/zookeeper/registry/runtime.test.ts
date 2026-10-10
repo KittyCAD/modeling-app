@@ -1,5 +1,6 @@
 import { signal } from '@preact/signals-core'
-import type { KclManager, ZDSProject } from '@src/lang/KclManager'
+import type { KclManager } from '@src/lang/KclManager'
+import type { ZDSProject } from '@src/lib/projectSession'
 import type { BillingRegistryService } from '@src/lib/billing'
 import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import type { FileEntry, Project } from '@src/lib/project'

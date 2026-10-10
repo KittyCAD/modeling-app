@@ -1,9 +1,11 @@
 import type { Diagnostic } from '@codemirror/lint'
+import { EditorView } from '@codemirror/view'
 import type {
   SceneGraphDelta,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+import { lineWrappingCompartment } from '@src/editor'
 import {
   artifactGraphField,
   setArtifactGraphEffect,
@@ -13,9 +15,12 @@ import {
   operationsStateField,
   setOperationsEffect,
 } from '@src/editor/plugins/operations'
-import { File, KclManager } from '@src/lang/KclManager'
+import { KclManager } from '@src/lang/KclManager'
+import { File } from '@src/lib/projectSession'
 import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
+import { createSettings } from '@src/lib/settings/initialSettings'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { waitFor } from 'xstate'
 
 const clientErrorMocks = vi.hoisted(() => ({
   reportSystemIOError: vi.fn(),
@@ -141,6 +146,66 @@ afterEach(() => {
   localStorage?.clear()
 })
 
+describe('KclManager line wrapping settings', () => {
+  it('follows replacement settings and stops watching when closed', async () => {
+    const { app, kclManager } = createKclManagerTestHarness()
+    const wrapsLines = () =>
+      lineWrappingCompartment.get(kclManager.editorView.state) ===
+      EditorView.lineWrapping
+    try {
+      await waitFor(app.settings.actor, (snapshot) => snapshot.matches('idle'))
+      const originalSetting =
+        app.settings.actor.getSnapshot().context.textEditor.textWrapping
+      originalSetting.user = true
+      expect(wrapsLines()).toBe(true)
+      originalSetting.user = false
+      expect(wrapsLines()).toBe(false)
+
+      const extensionSettings =
+        app.settings.actor.getSnapshot().context.extensionSettings
+      const replacement = createSettings(extensionSettings)
+      replacement.textEditor.textWrapping.user = true
+      app.settings.actor.send({
+        type: 'Set all settings',
+        settings: replacement,
+      })
+      await waitFor(
+        app.settings.actor,
+        (snapshot) =>
+          snapshot.context.textEditor.textWrapping ===
+          replacement.textEditor.textWrapping
+      )
+      expect(wrapsLines()).toBe(true)
+
+      // The effect must unsubscribe from the discarded Setting instance.
+      originalSetting.user = true
+      originalSetting.user = false
+      expect(wrapsLines()).toBe(true)
+      replacement.textEditor.textWrapping.user = false
+      expect(wrapsLines()).toBe(false)
+
+      kclManager.close()
+      const updateWrapping = vi.spyOn(kclManager, 'setEditorLineWrapping')
+      replacement.textEditor.textWrapping.user = true
+      const afterClose = createSettings(extensionSettings)
+      app.settings.actor.send({
+        type: 'Set all settings',
+        settings: afterClose,
+      })
+      await waitFor(
+        app.settings.actor,
+        (snapshot) =>
+          snapshot.context.textEditor.textWrapping ===
+          afterClose.textEditor.textWrapping
+      )
+      expect(updateWrapping).not.toHaveBeenCalled()
+    } finally {
+      kclManager.close()
+      app.dispose()
+    }
+  })
+})
+
 describe('KclManager live operation updates', () => {
   it('finishes execution when a live UI publication throws', async () => {
     const { kclManager } = createKclManagerTestHarness()
@@ -262,6 +327,14 @@ describe('KclManager file switching', () => {
 })
 
 describe('KclManager diagnostics', () => {
+  // Compare the diagnostic data exactly; renderMessage only changes its display.
+  const withoutRenderMessage = (diagnostics: Diagnostic[]) =>
+    diagnostics.map((diagnostic) => {
+      const data = { ...diagnostic }
+      delete data.renderMessage
+      return data
+    })
+
   it('filters out duplicated diagnostics', () => {
     const { kclManager } = createKclManagerTestHarness()
 
@@ -329,9 +402,29 @@ describe('KclManager diagnostics', () => {
 
     kclManager.setDiagnostics([validDiagnostic, staleDiagnostic])
 
-    expect(getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)).toEqual([
-      validDiagnostic,
+    expect(
+      withoutRenderMessage(
+        getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)
+      )
+    ).toEqual([validDiagnostic])
+  })
+
+  it('renders Markdown in dispatched diagnostic messages', () => {
+    const { kclManager } = createKclManagerTestHarness('abcd')
+    const dispatchSpy = vi.spyOn(kclManager.editorView, 'dispatch')
+
+    kclManager.setDiagnostics([
+      createDiagnostic(0, 2, 'Use `circle`: https://zoo.dev/docs'),
     ])
+
+    const [diagnostic] = getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)
+    const view = diagnostic.renderMessage?.(kclManager.editorView)
+    expect(view).toBeInstanceOf(HTMLElement)
+    if (!(view instanceof HTMLElement)) return
+    expect(view.querySelector('code')?.textContent).toBe('circle')
+    expect(view.querySelector('a')?.getAttribute('href')).toBe(
+      'https://zoo.dev/docs'
+    )
   })
 
   it('drops stale diagnostics after deleting code while diagnostics are present', () => {
@@ -365,10 +458,11 @@ describe('KclManager diagnostics', () => {
       })
     ).not.toThrow()
 
-    expect(getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)).toEqual([
-      baseDiagnostic,
-      sketchSolveDiagnostic,
-    ])
+    expect(
+      withoutRenderMessage(
+        getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)
+      )
+    ).toEqual([baseDiagnostic, sketchSolveDiagnostic])
   })
 
   it('deduplicates identical diagnostics across base and sketch-solve layers', () => {
@@ -380,9 +474,11 @@ describe('KclManager diagnostics', () => {
     kclManager.diagnostics = [duplicateDiagnostic]
     kclManager.setSketchSolveDiagnostics([duplicateDiagnostic])
 
-    expect(getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)).toEqual([
-      duplicateDiagnostic,
-    ])
+    expect(
+      withoutRenderMessage(
+        getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)
+      )
+    ).toEqual([duplicateDiagnostic])
   })
 
   it('clears sketch-solve diagnostics without persisting them into the base diagnostics layer', () => {
@@ -400,9 +496,11 @@ describe('KclManager diagnostics', () => {
     kclManager.setSketchSolveDiagnostics([sketchSolveDiagnostic])
     kclManager.setSketchSolveDiagnostics([])
 
-    expect(getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)).toEqual([
-      baseDiagnostic,
-    ])
+    expect(
+      withoutRenderMessage(
+        getLatestDispatchedDiagnostics(dispatchSpy.mock.calls)
+      )
+    ).toEqual([baseDiagnostic])
   })
 
   it('writes to file when the code is unchanged and shouldWriteToDisk is true', () => {
@@ -1580,5 +1678,75 @@ describe('KclManager diagnostics', () => {
 
     expect(reopened.code).toBe('recovered newer')
     expect((reopened as any).hasUnsavedLocalChanges()).toBe(true)
+  })
+})
+
+describe('reconnect execution queue', () => {
+  afterEach(() => vi.restoreAllMocks())
+
+  it('releases execution tracking when execution setup throws', async () => {
+    const { kclManager } = createKclManagerTestHarness()
+    const manager = kclManager.engineCommandManager
+    manager.started = true
+    const finish = vi.fn()
+    vi.spyOn(manager, 'trackExecution').mockReturnValue(finish)
+    vi.spyOn(kclManager, 'setSketchSolveDiagnostics').mockImplementation(() => {
+      throw new Error('execution setup failed')
+    })
+    await expect(kclManager.executeAst()).rejects.toThrow(
+      'execution setup failed'
+    )
+    expect(finish).toHaveBeenCalledOnce()
+    manager.started = false
+    kclManager.isExecuting = false
+  })
+
+  it('queues edits without interrupting the running execution', async () => {
+    const { kclManager } = createKclManagerTestHarness()
+    const manager = kclManager.engineCommandManager
+    manager.started = true
+    vi.spyOn(manager, 'isReconnectPending', 'get').mockReturnValue(true)
+    const reject = vi.spyOn(manager, 'rejectAllModelingCommands')
+    kclManager.isExecuting = true
+    const args = { ast: createEmptyAst() }
+    await kclManager.executeAst(args)
+    expect(kclManager.executeIsStale).toBe(args)
+    expect(manager.executionIsStale).toBe(false)
+    expect(reject).not.toHaveBeenCalled()
+    expect(kclManager.isExecuting).toBe(true)
+    manager.started = false
+    kclManager.executeIsStale = null
+    kclManager.isExecuting = false
+  })
+
+  it('does not start the queued execution while reconnect is pending', () => {
+    const { kclManager } = createKclManagerTestHarness()
+    vi.spyOn(
+      kclManager.engineCommandManager,
+      'isReconnectPending',
+      'get'
+    ).mockReturnValue(true)
+    const execute = vi
+      .spyOn(kclManager, 'executeAst')
+      .mockResolvedValue(undefined)
+    const args = { ast: createEmptyAst() }
+    kclManager.executeIsStale = args
+    kclManager.isExecuting = false
+    expect(execute).not.toHaveBeenCalled()
+    expect(kclManager.executeIsStale).toBe(args)
+    kclManager.executeIsStale = null
+  })
+
+  it('discards queued work before resetting execution during panic cleanup', () => {
+    const { kclManager } = createKclManagerTestHarness()
+    const execute = vi
+      .spyOn(kclManager, 'executeAst')
+      .mockResolvedValue(undefined)
+    kclManager.isExecuting = true
+    kclManager.executeIsStale = { ast: createEmptyAst() }
+    kclManager.executeAstCleanUp()
+    expect(execute).not.toHaveBeenCalled()
+    expect(kclManager.executeIsStale).toBeNull()
+    expect(kclManager.isExecuting).toBe(false)
   })
 })

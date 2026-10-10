@@ -105,6 +105,7 @@ export class Connection extends EventTarget {
   handleMessage: ((event: MessageEvent<any>) => void) | null
   private readonly getCloudProjectId: () => string | undefined
   private reconnectRequested = false
+  private readonly onReconnectRequested: (connection: Connection) => void
 
   constructor({
     url,
@@ -118,6 +119,8 @@ export class Connection extends EventTarget {
     unitTestPool,
     handleMessage,
     getCloudProjectId,
+    onReconnectRequested = (connection: Connection) =>
+      connection.closeForReconnect(),
   }: {
     url: string
     token: string
@@ -130,6 +133,7 @@ export class Connection extends EventTarget {
     unitTestPool?: 'cpu'
     handleMessage: (event: MessageEvent<any>) => void
     getCloudProjectId: () => string | undefined
+    onReconnectRequested?: (connection: Connection) => void
   }) {
     markOnce('code/startInitialEngineConnect')
     super()
@@ -147,6 +151,7 @@ export class Connection extends EventTarget {
     this.rejectPendingCommand = rejectPendingCommand
     this.handleMessage = handleMessage
     this.getCloudProjectId = getCloudProjectId
+    this.onReconnectRequested = onReconnectRequested
     this._pingPongSpan = { ping: undefined, pong: undefined }
     this.deferredConnection = null
     this.deferredPeerConnection = null
@@ -244,6 +249,15 @@ export class Connection extends EventTarget {
         case 'ice_server_info':
           callback('auth success')
           return
+        case 'debug':
+        case 'modeling':
+        case 'trickle_ice':
+        case 'export':
+        case 'sdp_answer':
+        case 'modeling_batch':
+        case 'metrics_request':
+        case 'reconnect':
+          break
       }
       if (!this.handleMessage) {
         console.warn('unable to process message, handleMessage is missing')
@@ -627,6 +641,27 @@ export class Connection extends EventTarget {
     return this.peerConnection
   }
 
+  closeForReconnect() {
+    if (
+      !this.reconnectRequested ||
+      this.websocket?.readyState !== WebSocket.OPEN
+    ) {
+      return
+    }
+
+    this.recordShutdownTrigger({
+      route: 'websocket-closed',
+      initiatedBy: 'api',
+      code: WebSocketCloseCode.NormalClosure.toString(),
+      reason: 'reconnect requested',
+      reconnectRequested: true,
+    })
+    this.websocket.close(
+      WebSocketCloseCode.NormalClosure,
+      'reconnect requested'
+    )
+  }
+
   createWebSocketConnection() {
     if (!this.deferredSdpAnswer?.resolve) {
       console.warn('deferredSdpAnswer resolve is undefined')
@@ -683,17 +718,7 @@ export class Connection extends EventTarget {
         }
 
         this.reconnectRequested = true
-        this.recordShutdownTrigger({
-          route: 'websocket-closed',
-          initiatedBy: 'api',
-          code: WebSocketCloseCode.NormalClosure.toString(),
-          reason: 'reconnect requested',
-          reconnectRequested: true,
-        })
-        this.websocket.close(
-          WebSocketCloseCode.NormalClosure,
-          'reconnect requested'
-        )
+        this.onReconnectRequested(this)
       },
     })
     const onWebSocketClose = createOnWebSocketClose({

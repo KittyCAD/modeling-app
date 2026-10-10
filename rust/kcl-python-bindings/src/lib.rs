@@ -7,6 +7,7 @@ use std::sync::Arc;
 use anyhow::Result;
 use kcl_api::UnitAngle;
 use kcl_api::UnitLength;
+use kcl_lib::ExecState;
 use kcl_lib::ExecutorContext;
 use kcl_lib::IsRetryable;
 use kcl_lib::Program;
@@ -326,18 +327,31 @@ fn executor_settings(
     settings
 }
 
-// Keep the Python session's independent keyword options explicit at this boundary.
-#[allow(clippy::too_many_arguments)]
-async fn new_context_state(
+#[derive(Debug, Default)]
+struct ContextParams {
     current_file: Option<PathBuf>,
     mock: bool,
     highlight_edges: Option<bool>,
     geometry_only: bool,
     video_res_width: Option<u32>,
     video_res_height: Option<u32>,
-    kcl_version: kcl_lib::KclVersion,
     token: Option<String>,
     base_url: Option<String>,
+}
+
+// Keep the Python session's independent keyword options explicit at this boundary.
+async fn new_context_state(
+    kcl_version: kcl_lib::KclVersion,
+    ContextParams {
+        current_file,
+        mock,
+        highlight_edges,
+        geometry_only,
+        video_res_width,
+        video_res_height,
+        token,
+        base_url,
+    }: ContextParams,
 ) -> Result<(ExecutorContext, kcl_lib::ExecState)> {
     let mut settings = executor_settings(current_file, highlight_edges, geometry_only);
     settings.video_res_width = video_res_width;
@@ -434,17 +448,16 @@ async fn run_kcl(
     } = load_and_parse(input).await?;
 
     let (ctx, mut state) = new_context_state(
-        path,
-        mock,
-        highlight_edges,
-        geometry_only,
-        None,
-        None,
         program
             .language_version()
             .map_err(|err| into_miette_for_parse(&filename, &code, err))?,
-        None,
-        None,
+        ContextParams {
+            current_file: path,
+            mock,
+            highlight_edges,
+            geometry_only,
+            ..Default::default()
+        },
     )
     .await
     .map_err(to_py_exception)?;
@@ -515,9 +528,17 @@ async fn sketch_constraint_report_impl(input: KclInput) -> PyResult<SketchConstr
         }
     };
 
-    let (ctx, mut state) = new_context_state(path, false, None, false, None, None, kcl_version, None, None)
-        .await
-        .map_err(to_py_exception)?;
+    let (ctx, mut state) = new_context_state(
+        kcl_version,
+        ContextParams {
+            current_file: path,
+            mock: false,
+            geometry_only: false,
+            ..Default::default()
+        },
+    )
+    .await
+    .map_err(to_py_exception)?;
     let result = match ctx.run(&program, &mut state).await {
         Ok((env_ref, _)) => {
             let outcome = state.into_exec_outcome(env_ref, &ctx).await.map_err(to_py_exception)?;
@@ -546,8 +567,9 @@ async fn execute_and_snapshot_views_impl(
     zoom: bool,
     highlight_edges: Option<bool>,
 ) -> PyResult<Vec<Vec<u8>>> {
-    let ExecutedKcl { ctx, .. } = run_kcl(input, false, highlight_edges, false).await?;
-    let result = take_snaps(&ctx, image_format, snapshot_options, zoom).await;
+    let geometry_only = true;
+    let ExecutedKcl { ctx, mut state, .. } = run_kcl(input, false, highlight_edges, geometry_only).await?;
+    let result = take_snaps(&ctx, &mut state, image_format, snapshot_options, zoom).await;
     ctx.close().await;
     result
 }
@@ -783,17 +805,16 @@ async fn import_and_snapshot_views(
     highlight_edges: Option<bool>,
 ) -> PyResult<Vec<Vec<u8>>> {
     let zoom = zoom.unwrap_or(true);
+    let geometry_only = true;
     spawn_py(async move {
-        let (ctx, _state) = new_context_state(
-            None,
-            false,
-            highlight_edges,
-            false,
-            None,
-            None,
+        let (ctx, mut state) = new_context_state(
             kcl_lib::KclVersion::default(),
-            None,
-            None,
+            ContextParams {
+                mock: false,
+                highlight_edges,
+                geometry_only,
+                ..Default::default()
+            },
         )
         .await
         .map_err(to_py_exception)?;
@@ -801,7 +822,7 @@ async fn import_and_snapshot_views(
             ctx.close().await;
             return Err(e);
         }
-        let result = take_snaps(&ctx, image_format, snapshot_options, zoom).await;
+        let result = take_snaps(&ctx, &mut state, image_format, snapshot_options, zoom).await;
         ctx.close().await;
         result
     })
@@ -950,6 +971,33 @@ impl SnapshotOptions {
 
 async fn take_snaps(
     ctx: &ExecutorContext,
+    exec_state: &mut ExecState,
+    image_format: ImageFormat,
+    snapshot_options: Vec<SnapshotOptions>,
+    zoom: bool,
+) -> PyResult<Vec<Vec<u8>>> {
+    if ctx.settings.geometry_only {
+        // Once we call this, we have to be careful to disable graphics again before we
+        // early terminate.
+        ctx.enable_engine_graphics(exec_state).await.map_err(to_py_exception)?;
+        if let Err(e) = ctx
+            .enable_engine_graphics_settings(exec_state)
+            .await
+            .map_err(to_py_exception)
+        {
+            ctx.disable_engine_graphics(exec_state).await.map_err(to_py_exception)?;
+            return Err(e);
+        }
+        let snapshot_res = take_snaps_inner(ctx, image_format, snapshot_options, zoom).await;
+        ctx.disable_engine_graphics(exec_state).await.map_err(to_py_exception)?;
+        snapshot_res
+    } else {
+        take_snaps_inner(ctx, image_format, snapshot_options, zoom).await
+    }
+}
+
+async fn take_snaps_inner(
+    ctx: &ExecutorContext,
     image_format: ImageFormat,
     snapshot_options: Vec<SnapshotOptions>,
     zoom: bool,
@@ -978,6 +1026,7 @@ async fn take_snaps(
         let data_bytes = snapshot(ctx, image_format, pre_snap.padding, zoom).await?;
         snaps.push(data_bytes);
     }
+    // TODO: Disable gfx if geometry_only_connection
     Ok(snaps)
 }
 

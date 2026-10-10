@@ -26,6 +26,15 @@ Chamfer is similar in function and use to a fillet, except
 a fillet will blend the transition along an edge, rather than cut
 a sharp, straight transitional edge.
 
+### Face references
+
+In `edges`, `sideFaces` and `endFaces` contain face tags or face UUIDs, not raw sketch segments.
+For a side face created by extruding `profile.line1`, use `profileRegion.tags.line1` or
+`body.sketch.tags.line1`, where `profileRegion` is the extruded region and `body` is the resulting solid.
+For extrusion caps, declare `tagStart = $startCap` or `tagEnd = $endCap`, then refer to
+`startCap` or `endCap`. Use `$` only when declaring the tag.
+See [Face API Edge References](/docs/kcl-lang/edge-references) for selection examples.
+
 ### Arguments
 
 | Name | Type | Description | Required |
@@ -33,12 +42,12 @@ a sharp, straight transitional edge.
 | `solid` | [`Solid`](/docs/kcl-std/types/std-types-Solid) | The solid whose edges should be chamfered | Yes |
 | `length` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Chamfering cuts away two faces to create a third face. This is the length to chamfer away from each face. The larger this length to chamfer away, the larger the new face will be. | Yes |
 | `tags` | [[`Edge`](/docs/kcl-std/types/std-types-Edge); 1+] | The paths you want to chamfer (legacy API) | No |
-| `edges` | [[`any`](/docs/kcl-std/types/std-types-any)] | Array of edge references; each element is an object with: - `sideFaces`: [Face \| Tag; 1+] - Adjacent faces that share the edge(s) to chamfer - `endFaces?`: [Face \| Tag] - Optional faces to disambiguate when multiple edges share the same two faces - `index?`: number(Count) - Optional index when multiple edges share the same faces (0-based) | No |
+| `edges` | [[`any`](/docs/kcl-std/types/std-types-any)] | Preferred for KCL 3. Required unless legacy `tags` is provided. Do not provide both. Array of edge references; each element is an object with: - `sideFaces`: array of one or more face tags or face UUIDs. Adjacent faces that share the edge(s) to chamfer. - `endFaces?`: array of face tags or face UUIDs. Optional faces to disambiguate when multiple edges share the same two faces. - `index?`: number(Count). Optional index when multiple edges share the same faces (0-based). | No |
 | `secondLength` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Chamfering cuts away two faces to create a third face. If this argument isn't given, the lengths chamfered away from both the first and second face are both given by `length`. If this argument _is_ given, it determines how much is cut away from the second face. Incompatible with `angle`. | No |
 | `angle` | [`number(Angle)`](/docs/kcl-std/types/std-types-number) | Chamfering cuts away two faces to create a third face. This argument determines the angle between the two cut edges. Requires `length`, incompatible with `secondLength`. The valid range is 0deg < angle < 90deg. | No |
 | `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this chamfer | No |
 | `legacyMethod` | [`bool`](/docs/kcl-std/types/std-types-bool) | **Deprecated as of KCL 2.0.** **Removed in KCL 3.0.** You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm. If true, revert to older engine SSI algorithm. Defaults to false. | No |
-| `version` | [`number(_)`](/docs/kcl-std/types/std-types-number) | **Removed in KCL 3.0.** **Experimental.** What version of the fillet algorithm to use. 0 means "let the Zoo engine choose whichever version is best", 1 is the original Zoo fillet algorithm, 2 is the newer algorithm (supports rolling ball fillets). On KCL 2.0 and before, the default is 1. KCL 3.0 and later always use the newest algorithm. | No |
+| `version` | [`number(_)`](/docs/kcl-std/types/std-types-number) | **Removed in KCL 3.0.** **Experimental.** What version of the fillet algorithm to use. 0 means "let the Zoo engine choose whichever version is best", 1 is the original Zoo fillet algorithm, 2 is the newer algorithm (supports rolling ball fillets). On KCL 2.0 and before, the default is 1. Use KCL 3.0 or later for the newest algorithm without setting `version`. | No |
 | `tangentChain` | [`bool`](/docs/kcl-std/types/std-types-bool) | **Added in KCL 3.0.** If true, also chamfer edges that are tangent to the selected edges. Defaults to true. | No |
 
 ### Returns
@@ -308,8 +317,7 @@ chamfer001 = chamfer(
 @settings(defaultLengthUnit = mm, kclVersion = 3.0)
 
 // Chamfer the top circular edge of an extruded 8 mm shaft.
-// These two shafts show two equivalent edge-selection approaches:
-// `getOppositeEdge` and a tagged end face with `getCommonEdge`.
+// These two shafts show edge selection by a side face and end face.
 
 // Sketch two circles, one on the left, one on the right.
 // We'll use them for shafts below.
@@ -329,12 +337,18 @@ rightRegion = region(segments = [rightShaftSketch.rightCircle])
 // Extrude one circle into a shaft,
 // then use `leftRegion.tags.leftCircle` to reference the original circle
 // at the base of the shaft,
-// then use `getOppositeEdge` to get the opposite circular edge at the *top* of the shaft.
-leftShaft = extrude(leftRegion, length = 20mm)
+// The end face selects the circular edge at the top of the shaft.
+leftShaftBase = extrude(leftRegion, length = 20mm, tagEnd = $leftShaftTop)
+leftShaft = leftShaftBase
   |> chamfer(
        length = 1mm,
-       tags = [
-         getOppositeEdge(leftRegion.tags.leftCircle)
+       edges = [
+         {
+           sideFaces = [
+             leftRegion.tags.leftCircle,
+             leftShaftBase.faces.leftShaftTop
+           ]
+         }
        ],
      )
 
@@ -342,13 +356,19 @@ leftShaft = extrude(leftRegion, length = 20mm)
 rightShaftBase = extrude(rightRegion, length = 20mm, tagEnd = $rightShaftTop)
 
 // After extrusion, the circle identifies the cylindrical side face.
-// `getCommonEdge` selects the top rim shared by that face and the top end face.
-rightTopEdge = getCommonEdge(faces = [
-  rightShaftBase.sketch.tags.rightCircle,
-  rightShaftBase.faces.rightShaftTop
-])
-
-rightShaft = chamfer(rightShaftBase, length = 1mm, tags = [rightTopEdge])
+// Their shared edge is the top rim.
+rightShaft = chamfer(
+  rightShaftBase,
+  length = 1mm,
+  edges = [
+    {
+      sideFaces = [
+        rightRegion.tags.rightCircle,
+        rightShaftBase.faces.rightShaftTop
+      ]
+    }
+  ],
+)
 
 ```
 
