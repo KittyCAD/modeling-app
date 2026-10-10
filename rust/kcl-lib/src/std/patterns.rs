@@ -44,6 +44,8 @@ use crate::execution::early_return;
 use crate::execution::fn_call::Arg;
 use crate::execution::fn_call::Args;
 use crate::execution::kcl_value::FunctionSource;
+use crate::execution::types::ArrayLen;
+use crate::execution::types::CoercionError;
 use crate::execution::types::CoercionMode;
 use crate::execution::types::NumericType;
 use crate::execution::types::NumericTypeExt;
@@ -444,8 +446,10 @@ fn transform_from_obj_fields<T: GeometryTrait>(
         None => true,
     };
 
+    // Scale factors are plain multipliers, so like `scale()` they take no
+    // length unit.
     let scale = match transform.get("scale") {
-        Some(x) => point_3d_to_mm(T::array_to_point3d(x, source_ranges.clone(), exec_state)?).into(),
+        Some(x) => T::array_to_scale3d(x, source_ranges.clone(), exec_state)?.into(),
         None => kcmc::shared::Point3d { x: 1.0, y: 1.0, z: 1.0 },
     };
 
@@ -482,20 +486,29 @@ fn transform_from_obj_fields<T: GeometryTrait>(
             )));
         };
         if let Some(axis) = rot.get("axis") {
-            rotation.axis = point_3d_to_mm(T::array_to_point3d(axis, source_ranges.clone(), exec_state)?).into();
+            // Like `rotate()`, don't adjust axis units since only the
+            // direction of the axis is significant, not its magnitude.
+            rotation.axis = T::array_to_point3d(axis, source_ranges.clone(), exec_state)?
+                .map(|dim| dim.n)
+                .into();
         }
         if let Some(angle) = rot.get("angle") {
-            match angle {
-                KclValue::Number { value: number, .. } => {
-                    rotation.angle = Angle::from_degrees(*number);
-                }
-                _ => {
-                    return Err(KclError::new_semantic(KclErrorDetails::new(
-                        "The 'rotation.angle' key must be a number (of degrees)".to_owned(),
-                        source_ranges,
-                    )));
-                }
-            }
+            // Like `rotate()`, convert the angle to degrees from whatever unit
+            // it was written in. A number without a unit is read as degrees.
+            let angle = angle
+                .coerce(&RuntimeType::degrees(), CoercionMode::implicit(), exec_state)
+                .ok()
+                .and_then(|angle| angle.as_ty_f64())
+                .ok_or_else(|| {
+                    KclError::new_semantic(KclErrorDetails::new(
+                        format!(
+                            "The 'rotation.angle' key must be an angle (e.g., 45deg), found {}",
+                            angle.human_friendly_type()
+                        ),
+                        source_ranges.clone(),
+                    ))
+                })?;
+            rotation.angle = Angle::from_degrees(angle.n);
         }
         if let Some(origin) = rot.get("origin") {
             rotation.origin = match origin {
@@ -558,6 +571,42 @@ fn array_to_point2d(
         .map(|val| val.as_point2d().unwrap())
 }
 
+/// Like `array_to_point3d`, but for unitless numbers, i.e. scale factors.
+fn array_to_scale3d(
+    val: &KclValue,
+    source_ranges: Vec<SourceRange>,
+    exec_state: &mut ExecState,
+) -> Result<[f64; 3], KclError> {
+    let ty = RuntimeType::Array(Box::new(RuntimeType::count()), ArrayLen::Known(3));
+    val.coerce(&ty, CoercionMode::implicit(), exec_state)
+        .map_err(|e| scale_coercion_error(val, e, 3, source_ranges))
+        .map(|val| val.as_point3d().unwrap().map(|dim| dim.n))
+}
+
+/// Like `array_to_point2d`, but for unitless numbers, i.e. scale factors.
+fn array_to_scale2d(
+    val: &KclValue,
+    source_ranges: Vec<SourceRange>,
+    exec_state: &mut ExecState,
+) -> Result<[f64; 2], KclError> {
+    let ty = RuntimeType::Array(Box::new(RuntimeType::count()), ArrayLen::Known(2));
+    val.coerce(&ty, CoercionMode::implicit(), exec_state)
+        .map_err(|e| scale_coercion_error(val, e, 2, source_ranges))
+        .map(|val| val.as_point2d().unwrap().map(|dim| dim.n))
+}
+
+fn scale_coercion_error(val: &KclValue, e: CoercionError, dims: usize, source_ranges: Vec<SourceRange>) -> KclError {
+    KclError::new_semantic(KclErrorDetails::new(
+        format!(
+            "Expected an array of {dims} numbers without units (i.e., scale factors), found {}",
+            e.found
+                .map(|t| t.human_friendly_type())
+                .unwrap_or_else(|| val.human_friendly_type())
+        ),
+        source_ranges,
+    ))
+}
+
 pub trait GeometryTrait: Clone {
     type Set: Into<Vec<Self>> + Clone;
     #[allow(async_fn_in_trait)]
@@ -570,6 +619,13 @@ pub trait GeometryTrait: Clone {
         source_ranges: Vec<SourceRange>,
         exec_state: &mut ExecState,
     ) -> Result<[TyF64; 3], KclError>;
+    /// Reads unitless scale factors for each axis. 2D geometry takes two
+    /// factors and is not scaled along z.
+    fn array_to_scale3d(
+        val: &KclValue,
+        source_ranges: Vec<SourceRange>,
+        exec_state: &mut ExecState,
+    ) -> Result<[f64; 3], KclError>;
     #[allow(async_fn_in_trait)]
     async fn flush_batch(args: &Args, exec_state: &mut ExecState, set: &Self::Set) -> Result<(), KclError>;
 }
@@ -596,6 +652,15 @@ impl GeometryTrait for Sketch {
         let [x, y] = array_to_point2d(val, source_ranges, exec_state)?;
         let ty = x.ty;
         Ok([x, y, TyF64::new(0.0, ty)])
+    }
+
+    fn array_to_scale3d(
+        val: &KclValue,
+        source_ranges: Vec<SourceRange>,
+        exec_state: &mut ExecState,
+    ) -> Result<[f64; 3], KclError> {
+        let [x, y] = array_to_scale2d(val, source_ranges, exec_state)?;
+        Ok([x, y, 1.0])
     }
 
     async fn flush_batch(_: &Args, _: &mut ExecState, _: &Self::Set) -> Result<(), KclError> {
@@ -634,6 +699,14 @@ impl GeometryTrait for Solid {
         array_to_point3d(val, source_ranges, exec_state)
     }
 
+    fn array_to_scale3d(
+        val: &KclValue,
+        source_ranges: Vec<SourceRange>,
+        exec_state: &mut ExecState,
+    ) -> Result<[f64; 3], KclError> {
+        array_to_scale3d(val, source_ranges, exec_state)
+    }
+
     async fn flush_batch(args: &Args, exec_state: &mut ExecState, solid_set: &Self::Set) -> Result<(), KclError> {
         exec_state
             .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, args), solid_set)
@@ -664,6 +737,14 @@ impl GeometryTrait for ImportedGeometry {
         exec_state: &mut ExecState,
     ) -> Result<[TyF64; 3], KclError> {
         array_to_point3d(val, source_ranges, exec_state)
+    }
+
+    fn array_to_scale3d(
+        val: &KclValue,
+        source_ranges: Vec<SourceRange>,
+        exec_state: &mut ExecState,
+    ) -> Result<[f64; 3], KclError> {
+        array_to_scale3d(val, source_ranges, exec_state)
     }
 
     async fn flush_batch(_: &Args, _: &mut ExecState, _: &Self::Set) -> Result<(), KclError> {
@@ -897,6 +978,187 @@ patterned = startSketchOn(XY)
                 .all(|issue| issue.message != PATTERN_LINEAR_2D_REGIONS_ONLY),
             "unexpected regions-only issue: {:#?}",
             outcome.issues
+        );
+    }
+
+    /// Runs `code`, which patterns one shape with `instances = 2`, and returns
+    /// the single transform sent to the engine for the replica.
+    async fn pattern_transform_sent_to_engine(code: &str) -> Transform {
+        let result = crate::execution::parse_execute(code).await.unwrap();
+        let transforms = result
+            .root_module_artifact_commands()
+            .iter()
+            .find_map(|artifact_command| match &artifact_command.command {
+                ModelingCmd::EntityLinearPatternTransform(command) => Some(command.transforms.clone()),
+                _ => None,
+            })
+            .expect("expected a pattern transform command");
+        let [replica] = transforms.as_slice() else {
+            panic!("expected one replica, got {transforms:?} for:\n{code}");
+        };
+        let [transform] = replica.as_slice() else {
+            panic!("expected one transform, got {replica:?} for:\n{code}");
+        };
+        transform.clone()
+    }
+
+    /// A cube patterned with `instances = 2` whose transform fn returns `fields`.
+    fn pattern_transform_code(settings: &str, fields: &str) -> String {
+        format!(
+            r#"@settings(kclVersion = 2.0, {settings})
+cube = startSketchOn(XY)
+  |> rectangle(center = [0, 0], width = 1, height = 1)
+  |> extrude(length = 1)
+fn transform(@i) {{
+  return {{ {fields} }}
+}}
+patterned = patternTransform(cube, instances = 2, transform = transform)
+"#
+        )
+    }
+
+    /// Like `pattern_transform_code`, but patterns a 2D sketch.
+    fn pattern_transform_2d_code(settings: &str, fields: &str) -> String {
+        format!(
+            r#"@settings(kclVersion = 2.0, {settings})
+square = startSketchOn(XY)
+  |> rectangle(center = [0, 0], width = 1, height = 1)
+fn transform(@i) {{
+  return {{ {fields} }}
+}}
+patterned = patternTransform2d(square, instances = 2, transform = transform)
+"#
+        )
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn pattern_transform_scale_is_unitless() {
+        // A scale factor is a plain multiplier, so the file's length unit must
+        // not be applied to it.
+        for settings in [
+            "defaultLengthUnit = mm",
+            "defaultLengthUnit = in",
+            "defaultLengthUnit = m",
+        ] {
+            let code = pattern_transform_code(settings, "scale = [2, 3, 4]");
+            let transform = pattern_transform_sent_to_engine(&code).await;
+            assert_eq!(
+                (transform.scale.x, transform.scale.y, transform.scale.z),
+                (2.0, 3.0, 4.0),
+                "{code}"
+            );
+        }
+
+        // Index arithmetic, as in the docs, still gives a unitless number.
+        let code = pattern_transform_code("defaultLengthUnit = in", "scale = [pow(1.1, exp = i), 2 * i, 1]");
+        let transform = pattern_transform_sent_to_engine(&code).await;
+        assert_eq!(
+            (transform.scale.x, transform.scale.y, transform.scale.z),
+            (1.1, 2.0, 1.0),
+            "{code}"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn pattern_transform_rejects_scale_with_length_units() {
+        // A length is not a scale factor, like `scale(x = 2mm)`.
+        let code = pattern_transform_code("defaultLengthUnit = in", "scale = [2mm, 2mm, 2mm]");
+        let error = crate::execution::parse_execute(&code).await.unwrap_err();
+        assert_eq!(
+            error.message(),
+            "Expected an array of 3 numbers without units (i.e., scale factors), found number(mm)",
+            "{code}"
+        );
+
+        // Zero is still rejected.
+        let code = pattern_transform_code("defaultLengthUnit = in", "scale = [1, 0, 1]");
+        let error = crate::execution::parse_execute(&code).await.unwrap_err();
+        assert_eq!(
+            error.message(),
+            "cannot set y = 0, scale factor must be nonzero",
+            "{code}"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn pattern_transform_angle_uses_its_unit() {
+        let one_radian_in_degrees = 1.0f64.to_degrees();
+        for (angle, expected) in [
+            ("1rad", one_radian_in_degrees),
+            ("57.29577951308232deg", one_radian_in_degrees),
+            // A number without a unit is still read as degrees.
+            ("30", 30.0),
+            ("15 * i", 15.0),
+        ] {
+            let code = pattern_transform_code(
+                "defaultLengthUnit = in",
+                &format!("rotation = {{ angle = {angle}, origin = \"local\" }}"),
+            );
+            let transform = pattern_transform_sent_to_engine(&code).await;
+            let actual = transform.rotation.angle.to_degrees();
+            assert!(
+                (actual - expected).abs() < 1e-9,
+                "expected {expected} degrees, got {actual} for:\n{code}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn pattern_transform_rotation_axis_is_a_direction() {
+        // Like `rotate()`, only the direction of the axis matters, so the
+        // file's length unit must not be applied to it.
+        let code = pattern_transform_code(
+            "defaultLengthUnit = in",
+            "rotation = { axis = [0, 1, 0], angle = 90deg }",
+        );
+        let transform = pattern_transform_sent_to_engine(&code).await;
+        let axis = transform.rotation.axis;
+        assert_eq!((axis.x, axis.y, axis.z), (0.0, 1.0, 0.0), "{code}");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn pattern_transform_translate_and_origin_are_still_lengths() {
+        // Points in space still reach the engine in mm.
+        let code = pattern_transform_code(
+            "defaultLengthUnit = in",
+            "translate = [1, 2, 3], rotation = { angle = 90deg, origin = [1, 0, 0] }",
+        );
+        let transform = pattern_transform_sent_to_engine(&code).await;
+        let translate = transform.translate;
+        for (actual, expected) in [(translate.x.0, 25.4), (translate.y.0, 50.8), (translate.z.0, 76.2)] {
+            assert!(
+                (actual - expected).abs() < 1e-9,
+                "expected {expected}, got {actual} for:\n{code}"
+            );
+        }
+        let OriginType::Custom { origin } = transform.rotation.origin else {
+            panic!("expected a custom rotation origin for:\n{code}");
+        };
+        assert_eq!((origin.x, origin.y, origin.z), (25.4, 0.0, 0.0), "{code}");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn pattern_transform_2d_scale_and_angle_are_unitless() {
+        let code = pattern_transform_2d_code(
+            "defaultLengthUnit = in",
+            "scale = [2, 3], translate = [1, 0], rotation = { angle = 1rad }",
+        );
+        let transform = pattern_transform_sent_to_engine(&code).await;
+        assert_eq!(
+            (transform.scale.x, transform.scale.y, transform.scale.z),
+            (2.0, 3.0, 1.0),
+            "{code}"
+        );
+        assert_eq!(
+            (transform.translate.x.0, transform.translate.y.0),
+            (25.4, 0.0),
+            "{code}"
+        );
+        let actual = transform.rotation.angle.to_degrees();
+        let expected = 1.0f64.to_degrees();
+        assert!(
+            (actual - expected).abs() < 1e-9,
+            "expected {expected} degrees, got {actual} for:\n{code}"
         );
     }
 }
