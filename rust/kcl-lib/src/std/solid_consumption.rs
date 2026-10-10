@@ -137,6 +137,11 @@ pub(super) fn record_consumed_solids(
     operation: ConsumedSolidOperation,
     output_solids: &[Solid],
 ) {
+    if let Some(source) = solids.first() {
+        for output in output_solids {
+            exec_state.copy_section_material(source.id, output.id);
+        }
+    }
     let returned_solid_keys = output_solids.iter().map(consumed_solid_key).collect::<Vec<_>>();
     for solid in solids {
         let info = ConsumedSolidInfo::new(operation, returned_solid_keys.clone());

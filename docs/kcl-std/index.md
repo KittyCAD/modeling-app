@@ -162,6 +162,7 @@ layout: manual
   * [`patternCircular3d`](/docs/kcl-std/functions/std-solid-patternCircular3d)
   * [`patternLinear3d`](/docs/kcl-std/functions/std-solid-patternLinear3d)
   * [`patternTransform`](/docs/kcl-std/functions/std-solid-patternTransform)
+  * [`sectionView`](/docs/kcl-std/functions/std-solid-sectionView)
   * [`shell`](/docs/kcl-std/functions/std-solid-shell)
   * [`split`](/docs/kcl-std/functions/std-solid-split)
   * [`subtract`](/docs/kcl-std/functions/std-solid-subtract)

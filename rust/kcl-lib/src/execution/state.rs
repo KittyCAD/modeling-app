@@ -288,6 +288,9 @@ pub(crate) struct PendingLegacyAngleRefactorMeta {
 /// Artifact state for a single module.
 #[derive(Debug, Clone, Default, PartialEq, Serialize)]
 pub struct ModuleArtifactState {
+    /// Runtime bodies and materials, including unassigned function results.
+    #[serde(skip)]
+    pub(crate) section_scene: super::section_scene::SectionScene,
     /// Internal map of UUIDs to exec artifacts.
     pub artifacts: IndexMap<ArtifactId, Artifact>,
     /// Outgoing engine commands that have not yet been processed and integrated
@@ -1007,12 +1010,14 @@ impl ExecState {
 
     /// Record that a solid value has been consumed by a CSG boolean operation.
     pub(crate) fn mark_solid_consumed(&mut self, consumed_key: ConsumedSolidKey, info: ConsumedSolidInfo) {
+        self.mod_local.artifacts.section_scene.consumed.insert(consumed_key);
         self.mod_local.consumed_solids.insert(consumed_key, info);
     }
 
     /// Record that an engine body UUID has been consumed by a CSG boolean
     /// operation.
     pub(crate) fn mark_solid_id_consumed(&mut self, consumed_id: Uuid, info: ConsumedSolidInfo) {
+        self.mod_local.artifacts.section_scene.bodies.insert(consumed_id, None);
         self.mod_local.consumed_solid_ids.insert(consumed_id, info);
     }
 
@@ -1165,6 +1170,7 @@ impl ExecState {
     }
 
     pub(crate) fn push_command(&mut self, command: ArtifactCommand) {
+        self.track_section_command(&command);
         self.mod_local.artifacts.unprocessed_commands.push(command);
     }
 
@@ -1779,6 +1785,7 @@ impl ModuleArtifactState {
     }
 
     pub(crate) fn clear(&mut self) {
+        self.section_scene = Default::default();
         self.artifacts.clear();
         self.unprocessed_commands.clear();
         self.commands.clear();
@@ -1829,6 +1836,10 @@ impl ModuleArtifactState {
 
     /// When self is a cached state, extend it with new state.
     pub(crate) fn extend(&mut self, other: ModuleArtifactState) {
+        self.section_scene.deleted.extend(other.section_scene.deleted);
+        self.section_scene.consumed.extend(other.section_scene.consumed);
+        self.section_scene.bodies.extend(other.section_scene.bodies);
+        self.section_scene.materials.extend(other.section_scene.materials);
         self.artifacts.extend(other.artifacts);
         self.unprocessed_commands.extend(other.unprocessed_commands);
         self.commands.extend(other.commands);
