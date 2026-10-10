@@ -506,7 +506,9 @@ fn kcl_version_expr(kcl_version: KclVersion) -> Result<Expr, KclError> {
             },
             "2.0".to_owned(),
         ),
-        crate::KclVersion::V3Preview => (
+        crate::KclVersion::V3Preview | crate::KclVersion::V4Preview => (
+            // These have their own handling because they're string literals,
+            // not numeric literals.
             LiteralValue::String(kcl_version.as_str().to_owned()),
             format!("\"{}\"", kcl_version.as_str()),
         ),
