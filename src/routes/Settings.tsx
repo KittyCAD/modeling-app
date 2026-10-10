@@ -46,10 +46,17 @@ export const Settings = () => {
     if (document.activeElement instanceof HTMLInputElement) {
       document.activeElement.blur()
     }
-    void navigate(location.pathname.replace(PATHS.SETTINGS, ''))
+    const search = new URLSearchParams(location.search)
+    search.delete('tab')
+    void navigate({
+      pathname: location.pathname.replace(PATHS.SETTINGS, ''),
+      search: search.toString(),
+    })
   }
   const location = useLocation()
-  const isFileSettings = location.pathname.includes(PATHS.FILE)
+  const isFileSettings =
+    location.pathname.includes(PATHS.FILE) ||
+    location.pathname.startsWith(`${PATHS.PROJECT}/`)
   const hasOpenProject =
     app.project !== undefined &&
     app.project.projectIORefSignal.value.cloudSource?.canEdit !== false
@@ -184,8 +191,14 @@ export const Settings = () => {
             </div>
             <SettingsTabs
               value={searchParamTab}
-              onChange={(v) => setSearchParams((p) => ({ ...p, tab: v }))}
-              showProjectTab={isFileSettings}
+              onChange={(tab) =>
+                setSearchParams((previous) => {
+                  const search = new URLSearchParams(previous)
+                  search.set('tab', tab)
+                  return search
+                })
+              }
+              showProjectTab={isFileSettings && hasOpenProject}
             />
             <div
               className="flex-1 grid items-stretch pl-4 pr-5 pb-5 gap-2 overflow-hidden"

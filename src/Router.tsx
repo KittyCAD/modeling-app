@@ -1,6 +1,7 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import RootLayout from '@src/Root'
 import { CommandBar } from '@src/components/CommandBar/CommandBar'
+import { CloudProjectErrorPage } from '@src/components/CloudProjectPage'
 import { ErrorPage } from '@src/components/ErrorPage'
 import Loading from '@src/components/Loading'
 import { MachineApiController } from '@src/components/MachineApiController'
@@ -14,7 +15,12 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { TestLayout } from '@src/lib/layout/TestLayout'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS } from '@src/lib/paths'
-import { baseLoader, fileLoader, homeLoader } from '@src/lib/routeLoaders'
+import {
+  baseLoader,
+  fileLoader,
+  cloudProjectLoader,
+  homeLoader,
+} from '@src/lib/routeLoaders'
 import Home from '@src/routes/Home'
 import { OnboardingRootRoute, onboardingRoutes } from '@src/routes/Onboarding'
 import { Settings } from '@src/routes/Settings'
@@ -54,13 +60,19 @@ export const Router = () => {
               errorElement: <ErrorPage />,
               loader: baseLoader({ app }),
             },
-            {
-              loader: fileLoader({
-                app,
-              }),
-              id: PATHS.FILE,
-              path: PATHS.FILE + '/:id',
-              errorElement: <ErrorPage />,
+            ...[PATHS.FILE, PATHS.PROJECT].map((projectRoute) => ({
+              loader:
+                projectRoute === PATHS.PROJECT
+                  ? cloudProjectLoader({ app })
+                  : fileLoader({ app }),
+              id: projectRoute,
+              path: projectRoute + '/:id',
+              errorElement:
+                projectRoute === PATHS.PROJECT ? (
+                  <CloudProjectErrorPage />
+                ) : (
+                  <ErrorPage />
+                ),
               element: (
                 <ModelingPageProvider>
                   <Suspense
@@ -80,7 +92,7 @@ export const Router = () => {
               ),
               children: [
                 {
-                  id: PATHS.FILE + 'SETTINGS',
+                  id: projectRoute + 'SETTINGS',
                   children: [
                     {
                       path: makeUrlPathRelative(PATHS.SETTINGS),
@@ -94,7 +106,7 @@ export const Router = () => {
                   ],
                 },
                 {
-                  id: PATHS.FILE + 'TELEMETRY',
+                  id: projectRoute + 'TELEMETRY',
                   children: [
                     {
                       path: makeUrlPathRelative(PATHS.TELEMETRY),
@@ -103,7 +115,7 @@ export const Router = () => {
                   ],
                 },
               ],
-            },
+            })),
             {
               path: PATHS.HOME,
               errorElement: <ErrorPage />,

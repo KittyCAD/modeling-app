@@ -6,6 +6,10 @@ import {
   PROJECT_ID_QUERY_PARAM,
 } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
+import {
+  formatCloudProjectUrl,
+  isValidProjectFilePath,
+} from '@src/lib/cloudProjectOpen'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import {
   PATHS,
@@ -35,7 +39,8 @@ import { useEffect } from 'react'
 import { useLocation, useNavigate, useNavigation } from 'react-router-dom'
 
 export function SystemIOMachineLogicListener() {
-  const { settings, systemIOActor, registry } = useApp()
+  const app = useApp()
+  const { settings, systemIOActor, registry } = app
   const { kclManager } = useSingletons()
   // We gotta stop with this pattern. It doesn't scale. "Eager hook creation"
   const requestedProjectName = useRequestedProjectName()
@@ -89,6 +94,11 @@ export function SystemIOMachineLogicListener() {
         defaultDirectoryLibraryPath
       )
     }
+    const project = app.project?.projectIORefSignal.value
+    if (project?.cloudSource) {
+      filePathWithExtension = kclManager.path
+      projectDirectory = project.path
+    }
 
     // Close current file in current project if it exists
     lsp.onFileClose(filePathWithExtension, projectDirectory)
@@ -127,7 +137,17 @@ export function SystemIOMachineLogicListener() {
       url.searchParams.delete(PROJECT_ID_QUERY_PARAM)
     }
     const search = url.searchParams.toString()
-    void navigate(requestedPath + (search ? `?${search}` : ''), {
+    const relative =
+      project && requestedFilePathWithExtension
+        ? fsZds
+            .relative(project.path, requestedFilePathWithExtension)
+            .replaceAll('\\', '/')
+        : ''
+    const target =
+      project?.cloudSource && isValidProjectFilePath(relative)
+        ? formatCloudProjectUrl(project.cloudSource.id, relative, search)
+        : requestedPath + (search ? `?${search}` : '')
+    void navigate(target, {
       replace: requestedPath.includes(String(PATHS.ONBOARDING)),
     })
   }
