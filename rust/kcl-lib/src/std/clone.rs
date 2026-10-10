@@ -120,6 +120,9 @@ async fn inner_clone(
                 new_solid.id = new_id;
                 new_solid.value_id = new_id;
                 new_solid.become_new_body(new_id, result_artifact_id);
+                // A clone's faces must not replace tags on its source region,
+                // including in mock execution where child IDs are not remapped.
+                new_solid.tag_update_source_artifact_id = None;
                 if let Some(sketch) = new_solid.sketch_mut() {
                     sketch.original_id = new_id;
                 }
@@ -524,10 +527,64 @@ mod tests {
     use crate::execution::EdgeCutViewExt;
     use crate::execution::ExecOutcome;
     use crate::execution::ExtrudeSurfaceViewExt;
+    use crate::execution::Geometry;
     use crate::execution::KclValue;
     use crate::execution::PathViewExt;
     use crate::execution::Solid;
     use crate::execution::SolidViewExt;
+    use crate::execution::parse_execute;
+
+    async fn assert_mock_clone_preserves_source_region_tags(body_expression: &str) {
+        let code = format!(
+            r#"@settings(kclVersion = 3.0)
+lower = sketch(on = XY) {{
+  edge = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+}}
+upper = sketch(on = offsetPlane(XY, offset = 10mm)) {{
+  edge = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}}
+lowerRegion = region(segments = [lower.edge])
+upperRegion = region(segments = [upper.edge])
+body = {body_expression}
+beforeClone = lowerRegion.tags.edge
+copied = clone(body)
+afterClone = lowerRegion.tags.edge
+"#
+        );
+        let result = parse_execute(&code).await.expect("mock clone executes");
+        let KclValue::Solid { value: body } = result.variable("body") else {
+            panic!("body is not a solid");
+        };
+        let KclValue::Solid { value: copied } = result.variable("copied") else {
+            panic!("copied is not a solid");
+        };
+        assert_ne!(body.id, copied.id);
+
+        for name in ["beforeClone", "afterClone"] {
+            let KclValue::TagIdentifier(tag) = result.variable(name) else {
+                panic!("{name} is not a tag");
+            };
+            let info = tag.get_cur_info().expect("region tag has geometry info");
+            assert!(info.surface.is_some(), "{name} should still identify a face");
+            let Geometry::Solid(tagged_body) = &info.geometry else {
+                panic!("{name} is not a solid face tag");
+            };
+            assert_eq!(
+                tagged_body.id, body.id,
+                "{name} should identify the source body, not its independent clone"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn clone_does_not_retarget_extruded_region_tags_in_mock_execution() {
+        assert_mock_clone_preserves_source_region_tags("extrude(lowerRegion, length = 10mm)").await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn clone_does_not_retarget_loft_region_tags_in_mock_execution() {
+        assert_mock_clone_preserves_source_region_tags("loft([lowerRegion, upperRegion])").await;
+    }
 
     fn runtime_solid<'a>(outcome: &'a ExecOutcome, name: &str) -> &'a Solid {
         let value = outcome

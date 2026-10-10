@@ -213,30 +213,34 @@ async fn inner_loft(
 
     // Using the first sketch as the base curve, idk we might want to change this later.
     let mut sketch = sketches[0].clone();
+    // Record the source region before replacing its topology IDs with the loft's.
+    // Caller-memory tag updates must use its artifact identity: pattern copies
+    // have their own artifact IDs while retaining their source topology IDs.
+    let source_artifact_id = sketch.artifact_id;
     // A loft creates a new engine body rather than reusing its first section.
     // Keep both ID fields on the new body so follow-up operations query the
     // loft instead of the first section's path object.
     sketch.id = id;
     sketch.original_id = id;
-    Ok(Box::new(
-        do_post_extrude(
-            &sketch,
-            id.into(),
-            false,
-            &super::extrude::NamedCapTags {
-                start: tag_start.as_ref(),
-                end: tag_end.as_ref(),
-            },
-            kittycad_modeling_cmds::shared::ExtrudeMethod::New,
-            exec_state,
-            &args,
-            None,
-            None,
-            body_type,
-            crate::std::extrude::BeingExtruded::Sketch,
-        )
-        .await?,
-    ))
+    let mut solid = do_post_extrude(
+        &sketch,
+        id.into(),
+        false,
+        &super::extrude::NamedCapTags {
+            start: tag_start.as_ref(),
+            end: tag_end.as_ref(),
+        },
+        kittycad_modeling_cmds::shared::ExtrudeMethod::New,
+        exec_state,
+        &args,
+        None,
+        None,
+        body_type,
+        crate::std::extrude::BeingExtruded::Sketch,
+    )
+    .await?;
+    solid.tag_update_source_artifact_id = Some(source_artifact_id);
+    Ok(Box::new(solid))
 }
 
 #[cfg(test)]
@@ -245,6 +249,8 @@ mod tests {
 
     use super::*;
     use crate::execution::AbstractSegment;
+    use crate::execution::ExecTestResults;
+    use crate::execution::Geometry;
     use crate::execution::KclValue;
     use crate::execution::Plane;
     use crate::execution::Segment;
@@ -432,6 +438,122 @@ gdt::annotation(faces = [lowerRegion.tags.line1], annotation = "EDGE", fontSize 
                 panic!("lowerRegion is not a sketch");
             };
             assert!(region.tags["line1"].get_cur_info().unwrap().surface.is_some());
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn loft_updates_linearly_patterned_region_tags_to_faces() {
+        let code = r#"@settings(kclVersion = 3.0, experimentalFeatures = allow)
+lower = sketch(on = XY) {
+  edge = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+}
+upper = sketch(on = offsetPlane(XY, offset = 10mm)) {
+  edge = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+lowerRegion = region(segments = [lower.edge])
+upperRegion = region(segments = [upper.edge])
+patterned = patternLinear2d(lowerRegion, instances = 2, distance = 20mm, axis = X)
+lowerCopy = patterned[1]
+lowerCopyAlias = lowerCopy
+body = loft([lowerCopy, upperRegion])
+"#;
+        let result = parse_execute(code).await.expect("loft of patterned region executes");
+        let KclValue::Solid { value: body } = result.variable("body") else {
+            panic!("body is not a solid");
+        };
+        let KclValue::Sketch { value: original } = result.variable("lowerRegion") else {
+            panic!("lowerRegion is not a sketch");
+        };
+
+        for name in ["lowerCopy", "lowerCopyAlias"] {
+            let KclValue::Sketch { value: copy } = result.variable(name) else {
+                panic!("{name} is not a sketch");
+            };
+            assert_eq!(copy.original_id, original.original_id);
+            assert_ne!(copy.artifact_id, original.artifact_id);
+            let info = copy.tags["edge"].get_cur_info().expect("pattern copy has a tag");
+            assert!(info.surface.is_some(), "{name} should identify a loft face");
+            let Geometry::Solid(tagged_body) = &info.geometry else {
+                panic!("{name} does not have a solid face tag");
+            };
+            assert_eq!(tagged_body.id, body.id);
+        }
+
+        assert!(
+            original.tags["edge"]
+                .get_cur_info()
+                .expect("original region has a tag")
+                .surface
+                .is_none(),
+            "lofting a pattern copy should preserve the original region's sketch tag"
+        );
+    }
+
+    fn loft_region_tag_program(operation: &str) -> String {
+        format!(
+            r#"@settings(kclVersion = 3.0)
+lower = sketch(on = XY) {{
+  edge = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+}}
+upper = sketch(on = offsetPlane(XY, offset = 10mm)) {{
+  edge = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}}
+lowerRegion = region(segments = [lower.edge])
+upperRegion = region(segments = [upper.edge])
+body = loft([lowerRegion, upperRegion])
+beforeOperation = lowerRegion.tags.edge
+{operation}
+afterOperation = lowerRegion.tags.edge
+"#
+        )
+    }
+
+    fn body_id_for_region_tag(result: &ExecTestResults, name: &str) -> uuid::Uuid {
+        let KclValue::TagIdentifier(tag) = result.variable(name) else {
+            panic!("{name} is not a tag");
+        };
+        let info = tag.get_cur_info().expect("region tag has geometry info");
+        assert!(info.surface.is_some(), "{name} should identify a face");
+        let Geometry::Solid(body) = &info.geometry else {
+            panic!("{name} is not a solid face tag");
+        };
+        body.id
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn loft_region_tags_follow_subsequent_boolean_operations() {
+        let code = loft_region_tag_program(
+            "tool = extrude(upperRegion, length = 5mm)\nmodified = subtract(body, tools = tool)",
+        );
+        let result = parse_execute(&code).await.expect("modified loft executes");
+        let body_id = result.variable("body").as_solid().expect("body is a solid").id;
+        let outputs = result.variable("modified").into_array();
+        assert_eq!(outputs.len(), 1);
+        let modified = outputs[0].as_solid().expect("modified is a solid");
+        assert_ne!(body_id, modified.id);
+        assert_eq!(body_id_for_region_tag(&result, "beforeOperation"), body_id);
+        assert_eq!(body_id_for_region_tag(&result, "afterOperation"), modified.id);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn loft_independent_copies_do_not_retarget_region_tags() {
+        for expression in [
+            "mirror3d(body, across = YZ)",
+            "patternLinear3d(body, instances = 2, distance = 20mm, axis = X)",
+            "patternCircular3d(body, instances = 2, axis = Z)",
+        ] {
+            let code = loft_region_tag_program(&format!("independent = {expression}"));
+            let result = parse_execute(&code).await.expect("independent loft copies execute");
+            let body_id = result.variable("body").as_solid().expect("body is a solid").id;
+            let copies = result.variable("independent").into_array();
+            let last_copy = copies.last().and_then(KclValue::as_solid).expect("copy is a solid");
+            assert_ne!(body_id, last_copy.id, "{expression} must produce an independent copy");
+            assert_eq!(body_id_for_region_tag(&result, "beforeOperation"), body_id);
+            assert_eq!(
+                body_id_for_region_tag(&result, "afterOperation"),
+                body_id,
+                "{expression} must preserve the original region's face tag"
+            );
         }
     }
 
