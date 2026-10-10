@@ -51,6 +51,12 @@ export type FileEntry = {
  * Information about project.
  */
 export type Project = {
+  /** Access and URL identity resolved by the cloud-project opener. */
+  cloudSource?: {
+    id: string
+    canEdit: boolean
+    kind: 'private' | 'public'
+  }
   metadata: FileMetadata | null
   kcl_file_count: number
   directory_count: number
