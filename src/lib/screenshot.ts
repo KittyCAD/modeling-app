@@ -1,4 +1,5 @@
 import { writeProjectThumbnailFile } from '@src/lib/desktop'
+import { isReadOnlyProjectPath } from '@src/lib/fs-zds'
 import { getVisibleElementRect } from '@src/lib/viewportElement'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
@@ -176,7 +177,10 @@ export function createThumbnailPNGOnDesktop({
   projectDirectoryWithoutEndingSlash: string
 }) {
   setTimeout(() => {
-    if (!projectDirectoryWithoutEndingSlash) {
+    if (
+      !projectDirectoryWithoutEndingSlash ||
+      isReadOnlyProjectPath(projectDirectoryWithoutEndingSlash)
+    ) {
       return
     }
     // zoom to fit command does not wait, wait 500ms to see if zoom to fit finishes

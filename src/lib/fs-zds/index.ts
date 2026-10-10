@@ -3,6 +3,10 @@ import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import nodefs, { type NodeFSOptions } from '@src/lib/fs-zds/nodefs'
 import noopfs, { type NoopFSOptions } from '@src/lib/fs-zds/noopfs'
 import opfs, { type OPFSOptions } from '@src/lib/fs-zds/opfs'
+import {
+  createReadOnlyProjectStorage,
+  type ProjectSnapshotFile,
+} from '@src/lib/fs-zds/readOnlyProjects'
 
 declare global {
   interface Window {
@@ -54,6 +58,20 @@ export type StorageBacking =
 // object will act as a reference to all modules that import it. This reference
 // will be further modified to give the necessary functionality.
 const _impl: IZooDesignStudioFS = noopfs.impl
+let readOnlyStorage: ReturnType<typeof createReadOnlyProjectStorage> | undefined
+
+export const isReadOnlyProjectPath = (path: string) =>
+  readOnlyStorage?.isReadOnly(path) ?? false
+
+export const disposeReadOnlyProjectSnapshot = async (path: string) =>
+  readOnlyStorage?.disposeSnapshot(path)
+
+export const createReadOnlyProjectSnapshot = (
+  files: readonly ProjectSnapshotFile[]
+) =>
+  readOnlyStorage
+    ? readOnlyStorage.createSnapshot(files)
+    : Promise.reject(new Error('Project storage is not initialized.'))
 
 export const moduleFsViaObject = async (
   backing: StorageBacking
@@ -71,9 +89,13 @@ export const moduleFsViaModuleImport = async (backing: StorageBacking) => {
   }
 
   const impl = await moduleFsViaObject(backing)
+  readOnlyStorage = createReadOnlyProjectStorage(
+    impl,
+    impl.join(await impl.getPath('userData'), 'project-views')
+  )
 
   // Do not destroy the reference, but instead, reassign some of its properties.
-  Object.assign(_impl, impl)
+  Object.assign(_impl, readOnlyStorage.filesystem)
 
   // ts can't know if this is actually an fs backing even right after the
   // assignment, because _impl may have other properties.
