@@ -35,7 +35,10 @@ export function useAuthNavigation() {
       authState.matches('loggedIn') &&
       location.pathname.includes(PATHS.SIGN_IN)
     ) {
-      void navigate(PATHS.INDEX)
+      const returnTo = searchParams.get('returnTo')
+      void navigate(
+        returnTo?.startsWith(`${PATHS.PROJECT}/`) ? returnTo : PATHS.INDEX
+      )
     } else if (
       authState.matches('loggedOut') &&
       !location.pathname.includes(PATHS.SIGN_IN)
@@ -45,7 +48,10 @@ export function useAuthNavigation() {
         return
       }
 
-      void navigate(PATHS.SIGN_IN + (location.search || ''))
+      const search = location.pathname.startsWith(`${PATHS.PROJECT}/`)
+        ? `?returnTo=${encodeURIComponent(location.pathname + location.search)}`
+        : location.search
+      void navigate(PATHS.SIGN_IN + search)
     } else if (
       authState.matches('loggedOut') &&
       location.pathname.includes(PATHS.SIGN_IN) &&

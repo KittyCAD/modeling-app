@@ -1,3 +1,8 @@
+import {
+  getProjectFileUrl,
+  withProjectSubRoute,
+} from '@src/lib/projectNavigation'
+import { reportRejection } from '@src/lib/trap'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
 import { useApp, useSingletons } from '@src/lib/boot'
 import {
@@ -6,6 +11,7 @@ import {
   PROJECT_ID_QUERY_PARAM,
 } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
+import { isValidProjectFilePath } from '@src/lib/cloudProjectOpen'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import {
   PATHS,
@@ -35,7 +41,8 @@ import { useEffect } from 'react'
 import { useLocation, useNavigate, useNavigation } from 'react-router-dom'
 
 export function SystemIOMachineLogicListener() {
-  const { settings, systemIOActor, registry } = useApp()
+  const app = useApp()
+  const { settings, systemIOActor, registry } = app
   const { kclManager } = useSingletons()
   // We gotta stop with this pattern. It doesn't scale. "Eager hook creation"
   const requestedProjectName = useRequestedProjectName()
@@ -56,10 +63,12 @@ export function SystemIOMachineLogicListener() {
 
   function safestNavigateToFile({
     requestedPath,
+    subRoute = '',
     requestedFilePathWithExtension,
     requestedProjectDirectory,
   }: {
     requestedPath: string
+    subRoute?: string
     requestedFilePathWithExtension: string | null
     requestedProjectDirectory: string | null
   }) {
@@ -88,6 +97,11 @@ export function SystemIOMachineLogicListener() {
         filePathWithExtension,
         defaultDirectoryLibraryPath
       )
+    }
+    const project = app.project?.projectIORefSignal.value
+    if (project?.cloudSource) {
+      filePathWithExtension = kclManager.path
+      projectDirectory = project.path
     }
 
     // Close current file in current project if it exists
@@ -127,9 +141,40 @@ export function SystemIOMachineLogicListener() {
       url.searchParams.delete(PROJECT_ID_QUERY_PARAM)
     }
     const search = url.searchParams.toString()
-    void navigate(requestedPath + (search ? `?${search}` : ''), {
-      replace: requestedPath.includes(String(PATHS.ONBOARDING)),
-    })
+    const relative =
+      project && requestedFilePathWithExtension
+        ? fsZds
+            .relative(project.path, requestedFilePathWithExtension)
+            .replaceAll('\\', '/')
+        : ''
+    const beforeNavigation = window.location.href
+    const target =
+      project &&
+      requestedFilePathWithExtension &&
+      isValidProjectFilePath(relative)
+        ? Promise.resolve(
+            getProjectFileUrl(project, requestedFilePathWithExtension, search)
+          )
+        : requestedProjectDirectory
+          ? app.getProjectUrl(
+              { path: requestedProjectDirectory },
+              requestedFilePathWithExtension ?? requestedProjectDirectory,
+              search
+            )
+          : Promise.resolve(requestedPath + (search ? `?${search}` : ''))
+    void target
+      .then((url) => {
+        if (window.location.href !== beforeNavigation) return
+        return navigate(
+          requestedProjectDirectory && subRoute
+            ? withProjectSubRoute(url, subRoute)
+            : url,
+          {
+            replace: requestedPath.includes(String(PATHS.ONBOARDING)),
+          }
+        )
+      })
+      .catch(reportRejection)
   }
 
   /**
@@ -189,6 +234,7 @@ export function SystemIOMachineLogicListener() {
       )
       safestNavigateToFile({
         requestedPath,
+        subRoute: requestedProjectName.subRoute,
         requestedFilePathWithExtension: null,
         requestedProjectDirectory: projectPathWithoutSpecificKCLFile,
       })
@@ -224,6 +270,7 @@ export function SystemIOMachineLogicListener() {
       )
       safestNavigateToFile({
         requestedPath,
+        subRoute: requestedFileName.subRoute,
         requestedFilePathWithExtension: filePath,
         requestedProjectDirectory: projectPathWithoutSpecificKCLFile,
       })

@@ -1,5 +1,21 @@
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
+import { isDesktop } from '@src/lib/isDesktop'
+import type { Project } from '@src/lib/project'
+import {
+  downloadCloudProjectView,
+  isValidProjectFilePath,
+  resolveCloudProjectSource,
+} from '@src/lib/cloudProjectOpen'
+import { getCloudProjectLibraryMaterializationDirectoryPath } from '@src/lib/cloudSync/paths'
+import fsZds, {
+  createReadOnlyProjectSnapshot,
+  disposeReadOnlyProjectSnapshot,
+  isReadOnlyProjectPath,
+} from '@src/lib/fs-zds'
+import { isPersonalCloudProjectLibrarySetting } from '@src/lib/projectLibraries'
+import { cloudSyncService } from '@src/registry/contracts/cloudSync'
+import toast from 'react-hot-toast'
 import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { getProjectInfo, isPathNotFoundError } from '@src/lib/desktop'
 import {
@@ -78,16 +94,26 @@ export const fileLoader =
   ({ app }: { app: App }): LoaderFunction =>
   async (routerData) => {
     const assertCurrent = app.beginFileRouteLoad(routerData.request.signal)
-    const {
-      settings: { actor: settingsActor },
-    } = app
     const { kclManager } = app.singletons
     const { params } = routerData
+
+    if (params.id && isReadOnlyProjectPath(params.id)) {
+      return Promise.reject(new Error('Open this project using its cloud URL.'))
+    }
 
     // Old web bookmarks encode /browser/... as the file route's id. These
     // paths no longer identify projects, so return home before filesystem I/O.
     if (params.id?.startsWith('/browser')) {
       return redirect(PATHS.HOME)
+    }
+
+    if (!isDesktop()) {
+      const auth = await waitFor(
+        app.auth.actor,
+        (state) => state.matches('loggedIn') || state.matches('loggedOut')
+      )
+      assertCurrent()
+      if (!auth.matches('loggedIn')) return redirect(PATHS.SIGN_IN)
     }
 
     const wasmInstance = await kclManager.wasmInstancePromise
@@ -107,6 +133,7 @@ export const fileLoader =
           )
         )?.libraryPath
       : undefined
+    if (!isDesktop() && !targetLibraryPath) return redirect(PATHS.HOME)
     const projectPathData = params.id
       ? parseProjectRoute(appSettings.configuration, params.id, {
           activeProjectPath: currentProjectPath,
@@ -129,15 +156,27 @@ export const fileLoader =
       projectPathData
 
     const urlObj = new URL(routerData.request.url)
+    const projectInfo = await getProjectInfo(
+      app.registry.get(fileOperationsService),
+      projectPath,
+      wasmInstance
+    )
+    assertCurrent()
+    const projectUrl = await app.getProjectUrl(
+      projectInfo,
+      currentFilePath || projectInfo.default_file,
+      urlObj.search
+    )
+    assertCurrent()
+    if (projectUrl.startsWith(`${PATHS.PROJECT}/`)) {
+      const target = new URL(projectUrl, routerData.request.url)
+      const prefix = `${PATHS.FILE}/${safeEncodeForRouterPaths(params.id ?? '')}`
+      target.pathname += urlObj.pathname.slice(prefix.length)
+      return redirect(target.pathname + target.search)
+    }
 
     if (!urlObj.pathname.endsWith('/settings')) {
-      const fallbackFile = (
-        await getProjectInfo(
-          app.registry.get(fileOperationsService),
-          projectPath,
-          wasmInstance
-        )
-      ).default_file
+      const fallbackFile = projectInfo.default_file
       let fileExists = true
       if (currentFilePath && fileExists) {
         try {
@@ -180,82 +219,170 @@ export const fileLoader =
     // So that WASM gets an updated path for operations
     projectFsManager.dir = projectPath
 
-    const defaultProjectData = {
-      name: projectName || 'unnamed',
-      path: projectPath,
-      children: [],
-      kcl_file_count: 0,
-      directory_count: 0,
-      metadata: null,
-      default_file: projectPath,
-      readWriteAccess: true,
-    }
+    await openRouteProject(app, projectInfo, currentFilePath, assertCurrent)
+  }
 
-    const maybeProjectInfo = await getProjectInfo(
-      app.registry.get(fileOperationsService),
-      projectPath,
-      wasmInstance
-    )
-    assertCurrent()
+async function openRouteProject(
+  app: App,
+  project: Project,
+  filePath: string | null,
+  assertCurrent: () => void
+) {
+  const settingsActor = app.settings.actor
+  const kclManager = app.singletons.kclManager
+  projectFsManager.dir = project.path
+  // Fire off the event to load the project settings
+  // once we know it's idle.
+  await waitFor(settingsActor, (state) => state.matches('idle'))
+  assertCurrent()
+  settingsActor.send({
+    type: 'load.project',
+    project,
+  })
+  await waitFor(settingsActor, (state) => state.matches('idle'))
+  assertCurrent()
 
-    const project = maybeProjectInfo ?? defaultProjectData
+  const projectRef = await app.openProject(project, assertCurrent)
+  await projectRef.openEditor(
+    filePath || PROJECT_ENTRYPOINT,
+    app.singletons.kclManager,
+    // If persistCode in localStorage is present, it'll persist that code
+    // through *anything*. INTENDED FOR TESTS.
+    window.electron?.process.env.NODE_ENV === 'test' &&
+      project.cloudSource?.canEdit !== false
+      ? kclManager.localStoragePersistCode()
+      : undefined,
+    true,
+    assertCurrent
+  )
+  assertCurrent()
 
-    // Fire off the event to load the project settings
-    // once we know it's idle.
-    await waitFor(settingsActor, (state) => state.matches('idle'))
-    assertCurrent()
-    settingsActor.send({
-      type: 'load.project',
-      project,
+  const requestedFileName =
+    app.systemIOActor.getSnapshot().context.requestedFileName
+  if (
+    isRequestedFileLoaded({
+      requestedFileName,
+      projectName: project.name,
+      projectPath: project.path,
+      currentFilePath: filePath,
     })
-    await waitFor(settingsActor, (state) => state.matches('idle'))
-    assertCurrent()
+  ) {
+    requestedFileName.onProjectLoaderComplete?.()
+  }
 
-    const projectRef = await app.openProject(project, assertCurrent)
-    await projectRef.openEditor(
-      currentFilePath || PROJECT_ENTRYPOINT,
-      app.singletons.kclManager,
-      // If persistCode in localStorage is present, it'll persist that code
-      // through *anything*. INTENDED FOR TESTS.
-      window.electron?.process.env.NODE_ENV === 'test'
-        ? kclManager.localStoragePersistCode()
-        : undefined,
-      true,
-      assertCurrent
+  const requestedProjectDirectoryPath =
+    projectRef.projectIORefSignal.value.libraryPath ??
+    getParentAbsolutePath(project.path)
+  const systemIOSnapshot = app.systemIOActor.getSnapshot()
+  // Same-directory file navigation should not restart SystemIO's own
+  // post-mutation folder refresh.
+  const shouldSyncProjectDirectory =
+    requestedProjectDirectoryPath !==
+      systemIOSnapshot.context.projectDirectoryPath ||
+    (systemIOSnapshot.matches(SystemIOMachineStates.idle) &&
+      systemIOSnapshot.context.folders === undefined)
+  if (shouldSyncProjectDirectory) {
+    app.systemIOActor.send({
+      type: SystemIOMachineEvents.setProjectDirectoryPath,
+      data: {
+        requestedProjectDirectoryPath,
+      },
+    })
+  }
+}
+
+export const cloudProjectLoader =
+  ({ app }: { app: App }): LoaderFunction =>
+  async ({ request, params }) => {
+    const assertCurrent = app.beginFileRouteLoad(request.signal)
+    const url = new URL(request.url)
+    const auth = await waitFor(
+      app.auth.actor,
+      (state) => state.matches('loggedIn') || state.matches('loggedOut')
     )
     assertCurrent()
-
-    const requestedFileName =
-      app.systemIOActor.getSnapshot().context.requestedFileName
-    if (
-      isRequestedFileLoaded({
-        requestedFileName,
-        projectName,
-        projectPath,
-        currentFilePath,
-      })
-    ) {
-      requestedFileName.onProjectLoaderComplete?.()
+    if (!auth.matches('loggedIn')) {
+      return redirect(
+        `${PATHS.SIGN_IN}?returnTo=${encodeURIComponent(url.pathname + url.search)}`
+      )
     }
+    const id = params.id
+    const requestedFile = url.searchParams.get('file') ?? ''
+    if (!id || (requestedFile && !isValidProjectFilePath(requestedFile)))
+      return Promise.reject(new Error('Invalid project file path.'))
 
-    const requestedProjectDirectoryPath =
-      projectRef.projectIORefSignal.value.libraryPath ??
-      getParentAbsolutePath(project.path)
-    const systemIOSnapshot = app.systemIOActor.getSnapshot()
-    // Same-directory file navigation should not restart SystemIO's own
-    // post-mutation folder refresh.
-    const shouldSyncProjectDirectory =
-      requestedProjectDirectoryPath !==
-        systemIOSnapshot.context.projectDirectoryPath ||
-      (systemIOSnapshot.matches(SystemIOMachineStates.idle) &&
-        systemIOSnapshot.context.folders === undefined)
-    if (shouldSyncProjectDirectory) {
-      app.systemIOActor.send({
-        type: SystemIOMachineEvents.setProjectDirectoryPath,
-        data: {
-          requestedProjectDirectoryPath,
-        },
-      })
+    const wasm = await app.wasmPromise
+    assertCurrent()
+    const { settings } = await loadRouteSettings(app, wasm)
+    assertCurrent()
+    const config = { enabled: true, token: app.auth.token.value }
+    const source = await resolveCloudProjectSource(config, id)
+    assertCurrent()
+    const files = app.registry.get(fileOperationsService)
+    let viewPath: string | undefined
+    try {
+      let project: Project
+      let entrypoint: string
+      if (source.source.canEdit) {
+        const library = settings.app.libraries?.current?.find(
+          isPersonalCloudProjectLibrarySetting
+        )
+        if (!library)
+          return Promise.reject(
+            new Error('Enable the Personal Cloud library to edit this project.')
+          )
+        const cloud = await app.registry
+          .get(cloudSyncService)
+          .ensureProjectLocallySynced(
+            id,
+            await getCloudProjectLibraryMaterializationDirectoryPath(library)
+          )
+        assertCurrent()
+        if (!cloud)
+          return Promise.reject(
+            new Error('Enable Cloud Sync to edit this project.')
+          )
+        project = await getProjectInfo(files, cloud.projectPath, wasm)
+        assertCurrent()
+        entrypoint =
+          source.entrypoint && isValidProjectFilePath(source.entrypoint)
+            ? fsZds.join(project.path, source.entrypoint)
+            : project.default_file
+      } else {
+        const snapshot = await downloadCloudProjectView(
+          config,
+          source,
+          assertCurrent
+        )
+        viewPath = await createReadOnlyProjectSnapshot(snapshot.files)
+        assertCurrent()
+        project = await getProjectInfo(files, viewPath, wasm)
+        assertCurrent()
+        entrypoint = fsZds.join(viewPath, snapshot.entrypoint)
+      }
+      project = {
+        ...project,
+        title: source.title,
+        default_file: entrypoint,
+        cloudSource: source.source,
+      }
+      let path = requestedFile
+        ? fsZds.join(project.path, requestedFile)
+        : entrypoint
+      if (!path.endsWith('.kcl') || !(await files.exists(path))) {
+        path = entrypoint
+        if (requestedFile) {
+          toast('That file is unavailable. Opened the default KCL file.')
+          url.searchParams.delete('file')
+        }
+      }
+      assertCurrent()
+      await openRouteProject(app, project, path, assertCurrent)
+      // Keep valid selectors and overlays; only remove an unavailable file.
+      if (url.href !== request.url) return redirect(url.pathname + url.search)
+    } finally {
+      if (viewPath && app.project?.path !== viewPath)
+        await disposeReadOnlyProjectSnapshot(viewPath)
     }
   }
 

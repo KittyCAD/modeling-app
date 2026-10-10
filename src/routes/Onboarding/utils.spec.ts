@@ -70,7 +70,14 @@ function createOnboardingDeps(
   navigate = vi.fn()
 ): OnboardingUtilDeps {
   return {
-    app: { getCreateProjectLibraryTargets: () => targets },
+    app: {
+      getCreateProjectLibraryTargets: () => targets,
+      getProjectUrl: async (_project, filePath) =>
+        !window.electron ||
+        targets.every(({ library }) => library.type === 'cloud')
+          ? '/project/00000000-0000-4000-8000-000000013124?file=main.kcl'
+          : `/file/${encodeURIComponent(filePath)}`,
+    },
     onboardingStatus: 'dismissed',
     navigate,
   }
@@ -151,7 +158,10 @@ describe('Onboarding utility functions', () => {
         expect(unselected.run).not.toHaveBeenCalled()
       }
       expect(navigate).toHaveBeenCalledWith(
-        `/file/${encodeURIComponent(testCase.defaultFile)}/onboarding/desktop`
+        !testCase.desktop ||
+          testCase.selectedId === PERSONAL_CLOUD_PROJECT_LIBRARY_ID
+          ? '/project/00000000-0000-4000-8000-000000013124/onboarding/desktop?file=main.kcl'
+          : `/file/${encodeURIComponent(testCase.defaultFile)}/onboarding/desktop`
       )
     })
 

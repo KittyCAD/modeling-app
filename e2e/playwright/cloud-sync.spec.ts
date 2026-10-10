@@ -5,6 +5,7 @@ import {
   type CloudProject,
   cloudProjectResponse,
   createRemoteListGate,
+  mockCloudUser,
   opfsPathExists,
   PROJECT_DIR,
   projectTitles,
@@ -25,6 +26,10 @@ import type { Page } from '@playwright/test'
 import type { CreatedRemoteProject } from '@src/lib/cloudSync/types'
 import JSZip from 'jszip'
 
+test.beforeEach(async ({ context }) => {
+  await mockCloudUser(context)
+})
+
 const CLOUD_SYNC_E2E_TIMEOUT = 20_000
 
 async function openHomeProject(page: Page, projectTitle: string) {
@@ -36,8 +41,8 @@ async function openHomeProject(page: Page, projectTitle: string) {
   await projectLink.click()
 }
 
-async function expectProjectFileRoute(page: Page) {
-  await expect(page).toHaveURL(/\/file\/.*main\.kcl/, {
+async function expectProjectRoute(page: Page) {
+  await expect(page).toHaveURL(/\/project\/[^/?]+(?:\?|$)/, {
     timeout: CLOUD_SYNC_E2E_TIMEOUT,
   })
 }
@@ -72,7 +77,6 @@ test(
       })
     ).toHaveCount(0)
     await createProject({ name: projectName, page })
-    await expectProjectFileRoute(page)
 
     const response = await firstUploadProject.firstUpload
     expect(response.ok()).toBe(true)
@@ -88,12 +92,16 @@ test(
       expect(file.byte_size).toBeGreaterThanOrEqual(0)
     }
 
-    const editor = new EditorFixture(page)
-    await editor.openPane()
-    const initialCode = '@settings(kclVersion = 3.0)\n'
-    const queuedCode = `${initialCode}queuedCloudEdit = 42\n`
-    await editor.expectEditor.toContain(initialCode.trimEnd())
-    await editor.replaceCodeByTyping(initialCode, queuedCode)
+    const queuedCode = '@settings(kclVersion = 3.0)\nqueuedCloudEdit = 42\n'
+    // The editor opens after creation returns its UUID. Queue a filesystem edit
+    // while that response is held to keep exercising the first-upload race.
+    await page.evaluate(
+      ({ path, code }) => window.app.fileOperations.writeFile(path, code),
+      {
+        path: `${projectPath}/main.kcl`,
+        code: queuedCode,
+      }
+    )
     await expect
       .poll(
         () => readOpfsTextFiles(page, { main: `${projectPath}/main.kcl` }),
@@ -110,6 +118,10 @@ test(
     firstUploadProject.releaseUpload()
     const uploaded = await updatedResponse
     expect(uploaded.ok()).toBe(true)
+    await expectProjectRoute(page)
+    const editor = new EditorFixture(page)
+    await editor.openPane()
+    await editor.expectEditor.toContain('queuedCloudEdit = 42')
     expect(new URL(uploaded.url()).searchParams.get('expected_revision')).toBe(
       created.revision
     )
@@ -190,9 +202,12 @@ test(
       .getByRole('option', { name: 'Artificial Heart', exact: true })
       .click()
 
-    await expect(page).toHaveURL(/artificial-heart%2Fmain\.kcl$/, {
-      timeout: CLOUD_SYNC_E2E_TIMEOUT,
-    })
+    await expect(page).toHaveURL(
+      new RegExp(`/project/${createdProject.id}\\?file=main.kcl$`),
+      {
+        timeout: CLOUD_SYNC_E2E_TIMEOUT,
+      }
+    )
     await expect
       .poll(() => apiCalls.creates.length, {
         timeout: CLOUD_SYNC_E2E_TIMEOUT,
@@ -217,15 +232,16 @@ test(
   'streams remote-only projects into an empty local list and materializes opened clones',
   { tag: ['@web'] },
   async ({ context, page }, testInfo) => {
+    const remoteProjectId = '12945000-0000-4000-8000-000000013121'
     const remoteProjects: CloudProject[] = [
       {
-        id: 'remote-empty-one',
+        id: remoteProjectId,
         title: 'Remote empty one',
         revision: 'remote-empty-one-rev-1',
         updatedAt: '2026-06-02T20:00:00.000Z',
         files: {
           'main.kcl': 'remoteEmptyOne = 1\n',
-          'project.toml': projectToml('Remote empty one', 'remote-empty-one'),
+          'project.toml': projectToml('Remote empty one', remoteProjectId),
         },
       },
       {
@@ -312,8 +328,8 @@ test(
     await openHomeProject(page, 'Remote empty one')
     await expect
       .poll(() => apiCalls.downloads, { timeout: CLOUD_SYNC_E2E_TIMEOUT })
-      .toEqual(['remote-empty-one'])
-    await expectProjectFileRoute(page)
+      .toEqual([remoteProjectId])
+    await expectProjectRoute(page)
 
     const localFiles = await readOpfsTextFiles(page, {
       remoteOne: `${PROJECT_DIR}/remote-empty-one/main.kcl`,
@@ -322,7 +338,7 @@ test(
 
     expect(localFiles.remoteOne).toContain('remoteEmptyOne = 1')
     expect(localFiles.remoteOneToml).toContain(
-      'project_id = "remote-empty-one"'
+      `project_id = "${remoteProjectId}"`
     )
 
     const remoteListResponsesAfterMaterialization = apiCalls.remoteListResponses
@@ -439,7 +455,7 @@ test(
       })
       .toBe(1)
     expect(publicProjectDownloads).toBe(1)
-    await expectProjectFileRoute(page)
+    await expectProjectRoute(page)
     await expect
       .poll(() =>
         opfsPathExists(
@@ -484,7 +500,7 @@ test(
     await expect(
       page.getByText('Unable to determine the project directory.')
     ).toHaveCount(0)
-    await expectProjectFileRoute(page)
+    await expectProjectRoute(page)
   }
 )
 
@@ -492,16 +508,14 @@ test(
   'streams cloud projects without replacing the local-first home list',
   { tag: ['@web'] },
   async ({ context, page }, testInfo) => {
+    const remoteProjectId = '12945000-0000-4000-8000-000000013122'
     const remoteOnlyProject: CloudProject = {
-      id: 'remote-only-project',
+      id: remoteProjectId,
       title: 'Remote only project',
       revision: 'remote-only-rev-1',
       files: {
         'main.kcl': 'remoteOnly = 1\n',
-        'project.toml': projectToml(
-          'Remote only project',
-          'remote-only-project'
-        ),
+        'project.toml': projectToml('Remote only project', remoteProjectId),
       },
     }
     const cleanSyncedProject: CloudProject = {
@@ -758,7 +772,7 @@ test(
     // projects can accept newer remote contents, local-only projects are
     // created remotely and get a cloud project id, and stale dirty projects
     // keep their local dirty file.
-    expect(apiCalls.downloads).not.toContain('remote-only-project')
+    expect(apiCalls.downloads).not.toContain(remoteProjectId)
     await expect
       .poll(() =>
         opfsPathExists(page, `${PROJECT_DIR}/remote-only-project/main.kcl`)
@@ -783,8 +797,8 @@ test(
     await openHomeProject(page, 'Remote only project')
     await expect
       .poll(() => apiCalls.downloads, { timeout: CLOUD_SYNC_E2E_TIMEOUT })
-      .toEqual(expect.arrayContaining(['remote-only-project']))
-    await expectProjectFileRoute(page)
+      .toEqual(expect.arrayContaining([remoteProjectId]))
+    await expectProjectRoute(page)
 
     const remoteOnlyFiles = await readOpfsTextFiles(page, {
       remoteOnly: `${PROJECT_DIR}/remote-only-project/main.kcl`,
@@ -792,10 +806,10 @@ test(
     })
     expect(remoteOnlyFiles.remoteOnly).toContain('remoteOnly = 1')
     expect(remoteOnlyFiles.remoteOnlyToml).toContain(
-      'project_id = "remote-only-project"'
+      `project_id = "${remoteProjectId}"`
     )
     const remoteOnlyDownloadsAfterFirstOpen = apiCalls.downloads.filter(
-      (projectId) => projectId === 'remote-only-project'
+      (projectId) => projectId === remoteProjectId
     ).length
 
     const remoteListResponsesAfterMaterialization = apiCalls.remoteListResponses
@@ -853,9 +867,8 @@ test(
       )
       .toBe(false)
     expect(
-      apiCalls.downloads.filter(
-        (projectId) => projectId === 'remote-only-project'
-      ).length
+      apiCalls.downloads.filter((projectId) => projectId === remoteProjectId)
+        .length
     ).toBe(remoteOnlyDownloadsAfterFirstOpen)
 
     await openHomeProject(page, 'Remote only project')
@@ -863,12 +876,12 @@ test(
       .poll(
         () =>
           apiCalls.downloads.filter(
-            (projectId) => projectId === 'remote-only-project'
+            (projectId) => projectId === remoteProjectId
           ).length,
         { timeout: CLOUD_SYNC_E2E_TIMEOUT }
       )
       .toBeGreaterThan(remoteOnlyDownloadsAfterFirstOpen)
-    await expectProjectFileRoute(page)
+    await expectProjectRoute(page)
     await expect
       .poll(() =>
         page.evaluate(

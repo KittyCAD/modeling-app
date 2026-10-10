@@ -159,7 +159,7 @@ test.describe('Query parameter command', { tag: '@web' }, () => {
     await page.goto('/?cmd=set-layout&groupId=application&layoutId=ttc')
 
     // Home creates and opens a project before the file route applies its layout.
-    await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
+    await page.waitForURL('**/project/**', { waitUntil: 'domcontentloaded' })
 
     await expect
       .poll(() =>
@@ -191,7 +191,7 @@ test.describe('Query parameter command', { tag: '@web' }, () => {
     await test.step(
       'Open the created sample',
       async () => {
-        await expect(page).toHaveURL(/socket-head-cap-screw%2Fmain\.kcl$/, {
+        await expect(page).toHaveURL(/\/project\/[^/?]+\?file=main\.kcl$/, {
           timeout: sampleLoadTimeout,
         })
         await toolbar.openPane(DefaultLayoutPaneID.Code)

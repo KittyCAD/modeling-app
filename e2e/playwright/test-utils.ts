@@ -1412,7 +1412,9 @@ export async function createProject({
     await closeOnboardingModalIfPresent(page)
 
     if (returnHome) {
-      await page.waitForURL('**/file/**', { waitUntil: 'domcontentloaded' })
+      await page.waitForURL(/\/(?:file|project)\//, {
+        waitUntil: 'domcontentloaded',
+      })
       await page.getByTestId('app-logo').click()
     }
   })

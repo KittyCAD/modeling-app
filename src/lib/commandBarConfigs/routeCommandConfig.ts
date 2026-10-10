@@ -1,11 +1,12 @@
+import { withProjectSubRoute } from '@src/lib/projectNavigation'
 import type { Location, NavigateFunction } from 'react-router-dom'
 
 import type { Command } from '@src/lib/commandTypes'
-import { PATHS, webSafeJoin } from '@src/lib/paths'
+import { PATHS } from '@src/lib/paths'
 
 export function createRouteCommands(
   navigate: NavigateFunction,
-  location: Location,
+  _location: Location,
   filePath: string,
   scopes: Command['scopes']
 ) {
@@ -18,10 +19,7 @@ export function createRouteCommands(
     icon: 'settings',
     needsReview: false,
     onSubmit: (_data) => {
-      const path = webSafeJoin([
-        location.pathname.includes(PATHS.FILE) ? filePath : PATHS.HOME,
-        PATHS.TELEMETRY,
-      ])
+      const path = withProjectSubRoute(filePath || PATHS.HOME, PATHS.TELEMETRY)
       void navigate(path)
     },
   }
@@ -48,10 +46,9 @@ export function createRouteCommands(
     icon: 'settings',
     needsReview: false,
     onSubmit: (_data) => {
-      const path = location.pathname.includes(PATHS.FILE)
-        ? filePath + PATHS.SETTINGS + '?tab=project'
-        : PATHS.HOME + PATHS.SETTINGS
-      void navigate(path)
+      void navigate(
+        withProjectSubRoute(filePath || PATHS.HOME, PATHS.SETTINGS_PROJECT)
+      )
     },
   }
 

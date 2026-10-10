@@ -1,6 +1,7 @@
 import { expect, test } from '@e2e/playwright/base-test'
 import {
   type CloudProject,
+  mockCloudUser,
   opfsPathExists,
   PROJECT_DIR,
   projectToml,
@@ -35,7 +36,8 @@ test(
     ]
     await mockClientErrorReports(context)
     await routeCloudProjects(context, { remoteProjects })
-    await setup(context, page, testInfo)
+    await mockCloudUser(context)
+    await setup(context, page, testInfo, [], { cloudSyncEnabled: true })
     await page.goto('/')
 
     await seedCloudSyncState(page, {
@@ -59,15 +61,15 @@ test(
     await waitForWebKitBillingToSettle(page)
 
     await page.goto(
-      `/file/${encodeURIComponent(
-        `${PROJECT_DIR}/tutorial-project/main.kcl`
-      )}/onboarding/desktop/scene`
+      `/project/${TUTORIAL_PROJECT_ID}/onboarding/desktop/scene?file=main.kcl`
     )
     // Document load does not await the deferred app bootstrap.
     await waitForAppLoad(page)
 
     await expect(page).toHaveURL(
-      /tutorial-project%2Fblank\.kcl\/onboarding\/desktop\/scene/,
+      new RegExp(
+        `/project/${TUTORIAL_PROJECT_ID}/onboarding/desktop/scene\\?file=blank.kcl`
+      ),
       { timeout: 15_000 }
     )
     await expect(page.getByRole('heading', { name: 'Scene' })).toBeVisible()
@@ -108,15 +110,17 @@ liveTest.describe('Local onboarding with real API routes', () => {
         )
         .toBe('mm')
 
-      const blankRoute = `/file/${encodeURIComponent(blankPath)}/onboarding/desktop/scene`
       await page.goto(
         `/file/${encodeURIComponent(mainPath)}/onboarding/desktop/scene`
       )
       await waitForAppLoad(page)
 
-      await expect(page).toHaveURL(new URL(blankRoute, page.url()).href, {
-        timeout: 15_000,
-      })
+      await expect(page).toHaveURL(
+        /\/project\/[^/?]+\/onboarding\/desktop\/scene\?file=blank\.kcl$/,
+        {
+          timeout: 15_000,
+        }
+      )
       await expect(page.getByRole('heading', { name: 'Scene' })).toBeVisible()
       await expect.poll(() => fs.readFile(blankPath, 'utf8')).toBe(blankCode)
       await expect.poll(() => fs.readFile(mainPath, 'utf8')).toBe(mainCode)
@@ -137,13 +141,10 @@ liveTest.describe('Local onboarding with real API routes', () => {
       const next = page.getByTestId('onboarding-next')
       await expect(next).toBeVisible()
       await expect(next).toBeEnabled()
+      const toolbarRoute = new URL('toolbar', page.url())
+      toolbarRoute.search = new URL(page.url()).search
       await next.click()
-      await expect(page).toHaveURL(
-        new URL(
-          `/file/${encodeURIComponent(blankPath)}/onboarding/desktop/toolbar`,
-          page.url()
-        ).href
-      )
+      await expect(page).toHaveURL(toolbarRoute.href)
       await expect(
         page.getByRole('heading', { name: 'This is the toolbar' })
       ).toBeVisible()

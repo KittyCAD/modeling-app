@@ -659,9 +659,15 @@ function openSettings() {
     ? pathname
     : webSafeJoin([pathname, makeUrlPathRelative(PATHS.SETTINGS)])
 
-  pushRouterPath(
-    `${settingsPath}${pathname.includes(PATHS.FILE) ? '?tab=project' : ''}`
+  const search = new URLSearchParams(
+    getHashRouterPath()?.search ?? window.location.search
   )
+  if (
+    pathname.startsWith(`${PATHS.FILE}/`) ||
+    pathname.startsWith(`${PATHS.PROJECT}/`)
+  )
+    search.set('tab', 'project')
+  pushRouterPath(`${settingsPath}${search.size ? `?${search}` : ''}`)
 }
 
 function updateSettingsTab(tab: SettingsKeymapTab) {
@@ -708,7 +714,7 @@ function getHashRouterPath() {
     return null
   }
 
-  return new URL(window.location.hash.slice(1), window.location.origin)
+  return new URL(window.location.hash.slice(1), window.location.href)
 }
 
 function pushRouterPath(pathAndSearch: string) {

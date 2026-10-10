@@ -14,7 +14,7 @@ test(
     await cmdBar.chooseCommand('Create a sample')
     await cmdBar.selectOption({ name: 'Angle Gauge', exact: true }).click()
     await cmdBar.toBeClosed()
-    await expect(page).toHaveURL(/angle-gauge/)
+    await expect(page).toHaveURL(/\/project\/[^/?]+\?file=main\.kcl$/)
     await toolbar.openPane(DefaultLayoutPaneID.Code)
     await editor.expectEditor.toContain('Angle Gauge')
   }

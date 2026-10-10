@@ -1,3 +1,4 @@
+import { routeWritableCloudProjects } from '@e2e/playwright/lib/cloudSyncTestUtils'
 import type { Feature } from '@kittycad/lib'
 /* eslint-disable react-hooks/rules-of-hooks */
 import type {
@@ -112,6 +113,7 @@ export class AuthenticatedApp {
   ) {
     await setup(this.context, this.page, this.testInfo, userFeatures, {
       mockApiRoutes,
+      cloudSyncEnabled: true,
     })
     const u = await getUtils(this.page)
 
@@ -590,6 +592,7 @@ const fixturesForWeb = {
       return disposable
     }
 
+    if (mockApiRoutes) await routeWritableCloudProjects(context)
     const webApp = new AuthenticatedApp(context, page, testInfo)
     await webApp.initialise('', userFeatures, mockApiRoutes)
 

@@ -1,0 +1,129 @@
+import {
+  formatCloudProjectUrl,
+  isValidProjectFilePath,
+} from '@src/lib/cloudProjectOpen'
+import {
+  getCloudProjectLibraryMaterializationDirectoryPath,
+  normalizePathForSync,
+} from '@src/lib/cloudSync/paths'
+import { isDesktop } from '@src/lib/isDesktop'
+import {
+  PATHS,
+  safeEncodeForRouterPaths,
+  toProjectRelativePath,
+} from '@src/lib/paths'
+import type { Project } from '@src/lib/project'
+import {
+  isPersonalCloudProjectLibrarySetting,
+  isPathInDirectoryProjectLibrary,
+  type ProjectLibrarySetting,
+} from '@src/lib/projectLibraries'
+import type {
+  CloudProjectRelationship,
+  CloudSyncRegistryService,
+} from '@src/registry/contracts/cloudSync'
+
+export type ProjectRouteSource = Pick<
+  Project,
+  'path' | 'cloudProjectId' | 'cloudSource'
+>
+
+function cloudFileUrl(
+  id: string,
+  projectPath: string,
+  filePath: string,
+  search: string
+) {
+  const relative = toProjectRelativePath(projectPath, filePath)
+  return formatCloudProjectUrl(
+    id,
+    relative && isValidProjectFilePath(relative) ? relative : undefined,
+    search
+  )
+}
+
+export function getProjectFileUrl(
+  project: ProjectRouteSource,
+  filePath: string,
+  search = ''
+) {
+  return project.cloudSource
+    ? cloudFileUrl(project.cloudSource.id, project.path, filePath, search)
+    : `${PATHS.FILE}/${safeEncodeForRouterPaths(filePath)}${search ? `?${new URLSearchParams(search)}` : ''}`
+}
+
+export async function resolveProjectFileUrl({
+  project,
+  filePath,
+  search = '',
+  libraries,
+  cloudSync,
+  getRelationships,
+}: {
+  project: ProjectRouteSource
+  filePath: string
+  search?: string
+  libraries: readonly ProjectLibrarySetting[]
+  cloudSync: Pick<
+    CloudSyncRegistryService,
+    'getProjectMetadata' | 'getProjectMetadataIndex' | 'syncNow'
+  >
+  getRelationships: () => readonly CloudProjectRelationship[]
+}) {
+  if (project.cloudSource) return getProjectFileUrl(project, filePath, search)
+  const library =
+    isDesktop() && libraries.find(isPersonalCloudProjectLibrarySetting)
+  const cloudDirectory = library
+    ? await getCloudProjectLibraryMaterializationDirectoryPath(library)
+    : undefined
+  if (
+    isDesktop() &&
+    (!cloudDirectory ||
+      !isPathInDirectoryProjectLibrary(project.path, cloudDirectory))
+  ) {
+    return getProjectFileUrl(project, filePath, search)
+  }
+  const metadata = await cloudSync.getProjectMetadata(project.path)
+  let id = metadata?.remoteProjectId ?? project.cloudProjectId
+  const relationship =
+    id && getRelationships().find((entry) => entry.remoteProjectId === id)
+  let canonical =
+    relationship &&
+    relationship.canonicalRealization?.realization.localProjectPath
+  if (cloudDirectory && metadata?.syncExcluded)
+    return getProjectFileUrl(project, filePath, search)
+  if (cloudDirectory && id) {
+    if (!canonical) {
+      // Discovery may still be loading on a direct desktop file open.
+      const index = await cloudSync.getProjectMetadataIndex()
+      const known = [...index.values()].filter(
+        (entry) =>
+          entry.remoteProjectId === id &&
+          !entry.tombstone &&
+          !entry.syncExcluded &&
+          isPathInDirectoryProjectLibrary(
+            entry.localProjectPath,
+            cloudDirectory
+          )
+      )
+      if (known.length === 1) canonical = known[0].localProjectPath
+    }
+    if (
+      !canonical ||
+      normalizePathForSync(canonical) !== normalizePathForSync(project.path)
+    )
+      return getProjectFileUrl(project, filePath, search)
+  }
+  // New cloud projects need the server UUID before they can be opened.
+  id ??= (await cloudSync.syncNow(project.path)).remoteProjectId
+  return cloudFileUrl(id, project.path, filePath, search)
+}
+
+export function withProjectSubRoute(projectUrl: string, subRoute: string) {
+  const target = new URL(projectUrl, 'https://app.zoo.dev')
+  const suffix = new URL(subRoute, 'https://app.zoo.dev')
+  target.pathname += suffix.pathname
+  for (const [key, value] of suffix.searchParams)
+    target.searchParams.set(key, value)
+  return target.pathname + target.search
+}

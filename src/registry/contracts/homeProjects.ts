@@ -95,6 +95,7 @@ export type HomeProjectEntryContributionGroup =
   | readonly HomeProjectEntryContribution[]
 
 export type HomeProjectOpenResult = {
+  url?: string
   defaultFile: string
   localProjectPath?: string
 }

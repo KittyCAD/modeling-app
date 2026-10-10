@@ -279,9 +279,9 @@ test.describe('Aquarium publication', { tag: ['@desktop'] }, () => {
     await expect(page.getByTestId('app-header-project-name')).toHaveText(
       publicationTitle
     )
-    await expect
-      .poll(() => page.url())
-      .toContain(encodeURIComponent(movedMainFile))
+    await expect(page).toHaveURL(
+      new RegExp(`/project/${remoteProjectId}(?:\\?|$)`)
+    )
 
     await expect.poll(() => apiCalls.creates.length).toBe(1)
     await expect

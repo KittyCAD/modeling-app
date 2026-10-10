@@ -1,3 +1,4 @@
+import { withProjectSubRoute } from '@src/lib/projectNavigation'
 import { Popover, Transition } from '@headlessui/react'
 import type { UserResponse } from '@kittycad/lib'
 import type { ActionButtonProps } from '@src/components/ActionButton'
@@ -77,7 +78,7 @@ const UserSidebarMenu = ({ user }: { user?: UserResponse }) => {
           onClick: () => {
             const targetPath =
               filePath !== undefined
-                ? filePath + PATHS.SETTINGS_USER
+                ? withProjectSubRoute(filePath, PATHS.SETTINGS_USER)
                 : PATHS.HOME + PATHS.SETTINGS_USER
             void navigate(targetPath)
           },
@@ -87,9 +88,10 @@ const UserSidebarMenu = ({ user }: { user?: UserResponse }) => {
           Element: 'button',
           children: 'Keyboard shortcuts',
           onClick: () => {
-            const targetPath = location.pathname.includes(PATHS.FILE)
-              ? filePath + PATHS.SETTINGS_KEYBINDINGS
-              : PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS
+            const targetPath =
+              filePath !== undefined
+                ? withProjectSubRoute(filePath, PATHS.SETTINGS_KEYBINDINGS)
+                : PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS
             void navigate(targetPath)
           },
         },

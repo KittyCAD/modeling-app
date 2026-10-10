@@ -1,6 +1,7 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import RootLayout from '@src/Root'
 import { CommandBar } from '@src/components/CommandBar/CommandBar'
+import { CloudProjectErrorPage } from '@src/components/CloudProjectPage'
 import { ErrorPage } from '@src/components/ErrorPage'
 import Loading from '@src/components/Loading'
 import { MachineApiController } from '@src/components/MachineApiController'
@@ -14,7 +15,12 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { TestLayout } from '@src/lib/layout/TestLayout'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS } from '@src/lib/paths'
-import { baseLoader, fileLoader, homeLoader } from '@src/lib/routeLoaders'
+import {
+  baseLoader,
+  fileLoader,
+  cloudProjectLoader,
+  homeLoader,
+} from '@src/lib/routeLoaders'
 import Home from '@src/routes/Home'
 import { OnboardingRootRoute, onboardingRoutes } from '@src/routes/Onboarding'
 import { Settings } from '@src/routes/Settings'
@@ -22,6 +28,7 @@ import SignIn from '@src/routes/SignIn'
 import { Telemetry } from '@src/routes/Telemetry'
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import { Suspense, useMemo } from 'react'
+import type { ShouldRevalidateFunctionArgs } from 'react-router-dom'
 import {
   Outlet,
   RouterProvider,
@@ -54,10 +61,11 @@ export const Router = () => {
               errorElement: <ErrorPage />,
               loader: baseLoader({ app }),
             },
-            {
-              loader: fileLoader({
-                app,
-              }),
+            ...[PATHS.FILE, PATHS.PROJECT].map((projectRoute) => ({
+              loader:
+                projectRoute === PATHS.PROJECT
+                  ? cloudProjectLoader({ app })
+                  : fileLoader({ app }),
               // This can be deleted once https://github.com/KittyCAD/modeling-app/pull/13585 lands as that fixes it.
               shouldRevalidate: ({
                 currentParams,
@@ -66,11 +74,13 @@ export const Router = () => {
                 nextUrl,
                 formMethod,
                 defaultShouldRevalidate,
-              }) => {
+              }: ShouldRevalidateFunctionArgs) => {
                 if (
                   formMethod ||
                   !currentParams.id ||
                   currentParams.id !== nextParams.id || // if file url changes -> reload project
+                  currentUrl.searchParams.get('file') !==
+                    nextUrl.searchParams.get('file') ||
                   currentUrl.href === nextUrl.href
                 ) {
                   return defaultShouldRevalidate
@@ -80,9 +90,14 @@ export const Router = () => {
                 // Child routes and query changes within the same file reuse the loaded project.
                 return false
               },
-              id: PATHS.FILE,
-              path: PATHS.FILE + '/:id',
-              errorElement: <ErrorPage />,
+              id: projectRoute,
+              path: projectRoute + '/:id',
+              errorElement:
+                projectRoute === PATHS.PROJECT ? (
+                  <CloudProjectErrorPage />
+                ) : (
+                  <ErrorPage />
+                ),
               element: (
                 <ModelingPageProvider>
                   <Suspense
@@ -102,7 +117,7 @@ export const Router = () => {
               ),
               children: [
                 {
-                  id: PATHS.FILE + 'SETTINGS',
+                  id: projectRoute + 'SETTINGS',
                   children: [
                     {
                       path: makeUrlPathRelative(PATHS.SETTINGS),
@@ -116,7 +131,7 @@ export const Router = () => {
                   ],
                 },
                 {
-                  id: PATHS.FILE + 'TELEMETRY',
+                  id: projectRoute + 'TELEMETRY',
                   children: [
                     {
                       path: makeUrlPathRelative(PATHS.TELEMETRY),
@@ -125,7 +140,7 @@ export const Router = () => {
                   ],
                 },
               ],
-            },
+            })),
             {
               path: PATHS.HOME,
               errorElement: <ErrorPage />,
