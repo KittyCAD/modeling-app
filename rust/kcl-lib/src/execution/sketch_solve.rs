@@ -249,6 +249,7 @@ fn substitute_sketch_var(
         },
         KclValue::Sketch { .. } => Ok(value),
         KclValue::Solid { .. } => Ok(value),
+        KclValue::Path3d { .. } => Ok(value),
         KclValue::Helix { .. } => Ok(value),
         KclValue::ImportedGeometry(_) => Ok(value),
         KclValue::Function { .. } => Ok(value),

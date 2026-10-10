@@ -1139,6 +1139,42 @@ impl ExecState {
         self.mod_local.artifacts.artifacts.get_mut(&id)
     }
 
+    pub(crate) fn spatial_path_artifact(&self, id: ArtifactId) -> Option<kcl_api::artifact::Path> {
+        let artifact = self
+            .mod_local
+            .artifacts
+            .artifacts
+            .get(&id)
+            .or_else(|| self.global.artifacts.artifacts.get(&id));
+        if let Some(Artifact::Path(path)) = artifact {
+            return Some(path.clone());
+        }
+        // Imported paths retain their module's execution artifacts.
+        self.global.module_infos.values().find_map(|info| {
+            let artifacts = match &info.repr {
+                ModuleRepr::Kcl(_, Some(outcome)) => &outcome.artifacts.artifacts,
+                ModuleRepr::Foreign(_, Some((_, artifacts))) => &artifacts.artifacts,
+                _ => return None,
+            };
+            match artifacts.get(&id) {
+                Some(Artifact::Path(path)) => Some(path.clone()),
+                _ => None,
+            }
+        })
+    }
+
+    pub(crate) fn update_spatial_path_artifact(&mut self, path: kcl_api::artifact::Path) {
+        // Incremental execution can append to a cached route. Keep its live
+        // state current in both maps; graph construction preserves cached entries.
+        if self.global.artifacts.artifacts.contains_key(&path.id) {
+            self.global
+                .artifacts
+                .artifacts
+                .insert(path.id, Artifact::Path(path.clone()));
+        }
+        self.add_artifact(Artifact::Path(path));
+    }
+
     pub(crate) fn is_sketch_block_path(&self, path_id: ArtifactId) -> bool {
         self.mod_local
             .artifacts

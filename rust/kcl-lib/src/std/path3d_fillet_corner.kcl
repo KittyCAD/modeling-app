@@ -1,0 +1,14 @@
+@settings(kclVersion = 3.0, defaultLengthUnit = mm, experimentalFeatures = allow)
+
+corner = [0mm, 0mm, 60mm]
+end = [15mm, 25mm, 65mm]
+route = startPath3d(at = [0mm, 0mm, 0mm])
+  |> line3d(endAbsolute = corner)
+  |> line3d(endAbsolute = end)
+  |> pathFillet(radius = 10mm)
+
+profile = sketch(on = XY) {
+  section = circle(start = [2mm, 0mm], center = [0mm, 0mm])
+}
+sectionRegion = region(point = [0mm, 0mm], sketch = profile)
+body = sweep(sectionRegion, path = route)

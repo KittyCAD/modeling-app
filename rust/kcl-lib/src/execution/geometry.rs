@@ -472,6 +472,28 @@ impl HasAppearance {
     }
 }
 
+/// A continuous spatial trajectory. Coordinates are stored in millimeters.
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct Path3d {
+    pub id: uuid::Uuid,
+    pub artifact_id: ArtifactId,
+    pub start: [f64; 3],
+    pub end: [f64; 3],
+    pub segment_count: usize,
+    /// Authored geometry retained so route operations can rebuild the path.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub segments: Vec<kittycad_modeling_cmds::shared::PathSegment>,
+    /// Incoming unit tangent, used to construct the next spatial arc.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub end_tangent: Option<[f64; 3]>,
+    #[serde(skip)]
+    pub meta: Vec<Metadata>,
+}
+
 /// A helix.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]

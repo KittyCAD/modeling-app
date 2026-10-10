@@ -10,7 +10,7 @@ Create a 3D surface or solid by sweeping a sketch along a path.
 ```kcl
 sweep(
   @sketches: [Sketch | Face | TaggedFace | Segment; 1+],
-  path: Sketch | Helix | [Segment; 1+],
+  path: Sketch | Helix | Path3d | [Segment; 1+],
   sectional?: bool,
   tolerance?: number(Length),
   relativeTo?: string,
@@ -37,7 +37,7 @@ swept along the same path.
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `sketches` | [[`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Face`](/docs/kcl-std/types/std-types-Face) or [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) or [`Segment`](/docs/kcl-std/types/std-types-Segment); 1+] | The sketch or set of sketches that should be swept in space. | Yes |
-| `path` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Helix`](/docs/kcl-std/types/std-types-Helix) or [[`Segment`](/docs/kcl-std/types/std-types-Segment); 1+] | The path to sweep the sketch along. | Yes |
+| `path` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Helix`](/docs/kcl-std/types/std-types-Helix) or [`Path3d`](/docs/kcl-std/types/std-types-Path3d) or [[`Segment`](/docs/kcl-std/types/std-types-Segment); 1+] | The path to sweep the sketch along. | Yes |
 | `sectional` | [`bool`](/docs/kcl-std/types/std-types-bool) | In KCL 2, if true, the sweep is broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components. Sectional sweeps are not supported in KCL 3, so this argument has no effect and produces a warning. | No |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
 | `relativeTo` | [`string`](/docs/kcl-std/types/std-types-string) | **Deprecated.** **Removed in KCL 3.0.** Use 'translateProfileToPath' and 'orientProfilePerpendicular' instead. What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'. | No |

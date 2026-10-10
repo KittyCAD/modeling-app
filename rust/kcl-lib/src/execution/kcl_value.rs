@@ -27,6 +27,7 @@ use crate::execution::Helix;
 use crate::execution::ImportedGeometry;
 use crate::execution::Metadata;
 use crate::execution::NamedViewValue;
+use crate::execution::Path3d;
 use crate::execution::Plane;
 use crate::execution::Segment;
 use crate::execution::SegmentRepr;
@@ -167,6 +168,9 @@ pub enum KclValue {
     },
     Solid {
         value: Box<Solid>,
+    },
+    Path3d {
+        value: Box<Path3d>,
     },
     Helix {
         value: Box<Helix>,
@@ -747,6 +751,7 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::GdtAnnotation { value } => to_vec_sr(&value.meta),
             KclValue::Solid { value } => to_vec_sr(&value.meta),
             KclValue::Sketch { value } => to_vec_sr(&value.meta),
+            KclValue::Path3d { value } => to_vec_sr(&value.meta),
             KclValue::Helix { value } => to_vec_sr(&value.meta),
             KclValue::CameraView { value } => to_vec_sr(value.meta()),
             KclValue::NamedView { value } => to_vec_sr(value.meta()),
@@ -785,6 +790,7 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::GdtAnnotation { value } => to_vec_sr(&value.meta),
             KclValue::Solid { value } => to_vec_sr(&value.meta),
             KclValue::Sketch { value } => to_vec_sr(&value.meta),
+            KclValue::Path3d { value } => to_vec_sr(&value.meta),
             KclValue::Helix { value } => to_vec_sr(&value.meta),
             KclValue::CameraView { value } => to_vec_sr(value.meta()),
             KclValue::NamedView { value } => to_vec_sr(value.meta()),
@@ -839,6 +845,7 @@ impl KclValue {
             KclValue::Segment { value } => value.meta.clone(),
             KclValue::Sketch { value } => value.meta.clone(),
             KclValue::Solid { value } => value.meta.clone(),
+            KclValue::Path3d { value } => value.meta.clone(),
             KclValue::Helix { value } => value.meta.clone(),
             KclValue::CameraView { value } => value.meta().to_vec(),
             KclValue::NamedView { value } => value.meta().to_vec(),
@@ -879,6 +886,7 @@ impl KclValue {
             | KclValue::Segment { .. }
             | KclValue::Sketch { .. }
             | KclValue::Solid { .. }
+            | KclValue::Path3d { .. }
             | KclValue::Helix { .. }
             | KclValue::CameraView { .. }
             | KclValue::NamedView { .. }
@@ -901,6 +909,7 @@ impl KclValue {
             KclValue::GdtAnnotation { .. } => "an annotation".to_owned(),
             KclValue::Solid { .. } => "a solid".to_owned(),
             KclValue::Sketch { .. } => "a sketch".to_owned(),
+            KclValue::Path3d { .. } => "a 3D path".to_owned(),
             KclValue::Helix { .. } => "a helix".to_owned(),
             KclValue::CameraView { .. } => "a camera view".to_owned(),
             KclValue::NamedView { .. } => "a named view".to_owned(),
@@ -1428,6 +1437,7 @@ impl KclValue {
             | KclValue::SketchConstraint { .. }
             | KclValue::Solid { .. }
             | KclValue::Sketch { .. }
+            | KclValue::Path3d { .. }
             | KclValue::Helix { .. }
             | KclValue::CameraView { .. }
             | KclValue::NamedView { .. }

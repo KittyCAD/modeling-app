@@ -3587,6 +3587,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     supportsTransform: true,
     prepareToEdit: prepareToEditSplit,
   },
+  startPath3d: {
+    label: '3D Path',
+    icon: 'sketch',
+  },
   startSketchOn: {
     label: 'Sketch',
     icon: 'sketch',
@@ -3723,6 +3727,7 @@ export function getOperationCalculatedDisplay(op: OpKclValue): string {
     case 'Number':
       return isNonNullable(op.value) ? op.value.toPrecision(5) : ''
     case 'Helix':
+    case 'Path3d':
     case 'Sketch':
     case 'Solid':
     case 'Face':
@@ -4266,6 +4271,7 @@ function artifactIdsInOpValue(value: OpKclValue): string[] {
     case 'Plane':
     case 'Face':
     case 'Segment':
+    case 'Path3d':
     case 'GdtAnnotation':
     case 'ImportedGeometry':
       return [value.artifact_id]

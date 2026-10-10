@@ -229,7 +229,8 @@ pub struct Plane {
 pub struct Path {
     pub id: ArtifactId,
     pub sub_type: PathSubType,
-    pub plane_id: ArtifactId,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub plane_id: Option<ArtifactId>,
     pub seg_ids: Vec<ArtifactId>,
     /// Whether this artifact has been used in a subsequent operation
     pub consumed: bool,
@@ -271,6 +272,7 @@ pub struct Path {
 #[serde(rename_all = "camelCase")]
 pub enum PathSubType {
     Sketch,
+    Spatial,
     Region,
 }
 
