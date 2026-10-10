@@ -16,6 +16,8 @@ componentBoltPatternX = 2
 componentBoltPatternY = 3
 
 // Define bracket parameters such as sheet metal thickness, bend radius, flange length, etc.
+// hatHeight - thickness sets the wall tangent points at the inner top bends.
+// The overall height is about 2.59 in with the default dimensions.
 hatHeight = 2.5
 bendAngle = 75deg
 thickness = 0.125
@@ -105,11 +107,25 @@ sketch001 = sketch(on = XZ) {
   line2 = line(start = [var -4.25in, var 0in], end = [var 4.25in, var 0in], construction = true)
   coincident([line2.start, line1.start])
   coincident([line2.end, line10.start])
-  distance([line2.start, line2.end]) == mountingBoltPatternX * 1.2
+  distance([line2.start, line2.end]) == mountingBoltPatternX + 2 * overhang
   parallel([line3, line17])
   parallel([line7, line13])
-  vertical(line21)
   vertical(line10)
+  horizontal(line1)
+  horizontal(line2)
+  midpoint(line2, point = ORIGIN)
+  distance([line1.start, line1.end]) == flangeLength
+  distance([line10.start, line10.end]) == thickness
+  verticalDistance([ORIGIN, line3.end]) == hatHeight - thickness
+  angleDimension(lines = [line1, line3], sector = 1) == bendAngle
+  radius(arc2) == exteriorBendRadius
+  radius(arc4) == interiorBendRadius
+  radius(arc6) == interiorBendRadius
+  radius(arc8) == exteriorBendRadius
+  radius(arc12) == interiorBendRadius
+  radius(arc14) == exteriorBendRadius
+  radius(arc16) == exteriorBendRadius
+  radius(arc18) == interiorBendRadius
 }
 region0011 = region(segments = [sketch001.line1, sketch001.arc2])
 bracketProfile = extrude(
@@ -205,14 +221,14 @@ sketch002 = sketch(on = XY) {
   radius(circle9) == cutoutDiameter
 }
 
-region001 = region(point = [-83.5119mm, -54.1555mm], sketch = sketch002)
-region002 = region(point = [-91.277mm, 44.9144mm], sketch = sketch002)
-region003 = region(point = [-21.77mm, 35.021mm], sketch = sketch002)
-region004 = region(point = [-21.3146mm, -35.6573mm], sketch = sketch002)
-region005 = region(point = [20.724mm, -37.2099mm], sketch = sketch002)
-region006 = region(point = [22.5716mm, 34.2714mm], sketch = sketch002)
-region007 = region(point = [85.2549mm, 45.6035mm], sketch = sketch002)
-region008 = region(point = [82.8907mm, -52.8442mm], sketch = sketch002)
+region001 = region(segments = [sketch002.circle2])
+region002 = region(segments = [sketch002.circle1])
+region003 = region(segments = [sketch002.circle6])
+region004 = region(segments = [sketch002.circle7])
+region005 = region(segments = [sketch002.circle8])
+region006 = region(segments = [sketch002.circle5])
+region007 = region(segments = [sketch002.circle4])
+region008 = region(segments = [sketch002.circle3])
 region009 = region(point = [0mm, 0mm], sketch = sketch002)
 extrude001 = extrude(
   [
