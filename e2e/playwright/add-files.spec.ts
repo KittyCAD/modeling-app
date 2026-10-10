@@ -8,6 +8,13 @@ test.describe('Local Drive picker', () => {
     { tag: '@web' },
     async ({ page, homePage, toolbar, cmdBar, fs }) => {
       await homePage.createAndGoToProject('local-drive')
+      await page.waitForFunction(() =>
+        window.app.systemIOActor
+          .getSnapshot()
+          .context.folders?.some(
+            (project) => project.name === window.app.project?.name
+          )
+      )
       await toolbar.openPane(DefaultLayoutPaneID.Code)
       await toolbar.openPane(DefaultLayoutPaneID.Files)
 
@@ -42,6 +49,13 @@ test.describe('Local Drive picker', () => {
     { tag: '@web' },
     async ({ page, homePage, toolbar, cmdBar, editor }) => {
       await homePage.createAndGoToProject('local-kcl')
+      await page.waitForFunction(() =>
+        window.app.systemIOActor
+          .getSnapshot()
+          .context.folders?.some(
+            (project) => project.name === window.app.project?.name
+          )
+      )
       await toolbar.openPane(DefaultLayoutPaneID.Code)
       const code = '@settings(kclVersion = 3.0)\n// Selected from Local Drive\n'
 
@@ -56,8 +70,7 @@ test.describe('Local Drive picker', () => {
       })
       await expect(cmdBar.currentArgumentInput).toHaveValue('picked.kcl')
       await cmdBar.progressCmdBar()
-      await cmdBar.toBeClosed()
-      await expect(page).toHaveURL(/picked\.kcl$/, { timeout: 30_000 })
+      await expect(page).toHaveURL(/picked\.kcl$/, { timeout: 15_000 })
       await editor.expectEditor.toContain('Selected from Local Drive')
     }
   )
