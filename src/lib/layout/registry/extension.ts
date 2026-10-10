@@ -1,7 +1,6 @@
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
   provideService,
 } from '@kittycad/registry'
 import { computed, effect, signal } from '@preact/signals-core'
@@ -212,13 +211,11 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
   }
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'layout-extension',
-      providesServices: [provideService(layoutService, serviceImpl)],
-      dispose: () => {
-        disposeLayout?.()
-      },
-    }),
+    id: 'layout-extension',
+    providesServices: [provideService(layoutService, serviceImpl)],
+    dispose: () => {
+      disposeLayout?.()
+    },
   }
 }, 'layout-extension')
 

@@ -1,7 +1,6 @@
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
   pluginsValueSpec,
   provide,
   provideService,
@@ -476,21 +475,19 @@ const configuredProjectLibraryRealizations = defineRegistryItemFactory(
     })
 
     return {
-      item: defineRuntimeRegistryItem({
-        id: 'project-libraries.configured-realizations',
-        provides: [
-          provide(projectLibraryRealizationsValueSpec, realizations, {
-            key: 'project-libraries.configured-realizations',
-          }),
-        ],
-        dispose: () => {
-          disposed = true
-          for (const state of scanStates.values()) {
-            state.abortController?.abort()
-          }
-          disposeConfiguredProjectLibraryRealizationsEffect?.()
-        },
-      }),
+      id: 'project-libraries.configured-realizations',
+      provides: [
+        provide(projectLibraryRealizationsValueSpec, realizations, {
+          key: 'project-libraries.configured-realizations',
+        }),
+      ],
+      dispose: () => {
+        disposed = true
+        for (const state of scanStates.values()) {
+          state.abortController?.abort()
+        }
+        disposeConfiguredProjectLibraryRealizationsEffect?.()
+      },
     }
   },
   'project-libraries.configured-realizations'
@@ -787,69 +784,67 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
   }
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'project-libraries.directory-library-type',
-      provides: [
-        provide(projectLibraryTypesValueSpec, {
+    id: 'project-libraries.directory-library-type',
+    provides: [
+      provide(projectLibraryTypesValueSpec, {
+        type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+        title: 'Directory',
+        icon: 'folder',
+        order: 0,
+        defaultSetting: {
+          title: DEFAULT_PROJECT_LIBRARY_TITLE,
+          path: 'projects',
           type: DIRECTORY_PROJECT_LIBRARY_TYPE,
-          title: 'Directory',
-          icon: 'folder',
-          order: 0,
-          defaultSetting: {
-            title: DEFAULT_PROJECT_LIBRARY_TITLE,
-            path: 'projects',
-            type: DIRECTORY_PROJECT_LIBRARY_TYPE,
-          },
-          newLibrarySetting: {
-            title: NEW_PROJECT_LIBRARY_TITLE,
-            path: 'projects',
-            type: DIRECTORY_PROJECT_LIBRARY_TYPE,
-          },
-          settingsDetails: DirectoryProjectLibrarySettingsDetails,
-          hideInSettingsOnPlatform: 'web',
-          /**
-           * Directory libraries return concrete folders on disk. Any cloud
-           * project ID found in project metadata is carried as an observation,
-           * not used here to merge or discard local realizations.
-           */
-          readRealizations: async ({ library, signal }) => {
-            const wasmInstancePromise = getWasmPromise()
-            if (wasmInstancePromise instanceof Error) {
-              return Promise.reject(wasmInstancePromise)
-            }
+        },
+        newLibrarySetting: {
+          title: NEW_PROJECT_LIBRARY_TITLE,
+          path: 'projects',
+          type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+        },
+        settingsDetails: DirectoryProjectLibrarySettingsDetails,
+        hideInSettingsOnPlatform: 'web',
+        /**
+         * Directory libraries return concrete folders on disk. Any cloud
+         * project ID found in project metadata is carried as an observation,
+         * not used here to merge or discard local realizations.
+         */
+        readRealizations: async ({ library, signal }) => {
+          const wasmInstancePromise = getWasmPromise()
+          if (wasmInstancePromise instanceof Error) {
+            return Promise.reject(wasmInstancePromise)
+          }
 
-            return runReportedDirectoryProjectOperation({
-              operation: SystemIOMachineActors.readFoldersFromProjectDirectory,
-              risk: 'read',
-              run: async () => {
-                const projects = await readProjectsFromProjectDirectory({
+          return runReportedDirectoryProjectOperation({
+            operation: SystemIOMachineActors.readFoldersFromProjectDirectory,
+            risk: 'read',
+            run: async () => {
+              const projects = await readProjectsFromProjectDirectory({
+                fileOperations: fileOperations(),
+                projectDirectoryPath: library.path,
+                wasmInstancePromise,
+                signal,
+                onProjectStatFailures: reportDirectoryProjectStatFailures,
+              })
+              if (!signal.aborted) {
+                scheduleProjectDirectoryNameSyncFromTitles({
                   fileOperations: fileOperations(),
-                  projectDirectoryPath: library.path,
-                  wasmInstancePromise,
-                  signal,
-                  onProjectStatFailures: reportDirectoryProjectStatFailures,
+                  projects,
+                  onProjectDirectoriesRenamed: () =>
+                    invalidateProjectLibraryRealizations({
+                      libraryId: library.id,
+                    }),
                 })
-                if (!signal.aborted) {
-                  scheduleProjectDirectoryNameSyncFromTitles({
-                    fileOperations: fileOperations(),
-                    projects,
-                    onProjectDirectoriesRenamed: () =>
-                      invalidateProjectLibraryRealizations({
-                        libraryId: library.id,
-                      }),
-                  })
-                }
+              }
 
-                return projects.map((project) =>
-                  projectLibraryRealizationFromProject(project, library)
-                )
-              },
-            })
-          },
-          operations: withReportedDirectoryProjectOperations(operations),
-        }),
-      ],
-    }),
+              return projects.map((project) =>
+                projectLibraryRealizationFromProject(project, library)
+              )
+            },
+          })
+        },
+        operations: withReportedDirectoryProjectOperations(operations),
+      }),
+    ],
   }
 }, 'project-libraries.directory-library-type')
 
