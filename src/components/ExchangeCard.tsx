@@ -120,6 +120,30 @@ export const ButtonClearChat = (props: ComponentProps<'button'>) => (
   </button>
 )
 
+export const ButtonToggleReasoning = ({
+  expanded,
+  onClick,
+}: {
+  expanded: boolean
+  onClick: () => void
+}) => (
+  <button
+    type="button"
+    aria-expanded={expanded}
+    onClick={onClick}
+    className="flex justify-center items-center flex-none pt-1 pb-1"
+  >
+    {expanded ? (
+      <>
+        Collapse
+        <CustomIcon name="collapse" className="w-5 h-5" aria-hidden="true" />
+      </>
+    ) : (
+      'See reasoning'
+    )}
+  </button>
+)
+
 export const ResponseCardToolBar = (props: {
   responses?: MlCopilotServerMessage[]
   onClickClearChat: () => void
@@ -595,23 +619,11 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
         </div>
       )}
       {hasReasoningContent && (
-        <div
-          tabIndex={0}
-          role="button"
-          className="pl-8 flex flex-row items-center cursor-pointer justify-start gap-2"
-          onClick={() => onSeeReasoning()}
-        >
-          <div>
-            <button className="flex justify-center items-center flex-none pt-1 pb-1">
-              {showFullReasoning ? (
-                <>
-                  Collapse <CustomIcon name="collapse" className="w-5 h-5" />
-                </>
-              ) : (
-                <>See reasoning</>
-              )}
-            </button>
-          </div>
+        <div className="pl-8 flex flex-row items-center justify-start gap-2">
+          <ButtonToggleReasoning
+            expanded={showFullReasoning}
+            onClick={onSeeReasoning}
+          />
           {props.isLastResponse && (
             <ExchangeCardStatus
               maybeError={maybeError}
