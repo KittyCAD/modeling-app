@@ -256,24 +256,37 @@ function hasDefaultDirectoryLibrarySetting(app: App) {
 }
 
 describe('project system', () => {
-  it('always closes a the last project before opening a new one', async () => {
+  it('stops the outgoing modeling actor before reusing its editor in another project', async () => {
     const app = createAppForTest()
-    vi.fn(window.electron?.watchFileOn).mockImplementation(() => {})
-    vi.fn(window.electron?.watchFileOff).mockImplementation(() => {})
-
-    const project1 = await app.openProject(mockProject)
-    const closeFn = vi.spyOn(project1, 'close')
-    const projectPath = 'some-other-one'
-    await app.openProject({
-      ...mockProject,
-      name: 'bracket',
-      path: projectPath,
-      default_file: fsZds.join(projectPath, 'main.kcl'),
-    })
-    expect(closeFn).toHaveBeenCalled()
-
-    app.closeProject()
-    app.dispose()
+    const read = vi.spyOn(File.prototype, 'read').mockResolvedValue('')
+    try {
+      await waitForSettingsIdle(app)
+      const first = await app.openProject(mockProject)
+      const editor = await first.openEditor(
+        '/some-dir/test/main.kcl',
+        app.singletons.kclManager,
+        '',
+        false
+      )
+      const previous = await editor.modelingActorPromise
+      previous.send({
+        type: 'Set mouse state',
+        data: { type: 'isDragging', on: null },
+      })
+      const next = await app.openProject({
+        ...mockProject,
+        name: 'next',
+        path: '/some-dir/next',
+      })
+      await next.openEditor('/some-dir/next/main.kcl', editor, '', false)
+      const current = await editor.modelingActorPromise
+      expect(previous.getSnapshot().status).toBe('stopped')
+      expect(current).not.toBe(previous)
+      expect(current.getSnapshot().context.mouseState.type).toBe('idle')
+    } finally {
+      read.mockRestore()
+      app.dispose()
+    }
   })
   it('uses registry runtime dependencies by default', () => {
     const app = createAppForTest()
@@ -567,7 +580,7 @@ describe('project system', () => {
     }
   })
 
-  it('annotates opened projects with their owning library path', async () => {
+  it('preserves library ownership and cloud identity when reusing a project', async () => {
     const app = createAppForTest()
 
     try {
@@ -592,6 +605,20 @@ describe('project system', () => {
           libraryPath: library.path,
           libraryType: library.type,
         })
+      )
+      const cloudSource: NonNullable<Project['cloudSource']> = {
+        id: 'remote-project',
+        canEdit: true,
+        kind: 'private',
+      }
+      expect(
+        await app.openProject({
+          ...openedProject.projectIORefSignal.value,
+          cloudSource,
+        })
+      ).toBe(openedProject)
+      expect(openedProject.projectIORefSignal.value.cloudSource).toEqual(
+        cloudSource
       )
     } finally {
       app.dispose()

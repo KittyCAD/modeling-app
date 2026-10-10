@@ -62,6 +62,10 @@ type CurrentProjectUploadArgs = Omit<PublishCurrentProjectArgs, 'project'> & {
 export async function publishCurrentProject(
   args: PublishCurrentProjectArgs
 ): Promise<PublishedProject | false> {
+  if (args.project?.cloudSource?.canEdit === false) {
+    toast.error('This project is view-only.')
+    return false
+  }
   if (!args.token) {
     toast.error('You need to be signed in to publish a project.', {
       duration: 5000,
