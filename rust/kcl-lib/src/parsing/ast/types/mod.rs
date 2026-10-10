@@ -866,7 +866,7 @@ impl Node<Program> {
         let new_color = csscolorparser::Color::new(color.red, color.green, color.blue, color.alpha);
         Ok(Some(ColorPresentation {
             // The label will be what they replace the color with.
-            label: new_color.to_css_hex(),
+            label: new_color.to_css_hex().to_string(),
             text_edit: None,
             additional_text_edits: None,
         }))
