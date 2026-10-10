@@ -226,6 +226,32 @@ pub(super) async fn fix_tags_and_references(
             )
             .await?;
 
+            if !old_face_tag_names.is_empty() {
+                // Preserve tagged faces when edge cuts leave the extrusion query empty.
+                // Untagged solids keep the existing reconstruction behavior.
+                for surface in solid.value.iter().filter(|surface| surface.get_tag().is_some()) {
+                    let (Some(id), Some(face_id)) = (
+                        entity_id_map.get(&surface.get_id()).copied(),
+                        entity_id_map.get(&surface.face_id()).copied(),
+                    ) else {
+                        continue;
+                    };
+                    if new_solid.value.iter().any(|surface| surface.get_id() == id) {
+                        continue;
+                    }
+                    if solid.start_cap_id == Some(surface.face_id()) {
+                        new_solid.start_cap_id.get_or_insert(face_id);
+                    }
+                    if solid.end_cap_id == Some(surface.face_id()) {
+                        new_solid.end_cap_id.get_or_insert(face_id);
+                    }
+                    let mut surface = surface.clone();
+                    surface.set_id(id);
+                    surface.set_face_id(face_id);
+                    new_solid.value.push(surface);
+                }
+            }
+
             if let Some((face_id, solid_id)) = face_creator {
                 let rebuilt_sketch = new_solid.sketch().cloned().ok_or_else(|| {
                     KclError::new_internal(KclErrorDetails::new(
