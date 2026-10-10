@@ -1705,26 +1705,26 @@ export const modelingMachine = setup({
           const sel = setSelections.selection
           const isEmpty =
             !sel || (typeof sel === 'object' && !sel.entityRef && !sel.codeRef)
-          if (isEmpty && kclManager.isShiftDown) {
-            // if the user is holding shift, but they didn't select anything
+          if (isEmpty && kclManager.isMultiSelectDown) {
+            // if the user is holding a multiselect modifier, but they didn't select anything
             // don't nuke their other selections (frustrating to have one bad click ruin your
             // whole selection)
             selections = {
               graphSelections: selectionRanges.graphSelections || [],
               otherSelections: selectionRanges.otherSelections,
             }
-          } else if (isEmpty && !kclManager.isShiftDown) {
+          } else if (isEmpty && !kclManager.isMultiSelectDown) {
             selections = {
               graphSelections: [],
               otherSelections: [],
             }
-          } else if (!isEmpty && !kclManager.isShiftDown) {
+          } else if (!isEmpty && !kclManager.isMultiSelectDown) {
             selections = {
               graphSelections: [sel],
               otherSelections: [],
             }
-          } else if (!isEmpty && kclManager.isShiftDown) {
-            // Handle Shift key – compare V2 to V2 via selectionV2Equals
+          } else if (!isEmpty && kclManager.isMultiSelectDown) {
+            // Handle additive selection – compare V2 to V2 via selectionV2Equals
             const newV2 = sel
             const current = selectionRanges.graphSelections || []
             const alreadySelected = current.some((s) =>
@@ -1794,7 +1794,7 @@ export const modelingMachine = setup({
               selection.entityId === setSelections.selection.entityId
           )
 
-          const otherSelections = kclManager.isShiftDown
+          const otherSelections = kclManager.isMultiSelectDown
             ? shouldDeselect
               ? selectionRanges.otherSelections.filter(
                   (selection) =>
@@ -1807,7 +1807,7 @@ export const modelingMachine = setup({
             : [setSelections.selection]
 
           const selections: Selections = {
-            graphSelections: kclManager.isShiftDown
+            graphSelections: kclManager.isMultiSelectDown
               ? selectionRanges.graphSelections
               : [],
             otherSelections,
@@ -1843,7 +1843,7 @@ export const modelingMachine = setup({
               selection.id === setSelections.selection.id
           )
 
-          const otherSelections = kclManager.isShiftDown
+          const otherSelections = kclManager.isMultiSelectDown
             ? shouldDeselect
               ? selectionRanges.otherSelections.filter(
                   (selection) =>
@@ -1856,7 +1856,7 @@ export const modelingMachine = setup({
             : [setSelections.selection]
 
           const selections: Selections = {
-            graphSelections: kclManager.isShiftDown
+            graphSelections: kclManager.isMultiSelectDown
               ? selectionRanges.graphSelections
               : [],
             otherSelections,
@@ -1886,7 +1886,7 @@ export const modelingMachine = setup({
           setSelections.selectionType === 'axisSelection' ||
           setSelections.selectionType === 'defaultPlaneSelection'
         ) {
-          if (kclManager.isShiftDown) {
+          if (kclManager.isMultiSelectDown) {
             selections = {
               graphSelections: selectionRanges.graphSelections || [],
               otherSelections: [setSelections.selection],

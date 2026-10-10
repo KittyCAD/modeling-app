@@ -588,6 +588,13 @@ export class SceneInfra {
   }
 
   private processMouseMove = async (mouseEvent: MouseEvent) => {
+    // Camera gestures (including Creo Ctrl+left-drag) own their mouse movement.
+    if (
+      mouseEvent.buttons !== 0 &&
+      this.camControls.getInteractionType(mouseEvent) !== 'none'
+    ) {
+      return
+    }
     this.updateCurrentMouseVector(mouseEvent)
 
     const planeIntersectPoint = this.getPlaneIntersectPoint()
@@ -805,7 +812,10 @@ export class SceneInfra {
   }
 
   onMouseDown = (event: MouseEvent) => {
-    if (event.button !== 0) {
+    if (
+      event.button !== 0 ||
+      this.camControls.getInteractionType(event) !== 'none'
+    ) {
       return
     }
 
@@ -858,6 +868,11 @@ export class SceneInfra {
   }
 
   onMouseUp = async (mouseEvent: MouseEvent) => {
+    if (this.camControls.wasDragging) {
+      this.selected = null
+      this.areaSelect = null
+      return
+    }
     if (mouseEvent.button !== 0) {
       return
     }

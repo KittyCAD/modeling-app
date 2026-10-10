@@ -710,6 +710,7 @@ export class KclManager extends File {
   }
   private _isAllTextSelected: boolean = false
   private _isShiftDown: boolean = false
+  private _isControlSelectionDown: boolean = false
   private _kclVersion: string = ''
   private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
   private timeoutRewatch: ReturnType<typeof setTimeout> | undefined = undefined
@@ -2634,6 +2635,12 @@ export class KclManager extends File {
   setIsShiftDown(isShiftDown: boolean) {
     this._isShiftDown = isShiftDown
   }
+  get isMultiSelectDown(): boolean {
+    return this._isShiftDown || this._isControlSelectionDown
+  }
+  setIsControlSelectionDown(isControlSelectionDown: boolean) {
+    this._isControlSelectionDown = isControlSelectionDown
+  }
   private selectionsWithSafeEnds(
     selection: Array<NonNullable<Selection['codeRef']>['range']>
   ): Array<[number, number]> {
@@ -3158,7 +3165,11 @@ export class KclManager extends File {
     const eventInfo = processCodeMirrorRanges({
       codeMirrorRanges: viewUpdate.state.selection.ranges,
       selectionRanges: this._selectionRanges,
-      isShiftDown: this._isShiftDown,
+      // Preserve non-code picks during viewport selection synchronization,
+      // without changing Ctrl shortcuts or text selection in the editor.
+      isShiftDown:
+        this._isShiftDown ||
+        (this._isControlSelectionDown && !viewUpdate.view.hasFocus),
       ast: this.ast,
       artifactGraph: this.artifactGraph,
       artifactIndex: this.artifactIndex,
