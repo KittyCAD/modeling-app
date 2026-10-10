@@ -1,5 +1,7 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
+import { NAMED_VIEWS_UI_FEATURE_FLAG } from '@src/lib/constants'
+import { DefaultLayoutPaneID } from '@src/lib/layout'
 
 const profileCode = `@settings(kclVersion = 3.0)
 sketch001 = sketch(on = XY) {
@@ -231,5 +233,91 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     await editor.expectEditor.toContain('tagStart = $startFace')
     await editor.expectEditor.not.toContain('99mm')
     await scene.settled()
+  })
+})
+
+test.describe('Named View dialog', { tag: '@web' }, () => {
+  test.use({
+    userFeatures: ['modeling_dialogs', NAMED_VIEWS_UI_FEATURE_FLAG],
+  })
+
+  test('Creates, edits visibility, and removes from the pane', async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+  }) => {
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', profileCode)
+    )
+    await toolbar.openPane(DefaultLayoutPaneID.NamedViews)
+    const pane = page.locator(`#${DefaultLayoutPaneID.NamedViews}-pane`)
+    await pane.getByTestId('named-view-create').click()
+
+    const dialog = page.getByTestId('modeling-dialog')
+    const name = dialog.getByRole('textbox', { name: /^name/i })
+    const exceptions = dialog.getByRole('button', {
+      name: 'Select Exceptions',
+      exact: true,
+    })
+    const submit = dialog.getByRole('button', { name: 'Submit', exact: true })
+    await name.fill('Inspection')
+    await dialog
+      .getByRole('combobox', { name: /^orientation/i })
+      .selectOption({ label: 'Front' })
+    await editor.selectText('region(')
+    await expect(exceptions).toContainText(/1 region/i)
+    await dialog.getByText('Show more', { exact: true }).click()
+    await dialog
+      .getByRole('textbox', { name: /^target$/i })
+      .fill('[0mm, 0mm, 0mm]')
+    await dialog.getByRole('textbox', { name: /^distance$/i }).fill('100mm')
+    await dialog
+      .getByRole('button', { name: 'Code changes', exact: true })
+      .click()
+    const preview = page.getByRole('region', {
+      name: 'Code changes',
+      exact: true,
+    })
+    await expect(preview.getByTestId('code-changes-diff')).toContainText(
+      'view::named('
+    )
+    await expect(preview.getByTestId('code-changes-diff')).toContainText(
+      'Inspection'
+    )
+    await scene.waitForExecutionDoneAfter(() => submit.click())
+    await expect(dialog).not.toBeAttached()
+    await expect(preview).not.toBeAttached()
+    await editor.expectEditor.toContain('except = [region001]')
+    await editor.expectEditor.toContain('distance = 100mm')
+
+    const row = pane
+      .getByTestId('named-view-row')
+      .filter({ hasText: 'Inspection' })
+    await row.getByTestId('named-view-label').dblclick()
+    await expect(exceptions).toBeEnabled()
+    await exceptions.click()
+    await editor.selectText('sketch(on = XY)')
+    await expect(exceptions).toContainText(/1 sketch/i)
+    await scene.waitForExecutionDoneAfter(() => submit.click())
+    await expect(dialog).not.toBeAttached()
+    await editor.expectEditor.toContain('except = [sketch001]')
+    await editor.expectEditor.toContain('distance = 100mm')
+
+    await toolbar.openFeatureTreePane()
+    await expect(
+      page
+        .getByTestId('feature-tree-operation-item')
+        .filter({ hasText: 'Named View' })
+    ).toHaveCount(0)
+    await row.getByTestId('named-view-actions').click()
+    await scene.waitForExecutionDoneAfter(() =>
+      page.getByRole('button', { name: 'Remove', exact: true }).click()
+    )
+    await expect(row).not.toBeAttached()
+    await editor.expectEditor.not.toContain('view::named(')
   })
 })

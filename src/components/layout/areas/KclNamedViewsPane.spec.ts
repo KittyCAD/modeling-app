@@ -1,9 +1,108 @@
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
+import type { NamedViewCameraSnapshot } from '@src/lang/modifyAst/namedViews'
+import { AreaType, LayoutType } from '@src/lib/layout'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { createElement, Suspense } from 'react'
+import { describe, expect, it, vi } from 'vitest'
 
-import { viewRows } from '@src/components/layout/areas/KclNamedViewsPane'
+const renderMocks = vi.hoisted(() => {
+  const wasmInstance = {}
+  const wasmInstancePromise = Object.assign(Promise.resolve(wasmInstance), {
+    status: 'fulfilled',
+    value: wasmInstance,
+  })
+
+  return {
+    wasmInstance,
+    activateNamedView: vi.fn(async () => undefined),
+    appSend: vi.fn(),
+    captureNamedViewCamera:
+      vi.fn<() => Promise<NamedViewCameraSnapshot | Error>>(),
+    updateNamedViewCamera: vi.fn(() => ({})),
+    updateModelingState: vi.fn(async () => undefined),
+    namedViewCameraSummary: vi.fn(() => 'Front Orthographic'),
+    prepareNamedViewEditCommand: vi.fn(async () => ({
+      type: 'Find and select command',
+    })),
+    kclManager: {
+      get wasmInstance() {
+        throw new Error('The synchronous WASM getter must not be used')
+      },
+      wasmInstancePromise,
+      ast: {},
+      code: '',
+      path: '/project/main.kcl',
+      sceneInfra: {},
+      execStateSignal: {
+        value: { artifactGraph: new Map(), filenames: {} },
+      },
+      isExecutingSignal: { value: false },
+      systemDeps: { projectPath: { value: '/project' } },
+    },
+  }
+})
+
+vi.mock('@src/lib/boot', () => ({
+  useApp: () => ({ commands: { actor: { send: renderMocks.appSend } } }),
+  useSingletons: () => ({ kclManager: renderMocks.kclManager }),
+}))
+
+vi.mock('@src/hooks/useModelingContext', () => ({
+  useModelingContext: () => ({ state: null }),
+}))
+
+vi.mock('@src/hooks/useReliesOnEngine', () => ({
+  useReliesOnEngine: () => false,
+}))
+
+vi.mock('@src/lib/kclNamedViewEdit', () => ({
+  namedViewCameraSummary: renderMocks.namedViewCameraSummary,
+  prepareNamedViewEditCommand: renderMocks.prepareNamedViewEditCommand,
+}))
+
+vi.mock('@src/lib/kclNamedViewCamera', () => ({
+  captureNamedViewCamera: renderMocks.captureNamedViewCamera,
+}))
+
+vi.mock('@src/lang/modifyAst/namedViews', () => ({
+  updateNamedViewCamera: renderMocks.updateNamedViewCamera,
+}))
+
+vi.mock('@src/lang/modelingWorkflows', () => ({
+  updateModelingState: renderMocks.updateModelingState,
+}))
+
+vi.mock('@src/lib/kclNamedViewActivation', async (importOriginal) => ({
+  ...(await importOriginal()),
+  activateNamedView: renderMocks.activateNamedView,
+}))
+
+vi.mock('@src/components/ActionButton', () => ({
+  ActionButton: () => null,
+}))
+
+vi.mock('@src/components/ContextMenu', () => ({
+  ContextMenu: () => null,
+  ContextMenuItem: () => null,
+}))
+
+vi.mock('@src/components/CustomIcon', () => ({
+  CustomIcon: () => null,
+}))
+
+vi.mock('@src/components/layout/Panel', () => ({
+  LayoutPanel: ({ children }: { children: unknown }) => children,
+  LayoutPanelHeader: ({ Menu }: { Menu: unknown }) => Menu,
+}))
+
+import {
+  KclNamedViewsPane,
+  canManageNamedView,
+  nextViewSelection,
+  viewRows,
+} from '@src/components/layout/areas/KclNamedViewsPane'
 import type { KclNamedView } from '@src/lang/std/kclNamedViews'
 import { KCL_DEFAULT_VIEW_NAME } from '@src/lang/std/kclNamedViews'
-import { describe, expect, it } from 'vitest'
 
 const CODE_REF = {
   range: [0, 0, 0] as [number, number, number],
@@ -15,10 +114,12 @@ function view({
   name,
   id = `view-${name}`,
   modulePath,
+  moduleId = 0,
 }: {
   name: string
   id?: string
   modulePath?: ModulePath
+  moduleId?: number
 }): KclNamedView {
   return {
     artifact: {
@@ -35,7 +136,7 @@ function view({
       hideIds: [],
       codeRef: CODE_REF,
     },
-    moduleId: 0,
+    moduleId,
     modulePath,
   }
 }
@@ -122,5 +223,232 @@ describe('viewRows', () => {
     const rows = viewRows([view({ name: 'Front', id: 'view-1' })])
 
     expect(rows.map((row) => row.key)).toEqual(['kcl-default', 'view-1'])
+  })
+
+  it('uses the source-derived camera summary beside each declared view', () => {
+    const namedView = view({ name: 'Front' })
+
+    expect(
+      viewRows([namedView], () => 'Front 200mm Perspective')[1].detail
+    ).toBe('Front 200mm Perspective')
+  })
+
+  it('only lets the root module manage a declared view', () => {
+    expect(canManageNamedView(view({ name: 'Root' }))).toBe(true)
+    expect(canManageNamedView(view({ name: 'Import', moduleId: 1 }))).toBe(
+      false
+    )
+  })
+})
+
+describe('KclNamedViewsPane', () => {
+  function renderPane() {
+    return render(
+      createElement(
+        Suspense,
+        { fallback: createElement('div', null, 'Loading WASM') },
+        createElement(KclNamedViewsPane, {
+          layout: {
+            id: 'named-views',
+            label: 'Named Views',
+            type: LayoutType.Simple,
+            areaType: AreaType.NamedViews,
+          },
+          areaConfig: { hide: () => false },
+          onClose: vi.fn(),
+        })
+      )
+    )
+  }
+
+  it('uses promised WASM instead of reading the unsafe synchronous getter', async () => {
+    const namedView = view({ name: 'Front', modulePath: { type: 'Main' } })
+    renderMocks.kclManager.execStateSignal.value = {
+      artifactGraph: new Map([
+        [namedView.artifact.id, { type: 'namedView', ...namedView.artifact }],
+      ]),
+      filenames: { 0: { type: 'Main' } },
+    }
+    renderMocks.namedViewCameraSummary.mockClear()
+
+    renderPane()
+    expect(await screen.findByText('Front')).toBeInTheDocument()
+    expect(renderMocks.namedViewCameraSummary).toHaveBeenCalledWith(
+      expect.objectContaining({ wasmInstance: renderMocks.wasmInstance })
+    )
+  })
+
+  it('opens the full edit flow when a view is double-clicked', async () => {
+    const namedView = view({ name: 'Front', modulePath: { type: 'Main' } })
+    renderMocks.kclManager.execStateSignal.value = {
+      artifactGraph: new Map([
+        [namedView.artifact.id, { type: 'namedView', ...namedView.artifact }],
+      ]),
+      filenames: { 0: { type: 'Main' } },
+    }
+    renderMocks.appSend.mockClear()
+    renderMocks.activateNamedView.mockClear()
+    renderMocks.prepareNamedViewEditCommand.mockClear()
+
+    renderPane()
+
+    const label = await screen.findByText('Front')
+    fireEvent.click(label, { detail: 1 })
+    fireEvent.click(label, { detail: 2 })
+    fireEvent.doubleClick(label, { detail: 2 })
+
+    await waitFor(() =>
+      expect(renderMocks.prepareNamedViewEditCommand).toHaveBeenCalledWith(
+        expect.objectContaining({
+          artifact: expect.objectContaining({ name: 'Front' }),
+        })
+      )
+    )
+    expect(renderMocks.appSend).toHaveBeenCalledWith(
+      expect.objectContaining({ type: 'Find and select command' })
+    )
+    expect(renderMocks.activateNamedView).toHaveBeenCalledTimes(1)
+  })
+
+  it('activates a view on a plain row click but not a modified click', async () => {
+    const namedView = view({ name: 'Front', modulePath: { type: 'Main' } })
+    renderMocks.kclManager.execStateSignal.value = {
+      artifactGraph: new Map([
+        [namedView.artifact.id, { type: 'namedView', ...namedView.artifact }],
+      ]),
+      filenames: { 0: { type: 'Main' } },
+    }
+    renderMocks.activateNamedView.mockClear()
+
+    renderPane()
+
+    const label = await screen.findByText('Front')
+    fireEvent.click(label)
+    expect(renderMocks.activateNamedView).toHaveBeenCalledWith(
+      expect.objectContaining({
+        target: expect.objectContaining({ kind: 'declared' }),
+      })
+    )
+
+    fireEvent.click(label, { metaKey: true })
+    expect(renderMocks.activateNamedView).toHaveBeenCalledTimes(1)
+  })
+
+  it.each(['unchanged', 'source', 'file'])(
+    'only applies a captured camera to the same source (%s)',
+    async (change) => {
+      const namedView = view({ name: 'Front', modulePath: { type: 'Main' } })
+      renderMocks.kclManager.execStateSignal.value = {
+        artifactGraph: new Map([
+          [namedView.artifact.id, { type: 'namedView', ...namedView.artifact }],
+        ]),
+        filenames: { 0: { type: 'Main' } },
+      }
+      renderMocks.kclManager.code = ''
+      renderMocks.kclManager.path = '/project/main.kcl'
+      renderMocks.updateNamedViewCamera.mockClear()
+      renderMocks.updateModelingState.mockClear()
+      let finishCapture: (camera: NamedViewCameraSnapshot) => void = () => {}
+      renderMocks.captureNamedViewCamera.mockReturnValueOnce(
+        new Promise((resolve) => {
+          finishCapture = resolve
+        })
+      )
+      renderPane()
+
+      const button = await screen.findByRole('button', {
+        name: 'Update from current camera',
+      })
+      fireEvent.click(button)
+      expect(button).toBeDisabled()
+      if (change === 'source') renderMocks.kclManager.code = '// New source'
+      if (change === 'file') renderMocks.kclManager.path = '/project/other.kcl'
+      finishCapture({
+        direction: [0, -1, 0],
+        up: [0, 0, 1],
+        target: [0, 0, 0],
+        distance: 100,
+        projection: 'Orthographic',
+      })
+      await waitFor(() => expect(button).not.toBeDisabled())
+      expect(renderMocks.updateNamedViewCamera).toHaveBeenCalledTimes(
+        change === 'unchanged' ? 1 : 0
+      )
+      expect(renderMocks.updateModelingState).toHaveBeenCalledTimes(
+        change === 'unchanged' ? 1 : 0
+      )
+    }
+  )
+})
+
+describe('nextViewSelection', () => {
+  const rowKeys = ['default', 'front', 'top', 'detail']
+
+  it('makes a plain click the only selection', () => {
+    const result = nextViewSelection({
+      selected: new Set(['front', 'top']),
+      rowKey: 'detail',
+      rowIndex: 3,
+      anchorIndex: 1,
+      rowKeys,
+      shiftKey: false,
+      toggleKey: false,
+    })
+
+    expect([...result.selected]).toEqual(['detail'])
+    expect(result.anchorIndex).toBe(3)
+  })
+
+  it('toggles a row with Command or Control click', () => {
+    const added = nextViewSelection({
+      selected: new Set(['front']),
+      rowKey: 'top',
+      rowIndex: 2,
+      anchorIndex: 1,
+      rowKeys,
+      shiftKey: false,
+      toggleKey: true,
+    })
+    expect([...added.selected]).toEqual(['front', 'top'])
+
+    const removed = nextViewSelection({
+      selected: added.selected,
+      rowKey: 'front',
+      rowIndex: 1,
+      anchorIndex: added.anchorIndex,
+      rowKeys,
+      shiftKey: false,
+      toggleKey: true,
+    })
+    expect([...removed.selected]).toEqual(['top'])
+  })
+
+  it('selects a contiguous range with Shift click', () => {
+    const result = nextViewSelection({
+      selected: new Set(['front']),
+      rowKey: 'detail',
+      rowIndex: 3,
+      anchorIndex: 1,
+      rowKeys,
+      shiftKey: true,
+      toggleKey: false,
+    })
+
+    expect([...result.selected]).toEqual(['front', 'top', 'detail'])
+    expect(result.anchorIndex).toBe(1)
+  })
+
+  it('adds a Shift range when Command or Control is also held', () => {
+    const result = nextViewSelection({
+      selected: new Set(['default']),
+      rowKey: 'detail',
+      rowIndex: 3,
+      anchorIndex: 2,
+      rowKeys,
+      shiftKey: true,
+      toggleKey: true,
+    })
+
+    expect([...result.selected]).toEqual(['default', 'top', 'detail'])
   })
 })

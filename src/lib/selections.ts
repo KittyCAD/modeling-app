@@ -2609,6 +2609,16 @@ export function getSelectionCountByType(
       incrementOrInitializeSelectionType('solid2d')
       return true
     }
+    if (
+      artifact.type === 'sketchBlock' ||
+      artifact.type === 'compositeSolid' ||
+      artifact.type === 'gdtAnnotation' ||
+      artifact.type === 'plane' ||
+      artifact.type === 'importedGeometry'
+    ) {
+      incrementOrInitializeSelectionType(artifact.type)
+      return true
+    }
     return false
   }
 
@@ -2663,15 +2673,11 @@ export function getSelectionCountByType(
           incrementOrInitializeSelectionType('path')
         }
       }
-    } else if (inlineArtifact?.type === 'helix') {
-      incrementOrInitializeSelectionType('helix')
     } else if (
-      inlineArtifact?.type === 'path' &&
-      inlineArtifact.subType === 'region'
+      inlineArtifact &&
+      incrementArtifactSelectionType(inlineArtifact)
     ) {
-      incrementOrInitializeSelectionType('pathRegion')
-    } else if (inlineArtifact?.type === 'path') {
-      incrementOrInitializeSelectionType('path')
+      return
     } else if (
       v2Selection.codeRef &&
       ast &&
