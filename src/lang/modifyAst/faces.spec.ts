@@ -1066,14 +1066,45 @@ ${simpleHole}
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
-    it('should add a simple hole call on cylinder end cap that has a hole already', async () => {
+    it.each(['tag', 'primitive', 'graph'])('second hole %s', async (kind) => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         `${cylinderWithEndTag}
 ${simpleHole}`,
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const face = getCapFromCylinder(artifactGraph)
+      const parentEntityId = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'compositeSolid'
+      )?.id
+      if (!parentEntityId) throw new Error('Missing first hole body')
+      const face: Selections =
+        kind === 'tag'
+          ? getCapFromCylinder(artifactGraph)
+          : kind === 'graph'
+            ? {
+                graphSelections: [
+                  {
+                    entityRef: { type: 'face', face_id: 'selected-face' },
+                    engineTopologyFallback: {
+                      parentId: parentEntityId,
+                      primitiveIndex: 0,
+                    },
+                  },
+                ],
+                otherSelections: [],
+              }
+            : {
+                graphSelections: [],
+                otherSelections: [
+                  {
+                    type: 'enginePrimitive',
+                    entityId: 'selected-face',
+                    parentEntityId,
+                    primitiveIndex: 0,
+                    primitiveType: 'face',
+                  },
+                ],
+              }
       const cutAt = (await stringToKclExpression(
         '[3, 3]',
         rustContextInThisFile,
@@ -1104,18 +1135,17 @@ ${simpleHole}`,
       }
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(
-        `${cylinderWithEndTag}
-${simpleHole}
-hole002 = hole::hole(
+      if (kind !== 'tag') {
+        expect(newCode).toContain('face001 = faceId(hole001, index = 0)')
+      }
+      expect(newCode).toContain(`hole002 = hole::hole(
   hole001,
-  face = capEnd001,
+  face = ${kind === 'tag' ? 'capEnd001' : 'face001'},
   cutAt = [3, 3],
   holeBottom = hole::flat(),
   holeBody = hole::blind(depth = 3, diameter = 2),
   holeType = hole::simple(),
-)`
-      )
+)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 

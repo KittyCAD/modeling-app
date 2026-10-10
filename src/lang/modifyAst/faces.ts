@@ -407,10 +407,31 @@ export function addHole({
       return result
     }
 
-    solidsExpr = result.solidsExpr
-    facesExpr = result.facesExpr
     pathIfPipe = result.pathIfPipe
     modifiedAst = result.modifiedAst
+    let { solidsExprs, facesExprs } = result
+    const enginePrimitives = getPrimitiveFaceSelectionsFromSelection({
+      graphSelections: face.graphSelections.filter(
+        (selection) => !resolveToCodeRef(selection, artifactGraph)
+      ),
+      otherSelections: face.otherSelections,
+    })
+    if (enginePrimitives.length > 0) {
+      const primitiveResult = insertFacePrimitiveVariablesAndOffsetPathToNode({
+        enginePrimitives,
+        modifiedAst,
+        artifactGraph,
+        wasmInstance,
+        useLatestBody: true,
+      })
+      if (err(primitiveResult)) return primitiveResult
+      solidsExprs = deduplicateFaceExprs(
+        solidsExprs.concat(primitiveResult.solidsExprs)
+      )
+      facesExprs.push(...primitiveResult.faceExprs)
+    }
+    solidsExpr = createVariableExpressionsArray(solidsExprs)
+    facesExpr = createVariableExpressionsArray(facesExprs)
     if (!facesExpr) {
       return new Error("Couldn't retrieve face from selection")
     }
