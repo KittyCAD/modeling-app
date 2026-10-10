@@ -226,6 +226,30 @@ pub(super) async fn fix_tags_and_references(
             )
             .await?;
 
+            // Edge cuts can leave the extrusion query empty. Preserve source surfaces
+            // that still have both their path/feature and face in the clone child map.
+            for surface in &solid.value {
+                let (Some(id), Some(face_id)) = (
+                    entity_id_map.get(&surface.get_id()).copied(),
+                    entity_id_map.get(&surface.face_id()).copied(),
+                ) else {
+                    continue;
+                };
+                if new_solid.value.iter().any(|surface| surface.get_id() == id) {
+                    continue;
+                }
+                let mut surface = surface.clone();
+                surface.set_id(id);
+                surface.set_face_id(face_id);
+                new_solid.value.push(surface);
+            }
+            new_solid.start_cap_id = new_solid
+                .start_cap_id
+                .or_else(|| solid.start_cap_id.and_then(|id| entity_id_map.get(&id).copied()));
+            new_solid.end_cap_id = new_solid
+                .end_cap_id
+                .or_else(|| solid.end_cap_id.and_then(|id| entity_id_map.get(&id).copied()));
+
             if let Some((face_id, solid_id)) = face_creator {
                 let rebuilt_sketch = new_solid.sketch().cloned().ok_or_else(|| {
                     KclError::new_internal(KclErrorDetails::new(
@@ -528,6 +552,52 @@ mod tests {
     use crate::execution::PathViewExt;
     use crate::execution::Solid;
     use crate::execution::SolidViewExt;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_clone_chamfered_cap_tags() {
+        for version in ["2.0", "3.0"] {
+            let code = r#"@settings(kclVersion = VERSION, experimentalFeatures = allow)
+profile = startSketchOn(XZ)
+  |> startProfile(at = [-4, -4])
+  |> line(end = [8, 0], tag = $bottom)
+  |> line(end = [0, 8], tag = $right)
+  |> line(end = [-8, 0], tag = $top)
+  |> close(tag = $left)
+blank = extrude(profile, length = 4mm, symmetric = true, tagStart = $startCap, tagEnd = $endCap)
+source = chamfer(blank, length = 0.25mm, edges = [
+  {sideFaces = [blank.sketch.tags.right, blank.faces.startCap]},
+  {sideFaces = [blank.sketch.tags.right, blank.faces.endCap]},
+  {sideFaces = [blank.sketch.tags.left, blank.faces.startCap]},
+  {sideFaces = [blank.sketch.tags.left, blank.faces.endCap]}
+])
+cloned = clone(source)
+startFace = cloned.faces.startCap
+endFace = cloned.faces.endCap
+clonedAgain = clone(cloned)
+result = chamfer(clonedAgain, length = 0.1mm, edges = [
+  {sideFaces = [clonedAgain.sketch.tags.top, clonedAgain.faces.startCap]},
+  {sideFaces = [clonedAgain.sketch.tags.top, clonedAgain.faces.endCap]}
+])
+"#
+            .replace("VERSION", version);
+            let program = crate::Program::parse_no_errs(&code).unwrap();
+            let ctx = crate::test_server::new_context(true, None, true, program.language_version().unwrap())
+                .await
+                .unwrap();
+            let outcome = ctx.run_with_caching(program).await;
+            ctx.close().await;
+            let outcome = outcome.unwrap_or_else(|error| panic!("KCL {version}: {}", error.error));
+            let source = runtime_solid(&outcome, "source");
+            for name in ["cloned", "clonedAgain"] {
+                let cloned = runtime_solid(&outcome, name);
+                assert_eq!(cloned.faces.len(), 2);
+                assert_ne!(source.start_cap_id, cloned.start_cap_id);
+                assert_ne!(source.end_cap_id, cloned.end_cap_id);
+                assert!(cloned.start_cap_id.is_some());
+                assert!(cloned.end_cap_id.is_some());
+            }
+        }
+    }
 
     fn runtime_solid<'a>(outcome: &'a ExecOutcome, name: &str) -> &'a Solid {
         let value = outcome
