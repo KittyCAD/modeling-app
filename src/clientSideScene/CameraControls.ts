@@ -380,8 +380,6 @@ export class CameraControls {
     this.camera.up.set(0, 0, 1)
     this.camera.far = 20000
     this.target = new Vector3()
-    this.camera.position.set(14, -14, 14) // Initial camera position, used when project is empty.
-    this.camera.lookAt(this.target)
     this.domElement = domElement
     this.isDragging = false
     this.wasDragging = false
@@ -495,6 +493,30 @@ export class CameraControls {
         callback: cb,
       })
     })
+  }
+
+  // This is only needed for local, streamed camera gets this from engine.
+  resetLocalCameraToDefaultView() {
+    // An orthographic camera's zoom is only recalculated when switching from perspective, 
+    // so switch to perspective first if needed.
+    if (this.camera instanceof OrthographicCamera) {
+      this._usePerspectiveCamera()
+    }
+    // Set default view
+    this.target.set(0, 0, 0)
+    this.camera.up.set(0, 0, 1)
+    this.camera.position.set(14, -14, 14)
+    this.camera.lookAt(this.target)
+
+    // Switch back if necessary or just update
+    if (
+      this.getSettings().modeling.cameraProjection.current === 'orthographic'
+    ) {
+      // This will convert the distance set above on the perspective camera to ortho zoom
+      this.useOrthographicCamera()
+    } else {
+      this.onCameraChange()
+    }
   }
 
   private _isCamMovingCallback: (isMoving: boolean, isTween: boolean) => void =

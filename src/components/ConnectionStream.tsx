@@ -637,9 +637,15 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const shouldShowLocalWebGpuScene = isLocalRendering && isLocalRenderVisible
 
   useEffect(() => {
+    // This effect runs when a project gets opened.
     const cameraControls = sceneInfra.camControls
     const wasLocalCameraMode = cameraControls.localCameraMode
     cameraControls.localCameraMode = isLocalRendering
+    // The engine gives a streamed scene its starting view. A local scene has
+    // to set its own, or it opens with the previous project's camera.
+    if (isLocalRendering) {
+      cameraControls.resetLocalCameraToDefaultView()
+    }
 
     return () => {
       cameraControls.localCameraMode = wasLocalCameraMode
