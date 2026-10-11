@@ -371,9 +371,14 @@ async fn get_old_new_child_map(
     // to be queried first. Pattern copies retain the source topology in KCL,
     // though, so use that topology for the runtime old-to-new ID map.
     let mut queries = Vec::with_capacity(3);
-    if old_geometry_id != source_topology_id {
-        queries.push(child_query(old_geometry_id, exec_state));
-    }
+    let original_query_id = if old_geometry_id != source_topology_id {
+        let query = child_query(old_geometry_id, exec_state);
+        let id = query.cmd_id;
+        queries.push(query);
+        Some(id)
+    } else {
+        None
+    };
 
     let old_query = child_query(source_topology_id, exec_state);
     let old_query_id = old_query.cmd_id;
@@ -399,6 +404,9 @@ async fn get_old_new_child_map(
             vec![args.source_range],
         ))),
     };
+    if let Some(query_id) = original_query_id {
+        child_ids(query_id)?;
+    }
     let old_entity_ids = child_ids(old_query_id)?;
     let new_entity_ids = child_ids(new_query_id)?;
 
