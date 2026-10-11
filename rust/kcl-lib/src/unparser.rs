@@ -899,10 +899,7 @@ impl Literal {
                 if let Some(suggestion) = deprecation(s, DeprecationKind::String) {
                     return write!(buf, "{suggestion}").unwrap();
                 }
-                let quote = if self.raw.trim().starts_with('"') { '"' } else { '\'' };
-                write(buf, quote);
-                write(buf, s);
-                write(buf, quote);
+                write(buf, &self.raw);
             }
             LiteralValue::Bool(_) => {
                 write(buf, &self.raw);
@@ -3555,6 +3552,20 @@ fn f() {
             literal.recast(&mut actual);
             assert_eq!(actual, expected, "failed test {i}, which is testing that {reason}");
         }
+    }
+
+    #[test]
+    fn recast_string_literal_preserves_escaped_quotes() {
+        let literal = Literal {
+            value: LiteralValue::String("Use \"datum A\" after polish".to_owned()),
+            raw: r#""Use \"datum A\" after polish""#.to_owned(),
+            digest: None,
+        };
+        let mut actual = String::new();
+        literal.recast(&mut actual);
+
+        assert_eq!(actual, literal.raw);
+        crate::Program::parse_no_errs(&format!("gdt::note(note = {actual})")).unwrap();
     }
 
     #[test]
