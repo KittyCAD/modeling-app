@@ -1000,7 +1000,6 @@ clonedLoft = clone(lofted)
         };
 
         assert_eq!(lofted.topology_id(), lofted.id);
-        assert_eq!(lofted.original_id(), lofted.id);
         assert_eq!(lofted.artifact_id, lofted.id.into());
 
         assert_ne!(lofted.id, cloned_loft.id);
@@ -1028,6 +1027,7 @@ clonedLoft = clone(lofted)
             panic!("Expected the source loft to be represented by a sweep artifact");
         };
         assert_eq!(source_sweep.sub_type, SweepSubType::Loft);
+        assert_eq!(source_sweep.path_id, Some(lofted.original_id().into()));
 
         let Some(Artifact::Sweep(cloned_sweep)) = result.artifact_graph.get(&cloned_loft.artifact_id) else {
             panic!("Expected the cloned loft to be represented by a sweep artifact");
