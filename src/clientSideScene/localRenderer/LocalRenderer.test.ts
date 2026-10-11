@@ -39,7 +39,7 @@ type RendererInternals = {
   currentModel: Group | null
   planeRenderer: PlaneRenderer | null
   pendingModelRefresh: boolean
-  modelLoadSettledAfterRender: boolean
+  modelLoadSettledAfterRender: false | 'idle' | 'new model'
   previewCamera: PerspectiveCamera | OrthographicCamera | null
   syncPreviewCameraFromShared(): void
   handleLocalSelectionCommand: LocalSelectionCommandHandler
@@ -464,7 +464,7 @@ describe('local GLB loading', () => {
     expect(f.manager.sceneInfra.camControls.target.toArray()).toEqual([
       500, -0, 500,
     ])
-    expect(f.state.modelLoadSettledAfterRender).toBe(true)
+    expect(f.state.modelLoadSettledAfterRender).toBe('new model')
     f.renderer.dispose()
   })
 
@@ -531,7 +531,7 @@ describe('local GLB loading', () => {
     expect(f.picker.setTargets).toHaveBeenLastCalledWith(f.defaultTargets, null)
     expect(f.highlights.setTargets).toHaveBeenLastCalledWith(f.defaultTargets)
     expect(f.state.baseRenderDirty).toBe(true)
-    expect(f.state.modelLoadSettledAfterRender).toBe(true)
+    expect(f.state.modelLoadSettledAfterRender).toBe('new model')
     f.renderer.dispose()
   })
 
@@ -557,7 +557,7 @@ describe('local GLB loading', () => {
     await vi.waitFor(() => expect(disposeGeometry).toHaveBeenCalledOnce())
     expect(f.state.currentModel).toBeNull()
     expect(f.manager.rustContext.export).toHaveBeenCalledOnce()
-    expect(f.state.modelLoadSettledAfterRender).toBe(true)
+    expect(f.state.modelLoadSettledAfterRender).toBe('new model')
     f.renderer.dispose()
   })
 

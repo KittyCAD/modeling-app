@@ -2276,8 +2276,14 @@ export class KclManager extends File {
       markOnce('code/endExecuteAst')
       this.notifyExecutionCompletion('completed')
 
-      // Update project thumbnail after successful execution
-      if (!isInterrupted && errors.length === 0 && projectFsManager.dir) {
+      // Update project thumbnail after successful execution. The local renderer
+      // writes its own once the new model is on screen.
+      if (
+        !isInterrupted &&
+        errors.length === 0 &&
+        projectFsManager.dir &&
+        !this.engineCommandManager.geometryOnly
+      ) {
         if (!this.fileOperations) {
           return
         }

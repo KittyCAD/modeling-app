@@ -4,9 +4,14 @@ import {
 } from '@src/clientSideScene/localRenderer/LocalRenderer'
 import { Spinner } from '@src/components/Spinner'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { useSingletons } from '@src/lib/boot'
+import { useApp, useSingletons } from '@src/lib/boot'
+import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { getSelectedPlaneId } from '@src/lang/queryAst'
+
+// The default planes are shown or hidden about 200 ms after an execution, so
+// the thumbnail waits for them, like the streamed one does.
+const THUMBNAIL_DELAY_MS = 500
 
 export const LocalWebGPUScene = (props: LocalRendererProps) => {
   const {
@@ -20,6 +25,7 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const rendererRef = useRef<LocalRenderer | null>(null)
   const latestPropsRef = useRef(props)
+  const app = useApp()
   const { kclManager } = useSingletons()
   const { state } = useModelingContext()
   const planeInteractionEnabled =
@@ -38,11 +44,26 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
     }
   }, [isExecuting])
 
-  const handleModelLoadSettled = useCallback(() => {
-    if (!kclManager.isExecutingSignal.value) {
-      setIsAwaitingModel(false)
-    }
-  }, [kclManager])
+  const handleModelLoadSettled = useCallback(
+    (isNewModel?: boolean) => {
+      if (!kclManager.isExecutingSignal.value) {
+        setIsAwaitingModel(false)
+      }
+      const renderer = rendererRef.current
+      const projectPath = app.project?.projectIORefSignal.value.path
+      if (!isNewModel || !renderer || !projectPath) return
+      setTimeout(() => {
+        renderer.readFrame((renderedCanvas) =>
+          createThumbnailPNGOnDesktop({
+            fileOperations: app.fileOperations,
+            projectDirectoryWithoutEndingSlash: projectPath,
+            renderedCanvas,
+          })
+        )
+      }, THUMBNAIL_DELAY_MS)
+    },
+    [kclManager, app]
+  )
 
   useEffect(() => {
     const container = containerRef.current

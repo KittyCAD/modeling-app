@@ -85,7 +85,8 @@ export interface LocalRendererProps {
   highlightEdges: boolean
   fixedSizeGrid: boolean
   onVisibilityChange: (isVisible: boolean) => void
-  onModelLoadSettled?: () => void
+  /** isNewModel: the frame just drawn is the first to show a finished execution. */
+  onModelLoadSettled?: (isNewModel?: boolean) => void
   forceHide?: boolean
 }
 
@@ -129,7 +130,7 @@ export class LocalRenderer {
   private readonly unregisterBaseUnitListener: () => void
   private ambientOcclusionRadius = 0.01
   private ambientOcclusionPipeline: AmbientOcclusionPipeline | null = null
-  private modelLoadSettledAfterRender = false
+  private modelLoadSettledAfterRender: false | 'idle' | 'new model' = false
   private baseRenderDirty = true
   private disposed = false
   private planeInteractionEnabled = false
@@ -793,9 +794,20 @@ export class LocalRenderer {
     } satisfies LocalRendererFrameMetrics)
 
     if (this.modelLoadSettledAfterRender) {
+      const isNewModel = this.modelLoadSettledAfterRender === 'new model'
       this.modelLoadSettledAfterRender = false
-      this.onModelLoadSettled?.()
+      this.onModelLoadSettled?.(isNewModel)
     }
+  }
+
+  /**
+   * Draws a frame and lends out the canvas. It can only be read during the
+   * call: WebGPU and WebGL canvases read back blank in a later task.
+   */
+  readFrame(read: (canvas: HTMLCanvasElement) => void) {
+    if (!this.renderer || !this.previewCamera || !this.scene) return
+    this.renderPreview(0)
+    read(this.renderer.domElement)
   }
 
   private scheduleRender() {
@@ -1028,7 +1040,7 @@ export class LocalRenderer {
     ) {
       void this.refreshModel().catch(reportRejection)
     } else if (!kclManager.isExecuting) {
-      this.modelLoadSettledAfterRender = true
+      this.modelLoadSettledAfterRender = 'idle'
     }
   }
 
@@ -1064,7 +1076,7 @@ export class LocalRenderer {
     if (this.kclManager.artifactGraph.size === 0) {
       this.clearModel()
       this.rebuildPlaneTargets()
-      this.modelLoadSettledAfterRender = true
+      this.modelLoadSettledAfterRender = 'new model'
       return
     }
     this.rebuildPlaneTargets()
@@ -1116,7 +1128,7 @@ export class LocalRenderer {
         this.fitSharedCameraToModel(bounds)
         this.hasFittedModel = true
       }
-      this.modelLoadSettledAfterRender = true
+      this.modelLoadSettledAfterRender = 'new model'
       this.invalidateBaseRender()
       logLocalWebGpuPreview('GLB model loaded', {
         exportRoundTripMs,
