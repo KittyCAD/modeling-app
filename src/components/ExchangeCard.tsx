@@ -519,7 +519,9 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
   let [startedAt] = useState<Date>(props.startedAt ?? new Date())
   const [updatedAt, setUpdatedAt] = useState<Date | undefined>(undefined)
 
-  const [showFullReasoning, setShowFullReasoning] = useState<boolean>(true)
+  const [showFullReasoning, setShowFullReasoning] = useState<boolean>(
+    () => !isExchangeComplete(props.responses)
+  )
 
   const cssCard = `flex flex-col px-4 py-2 gap-2 justify-between
     transition-height duration-500 overflow-hidden text-sm
