@@ -909,7 +909,7 @@ export class LocalRenderer {
     const renderer = new WebGPURenderer({
       antialias: true,
       alpha: false,
-      ...(device ? { device } : { forceWebGL: true }),
+      device,
     })
     await renderer.init()
     if (this.disposed) {
