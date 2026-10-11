@@ -370,22 +370,15 @@ async fn get_old_new_child_map(
     // Artifact graph ID management expects the cloned entity's own children
     // to be queried first. Pattern copies retain the source topology in KCL,
     // though, so use that topology for the runtime old-to-new ID map.
-    let mut queries = Vec::with_capacity(3);
-    let original_query_id = if old_geometry_id != source_topology_id {
-        let query = child_query(old_geometry_id, exec_state);
-        let id = query.cmd_id;
-        queries.push(query);
-        Some(id)
-    } else {
-        None
-    };
-
-    let old_query = child_query(source_topology_id, exec_state);
-    let old_query_id = old_query.cmd_id;
-    queries.push(old_query);
-    let new_query = child_query(new_geometry_id, exec_state);
-    let new_query_id = new_query.cmd_id;
-    queries.push(new_query);
+    let queries: Vec<_> = (old_geometry_id != source_topology_id)
+        .then_some(old_geometry_id)
+        .into_iter()
+        .chain([source_topology_id, new_geometry_id])
+        .map(|geometry_id| ModelingCmdReq {
+            cmd_id: exec_state.next_uuid().into(),
+            cmd: ModelingCmd::from(mcmd::EntityGetAllChildUuids::builder().entity_id(geometry_id).build()),
+        })
+        .collect();
     let response = exec_state
         .send_modeling_cmds(ModelingCmdMeta::from_args(exec_state, args), &queries)
         .await?;
@@ -395,20 +388,20 @@ async fn get_old_new_child_map(
             vec![args.source_range],
         )));
     };
-    let child_ids = |query_id| match responses.get(&query_id) {
-        Some(BatchResponse::Success {
-            response: OkModelingCmdResponse::EntityGetAllChildUuids(resp),
-        }) => Ok(&resp.entity_ids),
-        response => Err(KclError::new_engine(KclErrorDetails::new(
-            format!("EntityGetAllChildUuids response was not as expected: {response:?}"),
-            vec![args.source_range],
-        ))),
-    };
-    if let Some(query_id) = original_query_id {
-        child_ids(query_id)?;
-    }
-    let old_entity_ids = child_ids(old_query_id)?;
-    let new_entity_ids = child_ids(new_query_id)?;
+    let child_ids = queries
+        .iter()
+        .map(|query| match responses.get(&query.cmd_id) {
+            Some(BatchResponse::Success {
+                response: OkModelingCmdResponse::EntityGetAllChildUuids(resp),
+            }) => Ok(&resp.entity_ids),
+            response => Err(KclError::new_engine(KclErrorDetails::new(
+                format!("EntityGetAllChildUuids response was not as expected: {response:?}"),
+                vec![args.source_range],
+            ))),
+        })
+        .collect::<Result<Vec<_>>>()?;
+    let old_entity_ids = child_ids[child_ids.len() - 2];
+    let new_entity_ids = child_ids[child_ids.len() - 1];
 
     // Create a map of old entity ids to new entity ids.
     let mut entity_id_map = HashMap::from_iter(
@@ -420,13 +413,6 @@ async fn get_old_new_child_map(
     entity_id_map.insert(old_geometry_id, new_geometry_id);
     entity_id_map.insert(source_topology_id, new_geometry_id);
     Ok(entity_id_map)
-}
-
-fn child_query(geometry_id: uuid::Uuid, exec_state: &mut ExecState) -> ModelingCmdReq {
-    ModelingCmdReq {
-        cmd_id: exec_state.next_uuid().into(),
-        cmd: ModelingCmd::from(mcmd::EntityGetAllChildUuids::builder().entity_id(geometry_id).build()),
-    }
 }
 
 /// Fix the tags and references of a sketch.
