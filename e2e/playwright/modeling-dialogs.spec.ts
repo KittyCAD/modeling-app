@@ -4,6 +4,7 @@ import type { EngineCommand } from '@src/lang/std/artifactGraph'
 const profileCode = `@settings(kclVersion = 3.0)
 sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var 2mm, var 10mm], center = [var 0mm, var 10mm])
+  line1 = line(start = [var -10mm, var 0mm], end = [var -10mm, var 20mm])
 }
 region001 = region(segments = [sketch001.circle1])`
 
@@ -51,11 +52,16 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     ).toBeVisible()
     await expect(submit).toBeDisabled()
     await axisMode.selectOption({ label: 'Sketch Axis' })
+    await expect(submit).toBeEnabled()
+    await axisMode.selectOption({ label: 'Edge' })
+    await dialog.getByRole('button', { name: 'Select Edge' }).click()
+    await editor.selectText('line(')
     await dialog.getByRole('textbox', { name: /^angle$/i }).fill('180deg')
     await expect(submit).toBeEnabled()
     await submit.click()
     await expect(dialog).not.toBeAttached()
     await editor.expectEditor.toContain('angle = 180deg')
+    await editor.expectEditor.toContain('axis = sketch001.line1')
     await scene.settled()
 
     await toolbar.openFeatureTreePane()
@@ -66,6 +72,21 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     await submit.click()
     await expect(dialog).not.toBeAttached()
     await editor.expectEditor.toContain('angle = 90deg')
+    await editor.expectEditor.toContain('axis = sketch001.line1')
+    await scene.settled()
+
+    await toolbar.helixButton.click()
+    await dialog.getByRole('combobox', { name: /^mode\b/i }).selectOption({
+      label: 'Edge',
+    })
+    await dialog.getByRole('button', { name: 'Select Edge' }).click()
+    await editor.selectText('line(')
+    await expect(submit).toBeEnabled()
+    await submit.click()
+    await expect(dialog).not.toBeAttached()
+    await editor.expectEditor.toContain('helix(axis = sketch001.line1', {
+      shouldNormalise: true,
+    })
     await scene.settled()
 
     const planeIds = await page.evaluate(() => {

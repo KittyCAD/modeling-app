@@ -47,6 +47,7 @@ export function addHelix({
   ast,
   artifactGraph,
   wasmInstance,
+  mode,
   axis,
   edge,
   cylinder,
@@ -76,6 +77,14 @@ export function addHelix({
       pathToNode: PathToNode
     }
   | Error {
+  // Dialogs retain drafts for each mode; only use the selected one.
+  if (mode !== undefined) {
+    if (mode !== 'Axis') axis = undefined
+    if (mode !== 'Edge') edge = undefined
+    if (mode !== 'Cylinder') cylinder = undefined
+    if (mode === 'Cylinder') radius = undefined
+  }
+
   // 1. Clone the ast and nodeToEdit so we can freely edit them
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
