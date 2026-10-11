@@ -497,7 +497,7 @@ export class CameraControls {
 
   // This is only needed for local, streamed camera gets this from engine.
   resetLocalCameraToDefaultView() {
-    // An orthographic camera's zoom is only recalculated when switching from perspective, 
+    // An orthographic camera's zoom is only recalculated when switching from perspective,
     // so switch to perspective first if needed.
     if (this.camera instanceof OrthographicCamera) {
       this._usePerspectiveCamera()
