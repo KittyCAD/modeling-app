@@ -12,7 +12,7 @@ import {
   Vector3,
 } from 'three'
 import * as TWEEN from '@tweenjs/tween.js'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, type MockInstance, vi } from 'vitest'
 
 afterEach(() => {
   TWEEN.removeAll()
@@ -42,6 +42,22 @@ function makeConnectionManager(
 
 function unusedSettings(): never {
   throw new Error('Settings are not used by viewport projection updates')
+}
+
+/** What was sent, leaving out the client telling the engine where its camera is. */
+function commandsBesidesCameraPushes(
+  send: MockInstance<ConnectionManager['sendSceneCommand']>
+) {
+  return send.mock.calls
+    .map(([command]) =>
+      command.type === 'modeling_cmd_req' ? command.cmd.type : command.type
+    )
+    .filter(
+      (type) =>
+        type !== 'default_camera_look_at' &&
+        type !== 'default_camera_set_orthographic' &&
+        type !== 'default_camera_set_perspective'
+    )
 }
 
 describe('local canvas spherical orbit', () => {
@@ -123,7 +139,7 @@ describe('local canvas spherical orbit', () => {
         1e-6
       )
       controls.onMouseUp(pointer(512, 2980))
-      expect(send).not.toHaveBeenCalled()
+      expect(commandsBesidesCameraPushes(send)).toEqual([])
     }
   )
 
@@ -224,7 +240,7 @@ describe('local sketch camera transition', () => {
     return { manager, controls, sendSceneCommand }
   }
 
-  it('aligns once using the existing eye distance, without engine camera commands', async () => {
+  it('aligns once using the existing eye distance, without the engine moving the camera', async () => {
     vi.stubGlobal('matchMedia', () => ({ matches: true }))
     const { manager, controls, sendSceneCommand } = setup()
     const sketch = new Group()
@@ -237,7 +253,9 @@ describe('local sketch camera transition', () => {
     await letEngineAnimateAndSyncCamAfter(manager, 'plane-id', controls)
     await controls.transitionToSketch(sketch)
 
-    expect(sendSceneCommand).toHaveBeenCalledTimes(1)
+    expect(commandsBesidesCameraPushes(sendSceneCommand)).toEqual([
+      'enable_sketch_mode',
+    ])
     expect(sendSceneCommand).toHaveBeenCalledWith(
       expect.objectContaining({
         cmd: expect.objectContaining({
@@ -278,7 +296,9 @@ describe('local sketch camera transition', () => {
     expect(visibleHalfHeight).toBeCloseTo(expectedHalfHeight / 2)
     expect(camera.near).toBe(1)
     expect(camera.far).toBe(10000)
-    expect(sendSceneCommand).toHaveBeenCalledTimes(1)
+    expect(commandsBesidesCameraPushes(sendSceneCommand)).toEqual([
+      'enable_sketch_mode',
+    ])
   })
 
   it.each([100, 1000])(
@@ -331,7 +351,7 @@ describe('local sketch camera transition', () => {
       },
     })
     await controls.transitionToSketch(sketch)
-    expect(sendSceneCommand).toHaveBeenLastCalledWith(
+    expect(sendSceneCommand).toHaveBeenCalledWith(
       expect.objectContaining({
         cmd: { type: 'face_get_center', object_id: 'face-id' },
       })

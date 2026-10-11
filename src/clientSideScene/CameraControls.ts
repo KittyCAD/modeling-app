@@ -154,6 +154,10 @@ export class CameraControls {
     return this.camera instanceof PerspectiveCamera
   }
 
+  /**
+   * In local mode the client owns the camera, as in clientToEngine, and keeps
+   * pushing it to the engine so that engine camera commands start from it.
+   */
   private get effectiveCameraMode(): CameraSyncDirection | 'local' {
     return this.localCameraMode ? 'local' : this.syncDirection
   }
@@ -274,7 +278,6 @@ export class CameraControls {
   )
 
   throttledUpdateEngineCamera = throttle((threeValues: ThreeCamValues) => {
-    if (this.localCameraMode) return
     const cmd: EngineCommand = {
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
@@ -290,7 +293,7 @@ export class CameraControls {
     this.engineCommandManager.sendSceneCommand(cmd)
   }, 1000 / 15)
 
-  /** Push the locally owned camera to the engine before showing its stream. */
+  /** Gives the engine the client's camera: its projection and its pose. */
   syncCameraToEngine = async () => {
     if (this.camera instanceof OrthographicCamera) {
       await this.engineCommandManager.sendSceneCommand({
@@ -828,16 +831,14 @@ export class CameraControls {
 
     this.camera.quaternion.set(qx, qy, qz, qw)
     this.camera.updateProjectionMatrix()
-    if (this.effectiveCameraMode !== 'local') {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      this.engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_set_orthographic',
-        },
-      })
-    }
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_set_orthographic',
+      },
+    })
     this.onCameraChange()
   }
   private createPerspectiveCamera = () => {
@@ -876,15 +877,13 @@ export class CameraControls {
     }
 
     if (this.camera instanceof OrthographicCamera) {
-      if (this.effectiveCameraMode !== 'local') {
-        await this.engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'default_camera_set_orthographic',
-          },
-        })
-      }
+      await this.engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: {
+          type: 'default_camera_set_orthographic',
+        },
+      })
       return
     }
 
@@ -893,10 +892,7 @@ export class CameraControls {
 
   usePerspectiveCamera = async (forceSend = false) => {
     this._usePerspectiveCamera()
-    if (
-      this.effectiveCameraMode === 'clientToEngine' ||
-      (forceSend && this.effectiveCameraMode !== 'local')
-    ) {
+    if (this.effectiveCameraMode !== 'engineToClient' || forceSend) {
       await this.engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd_id: uuidv4(),
@@ -1808,10 +1804,7 @@ export class CameraControls {
       this.camera.updateProjectionMatrix()
     }
 
-    if (
-      this.effectiveCameraMode === 'clientToEngine' ||
-      (forceUpdate && this.effectiveCameraMode !== 'local')
-    ) {
+    if (this.effectiveCameraMode !== 'engineToClient' || forceUpdate) {
       this.throttledUpdateEngineCamera({
         quaternion: this.camera.quaternion,
         position: this.camera.position,
