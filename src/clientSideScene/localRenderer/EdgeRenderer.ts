@@ -7,8 +7,8 @@ import { KITTYCAD_GLTF } from './KITTYCAD_GLTF'
 import { sampleEdge } from './sampleEdge'
 import { isErr } from '@src/lib/trap'
 
-const LIGHT_THEME_EDGE_COLOR = new Color(0x1c1c1c)
-const DARK_THEME_EDGE_COLOR = new Color(0xf9f9f9)
+// The engine draws edges in this colour in both themes: see edgeColor in theme.ts.
+const EDGE_COLOR = new Color(0x1c1c1c)
 
 export type EdgeSelectionTarget = {
   object: LineSegments2
@@ -24,10 +24,10 @@ export class EdgeRenderer {
   private readonly selectionMaterial = new Line2NodeMaterial()
   private selectionTargets: EdgeSelectionTarget[] = []
 
-  constructor(backgroundColor: string, visible = true) {
+  constructor(visible = true) {
     this.geometry.setPositions([])
     this.material = new Line2NodeMaterial({
-      color: getEdgeColorForBackground(backgroundColor),
+      color: EDGE_COLOR,
       linewidth: LOCAL_WEBGPU_EDGE_LINE_WIDTH_PX,
     })
     this.material.worldUnits = false
@@ -137,10 +137,6 @@ export class EdgeRenderer {
     this.selectionTargets = []
   }
 
-  setBackgroundColor(backgroundColor: string) {
-    this.material.color.copy(getEdgeColorForBackground(backgroundColor))
-  }
-
   setVisible(visible: boolean) {
     this.group.visible = visible
   }
@@ -152,11 +148,4 @@ export class EdgeRenderer {
     this.material.dispose()
     this.selectionMaterial.dispose()
   }
-}
-
-function getEdgeColorForBackground(backgroundColor: string) {
-  const background = new Color(backgroundColor)
-  const luminance =
-    background.r * 0.2126 + background.g * 0.7152 + background.b * 0.0722
-  return luminance < 0.5 ? LIGHT_THEME_EDGE_COLOR : DARK_THEME_EDGE_COLOR
 }

@@ -410,7 +410,6 @@ export class LocalRenderer {
     if (this.theme === theme) return
     this.theme = theme
     this.selectionHighlightRenderer?.setBackgroundColor(this.backgroundColor)
-    this.edgeRenderer?.setBackgroundColor(this.backgroundColor)
     this.planeRenderer?.setTheme(theme)
     this.invalidateBaseRender()
   }
@@ -953,10 +952,7 @@ export class LocalRenderer {
       return
     }
 
-    this.edgeRenderer = new EdgeRenderer(
-      this.backgroundColor,
-      this.highlightEdges
-    )
+    this.edgeRenderer = new EdgeRenderer(this.highlightEdges)
     // Keep reference planes separate from the GLB and its fit-to-model bounds.
     this.planeRenderer = new PlaneRenderer(this.theme)
     this.planeRenderer.addTo(scene)
