@@ -453,6 +453,7 @@ export const commandBarMachine = setup({
             context.selectedCommand &&
             (argConfig?.inputType === 'selection' ||
               argConfig?.inputType === 'string' ||
+              argConfig?.inputType === 'text' ||
               argConfig?.inputType === 'options' ||
               argConfig?.inputType === 'selectionMixed') &&
             argConfig?.validation
@@ -496,6 +497,26 @@ export const commandBarMachine = setup({
           let argValue = typeof arg === 'function' ? arg(input) : arg
 
           try {
+            // Text may already be supplied when editing an existing command.
+            if (argConfig.inputType === 'text' && argConfig.validation) {
+              const result = await argConfig.validation({
+                data: { [argName]: argValue },
+                context: input,
+                machineContext:
+                  input.selectedCommand?.machineActor?.getSnapshot().context,
+              })
+              if (result !== true) {
+                const message =
+                  typeof result === 'string'
+                    ? result
+                    : `Unable to validate ${argName}.`
+                toast.error(message)
+                return Promise.reject({
+                  message,
+                  arg: { ...argConfig, name: argName },
+                })
+              }
+            }
             const isRequired =
               typeof argConfig.required === 'function'
                 ? argConfig.required(input)
