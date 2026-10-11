@@ -5,6 +5,8 @@ use std::collections::HashMap;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kcmc::ok_response::OkModelingCmdResponse;
+use kcmc::websocket::BatchResponse;
+use kcmc::websocket::ModelingCmdReq;
 use kcmc::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::{self as kcmc};
 
@@ -368,15 +370,45 @@ async fn get_old_new_child_map(
     // Artifact graph ID management expects the cloned entity's own children
     // to be queried first. Pattern copies retain the source topology in KCL,
     // though, so use that topology for the runtime old-to-new ID map.
-    if old_geometry_id != source_topology_id {
-        get_all_child_uuids(old_geometry_id, exec_state, args).await?;
+    let mut queries = Vec::with_capacity(3);
+    let original_query_id = if old_geometry_id != source_topology_id {
+        let query = child_query(old_geometry_id, exec_state);
+        let id = query.cmd_id;
+        queries.push(query);
+        Some(id)
+    } else {
+        None
+    };
+
+    let old_query = child_query(source_topology_id, exec_state);
+    let old_query_id = old_query.cmd_id;
+    queries.push(old_query);
+    let new_query = child_query(new_geometry_id, exec_state);
+    let new_query_id = new_query.cmd_id;
+    queries.push(new_query);
+    let response = exec_state
+        .send_modeling_cmds(ModelingCmdMeta::from_args(exec_state, args), &queries)
+        .await?;
+    let OkWebSocketResponseData::ModelingBatch { responses } = response else {
+        return Err(KclError::new_engine(KclErrorDetails::new(
+            format!("Expected clone child query batch response: {response:?}"),
+            vec![args.source_range],
+        )));
+    };
+    let child_ids = |query_id| match responses.get(&query_id) {
+        Some(BatchResponse::Success {
+            response: OkModelingCmdResponse::EntityGetAllChildUuids(resp),
+        }) => Ok(&resp.entity_ids),
+        response => Err(KclError::new_engine(KclErrorDetails::new(
+            format!("EntityGetAllChildUuids response was not as expected: {response:?}"),
+            vec![args.source_range],
+        ))),
+    };
+    if let Some(query_id) = original_query_id {
+        child_ids(query_id)?;
     }
-
-    // Get the old geometries entity ids.
-    let old_entity_ids = get_all_child_uuids(source_topology_id, exec_state, args).await?;
-
-    // Get the new geometries entity ids.
-    let new_entity_ids = get_all_child_uuids(new_geometry_id, exec_state, args).await?;
+    let old_entity_ids = child_ids(old_query_id)?;
+    let new_entity_ids = child_ids(new_query_id)?;
 
     // Create a map of old entity ids to new entity ids.
     let mut entity_id_map = HashMap::from_iter(
@@ -390,27 +422,11 @@ async fn get_old_new_child_map(
     Ok(entity_id_map)
 }
 
-async fn get_all_child_uuids(
-    geometry_id: uuid::Uuid,
-    exec_state: &mut ExecState,
-    args: &Args,
-) -> Result<Vec<uuid::Uuid>> {
-    let response = exec_state
-        .send_modeling_cmd(
-            ModelingCmdMeta::from_args(exec_state, args),
-            ModelingCmd::from(mcmd::EntityGetAllChildUuids::builder().entity_id(geometry_id).build()),
-        )
-        .await?;
-    let OkWebSocketResponseData::Modeling {
-        modeling_response: OkModelingCmdResponse::EntityGetAllChildUuids(resp),
-    } = response
-    else {
-        return Err(KclError::new_engine(KclErrorDetails::new(
-            format!("EntityGetAllChildUuids response was not as expected: {response:?}"),
-            vec![args.source_range],
-        )));
-    };
-    Ok(resp.entity_ids)
+fn child_query(geometry_id: uuid::Uuid, exec_state: &mut ExecState) -> ModelingCmdReq {
+    ModelingCmdReq {
+        cmd_id: exec_state.next_uuid().into(),
+        cmd: ModelingCmd::from(mcmd::EntityGetAllChildUuids::builder().entity_id(geometry_id).build()),
+    }
 }
 
 /// Fix the tags and references of a sketch.

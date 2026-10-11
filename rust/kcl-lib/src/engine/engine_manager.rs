@@ -501,7 +501,7 @@ impl EngineManager {
         self.stats().commands_batched.fetch_add(1, Relaxed);
 
         // Flush the batch queue.
-        self.run_batch(requests, source_range).await
+        self.run_batch(requests, source_range, false).await
     }
 
     /// Send the modeling cmd async and don't wait for the response.
@@ -536,6 +536,7 @@ impl EngineManager {
         &self,
         orig_requests: Vec<(WebSocketRequest, SourceRange)>,
         source_range: SourceRange,
+        all_responses: bool,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
         // Return early if we have no commands to send.
         if orig_requests.is_empty() {
@@ -607,7 +608,13 @@ impl EngineManager {
 
                 // If we have a batch response, we want to return the specific id we care about.
                 if let OkWebSocketResponseData::ModelingBatch { responses } = response {
-                    self.parse_batch_responses(last_id.into(), id_to_source_range, id_to_command, responses)
+                    let last_response =
+                        self.parse_batch_responses(last_id.into(), id_to_source_range, id_to_command, &responses)?;
+                    if all_responses {
+                        Ok(OkWebSocketResponseData::ModelingBatch { responses })
+                    } else {
+                        Ok(last_response)
+                    }
                 } else {
                     // We should never get here.
                     Err(KclError::new_engine(KclErrorDetails::new(
@@ -642,6 +649,23 @@ impl EngineManager {
         }
     }
 
+    /// Send these commands together and retain every reply. They are appended after taking
+    /// the shared queue so another execution cannot flush only part of this group.
+    pub(crate) async fn send_modeling_cmds(
+        &self,
+        batch_context: &EngineBatchContext,
+        source_range: SourceRange,
+        cmds: &[ModelingCmdReq],
+    ) -> Result<OkWebSocketResponseData, KclError> {
+        let mut requests = batch_context.take_batch().await;
+        requests.extend(
+            cmds.iter()
+                .map(|cmd| (WebSocketRequest::ModelingCmdReq(cmd.clone()), source_range)),
+        );
+        self.stats().commands_batched.fetch_add(cmds.len(), Relaxed);
+        self.run_batch(requests, source_range, true).await
+    }
+
     /// Force flush the batch queue.
     pub async fn flush_batch(
         &self,
@@ -659,7 +683,7 @@ impl EngineManager {
             batch_context.take_batch().await
         };
 
-        self.run_batch(all_requests, source_range).await
+        self.run_batch(all_requests, source_range, false).await
     }
 
     async fn make_default_plane(
@@ -789,7 +813,7 @@ impl EngineManager {
         // Allows us to print which command failed
         id_to_command: HashMap<uuid::Uuid, ModelingCmdEndpoint>,
         // The response from the engine.
-        responses: HashMap<kcmc::id::ModelingCmdId, BatchResponse>,
+        responses: &HashMap<kcmc::id::ModelingCmdId, BatchResponse>,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
         let mut any_err: Option<crate::errors::KclError> = None;
         let mut target_ok: Option<OkWebSocketResponseData> = None;

@@ -231,6 +231,30 @@ impl ExecState {
             .await
     }
 
+    /// Send multiple commands together, preserving their artifact records and replies.
+    pub(crate) async fn send_modeling_cmds(
+        &mut self,
+        meta: ModelingCmdMeta<'_>,
+        cmds: &[ModelingCmdReq],
+    ) -> Result<OkWebSocketResponseData, KclError> {
+        if self.is_in_sketch_block() {
+            return Err(no_modeling_in_sketch_block_error(meta.source_range));
+        }
+        for cmd_req in cmds {
+            self.push_command(ArtifactCommand {
+                cmd_id: *cmd_req.cmd_id.as_ref(),
+                range: meta.source_range,
+                command: cmd_req.cmd.clone(),
+                entity_clone_info: None,
+                omit_from_graph: false,
+            });
+        }
+        meta.ctx
+            .engine
+            .send_modeling_cmds(&meta.ctx.engine_batch, meta.source_range, cmds)
+            .await
+    }
+
     /// Send a query-only modeling command that is recorded in command snapshots
     /// but omitted from the semantic artifact graph.
     pub(crate) async fn send_untracked_modeling_cmd(
