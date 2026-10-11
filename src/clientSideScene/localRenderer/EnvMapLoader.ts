@@ -14,7 +14,8 @@ export class EnvMapLoader {
 
   constructor(
     private readonly renderer: Renderer,
-    private readonly device: GPUDevice
+    // Absent when the renderer runs on its WebGL backend.
+    private readonly device?: GPUDevice
   ) {}
 
   async loadDefault(scene: Scene) {
@@ -36,7 +37,7 @@ export class EnvMapLoader {
         100,
         { size: DEFAULT_PMREM_SIZE }
       )
-      await this.device.queue.onSubmittedWorkDone()
+      await this.device?.queue.onSubmittedWorkDone()
     } catch (error) {
       environmentRenderTarget?.dispose()
       throw error
@@ -62,7 +63,7 @@ export class EnvMapLoader {
 
     try {
       environmentRenderTarget = pmremGenerator.fromEquirectangular(hdrTexture)
-      await this.device.queue.onSubmittedWorkDone()
+      await this.device?.queue.onSubmittedWorkDone()
     } catch (error) {
       environmentRenderTarget?.dispose()
       throw error

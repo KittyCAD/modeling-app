@@ -864,58 +864,57 @@ export class LocalRenderer {
       logLocalWebGpuPreview('WebGPU unavailable', {
         isSecureContext: window.isSecureContext,
       })
-      this.setVisible(false)
-      return
     }
 
-    const adapter = await navigator.gpu.requestAdapter({
-      powerPreference: 'high-performance',
-    })
-    if (!adapter) {
+    const adapter = hasNavigatorGpu
+      ? await navigator.gpu.requestAdapter({
+          powerPreference: 'high-performance',
+        })
+      : null
+    if (hasNavigatorGpu && !adapter) {
       logLocalWebGpuPreview('WebGPU adapter request failed')
-      this.setVisible(false)
-      return
     }
 
-    let device: GPUDevice
-    try {
-      device = await adapter.requestDevice({
-        requiredLimits: {
-          // TODO: Chunk geometry so large models work on
-          // adapters with lower per-buffer limits.
-          maxBufferSize: adapter.limits.maxBufferSize,
-        },
-      })
-    } catch (error) {
-      logLocalWebGpuPreview('device request failed', {
-        error,
-        adapterInfo: adapter.info
-          ? {
-              vendor: adapter.info.vendor,
-              architecture: adapter.info.architecture,
-              description: adapter.info.description,
-            }
-          : null,
-        adapterFeatures: Array.from(adapter.features.values()),
-      })
-      reportRejection(error)
-      this.setVisible(false)
-      return
-    }
+    // Without a WebGPU device, three.js renders the same scene through WebGL 2.
+    const device = adapter
+      ? await adapter
+          .requestDevice({
+            requiredLimits: {
+              // TODO: Chunk geometry so large models work on
+              // adapters with lower per-buffer limits.
+              maxBufferSize: adapter.limits.maxBufferSize,
+            },
+          })
+          .catch((error: unknown) => {
+            logLocalWebGpuPreview('device request failed', {
+              error,
+              adapterInfo: adapter.info
+                ? {
+                    vendor: adapter.info.vendor,
+                    architecture: adapter.info.architecture,
+                    description: adapter.info.description,
+                  }
+                : null,
+              adapterFeatures: Array.from(adapter.features.values()),
+            })
+            reportRejection(error)
+            return undefined
+          })
+      : undefined
     if (this.disposed) {
-      device.destroy()
+      device?.destroy()
       return
     }
 
     const renderer = new WebGPURenderer({
       antialias: true,
       alpha: false,
-      device,
+      ...(device ? { device } : { forceWebGL: true }),
     })
     await renderer.init()
     if (this.disposed) {
       renderer.dispose()
-      device.destroy()
+      device?.destroy()
       return
     }
     renderer.toneMapping = NeutralToneMapping
@@ -947,7 +946,7 @@ export class LocalRenderer {
       envMapLoader.dispose()
       renderer.domElement.remove()
       renderer.dispose()
-      device.destroy()
+      device?.destroy()
       this.scene = null
       return
     }
@@ -983,7 +982,7 @@ export class LocalRenderer {
       )
 
     this.renderer = renderer
-    this.device = device
+    this.device = device ?? null
     this.envMapLoader = envMapLoader
 
     this.rebuildPlaneTargets()

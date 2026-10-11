@@ -17,11 +17,12 @@ import {
 import type { EdgeSelectionTarget } from '@src/clientSideScene/localRenderer/EdgeRenderer'
 import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeometry.js'
 import { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
-import { attribute, outputStruct, uint, varying } from 'three/tsl'
+import { attribute, float, outputStruct, uint, varying, vec4 } from 'three/tsl'
 import {
   Line2NodeMaterial,
   NodeMaterial,
   RenderTarget,
+  WebGLBackend,
   type Node,
   type WebGPURenderer,
 } from 'three/webgpu'
@@ -87,6 +88,22 @@ export class IntegerIdPicker {
     this.scene.background = new Color(0)
   }
 
+  // three.js can neither clear nor read back an integer render target on its
+  // WebGL backend, so there the ID is packed into the bytes of an RGBA one.
+  private get packsIdsIntoColor() {
+    return this.renderer.backend instanceof WebGLBackend
+  }
+
+  private idOutput(id: Node<'uint'>) {
+    if (!this.packsIdsIntoColor) {
+      // Preserve integer output instead of NodeMaterial's default vec4 conversion.
+      return outputStruct(id)
+    }
+    const byte = (shift: number) =>
+      float(id.shiftRight(uint(shift)).bitAnd(uint(255))).div(255)
+    return vec4(byte(0), byte(8), byte(16), 1)
+  }
+
   // Share geometry; only the small ID materials and scene nodes are owned here.
   setTargets(
     targets: Mesh[],
@@ -112,8 +129,7 @@ export class IntegerIdPicker {
     }
     const createMaterial = (id: number) => {
       const material = new NodeMaterial()
-      // Preserve integer output instead of NodeMaterial's default vec4 conversion.
-      material.fragmentNode = outputStruct(uint(id))
+      material.fragmentNode = this.idOutput(uint(id))
       material.side = DoubleSide
       material.blending = NoBlending
       material.toneMapped = false
@@ -186,7 +202,7 @@ export class IntegerIdPicker {
         const selectionId = varying(
           attribute('selectionId', 'uint') as unknown as Node<'uint'>
         ) as unknown as Node<'uint'>
-        material.outputNode = outputStruct(uint(selectionId)) as Node
+        material.outputNode = this.idOutput(selectionId) as Node
         const object = new LineSegments2(geometry, material)
         object.frustumCulled = false
         object.renderOrder = 2
@@ -266,12 +282,17 @@ export class IntegerIdPicker {
     const pixels = await this.renderer.readRenderTargetPixelsAsync(
       target,
       readbackPixelX,
-      readbackPixelY,
+      // WebGL counts rows from the bottom.
+      this.packsIdsIntoColor
+        ? target.height - 1 - readbackPixelY
+        : readbackPixelY,
       1,
       1
     )
     const idBufferReadbackDurationMs = performance.now() - readbackStartedAt
-    const selectionId = Number(pixels[0] ?? 0)
+    const selectionId = this.packsIdsIntoColor
+      ? pixels[0] | (pixels[1] << 8) | (pixels[2] << 16)
+      : Number(pixels[0] ?? 0)
     const stale = version !== this.version
 
     return {
@@ -324,8 +345,9 @@ export class IntegerIdPicker {
 
     if (!this.renderTarget) {
       this.renderTarget = new RenderTarget(width, height, {
-        format: RedIntegerFormat,
-        type: UnsignedIntType,
+        ...(this.packsIdsIntoColor
+          ? {}
+          : { format: RedIntegerFormat, type: UnsignedIntType }),
         minFilter: NearestFilter,
         magFilter: NearestFilter,
         depthBuffer: true,
