@@ -452,14 +452,30 @@ export class CameraControls {
 
       this.camera.up.copy(newUp)
       this.camera.updateProjectionMatrix()
-      if (this.camera instanceof PerspectiveCamera && camSettings.ortho) {
+      // TODO this code might need to be deleted once we support named views, etc.
+      // In local mode the engine is never told the camera's projection or field
+      // of view, so only the pose is taken from its replies.
+      const followsEngineProjection = this.effectiveCameraMode !== 'local'
+      if (
+        followsEngineProjection &&
+        this.camera instanceof PerspectiveCamera &&
+        camSettings.ortho
+      ) {
         this.useOrthographicCamera()
       }
-      if (this.camera instanceof OrthographicCamera && !camSettings.ortho) {
+      if (
+        followsEngineProjection &&
+        this.camera instanceof OrthographicCamera &&
+        !camSettings.ortho
+      ) {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         this.usePerspectiveCamera()
       }
-      if (this.camera instanceof PerspectiveCamera && camSettings.fov_y) {
+      if (
+        followsEngineProjection &&
+        this.camera instanceof PerspectiveCamera &&
+        camSettings.fov_y
+      ) {
         this.camera.fov = camSettings.fov_y
       } else if (this.camera instanceof OrthographicCamera) {
         const fovY = camSettings.fov_y ?? this.perspectiveFovBeforeOrtho ?? 45
