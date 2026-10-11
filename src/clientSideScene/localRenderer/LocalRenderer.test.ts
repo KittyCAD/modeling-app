@@ -39,7 +39,6 @@ type RendererInternals = {
   currentModel: Group | null
   planeRenderer: PlaneRenderer | null
   pendingModelRefresh: boolean
-  modelLoadSettledAfterRender: false | 'idle' | 'new model'
   previewCamera: PerspectiveCamera | OrthographicCamera | null
   syncPreviewCameraFromShared(): void
   handleLocalSelectionCommand: LocalSelectionCommandHandler
@@ -464,7 +463,7 @@ describe('local GLB loading', () => {
     expect(f.manager.sceneInfra.camControls.target.toArray()).toEqual([
       500, -0, 500,
     ])
-    expect(f.state.modelLoadSettledAfterRender).toBe('new model')
+    expect(f.onModelLoadSettled).toHaveBeenCalledExactlyOnceWith(true)
     f.renderer.dispose()
   })
 
@@ -531,7 +530,8 @@ describe('local GLB loading', () => {
     expect(f.picker.setTargets).toHaveBeenLastCalledWith(f.defaultTargets, null)
     expect(f.highlights.setTargets).toHaveBeenLastCalledWith(f.defaultTargets)
     expect(f.state.baseRenderDirty).toBe(true)
-    expect(f.state.modelLoadSettledAfterRender).toBe('new model')
+    expect(f.onModelLoadSettled).toHaveBeenCalledTimes(2)
+    expect(f.onModelLoadSettled).toHaveBeenLastCalledWith(true)
     f.renderer.dispose()
   })
 
@@ -557,7 +557,7 @@ describe('local GLB loading', () => {
     await vi.waitFor(() => expect(disposeGeometry).toHaveBeenCalledOnce())
     expect(f.state.currentModel).toBeNull()
     expect(f.manager.rustContext.export).toHaveBeenCalledOnce()
-    expect(f.state.modelLoadSettledAfterRender).toBe('new model')
+    expect(f.onModelLoadSettled).toHaveBeenCalledExactlyOnceWith(true)
     f.renderer.dispose()
   })
 
@@ -639,7 +639,9 @@ describe('local GLB loading', () => {
       )
       expect(f.highlights.setTargets).toHaveBeenLastCalledWith(f.defaultTargets)
       expect(f.state.baseRenderDirty).toBe(true)
-      expect(f.onModelLoadSettled).toHaveBeenCalledOnce()
+      // Once for the first model, once for the failure.
+      expect(f.onModelLoadSettled).toHaveBeenCalledTimes(2)
+      expect(f.onModelLoadSettled).toHaveBeenLastCalledWith()
       expect(f.manager.rustContext.export).toHaveBeenCalledTimes(2)
       f.renderer.dispose()
     }
@@ -691,7 +693,7 @@ describe('local GLB loading', () => {
     await pending.promise.catch(() => {})
     expect(f.state.currentModel).toBe(current)
     expect(errorLog).not.toHaveBeenCalled()
-    expect(f.onModelLoadSettled).not.toHaveBeenCalled()
+    expect(f.onModelLoadSettled).toHaveBeenCalledExactlyOnceWith(true)
     f.renderer.dispose()
   })
 

@@ -51,16 +51,17 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
       }
       const renderer = rendererRef.current
       const projectPath = app.project?.projectIORefSignal.value.path
-      if (!isNewModel || !renderer || !projectPath) return
-      setTimeout(() => {
-        renderer.readFrame((renderedCanvas) =>
-          createThumbnailPNGOnDesktop({
-            fileOperations: app.fileOperations,
-            projectDirectoryWithoutEndingSlash: projectPath,
-            renderedCanvas,
-          })
-        )
-      }, THUMBNAIL_DELAY_MS)
+      if (isNewModel && renderer && projectPath) {
+        setTimeout(() => {
+          renderer.readFrame((renderedCanvas) =>
+            createThumbnailPNGOnDesktop({
+              fileOperations: app.fileOperations,
+              projectDirectoryWithoutEndingSlash: projectPath,
+              renderedCanvas,
+            })
+          )
+        }, THUMBNAIL_DELAY_MS)
+      }
     },
     [kclManager, app]
   )

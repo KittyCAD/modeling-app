@@ -85,7 +85,7 @@ export interface LocalRendererProps {
   highlightEdges: boolean
   fixedSizeGrid: boolean
   onVisibilityChange: (isVisible: boolean) => void
-  /** isNewModel: the frame just drawn is the first to show a finished execution. */
+  /** isNewModel: the result of a finished execution is now in the scene. */
   onModelLoadSettled?: (isNewModel?: boolean) => void
   forceHide?: boolean
 }
@@ -130,7 +130,6 @@ export class LocalRenderer {
   private readonly unregisterBaseUnitListener: () => void
   private ambientOcclusionRadius = 0.01
   private ambientOcclusionPipeline: AmbientOcclusionPipeline | null = null
-  private modelLoadSettledAfterRender: false | 'idle' | 'new model' = false
   private baseRenderDirty = true
   private disposed = false
   private planeInteractionEnabled = false
@@ -171,7 +170,6 @@ export class LocalRenderer {
           // A new execution invalidates any export or GLB parse still in flight.
           this.modelLoadGeneration += 1
           this.pendingModelRefresh = false
-          this.modelLoadSettledAfterRender = false
           this.clearPlaneHover()
         }
       }
@@ -792,12 +790,6 @@ export class LocalRenderer {
       hoverActive: this.hoveredPlane !== null,
       selectionCount: this.selectedPlaneId ? 1 : 0,
     } satisfies LocalRendererFrameMetrics)
-
-    if (this.modelLoadSettledAfterRender) {
-      const isNewModel = this.modelLoadSettledAfterRender === 'new model'
-      this.modelLoadSettledAfterRender = false
-      this.onModelLoadSettled?.(isNewModel)
-    }
   }
 
   /**
@@ -1040,7 +1032,7 @@ export class LocalRenderer {
     ) {
       void this.refreshModel().catch(reportRejection)
     } else if (!kclManager.isExecuting) {
-      this.modelLoadSettledAfterRender = 'idle'
+      this.onModelLoadSettled?.()
     }
   }
 
@@ -1076,7 +1068,7 @@ export class LocalRenderer {
     if (this.kclManager.artifactGraph.size === 0) {
       this.clearModel()
       this.rebuildPlaneTargets()
-      this.modelLoadSettledAfterRender = 'new model'
+      this.onModelLoadSettled?.(true)
       return
     }
     this.rebuildPlaneTargets()
@@ -1128,8 +1120,8 @@ export class LocalRenderer {
         this.fitSharedCameraToModel(bounds)
         this.hasFittedModel = true
       }
-      this.modelLoadSettledAfterRender = 'new model'
       this.invalidateBaseRender()
+      this.onModelLoadSettled?.(true)
       logLocalWebGpuPreview('GLB model loaded', {
         exportRoundTripMs,
         loadMs: performance.now() - startedAt - exportRoundTripMs,
