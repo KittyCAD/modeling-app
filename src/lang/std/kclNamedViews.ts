@@ -22,7 +22,8 @@ export const KCL_DEFAULT_VIEW_NAME = 'Default View'
  * A KclNamedView is one `view::named` artifact and the module that declared it.
  *
  * The `NamedView` of `@rust/kcl-lib/bindings/NamedView` is a different feature:
- * the project-global camera stored in `project.toml`.
+ * the deprecated project-global camera stored in `project.toml`, which
+ * `migrateProjectTomlNamedViews` moves into KCL.
  */
 export interface KclNamedView {
   artifact: KclNamedViewArtifact
