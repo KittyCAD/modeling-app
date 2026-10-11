@@ -27,6 +27,7 @@ import { projectLibrariesFromSettings } from '@src/lib/projectLibraries'
 import { projectWithLibraryOwnership } from '@src/lib/projectLibraryOwnership'
 import type RustContext from '@src/lib/rustContext'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
+import { takeViewportScreenshot } from '@src/lib/screenshot'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import {
   getAllCurrentSettings,
@@ -94,6 +95,7 @@ import {
   type UserFeaturesRegistryService,
   userFeaturesService,
 } from '@src/registry/contracts/userFeatures'
+import { viewportScreenshotService } from '@src/registry/contracts/viewportScreenshot'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import {
   type ZdsPluginActivationSetting,
@@ -830,6 +832,10 @@ export class App implements AppSubsystems {
           ),
           provideService(systemIOService, {
             actor: this.systemIOActor,
+          }),
+          provideService(viewportScreenshotService, {
+            capture: () =>
+              takeViewportScreenshot(kclManager.sceneInfra.localRenderer),
           }),
         ],
       }),

@@ -1,3 +1,4 @@
+import type { LocalRenderer } from '@src/clientSideScene/localRenderer/LocalRenderer'
 import { writeProjectThumbnailFile } from '@src/lib/desktop'
 import { getVisibleElementRect } from '@src/lib/viewportElement'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
@@ -120,23 +121,38 @@ async function takeScreenshotOfVideoStreamCanvas(): Promise<Blob | null> {
 }
 
 /**
- * Captures the video stream canvas composited with the gizmo overlay,
- * matching what the user sees in the modeling viewport.
+ * Draws the visible part of the 3D scene: from the local renderer if there is
+ * one, else from the video.
  */
-export function takeViewportScreenshot(): string {
+const drawVisibleScene = (
+  targetCanvas: HTMLCanvasElement,
+  localRenderer?: LocalRenderer | null
+) => {
+  if (localRenderer) {
+    return localRenderer.readFrame((renderedCanvas) =>
+      drawVisibleVideoStream(renderedCanvas, renderedCanvas, targetCanvas)
+    )
+  }
   const canvas = document.querySelector('[data-engine]')
   const video = document.getElementById('video-stream')
   if (
-    !canvas ||
-    !video ||
-    !(canvas instanceof HTMLCanvasElement) ||
-    !(video instanceof HTMLVideoElement)
+    canvas instanceof HTMLCanvasElement &&
+    video instanceof HTMLVideoElement
   ) {
-    return ''
+    return drawVisibleVideoStream(video, canvas, targetCanvas)
   }
+  return null
+}
 
+/**
+ * Captures the 3D scene composited with the gizmo overlay, matching what the
+ * user sees in the modeling viewport.
+ */
+export function takeViewportScreenshot(
+  localRenderer?: LocalRenderer | null
+): string {
   const compositeCanvas = document.createElement('canvas')
-  const crop = drawVisibleVideoStream(video, canvas, compositeCanvas)
+  const crop = drawVisibleScene(compositeCanvas, localRenderer)
   const ctx = compositeCanvas.getContext('2d')
   if (!crop) return ''
   if (!ctx) return ''

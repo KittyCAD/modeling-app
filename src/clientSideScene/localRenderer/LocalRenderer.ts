@@ -796,10 +796,10 @@ export class LocalRenderer {
    * Draws a frame and lends out the canvas. It can only be read during the
    * call: WebGPU and WebGL canvases read back blank in a later task.
    */
-  readFrame(read: (canvas: HTMLCanvasElement) => void) {
-    if (!this.renderer || !this.previewCamera || !this.scene) return
+  readFrame<T>(read: (canvas: HTMLCanvasElement) => T) {
+    if (!this.renderer || !this.previewCamera || !this.scene) return undefined
     this.renderPreview(0)
-    read(this.renderer.domElement)
+    return read(this.renderer.domElement)
   }
 
   private scheduleRender() {

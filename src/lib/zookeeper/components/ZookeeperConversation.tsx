@@ -10,7 +10,7 @@ import { MakeathonAnnouncement } from '@src/components/MakeathonAnnouncement'
 import Tooltip from '@src/components/Tooltip'
 import { noAutofillInputProps } from '@src/lib/autofill'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
+import { dataUrlToFile } from '@src/lib/screenshot'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 import { isNonNullable } from '@src/lib/utils'
@@ -25,6 +25,7 @@ import {
   type ZookeeperAttachmentFetchState,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import { viewportScreenshotService } from '@src/registry/contracts/viewportScreenshot'
 import {
   activateZoodleRuntimeExtension,
   deactivateZoodleRuntimeExtension,
@@ -438,7 +439,7 @@ export const ZookeeperConversationInput = (
   const onCaptureScreenshot = () => {
     if (props.disabled) return
     try {
-      const dataUrl = takeViewportScreenshot()
+      const dataUrl = registry.get(viewportScreenshotService).capture()
       if (!dataUrl) return
       appendDataUrlAttachment(dataUrl, 'viewport-screenshot.png')
     } catch (e) {
@@ -454,7 +455,7 @@ export const ZookeeperConversationInput = (
 
     if (props.disabled) return
     try {
-      const dataUrl = takeViewportScreenshot()
+      const dataUrl = registry.get(viewportScreenshotService).capture()
       if (!dataUrl) return
       setIsZoodleActive(true)
       activateZoodleRuntimeExtension(registry, {

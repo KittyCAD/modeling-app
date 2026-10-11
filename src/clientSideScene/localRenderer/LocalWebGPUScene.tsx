@@ -77,10 +77,14 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
       onModelLoadSettled: handleModelLoadSettled,
     })
     rendererRef.current = renderer
+    kclManager.sceneInfra.localRenderer = renderer
 
     return () => {
       if (rendererRef.current === renderer) {
         rendererRef.current = null
+      }
+      if (kclManager.sceneInfra.localRenderer === renderer) {
+        kclManager.sceneInfra.localRenderer = null
       }
       renderer.dispose()
     }
