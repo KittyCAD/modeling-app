@@ -559,18 +559,19 @@ mod tests {
     async fn kcl_test_clone_chamfered_cap_tags() {
         for version in ["2.0", "3.0"] {
             let code = r#"@settings(kclVersion = VERSION, experimentalFeatures = allow)
-profile = startSketchOn(XZ)
-  |> startProfile(at = [-4, -4])
-  |> line(end = [8, 0], tag = $bottom)
-  |> line(end = [0, 8], tag = $right)
-  |> line(end = [-8, 0], tag = $top)
-  |> close(tag = $left)
-blank = extrude(profile, length = 4mm, symmetric = true, tagStart = $startCap, tagEnd = $endCap)
+profile = sketch(on = XZ) {
+  bottom = line(start = [-4mm, -4mm], end = [4mm, -4mm])
+  right = line(start = [4mm, -4mm], end = [4mm, 4mm])
+  top = line(start = [4mm, 4mm], end = [-4mm, 4mm])
+  left = line(start = [-4mm, 4mm], end = [-4mm, -4mm])
+}
+profileRegion = region(segments = [profile.bottom, profile.right, profile.top, profile.left])
+blank = extrude(profileRegion, length = 4mm, symmetric = true, tagStart = $startCap, tagEnd = $endCap)
 source = chamfer(blank, length = 0.25mm, edges = [
-  {sideFaces = [blank.sketch.tags.right, blank.faces.startCap]},
-  {sideFaces = [blank.sketch.tags.right, blank.faces.endCap]},
-  {sideFaces = [blank.sketch.tags.left, blank.faces.startCap]},
-  {sideFaces = [blank.sketch.tags.left, blank.faces.endCap]}
+  {sideFaces = [profileRegion.tags.right, blank.faces.startCap]},
+  {sideFaces = [profileRegion.tags.right, blank.faces.endCap]},
+  {sideFaces = [profileRegion.tags.left, blank.faces.startCap]},
+  {sideFaces = [profileRegion.tags.left, blank.faces.endCap]}
 ])
 cloned = clone(source)
 startFace = cloned.faces.startCap
