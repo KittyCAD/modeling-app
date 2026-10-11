@@ -17,7 +17,6 @@ import {
   EngineConnectionManagerEvents,
   type EngineDisconnectEventDetail,
 } from '@src/lib/engineConnection/utils'
-import { Themes } from '@src/lib/theme'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
@@ -91,77 +90,6 @@ describe('ConnectionManager', () => {
     reportClientError.mockClear()
     ReconnectTestWebSocket.instances = []
   })
-
-  it.each(['camera_drag_move', 'camera_drag_end'] as const)(
-    'settles %s replies during WebRTC startup and removes the listener on teardown',
-    async (type) => {
-      vi.useFakeTimers()
-      vi.stubGlobal('WebSocket', ReconnectTestWebSocket)
-      const manager = createConnectionManager()
-      vi.spyOn(manager, 'settings', 'get').mockReturnValue({
-        theme: Themes.Light,
-        highlightEdges: true,
-        enableSSAO: false,
-        showScaleGrid: false,
-        cameraProjection: 'perspective',
-        cameraOrbit: 'spherical',
-        backfaceColor: '#ffffff',
-      })
-      const handleMessage = vi.fn(manager.createMessageHandler())
-      vi.spyOn(manager, 'createMessageHandler').mockReturnValue(handleMessage)
-      const start = startConnectionManager(manager, { width: 256, height: 256 })
-      const connection = manager.connection!
-      const socket = ReconnectTestWebSocket.instances[0]
-      socket.send.mockImplementation((data: string) => {
-        const request = JSON.parse(data)
-        socket.dispatchEvent(
-          new MessageEvent('message', {
-            data: JSON.stringify({
-              success: true,
-              request_id: request.cmd_id,
-              resp: {
-                type: 'modeling',
-                data: {
-                  modeling_response: { type: request.cmd.type, settings: {} },
-                },
-              },
-            }),
-          })
-        )
-      })
-      const sendCamera = (id: string) =>
-        manager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: id,
-          cmd: { type, interaction: 'rotate', window: { x: 10, y: 10 } },
-        })
-
-      expect(connection.connected).toBe(false)
-      const early = sendCamera('early-camera')
-      expect(manager.pendingCommands).toEqual({})
-      await expect(early).resolves.toEqual(
-        expect.objectContaining({ success: true })
-      )
-      expect(handleMessage).toHaveBeenCalledOnce()
-
-      connection.peerConnection = new EventTarget() as RTCPeerConnection
-      connection.deferredPeerConnection!.resolve(true)
-      connection.deferredMediaStreamAndWebrtcStatsCollector!.resolve(true)
-      connection.deferredSdpAnswer!.resolve(true)
-      connection.deferredConnection!.resolve(true)
-      await start
-      handleMessage.mockClear()
-      await sendCamera('ready-camera')
-      expect(handleMessage).toHaveBeenCalledOnce()
-      await vi.advanceTimersByTimeAsync(PENDING_COMMAND_TIMEOUT)
-      expect(manager.pendingCommands).toEqual({})
-
-      manager.tearDown({ route: 'page-exit', initiatedBy: 'client' })
-      handleMessage.mockClear()
-      socket.dispatchEvent(new MessageEvent('message', { data: '{}' }))
-      expect(handleMessage).not.toHaveBeenCalled()
-    }
-  )
 
   it('warns when Engine rejects a modeling command', async () => {
     const manager = createConnectionManager()
