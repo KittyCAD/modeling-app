@@ -35,6 +35,28 @@ export type ZookeeperEditPatch = {
   changed_files?: ZookeeperEditPatchFile[]
 }
 
+export type ZookeeperFileChangeSummary = {
+  created: number
+  modified: number
+  deleted: number
+}
+
+export function summarizeZookeeperEditPatch(
+  patch: ZookeeperEditPatch
+): ZookeeperFileChangeSummary {
+  const filesByPath = new Map(
+    (patch.changed_files ?? []).map((file) => [
+      normalizeZookeeperPatchPath(file.path),
+      file,
+    ])
+  )
+  const summary = { created: 0, modified: 0, deleted: 0 }
+  for (const file of filesByPath.values()) {
+    summary[file.status] += 1
+  }
+  return summary
+}
+
 type EditKclCodeToolResultWithPatch = Extract<
   MlToolResult,
   { type: 'edit_kcl_code' }

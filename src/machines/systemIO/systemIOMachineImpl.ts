@@ -36,6 +36,7 @@ import { duplicateProjectInDirectory } from '@src/lib/projectDuplication'
 import { readProjectsFromProjectDirectory } from '@src/lib/projectLibraries/directoryScanner'
 import { getProjectTitleFromUniqueDirectoryName } from '@src/lib/projectName'
 import { err, isErr } from '@src/lib/trap'
+import type { ZookeeperFileChangeSummary } from '@src/lib/zookeeper/zookeeperEditPatch'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
   ExpectedSystemIOError,
@@ -321,6 +322,21 @@ const sharedBulkCreateWorkflow = async ({
     projectName: newProjectName,
     subRoute: 'subRoute' in input ? input.subRoute : '',
   }
+}
+
+export function formatZookeeperFileChangeSummary({
+  created,
+  modified,
+  deleted,
+}: ZookeeperFileChangeSummary): string {
+  const count = created + modified + deleted
+  if (count === 0) return 'No files changed'
+  const details = [
+    created && `${created} created`,
+    modified && `${modified} modified`,
+    deleted && `${deleted} deleted`,
+  ].filter(Boolean)
+  return `Successfully changed ${count} ${count === 1 ? 'file' : 'files'} (${details.join(', ')})`
 }
 
 const sharedBulkWriteImportedProjectFilesWorkflow = async ({
@@ -867,7 +883,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             context: SystemIOContext
             files: RequestedKCLFile[]
             filesToDelete?: RequestedKCLFileDelete[]
-            changedFileCount?: number
+            fileChangeSummary?: ZookeeperFileChangeSummary
             requestedProjectName: string
             requestedProjectPath?: string
             override?: boolean
@@ -898,11 +914,10 @@ export const systemIOMachineImpl = systemIOMachine.provide({
               },
             })
 
-            if (input.changedFileCount !== undefined) {
-              const count = input.changedFileCount
-              message.message = count
-                ? `Successfully changed ${count} ${count === 1 ? 'file' : 'files'}`
-                : 'No files changed'
+            if (input.fileChangeSummary) {
+              message.message = formatZookeeperFileChangeSummary(
+                input.fileChangeSummary
+              )
             } else {
               message.message += `, ${totalDeleted} deleted`
             }
