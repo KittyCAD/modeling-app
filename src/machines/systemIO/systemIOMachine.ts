@@ -158,6 +158,7 @@ export const systemIOMachine = setup({
           data: {
             files: RequestedKCLFile[]
             filesToDelete?: RequestedKCLFileDelete[]
+            changedFileCount?: number
             requestedProjectName: string
             requestedProjectPath?: string
             requestedFileNameWithExtension: string
@@ -715,6 +716,7 @@ export const systemIOMachine = setup({
             context: SystemIOContext
             files: RequestedKCLFile[]
             filesToDelete?: RequestedKCLFileDelete[]
+            changedFileCount?: number
             requestedProjectName: string
             requestedProjectPath?: string
             requestedFileNameWithExtension: string
@@ -1760,6 +1762,7 @@ export const systemIOMachine = setup({
             context,
             files: event.data.files,
             filesToDelete: event.data.filesToDelete,
+            changedFileCount: event.data.changedFileCount,
             requestedProjectName: event.data.requestedProjectName,
             requestedProjectPath: event.data.requestedProjectPath,
             override: event.data.override,

@@ -283,6 +283,13 @@ export class ZookeeperFileRequestProcessor {
               data: {
                 files: payload.files,
                 filesToDelete: payload.filesToDelete,
+                changedFileCount: payload.zookeeperEditPatch?.changed_files
+                  ? new Set(
+                      payload.zookeeperEditPatch.changed_files.map((file) =>
+                        normalizeKCLFileDeletePath(file.path)
+                      )
+                    ).size
+                  : undefined,
                 override: true,
                 requestedProjectName: payload.requestedProjectName,
                 requestedProjectPath: requestProjectPath,

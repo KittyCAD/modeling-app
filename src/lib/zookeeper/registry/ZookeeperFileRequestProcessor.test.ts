@@ -172,6 +172,32 @@ describe('ZookeeperFileRequestProcessor', () => {
     kclManagerState.zookeeperManagerMachineBulkManipulatingFileSystem = false
   })
 
+  test('reports the effective changed-file count rather than the cumulative output count', async () => {
+    const processor = createProcessor()
+    emitZookeeperFileRequest(processor, 'updated code', 1, {
+      type: 'edit_kcl_code',
+      status_code: 201,
+      project_name: 'demo',
+      outputs: {
+        'main.kcl': 'updated code',
+        'unchanged.kcl': 'existing code',
+      },
+      zookeeper_edit_patch: {
+        run_id: 'run-1',
+        changed_files: [
+          {
+            path: 'main.kcl',
+            status: 'modified',
+            diff: '--- a/main.kcl\n+++ b/main.kcl\n@@ -1 +1 @@\n-old\n+updated code\n',
+          },
+        ],
+      },
+    })
+
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
+    expect(mocks.systemIOSend.mock.calls[0][0].data.changedFileCount).toBe(1)
+  })
+
   test('waits for the previous editor refresh before dispatching the next edit', async () => {
     const processor = createProcessor()
 

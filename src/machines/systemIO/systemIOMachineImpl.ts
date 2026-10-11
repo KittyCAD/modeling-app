@@ -867,6 +867,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             context: SystemIOContext
             files: RequestedKCLFile[]
             filesToDelete?: RequestedKCLFileDelete[]
+            changedFileCount?: number
             requestedProjectName: string
             requestedProjectPath?: string
             override?: boolean
@@ -897,7 +898,14 @@ export const systemIOMachineImpl = systemIOMachine.provide({
               },
             })
 
-            message.message += `, ${totalDeleted} deleted`
+            if (input.changedFileCount !== undefined) {
+              const count = input.changedFileCount
+              message.message = count
+                ? `Successfully changed ${count} ${count === 1 ? 'file' : 'files'}`
+                : 'No files changed'
+            } else {
+              message.message += `, ${totalDeleted} deleted`
+            }
             potentialError = new Error('onFileSystemSuccess')
             input.onFileSystemSuccess?.()
 
