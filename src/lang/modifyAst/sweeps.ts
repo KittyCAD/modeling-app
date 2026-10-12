@@ -820,7 +820,6 @@ export function addRevolve({
   sketches,
   angle,
   wasmInstance,
-  axisOrEdge,
   axis,
   edge,
   tolerance,
@@ -852,10 +851,6 @@ export function addRevolve({
       pathToNode: PathToNode
     }
   | Error {
-  // Dialogs retain drafts for both modes; only use the selected one.
-  if (axisOrEdge === 'Edge') axis = undefined
-  if (axisOrEdge === 'Axis') edge = undefined
-
   // 1. Clone the ast and nodeToEdit so we can freely edit them
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)

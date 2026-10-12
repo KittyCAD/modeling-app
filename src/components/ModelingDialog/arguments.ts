@@ -103,6 +103,20 @@ export async function resolveArguments(
   artifactGraph: Parameters<typeof getSelectionCountByType>[2]
 ): Promise<Record<string, unknown> | Error> {
   const resolved = { ...context.argumentsToSubmit, ...values }
+  // Creation dialogs retain inactive drafts. Keep those out of the payload,
+  // while preserving hidden edit arguments and static command metadata.
+  if (!resolved.nodeToEdit) {
+    const current = { ...context, argumentsToSubmit: resolved }
+    for (const [name, arg] of Object.entries(
+      context.selectedCommand?.args ?? {}
+    )) {
+      if (
+        typeof arg.hidden === 'function' &&
+        arg.hidden(current, arg.machineActor?.getSnapshot().context)
+      )
+        resolved[name] = undefined
+    }
+  }
   for (const field of getDialogFields({
     ...context,
     argumentsToSubmit: resolved,

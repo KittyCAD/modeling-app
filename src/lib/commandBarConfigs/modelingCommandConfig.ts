@@ -842,7 +842,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           axis: {
             required: (context) =>
               ['Axis'].includes(context.argumentsToSubmit.axisOrEdge as string),
-            hidden: (context) =>
+            hidden: (context: {
+              argumentsToSubmit: Record<string, unknown>
+              selectedCommand?: { useModelingDialog?: boolean }
+            }) =>
+              context.selectedCommand?.useModelingDialog === true &&
               context.argumentsToSubmit.axisOrEdge === 'Edge',
             inputType: 'options',
             displayName: 'Sketch Axis',
