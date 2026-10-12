@@ -2328,6 +2328,12 @@ export class KclManager extends File {
       data: null,
     })
     markOnce('code/endExecuteAst')
+    // The local renderer shows its loading indicator until it hears this.
+    this.dispatchEvent(
+      new CustomEvent<KclExecutionDoneDetail>(KclManagerEvents.ExecutionDone, {
+        detail: { successful: false, isInterrupted: true, hasErrors: false },
+      })
+    )
   }
 
   // DO NOT CALL THIS from codemirror ever.
