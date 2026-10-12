@@ -2390,7 +2390,7 @@ export default {
       {
         "name": "edges",
         "ty": "[Edge | any; 1+]",
-        "docs": "The edges to be annotated. At least one of `faces` or `edges` must be supplied. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.",
+        "docs": "The edges to be annotated. At least one of `faces` or `edges` must be supplied.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -2525,7 +2525,7 @@ export default {
       {
         "name": "edges",
         "ty": "[Edge | any; 1+]",
-        "docs": "The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.",
+        "docs": "The edges to be annotated.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -2636,7 +2636,7 @@ export default {
       {
         "name": "edges",
         "ty": "[Edge | any; 1+]",
-        "docs": "The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.",
+        "docs": "The edges to be annotated.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -2771,7 +2771,7 @@ export default {
       {
         "name": "edges",
         "ty": "[Edge | any; 1+]",
-        "docs": "The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.",
+        "docs": "The edges to be annotated.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -2894,7 +2894,7 @@ export default {
       {
         "name": "edges",
         "ty": "[Edge | any; 1+]",
-        "docs": "The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.",
+        "docs": "The edges to be annotated.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3104,7 +3104,7 @@ export default {
       {
         "name": "from",
         "ty": "Face | TaggedFace | Edge | any",
-        "docs": "The face or edge to measure from. Must be used with `to`. The default position is the entity center. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.",
+        "docs": "The face or edge to measure from. Must be used with `to`. The default position is the entity center.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3116,7 +3116,7 @@ export default {
       {
         "name": "to",
         "ty": "Face | TaggedFace | Edge | any",
-        "docs": "The face or edge to measure to. Must be used with `from`. The default position is the entity center. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.",
+        "docs": "The face or edge to measure to. Must be used with `from`. The default position is the entity center.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3128,7 +3128,7 @@ export default {
       {
         "name": "edges",
         "ty": "[Edge | any; 1+]",
-        "docs": "The edges whose lengths are annotated. Cannot be combined with `from` or `to`. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.",
+        "docs": "The edges whose lengths are annotated. Cannot be combined with `from` or `to`.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3437,7 +3437,7 @@ export default {
       {
         "name": "edges",
         "ty": "[Edge | any; 1+]",
-        "docs": "The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.",
+        "docs": "The edges to be annotated.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3572,7 +3572,7 @@ export default {
       {
         "name": "edges",
         "ty": "[Edge | any; 1+]",
-        "docs": "The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.",
+        "docs": "The edges to be annotated.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3707,7 +3707,7 @@ export default {
       {
         "name": "edges",
         "ty": "[Edge | any; 1+]",
-        "docs": "The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.",
+        "docs": "The edges to be annotated.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3830,7 +3830,7 @@ export default {
       {
         "name": "edges",
         "ty": "[Edge | any; 1+]",
-        "docs": "The edges to be annotated with profile of a line. Provide either `edges` or `faces`, but not both. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.",
+        "docs": "The edges to be annotated with profile of a line. Provide either `edges` or `faces`, but not both.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3953,7 +3953,7 @@ export default {
       {
         "name": "edges",
         "ty": "[Edge | any; 1+]",
-        "docs": "The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.",
+        "docs": "The edges to be annotated.",
         "required": true,
         "special": false,
         "experimental": false,
@@ -4235,7 +4235,7 @@ export default {
       {
         "name": "edges",
         "ty": "[Edge | any; 1+]",
-        "docs": "The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.",
+        "docs": "The edges to be annotated.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -4358,7 +4358,7 @@ export default {
       {
         "name": "edges",
         "ty": "[Edge | any; 1+]",
-        "docs": "The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.",
+        "docs": "The edges to be annotated.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -4493,7 +4493,7 @@ export default {
       {
         "name": "edges",
         "ty": "[Edge | any; 1+]",
-        "docs": "The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.",
+        "docs": "The edges to be annotated.",
         "required": false,
         "special": false,
         "experimental": false,
