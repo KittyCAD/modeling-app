@@ -51,7 +51,7 @@ type RendererInternals = {
       typeof vi.fn<
         () => Promise<{
           target: Mesh | null
-          diagnostics: { stale: boolean }
+          stale: boolean
         }>
       >
     >
@@ -152,9 +152,7 @@ describe('local GLB loading', () => {
     const target = planes.planes.get(id)?.mesh
     if (!target) throw new Error('Missing plane mesh')
     const picker = {
-      pick: vi
-        .fn()
-        .mockResolvedValue({ target, diagnostics: { stale: false } }),
+      pick: vi.fn().mockResolvedValue({ target, stale: false }),
       invalidate: vi.fn(),
       setTargets: vi.fn(),
       clearModel: vi.fn(),
@@ -332,8 +330,7 @@ describe('local GLB loading', () => {
     f.picker.pick.mockImplementation(
       () =>
         new Promise((resolve) => {
-          resolvePick = () =>
-            resolve({ target: f.target, diagnostics: { stale: false } })
+          resolvePick = () => resolve({ target: f.target, stale: false })
         })
     )
     const pending = f.pick()
@@ -350,8 +347,7 @@ describe('local GLB loading', () => {
     f.picker.pick.mockImplementation(
       () =>
         new Promise((resolve) => {
-          resolvePick = () =>
-            resolve({ target: f.target, diagnostics: { stale: false } })
+          resolvePick = () => resolve({ target: f.target, stale: false })
         })
     )
     const pending = f.pick()
@@ -372,12 +368,12 @@ describe('local GLB loading', () => {
     const f = planeFixture()
     f.picker.pick.mockResolvedValueOnce({
       target: f.target,
-      diagnostics: { stale: true },
+      stale: true,
     })
     expect(await f.pick()).toEqual({})
     f.picker.pick.mockResolvedValueOnce({
       target: null,
-      diagnostics: { stale: false },
+      stale: false,
     })
     expect((await f.pick(true))?.modelingResponse).toEqual({
       type: 'query_entity_type_with_point',

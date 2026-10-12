@@ -43,14 +43,6 @@ import {
 const HIGHLIGHT_INTERIOR_OPACITY = 0.2
 const HIGHLIGHT_LINE_WIDTH_PX = 2
 
-export type SelectionHighlightRenderMetrics = {
-  compositionCpuSubmissionMs: number
-  highlightCpuSubmissionMs: number
-  presentationCpuSubmissionMs: number
-  maskPasses: number
-  linePasses: number
-}
-
 export class SelectionHighlightRenderer {
   private readonly renderer: WebGPURenderer
   private readonly baseHdrTarget: RenderTarget
@@ -257,17 +249,11 @@ export class SelectionHighlightRenderer {
     this.ensureTargetSize()
     this.renderer.setRenderTarget(this.frameTarget)
     this.renderer.autoClear = true
-    const compositionStartedAt = performance.now()
     this.copyBasePipeline.render()
-    const compositionCpuSubmissionMs = performance.now() - compositionStartedAt
 
-    const highlightStartedAt = performance.now()
-    let maskPasses = 0
-    let linePasses = 0
     this.renderer.setClearColor(0x000000, 0)
 
     if (this.hoverMaskScene.children.length > 0) {
-      maskPasses += 1
       this.renderSceneOverlay(
         this.hoverMaskScene,
         camera,
@@ -275,12 +261,8 @@ export class SelectionHighlightRenderer {
         this.hoverCompositeMaterial
       )
     }
-    if (this.hoverLineScene.children.length > 0) {
-      linePasses += 1
-    }
     this.renderLines(this.hoverLineScene, camera, this.frameTarget)
     if (this.selectionMaskScene.children.length > 0) {
-      maskPasses += 1
       this.renderSceneOverlay(
         this.selectionMaskScene,
         camera,
@@ -288,30 +270,14 @@ export class SelectionHighlightRenderer {
         this.selectionCompositeMaterial
       )
     }
-    if (this.selectionLineScene.children.length > 0) {
-      linePasses += 1
-    }
     this.renderLines(this.selectionLineScene, camera, this.frameTarget)
-
-    const highlightCpuSubmissionMs = performance.now() - highlightStartedAt
 
     this.renderer.setClearColor(this.savedClearColor, this.savedClearAlpha)
     this.renderer.setRenderTarget(this.frameOutputTarget)
     this.renderer.autoClear = true
-    const presentationStartedAt = performance.now()
     this.presentPipeline.render()
-    const presentationCpuSubmissionMs =
-      performance.now() - presentationStartedAt
     this.renderer.setRenderTarget(this.frameOutputTarget)
     this.renderer.autoClear = this.frameAutoClear
-
-    return {
-      compositionCpuSubmissionMs,
-      highlightCpuSubmissionMs,
-      presentationCpuSubmissionMs,
-      maskPasses,
-      linePasses,
-    } satisfies SelectionHighlightRenderMetrics
   }
 
   clearModel() {

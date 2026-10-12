@@ -30,41 +30,10 @@ import {
 const SELECTION_LINE_WIDTH_AT_REFERENCE_PX = 24
 const SELECTION_LINE_WIDTH_REFERENCE_VIEWPORT_PX = 2048
 
-export type IntegerIdPickerGeometryStats = {
-  vertexCount: number
-  faceCount: number
-  faceTriangleCount: number
-  surfaceMeshCount: number
-  edgeCount: number
-  edgeSegmentCount: number
-  sketchCount: number
-  sketchSegmentCount: number
-  regionCount: number
-  regionTriangleCount: number
-  vertexBufferBytes: number
-  indexBufferBytes: number
-  edgeSegmentBufferBytes: number
-}
-
-export type IntegerIdPickerDiagnostics = {
-  idSceneBuildDurationMs: number
-  idBufferWasRendered: boolean
-  idBufferRenderSubmissionDurationMs: number
-  idBufferReadbackDurationMs: number
-  idBufferTotalDurationMs: number
-  idBufferWidth: number
-  idBufferHeight: number
-  idBufferPixelCount: number
-  readbackPixelX: number
-  readbackPixelY: number
-  selectionId: number
-  stale: boolean
-  geometry: IntegerIdPickerGeometryStats
-}
-
 export type IntegerIdPickResult = {
   target: Mesh | null
-  diagnostics: IntegerIdPickerDiagnostics
+  // The targets changed while the ID was being read back.
+  stale: boolean
 }
 
 export class IntegerIdPicker {
@@ -78,8 +47,6 @@ export class IntegerIdPicker {
   private renderTarget: RenderTarget | null = null
   private edgeObject: LineSegments2 | null = null
   private edgesVisible = true
-  private geometryStats: IntegerIdPickerGeometryStats | null = null
-  private idSceneBuildDurationMs = 0
   private dirty = true
   private version = 0
 
@@ -111,22 +78,6 @@ export class IntegerIdPicker {
     edges?: { source: LineSegments2; targets: EdgeSelectionTarget[] }
   ) {
     this.clearModel()
-    const startedAt = performance.now()
-    const stats: IntegerIdPickerGeometryStats = {
-      vertexCount: 0,
-      faceCount: targets.length,
-      faceTriangleCount: 0,
-      surfaceMeshCount: 0,
-      edgeCount: 0,
-      edgeSegmentCount: 0,
-      sketchCount: 0,
-      sketchSegmentCount: 0,
-      regionCount: 0,
-      regionTriangleCount: 0,
-      vertexBufferBytes: 0,
-      indexBufferBytes: 0,
-      edgeSegmentBufferBytes: 0,
-    }
     const createMaterial = (id: number) => {
       const material = new NodeMaterial()
       material.fragmentNode = this.idOutput(uint(id))
@@ -142,11 +93,6 @@ export class IntegerIdPicker {
       proxy.matrixAutoUpdate = false
       this.sourceByProxy.set(proxy, source)
       this.scene.add(proxy)
-      stats.surfaceMeshCount++
-      const positions = source.geometry.getAttribute('position')
-      stats.vertexCount += positions?.count ?? 0
-      stats.faceTriangleCount +=
-        (source.geometry.index?.count ?? positions?.count ?? 0) / 3
     }
     const occluderMaterial = createMaterial(0)
     const targetSet = new Set(targets)
@@ -213,12 +159,7 @@ export class IntegerIdPicker {
         this.materials.add(material)
         this.scene.add(object)
       }
-      stats.edgeCount = edges.targets.length
-      stats.edgeSegmentCount = segmentCount
-      stats.edgeSegmentBufferBytes = selectionIds.byteLength
     }
-    this.geometryStats = stats
-    this.idSceneBuildDurationMs = performance.now() - startedAt
   }
 
   setEdgesVisible(visible: boolean) {
@@ -248,7 +189,6 @@ export class IntegerIdPicker {
     camera: Camera
   }): Promise<IntegerIdPickResult | null> {
     if (
-      !this.geometryStats ||
       streamWidth <= 0 ||
       streamHeight <= 0 ||
       this.scene.children.length === 0
@@ -256,7 +196,6 @@ export class IntegerIdPicker {
       return null
     }
 
-    const startedAt = performance.now()
     const target = this.ensureRenderTarget()
     const readbackPixelX = clampPixel(
       Math.floor((x / streamWidth) * target.width),
@@ -268,17 +207,11 @@ export class IntegerIdPicker {
     )
     const version = this.version
     const targetById = this.targetById
-    const geometryStats = this.geometryStats
-    const idBufferWasRendered = this.dirty
 
-    const renderStartedAt = performance.now()
-    if (idBufferWasRendered) {
+    if (this.dirty) {
       this.renderIdBuffer(target, camera, streamWidth)
     }
-    const idBufferRenderSubmissionDurationMs =
-      performance.now() - renderStartedAt
 
-    const readbackStartedAt = performance.now()
     const pixels = await this.renderer.readRenderTargetPixelsAsync(
       target,
       readbackPixelX,
@@ -289,7 +222,6 @@ export class IntegerIdPicker {
       1,
       1
     )
-    const idBufferReadbackDurationMs = performance.now() - readbackStartedAt
     const selectionId = this.packsIdsIntoColor
       ? pixels[0] | (pixels[1] << 8) | (pixels[2] << 16)
       : Number(pixels[0] ?? 0)
@@ -297,21 +229,7 @@ export class IntegerIdPicker {
 
     return {
       target: stale ? null : (targetById[selectionId] ?? null),
-      diagnostics: {
-        idSceneBuildDurationMs: this.idSceneBuildDurationMs,
-        idBufferWasRendered,
-        idBufferRenderSubmissionDurationMs,
-        idBufferReadbackDurationMs,
-        idBufferTotalDurationMs: performance.now() - startedAt,
-        idBufferWidth: target.width,
-        idBufferHeight: target.height,
-        idBufferPixelCount: target.width * target.height,
-        readbackPixelX,
-        readbackPixelY,
-        selectionId,
-        stale,
-        geometry: geometryStats,
-      },
+      stale,
     }
   }
 
@@ -320,7 +238,6 @@ export class IntegerIdPicker {
     this.scene.clear()
     this.edgeObject = null
     this.targetById = [null]
-    this.geometryStats = null
     this.geometries.forEach((geometry) => {
       geometry.dispose()
     })

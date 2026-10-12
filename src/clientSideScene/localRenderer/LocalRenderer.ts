@@ -10,10 +10,6 @@ import { PlaneRenderer } from '@src/clientSideScene/localRenderer/PlaneRenderer'
 import { EnvMapLoader } from '@src/clientSideScene/localRenderer/EnvMapLoader'
 import { IntegerIdPicker } from '@src/clientSideScene/localRenderer/IntegerIdPicker'
 import { HDR_ENV_MAP_URL } from '@src/clientSideScene/localRenderer/maps'
-import {
-  type LocalRendererFrameMetrics,
-  LocalRendererPerformanceMonitor,
-} from '@src/clientSideScene/localRenderer/PerformanceMonitor'
 import { SelectionHighlightRenderer } from '@src/clientSideScene/localRenderer/SelectionHighlightRenderer'
 import type { KclExecutionDoneDetail, KclManager } from '@src/lang/KclManager'
 import { KclManagerEvents } from '@src/lang/KclManager'
@@ -38,7 +34,6 @@ import {
   Scene,
   Sphere,
   Texture,
-  Vector2,
   Vector3,
 } from 'three'
 import {
@@ -109,11 +104,9 @@ export class LocalRenderer {
   private planeRenderer: PlaneRenderer | null = null
   private integerIdPicker: IntegerIdPicker | null = null
   private selectionHighlightRenderer: SelectionHighlightRenderer | null = null
-  private performanceMonitor: LocalRendererPerformanceMonitor | null = null
   private resizeObserver: ResizeObserver | null = null
   private readonly dprDetector: DprDetector
   private animationFrameId = -1
-  private scheduledRenderAt = 0
   private currentModel: Object3D | null = null
   private readonly gltfLoader = new GLTFLoader()
   private modelLoadGeneration = 0
@@ -125,7 +118,6 @@ export class LocalRenderer {
   private readonly convertedSharedPosition = new Vector3()
   private readonly convertedSharedTarget = new Vector3()
   private readonly convertedSharedUp = new Vector3()
-  private readonly performanceDrawingBufferSize = new Vector2()
   private unregisterSharedCameraListener: (() => void) | null = null
   private readonly unregisterBaseUnitListener: () => void
   private ambientOcclusionRadius = 0.01
@@ -345,7 +337,7 @@ export class LocalRenderer {
         !this.planeInteractionEnabled ||
         this.kclManager.isExecuting ||
         generation !== this.modelLoadGeneration ||
-        result?.diagnostics.stale ||
+        result?.stale ||
         (isHover && requestVersion !== this.hoverRequestVersion)
       )
         return {}
@@ -478,7 +470,6 @@ export class LocalRenderer {
     this.integerIdPicker = null
     this.selectionHighlightRenderer?.dispose()
     this.selectionHighlightRenderer = null
-    this.performanceMonitor = null
     this.resizeObserver?.disconnect()
     this.resizeObserver = null
     this.dprDetector.dispose()
@@ -654,7 +645,7 @@ export class LocalRenderer {
     }
   }
 
-  private renderPreview(requestAnimationFrameDelayMs: number) {
+  private renderPreview() {
     const previewCamera = this.previewCamera
     const renderer = this.renderer
     const scene = this.scene
@@ -662,17 +653,9 @@ export class LocalRenderer {
       return
     }
 
-    const frameStartedAt = performance.now()
-    const renderInfoBefore = captureRendererWork(renderer)
-    const frameSetupStartedAt = performance.now()
     const baseRendered =
       this.selectionHighlightRenderer?.beginFrame(this.baseRenderDirty) ?? true
-    const frameSetupCpuMs = performance.now() - frameSetupStartedAt
-
-    let sceneCpuSubmissionMs = 0
-    let baseCacheCpuSubmissionMs = 0
     if (baseRendered) {
-      const sceneStartedAt = performance.now()
       if (!this.enableSSAO || this.forceHide) {
         renderer.render(scene, previewCamera)
       } else {
@@ -744,52 +727,11 @@ export class LocalRenderer {
 
         this.ambientOcclusionPipeline.pipeline.render()
       }
-      sceneCpuSubmissionMs = performance.now() - sceneStartedAt
-
-      const baseCacheStartedAt = performance.now()
       this.selectionHighlightRenderer?.cacheBaseFrame()
-      baseCacheCpuSubmissionMs = performance.now() - baseCacheStartedAt
       this.baseRenderDirty = false
     }
 
-    const highlightMetrics = this.selectionHighlightRenderer?.render(
-      previewCamera
-    ) ?? {
-      compositionCpuSubmissionMs: 0,
-      highlightCpuSubmissionMs: 0,
-      presentationCpuSubmissionMs: 0,
-      maskPasses: 0,
-      linePasses: 0,
-    }
-    const renderInfoAfter = captureRendererWork(renderer)
-    const drawingBufferSize = renderer.getDrawingBufferSize(
-      this.performanceDrawingBufferSize
-    )
-    this.performanceMonitor?.recordFrame({
-      requestAnimationFrameDelayMs,
-      frameSetupCpuMs,
-      sceneCpuSubmissionMs,
-      baseCacheCpuSubmissionMs,
-      compositionCpuSubmissionMs: highlightMetrics.compositionCpuSubmissionMs,
-      highlightCpuSubmissionMs: highlightMetrics.highlightCpuSubmissionMs,
-      presentationCpuSubmissionMs: highlightMetrics.presentationCpuSubmissionMs,
-      totalCpuSubmissionMs: performance.now() - frameStartedAt,
-      rendererRenderCalls:
-        renderInfoAfter.rendererRenderCalls -
-        renderInfoBefore.rendererRenderCalls,
-      drawCalls: renderInfoAfter.drawCalls - renderInfoBefore.drawCalls,
-      triangles: renderInfoAfter.triangles - renderInfoBefore.triangles,
-      lines: renderInfoAfter.lines - renderInfoBefore.lines,
-      maskPasses: highlightMetrics.maskPasses,
-      highlightLinePasses: highlightMetrics.linePasses,
-      viewportWidth: drawingBufferSize.x,
-      viewportHeight: drawingBufferSize.y,
-      pixelRatio: renderer.getPixelRatio(),
-      ssaoEnabled: this.enableSSAO && !this.forceHide,
-      baseRendered,
-      hoverActive: this.hoveredPlane !== null,
-      selectionCount: this.selectedPlaneId ? 1 : 0,
-    } satisfies LocalRendererFrameMetrics)
+    this.selectionHighlightRenderer?.render(previewCamera)
   }
 
   /**
@@ -798,7 +740,7 @@ export class LocalRenderer {
    */
   readFrame<T>(read: (canvas: HTMLCanvasElement) => T) {
     if (!this.renderer || !this.previewCamera || !this.scene) return undefined
-    this.renderPreview(0)
+    this.renderPreview()
     return read(this.renderer.domElement)
   }
 
@@ -807,17 +749,13 @@ export class LocalRenderer {
       return
     }
 
-    this.scheduledRenderAt = performance.now()
     this.animationFrameId = requestAnimationFrame(() => {
-      const requestAnimationFrameDelayMs =
-        performance.now() - this.scheduledRenderAt
       this.animationFrameId = -1
-      this.scheduledRenderAt = 0
       if (this.disposed || !this.previewCamera) {
         return
       }
 
-      this.renderPreview(requestAnimationFrameDelayMs)
+      this.renderPreview()
     })
   }
 
@@ -855,7 +793,6 @@ export class LocalRenderer {
       this.currentModel = null
     }
 
-    this.performanceMonitor?.setGeometry(null)
     this.invalidateBaseRender()
   }
 
@@ -965,7 +902,6 @@ export class LocalRenderer {
       renderer,
       this.backgroundColor
     )
-    this.performanceMonitor = new LocalRendererPerformanceMonitor(renderer)
 
     const sharedCamera = kclManager.sceneInfra.camControls.camera
     const sharedTarget = kclManager.sceneInfra.camControls.target
@@ -1201,15 +1137,6 @@ function logLocalWebGpuPreview(message: string, metadata?: unknown) {
       message,
       metadata ?? ''
     )
-  }
-}
-
-function captureRendererWork(renderer: WebGPURenderer) {
-  return {
-    rendererRenderCalls: renderer.info.render.calls,
-    drawCalls: renderer.info.render.drawCalls,
-    triangles: renderer.info.render.triangles,
-    lines: renderer.info.render.lines,
   }
 }
 
