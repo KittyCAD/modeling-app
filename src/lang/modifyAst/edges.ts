@@ -236,7 +236,7 @@ export function addFillet({
         modelingStdLibCommandName('Fillet'),
         data.solidsExpr,
         [
-          createLabeledArg('edges', data.edgeRefsExpr),
+          createLabeledArg(data.argumentName ?? 'edges', data.edgeRefsExpr),
           ...structuredClone(nonSelectionArgs),
         ]
       )
@@ -403,7 +403,7 @@ export function addChamfer({
         modelingStdLibCommandName('Chamfer'),
         data.solidsExpr,
         [
-          createLabeledArg('edges', data.edgeRefsExpr),
+          createLabeledArg(data.argumentName ?? 'edges', data.edgeRefsExpr),
           ...structuredClone(nonSelectionArgs),
         ]
       )
@@ -2607,38 +2607,31 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
         {
           solidsExpr: Expr | null
           edgeRefsExpr: Expr
+          argumentName?: 'tags' | 'edges'
           pathIfPipe?: PathToNode
         }
       >
     }
   | Error {
-  const primitiveCopies: EnginePrimitiveSelection[] = []
+  const primitiveCopies: { parentId: string; primitiveIndex: number }[] = []
   const graphSelections = selections.graphSelections.filter((selection) => {
     const topology = getEngineTopologyFallbackNormalized(selection)
     const faces =
       selection.entityRef?.type === 'edge' ? selection.entityRef.side_faces : []
-    const entityId = selection.engineEntityId ?? selection.artifact?.id
     if (
       topology &&
-      entityId &&
       hasUnscopedCopiedFaces(faces, topology.parentId, artifactGraph)
     ) {
       // Copied composite faces retain source-region tags. Their edge index
       // is scoped to the selected output and avoids ambiguous sketch tags.
-      primitiveCopies.push({
-        type: 'enginePrimitive',
-        primitiveType: 'edge',
-        entityId,
-        parentEntityId: topology.parentId,
-        primitiveIndex: topology.primitiveIndex,
-      })
+      primitiveCopies.push(topology)
       return false
     }
     return true
   })
   selections = {
     graphSelections,
-    otherSelections: [...selections.otherSelections, ...primitiveCopies],
+    otherSelections: selections.otherSelections,
   }
   let modifiedAst = ast
   const bodies = new Map<
@@ -2646,9 +2639,57 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
     {
       solidsExpr: Expr | null
       edgeRefsExpr: Expr
+      argumentName?: 'tags' | 'edges'
       pathIfPipe?: PathToNode
     }
   >()
+  for (const topology of primitiveCopies) {
+    const body = getBodySelectionFromPrimitiveParentEntityId(
+      topology.parentId,
+      artifactGraph,
+      {
+        bodyArtifactTypes: ['sweep', 'compositeSolid', 'pattern'],
+        lookUpPatternCopies: true,
+      }
+    )
+    if (!body)
+      return new Error('Could not resolve the selected copied edge body')
+    const vars = getVariableExprsFromSelection(
+      { graphSelections: [body], otherSelections: [] },
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      nodeToEdit
+    )
+    if (err(vars)) return vars
+    if (vars.exprs.length !== 1)
+      return new Error('Could not resolve the selected copied edge body')
+    const bodyExpr = vars.exprs[0]
+    const edge = createCallExpressionStdLibKw(
+      'edgeId',
+      structuredClone(bodyExpr),
+      [
+        createLabeledArg(
+          'index',
+          createLiteral(topology.primitiveIndex, wasmInstance)
+        ),
+      ]
+    )
+    // Fillet/chamfer accept UUIDs through tags; edges requires sideFaces objects.
+    // Keep these calls separate from semantic edges on the same body.
+    const key = `primitive:${getEdgeBodyKey(bodyExpr, vars.pathIfPipe)}`
+    const existing = bodies.get(key)
+    if (existing?.edgeRefsExpr.type === 'ArrayExpression') {
+      existing.edgeRefsExpr.elements.push(edge)
+    } else {
+      bodies.set(key, {
+        solidsExpr: bodyExpr,
+        edgeRefsExpr: createArrayExpression([edge]),
+        argumentName: 'tags',
+        pathIfPipe: vars.pathIfPipe,
+      })
+    }
+  }
   const handledSelections = new Set<Selection>()
 
   const v2Selections = selections.graphSelections || []
@@ -2915,7 +2956,7 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
     }
   }
 
-  if (bodies.size === 0 && primitiveCopies.length === 0) {
+  if (bodies.size === 0) {
     return new Error('No edge selections found')
   }
 

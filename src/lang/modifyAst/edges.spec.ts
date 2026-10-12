@@ -196,8 +196,15 @@ solid001 = mirror3d(pattern001[2], across = plane001)
     event.data.selectionType !== 'singleCodeCursor'
   )
     throw new Error('Expected graph edge selection')
+  // Command-bar arguments retain topology but omit the artifact and engine ID.
   const selection = {
-    graphSelections: [event.data.selection],
+    graphSelections: [
+      {
+        entityRef: event.data.selection.entityRef,
+        codeRef: event.data.selection.codeRef,
+        engineTopologyFallback: event.data.selection.engineTopologyFallback,
+      },
+    ],
     otherSelections: [],
   }
   expect(selection.graphSelections[0].engineTopologyFallback).toEqual({
