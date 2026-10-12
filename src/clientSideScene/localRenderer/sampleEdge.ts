@@ -2,7 +2,7 @@ import type {
   KIITYCAD_GLTF_VERTEX,
   KITTYCAD_GLTF_CURVE3D,
   KITTYCAD_GLTF_EDGE,
-} from './KITTYCAD_GLTF'
+} from '@src/clientSideScene/localRenderer/KITTYCAD_GLTF'
 import { Vector3, Vector4 } from 'three'
 import { calcBSplinePoint } from 'three/examples/jsm/curves/NURBSUtils.js'
 

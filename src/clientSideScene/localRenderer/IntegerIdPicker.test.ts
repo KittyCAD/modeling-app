@@ -2,7 +2,7 @@ import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeome
 import { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
 import { Line2NodeMaterial, type WebGPURenderer } from 'three/webgpu'
 import { describe, expect, it } from 'vitest'
-import { IntegerIdPicker } from './IntegerIdPicker'
+import { IntegerIdPicker } from '@src/clientSideScene/localRenderer/IntegerIdPicker'
 
 describe('IntegerIdPicker', () => {
   it('accepts an edge source before its geometry has been populated', () => {

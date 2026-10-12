@@ -50,7 +50,7 @@ import {
   RenderPipeline,
   WebGPURenderer,
 } from 'three/webgpu'
-import { type KITTYCAD_GLTF } from './KITTYCAD_GLTF'
+import { type KITTYCAD_GLTF } from '@src/clientSideScene/localRenderer/KITTYCAD_GLTF'
 
 const ENGINE_MILLIMETERS_TO_GLTF_METERS = 1 / 1000
 
