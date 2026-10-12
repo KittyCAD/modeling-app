@@ -74,6 +74,33 @@ const commandBarConfig = {
 } satisfies StateMachineCommandSetConfig<typeof testMachine, TestCommandSchema>
 
 describe('createMachineCommand', () => {
+  test('preserves text validation when constructing runtime commands', () => {
+    const validation = vi.fn(async () => true)
+    const actor = createActor(testMachine).start()
+    try {
+      const command = createMachineCommand<
+        typeof testMachine,
+        TestCommandSchema
+      >({
+        groupId: testMachine.id,
+        type: 'WithArguments',
+        state: actor.getSnapshot(),
+        send: vi.fn(),
+        actor,
+        commandBarConfig: {
+          WithArguments: {
+            args: {
+              availableArg: { inputType: 'text', required: true, validation },
+            },
+          },
+        },
+        defaultScopes: GLOBAL_COMMAND_SCOPES,
+      })
+      expect(command).toMatchObject({ args: { availableArg: { validation } } })
+    } finally {
+      actor.stop()
+    }
+  })
   test('defaults missing descriptions while preserving overrides, including command arrays', () => {
     const actor = createActor(testMachine).start()
     const configs = {
