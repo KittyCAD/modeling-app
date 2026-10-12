@@ -1526,7 +1526,7 @@ fn pattern_artifact_links_to_source_geometry() {
         PatternSubType::Circular,
         path_id,
         &face_edge_infos,
-        code_ref.clone(),
+        code_ref,
         &AHashMap::from_iter([(copy_id, map)]),
     );
     assert!(mapped.iter().any(|artifact| matches!(artifact, Artifact::Wall(wall)

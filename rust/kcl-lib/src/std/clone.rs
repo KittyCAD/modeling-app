@@ -260,7 +260,10 @@ pub(crate) async fn resolve_scoped_pattern_tags(
     if solid.id == solid.topology_id() || args.ctx.no_engine_commands().await {
         return Ok(solid);
     }
-    let id_map = get_old_new_child_map(solid.id, solid.id, solid.topology_id(), exec_state, args).await?;
+    let Some(id_map) = try_get_body_copy_child_map(solid.id, solid.id, solid.topology_id(), exec_state, args).await?
+    else {
+        return Ok(solid);
+    };
     remap_sketchless_solid(&mut solid, &id_map);
     remap_edge_cuts(&mut solid, &id_map);
     let mut geometry = solid.clone();
@@ -403,6 +406,25 @@ fn restore_face_tags(solid: &mut Solid, face_tag_names: &[String], exec_state: &
     }
 }
 
+/// Patterning retained features is valid even when their source is no longer
+/// a queryable live body. In that case no semantic copy metadata is available;
+/// keep the existing tags and allow primitive selection of the output.
+pub(super) async fn try_get_body_copy_child_map(
+    new_geometry_id: uuid::Uuid,
+    old_geometry_id: uuid::Uuid,
+    source_topology_id: uuid::Uuid,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Option<HashMap<uuid::Uuid, uuid::Uuid>>> {
+    match get_old_new_child_map(new_geometry_id, old_geometry_id, source_topology_id, exec_state, args).await {
+        Ok(map) => Ok(Some(map)),
+        Err(error) if matches!(error, KclError::Engine { .. }) && error.message() == "No such entity exists" => {
+            Ok(None)
+        }
+        Err(error) => Err(error),
+    }
+}
+
 pub(super) async fn get_old_new_child_map(
     new_geometry_id: uuid::Uuid,
     old_geometry_id: uuid::Uuid,
@@ -433,6 +455,20 @@ pub(super) async fn get_old_new_child_map(
     entity_id_map.insert(old_geometry_id, new_geometry_id);
     entity_id_map.insert(source_topology_id, new_geometry_id);
     Ok(entity_id_map)
+}
+
+pub(super) async fn try_get_body_child_uuids(
+    geometry_id: uuid::Uuid,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Option<Vec<uuid::Uuid>>> {
+    match get_all_child_uuids(geometry_id, exec_state, args).await {
+        Ok(ids) => Ok(Some(ids)),
+        Err(error) if matches!(error, KclError::Engine { .. }) && error.message() == "No such entity exists" => {
+            Ok(None)
+        }
+        Err(error) => Err(error),
+    }
 }
 
 async fn get_all_child_uuids(
@@ -1193,7 +1229,10 @@ clonedCopy = clone(patternCopy)
         assert_eq!(cloned_copy.topology_id(), cloned_copy.id);
         assert_eq!(cloned_copy.artifact_id, cloned_copy.id.into());
         assert_ne!(pattern_copy.id, cloned_copy.id);
-        assert!(result.artifact_graph.get(&pattern_copy.artifact_id).is_none());
+        assert!(matches!(
+            result.artifact_graph.get(&pattern_copy.artifact_id),
+            Some(Artifact::CompositeSolid(_))
+        ));
         assert_cloned_composite_topology(&result.artifact_graph, cloned_copy);
 
         ctx.close().await;
@@ -1362,7 +1401,9 @@ clonedCopy = clone(patternCopy)
         let cloned_sketch = cloned_copy.sketch().expect("Expected cloned copy to have a sketch");
         assert_eq!(pattern_copy.original_id(), source.id);
         assert_eq!(cloned_copy.original_id(), cloned_copy.id);
-        assert!(result.artifact_graph.get(&pattern_copy.artifact_id).is_none());
+        assert!(
+            matches!(result.artifact_graph.get(&pattern_copy.artifact_id), Some(Artifact::Sweep(sweep)) if sweep.source_sweep_id == Some(source.artifact_id))
+        );
         assert_ne!(cloned_copy.artifact_id, cloned_copy.id.into());
 
         assert_eq!(pattern_sketch.tags.get("wall"), cloned_sketch.tags.get("wall"));

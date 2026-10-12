@@ -2019,6 +2019,15 @@ fn artifacts_to_update(
                 if artifact_id == source_artifact_id || !entity_id_map.contains_key(&artifact_id) {
                     continue;
                 }
+                // Pattern copies now have a semantic body artifact. Clone the
+                // source topology above, rather than remapping that extra root
+                // onto the cloned sketch's engine ID and overwriting its Path.
+                if artifact_id == source_entity_id
+                    && source_entity_id != source_artifact_id
+                    && matches!(artifact, Artifact::Sweep(_) | Artifact::CompositeSolid(_))
+                {
+                    continue;
+                }
                 cloned_artifacts.push(remap_artifact_for_clone(
                     artifact,
                     &entity_id_map,
