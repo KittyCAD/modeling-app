@@ -1128,15 +1128,21 @@ async fn default_distance_setback(
                     .build()
                     .into(),
             )
-            .await;
-        if let Ok(OkWebSocketResponseData::Modeling {
+            .await?;
+        let OkWebSocketResponseData::Modeling {
             modeling_response: OkModelingCmdResponse::BoundingBox(bounds),
-        }) = response
-            && let Some(bound_setback) = distance_setback(
-                [bounds.dimensions.x, bounds.dimensions.y, bounds.dimensions.z],
-                args.source_range,
-            )?
-        {
+        } = response
+        else {
+            return Err(KclError::new_engine(KclErrorDetails::new(
+                format!("BoundingBox response was not as expected: {response:?}"),
+                vec![args.source_range],
+            )));
+        };
+
+        if let Some(bound_setback) = distance_setback(
+            [bounds.dimensions.x, bounds.dimensions.y, bounds.dimensions.z],
+            args.source_range,
+        )? {
             return Ok(bound_setback);
         }
     }
