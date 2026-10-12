@@ -51,7 +51,13 @@ export class EdgeRenderer {
 
   // TODO defer building if edges are not visible
   public buildEdges(gltf: KITTYCAD_GLTF) {
-    const brep = gltf.userData.gltfExtensions.KITTYCAD_boundary_representation
+    const brep = gltf.userData.gltfExtensions?.KITTYCAD_boundary_representation
+    if (!brep) {
+      // assignFaceUuids has already warned. Leave no edges from an earlier model.
+      this.clearSelectionTargets()
+      this.geometry.setPositions([])
+      return
+    }
     const positions: number[] = []
     const positionsByUuid = new Map<string, number[]>()
     const rangesByUuid = new Map<string, EdgeSelectionTarget['ranges']>()

@@ -1077,7 +1077,13 @@ function convertEngineWorldVectorToGltfWorld(
 
 /** Attach B-rep face IDs to the corresponding glTF primitive meshes. */
 export function assignFaceUuids(gltf: KITTYCAD_GLTF) {
-  const brep = gltf.userData.gltfExtensions.KITTYCAD_boundary_representation
+  const brep = gltf.userData.gltfExtensions?.KITTYCAD_boundary_representation
+  if (!brep) {
+    console.warn(
+      '[LocalWebGPUScene] The model has no B-rep data, so its faces and edges cannot be selected.'
+    )
+    return
+  }
   const faceIdsBySolidMesh = new Map<number, number[]>()
 
   for (const solid of brep.solids) {

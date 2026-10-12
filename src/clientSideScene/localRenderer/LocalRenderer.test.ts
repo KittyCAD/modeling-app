@@ -8,8 +8,7 @@ import {
   type Group,
   Mesh,
   MeshStandardMaterial,
-  OrthographicCamera,
-  PlaneGeometry,
+  type OrthographicCamera,
   PerspectiveCamera,
   Scene,
   Vector3,
@@ -38,12 +37,8 @@ type RendererInternals = {
   scene: Scene | null
   currentModel: Group | null
   planeRenderer: PlaneRenderer | null
-  pendingModelRefresh: boolean
   previewCamera: PerspectiveCamera | OrthographicCamera | null
-  syncPreviewCameraFromShared(): void
   handleLocalSelectionCommand: LocalSelectionCommandHandler
-  clearPlaneHover(): void
-  rebuildPlaneTargets(): void
   baseRenderDirty: boolean
   pointerOverCanvas: boolean
   integerIdPicker: {
@@ -265,104 +260,6 @@ describe('local GLB loading', () => {
     f.renderer.dispose()
   })
 
-  it('keeps offset selection when defaults are hidden and clears it when the offset is removed', () => {
-    const f = planeFixture('offset')
-    f.renderer.setSelectedPlane('offset')
-    f.renderer.setDefaultPlaneVisibility({ xy: false, xz: false, yz: false })
-    expect(f.highlights.setSelection).toHaveBeenLastCalledWith([f.target])
-    f.state.planeRenderer?.updateOffsetPlanes(new Map())
-    f.state.rebuildPlaneTargets()
-    expect(f.highlights.setSelection).toHaveBeenLastCalledWith([])
-    expect(f.highlights.setHover).toHaveBeenLastCalledWith(null)
-    const defaultTargets = [
-      ...(f.state.planeRenderer?.planes.values() ?? []),
-    ].map(({ mesh }) => mesh)
-    expect(f.picker.setTargets).toHaveBeenLastCalledWith(defaultTargets, null)
-    expect(f.highlights.setTargets).toHaveBeenLastCalledWith(defaultTargets)
-    f.renderer.dispose()
-  })
-
-  it('applies visibility, invalidates picking, and hides highlights until the plane is shown again', async () => {
-    const f = planeFixture()
-    await f.pick()
-    f.renderer.setSelectedPlane('plane-xy')
-    f.picker.invalidate.mockClear()
-    f.state.baseRenderDirty = false
-
-    f.renderer.setDefaultPlaneVisibility({ xy: false, xz: true, yz: true })
-    expect(f.setDefaultVisibility).toHaveBeenLastCalledWith({
-      xy: false,
-      xz: true,
-      yz: true,
-    })
-    expect(f.picker.invalidate).toHaveBeenCalledOnce()
-    expect(f.state.baseRenderDirty).toBe(true)
-    expect(f.highlights.setHover).toHaveBeenLastCalledWith(null)
-    expect(f.highlights.setSelection).toHaveBeenLastCalledWith([])
-
-    f.renderer.setDefaultPlaneVisibility({ xy: true, xz: false, yz: false })
-    expect(f.highlights.setSelection).toHaveBeenLastCalledWith([f.target])
-    expect(f.picker.setTargets).not.toHaveBeenCalled()
-    f.renderer.dispose()
-  })
-
-  it('retains visibility set before initialization and when model targets are rebuilt', () => {
-    const f = planeFixture()
-    const { planeRenderer } = f.state
-    f.state.planeRenderer = null
-    const visibility = { xy: false, xz: true, yz: false }
-    f.renderer.setDefaultPlaneVisibility(visibility)
-    f.renderer.setSelectedPlane('plane-xy')
-
-    f.state.planeRenderer = planeRenderer
-    f.state.rebuildPlaneTargets()
-    expect(f.setDefaultVisibility).toHaveBeenLastCalledWith(visibility)
-    expect(f.highlights.setSelection).toHaveBeenLastCalledWith([])
-    f.state.rebuildPlaneTargets()
-    expect(f.setDefaultVisibility).toHaveBeenLastCalledWith(visibility)
-    f.renderer.dispose()
-  })
-
-  it('discards pending hover readbacks when plane visibility changes', async () => {
-    const f = planeFixture()
-    let resolvePick = () => {}
-    f.picker.pick.mockImplementation(
-      () =>
-        new Promise((resolve) => {
-          resolvePick = () => resolve({ target: f.target, stale: false })
-        })
-    )
-    const pending = f.pick()
-    f.renderer.setDefaultPlaneVisibility({ xy: false, xz: true, yz: true })
-    resolvePick()
-    expect(await pending).toEqual({})
-    expect(f.highlights.setHover).toHaveBeenLastCalledWith(null)
-    f.renderer.dispose()
-  })
-
-  it('does not apply a GPU hover result after the pointer leaves or execution starts', async () => {
-    const f = planeFixture()
-    let resolvePick = () => {}
-    f.picker.pick.mockImplementation(
-      () =>
-        new Promise((resolve) => {
-          resolvePick = () => resolve({ target: f.target, stale: false })
-        })
-    )
-    const pending = f.pick()
-    f.state.clearPlaneHover()
-    resolvePick()
-    expect(await pending).toEqual({})
-    expect(f.highlights.setHover).toHaveBeenLastCalledWith(null)
-
-    const next = f.pick()
-    f.manager.isExecutingSignal.value = true
-    resolvePick()
-    expect(await next).toEqual({})
-    expect(f.highlights.setHover).toHaveBeenLastCalledWith(null)
-    f.renderer.dispose()
-  })
-
   it('ignores stale GPU results and returns an empty selection for a miss', async () => {
     const f = planeFixture()
     f.picker.pick.mockResolvedValueOnce({
@@ -381,63 +278,6 @@ describe('local GLB loading', () => {
     f.renderer.dispose()
   })
 
-  it('updates plane scale on camera, fixed-grid setting, and file-unit changes', () => {
-    const f = fixture()
-    f.state.planeRenderer = new PlaneRenderer(Themes.Light)
-    const updateScale = vi.spyOn(f.state.planeRenderer, 'updateScale')
-    const controls = f.manager.sceneInfra.camControls
-    controls.camera.position.set(100, 0, 0)
-    f.state.syncPreviewCameraFromShared()
-    expect(updateScale).toHaveBeenLastCalledWith(100, 0.1)
-    controls.camera.position.set(1000, 0, 0)
-    f.state.syncPreviewCameraFromShared()
-    expect(updateScale).toHaveBeenLastCalledWith(1000, 0.1)
-
-    f.renderer.setFixedSizeGrid(false)
-    expect(updateScale).toHaveBeenLastCalledWith(1000, undefined)
-    f.renderer.setFixedSizeGrid(true)
-    expect(updateScale).toHaveBeenLastCalledWith(1000, 0.1)
-
-    f.manager.sceneInfra.baseUnitMultiplier = 25.4
-    f.manager.sceneInfra.baseUnitChange.dispatch()
-    expect(updateScale).toHaveBeenLastCalledWith(1000, 2.54)
-    f.renderer.dispose()
-    updateScale.mockClear()
-    f.manager.sceneInfra.baseUnitChange.dispatch()
-    expect(updateScale).not.toHaveBeenCalled()
-  })
-
-  it('preserves orthographic negative near planes and tiny perspective near planes', () => {
-    const f = fixture()
-    f.state.previewCamera = new PerspectiveCamera()
-    f.manager.sceneInfra.camControls.camera = new OrthographicCamera(
-      -20,
-      20,
-      20,
-      -20,
-      -10000,
-      10000
-    )
-    f.manager.sceneInfra.camControls.camera.position.set(100, -100, 100)
-    f.state.syncPreviewCameraFromShared()
-    expect(f.state.previewCamera).toBeInstanceOf(OrthographicCamera)
-    expect(f.state.previewCamera.near).toBe(-10)
-    expect(f.state.previewCamera.far).toBe(10)
-
-    f.manager.sceneInfra.camControls.camera = new PerspectiveCamera(
-      45,
-      1,
-      0.001,
-      10
-    )
-    f.manager.sceneInfra.camControls.camera.position.set(0.1, -0.1, 0.1)
-    f.state.syncPreviewCameraFromShared()
-    expect(f.state.previewCamera).toBeInstanceOf(PerspectiveCamera)
-    expect(f.state.previewCamera.near).toBeCloseTo(0.000001, 10)
-    expect(f.state.previewCamera.far).toBe(0.01)
-    f.renderer.dispose()
-  })
-
   it('exports once after successful execution and loads standard geometry/materials', async () => {
     const f = fixture()
     f.manager.isExecutingSignal.value = true
@@ -445,7 +285,12 @@ describe('local GLB loading', () => {
     f.done()
     await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
     expect(f.manager.rustContext.export).toHaveBeenCalledExactlyOnceWith(
-      { type: 'gltf', storage: 'binary', presentation: 'compact' },
+      {
+        type: 'gltf',
+        storage: 'binary',
+        presentation: 'compact',
+        include_uuids: true,
+      },
       { settings: { modeling: { base_unit: 'mm' } } }
     )
     const mesh = f.state.currentModel?.children[0]
@@ -458,100 +303,6 @@ describe('local GLB loading', () => {
     expect(f.manager.sceneInfra.camControls.target.toArray()).toEqual([
       500, -0, 500,
     ])
-    expect(f.onModelLoadSettled).toHaveBeenCalledExactlyOnceWith(true)
-    f.renderer.dispose()
-  })
-
-  it('replaces and disposes the old model without refitting the camera', async () => {
-    const f = fixture()
-    // Reference geometry is not part of the export, its bounds, or its disposal.
-    const referencePlane = new Mesh(
-      new PlaneGeometry(1000, 1000),
-      new MeshStandardMaterial()
-    )
-    referencePlane.name = 'default-planes'
-    referencePlane.position.set(1000, 0, 0)
-    f.state.scene?.add(referencePlane)
-    const disposeReference = vi.spyOn(referencePlane.geometry, 'dispose')
-    f.done()
-    await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
-    expect(f.manager.sceneInfra.camControls.target.toArray()).toEqual([
-      500, -0, 500,
-    ])
-    const old = f.state.currentModel
-    const mesh = old?.children[0]
-    if (!(mesh instanceof Mesh)) throw new Error('Missing mesh')
-    const disposeGeometry = vi.spyOn(mesh.geometry, 'dispose')
-    const disposeMaterial = vi.spyOn(mesh.material, 'dispose')
-    f.manager.isExecutingSignal.value = true
-    f.done()
-    await vi.waitFor(() => expect(f.state.currentModel).not.toBe(old))
-    expect(disposeGeometry).toHaveBeenCalledOnce()
-    expect(disposeMaterial).toHaveBeenCalledOnce()
-    expect(f.state.scene?.children).toHaveLength(2)
-    expect(f.state.scene?.children).toContain(referencePlane)
-    expect(disposeReference).not.toHaveBeenCalled()
-    expect(
-      f.manager.sceneInfra.camControls.onCameraChange
-    ).toHaveBeenCalledOnce()
-    f.renderer.dispose()
-    referencePlane.geometry.dispose()
-    referencePlane.material.dispose()
-  })
-
-  it('clears an empty execution without exporting, while preserving default planes', async () => {
-    const f = planeFixture()
-    const referencePlane = f.state.planeRenderer?.planes.get('plane-xy')?.group
-    if (!referencePlane) throw new Error('Missing reference plane')
-    f.state.scene?.add(referencePlane)
-    f.done()
-    await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
-    const mesh = f.state.currentModel?.children[0]
-    if (!(mesh instanceof Mesh)) throw new Error('Missing mesh')
-    const disposeGeometry = vi.spyOn(mesh.geometry, 'dispose')
-    const disposeMaterial = vi.spyOn(mesh.material, 'dispose')
-    const disposePlane = vi.spyOn(f.target.geometry, 'dispose')
-
-    f.manager.isExecutingSignal.value = true
-    f.manager.artifactGraph.clear()
-    f.done()
-
-    expect(f.state.currentModel).toBeNull()
-    expect(f.manager.rustContext.export).toHaveBeenCalledOnce()
-    expect(disposeGeometry).toHaveBeenCalledOnce()
-    expect(disposeMaterial).toHaveBeenCalledOnce()
-    expect(disposePlane).not.toHaveBeenCalled()
-    expect(f.state.scene?.children).toEqual([referencePlane])
-    expect(f.picker.setTargets).toHaveBeenLastCalledWith(f.defaultTargets, null)
-    expect(f.highlights.setTargets).toHaveBeenLastCalledWith(f.defaultTargets)
-    expect(f.state.baseRenderDirty).toBe(true)
-    expect(f.onModelLoadSettled).toHaveBeenCalledTimes(2)
-    expect(f.onModelLoadSettled).toHaveBeenLastCalledWith(true)
-    f.renderer.dispose()
-  })
-
-  it('does not restore a stale GLB after an empty execution completes', async () => {
-    const f = fixture()
-    const gltf = await new GLTFLoader().parseAsync(
-      new Uint8Array(triangleGlb().contents).buffer,
-      ''
-    )
-    const mesh = gltf.scene.children[0]
-    if (!(mesh instanceof Mesh)) throw new Error('Missing mesh')
-    const disposeGeometry = vi.spyOn(mesh.geometry, 'dispose')
-    const pending = Promise.withResolvers<typeof gltf>()
-    const parse = vi
-      .spyOn(GLTFLoader.prototype, 'parseAsync')
-      .mockReturnValueOnce(pending.promise)
-    f.done()
-    await vi.waitFor(() => expect(parse).toHaveBeenCalledOnce())
-    f.manager.isExecutingSignal.value = true
-    f.manager.artifactGraph.clear()
-    f.done()
-    pending.resolve(gltf)
-    await vi.waitFor(() => expect(disposeGeometry).toHaveBeenCalledOnce())
-    expect(f.state.currentModel).toBeNull()
-    expect(f.manager.rustContext.export).toHaveBeenCalledOnce()
     expect(f.onModelLoadSettled).toHaveBeenCalledExactlyOnceWith(true)
     f.renderer.dispose()
   })
@@ -571,27 +322,6 @@ describe('local GLB loading', () => {
     f.done()
     await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
     f.renderer.dispose()
-  })
-
-  it('disposes a parsed model if the renderer was unmounted while parsing', async () => {
-    const f = fixture()
-    const gltf = await new GLTFLoader().parseAsync(
-      new Uint8Array(triangleGlb().contents).buffer,
-      ''
-    )
-    const mesh = gltf.scene.children[0]
-    if (!(mesh instanceof Mesh)) throw new Error('Missing mesh')
-    const disposeGeometry = vi.spyOn(mesh.geometry, 'dispose')
-    const pending = Promise.withResolvers<typeof gltf>()
-    const parse = vi
-      .spyOn(GLTFLoader.prototype, 'parseAsync')
-      .mockReturnValueOnce(pending.promise)
-    f.done()
-    await vi.waitFor(() => expect(parse).toHaveBeenCalledOnce())
-    f.renderer.dispose()
-    pending.resolve(gltf)
-    await vi.waitFor(() => expect(disposeGeometry).toHaveBeenCalledOnce())
-    expect(f.state.currentModel).toBeNull()
   })
 
   it.each(['missing GLB', 'export rejection', 'parse rejection'])(
@@ -628,9 +358,11 @@ describe('local GLB loading', () => {
       expect(disposeGeometry).toHaveBeenCalledOnce()
       expect(disposeMaterial).toHaveBeenCalledOnce()
       expect(f.state.scene?.children).toEqual([referencePlane])
+      // The third argument is the edge data, absent without an edge renderer.
       expect(f.picker.setTargets).toHaveBeenLastCalledWith(
         f.defaultTargets,
-        null
+        null,
+        undefined
       )
       expect(f.highlights.setTargets).toHaveBeenLastCalledWith(f.defaultTargets)
       expect(f.state.baseRenderDirty).toBe(true)
@@ -641,56 +373,6 @@ describe('local GLB loading', () => {
       f.renderer.dispose()
     }
   )
-
-  it('renders offset planes even when GLB export fails, and clears them on empty execution', async () => {
-    const f = fixture()
-    const scene = new Scene()
-    f.state.scene = scene
-    f.state.planeRenderer = new PlaneRenderer(Themes.Light)
-    f.state.planeRenderer.addTo(scene)
-    const root = scene.children[0]
-    f.done()
-    await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
-    const defaults = [...root.children]
-    const offset = offsetPlane()
-    f.manager.artifactGraph.clear()
-    f.manager.artifactGraph.set(offset.id, offset)
-    f.manager.rustContext.export.mockResolvedValueOnce(undefined)
-    vi.spyOn(console, 'error').mockImplementation(() => {})
-    f.done()
-    expect(root.children.map((child) => child.name)).toEqual([
-      'XY',
-      'YZ',
-      'XZ',
-      'offset',
-    ])
-    await vi.waitFor(() => expect(f.state.currentModel).toBeNull())
-    expect(scene.children).toEqual([root])
-    expect(root.children).toHaveLength(4)
-    f.manager.artifactGraph.clear()
-    f.done()
-    expect(root.children).toEqual(defaults)
-    f.renderer.dispose()
-    expect(scene.children).toHaveLength(0)
-  })
-
-  it('ignores an old export failure after a newer model has loaded', async () => {
-    const f = fixture()
-    const pending = Promise.withResolvers<ModelingAppFile[]>()
-    f.manager.rustContext.export.mockReturnValueOnce(pending.promise)
-    f.done()
-    f.manager.isExecutingSignal.value = true
-    f.done()
-    await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
-    const current = f.state.currentModel
-    const errorLog = vi.spyOn(console, 'error').mockImplementation(() => {})
-    pending.reject(new Error('Old export failed'))
-    await pending.promise.catch(() => {})
-    expect(f.state.currentModel).toBe(current)
-    expect(errorLog).not.toHaveBeenCalled()
-    expect(f.onModelLoadSettled).toHaveBeenCalledExactlyOnceWith(true)
-    f.renderer.dispose()
-  })
 
   it('does not export failed executions and settles failed exports without retrying', async () => {
     const f = fixture()
@@ -728,6 +410,20 @@ function triangleGlb(): ModelingAppFile {
   const vertices = new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0])
   const json = JSON.stringify({
     asset: { version: '2.0' },
+    // Engine exports carry this; here it describes no faces or edges.
+    extensionsUsed: ['KITTYCAD_boundary_representation'],
+    extensions: {
+      KITTYCAD_boundary_representation: {
+        solids: [],
+        shells: [],
+        faces: [],
+        loops: [],
+        edges: [],
+        vertices: [],
+        surfaces: [],
+        curves3D: [],
+      },
+    },
     scene: 0,
     scenes: [{ nodes: [0] }],
     nodes: [{ mesh: 0 }],

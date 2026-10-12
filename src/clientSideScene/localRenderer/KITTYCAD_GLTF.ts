@@ -2,8 +2,9 @@ import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader'
 
 export type KITTYCAD_GLTF = GLTF & {
   userData: {
-    gltfExtensions: {
-      KITTYCAD_boundary_representation: KITTYCAD_GLTF_BREP
+    // Absent when the engine exports a model without B-rep data.
+    gltfExtensions?: {
+      KITTYCAD_boundary_representation?: KITTYCAD_GLTF_BREP
     }
   }
 }
