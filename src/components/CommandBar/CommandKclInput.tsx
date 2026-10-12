@@ -73,6 +73,8 @@ export function CommandKclInput({
   arg,
   label,
   description,
+  isRequired = true,
+  inline = true,
   value,
   nodeToEdit,
   variableName,
@@ -90,6 +92,8 @@ export function CommandKclInput({
   arg: CommandKclArgument
   label: ReactNode
   description?: ReactNode
+  isRequired?: boolean
+  inline?: boolean
   value: string
   nodeToEdit?: unknown
   variableName?: string
@@ -376,23 +380,24 @@ export function CommandKclInput({
   const canUseUncalculatedValue =
     Boolean(arg.allowUncalculated) && valueNode !== null
   const canSubmitKclValue =
-    !isEmpty &&
-    !isExecuting &&
-    valueNode !== null &&
-    (calcResult !== 'NAN' || canUseUncalculatedValue) &&
-    (!createNewVariable || isNewVariableNameUnique)
-  const validationMessage = isEmpty
-    ? 'Enter a value.'
-    : !isEmpty && !isExecuting && valueNode === null
-      ? 'Unable to submit undefined command value.'
-      : !isEmpty &&
-          !isExecuting &&
-          calcResult === 'NAN' &&
-          !canUseUncalculatedValue
-        ? "Can't calculate"
-        : createNewVariable && !isNewVariableNameUnique
-          ? 'Variable name unavailable'
-          : undefined
+    (isEmpty && !isRequired) ||
+    (!isExecuting &&
+      valueNode !== null &&
+      (calcResult !== 'NAN' || canUseUncalculatedValue) &&
+      (!createNewVariable || isNewVariableNameUnique))
+  const validationMessage =
+    isEmpty && isRequired
+      ? 'Enter a value.'
+      : !isEmpty && !isExecuting && valueNode === null
+        ? 'Unable to submit undefined command value.'
+        : !isEmpty &&
+            !isExecuting &&
+            calcResult === 'NAN' &&
+            !canUseUncalculatedValue
+          ? "Can't calculate"
+          : createNewVariable && !isNewVariableNameUnique
+            ? 'Variable name unavailable'
+            : undefined
   const resolvedKclValue = useMemo<KclCommandValue | undefined>(() => {
     if (isEmpty || !canSubmitKclValue || valueNode === null) {
       return undefined
@@ -458,46 +463,69 @@ export function CommandKclInput({
   }, [canSubmitKclValue, isEmpty, isExecuting, validationMessage])
 
   return (
-    <div>
-      <label className="flex gap-4 items-center mx-4 my-4 border-solid border-b border-chalkboard-50">
+    <div className={inline ? '' : 'flex flex-col gap-1'}>
+      <label
+        className={
+          inline
+            ? 'flex gap-4 items-center mx-4 my-4 border-solid border-b border-chalkboard-50'
+            : 'flex flex-col gap-1'
+        }
+      >
         <span
           id={labelId}
           data-testid="cmd-bar-arg-name"
           className="capitalize text-chalkboard-80 dark:text-chalkboard-20"
         >
           {label}
+          {!inline && isRequired && <span aria-hidden="true"> *</span>}
         </span>
         <div
           id={inputId}
           data-testid="cmd-bar-arg-value"
           ref={editorRef}
-          className={styles.editor}
+          className={inline ? styles.editor : styles.compactEditor}
         />
-        <CustomIcon
-          name="equal"
-          className="w-5 h-5 text-chalkboard-70 dark:text-chalkboard-40"
-        />
-        <span
-          className={
-            calcResult === 'NAN'
-              ? 'text-destroy-80 dark:text-destroy-40'
-              : 'text-succeed-80 dark:text-succeed-40'
-          }
-        >
-          {isExecuting === true || !calcResult ? (
-            <Spinner className="text-inherit w-4 h-4" />
-          ) : arg.valueSummary && valueNode ? (
-            arg.valueSummary(valueForSummary, wasmInstance)
-          ) : calcResult === 'NAN' ? (
-            "Can't calculate"
-          ) : (
-            roundOffWithUnits(calcResult, 4)
-          )}
-        </span>
+        {(inline || !isEmpty) && (
+          <span
+            className={inline ? 'contents' : 'flex items-center gap-1 text-xs'}
+          >
+            <CustomIcon
+              name="equal"
+              className={
+                inline
+                  ? 'w-5 h-5 text-chalkboard-70 dark:text-chalkboard-40'
+                  : 'w-4 h-4 text-chalkboard-70 dark:text-chalkboard-40'
+              }
+            />
+            <span
+              className={
+                calcResult === 'NAN'
+                  ? 'text-destroy-80 dark:text-destroy-40'
+                  : 'text-succeed-80 dark:text-succeed-40'
+              }
+            >
+              {isExecuting === true || !calcResult ? (
+                <Spinner className="text-inherit w-4 h-4" />
+              ) : arg.valueSummary && valueNode ? (
+                arg.valueSummary(valueForSummary, wasmInstance)
+              ) : calcResult === 'NAN' ? (
+                "Can't calculate"
+              ) : (
+                roundOffWithUnits(calcResult, 4)
+              )}
+            </span>
+          </span>
+        )}
       </label>
       {description}
       {arg.createVariable !== 'disallow' && (
-        <div className="flex items-baseline gap-4 mx-4">
+        <div
+          className={
+            inline
+              ? 'flex items-baseline gap-4 mx-4'
+              : 'flex flex-wrap items-baseline gap-2 text-xs'
+          }
+        >
           <input
             type="checkbox"
             id={`${inputId}-variable-checkbox`}
@@ -508,11 +536,17 @@ export function CommandKclInput({
               onChange({ source: 'edit', value: resolvedKclValue ?? value })
               setCreateNewVariable(e.target.checked)
             }}
-            className="bg-chalkboard-10 dark:bg-chalkboard-80"
+            className={
+              inline ? 'bg-chalkboard-10 dark:bg-chalkboard-80' : undefined
+            }
           />
           <label
             htmlFor={`${inputId}-variable-checkbox`}
-            className="text-blue border-none bg-transparent font-sm flex gap-1 items-center pl-0 pr-1"
+            className={
+              inline
+                ? 'text-blue border-none bg-transparent font-sm flex gap-1 items-center pl-0 pr-1'
+                : undefined
+            }
           >
             Create new variable
           </label>

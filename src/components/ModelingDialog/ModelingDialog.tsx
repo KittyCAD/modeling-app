@@ -134,7 +134,7 @@ export default function ModelingDialog({
           label={label}
           description={description}
           isRequired={required}
-          disabled={false}
+          inline={false}
           value={getKclInputValue(arg, value)}
           submittedValue={state.context.argumentsToSubmit[name]}
           nodeToEdit={state.context.argumentsToSubmit.nodeToEdit}

@@ -16,3 +16,28 @@
   @apply text-chalkboard-10;
   @apply bg-primary/40;
 }
+
+.compactEditor {
+  @apply min-h-7 w-full rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs dark:border-chalkboard-70;
+}
+.compactEditor :global(.cm-editor) {
+  @apply bg-transparent;
+}
+.compactEditor :global(.cm-editor.cm-focused) {
+  outline: none;
+}
+.compactEditor:focus-within {
+  @apply outline outline-1 outline-offset-0 outline-chalkboard-100 dark:outline-chalkboard-10;
+}
+.compactEditor :global(.cm-content) {
+  padding: 0;
+  min-height: 1rem;
+}
+.compactEditor :global(.cm-line) {
+  padding: 0;
+}
+.compactEditor :global(.cm-scroller) {
+  font-family:
+    "Source Code VF", Menlo, Monaco, Consolas, "Courier New", monospace;
+  overflow: hidden;
+}
