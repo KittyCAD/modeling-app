@@ -37,7 +37,7 @@ import {
 } from 'three'
 import {
   GLTFLoader,
-  GLTFReference,
+  type GLTFReference,
 } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import type DenoiseNode from 'three/examples/jsm/tsl/display/DenoiseNode.js'
 import { denoise } from 'three/examples/jsm/tsl/display/DenoiseNode.js'
