@@ -38,7 +38,7 @@ import {
   noAutofillInputProps,
   setNoAutofillAttributes,
 } from '@src/lib/autofill'
-import styles from './CommandBarKclInput.module.css'
+import styles from './CommandKclInput.module.css'
 import { MarkdownText } from '@src/components/MarkdownText'
 
 // TODO: remove the need for this selector once we decouple all actors from React
