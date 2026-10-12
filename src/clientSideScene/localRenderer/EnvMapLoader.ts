@@ -15,6 +15,8 @@ export class EnvMapLoader {
   constructor(
     private readonly renderer: Renderer,
     // Absent when the renderer runs on its WebGL backend.
+    // TODO: the device is only used to wait for the GPU after an env map is
+    // built. If that wait is not needed, it and the catch blocks below can go.
     private readonly device?: GPUDevice
   ) {}
 
@@ -40,7 +42,7 @@ export class EnvMapLoader {
       await this.device?.queue.onSubmittedWorkDone()
     } catch (error) {
       environmentRenderTarget?.dispose()
-      throw error
+      return Promise.reject(error)
     } finally {
       roomEnvironment.dispose()
       pmremGenerator.dispose()
@@ -66,7 +68,7 @@ export class EnvMapLoader {
       await this.device?.queue.onSubmittedWorkDone()
     } catch (error) {
       environmentRenderTarget?.dispose()
-      throw error
+      return Promise.reject(error)
     } finally {
       hdrTexture.dispose()
       pmremGenerator.dispose()
