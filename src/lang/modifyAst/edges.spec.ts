@@ -37,6 +37,7 @@ import {
   enginelessExecutor,
   getAstAndArtifactGraph,
 } from '@src/lib/testHelpers'
+import { getPrimitiveSelectionForEntity } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 import { isOverlap } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -78,6 +79,146 @@ afterAll(() => {
     initiatedBy: 'client',
   })
 })
+
+it('fillets an edge on a mirrored pattern with later face features', async () => {
+  const code = `@settings(kclVersion = 3.0)
+cubeSize = 20mm
+cubeProfile = sketch(on = XY) {
+  bottomEdge = line(start = [var 0mm, var 0mm], end = [var 20mm, var 0mm])
+  rightEdge = line(start = [var 20mm, var 0mm], end = [var 20mm, var 20mm])
+  topEdge = line(start = [var 20mm, var 20mm], end = [var 0mm, var 20mm])
+  leftEdge = line(start = [var 0mm, var 20mm], end = [var 0mm, var 0mm])
+  coincident([bottomEdge.start, ORIGIN])
+  coincident([bottomEdge.end, rightEdge.start])
+  coincident([rightEdge.end, topEdge.start])
+  coincident([topEdge.end, leftEdge.start])
+  coincident([leftEdge.end, bottomEdge.start])
+  horizontal(bottomEdge)
+  vertical(rightEdge)
+  horizontal(topEdge)
+  vertical(leftEdge)
+  distance([bottomEdge.start, bottomEdge.end]) == cubeSize
+  distance([rightEdge.start, rightEdge.end]) == cubeSize
+}
+cubeRegion = region(segments = [cubeProfile.bottomEdge, cubeProfile.rightEdge], intersectionIndex = -1, direction = CCW)
+originalCube = extrude(cubeRegion, length = cubeSize, tagEnd = $capEnd001)
+hide(cubeProfile)
+translatedCube = clone(originalCube) |> translate(x = 50mm, global = true)
+face001 = faceOf(translatedCube, face = END)
+sketch001 = sketch(on = face001) {
+  line1 = line(start = [var 54.38mm, var 6.26mm], end = [var 59.9mm, var 16mm])
+  line2 = line(start = [var 59.9mm, var 16mm], end = [var 66.59mm, var 5.18mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 66.59mm, var 5.18mm], end = [var 54.38mm, var 6.26mm])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line1.start])
+}
+hidden001 = hide(sketch001)
+region001 = region(segments = [sketch001.line1, sketch001.line2], direction = CW)
+extrude001 = extrude(region001, length = 50mm)
+pattern001 = patternLinear3d(translatedCube, instances = 4, distance = 30mm, axis = Y)
+face002 = faceOf(pattern001[2], face = region001.tags.line1)
+sketch002 = sketch(on = face002) {
+  line1 = line(start = [var -92.97mm, var 66.65mm], end = [var -86.87mm, var 66.65mm])
+  line2 = line(start = [var -86.87mm, var 66.65mm], end = [var -86.87mm, var 25.47mm])
+  line3 = line(start = [var -86.87mm, var 25.47mm], end = [var -92.97mm, var 25.47mm])
+  line4 = line(start = [var -92.97mm, var 25.47mm], end = [var -92.97mm, var 66.65mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+hide(sketch002)
+region002 = region(segments = [sketch002.line1, sketch002.line2], direction = CW)
+extrude002 = extrude(region002, length = 20mm, tagEnd = $capEnd002)
+plane001 = planeOf(extrude002, face = capEnd002)
+solid001 = mirror3d(pattern001[2], across = plane001)
+`
+  const { ast, artifactGraph } = await getAstAndArtifactGraph(
+    code,
+    instanceInThisFile,
+    kclManagerInThisFile
+  )
+  expect(kclManagerInThisFile.errors).toEqual([])
+  const body = [...artifactGraph.values()].find(
+    (a) =>
+      (a.type === 'sweep' || a.type === 'compositeSolid') &&
+      code.slice(a.codeRef.range[0], a.codeRef.range[1]).includes('mirror3d')
+  )
+  if (!body) throw new Error('Expected mirrored body')
+  const walls = [...artifactGraph.values()].filter((a) => {
+    if (a.type !== 'wall' || a.cmdId !== body.id) return false
+    const seg = getOriginalSegmentArtifact(a.segId, artifactGraph)
+    return (
+      seg &&
+      /start = \[var (66.59mm|59.9mm)/.test(
+        code.slice(seg.codeRef.range[0], seg.codeRef.range[1])
+      )
+    )
+  })
+  const edge = [...artifactGraph.values()].find(
+    (a) =>
+      a.type === 'sweepEdge' &&
+      a.commonSurfaceIds?.length === 2 &&
+      a.commonSurfaceIds?.every((id) => walls.some((w) => w.id === id))
+  )
+  if (edge?.type !== 'sweepEdge' || !edge.commonSurfaceIds)
+    throw new Error('Expected mirrored triangle edge')
+  const primitive = await getPrimitiveSelectionForEntity(
+    edge.id,
+    engineCommandManagerInThisFile,
+    artifactGraph
+  )
+  if (!primitive?.parentEntityId)
+    throw new Error('Expected selected edge topology')
+  const codeRef = getCodeRefsByArtifactId(edge.id, artifactGraph)?.[0]
+  const result = addFillet({
+    ast,
+    artifactGraph,
+    selection: {
+      graphSelections: [
+        {
+          artifact: edge,
+          codeRef,
+          entityRef: { type: 'edge', side_faces: edge.commonSurfaceIds },
+          engineTopologyFallback: {
+            parentId: primitive.parentEntityId,
+            primitiveIndex: primitive.primitiveIndex,
+          },
+        },
+      ],
+      otherSelections: [],
+    },
+    radius: (await stringToKclExpression(
+      '1mm',
+      rustContextInThisFile
+    )) as KclCommandValue,
+    wasmInstance: instanceInThisFile,
+  })
+  if (err(result)) throw result
+  const newCode = recast(result.modifiedAst, instanceInThisFile)
+  if (err(newCode)) throw newCode
+  expect(newCode).toMatch(/fillet\(\s*solid001\[0\],/)
+  expect(newCode).toContain(
+    `edgeId(solid001[0], index = ${primitive.primitiveIndex})`
+  )
+  const executed = await getAstAndArtifactGraph(
+    newCode,
+    instanceInThisFile,
+    kclManagerInThisFile
+  )
+  expect(kclManagerInThisFile.errors).toEqual([])
+  expect(
+    [...executed.artifactGraph.values()].some(
+      (artifact) =>
+        artifact.type === 'edgeCut' && artifact.consumedEdgeId === edge.id
+    )
+  ).toBe(true)
+}, 60_000)
 
 describe('edges.spec.ts', () => {
   const extrudedTriangle = `sketch001 = startSketchOn(XY)

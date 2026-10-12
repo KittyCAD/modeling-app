@@ -2611,6 +2611,41 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
       >
     }
   | Error {
+  const primitiveCopies: EnginePrimitiveSelection[] = []
+  const graphSelections = selections.graphSelections.filter((selection) => {
+    const topology = getEngineTopologyFallbackNormalized(selection)
+    const faces =
+      selection.entityRef?.type === 'edge' ? selection.entityRef.side_faces : []
+    const entityId = selection.engineEntityId ?? selection.artifact?.id
+    if (
+      topology &&
+      entityId &&
+      faces.some((id) => {
+        const face = artifactGraph.get(id)
+        return (
+          (face?.type === 'wall' || face?.type === 'cap') &&
+          face.cmdId === topology.parentId &&
+          face.sweepId !== topology.parentId
+        )
+      })
+    ) {
+      // Copied composite faces retain source-region tags. Their edge index
+      // is scoped to the selected output and avoids ambiguous sketch tags.
+      primitiveCopies.push({
+        type: 'enginePrimitive',
+        primitiveType: 'edge',
+        entityId,
+        parentEntityId: topology.parentId,
+        primitiveIndex: topology.primitiveIndex,
+      })
+      return false
+    }
+    return true
+  })
+  selections = {
+    graphSelections,
+    otherSelections: [...selections.otherSelections, ...primitiveCopies],
+  }
   let modifiedAst = ast
   const bodies = new Map<
     string,
