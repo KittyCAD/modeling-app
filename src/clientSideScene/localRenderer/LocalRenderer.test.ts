@@ -113,7 +113,6 @@ function fixture(
       enableSSAO: false,
       highlightEdges: false,
       fixedSizeGrid: true,
-      onVisibilityChange: vi.fn(),
       onModelLoadSettled,
     }
   )

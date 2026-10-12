@@ -14,14 +14,7 @@ import { getSelectedPlaneId } from '@src/lang/queryAst'
 const THUMBNAIL_DELAY_MS = 500
 
 export const LocalWebGPUScene = (props: LocalRendererProps) => {
-  const {
-    theme,
-    enableSSAO,
-    highlightEdges,
-    fixedSizeGrid,
-    onVisibilityChange,
-    forceHide = false,
-  } = props
+  const { theme, enableSSAO, highlightEdges, fixedSizeGrid } = props
   const containerRef = useRef<HTMLDivElement>(null)
   const rendererRef = useRef<LocalRenderer | null>(null)
   const latestPropsRef = useRef(props)
@@ -117,14 +110,6 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
   useEffect(() => {
     rendererRef.current?.setFixedSizeGrid(fixedSizeGrid)
   }, [fixedSizeGrid])
-
-  useEffect(() => {
-    rendererRef.current?.setForceHide(forceHide)
-  }, [forceHide])
-
-  useEffect(() => {
-    rendererRef.current?.setOnVisibilityChange(onVisibilityChange)
-  }, [onVisibilityChange])
 
   return (
     <>

@@ -236,7 +236,6 @@ export class SelectionHighlightRenderer {
   }
 
   setSelection(targets: Iterable<Mesh>) {
-    console.log('setselection', targets)
     this.selectedKeys = new Set(Array.from(targets, (target) => target.uuid))
     this.updateSceneMembership()
   }

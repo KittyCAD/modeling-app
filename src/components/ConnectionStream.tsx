@@ -52,13 +52,6 @@ import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 
 const TIME_TO_CONNECT = 30_000
-const WEBGPU_PORT_LOG_PREFIX = '[WEBGPU_POC]'
-const WEBGPU_PORT_DEBUG_STORAGE_KEY = 'webgpu-port-debug'
-
-function shouldDebugLocalWebGpuPreview() {
-  return localStorage.getItem(WEBGPU_PORT_DEBUG_STORAGE_KEY) === 'true'
-}
-
 const stringHash = (value: string) => {
   let hash = 0
   for (let i = 0; i < value.length; i++) {
@@ -84,7 +77,6 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const [showManualConnect, setShowManualConnect] = useState(false)
   const isIdle = useRef(false)
   const [isSceneReady, setIsSceneReady] = useState(false)
-  const [isLocalRenderVisible, setIsLocalRenderVisible] = useState(false)
   const settingsValues = settings.useSettings()
   // Each renderer needs its own kind of engine session, so the choice is fixed
   // when the scene mounts instead of following the setting live.
@@ -617,25 +609,6 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     [sceneInfra.camControls.wasDragging]
   )
 
-  const handleLocalVisibilityChange = useCallback((isVisible: boolean) => {
-    EngineDebugger.addLog({
-      label: 'ConnectionStream.tsx',
-      message: 'local webgpu visibility changed',
-      metadata: { isVisible },
-    })
-    if (shouldDebugLocalWebGpuPreview()) {
-      console.info(
-        `${WEBGPU_PORT_LOG_PREFIX}[ConnectionStream] local webgpu visibility changed`,
-        {
-          isVisible,
-        }
-      )
-    }
-    setIsLocalRenderVisible(isVisible)
-  }, [])
-
-  const shouldShowLocalWebGpuScene = isLocalRendering && isLocalRenderVisible
-
   useEffect(() => {
     // This effect runs when a project gets opened.
     const cameraControls = sceneInfra.camControls
@@ -691,8 +664,6 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           enableSSAO={settingsValues.modeling.enableSSAO.current}
           highlightEdges={settingsValues.modeling.highlightEdges.current}
           fixedSizeGrid={settingsValues.modeling.fixedSizeGrid.current}
-          onVisibilityChange={handleLocalVisibilityChange}
-          forceHide={!shouldShowLocalWebGpuScene}
         />
       )}
       <ClientSideScene

@@ -14,7 +14,6 @@ import { SelectionHighlightRenderer } from '@src/clientSideScene/localRenderer/S
 import type { KclExecutionDoneDetail, KclManager } from '@src/lang/KclManager'
 import { KclManagerEvents } from '@src/lang/KclManager'
 import { artifactToEntityRef } from '@src/lang/queryAst'
-import { EngineDebugger } from '@src/lib/debugger'
 import { DprDetector } from '@src/lib/DprDetector'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { type ResolvedTheme, getThemeBackgroundColor } from '@src/lib/theme'
@@ -53,8 +52,6 @@ import {
 } from 'three/webgpu'
 import { type KITTYCAD_GLTF } from './KITTYCAD_GLTF'
 
-const WEBGPU_PORT_DEBUG_STORAGE_KEY = 'webgpu-port-debug'
-const WEBGPU_PORT_LOG_PREFIX = '[WEBGPU_POC]'
 const ENGINE_MILLIMETERS_TO_GLTF_METERS = 1 / 1000
 
 // The installed typings omit support for reconstructing normals from depth.
@@ -79,10 +76,8 @@ export interface LocalRendererProps {
   enableSSAO: boolean
   highlightEdges: boolean
   fixedSizeGrid: boolean
-  onVisibilityChange: (isVisible: boolean) => void
   /** isNewModel: the result of a finished execution is now in the scene. */
   onModelLoadSettled?: (isNewModel?: boolean) => void
-  forceHide?: boolean
 }
 
 export class LocalRenderer {
@@ -92,10 +87,7 @@ export class LocalRenderer {
   private enableSSAO: boolean
   private highlightEdges: boolean
   private fixedSizeGrid: boolean
-  private forceHide: boolean
-  private onVisibilityChange: LocalRendererProps['onVisibilityChange']
   private onModelLoadSettled: LocalRendererProps['onModelLoadSettled']
-  private isVisible = false
   private renderer: WebGPURenderer | null = null
   private device: DisposableGpuDevice | null = null
   private scene: Scene | null = null
@@ -147,8 +139,6 @@ export class LocalRenderer {
     this.enableSSAO = props.enableSSAO
     this.highlightEdges = props.highlightEdges
     this.fixedSizeGrid = props.fixedSizeGrid
-    this.forceHide = props.forceHide ?? false
-    this.onVisibilityChange = props.onVisibilityChange
     this.onModelLoadSettled = props.onModelLoadSettled
 
     this.container.style.opacity = '0'
@@ -333,7 +323,6 @@ export class LocalRenderer {
 
       if (
         this.disposed ||
-        this.forceHide ||
         !this.planeInteractionEnabled ||
         this.kclManager.isExecuting ||
         generation !== this.modelLoadGeneration ||
@@ -425,23 +414,6 @@ export class LocalRenderer {
     this.invalidateBaseRender()
   }
 
-  setForceHide(forceHide: boolean) {
-    if (this.forceHide === forceHide) {
-      return
-    }
-
-    this.forceHide = forceHide
-    if (forceHide) this.clearPlaneHover()
-    this.container.style.opacity = this.isVisible && !this.forceHide ? '1' : '0'
-    this.invalidateBaseRender()
-  }
-
-  setOnVisibilityChange(
-    onVisibilityChange: LocalRendererProps['onVisibilityChange']
-  ) {
-    this.onVisibilityChange = onVisibilityChange
-  }
-
   dispose() {
     if (this.disposed) {
       return
@@ -457,7 +429,6 @@ export class LocalRenderer {
       this.onExecutionDone
     )
     this.container.style.opacity = '0'
-    this.isVisible = false
     this.unregisterSharedCameraListener?.()
     this.unregisterSharedCameraListener = null
     this.unregisterBaseUnitListener()
@@ -487,17 +458,6 @@ export class LocalRenderer {
     this.device = null
     this.scene = null
     this.previewCamera = null
-  }
-
-  private setVisible(nextVisible: boolean) {
-    if (this.isVisible === nextVisible) {
-      return
-    }
-
-    this.isVisible = nextVisible
-    this.container.style.opacity = nextVisible && !this.forceHide ? '1' : '0'
-    this.onVisibilityChange(nextVisible)
-    this.scheduleRender()
   }
 
   private readonly syncPlaneScale = () => {
@@ -595,7 +555,6 @@ export class LocalRenderer {
   }
 
   private readonly handleInitializationError = (error: unknown) => {
-    logLocalWebGpuPreview('preview initialization failed', { error })
     console.error('[LocalWebGPUScene] preview initialization failed', error)
     reportRejection(error)
   }
@@ -656,7 +615,7 @@ export class LocalRenderer {
     const baseRendered =
       this.selectionHighlightRenderer?.beginFrame(this.baseRenderDirty) ?? true
     if (baseRendered) {
-      if (!this.enableSSAO || this.forceHide) {
+      if (!this.enableSSAO) {
         renderer.render(scene, previewCamera)
       } else {
         if (this.ambientOcclusionPipeline?.camera !== previewCamera) {
@@ -801,20 +760,11 @@ export class LocalRenderer {
     const { container } = this
 
     const hasNavigatorGpu = typeof navigator !== 'undefined' && !!navigator.gpu
-    if (!hasNavigatorGpu) {
-      logLocalWebGpuPreview('WebGPU unavailable', {
-        isSecureContext: window.isSecureContext,
-      })
-    }
-
     const adapter = hasNavigatorGpu
       ? await navigator.gpu.requestAdapter({
           powerPreference: 'high-performance',
         })
       : null
-    if (hasNavigatorGpu && !adapter) {
-      logLocalWebGpuPreview('WebGPU adapter request failed')
-    }
 
     // Without a WebGPU device, three.js renders the same scene through WebGL 2.
     const device = adapter
@@ -827,17 +777,6 @@ export class LocalRenderer {
             },
           })
           .catch((error: unknown) => {
-            logLocalWebGpuPreview('device request failed', {
-              error,
-              adapterInfo: adapter.info
-                ? {
-                    vendor: adapter.info.vendor,
-                    architecture: adapter.info.architecture,
-                    description: adapter.info.description,
-                  }
-                : null,
-              adapterFeatures: Array.from(adapter.features.values()),
-            })
             reportRejection(error)
             return undefined
           })
@@ -873,11 +812,7 @@ export class LocalRenderer {
     if (hdrEnvMapUrl) {
       try {
         await envMapLoader.loadHdr(scene, hdrEnvMapUrl)
-      } catch (error) {
-        logLocalWebGpuPreview(
-          'HDR environment unavailable; using procedural fallback',
-          { url: hdrEnvMapUrl, error }
-        )
+      } catch {
         await envMapLoader.loadDefault(scene)
       }
     } else {
@@ -929,7 +864,7 @@ export class LocalRenderer {
     const removeSelectionHandler =
       kclManager.engineCommandManager.setLocalSelectionCommandHandler(
         (command, context) =>
-          !this.disposed && !this.forceHide && this.planeInteractionEnabled
+          !this.disposed && this.planeInteractionEnabled
             ? this.handleLocalSelectionCommand(command, context)
             : null
       )
@@ -957,7 +892,7 @@ export class LocalRenderer {
 
     this.scheduleRender()
 
-    this.setVisible(true)
+    this.container.style.opacity = '1'
     // Execution may finish while the GPU/environment is initializing, or before
     // this renderer is mounted. Load that completed scene once, too.
     if (
@@ -981,7 +916,6 @@ export class LocalRenderer {
       this.rebuildPlaneTargets()
       this.syncPlaneScale()
       this.pendingModelRefresh = false
-      logLocalWebGpuPreview('KCL execution failed', detail)
       this.onModelLoadSettled?.()
       return
     }
@@ -1008,7 +942,6 @@ export class LocalRenderer {
       return
     }
     this.rebuildPlaneTargets()
-    const startedAt = performance.now()
     try {
       // Like viewer2: one whole-scene binary glTF export, without UUID extras.
       const files = await this.kclManager.rustContext.export(
@@ -1022,7 +955,6 @@ export class LocalRenderer {
       )
       if (!isCurrent()) return
 
-      const exportRoundTripMs = performance.now() - startedAt
       const file = files?.find((file) => file.name.endsWith('.glb'))
       if (!file) {
         this.handleModelLoadError(
@@ -1058,11 +990,6 @@ export class LocalRenderer {
       }
       this.invalidateBaseRender()
       this.onModelLoadSettled?.(true)
-      logLocalWebGpuPreview('GLB model loaded', {
-        exportRoundTripMs,
-        loadMs: performance.now() - startedAt - exportRoundTripMs,
-        payloadBytes: bytes.byteLength,
-      })
     } catch (error) {
       if (isCurrent()) this.handleModelLoadError(error)
     }
@@ -1112,31 +1039,6 @@ export class LocalRenderer {
     camera.updateProjectionMatrix()
     camera.updateMatrixWorld(true)
     controls.onCameraChange()
-  }
-}
-
-function shouldDebugLocalWebGpuPreview() {
-  return localStorage.getItem(WEBGPU_PORT_DEBUG_STORAGE_KEY) === 'true'
-}
-
-function logLocalWebGpuPreview(message: string, metadata?: unknown) {
-  EngineDebugger.addLog({
-    label: 'LocalWebGPUScene',
-    message,
-    metadata,
-  })
-
-  const shouldPrintToConsole =
-    shouldDebugLocalWebGpuPreview() ||
-    message === 'preview initialization failed' ||
-    message === 'device request failed'
-
-  if (shouldPrintToConsole) {
-    console.info(
-      `${WEBGPU_PORT_LOG_PREFIX}[LocalWebGPUScene]`,
-      message,
-      metadata ?? ''
-    )
   }
 }
 

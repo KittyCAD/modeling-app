@@ -51,32 +51,17 @@ export class EdgeRenderer {
 
   // TODO defer building if edges are not visible
   public buildEdges(gltf: KITTYCAD_GLTF) {
-    console.log('>>>', gltf)
     const brep = gltf.userData.gltfExtensions.KITTYCAD_boundary_representation
-    // for (const solid of brep.solids) {
-    //   for (const [shellIndex, _] of solid.shells) {
-    //     const shell = brep.shells[shellIndex]
-    //     for (const [faceIndex, _] of shell.faces) {
-    //       const face = brep.faces[faceIndex]
-    //       for (const [loopIndex, _] of face.loops) {
-    //         const loop = brep.loops[loopIndex]
-    //         for (const [edgeIndex, _] of loop.edges) {
-    //           const edge = brep.edges[edgeIndex]
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
     const positions: number[] = []
     const positionsByUuid = new Map<string, number[]>()
     const rangesByUuid = new Map<string, EdgeSelectionTarget['ranges']>()
     this.clearSelectionTargets()
-    for (const edge of brep.edges) {
+    for (const [index, edge] of brep.edges.entries()) {
       const curve = brep.curves3D[edge.curve[0]]
       if (curve) {
         const points = sampleEdge(edge, curve, brep.vertices)
         if (isErr(points)) {
-          //console.error(`Edge ${index}: ${points.message}`)
+          console.error(`Edge ${index}: ${points.message}`)
           continue
         }
         // Convert a polyline into independent segment pairs.
