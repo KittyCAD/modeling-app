@@ -1405,7 +1405,13 @@ export function getVariableExprsFromSelection(
   const pushedNames = {} as Record<string, boolean>
   for (const s of selection.graphSelections) {
     const resolvedForSegment = resolveToCodeRef(s, artifactGraph)
-    const copiedBody = resolvedForSegment?.artifact
+    const selectedArtifact = resolvedForSegment?.artifact
+    // Face selections must resolve the owning copy before looking up its
+    // variable. The copy's call location names the whole output array.
+    const copiedBody =
+      selectedArtifact?.type === 'cap' || selectedArtifact?.type === 'wall'
+        ? artifactGraph.get(selectedArtifact.sweepId)
+        : selectedArtifact
     const copyPattern = copiedBody
       ? getPatternArtifactForCopyId(copiedBody.id, artifactGraph)
       : undefined
@@ -1428,7 +1434,7 @@ export function getVariableExprsFromSelection(
         continue
       }
     }
-    const mirroredBody = resolvedForSegment?.artifact
+    const mirroredBody = copiedBody
     if (
       mirroredBody &&
       (mirroredBody.type === 'sweep' || mirroredBody.type === 'compositeSolid')
