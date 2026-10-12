@@ -212,6 +212,13 @@ async function resolveSweepParentEntityIdForEdge(
 
     const artifact = artifactGraph.get(node.id)
 
+    // Pattern copies may have no body artifact. Keep their engine body ID
+    // rather than climbing to the pattern command or source body.
+    const pattern = getPatternArtifactForCopyId(node.id, artifactGraph)
+    if (pattern?.copyIds.includes(node.id)) {
+      return node.id
+    }
+
     if (artifact?.type === 'sweep' || artifact?.type === 'compositeSolid') {
       return artifact.id
     }
@@ -1775,7 +1782,17 @@ export async function getEventForQueryEntityTypeWithPoint(
     }
   }
 
-  if (clickEntityId && engineCommandManager) {
+  if (
+    clickEntityId &&
+    engineCommandManager &&
+    !(
+      entityRef.type === 'edge' &&
+      entityRef.side_faces.length > 0 &&
+      [...entityRef.side_faces, ...(entityRef.end_faces ?? [])].every((id) =>
+        artifactGraph.has(id)
+      )
+    )
+  ) {
     const primitiveSel = await getPrimitiveSelectionForEntity(
       clickEntityId,
       engineCommandManager,
