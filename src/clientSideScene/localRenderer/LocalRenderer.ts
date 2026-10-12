@@ -1,4 +1,4 @@
-import type { OkModelingCmdResponse } from '@kittycad/lib'
+import type { EntityReference, OkModelingCmdResponse } from '@kittycad/lib'
 import type { LocalSelectionCommandHandler } from '@src/clientSideScene/localSelectionCommandProxy'
 import {
   LOCAL_WEBGPU_GTAO_SAMPLES,
@@ -17,8 +17,9 @@ import { artifactToEntityRef } from '@src/lang/queryAst'
 import { DprDetector } from '@src/lib/DprDetector'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { type ResolvedTheme, getThemeBackgroundColor } from '@src/lib/theme'
+import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { reportRejection } from '@src/lib/trap'
-import { isArray } from '@src/lib/utils'
+import { isArray, uuidv4 } from '@src/lib/utils'
 import type { PlaneVisibilityMap } from '@src/machines/modelingSharedTypes'
 import {
   Box3,
@@ -123,6 +124,7 @@ export class LocalRenderer {
     yz: true,
   }
   private selectedPlaneId: string | null = null
+  private readonly engineEntityReferences = new Map<string, EntityReference>()
   private hoveredPlane: Mesh | null = null
   private hoverRequestVersion = 0
   private pointerOverCanvas = false
@@ -259,6 +261,41 @@ export class LocalRenderer {
     return reference?.type === 'helix' ? undefined : reference
   }
 
+  /**
+   * The artifact graph cannot describe every entity, for example an edge
+   * between two faces of a sweep. The engine can, so it is asked once per
+   * entity and the answer is cached.
+   * Only click asks for this, hover doesn't need it (we just higlight the edge by its id).
+   */
+  private async getEngineEntityReference(entityId: string) {
+    const cached = this.engineEntityReferences.get(entityId)
+    if (cached) {
+      return cached
+    }
+    const generation = this.modelLoadGeneration
+    const response =
+      await this.kclManager.engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: { type: 'query_entity_type', entity_id: entityId },
+      })
+    // The model changed while the engine was answering.
+    if (generation !== this.modelLoadGeneration) {
+      return undefined
+    }
+    // A reply from the engine arrives wrapped in a one-element array
+    const single = isArray(response) ? response[0] : response
+
+    if (single && isModelingResponse(single)) {
+      const modelingResponse = single.resp.data.modeling_response
+      if (modelingResponse.type === 'query_entity_type') {
+        const reference = modelingResponse.data.reference
+        this.engineEntityReferences.set(entityId, reference)
+        return reference
+      }
+    }
+  }
+
   private readonly handleLocalSelectionCommand: LocalSelectionCommandHandler =
     async (command, { streamDimensions }) => {
       if (command.type !== 'modeling_cmd_req') return null
@@ -352,6 +389,12 @@ export class LocalRenderer {
           },
         }
       }
+      const reference =
+        entityId && cmd.type === 'query_entity_type_with_point'
+          ? (this.getLocalEntityReference(entityId) ??
+            (await this.getEngineEntityReference(entityId)))
+          : undefined
+      if (generation !== this.modelLoadGeneration) return {}
       const response: OkModelingCmdResponse =
         cmd.type === 'select_with_point'
           ? ({
@@ -363,11 +406,7 @@ export class LocalRenderer {
             >)
           : ({
               type: 'query_entity_type_with_point',
-              data: {
-                reference: entityId
-                  ? this.getLocalEntityReference(entityId)
-                  : undefined,
-              },
+              data: { reference },
             } satisfies Extract<
               OkModelingCmdResponse,
               { type: 'query_entity_type_with_point' }
@@ -743,6 +782,7 @@ export class LocalRenderer {
   }
 
   private clearModel() {
+    this.engineEntityReferences.clear()
     this.integerIdPicker?.clearModel()
     this.selectionHighlightRenderer?.clearModel()
     if (this.currentModel) {
