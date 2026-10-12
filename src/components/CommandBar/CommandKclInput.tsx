@@ -5,96 +5,104 @@ import {
   completionKeymap,
   completionStatus,
 } from '@codemirror/autocomplete'
-import type { ViewUpdate } from '@codemirror/view'
-import { EditorView, keymap } from '@codemirror/view'
-import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
-import { useSelector } from '@xstate/react'
-import { use, useEffect, useMemo, useRef, useState } from 'react'
-import toast from 'react-hot-toast'
-import type { AnyStateMachine, SnapshotFrom } from 'xstate'
+import { EditorView, keymap, tooltips } from '@codemirror/view'
+import type { ReactNode } from 'react'
+import {
+  use,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import { useSignals } from '@preact/signals-react/runtime'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Spinner } from '@src/components/Spinner'
-import { createLocalName, createVariableDeclaration } from '@src/lang/create'
+import {
+  createLocalName,
+  createVariableDeclaration,
+  findUniqueName,
+} from '@src/lang/create'
+import type { KclManager } from '@src/lang/KclManager'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import type { SourceRange, VariableDeclarator } from '@src/lang/wasm'
 import { formatNumberValue, isPathToNode } from '@src/lang/wasm'
-import { useApp } from '@src/lib/boot'
+import type { AppSettingsSystem } from '@src/lib/app'
 import type { CommandArgument, KclCommandValue } from '@src/lib/commandTypes'
+import { isKclCommandValue } from '@src/lib/commandUtils'
 import { getResolvedTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
 import { roundOff, roundOffWithUnits } from '@src/lib/utils'
 import { varMentions } from '@src/lib/varCompletionExtension'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 import { Compartment, EditorState } from '@codemirror/state'
-import { editorTheme, themeCompartment } from '@src/editor/plugins/theme'
-import { useModelingContext } from '@src/hooks/useModelingContext'
-import type { KclManager } from '@src/lang/KclManager'
+import { editorTheme } from '@src/editor/plugins/theme'
 import {
-  noAutofillFormProps,
   noAutofillInputProps,
   setNoAutofillAttributes,
 } from '@src/lib/autofill'
+import type { Selections } from '@src/machines/modelingSharedTypes'
+import {
+  CODE_EDITOR_FOCUSED_COMMAND_SCOPE,
+  CODE_EDITOR_NOT_FOCUSED_COMMAND_SCOPE,
+  type CommandScopeService,
+} from '@src/registry/contracts/commands'
 import styles from './CommandKclInput.module.css'
-import { MarkdownText } from '@src/components/MarkdownText'
 
-// TODO: remove the need for this selector once we decouple all actors from React
-const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
-  snapshot?.context
+function getKclEditorContentAttributes(labelId: string) {
+  return EditorView.contentAttributes.of({
+    'aria-labelledby': labelId,
+    'aria-multiline': 'false',
+    autocapitalize: 'off',
+    autocorrect: 'off',
+    spellcheck: 'false',
+  })
+}
 
-const varMentionsCompartment = new Compartment()
-const setValueCompartment = new Compartment()
-const keymapCompartment = new Compartment()
-const kclLspCompartment = new Compartment()
-const kclAutocompleteCompartment = new Compartment()
-const miniEditor = new EditorView({
-  state: EditorState.create({
-    extensions: [
-      themeCompartment.of([]),
-      varMentionsCompartment.of([]),
-      setValueCompartment.of([]),
-      kclLspCompartment.of([]),
-      kclAutocompleteCompartment.of([]),
-      closeBrackets(),
-      keymap.of([...closeBracketsKeymap, ...completionKeymap]),
-      keymapCompartment.of([]),
-    ],
-  }),
-})
-
-function CommandBarKclInput({
+export function CommandKclInput({
+  kclManager,
+  settings,
+  wasmPromise,
+  commandScopes,
+  name,
   arg,
-  stepBack,
-  onSubmit,
-  executingEditor: kclManager,
+  label,
+  description,
+  value,
+  nodeToEdit,
+  variableName,
+  selectionRanges,
+  submittedValue,
+  autoFocus,
+  onChange,
+  onValidationChange,
 }: {
-  arg: CommandArgument<unknown> & {
-    inputType: 'kcl'
-    name: string
-  }
-  stepBack: () => void
-  onSubmit: (event: unknown) => void
-  executingEditor: KclManager
+  kclManager: KclManager
+  settings: AppSettingsSystem
+  wasmPromise: Promise<ModuleType>
+  commandScopes?: CommandScopeService
+  name: string
+  arg: CommandKclArgument
+  label: ReactNode
+  description?: ReactNode
+  value: string
+  nodeToEdit?: unknown
+  variableName?: string
+  selectionRanges: Selections
+  submittedValue?: unknown
+  autoFocus?: boolean
+  onChange: (change: CommandKclChange) => void
+  onValidationChange: (state: CommandKclValidationState) => void
 }) {
-  const { commands, settings, wasmPromise } = useApp()
+  useSignals()
   const wasmInstance = use(wasmPromise)
-  const commandBarState = commands.useState()
-  const previouslySetValue = commandBarState.context.argumentsToSubmit[
-    arg.name
-  ] as KclCommandValue | undefined
   const settingsValues = settings.useSettings()
-  const {
-    context: { selectionRanges },
-  } = useModelingContext()
-  const argMachineContext = useSelector(
-    arg.machineActor,
-    machineContextSelector
-  )
   const sourceRangeForPrevVariables = useMemo<SourceRange | undefined>(() => {
-    const nodeToEdit = commandBarState.context.argumentsToSubmit.nodeToEdit
     const pathToNode = isPathToNode(nodeToEdit) ? nodeToEdit : undefined
     const node = pathToNode
       ? getNodeFromPath<Node<VariableDeclarator>>(
@@ -106,72 +114,67 @@ function CommandBarKclInput({
     return !err(node) && node && node.node.type === 'VariableDeclarator'
       ? [node.node.start, node.node.end, node.node.moduleId]
       : undefined
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [kclManager.ast, commandBarState.context.argumentsToSubmit.nodeToEdit])
-  const defaultValue = useMemo(
+  }, [nodeToEdit, kclManager.ast, wasmInstance])
+
+  const completionSourceRange = useMemo<SourceRange>(
     () =>
-      arg.defaultValue
-        ? arg.defaultValue instanceof Function
-          ? arg.defaultValue(
-              commandBarState.context,
-              argMachineContext,
-              wasmInstance
-            )
-          : arg.defaultValue
-        : '',
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+      sourceRangeForPrevVariables ||
+      selectionRanges.graphSelections[0]?.codeRef?.range || [
+        kclManager.codeSignal.value.length,
+        kclManager.codeSignal.value.length,
+        kclManager.ast.moduleId,
+      ],
     [
-      arg.defaultValue,
-      commandBarState.context,
-      argMachineContext,
-      argMachineContext,
-      wasmInstance,
+      kclManager.ast.moduleId,
+      kclManager.codeSignal.value.length,
+      selectionRanges.graphSelections,
+      sourceRangeForPrevVariables,
     ]
   )
+
   const initialVariableName = useMemo(() => {
-    // Use the configured variable name if it exists
-    if (arg.variableName !== undefined) {
-      return arg.variableName instanceof Function
-        ? arg.variableName(commandBarState.context, argMachineContext)
-        : arg.variableName
+    if (variableName !== undefined) {
+      return variableName
     }
-    // or derive it from the previously set value or the argument name
-    return typeof previouslySetValue === 'object' &&
-      'variableName' in previouslySetValue
-      ? previouslySetValue.variableName
-      : arg.name
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [
-    arg.variableName,
-    commandBarState.context,
-    argMachineContext,
-    arg.name,
-    previouslySetValue,
-  ])
-  const initialValue = useMemo(() => {
-    const kclValue = previouslySetValue?.valueText || defaultValue || ''
-    return arg.kclValueToInput ? arg.kclValueToInput(kclValue) : kclValue
-  }, [arg, previouslySetValue, defaultValue])
-  const [value, setValue] = useState(initialValue)
+
+    return isKclCommandValue(submittedValue) && 'variableName' in submittedValue
+      ? submittedValue.variableName
+      : name
+  }, [variableName, name, submittedValue])
   const kclValue = useMemo(
-    () => (arg.inputToKclValue ? arg.inputToKclValue(value) : value),
+    () =>
+      arg.inputToKclValue ? arg.inputToKclValue(value.trim()) : value.trim(),
     [arg, value]
   )
   const [createNewVariable, setCreateNewVariable] = useState(
-    (typeof previouslySetValue === 'object' &&
-      'variableName' in previouslySetValue) ||
+    (isKclCommandValue(submittedValue) && 'variableName' in submittedValue) ||
       arg.createVariable === 'byDefault' ||
       arg.createVariable === 'force' ||
       false
   )
-  const [canSubmit, setCanSubmit] = useState(true)
-  useHotkeyWrapper(
-    ['esc'],
-    () => commands.send({ type: 'Close' }),
-    kclManager,
-    { enableOnFormTags: true, enableOnContentEditable: true }
-  )
+  const [hasEditedVariableName, setHasEditedVariableName] = useState(false)
+  const inputId = `command-kcl-input-${name}`
+  const labelId = `${inputId}-label`
   const editorRef = useRef<HTMLDivElement>(null)
+  const miniEditorRef = useRef<EditorView | null>(null)
+  const onChangeRef = useRef(onChange)
+  const onValidationChangeRef = useRef(onValidationChange)
+  const lastReportedValueRef = useRef<unknown>(Symbol('initial-kcl-value'))
+  const lastValidationStateRef = useRef<string>('')
+  const isSyncingEditorValueRef = useRef(false)
+  const compartmentsRef = useRef({
+    theme: new Compartment(),
+    varMentions: new Compartment(),
+    contentAttributes: new Compartment(),
+  })
+
+  useEffect(() => {
+    onChangeRef.current = onChange
+  }, [onChange])
+
+  useEffect(() => {
+    onValidationChangeRef.current = onValidationChange
+  }, [onValidationChange])
 
   const allowArrays = arg.allowArrays ?? false
   const allowStringArrays = arg.allowStringArrays ?? false
@@ -192,7 +195,7 @@ function CommandBarKclInput({
   } = useCalculateKclExpression({
     value: kclValue,
     initialVariableName,
-    sourceRange: sourceRangeForPrevVariables,
+    sourceRange: completionSourceRange,
     selectionRanges,
     rustContext: kclManager.rustContext,
     code: kclManager.codeSignal.value,
@@ -218,145 +221,254 @@ function CommandBarKclInput({
     }
   })
   const varMentionsExtension = varMentions(varMentionData)
+  const initialEditorProps = useRef({
+    value,
+    labelId,
+    autoFocus,
+    theme: settingsValues.app.theme.current,
+    varMentionData,
+  })
 
-  useEffect(() => {
-    miniEditor.dispatch({
-      effects: [
-        keymapCompartment.reconfigure(
+  useLayoutEffect(() => {
+    if (!editorRef.current) {
+      return
+    }
+
+    const initial = initialEditorProps.current
+    const compartments = compartmentsRef.current
+    const miniEditor = new EditorView({
+      state: EditorState.create({
+        doc: initial.value,
+        extensions: [
+          compartments.theme.of(editorTheme[getResolvedTheme(initial.theme)]),
+          compartments.varMentions.of(varMentions(initial.varMentionData)),
+          compartments.contentAttributes.of(
+            getKclEditorContentAttributes(initial.labelId)
+          ),
+          EditorView.updateListener.of((update) => {
+            if (update.docChanged && !isSyncingEditorValueRef.current) {
+              onChangeRef.current({
+                source: 'edit',
+                value: update.state.doc.toString(),
+              })
+            }
+          }),
+          closeBrackets(),
+          keymap.of([...closeBracketsKeymap, ...completionKeymap]),
           keymap.of([
             {
               key: 'Enter',
               run: (editor) => {
                 // Only submit if there is no completion active
                 if (completionStatus(editor.state) !== null) return false
-                handleSubmit()
+                editor.dom.closest('form')?.requestSubmit()
                 return true
               },
             },
-            {
-              key: 'Meta-Backspace',
-              run: () => {
-                stepBack()
-                return true
-              },
-            },
-          ])
-        ),
-      ],
+          ]),
+          EditorView.lineWrapping,
+          tooltips({ parent: document.body }),
+        ],
+      }),
+      parent: editorRef.current,
     })
-  })
+
+    setNoAutofillAttributes(editorRef.current)
+    setNoAutofillAttributes(miniEditor.dom)
+    setNoAutofillAttributes(miniEditor.contentDOM)
+    miniEditorRef.current = miniEditor
+    if (initial.autoFocus) {
+      miniEditor.focus()
+      miniEditor.dispatch({
+        selection: { anchor: 0, head: miniEditor.state.doc.length },
+      })
+    }
+
+    return () => {
+      // Check focus before React removes this editor. Otherwise opening the
+      // command palette can capture its stale editor scope after dismissal.
+      if (miniEditor.dom.contains(document.activeElement)) {
+        commandScopes?.removeScope(CODE_EDITOR_FOCUSED_COMMAND_SCOPE)
+        commandScopes?.applyScope(CODE_EDITOR_NOT_FOCUSED_COMMAND_SCOPE)
+      }
+      miniEditor.destroy()
+      miniEditorRef.current = null
+    }
+  }, [commandScopes])
 
   useEffect(() => {
+    const miniEditor = miniEditorRef.current
+    if (!miniEditor) {
+      return
+    }
     miniEditor.dispatch({
-      effects: [varMentionsCompartment.reconfigure(varMentionsExtension)],
+      effects: [
+        compartmentsRef.current.varMentions.reconfigure(varMentionsExtension),
+      ],
     })
   }, [varMentionsExtension])
 
   useEffect(() => {
+    const miniEditor = miniEditorRef.current
+    if (!miniEditor) {
+      return
+    }
     miniEditor.dispatch({
-      effects: themeCompartment.reconfigure(
+      effects: compartmentsRef.current.theme.reconfigure(
         editorTheme[getResolvedTheme(settingsValues.app.theme.current)]
       ),
     })
   }, [settingsValues.app.theme])
 
   useEffect(() => {
-    if (editorRef.current) {
-      setNoAutofillAttributes(editorRef.current)
-      setNoAutofillAttributes(miniEditor.dom)
-      setNoAutofillAttributes(miniEditor.contentDOM)
+    const miniEditor = miniEditorRef.current
+    if (!miniEditor) {
+      return
+    }
+    miniEditor.dispatch({
+      effects: compartmentsRef.current.contentAttributes.reconfigure(
+        getKclEditorContentAttributes(labelId)
+      ),
+    })
+  }, [labelId])
+
+  useEffect(() => {
+    const miniEditor = miniEditorRef.current
+    if (!miniEditor) {
+      return
+    }
+
+    const currentValue = miniEditor.state.doc.toString()
+    if (currentValue === value) {
+      return
+    }
+
+    isSyncingEditorValueRef.current = true
+    try {
       miniEditor.dispatch({
         changes: {
           from: 0,
           to: miniEditor.state.doc.length,
-          insert: initialValue,
-        },
-        selection: {
-          anchor: 0,
-          head: initialValue.length,
+          insert: value,
         },
       })
-      editorRef.current.appendChild(miniEditor.dom)
-      miniEditor.focus()
+    } finally {
+      isSyncingEditorValueRef.current = false
     }
-    miniEditor.dispatch({
-      effects: setValueCompartment.reconfigure(
-        EditorView.updateListener.of((vu: ViewUpdate) => {
-          if (vu.docChanged) {
-            setValue(vu.state.doc.toString())
-          }
-        })
-      ),
-    })
-  }, [arg, editorRef, initialValue])
+  }, [value])
 
   useEffect(() => {
-    const canUseUncalculatedValue =
-      Boolean(arg.allowUncalculated) && valueNode !== null
-    setCanSubmit(
-      (calcResult !== 'NAN' || canUseUncalculatedValue) &&
-        (!createNewVariable || isNewVariableNameUnique) &&
-        !isExecuting
-    )
-  }, [
-    arg.allowUncalculated,
-    calcResult,
-    createNewVariable,
-    isNewVariableNameUnique,
-    isExecuting,
-    valueNode,
-  ])
-
-  function handleSubmit(e?: React.FormEvent<HTMLFormElement>) {
-    e?.preventDefault()
-    if (!canSubmit || valueNode === null) {
-      // Gotcha: Our application can attempt to submit a command value before the command bar kcl input is ready. Notify the scene and user.
-      if (!canSubmit) {
-        toast.error('Unable to submit command.')
-      } else if (valueNode === null) {
-        toast.error('Unable to submit undefined command value.')
-      }
+    if (hasEditedVariableName) {
       return
     }
 
-    onSubmit(
-      createNewVariable
-        ? ({
-            valueAst: valueNode,
-            valueText: kclValue,
-            valueCalculated: calcResult,
-            variableName: newVariableName,
-            insertIndex: newVariableInsertIndex,
-            variableIdentifierAst: createLocalName(newVariableName),
-            variableDeclarationAst: createVariableDeclaration(
-              newVariableName,
-              valueNode
-            ),
-          } satisfies KclCommandValue)
-        : ({
-            valueAst: valueNode,
-            valueText: kclValue,
-            valueCalculated: calcResult,
-          } satisfies KclCommandValue)
+    setNewVariableName(
+      findUniqueName(kclManager.astSignal.value, initialVariableName)
     )
+  }, [
+    hasEditedVariableName,
+    initialVariableName,
+    kclManager.astSignal.value,
+    setNewVariableName,
+  ])
+
+  const isEmpty = value.trim() === ''
+  const canUseUncalculatedValue =
+    Boolean(arg.allowUncalculated) && valueNode !== null
+  const canSubmitKclValue =
+    !isEmpty &&
+    !isExecuting &&
+    valueNode !== null &&
+    (calcResult !== 'NAN' || canUseUncalculatedValue) &&
+    (!createNewVariable || isNewVariableNameUnique)
+  const validationMessage = isEmpty
+    ? 'Enter a value.'
+    : !isEmpty && !isExecuting && valueNode === null
+      ? 'Unable to submit undefined command value.'
+      : !isEmpty &&
+          !isExecuting &&
+          calcResult === 'NAN' &&
+          !canUseUncalculatedValue
+        ? "Can't calculate"
+        : createNewVariable && !isNewVariableNameUnique
+          ? 'Variable name unavailable'
+          : undefined
+  const resolvedKclValue = useMemo<KclCommandValue | undefined>(() => {
+    if (isEmpty || !canSubmitKclValue || valueNode === null) {
+      return undefined
+    }
+
+    return createNewVariable
+      ? ({
+          valueAst: valueNode,
+          valueText: kclValue,
+          valueCalculated: calcResult,
+          variableName: newVariableName,
+          insertIndex: newVariableInsertIndex,
+          variableIdentifierAst: createLocalName(newVariableName),
+          variableDeclarationAst: createVariableDeclaration(
+            newVariableName,
+            valueNode
+          ),
+        } satisfies KclCommandValue)
+      : ({
+          valueAst: valueNode,
+          valueText: kclValue,
+          valueCalculated: calcResult,
+        } satisfies KclCommandValue)
+  }, [
+    calcResult,
+    canSubmitKclValue,
+    createNewVariable,
+    isEmpty,
+    kclValue,
+    newVariableInsertIndex,
+    newVariableName,
+    valueNode,
+  ])
+  const valueForSummary = resolvedKclValue ?? {
+    valueAst: valueNode,
+    valueText: kclValue,
+    valueCalculated: calcResult,
   }
 
+  useEffect(() => {
+    const nextValue = resolvedKclValue ?? value
+    if (lastReportedValueRef.current === nextValue) {
+      return
+    }
+
+    lastReportedValueRef.current = nextValue
+    onChangeRef.current({ source: 'calculation', value: nextValue })
+  }, [resolvedKclValue, value])
+
+  useEffect(() => {
+    const nextValidationState: CommandKclValidationState = {
+      canSubmit: canSubmitKclValue,
+      isChecking: !isEmpty && isExecuting,
+      message: validationMessage,
+    }
+    const nextValidationStateKey = JSON.stringify(nextValidationState)
+    if (lastValidationStateRef.current === nextValidationStateKey) {
+      return
+    }
+
+    lastValidationStateRef.current = nextValidationStateKey
+    onValidationChangeRef.current(nextValidationState)
+  }, [canSubmitKclValue, isEmpty, isExecuting, validationMessage])
+
   return (
-    <form
-      {...noAutofillFormProps}
-      id="arg-form"
-      className="mb-2"
-      onSubmit={handleSubmit}
-      data-can-submit={canSubmit}
-    >
+    <div>
       <label className="flex gap-4 items-center mx-4 my-4 border-solid border-b border-chalkboard-50">
         <span
+          id={labelId}
           data-testid="cmd-bar-arg-name"
           className="capitalize text-chalkboard-80 dark:text-chalkboard-20"
         >
-          {arg.displayName || arg.name}
+          {label}
         </span>
         <div
+          id={inputId}
           data-testid="cmd-bar-arg-value"
           ref={editorRef}
           className={styles.editor}
@@ -375,11 +487,7 @@ function CommandBarKclInput({
           {isExecuting === true || !calcResult ? (
             <Spinner className="text-inherit w-4 h-4" />
           ) : arg.valueSummary && valueNode ? (
-            arg.valueSummary({
-              valueAst: valueNode,
-              valueText: kclValue,
-              valueCalculated: calcResult,
-            })
+            arg.valueSummary(valueForSummary, wasmInstance)
           ) : calcResult === 'NAN' ? (
             "Can't calculate"
           ) : (
@@ -387,26 +495,23 @@ function CommandBarKclInput({
           )}
         </span>
       </label>
-      {arg.description && (
-        <MarkdownText
-          text={arg.description}
-          className="mx-4 mb-4 select-text text-sm leading-relaxed text-chalkboard-70 dark:text-chalkboard-40 parsed-markdown [&_*]:select-text [&_strong]:font-semibold [&_strong]:text-chalkboard-90 dark:[&_strong]:text-chalkboard-20"
-        />
-      )}
+      {description}
       {arg.createVariable !== 'disallow' && (
         <div className="flex items-baseline gap-4 mx-4">
           <input
             type="checkbox"
-            id="variable-checkbox"
+            id={`${inputId}-variable-checkbox`}
             data-testid="cmd-bar-variable-checkbox"
             checked={createNewVariable}
+            disabled={arg.createVariable === 'force'}
             onChange={(e) => {
+              onChange({ source: 'edit', value: resolvedKclValue ?? value })
               setCreateNewVariable(e.target.checked)
             }}
             className="bg-chalkboard-10 dark:bg-chalkboard-80"
           />
           <label
-            htmlFor="variable-checkbox"
+            htmlFor={`${inputId}-variable-checkbox`}
             className="text-blue border-none bg-transparent font-sm flex gap-1 items-center pl-0 pr-1"
           >
             Create new variable
@@ -416,25 +521,29 @@ function CommandBarKclInput({
               <input
                 {...noAutofillInputProps}
                 type="text"
-                id="variable-name"
-                name="variable-name"
-                className="flex-1  border-solid border-0 border-b border-chalkboard-50 bg-transparent focus:outline-none"
+                id={`${inputId}-variable-name`}
+                name={`${inputId}-variable-name`}
+                aria-label="Variable name"
+                className="min-w-0 flex-1 border-0 border-b border-chalkboard-50 bg-transparent focus:outline-none"
                 placeholder="Variable name"
                 value={newVariableName}
                 autoFocus
-                onChange={(e) => setNewVariableName(e.target.value)}
+                onChange={(e) => {
+                  onChange({ source: 'edit', value: resolvedKclValue ?? value })
+                  setHasEditedVariableName(true)
+                  setNewVariableName(e.target.value)
+                }}
                 onKeyDown={(e) => {
                   if (
                     e.currentTarget.value === '' &&
                     e.key === 'Backspace' &&
                     arg.createVariable !== 'force'
                   ) {
+                    onChange({
+                      source: 'edit',
+                      value: resolvedKclValue ?? value,
+                    })
                     setCreateNewVariable(false)
-                  }
-                }}
-                onKeyUp={(e) => {
-                  if (e.key === 'Enter' && canSubmit) {
-                    handleSubmit()
                   }
                 }}
               />
@@ -451,8 +560,35 @@ function CommandBarKclInput({
           )}
         </div>
       )}
-    </form>
+    </div>
   )
 }
 
-export default CommandBarKclInput
+export type CommandKclChange = {
+  source: 'edit' | 'calculation'
+  // Keep the raw text while its expression is empty, invalid, or calculating.
+  value: KclCommandValue | string
+}
+
+export type CommandKclValidationState = {
+  canSubmit: boolean
+  isChecking: boolean
+  message?: string
+}
+
+export type CommandKclArgument = Extract<
+  CommandArgument<unknown>,
+  { inputType: 'kcl' }
+>
+
+export function getKclInputValue(
+  arg: CommandKclArgument,
+  value: unknown
+): string {
+  if (isKclCommandValue(value)) {
+    return arg.kclValueToInput
+      ? arg.kclValueToInput(value.valueText)
+      : value.valueText
+  }
+  return typeof value === 'string' ? value : ''
+}
