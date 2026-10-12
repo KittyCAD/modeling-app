@@ -1102,9 +1102,8 @@ export function assignFaceUuids(gltf: KITTYCAD_GLTF) {
 
   gltf.scene.traverse((object) => {
     if (!(object instanceof Mesh)) return
-    const association = gltf.parser.associations.get(object) as
-      | (GLTFReference & { primitives?: number })
-      | undefined
+    const association: (GLTFReference & { primitives?: number }) | undefined =
+      gltf.parser.associations.get(object)
     const meshIndex = association?.meshes
     const primitiveIndex = association?.primitives
     if (meshIndex === undefined || primitiveIndex === undefined) return

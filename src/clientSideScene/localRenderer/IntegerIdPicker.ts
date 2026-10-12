@@ -148,7 +148,7 @@ export class IntegerIdPicker {
         const selectionId = varying(
           attribute('selectionId', 'uint') as unknown as Node<'uint'>
         ) as unknown as Node<'uint'>
-        material.outputNode = this.idOutput(selectionId) as Node
+        material.outputNode = this.idOutput(selectionId)
         const object = new LineSegments2(geometry, material)
         object.frustumCulled = false
         object.renderOrder = 2
