@@ -2409,6 +2409,21 @@ export function refactorZ0006Unified(
   wasmInstance: ModuleType,
   sourceRange?: Z0006SourceRange
 ): string | Error {
+  // Source-region tags cannot identify these copied composite faces. Preserve
+  // the body-scoped edgeId fallback rather than changing the selected edge.
+  edgeRefactorMetadata = edgeRefactorMetadata.filter(
+    (meta) =>
+      meta.stdlibFn !== 'edgeId' ||
+      !meta.faceIds.some((id) => {
+        const face = artifactGraph.get(id)
+        if (face?.type !== 'wall' && face?.type !== 'cap') return false
+        const body = artifactGraph.get(face.cmdId)
+        return (
+          (body?.type === 'sweep' || body?.type === 'compositeSolid') &&
+          hasUnscopedCopiedFaces(meta.faceIds, body.id, artifactGraph)
+        )
+      })
+  )
   const toFixFC = filterCallsBySourceRange(
     findFilletChamferCallsToFixUnified(
       ast,

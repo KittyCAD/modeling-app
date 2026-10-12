@@ -7,6 +7,7 @@ import {
   addChamfer,
   addFillet,
   deleteEdgeTreatment,
+  refactorZ0006Unified,
   retrieveEdgeSelectionsFromOpArgs,
   retrieveEdgeSelectionsFromSingleEdgeRef,
 } from '@src/lang/modifyAst/edges'
@@ -230,6 +231,22 @@ solid001 = mirror3d(pattern001[2], across = plane001)
     kclManagerInThisFile
   )
   expect(kclManagerInThisFile.errors).toEqual([])
+  function expectNoUnsafeEdgeRefactor(code: string) {
+    const state = kclManagerInThisFile.execState
+    expect(
+      state.edgeRefactorMetadata?.some((meta) => meta.stdlibFn === 'edgeId')
+    ).toBe(true)
+    expect(
+      refactorZ0006Unified(
+        assertParse(code, instanceInThisFile),
+        state.edgeRefactorMetadata ?? [],
+        state.directTagFilletMetadata ?? [],
+        state.artifactGraph,
+        instanceInThisFile
+      )
+    ).toEqual(new Error('No Z0006 fixes to apply'))
+  }
+  expectNoUnsafeEdgeRefactor(annotationCode)
   const result = addFillet({
     ast,
     artifactGraph,
@@ -253,6 +270,7 @@ solid001 = mirror3d(pattern001[2], across = plane001)
     kclManagerInThisFile
   )
   expect(kclManagerInThisFile.errors).toEqual([])
+  expectNoUnsafeEdgeRefactor(newCode)
   expect(
     [...executed.artifactGraph.values()].some(
       (artifact) =>
