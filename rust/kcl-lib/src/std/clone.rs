@@ -1,6 +1,7 @@
 //! Standard library clone.
 
 use std::collections::HashMap;
+use std::collections::HashSet;
 
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
@@ -229,6 +230,11 @@ pub(super) async fn fix_tags_and_references(
             if !old_face_tag_names.is_empty() {
                 // Preserve tagged faces when edge cuts leave the extrusion query empty.
                 // Untagged solids keep the existing reconstruction behavior.
+                let mut seen_ids = new_solid
+                    .value
+                    .iter()
+                    .map(|surface| surface.get_id())
+                    .collect::<HashSet<_>>();
                 for surface in solid.value.iter().filter(|surface| surface.get_tag().is_some()) {
                     let (Some(id), Some(face_id)) = (
                         entity_id_map.get(&surface.get_id()).copied(),
@@ -236,7 +242,7 @@ pub(super) async fn fix_tags_and_references(
                     ) else {
                         continue;
                     };
-                    if new_solid.value.iter().any(|surface| surface.get_id() == id) {
+                    if !seen_ids.insert(id) {
                         continue;
                     }
                     if solid.start_cap_id == Some(surface.face_id()) {
