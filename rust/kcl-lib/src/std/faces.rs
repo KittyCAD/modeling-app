@@ -79,7 +79,17 @@ pub(super) async fn make_face(
             vec![args.source_range],
         )));
     };
-    let extrude_plane_id = face.face_id(&solid, exec_state, args, true).await?;
+    let mut extrude_plane_id = face.face_id(&solid, exec_state, args, true).await?;
+    // A face added by a later feature may not be present in the patterned
+    // input's sketch tags. Resolve its source tag against the selected copy.
+    if solid.id != solid.topology_id()
+        && !args.ctx.no_engine_commands().await
+        && let Some(map) =
+            crate::std::clone::try_get_body_copy_child_map(solid.id, solid.id, solid.topology_id(), exec_state, args)
+                .await?
+    {
+        extrude_plane_id = map.get(&extrude_plane_id).copied().unwrap_or(extrude_plane_id);
+    }
     let sketch = solid.sketch().ok_or_else(|| {
         KclError::new_type(crate::errors::KclErrorDetails::new(
             "This solid was created without a sketch, so its face axes are unavailable.".to_owned(),
