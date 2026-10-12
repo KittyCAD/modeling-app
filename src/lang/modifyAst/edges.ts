@@ -74,6 +74,7 @@ import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import {
   getBodySelectionFromPrimitiveParentEntityId,
   getEngineTopologyFallbackNormalized,
+  hasUnscopedCopiedFaces,
 } from '@src/lib/primitiveBodySelection'
 import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
@@ -2620,14 +2621,7 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
     if (
       topology &&
       entityId &&
-      faces.some((id) => {
-        const face = artifactGraph.get(id)
-        return (
-          (face?.type === 'wall' || face?.type === 'cap') &&
-          face.cmdId === topology.parentId &&
-          face.sweepId !== topology.parentId
-        )
-      })
+      hasUnscopedCopiedFaces(faces, topology.parentId, artifactGraph)
     ) {
       // Copied composite faces retain source-region tags. Their edge index
       // is scoped to the selected output and avoids ambiguous sketch tags.
@@ -2921,7 +2915,7 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
     }
   }
 
-  if (bodies.size === 0) {
+  if (bodies.size === 0 && primitiveCopies.length === 0) {
     return new Error('No edge selections found')
   }
 

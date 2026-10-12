@@ -37,7 +37,11 @@ import {
   enginelessExecutor,
   getAstAndArtifactGraph,
 } from '@src/lib/testHelpers'
-import { getPrimitiveSelectionForEntity } from '@src/lib/selections'
+import {
+  getEventForQueryEntityTypeWithPoint,
+  getPrimitiveSelectionForEntity,
+} from '@src/lib/selections'
+import { addAnnotationGdt } from '@src/lang/modifyAst/gdt'
 import { err } from '@src/lib/trap'
 import { isOverlap } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -80,7 +84,7 @@ afterAll(() => {
   })
 })
 
-it('fillets an edge on a mirrored pattern with later face features', async () => {
+it('fillets and annotates a mirrored pattern edge through point selection', async () => {
   const code = `@settings(kclVersion = 3.0)
 cubeSize = 20mm
 cubeProfile = sketch(on = XY) {
@@ -175,24 +179,54 @@ solid001 = mirror3d(pattern001[2], across = plane001)
   )
   if (!primitive?.parentEntityId)
     throw new Error('Expected selected edge topology')
-  const codeRef = getCodeRefsByArtifactId(edge.id, artifactGraph)?.[0]
+  const event = await getEventForQueryEntityTypeWithPoint(
+    {
+      entity_id: edge.id,
+      reference: { type: 'edge', side_faces: edge.commonSurfaceIds },
+    },
+    {
+      engineCommandManager: engineCommandManagerInThisFile,
+      kclManager: kclManagerInThisFile,
+      rustContext: rustContextInThisFile,
+      wasmInstance: instanceInThisFile,
+    }
+  )
+  if (
+    event?.type !== 'Set selection' ||
+    event.data.selectionType !== 'singleCodeCursor'
+  )
+    throw new Error('Expected graph edge selection')
+  const selection = {
+    graphSelections: [event.data.selection],
+    otherSelections: [],
+  }
+  expect(selection.graphSelections[0].engineTopologyFallback).toEqual({
+    parentId: primitive.parentEntityId,
+    primitiveIndex: primitive.primitiveIndex,
+  })
+  const annotation = addAnnotationGdt({
+    ast,
+    artifactGraph,
+    objects: selection,
+    annotation: 'mirrored edge',
+    wasmInstance: instanceInThisFile,
+  })
+  if (err(annotation)) throw annotation
+  const annotationCode = recast(annotation.modifiedAst, instanceInThisFile)
+  if (err(annotationCode)) throw annotationCode
+  expect(annotationCode).toContain(
+    `edgeId(solid001[0], index = ${primitive.primitiveIndex})`
+  )
+  await getAstAndArtifactGraph(
+    annotationCode,
+    instanceInThisFile,
+    kclManagerInThisFile
+  )
+  expect(kclManagerInThisFile.errors).toEqual([])
   const result = addFillet({
     ast,
     artifactGraph,
-    selection: {
-      graphSelections: [
-        {
-          artifact: edge,
-          codeRef,
-          entityRef: { type: 'edge', side_faces: edge.commonSurfaceIds },
-          engineTopologyFallback: {
-            parentId: primitive.parentEntityId,
-            primitiveIndex: primitive.primitiveIndex,
-          },
-        },
-      ],
-      otherSelections: [],
-    },
+    selection,
     radius: (await stringToKclExpression(
       '1mm',
       rustContextInThisFile
