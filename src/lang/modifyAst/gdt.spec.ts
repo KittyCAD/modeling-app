@@ -2104,7 +2104,11 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
             artifact.type === 'wall' &&
             artifact.sweepId === (cap?.type === 'cap' ? cap.sweepId : undefined)
         )
-        if (!cap || !wall) throw new Error('Expected source cap and wall')
+        if (!cap || !wall || cap.type !== 'cap')
+          throw new Error('Expected source cap and wall')
+        const sourceSweep = artifactGraph.get(cap.sweepId)
+        if (sourceSweep?.type !== 'sweep')
+          throw new Error('Expected source sweep')
         const original = addAnnotationGdt({
           ast,
           artifactGraph,
@@ -2170,8 +2174,66 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         expect(copiedCode).toContain(`edgeId(${expected}, index = 0)`)
         await executeCode(copiedCode, instanceInThisFile, kclManagerInThisFile)
         expect(kclManagerInThisFile.errors).toEqual([])
+        const copyCap = [...artifactGraph.values()].find(
+          (artifact) =>
+            artifact.type === 'cap' &&
+            artifact.sweepId === copyId &&
+            artifact.subType === 'end'
+        )
+        const copyWall = [...artifactGraph.values()].find(
+          (artifact) => artifact.type === 'wall' && artifact.sweepId === copyId
+        )
+        if (!copyCap || !copyWall)
+          throw new Error('Expected semantic copied faces')
+        const scoped = addAnnotationGdt({
+          ast,
+          artifactGraph,
+          wasmInstance: instanceInThisFile,
+          annotation: 'scoped copy',
+          objects: {
+            graphSelections: [
+              {
+                entityRef: {
+                  type: 'edge',
+                  side_faces: [copyWall.id, copyCap.id],
+                },
+              },
+            ],
+            otherSelections: [],
+          },
+        })
+        if (err(scoped)) throw scoped
+        const scopedCode = recast(scoped.modifiedAst, instanceInThisFile)
+        if (err(scopedCode)) throw scopedCode
+        expect(scopedCode).toContain(`${expected}.sketch.tags.`)
+        expect(scopedCode).toContain(`${expected}.faces.capEnd001`)
+        expect(scopedCode).not.toContain('edgeId(')
+        const segmentName = scopedCode.match(
+          /\.sketch\.tags\.([a-zA-Z0-9_]+)/
+        )?.[1]
+        if (!segmentName) throw new Error('Expected named sketch face')
+        const rawCapQuery =
+          kind === 'pattern'
+            ? `\ngdt::annotation(edges = [{ sideFaces = [cube1.sketch.tags.${segmentName}, capEnd001] }], annotation = "raw cap remains on original")`
+            : ''
+        await executeCode(
+          scopedCode +
+            `\ncommonCopyEdge = getCommonEdge(faces = [${expected}.sketch.tags.${segmentName}, ${expected}.faces.capEnd001])` +
+            rawCapQuery,
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
+        expect(kclManagerInThisFile.errors).toEqual([])
+        const commonEdge = kclManagerInThisFile.variables.commonCopyEdge
+        if (commonEdge?.type !== 'Uuid')
+          throw new Error('Expected resolved copy edge UUID')
+        const copiedBody = artifactGraph.get(copyId)
+        if (copiedBody?.type !== 'sweep')
+          throw new Error('Expected copied sweep')
+        expect(copiedBody.edgeIds).toContain(commonEdge.value)
+        expect(sourceSweep.edgeIds).not.toContain(commonEdge.value)
       },
-      30_000
+      60_000
     )
 
     it('should add annotations to selected faces and edges', async () => {

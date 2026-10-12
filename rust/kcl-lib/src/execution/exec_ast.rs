@@ -4633,6 +4633,8 @@ impl Node<MemberExpression> {
                 )))
             }
             (KclValue::Solid { value }, Property::String(prop), false) if prop == "sketch" => {
+                let args = Args::new_no_args(self.into(), self.node_path.clone(), ctx.clone(), None);
+                let value = crate::std::clone::resolve_scoped_pattern_tags(value, exec_state, &args).await?;
                 let Some(sketch) = value.sketch() else {
                     return Err(KclError::new_semantic(KclErrorDetails::new(
                         "This solid was created without a sketch, so `solid.sketch` is unavailable.".to_owned(),
@@ -4645,6 +4647,8 @@ impl Node<MemberExpression> {
                 .continue_())
             }
             (KclValue::Solid { value: solid }, Property::String(prop), false) if prop == "faces" => {
+                let args = Args::new_no_args(self.into(), self.node_path.clone(), ctx.clone(), None);
+                let solid = crate::std::clone::resolve_scoped_pattern_tags(solid, exec_state, &args).await?;
                 Ok(KclValue::Object {
                     meta: vec![Metadata {
                         source_range: SourceRange::from(self.clone()),

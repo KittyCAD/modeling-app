@@ -392,6 +392,7 @@ async fn send_pattern_transform<T: GeometryTrait>(
         let mut new_geometry = geometry.clone();
         new_geometry.set_id(id);
         new_geometry.set_artifact_id(id);
+        new_geometry.record_copy_topology(geometry, exec_state, args).await?;
         geometries.push(new_geometry);
     }
     Ok(geometries)
@@ -565,6 +566,15 @@ pub trait GeometryTrait: Clone {
     fn topology_id(&self) -> Uuid;
     fn set_id(&mut self, id: Uuid);
     fn set_artifact_id(&mut self, id: Uuid);
+    #[allow(async_fn_in_trait)]
+    async fn record_copy_topology(
+        &self,
+        _source: &Self,
+        _exec_state: &mut ExecState,
+        _args: &Args,
+    ) -> Result<(), KclError> {
+        Ok(())
+    }
     fn array_to_point3d(
         val: &KclValue,
         source_ranges: Vec<SourceRange>,
@@ -616,6 +626,19 @@ impl GeometryTrait for Solid {
 
     fn set_artifact_id(&mut self, id: Uuid) {
         self.become_pattern_copy(id);
+    }
+
+    async fn record_copy_topology(
+        &self,
+        source: &Self,
+        exec_state: &mut ExecState,
+        args: &Args,
+    ) -> Result<(), KclError> {
+        if !args.ctx.no_engine_commands().await {
+            crate::std::clone::get_old_new_child_map(self.id, source.id, source.topology_id(), exec_state, args)
+                .await?;
+        }
+        Ok(())
     }
 
     async fn id(&mut self, _: &ExecutorContext) -> Result<Uuid, KclError> {
@@ -1468,6 +1491,7 @@ async fn pattern_circular<T: GeometryTrait>(
         let mut new_geometry = geometry.clone();
         new_geometry.set_id(id);
         new_geometry.set_artifact_id(id);
+        new_geometry.record_copy_topology(geometry, exec_state, args).await?;
         geometries.push(new_geometry);
     }
     Ok(geometries)

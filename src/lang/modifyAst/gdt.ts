@@ -330,14 +330,8 @@ function buildGdtEdgeExpressions({
       [...payload.side_faces, ...(payload.end_faces ?? [])].some(
         (id) => !artifactGraph.has(id)
       )
-    // Copies without face artifacts need an edge query on the selected body.
-    // Pattern face IDs can still describe the source body, so use this query
-    // for pattern instances even when those IDs exist in the graph.
-    if (
-      topology &&
-      bodyExpr &&
-      (missingFaces || bodySelection?.artifact?.type === 'pattern')
-    ) {
+    // Use a primitive query only when semantic face artifacts are unavailable.
+    if (topology && bodyExpr && missingFaces) {
       edgeExprs.push(
         createCallExpressionStdLibKw('edgeId', bodyExpr, [
           createLabeledArg(

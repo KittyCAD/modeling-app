@@ -1405,6 +1405,29 @@ export function getVariableExprsFromSelection(
   const pushedNames = {} as Record<string, boolean>
   for (const s of selection.graphSelections) {
     const resolvedForSegment = resolveToCodeRef(s, artifactGraph)
+    const copiedBody = resolvedForSegment?.artifact
+    const copyPattern = copiedBody
+      ? getPatternArtifactForCopyId(copiedBody.id, artifactGraph)
+      : undefined
+    if (
+      copiedBody &&
+      copyPattern?.type === 'pattern' &&
+      copyPattern.copyIds.includes(copiedBody.id)
+    ) {
+      const expr = getPatternExprFromSelection(
+        { artifact: copyPattern, engineEntityId: copiedBody.id },
+        ast,
+        wasmInstance
+      )
+      if (expr) {
+        const key = splitOutputExprKey(expr)
+        if (!pushedNames[key]) {
+          exprs.push(expr)
+          pushedNames[key] = true
+        }
+        continue
+      }
+    }
     const mirroredBody = resolvedForSegment?.artifact
     if (
       mirroredBody &&

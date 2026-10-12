@@ -250,6 +250,51 @@ pub(super) async fn fix_tags_and_references(
     Ok(())
 }
 
+/// Pattern copies retain source topology for legacy operations. Resolve only
+/// body-scoped tag access against the copy, without rebinding bare tags.
+pub(crate) async fn resolve_scoped_pattern_tags(
+    mut solid: Box<Solid>,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Box<Solid>> {
+    if solid.id == solid.topology_id() || args.ctx.no_engine_commands().await {
+        return Ok(solid);
+    }
+    let id_map = get_old_new_child_map(solid.id, solid.id, solid.topology_id(), exec_state, args).await?;
+    remap_sketchless_solid(&mut solid, &id_map);
+    remap_edge_cuts(&mut solid, &id_map);
+    let mut geometry = solid.clone();
+    geometry.faces.clear();
+    if let Some(sketch) = geometry.sketch_mut() {
+        sketch.tags.clear();
+    }
+    geometry.become_new_body(solid.id, solid.artifact_id);
+
+    for tag in solid.faces.values_mut() {
+        remap_scoped_tag(tag, &id_map, &geometry);
+    }
+    if let Some(sketch) = solid.sketch_mut() {
+        for tag in sketch.tags.values_mut() {
+            remap_scoped_tag(tag, &id_map, &geometry);
+        }
+    }
+    Ok(solid)
+}
+
+fn remap_scoped_tag(tag: &mut TagIdentifier, id_map: &HashMap<uuid::Uuid, uuid::Uuid>, geometry: &Solid) {
+    for (_, info) in &mut tag.info {
+        info.id = remap_id(info.id, id_map);
+        if let Some(surface) = &mut info.surface {
+            surface.set_id(remap_id(surface.get_id(), id_map));
+            surface.set_face_id(remap_id(surface.face_id(), id_map));
+        }
+        if let Some(path) = &mut info.path {
+            path.set_id(remap_id(path.get_id(), id_map));
+        }
+        info.geometry = Geometry::Solid(geometry.clone());
+    }
+}
+
 fn remap_id(id: uuid::Uuid, entity_id_map: &HashMap<uuid::Uuid, uuid::Uuid>) -> uuid::Uuid {
     entity_id_map.get(&id).copied().unwrap_or(id)
 }
@@ -358,7 +403,7 @@ fn restore_face_tags(solid: &mut Solid, face_tag_names: &[String], exec_state: &
     }
 }
 
-async fn get_old_new_child_map(
+pub(super) async fn get_old_new_child_map(
     new_geometry_id: uuid::Uuid,
     old_geometry_id: uuid::Uuid,
     source_topology_id: uuid::Uuid,

@@ -96,10 +96,11 @@ test.describe(
           )
           const annotation = source.slice(source.indexOf('gdt::annotation('))
           expect(annotation).toContain(target.expected)
-          if (target.expected === 'originalCube') {
-            expect(annotation).toContain('originalCube.sketch.tags.')
-            expect(annotation).toContain('originalCube.faces.capEnd001')
-          }
+          expect(annotation).toContain(
+            `${target.expected}.sketch.tags.bottomEdge`
+          )
+          expect(annotation).toContain(`${target.expected}.faces.capEnd001`)
+          expect(annotation).not.toContain('edgeId(')
           expect(
             await page.evaluate(() => window.app.singletons.kclManager.errors)
           ).toEqual([])
