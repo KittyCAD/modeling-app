@@ -23,6 +23,14 @@ flowchart LR
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit]
     11["Segment<br>[490, 533, 0]"]
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+    28["Segment<br>[607, 697, 0]"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+    29["Segment<br>[607, 697, 0]"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+    30["Segment<br>[607, 697, 0]"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+    31["Segment<br>[607, 697, 0]"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   end
   1["Plane<br>[48, 475, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
@@ -50,35 +58,63 @@ flowchart LR
   26["SweepEdge Adjacent"]
   27["Sweep Extrusion<br>[607, 697, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  28["SketchBlock<br>[48, 475, 0]"]
+  32[Wall]
+    %% face_code_ref=Missing NodePath
+  33[Wall]
+    %% face_code_ref=Missing NodePath
+  34[Wall]
+    %% face_code_ref=Missing NodePath
+  35[Wall]
+    %% face_code_ref=Missing NodePath
+  36["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  37["Cap End"]
+    %% face_code_ref=Missing NodePath
+  38["SweepEdge Opposite"]
+  39["SweepEdge Adjacent"]
+  40["SweepEdge Opposite"]
+  41["SweepEdge Adjacent"]
+  42["SweepEdge Opposite"]
+  43["SweepEdge Adjacent"]
+  44["SweepEdge Opposite"]
+  45["SweepEdge Adjacent"]
+  46["SketchBlock<br>[48, 475, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  29["SketchBlockConstraint Coincident<br>[320, 356, 0]"]
+  47["SketchBlockConstraint Coincident<br>[320, 356, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 4 }, ExpressionStatementExpr]
-  30["SketchBlockConstraint Coincident<br>[359, 395, 0]"]
+  48["SketchBlockConstraint Coincident<br>[359, 395, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 5 }, ExpressionStatementExpr]
-  31["SketchBlockConstraint Coincident<br>[398, 434, 0]"]
+  49["SketchBlockConstraint Coincident<br>[398, 434, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 6 }, ExpressionStatementExpr]
-  32["SketchBlockConstraint Coincident<br>[437, 473, 0]"]
+  50["SketchBlockConstraint Coincident<br>[437, 473, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 7 }, ExpressionStatementExpr]
   1 --- 2
   1 <--x 7
-  1 <--x 28
+  1 <--x 46
   2 --- 3
   2 --- 4
   2 --- 5
   2 --- 6
   2 <--x 7
-  28 --- 2
+  46 --- 2
   3 <--x 8
+  3 <--x 28
   4 <--x 9
+  4 <--x 29
   5 <--x 10
+  5 <--x 30
   6 <--x 11
+  6 <--x 31
   7 --- 8
   7 --- 9
   7 --- 10
   7 --- 11
   7 ---- 12
   7 <---x 27
+  7 <--x 28
+  7 <--x 29
+  7 <--x 30
+  7 <--x 31
   8 --- 13
   8 x--> 17
   8 --- 19
@@ -125,4 +161,50 @@ flowchart LR
   21 <--x 18
   23 <--x 18
   25 <--x 18
+  27 --- 32
+  27 --- 33
+  27 --- 34
+  27 --- 35
+  27 --- 36
+  27 --- 37
+  27 --- 38
+  27 --- 39
+  27 --- 40
+  27 --- 41
+  27 --- 42
+  27 --- 43
+  27 --- 44
+  27 --- 45
+  28 --- 32
+  28 x--> 36
+  28 --- 38
+  28 --- 39
+  29 --- 33
+  29 x--> 36
+  29 --- 40
+  29 --- 41
+  30 --- 34
+  30 x--> 36
+  30 --- 42
+  30 --- 43
+  31 --- 35
+  31 x--> 36
+  31 --- 44
+  31 --- 45
+  32 --- 38
+  32 --- 39
+  41 <--x 32
+  33 --- 40
+  33 --- 41
+  43 <--x 33
+  34 --- 42
+  34 --- 43
+  45 <--x 34
+  39 <--x 35
+  35 --- 44
+  35 --- 45
+  38 <--x 37
+  40 <--x 37
+  42 <--x 37
+  44 <--x 37
 ```
