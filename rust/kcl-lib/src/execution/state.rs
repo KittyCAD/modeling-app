@@ -582,7 +582,7 @@ impl ExecState {
         let segment_ids_edited = mock_config.segment_ids_edited.clone();
         let mut global = GlobalState::new(&exec_context.settings, segment_ids_edited);
         global.drag_anchors = mock_config.drag_anchors.clone();
-        global.sketch_mode = mock_config.sketch_block_id.is_some() || mock_config.initialize_sketch;
+        global.sketch_mode = mock_config.sketch_block_id.is_some();
         ExecState {
             execution_callbacks: exec_context.execution_callbacks.clone(),
             global,
