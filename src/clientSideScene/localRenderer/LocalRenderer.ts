@@ -344,7 +344,6 @@ export class LocalRenderer {
       const { cmd } = command
       if (
         cmd.type !== 'highlight_set_entity' &&
-        cmd.type !== 'select_with_point' &&
         cmd.type !== 'query_entity_type_with_point'
       )
         return null
@@ -402,28 +401,18 @@ export class LocalRenderer {
           },
         }
       }
-      const reference =
-        entityId && cmd.type === 'query_entity_type_with_point'
-          ? ((await this.getEngineEntityReference(entityId)) ??
-            this.getLocalEntityReference(entityId))
-          : undefined
+      const reference = entityId
+        ? ((await this.getEngineEntityReference(entityId)) ??
+          this.getLocalEntityReference(entityId))
+        : undefined
       if (generation !== this.modelLoadGeneration) return {}
-      const response: OkModelingCmdResponse =
-        cmd.type === 'select_with_point'
-          ? ({
-              type: 'select_with_point',
-              data: { entity_id: entityId ?? undefined },
-            } satisfies Extract<
-              OkModelingCmdResponse,
-              { type: 'select_with_point' }
-            >)
-          : ({
-              type: 'query_entity_type_with_point',
-              data: { reference },
-            } satisfies Extract<
-              OkModelingCmdResponse,
-              { type: 'query_entity_type_with_point' }
-            >)
+      const response = {
+        type: 'query_entity_type_with_point',
+        data: { reference },
+      } satisfies Extract<
+        OkModelingCmdResponse,
+        { type: 'query_entity_type_with_point' }
+      >
       return {
         modelingResponse: { type: response.type, data: { ...response.data } },
         websocketResponse: {
