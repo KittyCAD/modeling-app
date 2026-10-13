@@ -35,42 +35,54 @@ use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Program;
 use crate::walk::Node as WalkNode;
 
-lazy_static::lazy_static! {
-    /// A static mutable lock for updating the last successful execution state for the cache.
-    static ref OLD_AST: Arc<RwLock<Option<GlobalState>>> = Default::default();
+#[derive(Debug, Default)]
+struct CacheInner {
+    /// Last successful execution state for the cache.
+    pub old_ast: Option<GlobalState>,
     // The last successful run's memory. Not cleared after an unsuccessful run.
-    static ref PREV_MEMORY: Arc<RwLock<Option<SketchModeState>>> = Default::default();
+    pub prev_memory: Option<SketchModeState>,
 }
+
+/// Clones all mutate the same cache via Arc.
+#[derive(Debug, Default, Clone)]
+pub(crate) struct Cache(Arc<RwLock<CacheInner>>);
 
 /// Read the old ast memory from the lock.
-pub(super) async fn read_old_ast() -> Option<GlobalState> {
-    let old_ast = OLD_AST.read().await;
-    old_ast.clone()
-}
+impl Cache {
+    pub(super) async fn read_old_ast(&self) -> Option<GlobalState> {
+        self.0.read().await.old_ast.clone()
+    }
 
-pub(super) async fn write_old_ast(old_state: GlobalState) {
-    let mut old_ast = OLD_AST.write().await;
-    *old_ast = Some(old_state);
-}
+    pub(super) async fn write_old_ast(&self, old_state: GlobalState) {
+        let mut inner = self.0.write().await;
+        inner.old_ast = Some(old_state);
+    }
 
-pub(crate) async fn read_old_memory() -> Option<SketchModeState> {
-    let old_mem = PREV_MEMORY.read().await;
-    old_mem.clone()
-}
+    pub(crate) async fn read_old_memory(&self) -> Option<SketchModeState> {
+        self.0.read().await.prev_memory.clone()
+    }
 
-pub(crate) async fn write_old_memory(mem: SketchModeState) {
-    let mut old_mem = PREV_MEMORY.write().await;
-    *old_mem = Some(mem);
-}
+    pub(crate) async fn write_old_memory(&self, mem: SketchModeState) {
+        let mut inner = self.0.write().await;
+        inner.prev_memory = Some(mem);
+    }
 
-pub async fn bust_cache() {
-    let mut old_ast = OLD_AST.write().await;
-    *old_ast = None;
-}
+    pub async fn bust_cache(&self) {
+        let mut inner = self.0.write().await;
+        inner.old_ast = None;
+    }
 
-pub async fn clear_mem_cache() {
-    let mut old_mem = PREV_MEMORY.write().await;
-    *old_mem = None;
+    pub async fn clear_mem_cache(&self) {
+        let mut inner = self.0.write().await;
+        inner.prev_memory = None;
+    }
+
+    /// Read a named value from the previous sketch-mode execution.
+    pub async fn read_old_memory_var(&self, name: &str) -> Option<KclValue> {
+        self.read_old_memory()
+            .await
+            .and_then(|memory| memory.stack.get(name, SourceRange::default()).ok())
+    }
 }
 
 /// Information for the caching an AST and smartly re-executing it if we can.
@@ -231,13 +243,6 @@ impl SketchModeState {
     pub(crate) fn reusable_for(&self, kcl_version: KclVersion) -> bool {
         self.kcl_version == kcl_version
     }
-}
-
-/// Read a named value from the previous sketch-mode execution.
-#[doc(hidden)]
-pub async fn read_old_memory_var(name: &str) -> Option<KclValue> {
-    let memory = read_old_memory().await?;
-    memory.stack.get(name, SourceRange::default()).ok()
 }
 
 #[cfg(test)]
