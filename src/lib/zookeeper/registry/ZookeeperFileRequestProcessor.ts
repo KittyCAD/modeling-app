@@ -31,6 +31,12 @@ type ZookeeperNewFileRequest = {
   exchangeId: number
 }
 
+type QueuedZookeeperFileRequest = {
+  request: ZookeeperNewFileRequest
+  run: () => Promise<void>
+  completed: Promise<void>
+}
+
 /**
  * Applies file edits emitted by one Zookeeper session. The session controller
  * forwards actor snapshots; this helper owns the serialized write queue.
@@ -43,8 +49,9 @@ export class ZookeeperFileRequestProcessor {
   // IDs stay monotonic when reset() replaces the conversation.
   private nextOrderedId = 0
   private activeOrderedId: number | undefined
-  private pendingOrderedIds: number[] = []
-  private queue: Promise<void> = Promise.resolve()
+  private activeRequest: QueuedZookeeperFileRequest | undefined
+  private queue: QueuedZookeeperFileRequest[] = []
+  private processingQueue = false
 
   constructor(
     private readonly deps: ZookeeperFileRequestProcessorDependencies
@@ -55,18 +62,18 @@ export class ZookeeperFileRequestProcessor {
       this.disposed = true
       this.abortController.abort()
     }
-    return this.queue
+    return this.waitForQueuedRequests()
   }
 
   reset() {
     if (this.disposed) {
-      return this.queue
+      return this.waitForQueuedRequests()
     }
     this.generation += 1
     this.abortController.abort()
     this.abortController = new AbortController()
     this.lastMessageId = undefined
-    return this.queue
+    return this.waitForQueuedRequests()
   }
 
   handleActorSnapshot(
@@ -115,6 +122,48 @@ export class ZookeeperFileRequestProcessor {
       type: 'Set selection',
       data: { selection: {}, selectionType: 'singleCodeCursor' },
     })
+  }
+
+  private waitForQueuedRequests() {
+    const requests = this.activeRequest
+      ? [this.activeRequest, ...this.queue]
+      : [...this.queue]
+    return Promise.all(requests.map((request) => request.completed)).then(
+      () => undefined
+    )
+  }
+
+  private async processQueue() {
+    if (this.processingQueue) {
+      return
+    }
+    this.processingQueue = true
+    try {
+      await Promise.resolve()
+      while (this.queue.length > 0) {
+        this.queue.sort(
+          (left, right) => left.request.orderedId - right.request.orderedId
+        )
+        const request = this.queue.shift()
+        if (!request) {
+          break
+        }
+        this.activeRequest = request
+        this.activeOrderedId = request.request.orderedId
+        try {
+          await request.run()
+        } catch (error: unknown) {
+          console.error('Failed to process Zookeeper file request.', error)
+        } finally {
+          this.activeRequest = undefined
+          if (this.activeOrderedId === request.request.orderedId) {
+            this.activeOrderedId = undefined
+          }
+        }
+      }
+    } finally {
+      this.processingQueue = false
+    }
   }
 
   private enqueue(request: ZookeeperNewFileRequest, onApplied: () => void) {
@@ -176,9 +225,14 @@ export class ZookeeperFileRequestProcessor {
       })
     }
 
-    this.pendingOrderedIds.push(request.orderedId)
-    this.queue = this.queue.then(
-      () =>
+    let finish: () => void = () => undefined
+    const completed = new Promise<void>((resolve) => {
+      finish = resolve
+    })
+    this.queue.push({
+      request,
+      completed,
+      run: () =>
         new Promise<void>((resolve) => {
           let historyCanceled = false
           let dispatched = false
@@ -199,9 +253,6 @@ export class ZookeeperFileRequestProcessor {
               return
             }
             settled = true
-            this.pendingOrderedIds = this.pendingOrderedIds.filter(
-              (orderedId) => orderedId !== request.orderedId
-            )
             if (this.activeOrderedId === request.orderedId) {
               this.activeOrderedId = undefined
             }
@@ -224,24 +275,6 @@ export class ZookeeperFileRequestProcessor {
             historyCanceled = true
             this.deps.history.cancel({ exchangeId: request.exchangeId })
           }
-          const stopIfOutOfOrder = () => {
-            const expectedOrderedId = this.pendingOrderedIds[0]
-            if (request.orderedId === expectedOrderedId) {
-              return false
-            }
-            console.error(
-              'Refusing to dispatch an out-of-order Zookeeper edit.',
-              {
-                orderedId: request.orderedId,
-                expectedOrderedId,
-              }
-            )
-            cancelHistory()
-            historyCompleted = true
-            postWriteCompleted = true
-            settle()
-            return true
-          }
           const stopIfStale = ({
             fileSystemWriteFinished = false,
           }: {
@@ -263,10 +296,6 @@ export class ZookeeperFileRequestProcessor {
             return true
           }
 
-          if (stopIfOutOfOrder()) {
-            return
-          }
-          this.activeOrderedId = request.orderedId
           if (stopIfStale()) {
             return
           }
@@ -293,7 +322,7 @@ export class ZookeeperFileRequestProcessor {
               abortSignal,
               systemIOActor,
             })
-            if (stopIfStale() || stopIfOutOfOrder()) {
+            if (stopIfStale()) {
               return
             }
 
@@ -455,7 +484,10 @@ export class ZookeeperFileRequestProcessor {
             postWriteCompleted = true
             settle()
           })
-        })
-    )
+        }).finally(finish),
+    })
+    void this.processQueue().catch((error: unknown) => {
+      console.error('Failed to process Zookeeper file queue.', error)
+    })
   }
 }
