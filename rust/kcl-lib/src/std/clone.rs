@@ -21,6 +21,7 @@ use crate::execution::GeometryWithImportedGeometry;
 use crate::execution::KclValue;
 use crate::execution::Metadata;
 use crate::execution::ModelingCmdMeta;
+use crate::execution::NewBodyKind;
 use crate::execution::Sketch;
 use crate::execution::Solid;
 use crate::execution::SolidCreator;
@@ -120,10 +121,7 @@ async fn inner_clone(
                 });
                 new_solid.id = new_id;
                 new_solid.value_id = new_id;
-                new_solid.become_new_body(new_id, result_artifact_id);
-                // A clone's faces must not replace tags on its source region,
-                // including in mock execution where child IDs are not remapped.
-                new_solid.tag_update_source_artifact_id = None;
+                new_solid.become_new_body(new_id, result_artifact_id, NewBodyKind::IndependentCopy);
                 if let Some(sketch) = new_solid.sketch_mut() {
                     sketch.original_id = new_id;
                 }

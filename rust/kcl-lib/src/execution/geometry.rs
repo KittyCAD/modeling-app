@@ -1376,6 +1376,16 @@ pub enum SolidCreator {
     Procedural,
 }
 
+/// Whether a new body replaces its source or is an independent copy.
+#[derive(Debug, Clone, Copy)]
+pub(crate) enum NewBodyKind {
+    /// Preserve the source region's tag updates through a replacement operation.
+    Replacement,
+    /// Fork from the source region. Don't update the source region's tags when
+    /// the new body is updated.
+    IndependentCopy,
+}
+
 impl Solid {
     pub fn sketch(&self) -> Option<&Sketch> {
         match &self.creator {
@@ -1409,11 +1419,16 @@ impl Solid {
 
     /// Make this solid a brand-new body produced by an operation. It now owns
     /// the topology of `engine_id`, and any retained pattern provenance no
-    /// longer applies.
-    pub(crate) fn become_new_body(&mut self, engine_id: uuid::Uuid, artifact_id: ArtifactId) {
+    /// longer applies. Independent copies also stop updating their source
+    /// region's tags, including when mock execution does not remap child IDs.
+    pub(crate) fn become_new_body(&mut self, engine_id: uuid::Uuid, artifact_id: ArtifactId, kind: NewBodyKind) {
         self.topology_id = engine_id;
         self.pattern_source_artifact_id = None;
         self.artifact_id = artifact_id;
+        match kind {
+            NewBodyKind::Replacement => {}
+            NewBodyKind::IndependentCopy => self.tag_update_source_artifact_id = None,
+        }
     }
 
     /// Make this solid a pattern copy. It gets a new top-level entity artifact
