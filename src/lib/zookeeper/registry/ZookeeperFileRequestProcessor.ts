@@ -124,13 +124,11 @@ export class ZookeeperFileRequestProcessor {
     })
   }
 
-  private waitForQueuedRequests() {
+  private async waitForQueuedRequests() {
     const requests = this.activeRequest
       ? [this.activeRequest, ...this.queue]
       : [...this.queue]
-    return Promise.all(requests.map((request) => request.completed)).then(
-      () => undefined
-    )
+    await Promise.all(requests.map((request) => request.completed))
   }
 
   private async processQueue() {
