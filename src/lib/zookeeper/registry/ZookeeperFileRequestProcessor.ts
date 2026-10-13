@@ -139,6 +139,8 @@ export class ZookeeperFileRequestProcessor {
     }
     this.processingQueue = true
     try {
+      // Yield one microtask so synchronous enqueue calls can be sorted together
+      // before the first edit becomes active. This does not wait for later arrivals.
       await Promise.resolve()
       while (this.queue.length > 0) {
         this.queue.sort(
