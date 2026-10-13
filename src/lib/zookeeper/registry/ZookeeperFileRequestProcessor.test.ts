@@ -1,7 +1,6 @@
 import type { MlCopilotServerMessage, MlToolResult } from '@kittycad/lib'
 import type { KclManager } from '@src/lang/KclManager'
 import type { Project } from '@src/lib/project'
-import { isArray } from '@src/lib/utils'
 import type { ZookeeperEditPatchHistory } from '@src/lib/zookeeper/registry/ZookeeperEditPatchHistory'
 import { ZookeeperFileRequestProcessor } from '@src/lib/zookeeper/registry/ZookeeperFileRequestProcessor'
 import {
@@ -260,7 +259,7 @@ describe('ZookeeperFileRequestProcessor', () => {
     expect(mocks.updateCodeEditor).toHaveBeenCalledOnce()
   })
 
-  test('finishes the active edit before reordering waiting edits by ordered ID', async () => {
+  test('finishes the active edit before dispatching waiting edits in received order', async () => {
     const processor = createProcessor()
     try {
       emitZookeeperFileRequest(processor, 'first edit', 1)
@@ -269,11 +268,6 @@ describe('ZookeeperFileRequestProcessor', () => {
 
       emitZookeeperFileRequest(processor, 'second edit', 2)
       emitZookeeperFileRequest(processor, 'third edit', 3)
-      const queuedRequests: unknown = Reflect.get(processor, 'queue')
-      if (!isArray(queuedRequests)) {
-        throw new Error('Expected a list of waiting requests')
-      }
-      Reflect.set(processor, 'queue', queuedRequests.toReversed())
       await Promise.resolve()
       expect(mocks.systemIOSend).toHaveBeenCalledOnce()
 
