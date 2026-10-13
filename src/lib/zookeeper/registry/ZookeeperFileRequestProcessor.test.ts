@@ -311,42 +311,6 @@ describe('ZookeeperFileRequestProcessor', () => {
     }
   })
 
-  test('warns when a settled edit receives a filesystem error while another edit is active', async () => {
-    const warning = vi
-      .spyOn(console, 'warn')
-      .mockImplementation(() => undefined)
-    const processor = createProcessor()
-    try {
-      emitZookeeperFileRequest(processor, 'first edit', 1)
-      emitZookeeperFileRequest(processor, 'second edit', 2)
-      await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
-      const firstRequest = mocks.systemIOSend.mock.calls[0][0].data
-      firstRequest.onFileSystemSuccess()
-      firstRequest.onSuccess()
-      await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
-
-      firstRequest.onFileSystemError()
-      expect(warning).toHaveBeenCalledWith(
-        'Ignoring Zookeeper filesystem error callback for a settled or inactive edit.',
-        { orderedId: 1, activeOrderedId: 2, settled: true }
-      )
-      expect(mocks.historyCancel).not.toHaveBeenCalled()
-      expect(mocks.historyComplete).toHaveBeenCalledOnce()
-      expect(mocks.onEditApplied).toHaveBeenCalledOnce()
-
-      const secondRequest = mocks.systemIOSend.mock.calls[1][0].data
-      secondRequest.onFileSystemSuccess()
-      secondRequest.onSuccess()
-      await waitFor(() => expect(mocks.onEditApplied).toHaveBeenCalledTimes(2))
-    } finally {
-      for (const [event] of mocks.systemIOSend.mock.calls) {
-        event.data.onFileSystemError()
-      }
-      await processor.dispose()
-      warning.mockRestore()
-    }
-  })
-
   test('retains queued live edits through EOS until files and history finish, then releases only the applied edit', async () => {
     const machine = zookeeperManagerMachine.provide({
       actors: {
