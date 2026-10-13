@@ -120,7 +120,8 @@ function emitZookeeperFileRequest(
   fileFocusedOnInEditor = {
     name: 'main.kcl',
     path: '/workspace/demo/main.kcl',
-  }
+  },
+  precedingResponses: MlCopilotServerMessage[] = []
 ) {
   processor.handleActorSnapshot({
     context: {
@@ -128,6 +129,7 @@ function emitZookeeperFileRequest(
         exchanges: [
           {
             responses: [
+              ...precedingResponses,
               {
                 tool_output: {
                   result: toolOutput,
@@ -170,6 +172,51 @@ describe('ZookeeperFileRequestProcessor', () => {
     kclManagerState.path = '/workspace/demo/main.kcl'
     kclManagerState.zookeeperHistoryRecordingInProgress = false
     kclManagerState.zookeeperManagerMachineBulkManipulatingFileSystem = false
+  })
+
+  test('deletes files from the current patch and preserves files recreated by the next edit', async () => {
+    const processor = createProcessor()
+    const deletion = patchBackedZookeeperEdit('intermediate code')
+    deletion.zookeeper_edit_patch?.changed_files?.push({
+      path: 'part.kcl',
+      status: 'deleted',
+      previous_contents: 'old part',
+    })
+    emitZookeeperFileRequest(processor, 'intermediate code', 1, deletion)
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
+    const firstRequest = mocks.systemIOSend.mock.calls[0][0].data
+    expect(firstRequest.filesToDelete).toEqual([
+      { requestedFileName: 'part.kcl' },
+    ])
+    firstRequest.onFileSystemSuccess()
+    firstRequest.onSuccess()
+
+    const recreation = patchBackedZookeeperEdit('final code')
+    recreation.outputs = { ...recreation.outputs, 'part.kcl': 'new part' }
+    recreation.zookeeper_edit_patch?.changed_files?.push({
+      path: 'part.kcl',
+      status: 'created',
+      contents: 'new part',
+    })
+    emitZookeeperFileRequest(
+      processor,
+      'final code',
+      2,
+      recreation,
+      undefined,
+      [{ tool_output: { result: deletion } }]
+    )
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
+    const secondRequest = mocks.systemIOSend.mock.calls[1][0].data
+    expect(secondRequest.filesToDelete).toEqual([])
+    expect(secondRequest.files).toContainEqual({
+      requestedProjectName: 'demo',
+      requestedFileName: 'part.kcl',
+      requestedCode: 'new part',
+    })
+    secondRequest.onFileSystemSuccess()
+    secondRequest.onSuccess()
+    await processor.dispose()
   })
 
   test('waits for the previous editor refresh before dispatching the next edit', async () => {
