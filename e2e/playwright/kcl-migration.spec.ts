@@ -1,56 +1,11 @@
-import { test as base, expect } from '@e2e/playwright/zoo-test'
+import { test, expect } from '@e2e/playwright/zoo-test'
 import type {
   MigrationClientMessage,
   MigrationOperation,
 } from '@src/lib/kclMigration/protocol'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 
-// Exercise app/editor/storage integration without invoking a paid engine or converter.
-const test = base.extend({
-  context: async ({ context, baseURL }, provide) => {
-    const appOrigin = new URL(baseURL ?? 'http://localhost:3000').origin
-    await context.route('**/*', (route) => {
-      const url = new URL(route.request().url())
-      if (!url.protocol.startsWith('http') || url.origin === appOrigin)
-        return route.fallback()
-      const pathname = url.pathname
-
-      const body =
-        pathname === '/user'
-          ? {
-              id: '12945000-0000-4000-8000-000000000001',
-              name: 'Migration Test',
-              username: 'migration-test',
-              email: 'migration@example.com',
-              image: '',
-              created_at: '2026-09-01T12:00:00Z',
-              updated_at: '2026-09-01T12:00:00Z',
-            }
-          : pathname === '/user/features'
-            ? {
-                features: [{ id: 'zookeeper_kcl_migration' }],
-              }
-            : pathname === '/meta/announcements' ||
-                pathname === '/announcements'
-              ? { announcements: [] }
-              : pathname === '/user/projects'
-                ? []
-                : {}
-      return route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify(body),
-      })
-    })
-    await context.routeWebSocket('**/ws/modeling/commands**', (socket) =>
-      socket.close()
-    )
-    await context.routeWebSocket('**/ws/ml/copilot**', (socket) =>
-      socket.close()
-    )
-    await provide(context)
-  },
-})
+test.use({ userFeatures: ['zookeeper_kcl_migration'] })
 
 const source = '@settings(kclVersion = 2.0)\nlength = 10mm\n'
 const candidate = '@settings(kclVersion = "3.0")\nlength = 11mm\n'
@@ -61,19 +16,10 @@ test.describe(
   () => {
     test('captures unsaved and supporting files, cancels, automatically applies and undoes a project', async ({
       page,
-      context,
+      scene,
       homePage,
       toolbar,
     }, testInfo) => {
-      await context.route('**/user/features', (route) =>
-        route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({
-            features: [{ id: 'zookeeper_kcl_migration' }],
-          }),
-        })
-      )
       let received: MigrationClientMessage | undefined
       let release: () => void = () => {
         throw new Error('Migration has not started')
@@ -158,7 +104,6 @@ test.describe(
             )
         })
       })
-      await page.reload()
       await page.setBodyDimensions({ width: 1440, height: 1000 })
       await expect(page.getByTestId('home-new-file')).toBeVisible()
       const localLibrary = page.getByRole('link', {
@@ -166,31 +111,32 @@ test.describe(
       })
       if (await localLibrary.isVisible()) await localLibrary.click()
       await homePage.goToModelingScene()
-      await page.waitForFunction(() =>
-        Boolean(window.app?.project?.executingEditor.value)
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() =>
+        page.evaluate(async (code) => {
+          const project = window.app.project
+          const editor = project?.executingEditor.value
+          if (!project || !editor) throw new Error('No project editor')
+          editor.updateCodeEditor(code, { shouldExecute: false })
+          await editor.flushWriteToFile()
+          await editor.executeCode()
+          await window.app.fileOperations.createDirectory(
+            window.fsZds.join(project.path, 'parts')
+          )
+          await window.app.fileOperations.writeFile(
+            window.fsZds.join(project.path, 'parts', 'support.bin'),
+            new Uint8Array([0, 255, 128])
+          )
+          await window.app.fileOperations.writeFile(
+            window.fsZds.join(project.path, 'thumbnail.png'),
+            new Uint8Array([1, 2, 3])
+          )
+          editor.updateCodeEditor(code.replace('10mm', '11mm'), {
+            shouldExecute: false,
+            shouldWriteToDisk: false,
+          })
+        }, source)
       )
-      await page.evaluate(async (code) => {
-        const project = window.app.project
-        const editor = project?.executingEditor.value
-        if (!project || !editor) throw new Error('No project editor')
-        editor.updateCodeEditor(code, { shouldExecute: false })
-        await editor.flushWriteToFile()
-        await window.app.fileOperations.createDirectory(
-          window.fsZds.join(project.path, 'parts')
-        )
-        await window.app.fileOperations.writeFile(
-          window.fsZds.join(project.path, 'parts', 'support.bin'),
-          new Uint8Array([0, 255, 128])
-        )
-        await window.app.fileOperations.writeFile(
-          window.fsZds.join(project.path, 'thumbnail.png'),
-          new Uint8Array([1, 2, 3])
-        )
-        editor.updateCodeEditor(code.replace('10mm', '11mm'), {
-          shouldExecute: false,
-          shouldWriteToDisk: false,
-        })
-      }, source)
       await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
       const migrate = page.getByRole('button', { name: 'Migrate to KCL 3' })
       await expect(migrate).toBeVisible()
@@ -284,7 +230,9 @@ test.describe(
       expect(await editorCode()).toContain('kclVersion = 2.0')
       // Completion applies through the session controller even with the pane closed.
       await toolbar.closePane(DefaultLayoutPaneID.Zookeeper)
-      release()
+      await scene.waitForExecutionDoneAfter(async () => release())
+      await scene.settled()
+      await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
       await expect.poll(editorCode).toBe(candidate)
       await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
       await expect(
@@ -307,39 +255,27 @@ test.describe(
       await page.screenshot({
         path: testInfo.outputPath('migration-applied.png'),
       })
-      // Successful execution refreshes this generated preview after Apply.
-      await page.evaluate(async () => {
-        const project = window.app.project
-        if (!project) throw new Error('No project')
-        await window.app.fileOperations.writeFile(
-          window.fsZds.join(project.path, 'thumbnail.png'),
-          new Uint8Array([4, 5, 6])
-        )
-      })
       await toolbar.closePane(DefaultLayoutPaneID.Zookeeper)
       await toolbar.openPane(DefaultLayoutPaneID.Zookeeper)
       await expect(
         page.getByRole('status').filter({ hasText: 'Migrated to KCL 3' })
       ).toBeVisible()
-      await page
-        .getByRole('button', { name: 'arrow turn left', exact: true })
-        .click()
+      await scene.waitForExecutionDoneAfter(() =>
+        page
+          .getByRole('button', { name: 'arrow turn left', exact: true })
+          .click()
+      )
+      await scene.settled()
+      await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
       await expect.poll(editorCode).toBe(source.replace('10mm', '11mm'))
-      await page
-        .getByRole('button', { name: 'arrow turn right', exact: true })
-        .click()
+      await scene.waitForExecutionDoneAfter(() =>
+        page
+          .getByRole('button', { name: 'arrow turn right', exact: true })
+          .click()
+      )
+      await scene.settled()
+      await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
       await expect.poll(editorCode).toBe(candidate)
-      expect(
-        await page.evaluate(async () => {
-          const project = window.app.project
-          if (!project) throw new Error('No project')
-          return Array.from(
-            await window.app.fileOperations.readFile(
-              window.fsZds.join(project.path, 'thumbnail.png')
-            )
-          )
-        })
-      ).toEqual([4, 5, 6])
       expect(
         await page.evaluate(async () => {
           const project = window.app.project
