@@ -289,6 +289,7 @@ describe('ZookeeperFileRequestProcessor', () => {
       firstRequest.onSuccess()
       await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
       const secondRequest = mocks.systemIOSend.mock.calls[1][0].data
+      // notice how it got re-ordered
       expect(secondRequest.orderedId).toBe(2)
       expect(secondRequest.files[0].requestedCode).toBe('edit 2')
       expect(mocks.historyCancel).not.toHaveBeenCalled()
