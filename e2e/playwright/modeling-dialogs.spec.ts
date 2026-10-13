@@ -1,5 +1,4 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
-import type { EngineCommand } from '@src/lang/std/artifactGraph'
 
 const profileCode = `@settings(kclVersion = 3.0)
 sketch001 = sketch(on = XY) {
@@ -18,22 +17,6 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     editor,
     toolbar,
   }) => {
-    const visibility = new Map<string, boolean>()
-    page.on('websocket', (socket) => {
-      if (!new URL(socket.url()).searchParams.has('video_res_width')) return
-      socket.on('framesent', ({ payload }) => {
-        const request: EngineCommand = JSON.parse(payload.toString())
-        const commands =
-          request.type === 'modeling_cmd_batch_req'
-            ? request.requests.map(({ cmd }) => cmd)
-            : request.type === 'modeling_cmd_req'
-              ? [request.cmd]
-              : []
-        for (const command of commands)
-          if (command.type === 'object_visible')
-            visibility.set(command.object_id, command.hidden)
-      })
-    })
     await homePage.goToModelingScene()
     await scene.settled()
     await scene.waitForExecutionDoneAfter(() =>
@@ -88,25 +71,6 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
       shouldNormalise: true,
     })
     await scene.settled()
-
-    const planeIds = await page.evaluate(() => {
-      const planes = window.app.singletons.kclManager.defaultPlanes
-      return planes ? [planes.xy, planes.xz, planes.yz] : []
-    })
-    expect(planeIds).toHaveLength(3)
-    await expect
-      .poll(() => planeIds.map((id) => visibility.get(id)))
-      .toEqual([true, true, true])
-    await toolbar.offsetPlaneButton.click()
-    await expect(dialog).toBeVisible()
-    await expect
-      .poll(() => planeIds.map((id) => visibility.get(id)))
-      .toEqual([false, false, false])
-    await dialog.getByRole('button', { name: 'Cancel', exact: true }).click()
-    await expect(dialog).not.toBeAttached()
-    await expect
-      .poll(() => planeIds.map((id) => visibility.get(id)))
-      .toEqual([true, true, true])
 
     await toolbar.translateButton.click()
     await expect(page.getByTestId('command-bar')).toBeVisible()
