@@ -1423,7 +1423,9 @@ export function getVariableExprsFromSelection(
       wasmInstance,
       artifactGraph,
       artifactTypeFilter,
-      preservePathInput
+      preservePathInput,
+      lastChildLookup,
+      nodeToEdit
     )
     if (splitOutputExpr) {
       const key = splitOutputExprKey(splitOutputExpr)
@@ -1751,7 +1753,9 @@ function getSplitOutputExprFromSelection(
   wasmInstance: ModuleType,
   artifactGraph: ArtifactGraph,
   artifactTypeFilter?: Array<Artifact['type']>,
-  preservePathInput = false
+  preservePathInput = false,
+  lastChildLookup = false,
+  nodeToEdit?: PathToNode
 ): Expr | null {
   if (
     artifactTypeFilter &&
@@ -1778,6 +1782,19 @@ function getSplitOutputExprFromSelection(
             artifactGraph
           )
         : null
+  if (lastChildLookup && artifact) {
+    const lastChild = getLastVariable(
+      findAllChildrenAndOrderByPlaceInCode(artifact, artifactGraph),
+      ast,
+      wasmInstance,
+      artifactTypeFilter,
+      nodeToEdit
+    )
+    // Indexed outputs must not bypass a later body derived from them.
+    if (lastChild && lastChild.artifact.id !== artifact.id) {
+      return null
+    }
+  }
   if (resolvedSelection?.artifact?.type === 'path') {
     const inputExpr = getMultiOutputExtrudeInputExprFromPath(
       resolvedSelection.artifact,
