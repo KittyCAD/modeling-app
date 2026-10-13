@@ -117,7 +117,7 @@ export class LocalRenderer {
   private ambientOcclusionPipeline: AmbientOcclusionPipeline | null = null
   private baseRenderDirty = true
   private disposed = false
-  private planeInteractionEnabled = false
+  private pickingEnabled = false
   private defaultPlaneVisibility: PlaneVisibilityMap = {
     xy: true,
     xz: true,
@@ -129,10 +129,10 @@ export class LocalRenderer {
   private selectionRequestVersion = 0
   private readonly engineEntityReferences = new Map<string, EntityReference>()
   private readonly targetByEntityId = new Map<string, Mesh>()
-  private hoveredPlane: Mesh | null = null
+  private hoveredTarget: Mesh | null = null
   private hoverRequestVersion = 0
   private pointerOverCanvas = false
-  private unregisterPlanePicking: (() => void) | null = null
+  private unregisterPicking: (() => void) | null = null
 
   constructor(
     container: HTMLDivElement,
@@ -158,7 +158,7 @@ export class LocalRenderer {
           // A new execution invalidates any export or GLB parse still in flight.
           this.modelLoadGeneration += 1
           this.pendingModelRefresh = false
-          this.clearPlaneHover()
+          this.clearHover()
         }
       }
     )
@@ -175,17 +175,17 @@ export class LocalRenderer {
     this.syncPlaneScale()
   }
 
-  setPlaneInteractionEnabled(enabled: boolean) {
-    this.planeInteractionEnabled = enabled
+  setPickingEnabled(enabled: boolean) {
+    this.pickingEnabled = enabled
     this.integerIdPicker?.invalidate()
-    if (!enabled) this.clearPlaneHover()
+    if (!enabled) this.clearHover()
   }
 
   setDefaultPlaneVisibility(visibility: PlaneVisibilityMap) {
     this.defaultPlaneVisibility = { ...visibility }
     this.planeRenderer?.setDefaultVisibility(visibility)
     this.integerIdPicker?.invalidate()
-    this.clearPlaneHover()
+    this.clearHover()
     this.updateSelection()
     this.invalidateBaseRender()
   }
@@ -204,14 +204,14 @@ export class LocalRenderer {
     this.scheduleRender()
   }
 
-  private readonly clearPlaneHover = () => {
+  private readonly clearHover = () => {
     this.hoverRequestVersion++
-    this.hoveredPlane = null
+    this.hoveredTarget = null
     this.selectionHighlightRenderer?.setHover(null)
     this.scheduleRender()
   }
 
-  private rebuildPlaneTargets() {
+  private rebuildSelectionTargets() {
     if (!this.planeRenderer) return
     this.planeRenderer.updateDefaultPlanes(
       this.kclManager.rustContext.defaultPlanes
@@ -247,7 +247,7 @@ export class LocalRenderer {
       ...targets,
       ...edgeTargets.map(({ object }) => object),
     ])
-    this.clearPlaneHover()
+    this.clearHover()
     this.updateSelection()
   }
 
@@ -350,7 +350,7 @@ export class LocalRenderer {
       const isHover = cmd.type === 'highlight_set_entity'
       const controls = this.kclManager.sceneInfra.camControls
       if (
-        !this.planeInteractionEnabled ||
+        !this.pickingEnabled ||
         this.kclManager.isExecuting ||
         controls.isDragging ||
         (isHover &&
@@ -372,7 +372,7 @@ export class LocalRenderer {
 
       if (
         this.disposed ||
-        !this.planeInteractionEnabled ||
+        !this.pickingEnabled ||
         this.kclManager.isExecuting ||
         generation !== this.modelLoadGeneration ||
         result?.stale ||
@@ -389,8 +389,8 @@ export class LocalRenderer {
           ? target.name
           : null)
       if (isHover) {
-        if (this.hoveredPlane !== target) {
-          this.hoveredPlane = target
+        if (this.hoveredTarget !== target) {
+          this.hoveredTarget = target
           this.selectionHighlightRenderer?.setHover(target)
           this.scheduleRender()
         }
@@ -461,8 +461,8 @@ export class LocalRenderer {
     }
 
     this.disposed = true
-    this.unregisterPlanePicking?.()
-    this.unregisterPlanePicking = null
+    this.unregisterPicking?.()
+    this.unregisterPicking = null
     this.unregisterExecutionListener?.()
     this.unregisterExecutionListener = null
     this.kclManager.removeEventListener(
@@ -518,7 +518,7 @@ export class LocalRenderer {
     const cameraControls = this.kclManager.sceneInfra.camControls
     if (cameraControls.isDragging) {
       // Dragging should clear hover, but mouse scroll shouldn't (to avoid flickering when over a plane)
-      this.clearPlaneHover()
+      this.clearHover()
     }
     const sharedCamera = cameraControls.camera
     const sharedTarget = cameraControls.target
@@ -902,7 +902,7 @@ export class LocalRenderer {
     this.device = device ?? null
     this.envMapLoader = envMapLoader
 
-    this.rebuildPlaneTargets()
+    this.rebuildSelectionTargets()
     const removeSelectionHandler =
       kclManager.engineCommandManager.setLocalSelectionCommandHandler(
         (command, context) => {
@@ -917,7 +917,7 @@ export class LocalRenderer {
             this.syncSelectionFromEngine().catch(reportRejection)
             return null
           }
-          return this.planeInteractionEnabled
+          return this.pickingEnabled
             ? this.handleLocalSelectionCommand(command, context)
             : null
         }
@@ -929,11 +929,11 @@ export class LocalRenderer {
     }
     const onLeave = () => {
       this.pointerOverCanvas = false
-      this.clearPlaneHover()
+      this.clearHover()
     }
     inputCanvas.addEventListener('pointerenter', onEnter)
     inputCanvas.addEventListener('pointerleave', onLeave)
-    this.unregisterPlanePicking = () => {
+    this.unregisterPicking = () => {
       removeSelectionHandler()
       inputCanvas.removeEventListener('pointerenter', onEnter)
       inputCanvas.removeEventListener('pointerleave', onLeave)
@@ -967,7 +967,7 @@ export class LocalRenderer {
     const { detail } = event as CustomEvent<KclExecutionDoneDetail>
     this.modelLoadGeneration += 1
     if (!detail.successful) {
-      this.rebuildPlaneTargets()
+      this.rebuildSelectionTargets()
       this.syncPlaneScale()
       this.pendingModelRefresh = false
       this.onModelLoadSettled?.()
@@ -991,11 +991,11 @@ export class LocalRenderer {
     // An empty execution has no GLB to export, but must clear the old model.
     if (this.kclManager.artifactGraph.size === 0) {
       this.clearModel()
-      this.rebuildPlaneTargets()
+      this.rebuildSelectionTargets()
       this.onModelLoadSettled?.(true)
       return
     }
-    this.rebuildPlaneTargets()
+    this.rebuildSelectionTargets()
     try {
       // Like viewer2: one whole-scene binary glTF export, without UUID extras.
       const files = await this.kclManager.rustContext.export(
@@ -1035,7 +1035,7 @@ export class LocalRenderer {
       this.edgeRenderer?.buildEdges(gltf)
       this.edgeRenderer?.addTo(gltf.scene)
 
-      this.rebuildPlaneTargets()
+      this.rebuildSelectionTargets()
       const bounds = new Box3().setFromObject(gltf.scene)
       this.updateAmbientOcclusionScale(bounds)
       if (!this.hasFittedModel && !bounds.isEmpty()) {
@@ -1051,7 +1051,7 @@ export class LocalRenderer {
 
   private handleModelLoadError(error: unknown) {
     this.clearModel()
-    this.rebuildPlaneTargets()
+    this.rebuildSelectionTargets()
     console.error('[LocalWebGPUScene] GLB model load failed', error)
     reportRejection(error)
     this.onModelLoadSettled?.()

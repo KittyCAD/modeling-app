@@ -167,7 +167,7 @@ describe('local GLB loading', () => {
     f.state.selectionHighlightRenderer = highlights
     f.state.previewCamera = new PerspectiveCamera()
     f.state.pointerOverCanvas = true
-    f.renderer.setPlaneInteractionEnabled(true)
+    f.renderer.setPickingEnabled(true)
     const pick = (click = false) =>
       f.state.handleLocalSelectionCommand(
         {
@@ -245,9 +245,9 @@ describe('local GLB loading', () => {
     f.manager.sceneInfra.camControls.isDragging = false
     f.manager.sceneInfra.camControls.wasDragging = true
     await f.pick(true)
-    f.renderer.setPlaneInteractionEnabled(false)
+    f.renderer.setPickingEnabled(false)
     await f.pick()
-    f.renderer.setPlaneInteractionEnabled(true)
+    f.renderer.setPickingEnabled(true)
     f.state.pointerOverCanvas = false
     await f.pick()
     expect(f.picker.pick).not.toHaveBeenCalled()

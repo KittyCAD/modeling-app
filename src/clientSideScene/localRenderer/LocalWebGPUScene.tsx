@@ -20,7 +20,7 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
   const app = useApp()
   const { kclManager } = useSingletons()
   const { state } = useModelingContext()
-  const planeInteractionEnabled =
+  const pickingEnabled =
     state.matches('idle') || state.matches('Sketch no face')
   const defaultPlaneVisibility = state.context.defaultPlaneVisibility
   const isExecuting = kclManager.isExecutingSignal.value
@@ -86,8 +86,8 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
   }, [theme])
 
   useEffect(() => {
-    rendererRef.current?.setPlaneInteractionEnabled(planeInteractionEnabled)
-  }, [planeInteractionEnabled, kclManager])
+    rendererRef.current?.setPickingEnabled(pickingEnabled)
+  }, [pickingEnabled, kclManager])
 
   useEffect(() => {
     rendererRef.current?.setDefaultPlaneVisibility(defaultPlaneVisibility)
