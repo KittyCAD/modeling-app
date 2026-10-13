@@ -152,6 +152,13 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
       .toBe(true)
     await expect(submit).toBeInViewport()
     await expect(dialog.locator('header')).toBeInViewport()
+    await page.setBodyDimensions({ width: 1200, height: 600 })
+    await expect
+      .poll(() => dialog.boundingBox())
+      .toMatchObject({
+        width: initialPosition.width,
+        height: initialPosition.height,
+      })
     await submit.click()
     await expect(dialog).not.toBeAttached()
     await editor.expectEditor.toContain('length = 12mm')

@@ -18,6 +18,8 @@ export type DraggableSide = 'top' | 'right' | 'bottom' | 'left'
 interface Offset {
   top: number
   left: number
+  width: number
+  height: number
   margin: {
     blockStart: number
     blockEnd: number
@@ -64,13 +66,13 @@ export function Draggable({
     const targetRect = targetRef.current.getBoundingClientRect()
     const containerRect = entries[0].target.getBoundingClientRect()
     const height = Math.min(
-      targetRect.height,
+      offsetRef.current.height,
       containerRect.height -
         offsetRef.current.margin.blockStart -
         offsetRef.current.margin.blockEnd
     )
     const width = Math.min(
-      targetRect.width,
+      offsetRef.current.width,
       containerRect.width -
         offsetRef.current.margin.inlineStart -
         offsetRef.current.margin.inlineEnd
@@ -181,6 +183,9 @@ export function Draggable({
       offsetRef.current = {
         top: e.clientY - top,
         left: e.clientX - left,
+        // Keep the original size when dragging again in a smaller container.
+        width: offsetRef.current?.width ?? width,
+        height: offsetRef.current?.height ?? height,
         margin,
       }
 

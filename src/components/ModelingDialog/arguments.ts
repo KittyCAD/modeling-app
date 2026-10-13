@@ -1,3 +1,5 @@
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { ArtifactGraph, Program } from '@src/lang/wasm'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import { isKclCommandValue } from '@src/lib/commandUtils'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
@@ -99,8 +101,8 @@ export async function resolveArguments(
   context: CommandBarContext,
   values: Record<string, unknown>,
   rustContext: RustContext,
-  ast: Parameters<typeof getSelectionCountByType>[0],
-  artifactGraph: Parameters<typeof getSelectionCountByType>[2]
+  ast: Node<Program>,
+  artifactGraph?: ArtifactGraph
 ): Promise<Record<string, unknown> | Error> {
   const resolved = { ...context.argumentsToSubmit, ...values }
   // Creation dialogs retain inactive drafts. Keep those out of the payload,
