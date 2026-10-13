@@ -43,6 +43,8 @@ export class ZookeeperFileRequestProcessor {
   // IDs stay monotonic when reset() replaces the conversation.
   private nextOrderedId = 0
   private activeOrderedId: number | undefined
+  private lastDispatchedOrderedId = 0
+  private pendingOrderedIds = new Set<number>()
   private queue: Promise<void> = Promise.resolve()
 
   constructor(
@@ -175,10 +177,10 @@ export class ZookeeperFileRequestProcessor {
       })
     }
 
+    this.pendingOrderedIds.add(request.orderedId)
     this.queue = this.queue.then(
       () =>
         new Promise<void>((resolve) => {
-          this.activeOrderedId = request.orderedId
           let historyCanceled = false
           let dispatched = false
           let settled = false
@@ -198,6 +200,7 @@ export class ZookeeperFileRequestProcessor {
               return
             }
             settled = true
+            this.pendingOrderedIds.delete(request.orderedId)
             if (this.activeOrderedId === request.orderedId) {
               this.activeOrderedId = undefined
             }
@@ -220,6 +223,30 @@ export class ZookeeperFileRequestProcessor {
             historyCanceled = true
             this.deps.history.cancel({ exchangeId: request.exchangeId })
           }
+          const stopIfOutOfOrder = () => {
+            const expectedOrderedId = this.pendingOrderedIds
+              .values()
+              .next().value
+            if (
+              request.orderedId === expectedOrderedId &&
+              request.orderedId > this.lastDispatchedOrderedId
+            ) {
+              return false
+            }
+            console.error(
+              'Refusing to dispatch an out-of-order Zookeeper edit.',
+              {
+                orderedId: request.orderedId,
+                expectedOrderedId,
+                lastDispatchedOrderedId: this.lastDispatchedOrderedId,
+              }
+            )
+            cancelHistory()
+            historyCompleted = true
+            postWriteCompleted = true
+            settle()
+            return true
+          }
           const stopIfStale = ({
             fileSystemWriteFinished = false,
           }: {
@@ -241,6 +268,10 @@ export class ZookeeperFileRequestProcessor {
             return true
           }
 
+          if (stopIfOutOfOrder()) {
+            return
+          }
+          this.activeOrderedId = request.orderedId
           if (stopIfStale()) {
             return
           }
@@ -267,12 +298,13 @@ export class ZookeeperFileRequestProcessor {
               abortSignal,
               systemIOActor,
             })
-            if (stopIfStale()) {
+            if (stopIfStale() || stopIfOutOfOrder()) {
               return
             }
 
             kclManager.zookeeperManagerMachineBulkManipulatingFileSystem = true
             dispatched = true
+            this.lastDispatchedOrderedId = request.orderedId
             systemIOActor.send({
               type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
               data: {
