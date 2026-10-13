@@ -539,19 +539,38 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
   ) : null
 }
 
+export const ExchangeReasoning = (props: {
+  complete: boolean
+  preview?: ReactNode
+  children: ReactNode
+}) => {
+  const [showFullReasoning, setShowFullReasoning] = useState(true)
+
+  useEffect(() => {
+    if (props.complete) setShowFullReasoning(false)
+  }, [props.complete])
+
+  return props.children ? (
+    <>
+      {showFullReasoning && <div>{props.children}</div>}
+      <div className="pl-8 flex flex-row items-center justify-start gap-2">
+        <ButtonToggleReasoning
+          expanded={showFullReasoning}
+          onClick={() => setShowFullReasoning(!showFullReasoning)}
+        />
+        {props.preview}
+      </div>
+    </>
+  ) : null
+}
+
 export const ExchangeCard = (props: ExchangeCardProps) => {
   let [startedAt] = useState<Date>(props.startedAt ?? new Date())
   const [updatedAt, setUpdatedAt] = useState<Date | undefined>(undefined)
 
-  const [showFullReasoning, setShowFullReasoning] = useState<boolean>(true)
-
   const cssCard = `flex flex-col px-4 py-2 gap-2 justify-between
     transition-height duration-500 overflow-hidden text-sm
   `
-
-  const onSeeReasoning = () => {
-    setShowFullReasoning(!showFullReasoning)
-  }
 
   useEffect(() => {
     setUpdatedAt(new Date())
@@ -578,12 +597,6 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
     }
   }
 
-  useEffect(() => {
-    if (isEndOfStream) {
-      setShowFullReasoning(false)
-    }
-  }, [isEndOfStream])
-
   const maybeError = props.responses.filter((r) => 'error' in r)[0]
 
   const hasReasoningContent = props.responses.some(
@@ -606,25 +619,10 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
           onFetchAttachment={props.onFetchAttachment}
         />
       )}
-      {showFullReasoning && hasReasoningContent && (
-        <div>
-          <ExchangeCardStatus
-            responses={props.responses}
-            attachmentFetches={props.attachmentFetches}
-            onFetchAttachment={props.onFetchAttachment}
-            onlyShowImmediateThought={false}
-            startedAt={startedAt}
-            updatedAt={updatedAt}
-          />
-        </div>
-      )}
-      {hasReasoningContent && (
-        <div className="pl-8 flex flex-row items-center justify-start gap-2">
-          <ButtonToggleReasoning
-            expanded={showFullReasoning}
-            onClick={onSeeReasoning}
-          />
-          {props.isLastResponse && (
+      <ExchangeReasoning
+        complete={isEndOfStream}
+        preview={
+          props.isLastResponse && (
             <ExchangeCardStatus
               maybeError={maybeError}
               responses={props.responses}
@@ -634,9 +632,20 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
               startedAt={startedAt}
               updatedAt={updatedAt}
             />
-          )}
-        </div>
-      )}
+          )
+        }
+      >
+        {hasReasoningContent && (
+          <ExchangeCardStatus
+            responses={props.responses}
+            attachmentFetches={props.attachmentFetches}
+            onFetchAttachment={props.onFetchAttachment}
+            onlyShowImmediateThought={false}
+            startedAt={startedAt}
+            updatedAt={updatedAt}
+          />
+        )}
+      </ExchangeReasoning>
       <ResponsesCard
         items={props.responses}
         deltasAggregated={props.deltasAggregated}

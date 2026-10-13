@@ -3,13 +3,12 @@ import { useSignals } from '@preact/signals-react/runtime'
 import {
   AvatarUser,
   ButtonClearChat,
-  ButtonToggleReasoning,
   ChatBubble,
+  ExchangeReasoning,
 } from '@src/components/ExchangeCard'
 import { Thinking } from '@src/components/Thinking'
 import { MarkdownText } from '@src/components/MarkdownText'
 import type { MigrationController } from '@src/lib/kclMigration/controller'
-import { useEffect, useState } from 'react'
 
 export function KclMigrationStart({
   disabled,
@@ -61,10 +60,6 @@ export function KclMigrationPanel({
   useSignals()
   const phase = controller.phase.value
   const busy = controller.busy
-  const [showFullReasoning, setShowFullReasoning] = useState(true)
-  useEffect(() => {
-    if (!busy) setShowFullReasoning(false)
-  }, [busy])
   return (
     <section
       aria-label="KCL migration"
@@ -77,29 +72,21 @@ export function KclMigrationPanel({
       >
         Migrate this project to KCL 3.0.
       </ChatBubble>
-      {(controller.progress.value.length > 0 ||
-        controller.progressText.value) && (
-        <>
-          {showFullReasoning && (
-            <div aria-label="Migration reasoning" className="my-3">
-              <Thinking
-                thoughts={controller.progress.value}
-                isDone={!busy}
-                onlyShowImmediateThought={false}
-              />
-              {controller.progressText.value && (
-                <MarkdownText text={controller.progressText.value} />
-              )}
-            </div>
-          )}
-          <div className="pl-8">
-            <ButtonToggleReasoning
-              expanded={showFullReasoning}
-              onClick={() => setShowFullReasoning(!showFullReasoning)}
+      <ExchangeReasoning complete={!busy}>
+        {controller.progress.value.length > 0 ||
+        controller.progressText.value ? (
+          <div aria-label="Migration reasoning" className="my-3">
+            <Thinking
+              thoughts={controller.progress.value}
+              isDone={!busy}
+              onlyShowImmediateThought={false}
             />
+            {controller.progressText.value && (
+              <MarkdownText text={controller.progressText.value} />
+            )}
           </div>
-        </>
-      )}
+        ) : undefined}
+      </ExchangeReasoning>
       <ChatBubble
         side="left"
         wfull

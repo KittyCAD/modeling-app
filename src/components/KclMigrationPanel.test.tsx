@@ -91,6 +91,21 @@ it('shows live Zookeeper reasoning before migration finishes', async () => {
     )
   })
   expect(screen.getByText('matching camera views')).toBeInTheDocument()
+  await act(async () => {
+    fixture.sendMessage({
+      type: 'progress',
+      operation_id: fixture.request.request_id,
+      message: { info: { text: 'Validating the candidate.' } },
+    })
+    await waitFor(() =>
+      expect(fixture.controller.progress.value).toHaveLength(2)
+    )
+  })
+  expect(screen.getByText('Validating the candidate.')).toBeVisible()
+  expect(screen.getByRole('button', { name: 'Collapse' })).toHaveAttribute(
+    'aria-expanded',
+    'true'
+  )
   fireEvent.click(screen.getByRole('button', { name: 'Collapse' }))
   expect(screen.queryByText('matching camera views')).not.toBeInTheDocument()
   fireEvent.click(screen.getByRole('button', { name: 'See reasoning' }))
