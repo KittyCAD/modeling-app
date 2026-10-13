@@ -491,7 +491,6 @@ function buildCreateFileCommandArgs(
   const argDefaultValues: CreateFileSchemaMethodOptional = {
     name: PROJECT_ENTRYPOINT,
     code: base64ToString(decodeURIComponent(searchParams.get('code') ?? '')),
-    method: isDesktop() ? undefined : 'existingProject',
   }
   if (!isDesktop()) {
     argDefaultValues.projectName = webProjectName ?? DEFAULT_WEB_PROJECT_NAME

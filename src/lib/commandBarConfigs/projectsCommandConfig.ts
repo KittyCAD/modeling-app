@@ -1,13 +1,13 @@
 import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import { MAX_PROJECT_NAME_LENGTH } from '@src/lib/constants'
+import fsZds from '@src/lib/fs-zds'
 import {
   getHomeProjectDeleteWarningMessage,
   getHomeProjectDisplayName,
   homeProjectDisplayNameExists,
 } from '@src/lib/homeProjects'
-import { isDesktop } from '@src/lib/isDesktop'
-import { PATHS } from '@src/lib/paths'
+import { PATHS, toWebSafePath } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import {
   getProjectDirectoryOptions,
@@ -44,6 +44,8 @@ export type ProjectsCommandSchema = {
     code?: string
     method: 'newProject' | 'existingProject'
     projectName?: string
+    newProjectName?: string
+    libraryId?: string
   }
 }
 
@@ -643,14 +645,80 @@ export function createProjectCommands({
     icon: 'file',
     description: 'Create a file',
     needsReview: true,
-    onSubmit: (record) => {
+    async onSubmit(record) {
       if (record) {
+        const fileName = toWebSafePath(String(record.name ?? '').trim())
+        const validationRoot = fsZds.resolve('/shared-import')
+        const relativePath = fsZds.relative(
+          validationRoot,
+          fsZds.resolve(validationRoot, fileName)
+        )
+        if (
+          !fileName ||
+          fileName.startsWith('/') ||
+          /^[a-z]:/i.test(fileName) ||
+          !relativePath ||
+          relativePath === '..' ||
+          relativePath.startsWith(`..${fsZds.sep}`) ||
+          relativePath === fsZds.resolve(relativePath)
+        ) {
+          return new Error('Enter a file name within the selected project.')
+        }
+        if (record.method === 'newProject' && getCreateProjectLibraryTargets) {
+          const target = selectedCreateProjectTarget(record.libraryId)
+          if (
+            !target ||
+            (record.libraryId && target.library.id !== record.libraryId)
+          ) {
+            toast.error(
+              'Add a writable project library before importing a project.'
+            )
+            return
+          }
+          const requestedProjectTitle = String(
+            record.newProjectName ?? ''
+          ).trim()
+          const requestedProjectName = getProjectDirectoryNameFromTitle(
+            requestedProjectTitle,
+            defaultProjectFolderNameSnapshot()
+          )
+          if (
+            !requestedProjectTitle ||
+            requestedProjectName.length > MAX_PROJECT_NAME_LENGTH
+          ) {
+            toast.error('Enter a valid project title.')
+            return
+          }
+          const kclFileName = fileName.endsWith('.kcl')
+            ? fileName
+            : `${fileName}.kcl`
+          const project = await target.createProject.run({
+            library: target.library,
+            requestedProjectName,
+            requestedProjectTitle,
+            initialProject: {
+              entrypointFilePath: kclFileName,
+              files: [
+                {
+                  requestedFileName: kclFileName,
+                  requestedData: new TextEncoder().encode(record.code ?? ''),
+                },
+              ],
+            },
+          })
+          if (!project?.default_file) {
+            return new Error('Unable to create the imported project.')
+          }
+          navigateToProjectFile(project.default_file)
+          return
+        }
         systemIOActor.send({
           type: SystemIOMachineEvents.importFileFromURL,
           data: {
-            requestedProjectName: record.projectName,
+            requestedProjectName:
+              record.method === 'newProject' ? undefined : record.projectName,
             requestedCode: record.code,
-            requestedFileNameWithExtension: record.name,
+            requestedFileNameWithExtension: fileName,
           },
         })
       }
@@ -660,18 +728,12 @@ export function createProjectCommands({
         inputType: 'options',
         required: true,
         skip: true,
-        options: isDesktop()
-          ? [
-              { name: 'New project', value: 'newProject' },
-              { name: 'Existing project', value: 'existingProject' },
-            ]
-          : [{ name: 'Overwrite', value: 'existingProject' }],
+        options: [
+          { name: 'New project', value: 'newProject' },
+          { name: 'Existing project', value: 'existingProject' },
+        ],
         valueSummary(value) {
-          return isDesktop()
-            ? value === 'newProject'
-              ? 'New project'
-              : 'Existing project'
-            : 'Overwrite'
+          return value === 'newProject' ? 'New project' : 'Existing project'
         },
       },
       // TODO: We can't get the currently-opened project to auto-populate here because
@@ -679,7 +741,6 @@ export function createProjectCommands({
       projectName: {
         inputType: 'options',
         required: (commandsContext) =>
-          isDesktop() &&
           commandsContext.argumentsToSubmit.method === 'existingProject',
         skip: true,
         options: (_, _context) => {
@@ -688,9 +749,38 @@ export function createProjectCommands({
           })
         },
       },
+      newProjectName: {
+        displayName: 'Project title',
+        inputType: 'string',
+        required: (context) =>
+          context.argumentsToSubmit.method === 'newProject',
+        hidden: (context) => context.argumentsToSubmit.method !== 'newProject',
+        skip: true,
+        defaultValue: defaultProjectFolderNameSnapshot,
+      },
+      libraryId: {
+        displayName: 'Library',
+        inputType: 'options',
+        required: (context) =>
+          context.argumentsToSubmit.method === 'newProject' &&
+          createProjectLibraryOptions().length > 1,
+        hidden: (context) =>
+          context.argumentsToSubmit.method !== 'newProject' ||
+          createProjectLibraryOptions().length <= 1,
+        prepopulate: true,
+        options: createProjectLibraryOptions,
+        defaultValue: defaultCreateProjectLibraryId,
+        valueSummary(value) {
+          return (
+            createProjectLibraryOptions().find(
+              (option) => option.value === value
+            )?.name ?? 'Library'
+          )
+        },
+      },
       name: {
         inputType: 'string',
-        required: isDesktop(),
+        required: true,
         skip: true,
       },
       code: {
@@ -704,17 +794,10 @@ export function createProjectCommands({
       },
     },
     reviewMessage(commandBarContext) {
-      return isDesktop()
-        ? `Will add the contents from URL to a new ${
-            commandBarContext.argumentsToSubmit.method === 'newProject'
-              ? 'project with file main.kcl'
-              : `file within the project "${commandBarContext.argumentsToSubmit.projectName}"`
-          } named "${
-            commandBarContext.argumentsToSubmit.name
-          }", and set default units to "${
-            commandBarContext.argumentsToSubmit.units
-          }".`
-        : `Will overwrite the contents of the current file with the contents from the URL.`
+      const args = commandBarContext.argumentsToSubmit
+      return args.method === 'newProject'
+        ? `Will create project "${args.newProjectName}" with file "${args.name}" containing the shared code.`
+        : `Will add the shared code as a new file in project "${args.projectName}". Existing files will be preserved.`
     },
   }
 
