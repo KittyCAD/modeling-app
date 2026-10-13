@@ -5130,7 +5130,8 @@ w = f() + f()
         let result = ctx.run_with_caching(program).await.unwrap();
         assert_number_variable(&result.variables, "x", 2.0);
 
-        let ctx2 = ExecutorContext::new_mock(None).await;
+        // Mock execution must explicitly reuse the live session's memory.
+        let ctx2 = ExecutorContext::new_mock(None).await.with_cache(ctx.cache.clone());
         let program2 = crate::Program::parse_no_errs("z = x + 1").unwrap();
         let result = ctx2.run_mock(&program2, &MockConfig::default()).await.unwrap();
         assert_number_variable(&result.variables, "z", 3.0);
