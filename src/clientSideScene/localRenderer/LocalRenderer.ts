@@ -19,7 +19,7 @@ import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { type ResolvedTheme, getThemeBackgroundColor } from '@src/lib/theme'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { reportRejection } from '@src/lib/trap'
-import { isArray, uuidv4 } from '@src/lib/utils'
+import { isArray, isNonNullable, uuidv4 } from '@src/lib/utils'
 import type { PlaneVisibilityMap } from '@src/machines/modelingSharedTypes'
 import {
   Box3,
@@ -123,8 +123,12 @@ export class LocalRenderer {
     xz: true,
     yz: true,
   }
-  private selectedPlaneId: string | null = null
+  // What the engine last said is selected, kept so that the highlight can be
+  // redrawn when the meshes are rebuilt.
+  private selectedEntityIds: string[] = []
+  private selectionRequestVersion = 0
   private readonly engineEntityReferences = new Map<string, EntityReference>()
+  private readonly targetByEntityId = new Map<string, Mesh>()
   private hoveredPlane: Mesh | null = null
   private hoverRequestVersion = 0
   private pointerOverCanvas = false
@@ -177,17 +181,12 @@ export class LocalRenderer {
     if (!enabled) this.clearPlaneHover()
   }
 
-  setSelectedPlane(id: string | null) {
-    this.selectedPlaneId = id
-    this.updatePlaneSelection()
-  }
-
   setDefaultPlaneVisibility(visibility: PlaneVisibilityMap) {
     this.defaultPlaneVisibility = { ...visibility }
     this.planeRenderer?.setDefaultVisibility(visibility)
     this.integerIdPicker?.invalidate()
     this.clearPlaneHover()
-    this.updatePlaneSelection()
+    this.updateSelection()
     this.invalidateBaseRender()
   }
 
@@ -197,9 +196,11 @@ export class LocalRenderer {
     return plane?.group.visible ? plane.mesh : null
   }
 
-  private updatePlaneSelection() {
-    const target = this.getPlaneTarget(this.selectedPlaneId)
-    this.selectionHighlightRenderer?.setSelection(target ? [target] : [])
+  private updateSelection() {
+    const targets = this.selectedEntityIds
+      .map((id) => this.getPlaneTarget(id) ?? this.targetByEntityId.get(id))
+      .filter(isNonNullable)
+    this.selectionHighlightRenderer?.setSelection(targets)
     this.scheduleRender()
   }
 
@@ -220,15 +221,20 @@ export class LocalRenderer {
       this.planeRenderer.planes.values(),
       ({ mesh }) => mesh
     )
+    this.targetByEntityId.clear()
     this.currentModel?.traverse((object) => {
       if (
         (object as Mesh).isMesh &&
         typeof object.userData.faceUuid === 'string'
       ) {
         targets.push(object as Mesh)
+        this.targetByEntityId.set(object.userData.faceUuid, object as Mesh)
       }
     })
     const edgeTargets = this.edgeRenderer?.getSelectionTargets() ?? []
+    for (const { object } of edgeTargets) {
+      this.targetByEntityId.set(object.userData.edgeUuid, object)
+    }
 
     this.integerIdPicker?.setTargets(
       targets,
@@ -242,7 +248,7 @@ export class LocalRenderer {
       ...edgeTargets.map(({ object }) => object),
     ])
     this.clearPlaneHover()
-    this.updatePlaneSelection()
+    this.updateSelection()
   }
 
   private getLocalEntityReference(entityId: string) {
@@ -296,18 +302,46 @@ export class LocalRenderer {
     }
   }
 
+  /**
+   * The engine holds the selection: the app tells it which references are
+   * selected and it turns them into entity IDs. Those IDs are what is
+   * highlighted here, so the engine is asked for them whenever a command
+   * changes the selection.
+   */
+  private async syncSelectionFromEngine() {
+    const version = ++this.selectionRequestVersion
+    // Lets the command that changed the selection be sent first, and lets only
+    // the last command of a burst ask.
+    await Promise.resolve()
+    if (version !== this.selectionRequestVersion) {
+      return
+    }
+    const response =
+      await this.kclManager.engineCommandManager.sendSceneCommand({
+        type: 'modeling_cmd_req',
+        cmd_id: uuidv4(),
+        cmd: { type: 'select_get' },
+      })
+    // The selection changed again while the engine was answering.
+    if (this.disposed || version !== this.selectionRequestVersion) {
+      return
+    }
+    // A reply from the engine arrives wrapped in a one-element array
+    const single = isArray(response) ? response[0] : response
+
+    if (single && isModelingResponse(single)) {
+      const modelingResponse = single.resp.data.modeling_response
+      if (modelingResponse.type === 'select_get') {
+        this.selectedEntityIds = modelingResponse.data.entity_ids
+        this.updateSelection()
+      }
+    }
+  }
+
   private readonly handleLocalSelectionCommand: LocalSelectionCommandHandler =
     async (command, { streamDimensions }) => {
       if (command.type !== 'modeling_cmd_req') return null
       const { cmd } = command
-      if (
-        cmd.type === 'select_add' ||
-        cmd.type === 'select_remove' ||
-        cmd.type === 'select_clear'
-      ) {
-        // The modeling-machine selection is supplied by LocalWebGPUScene.
-        return {}
-      }
       if (cmd.type === 'query_entity_type') {
         const reference = this.getLocalEntityReference(cmd.entity_id)
         if (!reference) return null
@@ -903,10 +937,22 @@ export class LocalRenderer {
     this.rebuildPlaneTargets()
     const removeSelectionHandler =
       kclManager.engineCommandManager.setLocalSelectionCommandHandler(
-        (command, context) =>
-          !this.disposed && this.planeInteractionEnabled
+        (command, context) => {
+          if (this.disposed) return null
+          if (
+            command.type === 'modeling_cmd_req' &&
+            (command.cmd.type === 'select_entity' ||
+              command.cmd.type === 'select_add' ||
+              command.cmd.type === 'select_remove' ||
+              command.cmd.type === 'select_clear')
+          ) {
+            this.syncSelectionFromEngine().catch(reportRejection)
+            return null
+          }
+          return this.planeInteractionEnabled
             ? this.handleLocalSelectionCommand(command, context)
             : null
+        }
       )
     const inputCanvas = kclManager.sceneInfra.camControls.domElement
     this.pointerOverCanvas = inputCanvas.matches(':hover')

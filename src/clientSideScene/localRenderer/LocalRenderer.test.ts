@@ -39,6 +39,7 @@ type RendererInternals = {
   planeRenderer: PlaneRenderer | null
   previewCamera: PerspectiveCamera | OrthographicCamera | null
   handleLocalSelectionCommand: LocalSelectionCommandHandler
+  syncSelectionFromEngine(): Promise<void>
   baseRenderDirty: boolean
   pointerOverCanvas: boolean
   integerIdPicker: {
@@ -79,6 +80,7 @@ function fixture(
       return this.isExecutingSignal.value
     },
     systemDeps: { settings: {} },
+    engineCommandManager: { sendSceneCommand: vi.fn() },
     rustContext: {
       defaultPlanes: { xy: 'plane-xy', yz: 'plane-yz', xz: 'plane-xz' },
       export: vi
@@ -235,9 +237,20 @@ describe('local GLB loading', () => {
           },
         },
       })
-      f.renderer.setSelectedPlane(id)
+      const engineSelects = (entity_ids: string[]) =>
+        f.manager.engineCommandManager.sendSceneCommand.mockResolvedValue({
+          resp: {
+            type: 'modeling',
+            data: {
+              modeling_response: { type: 'select_get', data: { entity_ids } },
+            },
+          },
+        })
+      engineSelects([id])
+      await f.state.syncSelectionFromEngine()
       expect(f.highlights.setSelection).toHaveBeenLastCalledWith([f.target])
-      f.renderer.setSelectedPlane(null)
+      engineSelects([])
+      await f.state.syncSelectionFromEngine()
       expect(f.highlights.setSelection).toHaveBeenLastCalledWith([])
       f.renderer.dispose()
     }

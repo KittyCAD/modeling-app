@@ -7,7 +7,6 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { getSelectedPlaneId } from '@src/lang/queryAst'
 
 // The default planes are shown or hidden about 200 ms after an execution, so
 // the thumbnail waits for them, like the streamed one does.
@@ -23,7 +22,6 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
   const { state } = useModelingContext()
   const planeInteractionEnabled =
     state.matches('idle') || state.matches('Sketch no face')
-  const selectedPlaneId = getSelectedPlaneId(state.context.selectionRanges)
   const defaultPlaneVisibility = state.context.defaultPlaneVisibility
   const isExecuting = kclManager.isExecutingSignal.value
   const [isAwaitingModel, setIsAwaitingModel] = useState(false)
@@ -90,10 +88,6 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
   useEffect(() => {
     rendererRef.current?.setPlaneInteractionEnabled(planeInteractionEnabled)
   }, [planeInteractionEnabled, kclManager])
-
-  useEffect(() => {
-    rendererRef.current?.setSelectedPlane(selectedPlaneId)
-  }, [selectedPlaneId, kclManager])
 
   useEffect(() => {
     rendererRef.current?.setDefaultPlaneVisibility(defaultPlaneVisibility)
