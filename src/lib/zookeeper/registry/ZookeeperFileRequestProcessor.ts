@@ -227,7 +227,7 @@ export class ZookeeperFileRequestProcessor {
     }
 
     const { promise: completed, resolve: finish } =
-      Promise.withResolvers<void>()
+      Promise.withResolvers<undefined>()
     this.queue.push({
       request,
       completed,
@@ -491,7 +491,7 @@ export class ZookeeperFileRequestProcessor {
             postWriteCompleted = true
             settle()
           })
-        }).finally(finish),
+        }).finally(() => finish(undefined)),
     })
     // Reorder waiting edits on arrival. The active edit finishes before the
     // worker takes the next request from this sorted queue.
