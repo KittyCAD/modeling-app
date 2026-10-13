@@ -226,7 +226,7 @@ describe('ZookeeperFileRequestProcessor', () => {
     await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
 
     const firstRequest = mocks.systemIOSend.mock.calls[0][0].data
-    expect(firstRequest.orderId).toBe(1)
+    expect(firstRequest.orderedId).toBe(1)
     firstRequest.onFileSystemSuccess()
     await Promise.resolve()
 
@@ -247,7 +247,7 @@ describe('ZookeeperFileRequestProcessor', () => {
     })
 
     await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
-    expect(mocks.systemIOSend.mock.calls[1][0].data.orderId).toBe(2)
+    expect(mocks.systemIOSend.mock.calls[1][0].data.orderedId).toBe(2)
     expect(mocks.systemIOSend.mock.calls[1][0].data.files[0]).toMatchObject({
       requestedCode: 'final code',
       requestedFileName: 'main.kcl',
@@ -731,7 +731,7 @@ describe('ZookeeperFileRequestProcessor', () => {
     emitZookeeperFileRequest(processor, 'fresh edit', 1)
 
     await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
-    expect(mocks.systemIOSend.mock.calls[0][0].data.orderId).toBe(2)
+    expect(mocks.systemIOSend.mock.calls[0][0].data.orderedId).toBe(2)
     expect(mocks.historyCancel).toHaveBeenCalledWith({ exchangeId: 0 })
     expect(mocks.systemIOSend.mock.calls[0][0].data.files[0]).toMatchObject({
       requestedCode: 'fresh edit',
