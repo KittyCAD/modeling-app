@@ -1,8 +1,4 @@
-import {
-  defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
-  provide,
-} from '@kittycad/registry'
+import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 import { computed } from '@preact/signals-core'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { getOpenPanes } from '@src/lib/layout/utils'
@@ -49,10 +45,8 @@ const zookeeperCreditsStatusBarItem = defineRegistryItemFactory((ctx) => {
   })
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'zookeeper.credits-status-bar-item',
-      provides: [provide(statusBarLocalItemsValueSpec, item)],
-    }),
+    id: 'zookeeper.credits-status-bar-item',
+    provides: [provide(statusBarLocalItemsValueSpec, item)],
   }
 }, 'zookeeper.credits-status-bar-item')
 
