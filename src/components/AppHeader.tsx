@@ -8,6 +8,7 @@ import { PATHS } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import type { ReactNode } from 'react'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: header navigation (useNavigate).
 import { useNavigate } from 'react-router-dom'
 import styles from './AppHeader.module.css'
 

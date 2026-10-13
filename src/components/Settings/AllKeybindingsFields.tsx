@@ -8,6 +8,7 @@ import {
   useMemo,
   useState,
 } from 'react'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: hash-based keybinding highlighting (useLocation).
 import { useLocation } from 'react-router-dom'
 
 import { CustomIcon } from '@src/components/CustomIcon'
