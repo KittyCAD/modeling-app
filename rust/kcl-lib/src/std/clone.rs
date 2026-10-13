@@ -1,6 +1,7 @@
 //! Standard library clone.
 
 use std::collections::HashMap;
+use std::collections::HashSet;
 
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
@@ -228,6 +229,37 @@ pub(super) async fn fix_tags_and_references(
                 BeingExtruded::Sketch,
             )
             .await?;
+
+            if !old_face_tag_names.is_empty() {
+                // Preserve tagged faces when edge cuts leave the extrusion query empty.
+                // Untagged solids keep the existing reconstruction behavior.
+                let mut seen_ids = new_solid
+                    .value
+                    .iter()
+                    .map(|surface| surface.get_id())
+                    .collect::<HashSet<_>>();
+                for surface in solid.value.iter().filter(|surface| surface.get_tag().is_some()) {
+                    let (Some(id), Some(face_id)) = (
+                        entity_id_map.get(&surface.get_id()).copied(),
+                        entity_id_map.get(&surface.face_id()).copied(),
+                    ) else {
+                        continue;
+                    };
+                    if !seen_ids.insert(id) {
+                        continue;
+                    }
+                    if solid.start_cap_id == Some(surface.face_id()) {
+                        new_solid.start_cap_id.get_or_insert(face_id);
+                    }
+                    if solid.end_cap_id == Some(surface.face_id()) {
+                        new_solid.end_cap_id.get_or_insert(face_id);
+                    }
+                    let mut surface = surface.clone();
+                    surface.set_id(id);
+                    surface.set_face_id(face_id);
+                    new_solid.value.push(surface);
+                }
+            }
 
             if let Some((face_id, solid_id)) = face_creator {
                 let rebuilt_sketch = new_solid.sketch().cloned().ok_or_else(|| {
@@ -584,6 +616,53 @@ afterClone = lowerRegion.tags.edge
     #[tokio::test(flavor = "multi_thread")]
     async fn clone_does_not_retarget_loft_region_tags_in_mock_execution() {
         assert_mock_clone_preserves_source_region_tags("loft([lowerRegion, upperRegion])").await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_clone_chamfered_cap_tags() {
+        for version in ["2.0", "3.0"] {
+            let code = r#"@settings(kclVersion = VERSION, experimentalFeatures = allow)
+profile = sketch(on = XZ) {
+  bottom = line(start = [-4mm, -4mm], end = [4mm, -4mm])
+  right = line(start = [4mm, -4mm], end = [4mm, 4mm])
+  top = line(start = [4mm, 4mm], end = [-4mm, 4mm])
+  left = line(start = [-4mm, 4mm], end = [-4mm, -4mm])
+}
+profileRegion = region(segments = [profile.bottom, profile.right, profile.top, profile.left])
+blank = extrude(profileRegion, length = 4mm, symmetric = true, tagStart = $startCap, tagEnd = $endCap)
+source = chamfer(blank, length = 0.25mm, edges = [
+  {sideFaces = [profileRegion.tags.right, blank.faces.startCap]},
+  {sideFaces = [profileRegion.tags.right, blank.faces.endCap]},
+  {sideFaces = [profileRegion.tags.left, blank.faces.startCap]},
+  {sideFaces = [profileRegion.tags.left, blank.faces.endCap]}
+])
+cloned = clone(source)
+startFace = cloned.faces.startCap
+endFace = cloned.faces.endCap
+clonedAgain = clone(cloned)
+result = chamfer(clonedAgain, length = 0.1mm, edges = [
+  {sideFaces = [clonedAgain.sketch.tags.top, clonedAgain.faces.startCap]},
+  {sideFaces = [clonedAgain.sketch.tags.top, clonedAgain.faces.endCap]}
+])
+"#
+            .replace("VERSION", version);
+            let program = crate::Program::parse_no_errs(&code).unwrap();
+            let ctx = crate::test_server::new_context(true, None, true, program.language_version().unwrap())
+                .await
+                .unwrap();
+            let outcome = ctx.run_with_caching(program).await;
+            ctx.close().await;
+            let outcome = outcome.unwrap_or_else(|error| panic!("KCL {version}: {}", error.error));
+            let source = runtime_solid(&outcome, "source");
+            for name in ["cloned", "clonedAgain"] {
+                let cloned = runtime_solid(&outcome, name);
+                assert_eq!(cloned.faces.len(), 2);
+                assert_ne!(source.start_cap_id, cloned.start_cap_id);
+                assert_ne!(source.end_cap_id, cloned.end_cap_id);
+                assert!(cloned.start_cap_id.is_some());
+                assert!(cloned.end_cap_id.is_some());
+            }
+        }
     }
 
     fn runtime_solid<'a>(outcome: &'a ExecOutcome, name: &str) -> &'a Solid {
