@@ -1,8 +1,4 @@
-import {
-  defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
-  provide,
-} from '@kittycad/registry'
+import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 import {
   computed,
   effect,
@@ -455,10 +451,8 @@ export const zookeeperRuntimeRegistryItem = defineRegistryItemFactory((ctx) => {
   })
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'zookeeper.runtime',
-      provides: [provide(layoutAreaLibraryValueSpec, areaLibrary)],
-      dispose: () => runtime.dispose(),
-    }),
+    id: 'zookeeper.runtime',
+    provides: [provide(layoutAreaLibraryValueSpec, areaLibrary)],
+    dispose: () => runtime.dispose(),
   }
 }, 'zookeeper.runtime')
