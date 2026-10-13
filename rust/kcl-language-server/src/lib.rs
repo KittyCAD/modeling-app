@@ -1,8 +1,5 @@
 //! Language Server Protocol implementations used by KCL editors.
 
-// Session caches contain AST and interpreter state, making Send/Sync proofs deeper.
-#![recursion_limit = "256"]
-
 mod lsp;
 
 pub(crate) use kcl_lib::CompilationIssue;

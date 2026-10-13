@@ -48,38 +48,55 @@ struct CacheInner {
 /// Clones share the same state. A default cache is empty and independent of all
 /// other caches. Callers must serialize executions that share an engine session;
 /// this cache only locks individual state accesses.
-#[derive(Debug, Default, Clone)]
-pub struct Cache(Arc<RwLock<CacheInner>>);
+#[derive(Debug, Clone)]
+pub struct Cache(Arc<dyn CacheStorage>);
+
+// Hide the cache's concrete state graph from Send/Sync proofs in callers.
+trait CacheStorage: std::fmt::Debug + Send + Sync {
+    fn inner(&self) -> &RwLock<CacheInner>;
+}
+
+impl CacheStorage for RwLock<CacheInner> {
+    fn inner(&self) -> &RwLock<CacheInner> {
+        self
+    }
+}
+
+impl Default for Cache {
+    fn default() -> Self {
+        Self(Arc::new(RwLock::new(CacheInner::default())))
+    }
+}
 
 impl Cache {
     /// Read the old AST state from the cache.
     pub(super) async fn read_old_ast(&self) -> Option<GlobalState> {
-        self.0.read().await.old_ast.clone()
+        self.0.inner().read().await.old_ast.clone()
     }
 
     pub(super) async fn write_old_ast(&self, old_state: GlobalState) {
-        let mut inner = self.0.write().await;
+        let mut inner = self.0.inner().write().await;
         inner.old_ast = Some(old_state);
     }
 
     pub(crate) async fn read_old_memory(&self) -> Option<SketchModeState> {
-        self.0.read().await.prev_memory.clone()
+        self.0.inner().read().await.prev_memory.clone()
     }
 
     pub(crate) async fn write_old_memory(&self, mem: SketchModeState) {
-        let mut inner = self.0.write().await;
+        let mut inner = self.0.inner().write().await;
         inner.prev_memory = Some(mem);
     }
 
     /// Invalidate live execution state while preserving usable sketch-mode memory.
     pub async fn bust_cache(&self) {
-        let mut inner = self.0.write().await;
+        let mut inner = self.0.inner().write().await;
         inner.old_ast = None;
     }
 
     /// Clear the memory reused by mock execution.
     pub async fn clear_mem_cache(&self) {
-        let mut inner = self.0.write().await;
+        let mut inner = self.0.inner().write().await;
         inner.prev_memory = None;
     }
 
