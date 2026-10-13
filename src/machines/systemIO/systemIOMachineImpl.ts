@@ -865,6 +865,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         }: {
           input: {
             context: SystemIOContext
+            requestId?: number
             files: RequestedKCLFile[]
             filesToDelete?: RequestedKCLFileDelete[]
             requestedProjectName: string

@@ -23,6 +23,7 @@ interface ZookeeperFileRequestProcessorDependencies {
 }
 
 type ZookeeperNewFileRequest = {
+  requestId: number
   toolOutput: MlToolResult
   projectNameCurrentlyOpened: string
   fileFocusedOnInEditor?: FileEntry
@@ -38,6 +39,9 @@ export class ZookeeperFileRequestProcessor {
   private disposed = false
   private generation = 0
   private lastMessageId: number | undefined
+  // IDs stay monotonic when reset() replaces the conversation.
+  private nextRequestId = 0
+  private activeRequestId: number | undefined
   private queue: Promise<void> = Promise.resolve()
 
   constructor(
@@ -95,6 +99,7 @@ export class ZookeeperFileRequestProcessor {
 
     this.enqueue(
       {
+        requestId: ++this.nextRequestId,
         toolOutput: lastResponse.tool_output.result,
         projectNameCurrentlyOpened: projectName,
         fileFocusedOnInEditor: snapshot.context.fileFocusedOnInEditor,
@@ -171,6 +176,7 @@ export class ZookeeperFileRequestProcessor {
     this.queue = this.queue.then(
       () =>
         new Promise<void>((resolve) => {
+          this.activeRequestId = request.requestId
           let historyCanceled = false
           let dispatched = false
           let settled = false
@@ -180,15 +186,19 @@ export class ZookeeperFileRequestProcessor {
           let historySucceeded = !shouldRecordHistory
           let postWriteCompleted = !shouldRefreshActiveEditor
           const requestCanFinish = () =>
-            dispatched
+            this.activeRequestId === request.requestId &&
+            (dispatched
               ? requestProjectIsCurrent() && this.deps.isEditorCurrent()
-              : requestIsCurrent()
+              : requestIsCurrent())
 
-          function settle() {
+          const settle = () => {
             if (settled || !historyCompleted || !postWriteCompleted) {
               return
             }
             settled = true
+            if (this.activeRequestId === request.requestId) {
+              this.activeRequestId = undefined
+            }
             abortSignal.removeEventListener('abort', cancelPostWrite)
             resolve()
             // The queued request and undo history now own everything needed
@@ -213,6 +223,9 @@ export class ZookeeperFileRequestProcessor {
           }: {
             fileSystemWriteFinished?: boolean
           } = {}) => {
+            if (settled) {
+              return true
+            }
             if (requestCanFinish()) {
               return false
             }
@@ -261,6 +274,7 @@ export class ZookeeperFileRequestProcessor {
             systemIOActor.send({
               type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
               data: {
+                requestId: request.requestId,
                 files: payload.files,
                 filesToDelete: payload.filesToDelete,
                 override: true,
@@ -269,6 +283,9 @@ export class ZookeeperFileRequestProcessor {
                 requestedFileNameWithExtension:
                   payload.requestedFileNameWithExtension ?? '',
                 onFileSystemError: () => {
+                  if (settled || this.activeRequestId !== request.requestId) {
+                    return
+                  }
                   if (fileSystemCompleted) {
                     cancelPostWrite()
                     return
@@ -283,7 +300,11 @@ export class ZookeeperFileRequestProcessor {
                   settle()
                 },
                 onFileSystemSuccess: () => {
-                  if (fileSystemCompleted) {
+                  if (
+                    fileSystemCompleted ||
+                    settled ||
+                    this.activeRequestId !== request.requestId
+                  ) {
                     return
                   }
                   fileSystemCompleted = true

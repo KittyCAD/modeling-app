@@ -1284,6 +1284,53 @@ describe('systemIOMachine - XState', () => {
           actor.stop()
         }
       })
+      it('passes the Zookeeper request ID to its bulk filesystem actor', async () => {
+        const receivedRequestIds: (number | undefined)[] = []
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async (): Promise<Project[]> => []),
+              [SystemIOMachineActors.bulkCreateAndDeleteKCLFilesAndNavigateToFile]:
+                fromPromise(async ({ input }) => {
+                  receivedRequestIds.push(input.requestId)
+                  return {
+                    message: 'Updated',
+                    projectName: input.requestedProjectName,
+                    fileName: input.requestedFileNameWithExtension,
+                    subRoute: '',
+                    shouldNavigate: false,
+                  }
+                }),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
+            data: {
+              requestId: 17,
+              files: [],
+              requestedProjectName: 'demo',
+              requestedFileNameWithExtension: 'main.kcl',
+            },
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.idle)
+          )
+          expect(receivedRequestIds).toEqual([17])
+        } finally {
+          actor.stop()
+        }
+      })
+
       it('should identify a completed bulk-created file navigation', async () => {
         const onSuccess = vi.fn()
         const actor = createActor(
