@@ -166,7 +166,6 @@ export class ZookeeperFileRequestProcessor {
     if (this.disposed) {
       return
     }
-    this.nextOrderedId = Math.max(this.nextOrderedId, request.orderedId)
     const project = this.deps.getProject()
     const { kclManager, systemIOActor } = this.deps
     const abortSignal = this.abortController.signal
