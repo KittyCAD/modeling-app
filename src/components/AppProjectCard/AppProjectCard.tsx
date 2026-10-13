@@ -29,6 +29,7 @@ import type {
 import type { FormEvent, HTMLAttributes } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: project-card opening and creation (useNavigate).
 import { Link, useNavigate } from 'react-router-dom'
 
 type AppProjectCardProps = HTMLAttributes<HTMLLIElement> & {

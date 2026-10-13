@@ -1,8 +1,4 @@
-import {
-  defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
-  provide,
-} from '@kittycad/registry'
+import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 import { computed } from '@preact/signals-core'
 import type { Command } from '@src/lib/commandTypes'
 import {
@@ -354,57 +350,52 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
   )
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'engine-scene-extension',
-      provides: [
-        provideCommand(
-          captureScreenshotCommand(() =>
-            saveViewportScreenshot(
-              ctx.services.get(fileOperationsService),
-              ctx.services.get(viewportScreenshotService)
-            )
+    id: 'engine-scene-extension',
+    provides: [
+      provideCommand(
+        captureScreenshotCommand(() =>
+          saveViewportScreenshot(
+            ctx.services.get(fileOperationsService),
+            ctx.services.get(viewportScreenshotService)
           )
-        ),
-        provideCommand(openMeasureToolCommand),
-        provideCommand(openPhysicalAnalysisToolCommand),
-        provideKeymapItem(openMeasureToolKeymapItem),
-        provideKeymapItem(openPhysicalAnalysisToolKeymapItem),
-        provide(statusBarGlobalItemsValueSpec, screenshotStatusBarItem),
-        provide(statusBarLocalItemsValueSpec, measurementStatusBarItem),
-        provide(statusBarLocalItemsValueSpec, physicalAnalysisStatusBarItem),
-        provide(statusBarLocalItemsValueSpec, selectionFilterStatusBarItem),
-        provide(statusBarLocalItemsValueSpec, selectionStatusBarItem),
-        provide(statusBarLocalItemsValueSpec, unitsStatusBarItem),
-        provide(
-          statusBarLocalItemsValueSpec,
-          experimentalFeaturesStatusBarItem
-        ),
-        provide(engineSceneStreamClassNamesValueSpec, defaultStreamClassName, {
-          key: defaultStreamClassName.id,
-        }),
-        provide(engineSceneViewExtensionsValueSpec, toolbarViewExtension, {
-          key: toolbarViewExtension.id,
-        }),
-        provide(
-          engineSceneViewExtensionsValueSpec,
-          sketchBackgroundOpacityViewExtension,
-          {
-            key: sketchBackgroundOpacityViewExtension.id,
-          }
-        ),
-        provide(
-          engineSceneViewExtensionsValueSpec,
-          sketchConstraintsToggleViewExtension,
-          {
-            key: sketchConstraintsToggleViewExtension.id,
-          }
-        ),
-        provide(engineSceneViewExtensionsValueSpec, gizmoViewExtension, {
-          key: gizmoViewExtension.id,
-        }),
-      ],
-      uses: [executionIndicator],
-    }),
+        )
+      ),
+      provideCommand(openMeasureToolCommand),
+      provideCommand(openPhysicalAnalysisToolCommand),
+      provideKeymapItem(openMeasureToolKeymapItem),
+      provideKeymapItem(openPhysicalAnalysisToolKeymapItem),
+      provide(statusBarGlobalItemsValueSpec, screenshotStatusBarItem),
+      provide(statusBarLocalItemsValueSpec, measurementStatusBarItem),
+      provide(statusBarLocalItemsValueSpec, physicalAnalysisStatusBarItem),
+      provide(statusBarLocalItemsValueSpec, selectionFilterStatusBarItem),
+      provide(statusBarLocalItemsValueSpec, selectionStatusBarItem),
+      provide(statusBarLocalItemsValueSpec, unitsStatusBarItem),
+      provide(statusBarLocalItemsValueSpec, experimentalFeaturesStatusBarItem),
+      provide(engineSceneStreamClassNamesValueSpec, defaultStreamClassName, {
+        key: defaultStreamClassName.id,
+      }),
+      provide(engineSceneViewExtensionsValueSpec, toolbarViewExtension, {
+        key: toolbarViewExtension.id,
+      }),
+      provide(
+        engineSceneViewExtensionsValueSpec,
+        sketchBackgroundOpacityViewExtension,
+        {
+          key: sketchBackgroundOpacityViewExtension.id,
+        }
+      ),
+      provide(
+        engineSceneViewExtensionsValueSpec,
+        sketchConstraintsToggleViewExtension,
+        {
+          key: sketchConstraintsToggleViewExtension.id,
+        }
+      ),
+      provide(engineSceneViewExtensionsValueSpec, gizmoViewExtension, {
+        key: gizmoViewExtension.id,
+      }),
+    ],
+    uses: [executionIndicator],
   }
 }, 'engine-scene-extension')
 

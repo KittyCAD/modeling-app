@@ -1,8 +1,4 @@
-import {
-  defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
-  provide,
-} from '@kittycad/registry'
+import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 import { computed } from '@preact/signals-core'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import {
@@ -49,10 +45,8 @@ const executionIndicator = defineRegistryItemFactory((ctx) => {
   )
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'execution-indicator.status-bar-item',
-      provides: [provide(statusBarLocalItemsValueSpec, statusBarItem)],
-    }),
+    id: 'execution-indicator.status-bar-item',
+    provides: [provide(statusBarLocalItemsValueSpec, statusBarItem)],
   }
 }, 'execution-indicator.status-bar-item')
 
