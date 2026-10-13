@@ -249,6 +249,37 @@ describe('desktop utilities', () => {
   })
 
   describe('listProjects', () => {
+    it('includes the default file created during first discovery', async () => {
+      const projectPath = '/test/projects/new-empty-project'
+      const mainPath = `${projectPath}/main.kcl`
+      const entries: string[] = []
+      mockFileSystem[projectPath] = entries
+      const originalStat = mockElectron.stat.getMockImplementation()!
+      mockElectron.stat.mockImplementation((path: string) =>
+        path === mainPath && !entries.includes('main.kcl')
+          ? Promise.reject('ENOENT')
+          : originalStat(path)
+      )
+      mockElectron.writeFile.mockImplementation(async (path: string) => {
+        if (path === mainPath) entries.push('main.kcl')
+      })
+
+      try {
+        const { instance } = await buildTheWorldNode()
+        const project = await getProjectInfo(
+          testFileOperations,
+          projectPath,
+          await instance
+        )
+        expect(project.kcl_file_count).toBe(1)
+        expect(project.children).toContainEqual(
+          expect.objectContaining({ name: 'main.kcl', path: mainPath })
+        )
+      } finally {
+        delete mockFileSystem[projectPath]
+      }
+    })
+
     it('preserves main.kcl created after discovery observed an empty project', async () => {
       const { instance } = await buildTheWorldNode()
       const projectPath = '/test/projects/project-without-kcl-files'
