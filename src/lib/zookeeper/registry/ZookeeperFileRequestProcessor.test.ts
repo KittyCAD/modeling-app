@@ -176,9 +176,6 @@ describe('ZookeeperFileRequestProcessor', () => {
 
   test('deletes files from the current patch and preserves files recreated by the next edit', async () => {
     const processor = createProcessor()
-    const deletionNotice: MlCopilotServerMessage = {
-      reasoning: { type: 'deleted_kcl_file', file_name: 'part.kcl' },
-    }
     const deletion = patchBackedZookeeperEdit('intermediate code')
     deletion.zookeeper_edit_patch?.changed_files?.push({
       path: 'part.kcl',
@@ -189,9 +186,7 @@ describe('ZookeeperFileRequestProcessor', () => {
       processor,
       'intermediate code',
       1,
-      deletion,
-      undefined,
-      [deletionNotice]
+      deletion
     )
     await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
     const firstRequest = mocks.systemIOSend.mock.calls[0][0].data
@@ -214,7 +209,7 @@ describe('ZookeeperFileRequestProcessor', () => {
       2,
       recreation,
       undefined,
-      [deletionNotice, { tool_output: { result: deletion } }]
+      [{ tool_output: { result: deletion } }]
     )
     await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
     const secondRequest = mocks.systemIOSend.mock.calls[1][0].data
