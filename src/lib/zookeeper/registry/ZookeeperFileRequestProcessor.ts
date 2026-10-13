@@ -22,7 +22,7 @@ interface ZookeeperFileRequestProcessorDependencies {
   onEditApplied: (response: MlCopilotServerMessage) => void
 }
 
-type ZookeeperNewFileRequest = {
+export type ZookeeperNewFileRequest = {
   // This only ensures the order of the edits received; there is no guarantee the server is sending us edits in-order.
   orderedId: number
   toolOutput: MlToolResult
@@ -166,7 +166,12 @@ export class ZookeeperFileRequestProcessor {
     }
   }
 
-  private enqueue(request: ZookeeperNewFileRequest, onApplied: () => void) {
+  /** Queues an edit whose orderedId was assigned when it was received. */
+  enqueue(request: ZookeeperNewFileRequest, onApplied: () => void) {
+    if (this.disposed) {
+      return
+    }
+    this.nextOrderedId = Math.max(this.nextOrderedId, request.orderedId)
     const project = this.deps.getProject()
     const { kclManager, systemIOActor } = this.deps
     const abortSignal = this.abortController.signal
@@ -341,6 +346,14 @@ export class ZookeeperFileRequestProcessor {
                   payload.requestedFileNameWithExtension ?? '',
                 onFileSystemError: () => {
                   if (settled || this.activeOrderedId !== request.orderedId) {
+                    console.warn(
+                      'Ignoring Zookeeper filesystem error callback for a settled or inactive edit.',
+                      {
+                        orderedId: request.orderedId,
+                        activeOrderedId: this.activeOrderedId,
+                        settled,
+                      }
+                    )
                     return
                   }
                   if (fileSystemCompleted) {

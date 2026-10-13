@@ -259,15 +259,29 @@ describe('ZookeeperFileRequestProcessor', () => {
     expect(mocks.updateCodeEditor).toHaveBeenCalledOnce()
   })
 
-  test('finishes the active edit before dispatching waiting edits in received order', async () => {
+  test('reorders waiting edits by orderedId without interrupting the active edit', async () => {
     const processor = createProcessor()
     try {
       emitZookeeperFileRequest(processor, 'first edit', 1)
       await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
       const firstRequest = mocks.systemIOSend.mock.calls[0][0].data
 
-      emitZookeeperFileRequest(processor, 'second edit', 2)
-      emitZookeeperFileRequest(processor, 'third edit', 3)
+      for (const orderedId of [3, 2]) {
+        processor.enqueue(
+          {
+            orderedId,
+            toolOutput: patchBackedZookeeperEdit(`edit ${orderedId}`),
+            projectNameCurrentlyOpened: 'demo',
+            fileFocusedOnInEditor: {
+              name: 'main.kcl',
+              path: '/workspace/demo/main.kcl',
+              children: null,
+            },
+            exchangeId: 0,
+          },
+          mocks.onEditApplied
+        )
+      }
       await Promise.resolve()
       expect(mocks.systemIOSend).toHaveBeenCalledOnce()
 
@@ -276,7 +290,7 @@ describe('ZookeeperFileRequestProcessor', () => {
       await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
       const secondRequest = mocks.systemIOSend.mock.calls[1][0].data
       expect(secondRequest.orderedId).toBe(2)
-      expect(secondRequest.files[0].requestedCode).toBe('second edit')
+      expect(secondRequest.files[0].requestedCode).toBe('edit 2')
       expect(mocks.historyCancel).not.toHaveBeenCalled()
 
       secondRequest.onFileSystemSuccess()
@@ -284,7 +298,7 @@ describe('ZookeeperFileRequestProcessor', () => {
       await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(3))
       const thirdRequest = mocks.systemIOSend.mock.calls[2][0].data
       expect(thirdRequest.orderedId).toBe(3)
-      expect(thirdRequest.files[0].requestedCode).toBe('third edit')
+      expect(thirdRequest.files[0].requestedCode).toBe('edit 3')
       thirdRequest.onFileSystemSuccess()
       thirdRequest.onSuccess()
       await waitFor(() => expect(mocks.onEditApplied).toHaveBeenCalledTimes(3))
@@ -293,6 +307,42 @@ describe('ZookeeperFileRequestProcessor', () => {
         event.data.onFileSystemError()
       }
       await processor.dispose()
+    }
+  })
+
+  test('warns when a settled edit receives a filesystem error while another edit is active', async () => {
+    const warning = vi
+      .spyOn(console, 'warn')
+      .mockImplementation(() => undefined)
+    const processor = createProcessor()
+    try {
+      emitZookeeperFileRequest(processor, 'first edit', 1)
+      emitZookeeperFileRequest(processor, 'second edit', 2)
+      await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
+      const firstRequest = mocks.systemIOSend.mock.calls[0][0].data
+      firstRequest.onFileSystemSuccess()
+      firstRequest.onSuccess()
+      await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
+
+      firstRequest.onFileSystemError()
+      expect(warning).toHaveBeenCalledWith(
+        'Ignoring Zookeeper filesystem error callback for a settled or inactive edit.',
+        { orderedId: 1, activeOrderedId: 2, settled: true }
+      )
+      expect(mocks.historyCancel).not.toHaveBeenCalled()
+      expect(mocks.historyComplete).toHaveBeenCalledOnce()
+      expect(mocks.onEditApplied).toHaveBeenCalledOnce()
+
+      const secondRequest = mocks.systemIOSend.mock.calls[1][0].data
+      secondRequest.onFileSystemSuccess()
+      secondRequest.onSuccess()
+      await waitFor(() => expect(mocks.onEditApplied).toHaveBeenCalledTimes(2))
+    } finally {
+      for (const [event] of mocks.systemIOSend.mock.calls) {
+        event.data.onFileSystemError()
+      }
+      await processor.dispose()
+      warning.mockRestore()
     }
   })
 
