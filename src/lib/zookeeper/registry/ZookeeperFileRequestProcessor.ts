@@ -23,6 +23,7 @@ interface ZookeeperFileRequestProcessorDependencies {
 }
 
 type ZookeeperNewFileRequest = {
+  // This only ensures the order of the edits received; there is no guarantee the server is sending us edits in-order.
   orderedId: number
   toolOutput: MlToolResult
   projectNameCurrentlyOpened: string
