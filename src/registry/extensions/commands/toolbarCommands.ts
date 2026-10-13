@@ -5,10 +5,7 @@ import {
 } from '@src/lang/queryAst'
 import { isCursorInSketchCommandRange } from '@src/lang/util'
 import type { Command } from '@src/lib/commandTypes'
-import {
-  EXPERIMENTAL_POINT_AND_CLICK_FLAG,
-  LEGACY_SKETCH_MODE_FEATURE_FLAG,
-} from '@src/lib/constants'
+import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
 import { selectSketchPlane } from '@src/lib/selectSketchPlane'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type {
@@ -133,12 +130,6 @@ function hasSketchExperimentalFeatures(input: unknown): boolean {
   return (
     getUserFeatures(input)?.has(EXPERIMENTAL_POINT_AND_CLICK_FLAG, false) ??
     false
-  )
-}
-
-function hasLegacySketchMode(input: unknown): boolean {
-  return (
-    getUserFeatures(input)?.has(LEGACY_SKETCH_MODE_FEATURE_FLAG, false) ?? false
   )
 }
 
@@ -286,15 +277,11 @@ async function enterSketch(input: unknown) {
     state.context.selectionRanges
   )
 
-  if ((kclManager.editorView.hasFocus && sketchPathId) || isSketchBlock) {
-    if (
-      kclManager.editorView.hasFocus &&
-      sketchPathId &&
-      !isSketchBlock &&
-      !hasLegacySketchMode(input)
-    ) {
-      return
-    }
+  // Legacy KCL 1.0 sketch editing is no longer supported.
+  if (kclManager.editorView.hasFocus && sketchPathId && !isSketchBlock) {
+    return
+  }
+  if (isSketchBlock) {
     return sendModelingEvent(input, { type: 'Enter sketch' })
   }
 

@@ -98,7 +98,6 @@ use crate::execution::cache::CacheResult;
 use crate::execution::cad_op::OperationExt;
 use crate::execution::import_graph::Universe;
 use crate::execution::import_graph::UniverseMap;
-use crate::execution::modeling::kcl_version_to_modeling_cmd;
 use crate::execution::typed_path::TypedPath;
 use crate::front::Number;
 use crate::front::Object;
@@ -1209,6 +1208,56 @@ impl ExecutorContext {
         Self::new_with_engine_and_fs(engine, crate::fs::new_file_system_handle(FileManager::new()), settings)
     }
 
+    /// Toggle on engine graphics.
+    /// Make sure to disable them again when you're done.
+    pub async fn enable_engine_graphics(&self, exec_state: &mut ExecState) -> Result<()> {
+        let source_range = Default::default();
+        self.engine
+            .send_modeling_cmd(
+                &self.engine_batch,
+                exec_state.next_uuid(),
+                source_range,
+                &ModelingCmd::ToggleGraphics(kcmc::ToggleGraphics::enabled(true)),
+            )
+            .await
+            .map(|_| ())?;
+
+        Ok(())
+    }
+
+    pub async fn enable_engine_graphics_settings(&self, exec_state: &mut ExecState) -> Result<()> {
+        let source_range = Default::default();
+        let grid_scale_unit = if self.settings.fixed_size_grid {
+            GridScaleBehavior::Fixed(Some(exec_state.length_unit()))
+        } else {
+            GridScaleBehavior::ScaleWithZoom
+        };
+        self.engine
+            .apply_graphics_settings(
+                &self.engine_batch,
+                &self.settings,
+                source_range,
+                exec_state.id_generator(),
+                grid_scale_unit,
+            )
+            .await?;
+        Ok(())
+    }
+
+    pub async fn disable_engine_graphics(&self, exec_state: &mut ExecState) -> Result<()> {
+        let source_range = Default::default();
+        self.engine
+            .send_modeling_cmd(
+                &self.engine_batch,
+                exec_state.next_uuid(),
+                source_range,
+                &ModelingCmd::ToggleGraphics(kcmc::ToggleGraphics::enabled(false)),
+            )
+            .await
+            .map(|_| ())?;
+        Ok(())
+    }
+
     /// Open an engine session for the entrypoint's resolved `Program::language_version()`.
     /// The version is fixed for the lifetime of this connection.
     #[cfg(not(target_arch = "wasm32"))]
@@ -1243,6 +1292,7 @@ impl ExecutorContext {
                     KclVersion::V2 => kittycad::types::KclVersion::Two0,
                     KclVersion::V3Preview => kittycad::types::KclVersion::Three0Preview,
                     KclVersion::V3 => kittycad::types::KclVersion::Three0,
+                    KclVersion::V4Preview => kittycad::types::KclVersion::Four0Preview,
                 }),
             })
             .await?;
@@ -1441,14 +1491,12 @@ impl ExecutorContext {
         exec_state.global.root_module_artifacts.clear();
         exec_state.global.artifacts.clear();
 
-        let modeling_kcl_version = kcl_version.map(kcl_version_to_modeling_cmd);
-
         self.engine
             .clear_scene(
                 &self.engine_batch,
                 &mut exec_state.mod_local.id_generator,
                 source_range,
-                modeling_kcl_version,
+                kcl_version,
                 self.settings.geometry_only,
             )
             .await?;

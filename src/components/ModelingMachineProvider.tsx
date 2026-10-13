@@ -13,6 +13,7 @@ import type { Actor, ContextFrom, Prop, StateFrom } from 'xstate'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import { modelingStdLibCommandSummary } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { Project } from '@src/lib/project'
 import { modelingMachine } from '@src/machines/modelingMachine'
 import { useFolders } from '@src/machines/systemIO/hooks'
@@ -349,6 +350,7 @@ export const ModelingMachineProvider = ({
     send: modelingSend,
     actor: modelingActor,
     commandBarConfig,
+    getDefaultDescription: modelingStdLibCommandSummary,
     scopes: MODELING_COMMAND_SCOPES,
     isExecuting: kclManager.isExecutingSignal.value,
     // TODO for when sketch tools are in the toolbar: This was added when we used one "Cancel" event,

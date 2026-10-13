@@ -95,9 +95,13 @@ import type { HTMLProps } from 'react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import {
+  // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: home navigation, library selection, and query-based sorting (useLocation).
   useLocation,
+  // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: home navigation, library selection, and query-based sorting (useNavigate).
   useNavigate,
+  // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: home navigation, library selection, and query-based sorting (useParams).
   useParams,
+  // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: home navigation, library selection, and query-based sorting (useSearchParams).
   useSearchParams,
 } from 'react-router-dom'
 

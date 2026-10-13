@@ -35,6 +35,7 @@ import {
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import { useEffect } from 'react'
 import toast from 'react-hot-toast'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: query-driven imports, project creation, and command dispatch (useNavigate, useSearchParams).
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { waitFor } from 'xstate'
 

@@ -3,7 +3,9 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { useCallback, useEffect, useState } from 'react'
 import {
   type NavigateFunction,
+  // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: onboarding navigation and route-based completion checks (useLocation).
   type useLocation,
+  // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: onboarding navigation and route-based completion checks (useNavigate).
   useNavigate,
 } from 'react-router-dom'
 import { type ActorRefFrom, type SnapshotFrom, waitFor } from 'xstate'
