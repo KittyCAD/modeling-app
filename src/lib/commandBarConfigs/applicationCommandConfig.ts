@@ -1,6 +1,8 @@
 import env from '@src/env'
+import { newKclFile } from '@src/lang/project'
 import type { App } from '@src/lib/app'
 import type { Command } from '@src/lib/commandTypes'
+import { MAX_PROJECT_NAME_LENGTH, PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import {
   writeEnvironmentConfigurationKittycadWebSocketUrl,
   writeEnvironmentConfigurationZookeeperWebSocketUrl,
@@ -24,7 +26,9 @@ import {
   safeEncodeForRouterPaths,
 } from '@src/lib/paths'
 import { getProjectDirectoryOptions } from '@src/lib/projectDisplayName'
-import { reportRejection, trap } from '@src/lib/trap'
+import type { ProjectLibraryInitialProject } from '@src/lib/projectLibraries'
+import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
+import { isErr, reportRejection, trap } from '@src/lib/trap'
 import { isArray, returnSelfOrGetHostNameFromURL } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
@@ -128,6 +132,46 @@ export function createApplicationCommands({
   const defaultCreateProjectLibraryId = () =>
     createProjectLibraryOptions()[0]?.value ?? ''
 
+  const createImportedProject = async (
+    data: { newProjectName: string; libraryId?: string },
+    initialProject: ProjectLibraryInitialProject
+  ) => {
+    const targets = createProjectLibraryTargets()
+    const target = data.libraryId
+      ? targets.find(({ library }) => library.id === data.libraryId)
+      : targets[0]
+    if (!target) {
+      return Promise.reject(
+        new Error('Add a writable project library before importing a project.')
+      )
+    }
+    const requestedProjectTitle = data.newProjectName.trim()
+    const requestedProjectName = getProjectDirectoryNameFromTitle(
+      requestedProjectTitle,
+      app.systemIOActor.getSnapshot().context.defaultProjectFolderName
+    )
+    if (
+      !requestedProjectTitle ||
+      requestedProjectName.length > MAX_PROJECT_NAME_LENGTH
+    ) {
+      return Promise.reject(new Error('Enter a valid project title.'))
+    }
+    const project = await target.createProject.run({
+      library: target.library,
+      requestedProjectName,
+      requestedProjectTitle,
+      initialProject,
+    })
+    if (!project?.default_file) {
+      return Promise.reject(new Error('Unable to create the imported project.'))
+    }
+    await app.registry
+      .get(routerService)
+      .navigate(
+        `${PATHS.FILE}/${safeEncodeForRouterPaths(project.default_file)}`
+      )
+  }
+
   const addKCLFileToProject: Command = {
     scopes: GLOBAL_COMMAND_SCOPES,
     name: 'add-kcl-file-to-project',
@@ -146,17 +190,28 @@ export function createApplicationCommands({
          * KCL samples
          */
         const error = "The command couldn't be submitted, check the arguments."
-        const folders = app.systemIOActor.getSnapshot().context.folders
-        const isProjectNew = !!data.newProjectName
-        const requestedProjectName = data.newProjectName || data.projectName
-        const uniqueNameIfNeeded = isProjectNew
-          ? getUniqueProjectName(requestedProjectName, folders ?? [])
-          : requestedProjectName
+        const isProjectNew = data.method === 'newProject'
+        const uniqueNameIfNeeded = data.projectName
 
         if (data.source === 'kcl-samples') {
           const kclSample = findKclSample(data.sample)
           if (!kclSample || kclSample.files.length === 0) {
             toast.error("Couldn't find KCL sample.")
+          } else if (isProjectNew) {
+            try {
+              const { initialProject } = await downloadKclSample(data.sample, {
+                assetUrlPrefix: isDesktop() ? '.' : '',
+              })
+              await createImportedProject(
+                {
+                  newProjectName: String(data.newProjectName ?? ''),
+                  libraryId: data.libraryId,
+                },
+                initialProject
+              )
+            } catch (cause) {
+              trap(new Error('Unable to import the sample project.', { cause }))
+            }
           } else {
             onSubmitKCLSampleCreation({
               sample: data.sample,
@@ -191,7 +246,45 @@ export function createApplicationCommands({
               selectedFile instanceof File
                 ? new Uint8Array(await selectedFile.arrayBuffer())
                 : await fileOperations.readFile(selectedFile)
-            if (isKCL) {
+            if (isProjectNew) {
+              const code = newKclFile(
+                isKCL ? new TextDecoder().decode(content) : undefined,
+                app.settings.actor.getSnapshot().context.modeling.defaultUnit
+                  .current,
+                wasmInstance
+              )
+              if (isErr(code)) {
+                trap(code)
+                return
+              }
+              await createImportedProject(
+                {
+                  newProjectName: String(data.newProjectName ?? ''),
+                  libraryId: data.libraryId,
+                },
+                {
+                  entrypointFilePath: isKCL
+                    ? fileNameWithExtension
+                    : PROJECT_ENTRYPOINT,
+                  files: [
+                    {
+                      requestedFileName: isKCL
+                        ? fileNameWithExtension
+                        : PROJECT_ENTRYPOINT,
+                      requestedData: new TextEncoder().encode(code),
+                    },
+                    ...(!isKCL
+                      ? [
+                          {
+                            requestedFileName: fileNameWithExtension,
+                            requestedData: new Uint8Array(content),
+                          },
+                        ]
+                      : []),
+                  ],
+                }
+              )
+            } else if (isKCL) {
               app.systemIOActor.send({
                 type: SystemIOMachineEvents.importFileFromURL,
                 data: {
@@ -272,13 +365,10 @@ export function createApplicationCommands({
         inputType: 'options',
         required: true,
         skip: true,
-        defaultValue: window.electron ? undefined : 'existingProject',
-        options: window.electron
-          ? [
-              { name: 'New project', value: 'newProject', isCurrent: true },
-              { name: 'Existing project', value: 'existingProject' },
-            ]
-          : [{ name: 'Existing project', value: 'existingProject' }],
+        options: [
+          { name: 'New project', value: 'newProject', isCurrent: true },
+          { name: 'Existing project', value: 'existingProject' },
+        ],
         valueSummary(value) {
           return value === 'newProject' ? 'New project' : 'Existing project'
         },
@@ -299,6 +389,26 @@ export function createApplicationCommands({
         required: (commandsContext) =>
           commandsContext.argumentsToSubmit.method === 'newProject',
         skip: true,
+      },
+      libraryId: {
+        displayName: 'Library',
+        required: (context) =>
+          context.argumentsToSubmit.method === 'newProject' &&
+          createProjectLibraryOptions().length > 1,
+        prepopulate: true,
+        hidden: (context) =>
+          context.argumentsToSubmit.method !== 'newProject' ||
+          createProjectLibraryOptions().length <= 1,
+        inputType: 'options',
+        options: createProjectLibraryOptions,
+        defaultValue: defaultCreateProjectLibraryId,
+        valueSummary(value) {
+          return (
+            createProjectLibraryOptions().find(
+              (option) => option.value === value
+            )?.name ?? 'Library'
+          )
+        },
       },
       files: {
         inputType: 'path',
