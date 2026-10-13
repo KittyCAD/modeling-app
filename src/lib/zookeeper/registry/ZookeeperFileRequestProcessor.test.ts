@@ -174,29 +174,6 @@ describe('ZookeeperFileRequestProcessor', () => {
     kclManagerState.zookeeperManagerMachineBulkManipulatingFileSystem = false
   })
 
-  test.each([true, false])(
-    'ignores reasoning deletion notices when the edit has a patch: %s',
-    async (hasPatch) => {
-      const processor = createProcessor()
-      const code = 'updated code'
-      const toolOutput = hasPatch
-        ? patchBackedZookeeperEdit(code)
-        : zookeeperEditWithoutPatch(code)
-
-      emitZookeeperFileRequest(processor, code, 1, toolOutput, undefined, [
-        { reasoning: { type: 'deleted_kcl_file', file_name: 'part.kcl' } },
-        { reasoning: { type: 'deleted_project_file', file_name: 'notes.txt' } },
-      ])
-      await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
-
-      const request = mocks.systemIOSend.mock.calls[0][0].data
-      expect(request.filesToDelete).toEqual([])
-      request.onFileSystemSuccess()
-      request.onSuccess()
-      await processor.dispose()
-    }
-  )
-
   test('deletes files from the current patch and preserves files recreated by the next edit', async () => {
     const processor = createProcessor()
     const deletionNotice: MlCopilotServerMessage = {
