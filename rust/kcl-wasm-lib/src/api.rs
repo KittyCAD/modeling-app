@@ -250,12 +250,12 @@ impl Context {
         let args: kcl_lib::front::SketchCtor =
             serde_json::from_str(args_json).map_err(|e| format!("Could not deserialize SketchCtor: {e}"))?;
 
-        let ctx = self
-            .create_executor_ctx(settings, None, false)
-            .map_err(|e| format!("Could not create KCL executor context for new sketch. {TRUE_BUG} Details: {e}"))?;
-
         let frontend = Arc::clone(&self.frontend);
         let mut guard = frontend.write().await;
+        let initialize_locally = guard.can_create_sketch_locally(&args).await;
+        let ctx = self
+            .create_executor_ctx(settings, None, initialize_locally)
+            .map_err(|e| format!("Could not create KCL executor context for new sketch. {TRUE_BUG} Details: {e}"))?;
         let (source_delta, scene_graph_delta, sketch_id) = guard
             .new_sketch(&ctx, project, file, version, args)
             .await

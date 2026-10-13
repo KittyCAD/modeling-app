@@ -690,6 +690,9 @@ pub(crate) fn render_sketch_png_from_scene_objects(
 #[derive(Debug, Clone, PartialEq)]
 pub struct MockConfig {
     pub use_prev_memory: bool,
+    /// Initialize a new sketch locally, evaluating its arguments and preserving
+    /// the complete cached scene prefix rather than an existing sketch's prefix.
+    pub initialize_sketch: bool,
     /// The `ObjectId` of the sketch block to execute for sketch mode. Only the
     /// specified sketch block will be executed. All other code is ignored.
     pub sketch_block_id: Option<ObjectId>,
@@ -715,6 +718,7 @@ impl Default for MockConfig {
         Self {
             // By default, use previous memory. This is usually what you want.
             use_prev_memory: true,
+            initialize_sketch: false,
             sketch_block_id: None,
             freedom_analysis: true,
             segment_ids_edited: AhashIndexSet::default(),
@@ -1556,10 +1560,14 @@ impl ExecutorContext {
         exec_state.global.never_type_ranges = mem.never_type_ranges;
         exec_state.global.std_not_yet_added = mem.std_not_yet_added;
         exec_state.mod_local.constraint_state = mem.constraint_state;
-        let len = _mock_config
-            .sketch_block_id
-            .map(|sketch_block_id| sketch_block_id.0)
-            .unwrap_or(0);
+        let len = if _mock_config.initialize_sketch {
+            mem.scene_objects.len()
+        } else {
+            _mock_config
+                .sketch_block_id
+                .map(|sketch_block_id| sketch_block_id.0)
+                .unwrap_or(0)
+        };
         if let Some(scene_objects) = mem.scene_objects.get(0..len) {
             exec_state
                 .global

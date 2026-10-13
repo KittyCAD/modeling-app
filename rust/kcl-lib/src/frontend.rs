@@ -794,12 +794,24 @@ impl SketchApi for FrontendState {
             "No AST produced after adding sketch",
         )?;
 
-        // Make sure to only set this if there are no errors.
-        self.program = new_program.clone();
-
-        // We need to do an engine execute so that the plane object gets created
-        // and is cached.
-        let outcome = ctx.run_with_caching(new_program.clone()).await?;
+        let outcome = if ctx.is_mock() {
+            // Only the new declaration runs. Existing model values and object
+            // IDs come from the synchronized cache; the engine catches up on exit.
+            let mut creation_program = new_program.clone();
+            creation_program.ast.body = creation_program.ast.body.last().cloned().into_iter().collect();
+            ctx.run_mock(
+                &creation_program,
+                &MockConfig {
+                    initialize_sketch: true,
+                    use_prev_memory: !self.program.ast.body.is_empty(),
+                    ..Default::default()
+                },
+            )
+            .await?
+        } else {
+            ctx.run_with_caching(new_program.clone()).await?
+        };
+        self.program = new_program;
         let freedom_analysis_ran = true;
 
         let outcome = self.update_state_after_exec(outcome, freedom_analysis_ran);
@@ -1961,6 +1973,14 @@ impl SketchApi for FrontendState {
 }
 
 impl FrontendState {
+    /// Only default planes can be created before engine materialization. A
+    /// nonempty program must have synchronized, successful execution memory.
+    pub async fn can_create_sketch_locally(&self, args: &SketchCtor) -> bool {
+        matches!(&args.on, Plane::Default(_))
+            && (self.program.ast.body.is_empty()
+                || crate::execution::cache::has_cached_sketch_memory(&self.program.ast).await)
+    }
+
     /// Evaluate an input expression using the current model's settings and cached variables.
     pub async fn evaluate_expression(&self, ctx: &ExecutorContext, mut program: Program) -> ExecResult<ExecOutcome> {
         program.ast.inner_attrs.clone_from(&self.program.ast.inner_attrs);
@@ -14721,6 +14741,114 @@ plane = planeOf(cube, face = side)
         assert_eq!(plane_object.id, plane_id);
         assert_eq!(plane_object.kind, ObjectKind::Plane(Plane::Object(plane_id)));
 
+        ctx.close().await;
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_new_sketch_local_supports_drawing_and_constraints() {
+        clear_mem_cache().await;
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let mut frontend = FrontendState::new();
+        frontend.program = Program::parse_no_errs("@settings(kclVersion = 3.0)").unwrap();
+        let version = Version(0);
+
+        for plane in [PlaneName::Xy, PlaneName::Xz, PlaneName::Yz] {
+            let prior_objects = frontend.scene_graph.objects.clone();
+            let (_, scene, sketch_id) = frontend
+                .new_sketch(
+                    &mock_ctx,
+                    ProjectId(0),
+                    FileId(0),
+                    version,
+                    SketchCtor {
+                        on: Plane::Default(plane),
+                    },
+                )
+                .await
+                .unwrap();
+            assert_eq!(&scene.new_graph.objects[..prior_objects.len()], &prior_objects);
+            assert_eq!(scene.new_graph.sketch_mode, Some(sketch_id));
+
+            let (_, scene) = frontend
+                .add_segment(
+                    &mock_ctx,
+                    version,
+                    sketch_id,
+                    SegmentCtor::Line(make_line_ctor(0.0, 0.0, 10.0, 1.0, NumericSuffix::Mm)),
+                    None,
+                )
+                .await
+                .unwrap();
+            let line_id = *scene.new_objects.last().unwrap();
+            let (source, scene) = frontend
+                .add_constraint(
+                    &mock_ctx,
+                    version,
+                    sketch_id,
+                    Constraint::Horizontal(Horizontal::Line { line: line_id }),
+                )
+                .await
+                .unwrap();
+            assert!(source.text.contains("horizontal(line1)"));
+            let ObjectKind::Sketch(sketch) = &scene.new_graph.objects[sketch_id.0].kind else {
+                panic!("Expected locally created sketch");
+            };
+            assert!(sketch.segments.contains(&line_id));
+            assert_eq!(sketch.constraints.len(), 1);
+        }
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_new_sketch_local_materializes_on_exit() {
+        clear_mem_cache().await;
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let mut frontend = FrontendState::new();
+        let program = Program::parse_no_errs("@settings(kclVersion = 3.0)\nexisting = sketch(on = XY) {}\n").unwrap();
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let args = SketchCtor {
+            on: Plane::Default(PlaneName::Yz),
+        };
+        assert!(frontend.can_create_sketch_locally(&args).await);
+        let saved_memory = read_old_memory().await.unwrap();
+        let mut incomplete_memory = saved_memory.clone();
+        incomplete_memory.scene_objects.clear();
+        write_old_memory(incomplete_memory).await;
+        assert!(!frontend.can_create_sketch_locally(&args).await);
+        write_old_memory(saved_memory).await;
+        assert!(
+            !frontend
+                .can_create_sketch_locally(&SketchCtor {
+                    on: Plane::Object(ObjectId(0))
+                })
+                .await
+        );
+        let version = Version(0);
+        let (_, _, sketch_id) = frontend
+            .new_sketch(&mock_ctx, ProjectId(0), FileId(0), version, args.clone())
+            .await
+            .unwrap();
+        let (_, scene) = frontend
+            .add_segment(
+                &mock_ctx,
+                version,
+                sketch_id,
+                SegmentCtor::Line(make_line_ctor(0.0, 0.0, 10.0, 0.0, NumericSuffix::Mm)),
+                None,
+            )
+            .await
+            .unwrap();
+        let line_id = *scene.new_objects.last().unwrap();
+        assert!(!frontend.can_create_sketch_locally(&args).await);
+        let scene = frontend.exit_sketch(&ctx, version, sketch_id).await.unwrap();
+        assert!(scene.sketch_mode.is_none());
+        let ObjectKind::Sketch(sketch) = &scene.objects[sketch_id.0].kind else {
+            panic!("Expected materialized sketch with the same local ID");
+        };
+        assert!(sketch.segments.contains(&line_id));
+        assert!(frontend.can_create_sketch_locally(&args).await);
         ctx.close().await;
         mock_ctx.close().await;
     }

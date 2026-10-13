@@ -48,6 +48,22 @@ pub(super) async fn read_old_ast() -> Option<GlobalState> {
     old_ast.clone()
 }
 
+/// Whether the frontend program and local scene match the last engine execution.
+pub(crate) async fn has_cached_sketch_memory(program: &Node<Program>) -> bool {
+    let cached = OLD_AST.read().await;
+    let Some(state) = cached.as_ref() else {
+        return false;
+    };
+    if state.main.ast.recast_top(&Default::default(), 0) != program.recast_top(&Default::default(), 0) {
+        return false;
+    }
+    let memory = PREV_MEMORY.read().await;
+    memory.as_ref().is_some_and(|memory| {
+        memory.kcl_version == state.kcl_version
+            && memory.scene_objects == state.exec_state.root_module_artifacts.scene_objects
+    })
+}
+
 pub(super) async fn write_old_ast(old_state: GlobalState) {
     let mut old_ast = OLD_AST.write().await;
     *old_ast = Some(old_state);
