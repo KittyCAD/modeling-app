@@ -8,6 +8,7 @@ import {
   exists as existsOperation,
   FileOperations,
   fileOperationsLayer,
+  lstat as lstatOperation,
   move as moveOperation,
   pendingFileOperations,
   readDirectory as readDirectoryOperation,
@@ -79,8 +80,8 @@ export function createFileOperationsRuntime(
         )
       ),
     pending: () => runRuntimePromise(pendingFileOperations),
-    stat: (path, options) =>
-      runFileOperationsPromise('stat', statOperation(path, options)),
+    stat: (path) => runFileOperationsPromise('stat', statOperation(path)),
+    lstat: (path) => runFileOperationsPromise('lstat', lstatOperation(path)),
     canReadWrite: (path) =>
       runFileOperationsPromise('access', canReadWriteOperation(path)),
     exists: (path) => runFileOperationsPromise('exists', existsOperation(path)),

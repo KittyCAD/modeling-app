@@ -1,4 +1,3 @@
-import type { StatOptions } from '@src/lib/fs-zds/interface'
 import { defineContract, defineService } from '@kittycad/registry'
 import type { FileNameParts } from '@src/lib/fileSystem/fileNames'
 import type {
@@ -17,7 +16,9 @@ export interface FileOperationsRegistryService {
   ) => Promise<A>
   readonly pending: () => Promise<number>
   /** Observe one path while coordinated mutations of it are excluded. */
-  readonly stat: (path: string, options?: StatOptions) => Promise<FileStat>
+  readonly stat: (path: string) => Promise<FileStat>
+  /** Observe a path itself without following a symbolic link. */
+  readonly lstat: (path: string) => Promise<FileStat>
   /** Check whether the current platform grant allows reading and writing. */
   readonly canReadWrite: (path: string) => Promise<boolean>
   /**

@@ -1133,6 +1133,7 @@ const slowFsMethodNames = [
   'rename',
   'rm',
   'stat',
+  'lstat',
   'writeFile',
 ] as const
 

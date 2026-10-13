@@ -177,10 +177,31 @@ describe('project migration', () => {
     expect(new TextDecoder().decode(files.get('Main.kcl'))).toBe('upper = 1\n')
   })
 
-  it('rejects linked files and directories rather than uploading files outside the project', async () => {
-    await symlink(fixture.root, path.join(fixture.root, 'linked-project'))
-    await expect(fixture.project.capture()).rejects.toThrow('symbolic links')
-  })
+  it.each(['main.kcl', 'parts', 'missing.kcl'])(
+    'inspects links without following them and rejects migration snapshots containing them (%s)',
+    async (target) => {
+      const link = path.join(fixture.root, 'linked-project')
+      await symlink(path.join(fixture.root, target), link)
+      expect(await fixture.runtime.operations.lstat(link)).toMatchObject({
+        symbolicLink: true,
+      })
+      if (target !== 'missing.kcl') {
+        expect(
+          (await fixture.runtime.operations.stat(link)).symbolicLink
+        ).toBeUndefined()
+      }
+      await fixture.runtime.operations.withDirectoryLock(
+        fixture.root,
+        async (files) => {
+          expect(await files.lstat(link)).toMatchObject({ symbolicLink: true })
+        }
+      )
+      await expect(fixture.project.capture()).rejects.toThrow('symbolic links')
+      await expect(
+        readProjectFiles(fixture.runtime.operations, path, link)
+      ).rejects.toThrow('Open the original project directory')
+    }
+  )
 
   it('requests stable KCL 3.0 without preview opt-in, authenticates and applies only after a validated result', async () => {
     await startRunning()

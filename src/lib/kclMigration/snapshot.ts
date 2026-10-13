@@ -7,7 +7,7 @@ import type { FileOperationsRegistryService } from '@src/registry/contracts/file
 export type ProjectFiles = Map<string, Uint8Array>
 export type SnapshotIO = Pick<
   FileOperationsRegistryService,
-  'readDirectory' | 'readFile' | 'stat'
+  'readDirectory' | 'readFile' | 'lstat'
 >
 export type ProjectPaths = Pick<IZooDesignStudioFS, 'join' | 'relative'>
 
@@ -45,7 +45,7 @@ export async function readProjectFiles(
   paths: ProjectPaths,
   root: string
 ): Promise<ProjectFiles> {
-  if ((await io.stat(root, { followSymlinks: false })).symbolicLink) {
+  if ((await io.lstat(root)).symbolicLink) {
     return Promise.reject(
       new Error(
         'Migration does not support symbolic links. Open the original project directory.'
@@ -65,7 +65,7 @@ export async function readProjectFiles(
           new Error(`Unsupported project path: ${relative}`)
         )
       }
-      const stat = await io.stat(absolute, { followSymlinks: false })
+      const stat = await io.lstat(absolute)
       if (stat.symbolicLink) {
         return Promise.reject(
           new Error(`Migration does not support symbolic links: ${relative}`)
