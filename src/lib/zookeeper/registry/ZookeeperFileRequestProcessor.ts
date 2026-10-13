@@ -164,6 +164,7 @@ export class ZookeeperFileRequestProcessor {
 
   /** Queues an edit whose orderedId was assigned when it was received. */
   enqueue(request: ZookeeperNewFileRequest, onApplied: () => void) {
+    // Re-ordering of the queue happens at the end of this function
     if (this.disposed) {
       return
     }
