@@ -268,9 +268,9 @@ export class LocalRenderer {
   }
 
   /**
-   * The artifact graph cannot describe every entity, for example an edge
-   * between two faces of a sweep. The engine can, so it is asked once per
-   * entity and the answer is cached.
+   * The engine's reference is the complete one: it can describe an edge
+   * between two faces of a sweep, and it adds a face's parent body and index.
+   * So the engine is asked once per entity and the answer is cached.
    * Only click asks for this, hover doesn't need it (we just higlight the edge by its id).
    */
   private async getEngineEntityReference(entityId: string) {
@@ -342,27 +342,6 @@ export class LocalRenderer {
     async (command, { streamDimensions }) => {
       if (command.type !== 'modeling_cmd_req') return null
       const { cmd } = command
-      if (cmd.type === 'query_entity_type') {
-        const reference = this.getLocalEntityReference(cmd.entity_id)
-        if (!reference) return null
-        const response = {
-          type: 'query_entity_type',
-          data: { reference },
-        } satisfies Extract<
-          OkModelingCmdResponse,
-          { type: 'query_entity_type' }
-        >
-        return {
-          websocketResponse: {
-            success: true,
-            request_id: command.cmd_id,
-            resp: {
-              type: 'modeling',
-              data: { modeling_response: response },
-            },
-          },
-        }
-      }
       if (
         cmd.type !== 'highlight_set_entity' &&
         cmd.type !== 'select_with_point' &&
@@ -425,8 +404,8 @@ export class LocalRenderer {
       }
       const reference =
         entityId && cmd.type === 'query_entity_type_with_point'
-          ? (this.getLocalEntityReference(entityId) ??
-            (await this.getEngineEntityReference(entityId)))
+          ? ((await this.getEngineEntityReference(entityId)) ??
+            this.getLocalEntityReference(entityId))
           : undefined
       if (generation !== this.modelLoadGeneration) return {}
       const response: OkModelingCmdResponse =

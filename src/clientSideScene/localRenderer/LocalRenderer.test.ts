@@ -218,25 +218,6 @@ describe('local GLB loading', () => {
         success: true,
         request_id: 'pick-request',
       })
-      const hoverReference = await f.state.handleLocalSelectionCommand(
-        {
-          type: 'modeling_cmd_req',
-          cmd_id: 'hover-reference',
-          cmd: { type: 'query_entity_type', entity_id: id },
-        },
-        { streamDimensions: { width: 800, height: 600 } }
-      )
-      expect(hoverReference?.websocketResponse).toMatchObject({
-        success: true,
-        resp: {
-          data: {
-            modeling_response: {
-              type: 'query_entity_type',
-              data: { reference: { type: 'plane', plane_id: id } },
-            },
-          },
-        },
-      })
       const engineSelects = (entity_ids: string[]) =>
         f.manager.engineCommandManager.sendSceneCommand.mockResolvedValue({
           resp: {
