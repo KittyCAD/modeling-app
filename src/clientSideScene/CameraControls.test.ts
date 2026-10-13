@@ -1,8 +1,17 @@
-import { CameraControls } from '@src/clientSideScene/CameraControls'
+import {
+  CameraControls,
+  letEngineAnimateAndSyncCamAfter,
+} from '@src/clientSideScene/CameraControls'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { getDimensions } from '@src/lib/engineConnection/utils'
-import { OrthographicCamera, PerspectiveCamera } from 'three'
+import {
+  OrthographicCamera,
+  PerspectiveCamera,
+  Quaternion,
+  Vector3,
+} from 'three'
 import { describe, expect, it, vi } from 'vitest'
+import * as TWEEN from '@tweenjs/tween.js'
 
 function makeCanvas(width: number, height: number) {
   const canvas = document.createElement('canvas')
@@ -143,3 +152,94 @@ describe('reconnect camera capture', () => {
     })
   })
 })
+
+describe('sketch camera readiness', () => {
+  it('finishes an already aligned camera without a safety timer', async () => {
+    const manager = makeConnectionManager({ width: 256, height: 256 })
+    const controls = new CameraControls(
+      makeCanvas(256, 256),
+      manager,
+      unusedSettings
+    )
+    const animate = vi.spyOn(controls, 'tweenCameraToQuaternion')
+    const send = vi.spyOn(manager, 'sendSceneCommand')
+    await letEngineAnimateAndSyncCamAfter(manager, 'plane-id', {
+      camControls: controls,
+      isAnimating: false,
+      animate: vi.fn(),
+      stop: vi.fn(),
+    })
+    expect(animate).not.toHaveBeenCalled()
+    expect(send).toHaveBeenCalledWith(
+      expect.objectContaining({
+        cmd: expect.objectContaining({
+          type: 'enable_sketch_mode',
+          animated: false,
+        }),
+      })
+    )
+    expect(controls.syncDirection).toBe('clientToEngine')
+  })
+})
+
+it.each([false, true])(
+  'completes a sketch camera turn with animation frames (existing loop: %s)',
+  async (existingLoop) => {
+    vi.useFakeTimers({
+      toFake: ['performance', 'requestAnimationFrame', 'cancelAnimationFrame'],
+    })
+    const manager = makeConnectionManager({ width: 256, height: 256 })
+    const controls = new CameraControls(
+      makeCanvas(256, 256),
+      manager,
+      unusedSettings
+    )
+    controls.camera.position.set(5, -5, 5)
+    const target = new Quaternion().setFromAxisAngle(
+      new Vector3(1, 0, 0),
+      Math.PI / 2
+    )
+    vi.spyOn(manager, 'sendSceneCommand').mockImplementation(
+      async (command) => {
+        if (
+          command.type === 'modeling_cmd_req' &&
+          command.cmd.type === 'default_camera_get_settings'
+        ) {
+          controls.camera.quaternion.copy(target)
+        }
+        return null
+      }
+    )
+    let frame = -1
+    const update = () => {
+      TWEEN.update()
+      frame = requestAnimationFrame(update)
+    }
+    const stop = vi.fn(() => cancelAnimationFrame(frame))
+    if (existingLoop) update()
+    try {
+      const completed = vi.fn()
+      const ready = letEngineAnimateAndSyncCamAfter(manager, 'plane-id', {
+        camControls: controls,
+        isAnimating: existingLoop,
+        animate: update,
+        stop,
+      }).then(completed)
+      await vi.advanceTimersByTimeAsync(100)
+      expect(completed).not.toHaveBeenCalled()
+      expect(controls.camera.quaternion.angleTo(target)).toBeGreaterThan(0)
+      expect(controls.camera.quaternion.angleTo(target)).toBeLessThan(
+        Math.PI / 2
+      )
+      await vi.advanceTimersByTimeAsync(450)
+      await ready
+      expect(controls.camera.quaternion.angleTo(target)).toBeLessThan(1e-6)
+      expect(completed).toHaveBeenCalledOnce()
+      expect(stop).toHaveBeenCalledTimes(existingLoop ? 0 : 1)
+    } finally {
+      cancelAnimationFrame(frame)
+      TWEEN.removeAll()
+      vi.useRealTimers()
+    }
+  }
+)

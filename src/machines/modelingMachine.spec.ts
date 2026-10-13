@@ -1,3 +1,10 @@
+import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
+import type {
+  DefaultPlane,
+  ExtrudeFacePlane,
+  OffsetPlane,
+} from '@src/machines/modelingSharedTypes'
+import { createSettings } from '@src/lib/settings/initialSettings'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 import {
@@ -19,6 +26,7 @@ import {
   type Artifact,
   type ArtifactGraph,
   assertParse,
+  emptyExecState,
   type CallExpressionKw,
   recast,
 } from '@src/lang/wasm'
@@ -1871,6 +1879,67 @@ sketch001 = sketch(on = YZ) {
 
         actor.stop()
       })
+    })
+
+    it('finalizes a solved sketch once and reuses the engine outcome', async () => {
+      const world = await buildTheWorldAndNoEngineConnection()
+      const { kclManager, rustContext, engineCommandManager } = world
+      const finalize = vi
+        .spyOn(rustContext, 'exitSketch')
+        .mockResolvedValue(dummyInitSketchGraphDelta)
+      engineCommandManager.started = true
+      const execute = vi
+        .spyOn(rustContext, 'execute')
+        .mockResolvedValue(emptyExecState())
+      const generationBefore = kclManager.engineSceneGenerationSignal.value
+      vi.spyOn(kclManager.sceneInfra, 'stop').mockImplementation(() => {})
+      vi.spyOn(engineCommandManager, 'sendSceneCommand').mockResolvedValue(null)
+      const context = generateModelingMachineDefaultContext({
+        kclManager,
+        rustContext,
+        wasmInstance: world.instance,
+        engineCommandManager,
+        commandBarActor: world.commandBarActor,
+        machineManager: world.machineManager,
+      })
+      const settings = createSettings()
+      context.store.useSketchSolveMode = settings.modeling.useSketchSolveMode
+      context.store.defaultUnit = settings.modeling.defaultUnit
+      const machine = modelingMachine.provide({
+        actors: {
+          'animate-to-sketch-solve': fromPromise(
+            async (): Promise<{
+              plane: DefaultPlane | ExtrudeFacePlane | OffsetPlane
+              sketchSolveId: number
+              initialSceneGraphDelta: SceneGraphDelta
+            }> => ({
+              plane: {
+                type: 'defaultPlane',
+                plane: 'XY',
+                planeId: 'test-plane-id',
+                zAxis: [0, 0, 1],
+                yAxis: [0, 1, 0],
+              },
+              sketchSolveId: 7,
+              initialSceneGraphDelta: dummyInitSketchGraphDelta,
+            })
+          ),
+        },
+      })
+      const actor = createActor(machine, { input: context }).start()
+      actor.send({ type: 'Enter sketch' })
+      actor.send({ type: 'Select sketch solve plane', data: 'test-plane-id' })
+      await waitForCondition(() =>
+        actor.getSnapshot().matches({ sketchSolveMode: 'active' })
+      )
+      actor.send({ type: 'Exit sketch' })
+      await waitForCondition(() => actor.getSnapshot().matches('idle'))
+      expect(finalize).toHaveBeenCalledExactlyOnceWith(0, 7)
+      expect(execute).not.toHaveBeenCalled()
+      expect(kclManager.engineSceneGenerationSignal.value).toBe(
+        generationBefore + 1
+      )
+      actor.stop()
     })
 
     it('restores camera orbit controls when sketch exit errors', async () => {

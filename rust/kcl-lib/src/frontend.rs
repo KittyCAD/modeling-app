@@ -583,7 +583,7 @@ impl FrontendState {
     pub fn clear_sketch_checkpoints(&mut self) {
         self.sketch_checkpoints.clear();
     }
-    fn scene_graph_for_ui(&self) -> SceneGraph {
+    pub fn scene_graph_for_ui(&self) -> SceneGraph {
         let has_control_point_splines = self.scene_graph.objects.iter().any(|object| {
             matches!(
                 object.kind,
@@ -884,7 +884,7 @@ impl SketchApi for FrontendState {
         ctx: &ExecutorContext,
         _version: Version,
         sketch: ObjectId,
-    ) -> ExecResult<SceneGraph> {
+    ) -> ExecResult<SceneGraphDelta> {
         // TODO: Check version.
         #[cfg(not(target_arch = "wasm32"))]
         let _ = sketch;
@@ -904,9 +904,14 @@ impl SketchApi for FrontendState {
         let outcome = ctx.run_with_caching(self.program.clone()).await?;
 
         // exit_sketch doesn't run freedom analysis, just clears sketch_mode
-        self.update_state_after_exec(outcome, false);
+        let outcome = self.update_state_after_exec(outcome, false);
 
-        Ok(self.scene_graph_for_ui())
+        Ok(SceneGraphDelta::new(
+            self.scene_graph_for_ui(),
+            Vec::new(),
+            false,
+            outcome,
+        ))
     }
 
     async fn delete_sketch(
@@ -15050,7 +15055,8 @@ sketch2 = sketch(on = XY) {
         // - sketch on=XY cached
         // - Sketch block 5
         let scene = frontend.exit_sketch(&ctx, version, sketch1_id).await.unwrap();
-        assert_eq!(scene.objects.len(), 30, "{:#?}", scene.objects);
+        assert_eq!(scene.new_graph.objects.len(), 30, "{:#?}", scene.new_graph.objects);
+        assert!(scene.new_graph.sketch_mode.is_none());
 
         // Edit the second sketch.
         //

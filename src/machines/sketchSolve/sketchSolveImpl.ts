@@ -1667,12 +1667,7 @@ export function spawnTool(
 
 export const tearDownSketchSolve = fromPromise(
   async ({ input }: { input: { context: SketchSolveContext } }) => {
-    // Let the rust side know this sketch is being exited
-    await input.context.rustContext.exitSketch(
-      SKETCH_FILE_VERSION,
-      input.context.sketchId
-    )
-
+    // The parent finalizes the sketch after draft cleanup and camera handoff.
     // Only delete if draft entities exist
     const deleteDraftEntities = !input.context.draftEntities
       ? Promise.resolve(null)

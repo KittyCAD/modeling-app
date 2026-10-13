@@ -187,6 +187,7 @@ import { File } from '@src/lib/projectSession/file'
 
 interface ExecuteArgs {
   ast?: Node<Program>
+  sketchId?: number
   executionId?: number
 }
 
@@ -2160,6 +2161,7 @@ export class KclManager extends File {
         path: this.path,
         rustContext: this.rustContext,
         callbacks: this.createExecutionCallbacks(currentExecutionId),
+        sketchId: args.sketchId,
       })
 
       const livePathsToWatch = Object.values(execState.filenames)
@@ -2344,7 +2346,10 @@ export class KclManager extends File {
       this._cancelTokens.set(key, true)
     })
   }
-  async executeCode(newCode = this.codeSignal.value): Promise<void> {
+  async executeCode(
+    newCode = this.codeSignal.value,
+    sketchId?: number
+  ): Promise<void> {
     if (!this.engineCommandManager.started) {
       console.warn('`executeCode` called before engine connection started')
       return
@@ -2375,7 +2380,7 @@ export class KclManager extends File {
       this.dispatchEvent(new CustomEvent(KclManagerEvents.LongExecution, {}))
     }, this.longExecutionTimeMs)
 
-    await this.executeAst({ ast })
+    await this.executeAst({ ast, sketchId })
   }
 
   async format() {

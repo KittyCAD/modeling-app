@@ -15,6 +15,7 @@ import type {
   ExistingSegmentCtor,
   Number,
   SetProgramOutcome as RustSetProgramOutcome,
+  SceneGraph,
   SceneGraphDelta,
   SegmentCtor,
   SegmentDragAnchor,
@@ -313,6 +314,12 @@ export default class RustContext {
     }
   }
 
+  /** Read the synchronized scene without executing the program again. */
+  async getSceneGraph(): Promise<SceneGraph> {
+    const instance = await this._checkContextInstance()
+    return instance.get_scene_graph()
+  }
+
   /**
    * Temporary hack. Set the program AST used by the frontend layer of the API
    * and execute it with a real engine so that state is updated and ready for
@@ -471,6 +478,9 @@ export default class RustContext {
         JSON.stringify(version),
         JSON.stringify(sketch),
         JSON.stringify(getSettingsFromActorContext(this.settingsActor))
+      )
+      this.setDefaultPlanes(
+        execStateFromRust(result.exec_outcome).defaultPlanes
       )
       return result
     } catch (e: any) {

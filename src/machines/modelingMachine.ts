@@ -317,8 +317,11 @@ async function enterSketchSolveFromSketchBlockArtifact({
 
   const id =
     planeData.type === 'extrudeFace' ? planeData.faceId : planeData.planeId
-  await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
-  kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
+  await letEngineAnimateAndSyncCamAfter(
+    engineCommandManager,
+    id,
+    kclManager.sceneInfra
+  )
 
   const project = projectRef?.current
   if (!project) {
@@ -2161,7 +2164,9 @@ export const modelingMachine = setup({
   actors: {
     sketchSolveMachine,
     sketchExit: fromPromise(
-      async (args: { input: { context: ModelingMachineContext } }) => {
+      async (args: {
+        input: { context: ModelingMachineContext; sketchId?: number }
+      }) => {
         const context = args.input.context
         const { store, engineCommandManager, kclManager } = context
         try {
@@ -2180,12 +2185,20 @@ export const modelingMachine = setup({
 
           kclManager.sceneInfra.camControls.syncDirection = 'engineToClient'
 
+          await kclManager.flushPendingEditorExecution()
+          if (
+            args.input.sketchId !== undefined &&
+            kclManager.hasEditsSinceLastExecutionSignal.peek()
+          ) {
+            await kclManager.executeCode()
+            await kclManager.flushPendingEditorExecution()
+          }
           // TODO: Re-evaluate if this pause/play logic is needed.
           // TODO: Do I need this video element?
           store.videoElement?.pause()
 
           await kclManager
-            .executeCode()
+            .executeCode(undefined, args.input.sketchId)
             .then(() => {
               if (
                 !engineCommandManager.started &&
@@ -3121,8 +3134,11 @@ export const modelingMachine = setup({
           }
 
           const id = plane.type === 'extrudeFace' ? plane.faceId : plane.planeId
-          await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
-          kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
+          await letEngineAnimateAndSyncCamAfter(
+            engineCommandManager,
+            id,
+            kclManager.sceneInfra
+          )
           return {
             sketchEntryNodePath: [],
             planeNodePath: pathToNewSketchNode,
@@ -3144,7 +3160,8 @@ export const modelingMachine = setup({
 
         await letEngineAnimateAndSyncCamAfter(
           engineCommandManager,
-          plane.planeId
+          plane.planeId,
+          kclManager.sceneInfra
         )
 
         return {
@@ -3193,6 +3210,10 @@ export const modelingMachine = setup({
           projectRef,
         } = input
         await kclManager.flushPendingEditorExecution()
+        if (kclManager.hasEditsSinceLastExecutionSignal.peek()) {
+          await kclManager.executeCode()
+          await kclManager.flushPendingEditorExecution()
+        }
         if (kclManager.hasParseErrors()) {
           return reject(
             new Error('Unable to enter sketch while KCL has parse errors.')
@@ -3357,10 +3378,12 @@ export const modelingMachine = setup({
 
         // Construct SketchCtor based on the result
         let sketchArgs: SketchCtor
-        const setProgramOutcome = await rustContext.hackSetProgram(
-          kclManager.ast,
-          jsAppSettings(rustContext.settingsActor)
-        )
+        // Pending editor execution above has already synchronized the Rust program.
+        if (result.type !== 'defaultPlane' && kclManager.hasErrors()) {
+          return reject(
+            new Error('Could not update SceneGraph before creating sketch.')
+          )
+        }
         if (result.type === 'defaultPlane') {
           sketchArgs = {
             on: { default: toPlaneName(result.plane) },
@@ -3370,24 +3393,13 @@ export const modelingMachine = setup({
           result.faceInfo.type === 'primitiveFace' &&
           primitiveFace
         ) {
-          if (setProgramOutcome.type !== 'Success') {
-            return reject(
-              new Error('Could not update SceneGraph before creating sketch.')
-            )
-          }
-
           sketchArgs = {
             on: { primitiveFace },
           }
         } else {
-          if (setProgramOutcome.type !== 'Success') {
-            return reject(
-              new Error('Could not update SceneGraph before creating sketch.')
-            )
-          }
-
+          const sceneGraph = await rustContext.getSceneGraph()
           const selectedSceneObject = findSceneObjectForPlaneSelection(
-            setProgramOutcome.sceneGraph.objects,
+            sceneGraph.objects,
             result,
             kclManager.ast,
             wasmInstance
@@ -3436,9 +3448,11 @@ export const modelingMachine = setup({
 
         const id =
           result.type === 'extrudeFace' ? result.faceId : result.planeId
-        await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
-
-        kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
+        await letEngineAnimateAndSyncCamAfter(
+          engineCommandManager,
+          id,
+          kclManager.sceneInfra
+        )
         kclManager.updateCodeEditor(
           newSketchResult.kclSource.text,
           {
@@ -3778,7 +3792,8 @@ export const modelingMachine = setup({
             )
             await letEngineAnimateAndSyncCamAfter(
               engineCommandManager,
-              artifact.id
+              artifact.id,
+              kclManager.sceneInfra
             )
             const normal = crossProduct(planeVar.xAxis, planeVar.yAxis)
             return {
@@ -3798,7 +3813,8 @@ export const modelingMachine = setup({
           )
         await letEngineAnimateAndSyncCamAfter(
           engineCommandManager,
-          info?.sketchDetails?.faceId || ''
+          info?.sketchDetails?.faceId || '',
+          kclManager.sceneInfra
         )
 
         const sketchArtifact = kclManager.artifactGraph.get(mainPath)
@@ -6477,14 +6493,17 @@ export const modelingMachine = setup({
           invoke: {
             id: 'sketchExit',
             src: 'sketchExit',
-            input: ({ context }) => ({ context }),
+            input: ({ context }) => ({
+              context,
+              sketchId: context.sketchSolveId,
+            }),
             onDone: {
               target: '#Modeling.idle',
               actions: ['reset sketch metadata'],
             },
             onError: {
               target: '#Modeling.idle',
-              actions: ['reset sketch metadata'],
+              actions: ['toastError', 'reset sketch metadata'],
             },
           },
         },

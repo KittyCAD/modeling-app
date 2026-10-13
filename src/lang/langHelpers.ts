@@ -17,8 +17,11 @@ import type {
   ExecState,
   Program,
 } from '@src/lang/wasm'
-import { emptyExecState, kclLint } from '@src/lang/wasm'
-import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from '@src/lib/constants'
+import { emptyExecState, execStateFromRust, kclLint } from '@src/lang/wasm'
+import {
+  EXECUTE_AST_INTERRUPT_ERROR_STRING,
+  SKETCH_FILE_VERSION,
+} from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { isArray } from '@src/lib/utils'
@@ -40,15 +43,23 @@ export async function executeAst({
   rustContext,
   path,
   callbacks,
+  sketchId,
 }: {
   ast: Node<Program>
   rustContext: RustContext
   path?: string
   callbacks?: ExecCallbacks
+  sketchId?: number
 }): Promise<ExecutionResult> {
   try {
     const settings = jsAppSettings(rustContext.settingsActor)
-    const execState = await rustContext.execute(ast, settings, path, callbacks)
+    const execState =
+      sketchId === undefined
+        ? await rustContext.execute(ast, settings, path, callbacks)
+        : execStateFromRust(
+            (await rustContext.exitSketch(SKETCH_FILE_VERSION, sketchId))
+              .exec_outcome
+          )
     await rustContext.waitForAllEngineModelingCommands()
     return {
       logs: [],
