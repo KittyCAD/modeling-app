@@ -203,7 +203,7 @@ export type CommandArgumentConfig<
   skip?: boolean
   /** If `true`, this argument will be automatically prepopulated with default value, but may still be cleared */
   prepopulate?: boolean
-  /** Collapse this field under Show more; its value is still submitted. */
+  /** Collapse this field under Advanced; its value is still submitted. */
   dialog?: { advanced?: boolean }
   /** For showing a summary display of the current value, such as in
    *  the command bar's header
@@ -398,7 +398,7 @@ export type CommandArgument<
       ) => boolean)
   /** If `true`, this argument will be automatically prepopulated with default value, but may still be cleared */
   prepopulate?: boolean
-  /** Collapse this field under Show more; its value is still submitted. */
+  /** Collapse this field under Advanced; its value is still submitted. */
   dialog?: { advanced?: boolean }
   skip?: boolean
   machineActor?: Actor<T>

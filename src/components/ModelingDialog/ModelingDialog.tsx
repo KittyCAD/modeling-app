@@ -296,7 +296,7 @@ export default function ModelingDialog({
           )}
           {!initializing && advanced.length > 0 && (
             <details>
-              <summary className="cursor-pointer py-1">Show more</summary>
+              <summary className="cursor-pointer py-1">Advanced</summary>
               <div className="flex flex-col gap-3 pt-2">
                 {advanced.map(renderField)}
               </div>

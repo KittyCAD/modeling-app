@@ -162,7 +162,7 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     await page.mouse.up()
     await expect(dialog).toHaveCSS('position', 'fixed')
     expect((await dialog.boundingBox())?.x).toBeCloseTo(initialPosition.x - 160)
-    const more = dialog.getByText('Show more', { exact: true })
+    const more = dialog.getByText('Advanced', { exact: true })
     await more.click()
     await expect(submit).toBeInViewport()
     await expect(
