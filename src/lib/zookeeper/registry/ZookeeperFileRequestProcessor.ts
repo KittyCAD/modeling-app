@@ -230,10 +230,8 @@ export class ZookeeperFileRequestProcessor {
       })
     }
 
-    let finish: () => void = () => undefined
-    const completed = new Promise<void>((resolve) => {
-      finish = resolve
-    })
+    const { promise: completed, resolve: finish } =
+      Promise.withResolvers<void>()
     this.queue.push({
       request,
       completed,
