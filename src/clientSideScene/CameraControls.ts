@@ -456,8 +456,8 @@ export class CameraControls {
       this.camera.up.copy(newUp)
       this.camera.updateProjectionMatrix()
       // TODO this code might need to be deleted once we support named views, etc.
-      // In local mode the engine is never told the camera's projection or field
-      // of view, so only the pose is taken from its replies.
+      // In local mode the client owns the projection and field of view and
+      // tells the engine, so only the pose is taken from the engine's replies.
       const followsEngineProjection = this.effectiveCameraMode !== 'local'
       if (
         followsEngineProjection &&
