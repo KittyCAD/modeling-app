@@ -486,11 +486,7 @@ fn transform_from_obj_fields<T: GeometryTrait>(
             )));
         };
         if let Some(axis) = rot.get("axis") {
-            // Like `rotate()`, don't adjust axis units since only the
-            // direction of the axis is significant, not its magnitude.
-            rotation.axis = T::array_to_point3d(axis, source_ranges.clone(), exec_state)?
-                .map(|dim| dim.n)
-                .into();
+            rotation.axis = point_3d_to_mm(T::array_to_point3d(axis, source_ranges.clone(), exec_state)?).into();
         }
         if let Some(angle) = rot.get("angle") {
             // Like `rotate()`, convert the angle to degrees from whatever unit
@@ -1104,16 +1100,27 @@ patterned = patternTransform2d(square, instances = 2, transform = transform)
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn pattern_transform_rotation_axis_is_a_direction() {
-        // Like `rotate()`, only the direction of the axis matters, so the
-        // file's length unit must not be applied to it.
-        let code = pattern_transform_code(
-            "defaultLengthUnit = in",
-            "rotation = { axis = [0, 1, 0], angle = 90deg }",
-        );
-        let transform = pattern_transform_sent_to_engine(&code).await;
-        let axis = transform.rotation.axis;
-        assert_eq!((axis.x, axis.y, axis.z), (0.0, 1.0, 0.0), "{code}");
+    async fn pattern_transform_rotation_axis_converts_each_part() {
+        // Each part of the axis is converted to mm on its own, so an axis whose
+        // parts have different units, like `[1in, 25.4mm, 0mm]`, points the
+        // same way as the all-mm control (the first case).
+        for (settings, axis, expected) in [
+            ("defaultLengthUnit = mm", "[25.4mm, 25.4mm, 0mm]", (25.4, 25.4, 0.0)),
+            ("defaultLengthUnit = mm", "[1in, 25.4mm, 0mm]", (25.4, 25.4, 0.0)),
+            ("defaultLengthUnit = in", "[1in, 25.4mm, 0mm]", (25.4, 25.4, 0.0)),
+            ("defaultLengthUnit = in", "[0, 1, 0]", (0.0, 25.4, 0.0)),
+        ] {
+            let code = pattern_transform_code(settings, &format!("rotation = {{ axis = {axis}, angle = 90deg }}"));
+            let transform = pattern_transform_sent_to_engine(&code).await;
+            let axis = transform.rotation.axis;
+            let actual = (axis.x, axis.y, axis.z);
+            assert!(
+                (actual.0 - expected.0).abs() < 1e-9
+                    && (actual.1 - expected.1).abs() < 1e-9
+                    && (actual.2 - expected.2).abs() < 1e-9,
+                "expected {expected:?}, got {actual:?} for:\n{code}"
+            );
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]
