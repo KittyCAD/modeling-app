@@ -1,7 +1,6 @@
 import { Menu } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { KclMigration } from '@src/components/KclMigration'
-import { KclMigrationPanel } from '@src/components/KclMigrationPanel'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
@@ -60,13 +59,6 @@ export function ZookeeperConversationPaneWrapper(
         migrationTurns={migration.turns.value}
         migrationHistory={migration.history}
         onClearMigrationConversation={() => migration.clearConversation()}
-        renderMigrationTurn={(turn, onClickClearChat) => (
-          <KclMigrationPanel
-            controller={turn.controller}
-            userAvatar={user?.image}
-            onClickClearChat={onClickClearChat}
-          />
-        )}
         migrationContent={(chatBusy, afterExchange) => (
           <KclMigration
             app={app}
