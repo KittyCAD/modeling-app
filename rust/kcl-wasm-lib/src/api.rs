@@ -216,7 +216,7 @@ impl Context {
             .await
             .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())?;
         let checkpoint_id = guard
-            .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+            .create_sketch_checkpoint(&self.cache, scene_graph_delta.exec_outcome.clone())
             .await
             .map_err(|e: Error| js_value_from_serde(&e))?;
         let result = kcl_lib::front::SketchMutationOutcome {
@@ -261,7 +261,7 @@ impl Context {
             .await
             .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
         let checkpoint_id = guard
-            .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+            .create_sketch_checkpoint(&self.cache, scene_graph_delta.exec_outcome.clone())
             .await
             .map_err(|e: Error| js_value_from_serde(&e))?;
         let result = kcl_lib::front::NewSketchOutcome {
@@ -307,7 +307,7 @@ impl Context {
             .await
             .map_err(|e: KclErrorWithOutputs| js_value_from_serde(&e))?;
         let checkpoint_id = guard
-            .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+            .create_sketch_checkpoint(&self.cache, scene_graph_delta.exec_outcome.clone())
             .await
             .map_err(|e: Error| js_value_from_serde(&e))?;
         let result = kcl_lib::front::EditSketchOutcome {
@@ -407,7 +407,7 @@ impl Context {
         let checkpoint_id = if create_checkpoint {
             Some(
                 guard
-                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .create_sketch_checkpoint(&self.cache, scene_graph_delta.exec_outcome.clone())
                     .await
                     .map_err(|e: Error| js_value_from_serde(&e))?,
             )
@@ -483,7 +483,7 @@ impl Context {
         let checkpoint_id = if create_checkpoint {
             Some(
                 guard
-                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .create_sketch_checkpoint(&self.cache, scene_graph_delta.exec_outcome.clone())
                     .await
                     .map_err(|e: Error| js_value_from_serde(&e))?,
             )
@@ -535,7 +535,7 @@ impl Context {
         let checkpoint_id = if create_checkpoint {
             Some(
                 guard
-                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .create_sketch_checkpoint(&self.cache, scene_graph_delta.exec_outcome.clone())
                     .await
                     .map_err(|e: Error| js_value_from_serde(&e))?,
             )
@@ -584,7 +584,7 @@ impl Context {
         let checkpoint_id = if create_checkpoint {
             Some(
                 guard
-                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .create_sketch_checkpoint(&self.cache, scene_graph_delta.exec_outcome.clone())
                     .await
                     .map_err(|e: Error| js_value_from_serde(&e))?,
             )
@@ -634,7 +634,7 @@ impl Context {
         let checkpoint_id = if create_checkpoint {
             Some(
                 guard
-                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .create_sketch_checkpoint(&self.cache, scene_graph_delta.exec_outcome.clone())
                     .await
                     .map_err(|e: Error| js_value_from_serde(&e))?,
             )
@@ -704,7 +704,7 @@ impl Context {
         let checkpoint_id = if create_checkpoint {
             Some(
                 guard
-                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .create_sketch_checkpoint(&self.cache, scene_graph_delta.exec_outcome.clone())
                     .await
                     .map_err(|e: Error| js_value_from_serde(&e))?,
             )
@@ -779,7 +779,7 @@ impl Context {
         let checkpoint_id = if create_checkpoint {
             Some(
                 guard
-                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .create_sketch_checkpoint(&self.cache, scene_graph_delta.exec_outcome.clone())
                     .await
                     .map_err(|e: Error| js_value_from_serde(&e))?,
             )
@@ -850,7 +850,7 @@ impl Context {
         let checkpoint_id = if create_checkpoint {
             Some(
                 guard
-                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .create_sketch_checkpoint(&self.cache, scene_graph_delta.exec_outcome.clone())
                     .await
                     .map_err(|e: Error| js_value_from_serde(&e))?,
             )
@@ -972,7 +972,7 @@ impl Context {
         let checkpoint_id = if operations_performed {
             Some(
                 guard
-                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .create_sketch_checkpoint(&self.cache, scene_graph_delta.exec_outcome.clone())
                     .await
                     .map_err(|e| format!("Failed to create sketch checkpoint: {:?}", e))?,
             )
@@ -1029,7 +1029,7 @@ impl Context {
         let checkpoint_id = if create_checkpoint {
             Some(
                 guard
-                    .create_sketch_checkpoint(scene_graph_delta.exec_outcome.clone())
+                    .create_sketch_checkpoint(&self.cache, scene_graph_delta.exec_outcome.clone())
                     .await
                     .map_err(|e: Error| js_value_from_serde(&e))?,
             )
@@ -1056,7 +1056,7 @@ impl Context {
         let frontend = Arc::clone(&self.frontend);
         let mut guard = frontend.write().await;
         let result = guard
-            .restore_sketch_checkpoint(checkpoint_id)
+            .restore_sketch_checkpoint(&self.cache, checkpoint_id)
             .await
             .map_err(|e: Error| js_value_from_serde(&e))?;
 

@@ -43,12 +43,16 @@ struct CacheInner {
     pub prev_memory: Option<SketchModeState>,
 }
 
-/// Clones all mutate the same cache via Arc.
+/// Cached execution state for one engine session and its associated mock execution.
+///
+/// Clones share the same state. A default cache is empty and independent of all
+/// other caches. Callers must serialize executions that share an engine session;
+/// this cache only locks individual state accesses.
 #[derive(Debug, Default, Clone)]
-pub(crate) struct Cache(Arc<RwLock<CacheInner>>);
+pub struct Cache(Arc<RwLock<CacheInner>>);
 
-/// Read the old ast memory from the lock.
 impl Cache {
+    /// Read the old AST state from the cache.
     pub(super) async fn read_old_ast(&self) -> Option<GlobalState> {
         self.0.read().await.old_ast.clone()
     }
@@ -67,11 +71,13 @@ impl Cache {
         inner.prev_memory = Some(mem);
     }
 
+    /// Invalidate live execution state while preserving usable sketch-mode memory.
     pub async fn bust_cache(&self) {
         let mut inner = self.0.write().await;
         inner.old_ast = None;
     }
 
+    /// Clear the memory reused by mock execution.
     pub async fn clear_mem_cache(&self) {
         let mut inner = self.0.write().await;
         inner.prev_memory = None;
