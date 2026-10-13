@@ -1,5 +1,6 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { KclManager } from '@src/lang/KclManager'
+import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
 import { createVariableDeclaration } from '@src/lang/create'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import { addHelix, getAxisExpression } from '@src/lang/modifyAst/geometry'
@@ -236,7 +237,88 @@ function generateAxis(
   return code.replace(/\s+/g, '')
 }
 
+const faceSketchCode = `@settings(kclVersion = 3.0)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -0.8mm, var -2mm], end = [var -0.8mm, var -2mm])
+  coincident([line1.end, line1.start])
+  line2 = line(start = [var -0.8mm, var -2mm], end = [var 1.2mm, var -2mm])
+  coincident([line1.end, line2.start])
+  horizontal(line2)
+  arc1 = arc(start = [var -0.8mm, var -2mm], end = [var 1.2mm, var -2mm], center = [var 0.2mm, var -1.97mm])
+  coincident([arc1.start, line1.start])
+  coincident([arc1.end, line2.end])
+  distance([ORIGIN, line2], labelPosition = [-3.83mm, -1.34mm]) == 2
+  radius(arc1) == 1mm
+}
+hidden001 = hide(sketch001)
+region001 = region(segments = [sketch001.line2, sketch001.arc1], direction = CW)
+revolve001 = revolve(region001, angle = 180deg, axis = X)
+
+face001 = faceOf(revolve001, face = END)
+sketch002 = sketch(on = face001) {
+  circle1 = circle(start = [var -0.4mm, var -2.44mm], center = [var -0.53mm, var -2.32mm])
+  line(start = [var -2.78mm, var -5.66mm], end = [var 1.36mm, var -7.86mm])
+}`
+
 describe('getAxisExpression', () => {
+  it.each([false, true])(
+    'validates the face-sketch axis before execution (named: %s)',
+    async (named) => {
+      const { instance, rustContext } =
+        await buildTheWorldAndNoEngineConnection()
+      const axisCall = 'line(start = [var -2.78mm'
+      const code = named
+        ? faceSketchCode.replace(axisCall, `revolveAxis = ${axisCall}`)
+        : faceSketchCode
+      const ast = assertParse(code, instance)
+      const originalAst = structuredClone(ast)
+      const { artifactGraph } = await enginelessExecutor(ast, rustContext)
+      const artifacts = [...artifactGraph.values()]
+      const axis = artifacts.find(
+        (a) =>
+          a.type === 'segment' && a.codeRef.range[0] === code.indexOf(axisCall)
+      )
+      const sketch = artifacts.find(
+        (a) =>
+          a.type === 'sketchBlock' &&
+          a.codeRef.range[0] === code.indexOf('sketch(on = face001)')
+      )
+      if (!axis || !sketch) throw new Error('Missing face-sketch artifacts')
+      const result = addRevolve({
+        ast,
+        artifactGraph,
+        sketches: {
+          graphSelections: [],
+          otherSelections: [
+            {
+              type: 'engineRegion',
+              id: 'circle-region',
+              sketchId: sketch.id,
+              point: { x: -0.53, y: -2.32 },
+            },
+          ],
+        },
+        edge: createSelectionFromArtifacts([axis], artifactGraph),
+        angle: await getKclCommandValue('180deg', instance, rustContext),
+        wasmInstance: instance,
+      })
+      expect(ast).toEqual(originalAst)
+      if (!named) {
+        expect(result).toEqual(
+          new Error(
+            'The selected sketch segment has no variable name. Assign it a name before using it as an axis.'
+          )
+        )
+        return
+      }
+      if (isErr(result)) throw result
+      expect(
+        await mockExecAstAndReportErrors(result.modifiedAst, rustContext)
+      ).toBeUndefined()
+    }
+  )
+
   it.each(['extrude', 'revolve'] as const)(
     'preserves a face API edge selector when generating %s',
     async (command) => {
