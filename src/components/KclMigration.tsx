@@ -1,16 +1,15 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import { KclMigrationStart } from '@src/components/KclMigrationPanel'
-import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
 import type { ZDSProject } from '@src/lib/projectSession'
 import type { App } from '@src/lib/app'
 import { MigrationController } from '@src/lib/kclMigration/controller'
 import {
-  isKcl2MigrationSource,
+  watchMigrationSource,
   migrationProject,
 } from '@src/lib/kclMigration/project'
 import { MIGRATION_FEATURE } from '@src/lib/kclMigration/protocol'
 import { kclMigrationService } from '@src/registry/contracts/kclMigration'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export function KclMigration({
   app,
@@ -53,41 +52,10 @@ function ProjectMigration({
 }) {
   useSignals()
   const token = app.auth.token.value
-  const projectInfo = project.projectIORefSignal.value
-  const executingPath = project.executingPath
-  const entrypointCode = project.findEditor(projectInfo.default_file)?.[1]
-    .codeSignal.value
   const [sourceIsKcl2, setSourceIsKcl2] = useState(false)
-  const [diskRevision, setDiskRevision] = useState(0)
-  const watchPaths = useMemo(
-    () => [projectInfo.default_file],
-    [projectInfo.default_file]
-  )
-  const onFileChange = useCallback(async () => {
-    setDiskRevision((revision) => revision + 1)
-  }, [])
-  useFileSystemWatcher(onFileChange, watchPaths)
   useEffect(() => {
-    let current = true
-    setSourceIsKcl2(false)
-    if (enabled) {
-      const check = async () => {
-        const source =
-          entrypointCode ??
-          new TextDecoder('utf-8', { fatal: true }).decode(
-            await app.fileOperations.readFile(projectInfo.default_file)
-          )
-        const wasm = await app.wasmPromise
-        if (current) setSourceIsKcl2(isKcl2MigrationSource(source, wasm))
-      }
-      check().catch(() => {
-        if (current) setSourceIsKcl2(false)
-      })
-    }
-    return () => {
-      current = false
-    }
-  }, [app, projectInfo, entrypointCode, executingPath, diskRevision, enabled])
+    if (enabled) return watchMigrationSource(app, project, setSourceIsKcl2)
+  }, [app, project, enabled])
   const migration = app.registry.get(kclMigrationService)
   const controller = migration.controller.value
   useEffect(() => {

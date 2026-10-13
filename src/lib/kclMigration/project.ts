@@ -1,6 +1,8 @@
 import { Compartment, EditorState, StateEffect } from '@codemirror/state'
+import { effect } from '@preact/signals-core'
+import { getKclLanguageVersion } from '@src/lang/kclLanguageVersion'
 import type { ZDSProject } from '@src/lib/projectSession'
-import { kclSettings } from '@src/lang/wasm'
+import { File } from '@src/lib/projectSession/file'
 import type { App } from '@src/lib/app'
 import { cloudSyncService } from '@src/lib/cloudSync/registry/contract'
 import fsZds from '@src/lib/fs-zds'
@@ -8,7 +10,6 @@ import { replaceMigrationFiles } from '@src/lib/kclMigration/apply'
 import { MIGRATION_TARGET } from '@src/lib/kclMigration/protocol'
 import { zookeeperEditPatchHistoryEvent } from '@src/lib/zookeeper/editorPlugin'
 import { isErr, reportRejection } from '@src/lib/trap'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { MigrationProject } from '@src/lib/kclMigration/controller'
 import {
   equalFiles,
@@ -18,9 +19,48 @@ import {
   type ProjectFiles,
 } from '@src/lib/kclMigration/snapshot'
 
-export function isKcl2MigrationSource(source: string, wasm: ModuleType) {
-  const settings = kclSettings(source, wasm)
-  return !isErr(settings) && settings?.kclVersion === '2.0'
+/** Observe the entrypoint's current source, including unsaved edits and closed files. */
+export function watchMigrationSource(
+  app: App,
+  project: ZDSProject,
+  onChange: (isKcl2: boolean) => void
+): () => void {
+  return effect(() => {
+    const entrypoint = project.projectIORefSignal.value.default_file
+    const activeEditor = project.executingEditor.value
+    const editor =
+      activeEditor?.path === entrypoint
+        ? activeEditor
+        : project.findEditor(entrypoint)?.[1]
+    const code = editor?.codeSignal.value
+    const file = new File(entrypoint)
+    let revision = 0
+    const update = async () => {
+      const current = ++revision
+      onChange(false)
+      try {
+        const source =
+          code ??
+          new TextDecoder('utf-8', { fatal: true }).decode(
+            await app.fileOperations.readFile(entrypoint)
+          )
+        const wasm = await app.wasmPromise
+        if (current === revision)
+          onChange(getKclLanguageVersion(source, wasm) === '2.0')
+      } catch {
+        if (current === revision) onChange(false)
+      }
+    }
+    if (code === undefined) {
+      file.onWatchEvent.push(() => void update())
+      file.watch()
+    }
+    void update()
+    return () => {
+      revision++
+      file.unwatch()
+    }
+  })
 }
 
 /** Bind snapshots and writes to the same project object, including after navigation. */
@@ -88,20 +128,20 @@ export function migrationProject(
         return Promise.reject(new Error('Open a KCL file before migrating.'))
       const wasm = await editor.wasmInstancePromise
       if (
-        !isKcl2MigrationSource(
+        getKclLanguageVersion(
           new TextDecoder('utf-8', { fatal: true }).decode(source),
           wasm
-        )
+        ) !== '2.0'
       ) {
         return Promise.reject(
           new Error('Migration requires an explicit KCL 2.0 project.')
         )
       }
-      const target = kclSettings(
+      const target = getKclLanguageVersion(
         `@settings(kclVersion = "${MIGRATION_TARGET}")\nx = 1`,
         wasm
       )
-      if (isErr(target) || target?.kclVersion !== MIGRATION_TARGET) {
+      if (target !== MIGRATION_TARGET) {
         return Promise.reject(
           new Error('Update Zoo Design Studio to a version supporting KCL 3.')
         )
