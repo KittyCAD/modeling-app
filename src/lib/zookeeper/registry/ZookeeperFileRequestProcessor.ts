@@ -43,8 +43,7 @@ export class ZookeeperFileRequestProcessor {
   // IDs stay monotonic when reset() replaces the conversation.
   private nextOrderedId = 0
   private activeOrderedId: number | undefined
-  private lastDispatchedOrderedId = 0
-  private pendingOrderedIds = new Set<number>()
+  private pendingOrderedIds: number[] = []
   private queue: Promise<void> = Promise.resolve()
 
   constructor(
@@ -177,7 +176,7 @@ export class ZookeeperFileRequestProcessor {
       })
     }
 
-    this.pendingOrderedIds.add(request.orderedId)
+    this.pendingOrderedIds.push(request.orderedId)
     this.queue = this.queue.then(
       () =>
         new Promise<void>((resolve) => {
@@ -200,7 +199,9 @@ export class ZookeeperFileRequestProcessor {
               return
             }
             settled = true
-            this.pendingOrderedIds.delete(request.orderedId)
+            this.pendingOrderedIds = this.pendingOrderedIds.filter(
+              (orderedId) => orderedId !== request.orderedId
+            )
             if (this.activeOrderedId === request.orderedId) {
               this.activeOrderedId = undefined
             }
@@ -224,13 +225,8 @@ export class ZookeeperFileRequestProcessor {
             this.deps.history.cancel({ exchangeId: request.exchangeId })
           }
           const stopIfOutOfOrder = () => {
-            const expectedOrderedId = this.pendingOrderedIds
-              .values()
-              .next().value
-            if (
-              request.orderedId === expectedOrderedId &&
-              request.orderedId > this.lastDispatchedOrderedId
-            ) {
+            const expectedOrderedId = this.pendingOrderedIds[0]
+            if (request.orderedId === expectedOrderedId) {
               return false
             }
             console.error(
@@ -238,7 +234,6 @@ export class ZookeeperFileRequestProcessor {
               {
                 orderedId: request.orderedId,
                 expectedOrderedId,
-                lastDispatchedOrderedId: this.lastDispatchedOrderedId,
               }
             )
             cancelHistory()
@@ -304,7 +299,6 @@ export class ZookeeperFileRequestProcessor {
 
             kclManager.zookeeperManagerMachineBulkManipulatingFileSystem = true
             dispatched = true
-            this.lastDispatchedOrderedId = request.orderedId
             systemIOActor.send({
               type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
               data: {

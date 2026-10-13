@@ -273,7 +273,7 @@ describe('ZookeeperFileRequestProcessor', () => {
       await waitFor(() =>
         expect(log).toHaveBeenCalledWith(
           'Refusing to dispatch an out-of-order Zookeeper edit.',
-          { orderedId: 2, expectedOrderedId: 1, lastDispatchedOrderedId: 1 }
+          { orderedId: 2, expectedOrderedId: 1 }
         )
       )
       expect(mocks.systemIOSend).toHaveBeenCalledOnce()
@@ -285,37 +285,6 @@ describe('ZookeeperFileRequestProcessor', () => {
       emitZookeeperFileRequest(processor, 'next valid edit', 3)
       await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
       expect(mocks.systemIOSend.mock.calls[1][0].data.orderedId).toBe(3)
-    } finally {
-      for (const [event] of mocks.systemIOSend.mock.calls) {
-        event.data.onFileSystemError()
-      }
-      await processor.dispose()
-      log.mockRestore()
-    }
-  })
-
-  test('rejects a reused ordered ID after its edit has already been dispatched', async () => {
-    const log = vi.spyOn(console, 'error').mockImplementation(() => undefined)
-    const processor = createProcessor()
-    try {
-      emitZookeeperFileRequest(processor, 'first edit', 1)
-      await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
-      const firstRequest = mocks.systemIOSend.mock.calls[0][0].data
-      firstRequest.onFileSystemSuccess()
-      firstRequest.onSuccess()
-      await waitFor(() => expect(mocks.onEditApplied).toHaveBeenCalledOnce())
-
-      // Simulate an ID being incorrectly reused by a later request.
-      Reflect.set(processor, 'nextOrderedId', 0)
-      emitZookeeperFileRequest(processor, 'replayed edit', 2)
-      await waitFor(() =>
-        expect(log).toHaveBeenCalledWith(
-          'Refusing to dispatch an out-of-order Zookeeper edit.',
-          { orderedId: 1, expectedOrderedId: 1, lastDispatchedOrderedId: 1 }
-        )
-      )
-      expect(mocks.systemIOSend).toHaveBeenCalledOnce()
-      expect(mocks.onEditApplied).toHaveBeenCalledOnce()
     } finally {
       for (const [event] of mocks.systemIOSend.mock.calls) {
         event.data.onFileSystemError()
