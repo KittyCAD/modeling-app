@@ -23,7 +23,7 @@ interface ZookeeperFileRequestProcessorDependencies {
 }
 
 type ZookeeperNewFileRequest = {
-  requestId: number
+  orderId: number
   toolOutput: MlToolResult
   projectNameCurrentlyOpened: string
   fileFocusedOnInEditor?: FileEntry
@@ -40,8 +40,8 @@ export class ZookeeperFileRequestProcessor {
   private generation = 0
   private lastMessageId: number | undefined
   // IDs stay monotonic when reset() replaces the conversation.
-  private nextRequestId = 0
-  private activeRequestId: number | undefined
+  private nextOrderId = 0
+  private activeOrderId: number | undefined
   private queue: Promise<void> = Promise.resolve()
 
   constructor(
@@ -97,9 +97,10 @@ export class ZookeeperFileRequestProcessor {
       return
     }
 
+    this.nextOrderId += 1
     this.enqueue(
       {
-        requestId: ++this.nextRequestId,
+        orderId: this.nextOrderId,
         toolOutput: lastResponse.tool_output.result,
         projectNameCurrentlyOpened: projectName,
         fileFocusedOnInEditor: snapshot.context.fileFocusedOnInEditor,
@@ -176,7 +177,7 @@ export class ZookeeperFileRequestProcessor {
     this.queue = this.queue.then(
       () =>
         new Promise<void>((resolve) => {
-          this.activeRequestId = request.requestId
+          this.activeOrderId = request.orderId
           let historyCanceled = false
           let dispatched = false
           let settled = false
@@ -186,7 +187,7 @@ export class ZookeeperFileRequestProcessor {
           let historySucceeded = !shouldRecordHistory
           let postWriteCompleted = !shouldRefreshActiveEditor
           const requestCanFinish = () =>
-            this.activeRequestId === request.requestId &&
+            this.activeOrderId === request.orderId &&
             (dispatched
               ? requestProjectIsCurrent() && this.deps.isEditorCurrent()
               : requestIsCurrent())
@@ -196,8 +197,8 @@ export class ZookeeperFileRequestProcessor {
               return
             }
             settled = true
-            if (this.activeRequestId === request.requestId) {
-              this.activeRequestId = undefined
+            if (this.activeOrderId === request.orderId) {
+              this.activeOrderId = undefined
             }
             abortSignal.removeEventListener('abort', cancelPostWrite)
             resolve()
@@ -274,7 +275,7 @@ export class ZookeeperFileRequestProcessor {
             systemIOActor.send({
               type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
               data: {
-                requestId: request.requestId,
+                orderId: request.orderId,
                 files: payload.files,
                 filesToDelete: payload.filesToDelete,
                 override: true,
@@ -283,7 +284,7 @@ export class ZookeeperFileRequestProcessor {
                 requestedFileNameWithExtension:
                   payload.requestedFileNameWithExtension ?? '',
                 onFileSystemError: () => {
-                  if (settled || this.activeRequestId !== request.requestId) {
+                  if (settled || this.activeOrderId !== request.orderId) {
                     return
                   }
                   if (fileSystemCompleted) {
@@ -303,7 +304,7 @@ export class ZookeeperFileRequestProcessor {
                   if (
                     fileSystemCompleted ||
                     settled ||
-                    this.activeRequestId !== request.requestId
+                    this.activeOrderId !== request.orderId
                   ) {
                     return
                   }

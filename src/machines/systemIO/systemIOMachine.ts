@@ -156,7 +156,7 @@ export const systemIOMachine = setup({
       | {
           type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile
           data: {
-            requestId?: number
+            orderId?: number
             files: RequestedKCLFile[]
             filesToDelete?: RequestedKCLFileDelete[]
             requestedProjectName: string
@@ -714,7 +714,7 @@ export const systemIOMachine = setup({
         }: {
           input: {
             context: SystemIOContext
-            requestId?: number
+            orderId?: number
             files: RequestedKCLFile[]
             filesToDelete?: RequestedKCLFileDelete[]
             requestedProjectName: string
@@ -1760,7 +1760,7 @@ export const systemIOMachine = setup({
           )
           return {
             context,
-            requestId: event.data.requestId,
+            orderId: event.data.orderId,
             files: event.data.files,
             filesToDelete: event.data.filesToDelete,
             requestedProjectName: event.data.requestedProjectName,

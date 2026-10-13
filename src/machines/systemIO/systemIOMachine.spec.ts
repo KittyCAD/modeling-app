@@ -1284,8 +1284,8 @@ describe('systemIOMachine - XState', () => {
           actor.stop()
         }
       })
-      it('passes the Zookeeper request ID to its bulk filesystem actor', async () => {
-        const receivedRequestIds: (number | undefined)[] = []
+      it('passes the Zookeeper order ID to its bulk filesystem actor', async () => {
+        const receivedOrderIds: (number | undefined)[] = []
         const actor = createActor(
           systemIOMachine.provide({
             actors: {
@@ -1293,7 +1293,7 @@ describe('systemIOMachine - XState', () => {
                 fromPromise(async (): Promise<Project[]> => []),
               [SystemIOMachineActors.bulkCreateAndDeleteKCLFilesAndNavigateToFile]:
                 fromPromise(async ({ input }) => {
-                  receivedRequestIds.push(input.requestId)
+                  receivedOrderIds.push(input.orderId)
                   return {
                     message: 'Updated',
                     projectName: input.requestedProjectName,
@@ -1316,7 +1316,7 @@ describe('systemIOMachine - XState', () => {
           actor.send({
             type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
             data: {
-              requestId: 17,
+              orderId: 17,
               files: [],
               requestedProjectName: 'demo',
               requestedFileNameWithExtension: 'main.kcl',
@@ -1325,7 +1325,7 @@ describe('systemIOMachine - XState', () => {
           await waitFor(actor, (state) =>
             state.matches(SystemIOMachineStates.idle)
           )
-          expect(receivedRequestIds).toEqual([17])
+          expect(receivedOrderIds).toEqual([17])
         } finally {
           actor.stop()
         }
