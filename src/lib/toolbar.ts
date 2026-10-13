@@ -26,7 +26,6 @@ import {
   SKETCH_SELECTION_RGB_STR,
 } from '@src/lib/constants'
 import type { HotkeySequence } from '@src/lib/hotkeys'
-import { isDesktop } from '@src/lib/isDesktop'
 import { selectSketchPlane } from '@src/lib/selectSketchPlane'
 import { getSelectedDefaultPlane } from '@src/lib/selections'
 import { isArray } from '@src/lib/utils'
@@ -866,7 +865,6 @@ export function buildToolbarConfig(
             }),
           icon: 'import',
           status: 'available',
-          disabled: () => !isDesktop(),
           title: 'Import',
           description: 'Import from a file in the current project directory.',
           links: [
