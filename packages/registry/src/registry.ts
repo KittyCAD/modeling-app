@@ -28,7 +28,7 @@ import type {
   RegistryItemDefinition,
   RegistryItemFactory,
   RegistryItemKey,
-  RuntimeRegistryItemHandle,
+  RuntimeRegistryItemDefinition,
   Service,
   ServiceReader,
   Slot,
@@ -54,7 +54,7 @@ interface FlattenedServiceContribution {
 
 interface RuntimeInstance {
   readonly key: RegistryItemKey
-  readonly handle: RuntimeRegistryItemHandle<unknown>
+  readonly item: RuntimeRegistryItemDefinition
   readonly dispose?: () => void | PromiseLike<void>
 }
 
@@ -160,7 +160,7 @@ export class Registry implements ValueSpecReader, ServiceReader {
           // Returned items are only known after the callback. Normalize that
           // subtree too; already executed identities win before any child runs.
           for (const child of this.assembleGraph(
-            [{ node: runtime.handle.item, path: `${path}/factory` }],
+            [{ node: runtime.item, path: `${path}/factory` }],
             slots
           ))
             execute(child)
@@ -488,17 +488,17 @@ export class Registry implements ValueSpecReader, ServiceReader {
   /** Create or reuse a runtime instance for one registry item factory. */
   private ensureRuntimeInstance(
     key: RegistryItemKey,
-    factory: RegistryItemFactory<unknown>,
+    factory: RegistryItemFactory,
     ctx: RegistryItemContext
   ): RuntimeInstance {
     const existing = this.runtimeInstances.get(key)
     if (existing) return existing
 
-    const handle = factory(ctx)
+    const item = factory(ctx)
     const instance: RuntimeInstance = {
       key,
-      handle,
-      dispose: normalizeDisposer(handle.item.dispose),
+      item,
+      dispose: normalizeDisposer(item.dispose),
     }
     this.runtimeInstances.set(key, instance)
     return instance

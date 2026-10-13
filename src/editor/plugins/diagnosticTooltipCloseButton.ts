@@ -76,6 +76,9 @@ export function diagnosticTooltipCloseButton(): Extension {
         position: 'relative',
         paddingRight: '1.75rem',
       },
+      '.cm-tooltip-lint .parsed-markdown a': {
+        textDecoration: 'underline',
+      },
       '.cm-tooltip-lint .cm-diagnosticAction.cm-diagnosticClose': {
         position: 'absolute',
         top: '0.25rem',

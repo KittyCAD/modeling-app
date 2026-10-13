@@ -24,6 +24,7 @@ interface UseStateMachineCommandsArgs<
   send: (event: EventFrom<T>) => void
   actor: Actor<T>
   commandBarConfig?: StateMachineCommandSetConfig<T, S>
+  getDefaultDescription?: (type: EventFrom<T>['type']) => string | undefined
   scopes: Command['scopes']
   isExecuting: boolean
   onCancel?: () => void
@@ -45,6 +46,7 @@ export default function useStateMachineCommands<
   send,
   actor,
   commandBarConfig,
+  getDefaultDescription,
   scopes,
   onCancel,
   isExecuting,
@@ -86,6 +88,7 @@ export default function useStateMachineCommands<
           send,
           actor,
           commandBarConfig,
+          getDefaultDescription,
           defaultScopes: scopes,
           onCancel,
           forceDisable: shouldDisableEngineCommands,
@@ -110,6 +113,7 @@ export default function useStateMachineCommands<
     shouldDisableEngineCommands,
     showExperimentalCommands,
     commandBarConfig,
+    getDefaultDescription,
     kclProgramVersion,
     scopes,
   ])

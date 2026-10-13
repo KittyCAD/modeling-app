@@ -6,7 +6,7 @@ use std::path::PathBuf;
 use std::str::FromStr;
 
 use indexmap::IndexMap;
-use kcl_api::KclVersion;
+use kittycad_modeling_cmds::KclVersion;
 use kittycad_modeling_cmds::ModelingCmd;
 use kittycad_modeling_cmds::each_cmd as mcmd;
 use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
@@ -10144,6 +10144,69 @@ mod kcl_v3_stable_execution {
 }
 mod subtract_inherits_tool_face_tags {
     const TEST_NAME: &str = "subtract_inherits_tool_face_tags";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME).await
+    }
+}
+mod extrude_with_hole_first {
+    const TEST_NAME: &str = "extrude_with_hole_first";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME).await
+    }
+}
+mod clone_tagged_chamfer {
+    const TEST_NAME: &str = "clone_tagged_chamfer";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME).await
+    }
+}
+mod fillet_chamfer_bracket {
+    const TEST_NAME: &str = "fillet_chamfer_bracket";
 
     /// Test parsing KCL.
     #[test]

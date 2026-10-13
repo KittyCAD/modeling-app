@@ -1,7 +1,9 @@
 name: sync-branch
 
 # This is used to sync the `staging` branch with the `main` branch to
-# continuously deploy the pre-production web app to Vercel
+# continuously deploy the pre-production web app to Vercel. The public-facing
+# web app is synced with the `production` branch, which is updated upon
+# publishing the release via the `publish-apps.yml` workflow.
 
 on:
   push:

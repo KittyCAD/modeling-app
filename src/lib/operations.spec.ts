@@ -18,10 +18,6 @@ import {
 } from '@src/lang/wasm'
 import type { Artifact, ArtifactGraph } from '@src/lang/wasm'
 import {
-  LEGACY_SKETCH_MODE_FEATURE_FLAG,
-  LEGACY_SKETCH_MODE_REMOVED_MESSAGE,
-} from '@src/lib/constants'
-import {
   enterEditFlow,
   filterOperations,
   getHideOpByArtifactId,
@@ -184,18 +180,6 @@ function toArtifactGraph(artifacts: Artifact[]): ArtifactGraph {
 const EMPTY_SELECTIONS = {
   graphSelections: [],
   otherSelections: [],
-}
-
-/** Stands in for the global app instance that holds the user's feature flags. */
-function stubUserFeatures(features: string[]) {
-  const previousApp = window.app
-  window.app = {
-    userFeatures: { has: (feature: string) => features.includes(feature) },
-  } as unknown as typeof window.app
-
-  return () => {
-    window.app = previousApp
-  }
 }
 
 function sketchBlockBegin(index = 0): Operation {
@@ -1046,46 +1030,6 @@ describe('operations.test.ts', () => {
       expect(argDefaultValues.roll?.valueText).toBe('10deg')
       expect(argDefaultValues.pitch?.valueText).toBe('20deg')
       expect(argDefaultValues.yaw?.valueText).toBe('30deg')
-    })
-  })
-
-  describe('Legacy sketch edit flow', () => {
-    const code = 'sketch001 = startSketchOn(XZ)'
-
-    async function editStartSketchOn() {
-      const { rustContext } = await buildTheWorldAndNoEngineConnection()
-      return enterEditFlow({
-        operation: stdlib('startSketchOn'),
-        code,
-        artifact: pathArtifact('path-id'),
-        artifactGraph: toArtifactGraph([pathArtifact('path-id')]),
-        rustContext,
-      })
-    }
-
-    it('refuses to edit without the legacy sketch mode feature', async () => {
-      const result = await editStartSketchOn()
-
-      expect(isErr(result)).toBe(true)
-      expect((result as Error).message).toBe(LEGACY_SKETCH_MODE_REMOVED_MESSAGE)
-    })
-
-    it('enters sketch mode with the legacy sketch mode feature', async () => {
-      const restoreApp = stubUserFeatures([LEGACY_SKETCH_MODE_FEATURE_FLAG])
-
-      try {
-        const result = await editStartSketchOn()
-        if (isErr(result)) {
-          throw result
-        }
-        if (result.type !== 'Find and select command') {
-          throw new Error(`Expected edit flow event, got ${result.type}`)
-        }
-
-        expect(result.data.name).toBe('Enter sketch')
-      } finally {
-        restoreApp()
-      }
     })
   })
 
