@@ -10205,3 +10205,24 @@ mod clone_tagged_chamfer {
         super::execute(TEST_NAME).await
     }
 }
+mod fillet_chamfer_bracket {
+    const TEST_NAME: &str = "fillet_chamfer_bracket";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME).await
+    }
+}
