@@ -21,6 +21,7 @@ use crate::execution::types::RuntimeType;
 use crate::std::Args;
 use crate::std::args::TyF64;
 use crate::std::axis_or_reference::Axis3dOrPoint3d;
+use crate::std::utils::untype_point3d_in_one_unit;
 
 fn transform_by<T>(property: T, set: bool, origin: OriginType) -> shared::TransformBy<T> {
     shared::TransformBy::builder()
@@ -340,14 +341,17 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     validate_rotation_angle(&yaw, "yaw", &args)?;
     validate_rotation_angle(&angle, "angle", &args)?;
 
+    // Only the axis's direction matters, not its length. Its parts are still
+    // read in one unit first, so a mixed-unit axis such as `[1in, 25.4mm, 0mm]`
+    // points the way it was written. Parts that share a unit keep their numbers.
+    let axis = axis.map(|a| untype_point3d_in_one_unit(a).0);
+
     let objects = inner_rotate(
         objects,
         roll.map(|t| t.n),
         pitch.map(|t| t.n),
         yaw.map(|t| t.n),
-        // Don't adjust axis units since the axis must be normalized and only the direction
-        // should be significant, not the magnitude.
-        axis.map(|a| [a[0].n, a[1].n, a[2].n]),
+        axis,
         // The origin is a point in space, so the engine needs it in mm.
         origin.map(|a| [a[0].unwrap_to_mm(), a[1].unwrap_to_mm(), a[2].unwrap_to_mm()]),
         angle.map(|t| t.n),
@@ -676,6 +680,40 @@ sweepSketch = startSketchOn(XY)
                 [0.0, 0.0, 2.0],
                 "{settings}origin = {origin}"
             );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_rotate_reads_mixed_unit_axis_in_one_unit() {
+        // The parts of a custom axis can have different units, for example when
+        // they come from variables. They are read in the unit of the first part
+        // that isn't zero, so the mixed cases point halfway between X and Y like
+        // the all-mm control (the first case). Axes whose parts share a unit,
+        // like the built-in `Z`, keep their numbers.
+        let mm_file = "@settings(defaultLengthUnit = mm)\n";
+        let in_file = "@settings(defaultLengthUnit = in)\n";
+        let mm_variables = "@settings(defaultLengthUnit = mm)\ndx = 1in\ndy = 25.4mm\n";
+        for (settings, axis, expected) in [
+            (mm_file, "[25.4mm, 25.4mm, 0mm]", [25.4, 25.4, 0.0]),
+            (mm_file, "[1in, 25.4mm, 0mm]", [1.0, 1.0, 0.0]),
+            (mm_variables, "[dx, dy, 0]", [1.0, 1.0, 0.0]),
+            (in_file, "[1in, 25.4mm, 0mm]", [1.0, 1.0, 0.0]),
+            (in_file, "[1, 1, 0]", [1.0, 1.0, 0.0]),
+            (in_file, "Z", [0.0, 0.0, 1.0]),
+        ] {
+            let arguments = format!("axis = {axis}, angle = 90deg");
+            let transform = rotate_transform_with_settings(settings, &arguments).await;
+            let rotation = transform
+                .rotate_angle_axis
+                .expect("expected an axis-angle rotation transform");
+
+            let actual = [rotation.property.x, rotation.property.y, rotation.property.z];
+            for (actual, expected) in actual.into_iter().zip(expected) {
+                assert!(
+                    (actual - expected).abs() < 1e-9,
+                    "{settings}axis = {axis}: expected {expected:?}, got {actual:?}"
+                );
+            }
         }
     }
 
