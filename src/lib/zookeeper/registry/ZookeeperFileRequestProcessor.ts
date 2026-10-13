@@ -138,19 +138,19 @@ export class ZookeeperFileRequestProcessor {
     this.processingQueue = true
     try {
       while (this.queue.length > 0) {
-        const request = this.queue.shift()
-        if (!request) {
+        const queuedEdit = this.queue.shift()
+        if (!queuedEdit) {
           break
         }
-        this.activeRequest = request
-        this.activeOrderedId = request.request.orderedId
+        this.activeRequest = queuedEdit
+        this.activeOrderedId = queuedEdit.request.orderedId
         try {
-          await request.run()
+          await queuedEdit.run()
         } catch (error: unknown) {
           console.error('Failed to process Zookeeper file request.', error)
         } finally {
           this.activeRequest = undefined
-          if (this.activeOrderedId === request.request.orderedId) {
+          if (this.activeOrderedId === queuedEdit.request.orderedId) {
             this.activeOrderedId = undefined
           }
         }
