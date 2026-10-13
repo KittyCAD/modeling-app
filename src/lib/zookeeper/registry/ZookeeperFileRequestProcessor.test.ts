@@ -120,7 +120,8 @@ function emitZookeeperFileRequest(
   fileFocusedOnInEditor = {
     name: 'main.kcl',
     path: '/workspace/demo/main.kcl',
-  }
+  },
+  precedingResponses: MlCopilotServerMessage[] = []
 ) {
   processor.handleActorSnapshot({
     context: {
@@ -128,6 +129,7 @@ function emitZookeeperFileRequest(
         exchanges: [
           {
             responses: [
+              ...precedingResponses,
               {
                 tool_output: {
                   result: toolOutput,
@@ -170,6 +172,84 @@ describe('ZookeeperFileRequestProcessor', () => {
     kclManagerState.path = '/workspace/demo/main.kcl'
     kclManagerState.zookeeperHistoryRecordingInProgress = false
     kclManagerState.zookeeperManagerMachineBulkManipulatingFileSystem = false
+  })
+
+  test.each([true, false])(
+    'ignores reasoning deletion notices when the edit has a patch: %s',
+    async (hasPatch) => {
+      const processor = createProcessor()
+      const code = 'updated code'
+      const toolOutput = hasPatch
+        ? patchBackedZookeeperEdit(code)
+        : zookeeperEditWithoutPatch(code)
+
+      emitZookeeperFileRequest(processor, code, 1, toolOutput, undefined, [
+        { reasoning: { type: 'deleted_kcl_file', file_name: 'part.kcl' } },
+        { reasoning: { type: 'deleted_project_file', file_name: 'notes.txt' } },
+      ])
+      await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
+
+      const request = mocks.systemIOSend.mock.calls[0][0].data
+      expect(request.filesToDelete).toEqual([])
+      request.onFileSystemSuccess()
+      request.onSuccess()
+      await processor.dispose()
+    }
+  )
+
+  test('deletes files from the current patch and preserves files recreated by the next edit', async () => {
+    const processor = createProcessor()
+    const deletionNotice: MlCopilotServerMessage = {
+      reasoning: { type: 'deleted_kcl_file', file_name: 'part.kcl' },
+    }
+    const deletion = patchBackedZookeeperEdit('intermediate code')
+    deletion.zookeeper_edit_patch?.changed_files?.push({
+      path: 'part.kcl',
+      status: 'deleted',
+      previous_contents: 'old part',
+    })
+    emitZookeeperFileRequest(
+      processor,
+      'intermediate code',
+      1,
+      deletion,
+      undefined,
+      [deletionNotice]
+    )
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
+    const firstRequest = mocks.systemIOSend.mock.calls[0][0].data
+    expect(firstRequest.filesToDelete).toEqual([
+      { requestedFileName: 'part.kcl' },
+    ])
+    firstRequest.onFileSystemSuccess()
+    firstRequest.onSuccess()
+
+    const recreation = patchBackedZookeeperEdit('final code')
+    recreation.outputs = { ...recreation.outputs, 'part.kcl': 'new part' }
+    recreation.zookeeper_edit_patch?.changed_files?.push({
+      path: 'part.kcl',
+      status: 'created',
+      contents: 'new part',
+    })
+    emitZookeeperFileRequest(
+      processor,
+      'final code',
+      2,
+      recreation,
+      undefined,
+      [deletionNotice, { tool_output: { result: deletion } }]
+    )
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
+    const secondRequest = mocks.systemIOSend.mock.calls[1][0].data
+    expect(secondRequest.filesToDelete).toEqual([])
+    expect(secondRequest.files).toContainEqual({
+      requestedProjectName: 'demo',
+      requestedFileName: 'part.kcl',
+      requestedCode: 'new part',
+    })
+    secondRequest.onFileSystemSuccess()
+    secondRequest.onSuccess()
+    await processor.dispose()
   })
 
   test('waits for the previous editor refresh before dispatching the next edit', async () => {
