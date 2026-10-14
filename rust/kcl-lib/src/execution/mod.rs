@@ -180,7 +180,7 @@ mod modeling;
 mod sketch_solve;
 mod solver_arc;
 mod state;
-pub mod typed_path;
+pub use kcl_api::typed_path;
 pub(crate) mod types;
 
 pub(crate) const SKETCH_BLOCK_PARAM_ON: &str = "on";

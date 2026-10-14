@@ -238,7 +238,7 @@ impl ts_rs::TS for TypedPath {
 #[cfg(not(target_arch = "wasm32"))]
 fn normalise_import<S: AsRef<str>>(raw: S) -> std::path::PathBuf {
     let s = raw.as_ref();
-    // On Unix we need to swap `\` → `/`.  On Windows we leave it alone.
+    // On Unix we need to swap `\` to `/`. On Windows we leave it alone.
     // (Windows happily consumes `/`)
     if cfg!(unix) && s.contains('\\') {
         std::path::PathBuf::from(s.replace('\\', "/"))
