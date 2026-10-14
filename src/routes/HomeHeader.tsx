@@ -10,7 +10,11 @@ import {
   type ProjectLibrary,
 } from '@src/lib/projectLibraries'
 import { FREE_CLOUD_PROJECT_TRAINING_POLICY_URL } from '@src/lib/projectLibraries/trainingDisclosure'
-import { getNextSearchParams, getSortIcon } from '@src/lib/sorting'
+import {
+  getSortIcon,
+  type ProjectSort,
+  type ProjectSortField,
+} from '@src/lib/sorting'
 import { getProjectLibraryIconName } from '@src/routes/projectLibraryIcons'
 import type { HTMLProps, ReactNode } from 'react'
 import { Link } from 'react-router-dom'
@@ -25,8 +29,8 @@ interface HomeHeaderProps extends HTMLProps<HTMLDivElement> {
   library?: ProjectLibrary
   showLibraryBackLink?: boolean
   setQuery: (query: string) => void
-  sort: string
-  setSearchParams: (params: Record<string, string>) => void
+  sort: ProjectSort
+  onSort: (field: ProjectSortField) => void
   readWriteProjectDir: ReadWriteProjectState
   projectSearchKeybinding?: string
   libraryHomeSummary?: ReactNode
@@ -39,7 +43,7 @@ export function HomeHeader({
   showLibraryBackLink = false,
   setQuery,
   sort,
-  setSearchParams,
+  onSort,
   readWriteProjectDir,
   projectSearchKeybinding,
   libraryHomeSummary,
@@ -101,7 +105,7 @@ export function HomeHeader({
                   ? 'text-chalkboard-80 dark:text-chalkboard-40'
                   : ''
               }`}
-              onClick={() => setSearchParams(getNextSearchParams(sort, 'name'))}
+              onClick={() => onSort('name')}
               iconStart={{
                 icon: getSortIcon(sort, 'name'),
                 bgClassName: 'bg-transparent',
@@ -120,9 +124,7 @@ export function HomeHeader({
                   ? 'text-chalkboard-80 dark:text-chalkboard-40'
                   : ''
               }`}
-              onClick={() =>
-                setSearchParams(getNextSearchParams(sort, 'modified'))
-              }
+              onClick={() => onSort('modified')}
               iconStart={{
                 icon: sort ? getSortIcon(sort, 'modified') : 'arrowDown',
                 bgClassName: 'bg-transparent',
