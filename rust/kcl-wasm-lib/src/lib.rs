@@ -4,6 +4,8 @@
 mod api;
 #[cfg(target_arch = "wasm32")]
 mod context;
+#[cfg(any(target_arch = "wasm32", test))]
+mod execution_path;
 #[cfg(target_arch = "wasm32")]
 mod lsp;
 #[cfg(target_arch = "wasm32")]
