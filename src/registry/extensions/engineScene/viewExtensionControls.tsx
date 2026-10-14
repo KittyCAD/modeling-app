@@ -17,10 +17,12 @@ const ModelingDialogViewExtension = lazy(async () => ({
     .ModelingDialogViewExtension,
 }))
 
-export function EngineSceneModelingDialogViewExtension() {
+export function EngineSceneModelingDialogViewExtension(
+  props: EngineSceneViewExtensionProps
+) {
   return (
     <Suspense fallback={null}>
-      <ModelingDialogViewExtension />
+      <ModelingDialogViewExtension {...props} />
     </Suspense>
   )
 }

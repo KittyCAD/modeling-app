@@ -1,14 +1,19 @@
 import { lazy, Suspense, useRef } from 'react'
 import { useApp } from '@src/lib/boot'
 import { isModelingDialogCommand } from '@src/lib/commandUtils'
+import { commandScopeService } from '@src/registry/contracts/commands'
+import type { EngineSceneViewExtensionProps } from '@src/registry/contracts/engineScene'
 
 const ModelingDialog = lazy(
   () => import('@src/components/ModelingDialog/ModelingDialog')
 )
 
-export function ModelingDialogViewExtension() {
+export function ModelingDialogViewExtension({
+  modelingState,
+  modelingSend,
+}: EngineSceneViewExtensionProps) {
   const containerRef = useRef<HTMLDivElement>(null)
-  const { commands } = useApp()
+  const { commands, settings, wasmPromise, registry } = useApp()
   const state = commands.useState()
   if (
     state.matches('Closed') ||
@@ -24,6 +29,13 @@ export function ModelingDialogViewExtension() {
         <ModelingDialog
           key={state.context.commandInvocationId}
           containerRef={containerRef}
+          kclManager={modelingState.context.kclManager}
+          commands={commands}
+          settings={settings}
+          wasmPromise={wasmPromise}
+          commandScopes={registry.optional(commandScopeService)}
+          selectionRanges={modelingState.context.selectionRanges}
+          modelingSend={modelingSend}
         />
       </Suspense>
     </div>

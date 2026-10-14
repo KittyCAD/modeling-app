@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
-import { useModelingContext } from '@src/hooks/useModelingContext'
-import { useApp, useSingletons } from '@src/lib/boot'
+import type { KclManager } from '@src/lang/KclManager'
+import type { AppCommandSystem } from '@src/lib/app'
 import { reportRejection } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import type { EngineSceneViewExtensionProps } from '@src/registry/contracts/engineScene'
 import {
   hasValue,
   isSelections,
@@ -14,18 +16,27 @@ import {
 const emptySelection: Selections = { graphSelections: [], otherSelections: [] }
 
 /** Only the active field owns scene selection; other fields keep their captured values. */
-export function useDialogSelection(
-  context: CommandBarContext,
-  fields: DialogField[],
-  values: Record<string, unknown>,
+export function useDialogSelection({
+  context,
+  fields,
+  values,
+  save,
+  commands,
+  kclManager,
+  wasmPromise,
+  selectionRanges,
+  modelingSend,
+}: {
+  context: CommandBarContext
+  fields: DialogField[]
+  values: Record<string, unknown>
   save: (name: string, value: unknown) => void
-) {
-  const { commands, wasmPromise } = useApp()
-  const { kclManager } = useSingletons()
-  const {
-    context: { selectionRanges },
-    send,
-  } = useModelingContext()
+  commands: AppCommandSystem
+  kclManager: KclManager
+  wasmPromise: Promise<ModuleType>
+  selectionRanges: Selections
+  modelingSend: EngineSceneViewExtensionProps['modelingSend']
+}) {
   const [activeName, setActiveName] = useState<string>()
   const activated = useRef(false)
   const selectionRef = useRef(selectionRanges)
@@ -48,7 +59,7 @@ export function useDialogSelection(
       type: 'Change current argument',
       data: { arg: { ...arg, name } },
     })
-    send({
+    modelingSend({
       type: 'Set selection',
       data: { selectionType: 'completeSelection', selection },
     })

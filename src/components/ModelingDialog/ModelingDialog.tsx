@@ -10,10 +10,15 @@ import {
 } from '@src/components/CommandBar/CommandKclInput'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { MarkdownText } from '@src/components/MarkdownText'
-import { useApp, useSingletons } from '@src/lib/boot'
+import type { KclManager } from '@src/lang/KclManager'
+import type { AppCommandSystem, AppSettingsSystem } from '@src/lib/app'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
 import { isErr, trap } from '@src/lib/trap'
 import { capitaliseFC } from '@src/lib/utils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Selections } from '@src/machines/modelingSharedTypes'
+import type { CommandScopeService } from '@src/registry/contracts/commands'
+import type { EngineSceneViewExtensionProps } from '@src/registry/contracts/engineScene'
 import {
   fieldText,
   getDialogFields,
@@ -27,12 +32,24 @@ import { useDialogSelection } from '@src/components/ModelingDialog/useDialogSele
 
 export default function ModelingDialog({
   containerRef,
+  kclManager,
+  commands,
+  settings,
+  wasmPromise,
+  commandScopes,
+  selectionRanges,
+  modelingSend,
 }: {
   containerRef: RefObject<HTMLElement | null>
+  kclManager: KclManager
+  commands: AppCommandSystem
+  settings: AppSettingsSystem
+  wasmPromise: Promise<ModuleType>
+  commandScopes?: CommandScopeService
+  selectionRanges: Selections
+  modelingSend: EngineSceneViewExtensionProps['modelingSend']
 }) {
   useSignals()
-  const { commands } = useApp()
-  const { kclManager } = useSingletons()
   const state = commands.useState()
   const { selectedCommand: command, commandInvocationId } = state.context
   const [values, setValues] = useState<Record<string, unknown>>({})
@@ -49,7 +66,17 @@ export default function ModelingDialog({
   })
   const save = (name: string, value: unknown) =>
     setValues((previous) => ({ ...previous, [name]: value }))
-  const selection = useDialogSelection(state.context, fields, values, save)
+  const selection = useDialogSelection({
+    context: state.context,
+    fields,
+    values,
+    save,
+    commands,
+    kclManager,
+    wasmPromise,
+    selectionRanges,
+    modelingSend,
+  })
   const context = {
     ...state.context,
     argumentsToSubmit: {
@@ -129,6 +156,10 @@ export default function ModelingDialog({
       return (
         <CommandKclInput
           key={name}
+          kclManager={kclManager}
+          settings={settings}
+          wasmPromise={wasmPromise}
+          commandScopes={commandScopes}
           name={name}
           arg={arg}
           label={label}
