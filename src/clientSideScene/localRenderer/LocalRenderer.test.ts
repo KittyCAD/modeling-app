@@ -110,6 +110,8 @@ function fixture(
       enableSSAO: false,
       highlightEdges: false,
       fixedSizeGrid: true,
+      pathTrace: false,
+      denoise: true,
       onModelLoadSettled,
     }
   )

@@ -10,6 +10,7 @@ import { PlaneRenderer } from '@src/clientSideScene/localRenderer/PlaneRenderer'
 import { EnvMapLoader } from '@src/clientSideScene/localRenderer/EnvMapLoader'
 import { IntegerIdPicker } from '@src/clientSideScene/localRenderer/IntegerIdPicker'
 import { HDR_ENV_MAP_URL } from '@src/clientSideScene/localRenderer/maps'
+import type { PathTraceRenderer } from '@src/clientSideScene/localRenderer/PathTraceRenderer'
 import { SelectionHighlightRenderer } from '@src/clientSideScene/localRenderer/SelectionHighlightRenderer'
 import type { KclExecutionDoneDetail, KclManager } from '@src/lang/KclManager'
 import { KclManagerEvents } from '@src/lang/KclManager'
@@ -69,16 +70,17 @@ type AmbientOcclusionPipeline = {
   denoisePass: DenoiseNode | null
   denoiseNoiseTexture: Texture | null
 }
-type DisposableGpuDevice = {
-  destroy: () => void
-}
 export interface LocalRendererProps {
   theme: ResolvedTheme
   enableSSAO: boolean
   highlightEdges: boolean
   fixedSizeGrid: boolean
+  pathTrace: boolean
+  denoise: boolean
   /** isNewModel: the result of a finished execution is now in the scene. */
   onModelLoadSettled?: (isNewModel?: boolean) => void
+  /** supportsPathTracing: the renderer runs on WebGPU, which path tracing needs. */
+  onInitialized?: (supportsPathTracing: boolean) => void
 }
 
 export class LocalRenderer {
@@ -88,9 +90,12 @@ export class LocalRenderer {
   private enableSSAO: boolean
   private highlightEdges: boolean
   private fixedSizeGrid: boolean
+  private pathTrace: boolean
+  private denoise: boolean
   private onModelLoadSettled: LocalRendererProps['onModelLoadSettled']
+  private onInitialized: LocalRendererProps['onInitialized']
   private renderer: WebGPURenderer | null = null
-  private device: DisposableGpuDevice | null = null
+  private device?: GPUDevice
   private scene: Scene | null = null
   private envMapLoader: EnvMapLoader | null = null
   private edgeRenderer: EdgeRenderer | null = null
@@ -115,6 +120,8 @@ export class LocalRenderer {
   private readonly unregisterBaseUnitListener: () => void
   private ambientOcclusionRadius = 0.01
   private ambientOcclusionPipeline: AmbientOcclusionPipeline | null = null
+  private pathTraceRenderer: PathTraceRenderer | null = null
+  private pathTraceRequest = 0
   private baseRenderDirty = true
   private disposed = false
   private pickingEnabled = false
@@ -145,7 +152,10 @@ export class LocalRenderer {
     this.enableSSAO = props.enableSSAO
     this.highlightEdges = props.highlightEdges
     this.fixedSizeGrid = props.fixedSizeGrid
+    this.pathTrace = props.pathTrace
+    this.denoise = props.denoise
     this.onModelLoadSettled = props.onModelLoadSettled
+    this.onInitialized = props.onInitialized
 
     this.container.style.opacity = '0'
     this.kclManager.addEventListener(
@@ -455,6 +465,65 @@ export class LocalRenderer {
     this.invalidateBaseRender()
   }
 
+  setPathTrace(pathTrace: boolean) {
+    if (this.pathTrace === pathTrace) {
+      return
+    }
+
+    this.pathTrace = pathTrace
+    if (pathTrace) {
+      this.startPathTracing().catch(this.handlePathTracingError)
+    } else {
+      this.stopPathTracing()
+    }
+    this.invalidateBaseRender()
+  }
+
+  setDenoise(denoise: boolean) {
+    this.denoise = denoise
+    this.pathTraceRenderer?.setDenoise(denoise)
+  }
+
+  private async startPathTracing() {
+    const { renderer, device, scene } = this
+    // Path tracing needs WebGPU. There is no WebGL fallback.
+    if (!renderer || !device || !scene?.environment) {
+      return
+    }
+
+    const request = ++this.pathTraceRequest
+    const { PathTraceRenderer } = await import(
+      '@src/clientSideScene/localRenderer/PathTraceRenderer'
+    )
+    const pathTraceRenderer = await PathTraceRenderer.create(
+      renderer,
+      device,
+      scene.environment,
+      scene.environmentIntensity,
+      () => this.scheduleRender()
+    )
+    if (this.disposed || request !== this.pathTraceRequest) {
+      pathTraceRenderer.dispose()
+      return
+    }
+
+    pathTraceRenderer.setModel(this.currentModel)
+    pathTraceRenderer.setDenoise(this.denoise)
+    this.pathTraceRenderer = pathTraceRenderer
+    this.invalidateBaseRender()
+  }
+
+  private stopPathTracing() {
+    this.pathTraceRequest++
+    this.pathTraceRenderer?.dispose()
+    this.pathTraceRenderer = null
+  }
+
+  private readonly handlePathTracingError = (error: unknown) => {
+    console.error('[LocalWebGPUScene] path tracing failed', error)
+    reportRejection(error)
+  }
+
   dispose() {
     if (this.disposed) {
       return
@@ -490,13 +559,14 @@ export class LocalRenderer {
       this.animationFrameId = -1
     }
     this.disposeAmbientOcclusionPipeline()
+    this.stopPathTracing()
     this.envMapLoader?.dispose()
     this.envMapLoader = null
     this.renderer?.domElement.remove()
     this.renderer?.dispose()
     this.renderer = null
     this.device?.destroy()
-    this.device = null
+    this.device = undefined
     this.scene = null
     this.previewCamera = null
   }
@@ -653,10 +723,17 @@ export class LocalRenderer {
       return
     }
 
+    const { pathTraceRenderer } = this
+    // A path traced image changes with every frame until it settles.
+    const pathTracing = !!pathTraceRenderer && !pathTraceRenderer.settled
     const baseRendered =
-      this.selectionHighlightRenderer?.beginFrame(this.baseRenderDirty) ?? true
+      this.selectionHighlightRenderer?.beginFrame(
+        this.baseRenderDirty || pathTracing
+      ) ?? true
     if (baseRendered) {
-      if (!this.enableSSAO) {
+      if (pathTraceRenderer) {
+        pathTraceRenderer.render(previewCamera)
+      } else if (!this.enableSSAO) {
         renderer.render(scene, previewCamera)
       } else {
         if (this.ambientOcclusionPipeline?.camera !== previewCamera) {
@@ -732,6 +809,9 @@ export class LocalRenderer {
     }
 
     this.selectionHighlightRenderer?.render(previewCamera)
+    if (pathTraceRenderer && !pathTraceRenderer.settled) {
+      this.scheduleRender()
+    }
   }
 
   /**
@@ -790,6 +870,7 @@ export class LocalRenderer {
     if (this.currentModel) {
       this.scene?.remove(this.currentModel)
       this.edgeRenderer?.removeFromParent()
+      this.pathTraceRenderer?.setModel(null)
       disposeObject3D(this.currentModel)
       this.currentModel = null
     }
@@ -812,6 +893,10 @@ export class LocalRenderer {
     const device = adapter
       ? await adapter
           .requestDevice({
+            // Half floats make the path tracer's denoiser faster.
+            requiredFeatures: adapter.features.has('shader-f16')
+              ? ['shader-f16']
+              : [],
             requiredLimits: {
               // TODO: Chunk geometry so large models work on
               // adapters with lower per-buffer limits.
@@ -899,7 +984,7 @@ export class LocalRenderer {
       )
 
     this.renderer = renderer
-    this.device = device ?? null
+    this.device = device
     this.envMapLoader = envMapLoader
 
     this.rebuildSelectionTargets()
@@ -947,6 +1032,10 @@ export class LocalRenderer {
     this.scheduleRender()
 
     this.container.style.opacity = '1'
+    this.onInitialized?.(!!device)
+    if (this.pathTrace) {
+      this.startPathTracing().catch(this.handlePathTracingError)
+    }
     // Execution may finish while the GPU/environment is initializing, or before
     // this renderer is mounted. Load that completed scene once, too.
     if (
@@ -1034,6 +1123,7 @@ export class LocalRenderer {
 
       this.edgeRenderer?.buildEdges(gltf)
       this.edgeRenderer?.addTo(gltf.scene)
+      this.pathTraceRenderer?.setModel(gltf.scene)
 
       this.rebuildSelectionTargets()
       const bounds = new Box3().setFromObject(gltf.scene)

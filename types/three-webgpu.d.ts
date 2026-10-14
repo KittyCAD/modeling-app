@@ -5,3 +5,7 @@ declare module 'three/webgpu' {
 declare module 'three/tsl' {
   export * from 'three/src/Three.TSL.js'
 }
+
+declare module 'three-gpu-pathtracer/webgpu' {
+  export * from 'three-gpu-pathtracer/src/webgpu/index.js'
+}

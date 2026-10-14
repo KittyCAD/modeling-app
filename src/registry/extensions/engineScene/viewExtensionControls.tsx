@@ -88,3 +88,34 @@ export function SketchConstraintsToggleViewExtension({
     </button>
   )
 }
+
+export function PathTraceToggleViewExtension({
+  pathTracing,
+}: EngineSceneViewExtensionProps) {
+  return (
+    <div className="flex items-center gap-2">
+      {pathTracing.enabled && (
+        <label className="h-8 px-2 rounded border text-xs flex items-center gap-1.5 backdrop-blur-sm bg-chalkboard-10/80 dark:bg-chalkboard-100/80 border-chalkboard-20 dark:border-chalkboard-80">
+          <input
+            type="checkbox"
+            checked={pathTracing.denoise}
+            onChange={(event) => pathTracing.setDenoise(event.target.checked)}
+          />
+          AI denoise
+        </label>
+      )}
+      <button
+        type="button"
+        aria-pressed={pathTracing.enabled}
+        onClick={() => pathTracing.setEnabled((enabled) => !enabled)}
+        className={`h-8 px-2 m-0 rounded border text-xs flex items-center backdrop-blur-sm ${
+          pathTracing.enabled
+            ? 'bg-primary hover:bg-primary text-chalkboard-10 border-primary'
+            : 'bg-chalkboard-10/80 dark:bg-chalkboard-100/80 border-chalkboard-20 dark:border-chalkboard-80'
+        }`}
+      >
+        Path trace: {pathTracing.enabled ? 'on' : 'off'}
+      </button>
+    </div>
+  )
+}

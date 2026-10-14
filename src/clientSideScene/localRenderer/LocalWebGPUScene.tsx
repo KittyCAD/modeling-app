@@ -13,7 +13,14 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 const THUMBNAIL_DELAY_MS = 500
 
 export const LocalWebGPUScene = (props: LocalRendererProps) => {
-  const { theme, enableSSAO, highlightEdges, fixedSizeGrid } = props
+  const {
+    theme,
+    enableSSAO,
+    highlightEdges,
+    fixedSizeGrid,
+    pathTrace,
+    denoise,
+  } = props
   const containerRef = useRef<HTMLDivElement>(null)
   const rendererRef = useRef<LocalRenderer | null>(null)
   const latestPropsRef = useRef(props)
@@ -104,6 +111,14 @@ export const LocalWebGPUScene = (props: LocalRendererProps) => {
   useEffect(() => {
     rendererRef.current?.setFixedSizeGrid(fixedSizeGrid)
   }, [fixedSizeGrid])
+
+  useEffect(() => {
+    rendererRef.current?.setPathTrace(pathTrace)
+  }, [pathTrace])
+
+  useEffect(() => {
+    rendererRef.current?.setDenoise(denoise)
+  }, [denoise])
 
   return (
     <>

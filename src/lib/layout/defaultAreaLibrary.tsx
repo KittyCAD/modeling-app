@@ -35,6 +35,9 @@ function ModelingArea() {
   const [sketchSolveStreamDimming, setSketchSolveStreamDimming] = useState(
     DEFAULT_SKETCH_SOLVE_STREAM_DIMMING
   )
+  const [pathTraceSupported, setPathTraceSupported] = useState(false)
+  const [pathTrace, setPathTrace] = useState(false)
+  const [pathTraceDenoise, setPathTraceDenoise] = useState(true)
   const engineSceneViewExtensions = registry.signal(
     engineSceneViewExtensionsValueSpec
   ).value
@@ -48,6 +51,14 @@ function ModelingArea() {
     modelingSend: send,
     sketchSolveStreamDimming,
     setSketchSolveStreamDimming,
+    pathTracing: {
+      supported: pathTraceSupported,
+      enabled: pathTrace,
+      denoise: pathTraceDenoise,
+      setSupported: setPathTraceSupported,
+      setEnabled: setPathTrace,
+      setDenoise: setPathTraceDenoise,
+    },
   }
   const streamClassName = mergeEngineSceneClassNames(
     engineSceneStreamClassNames

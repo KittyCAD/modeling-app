@@ -21,11 +21,23 @@ export type EngineSceneViewExtensionZone =
 
 export const engineSceneRuntimeExtensionsSlot = new Slot()
 
+/** Path tracing in the local renderer. */
+export type EngineScenePathTracing = {
+  /** The local renderer runs on WebGPU, which path tracing needs. */
+  supported: boolean
+  enabled: boolean
+  denoise: boolean
+  setSupported: (supported: boolean) => void
+  setEnabled: Dispatch<SetStateAction<boolean>>
+  setDenoise: Dispatch<SetStateAction<boolean>>
+}
+
 export type EngineSceneExtensionContext = {
   modelingState: StateFrom<typeof modelingMachine>
   modelingSend: (event: EventFrom<typeof modelingMachine>) => void
   sketchSolveStreamDimming: number
   setSketchSolveStreamDimming: Dispatch<SetStateAction<number>>
+  pathTracing: EngineScenePathTracing
 }
 
 export type EngineSceneViewExtensionProps = EngineSceneExtensionContext
