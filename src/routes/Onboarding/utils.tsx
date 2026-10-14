@@ -3,8 +3,6 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { useCallback, useEffect, useState } from 'react'
 import {
   type NavigateFunction,
-  // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: onboarding navigation and route-based completion checks (useLocation).
-  type useLocation,
   // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: onboarding navigation and route-based completion checks (useNavigate).
   useNavigate,
 } from 'react-router-dom'
@@ -419,14 +417,10 @@ export function acceptOnboarding(deps: OnboardingUtilDeps): Promise<void> {
   return trackedStart
 }
 
-export function needsToOnboard(
-  location: ReturnType<typeof useLocation>,
-  onboardingStatus: OnboardingStatus
-) {
+export function needsToOnboard(onboardingStatus: OnboardingStatus) {
   return (
-    !location.pathname.includes(String(PATHS.ONBOARDING)) &&
-    (onboardingStatus.length === 0 ||
-      !(onboardingStatus === 'completed' || onboardingStatus === 'dismissed'))
+    onboardingStatus.length === 0 ||
+    !(onboardingStatus === 'completed' || onboardingStatus === 'dismissed')
   )
 }
 

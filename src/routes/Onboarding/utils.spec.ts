@@ -16,7 +16,6 @@ import {
   useOnboardingStartPending,
 } from '@src/routes/Onboarding/utils'
 import { act, renderHook, waitFor } from '@testing-library/react'
-import type { Location } from 'react-router-dom'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const originalElectron = window.electron
@@ -275,40 +274,16 @@ describe('Onboarding utility functions', () => {
   })
 
   describe('needsToOnboard', () => {
-    it('in onboarding already does not need onboarding', () => {
-      const location: Location = {
-        pathname: '/some-file/onboarding/some-step',
-        search: '',
-        hash: '',
-        state: null,
-        key: 'default',
-      }
-      expect(needsToOnboard(location, '')).toEqual(false)
-    })
-    it('elsewhere with bad status does need onboarding', () => {
-      const location: Location = {
-        pathname: '/somewhere-else',
-        search: '',
-        hash: '',
-        state: null,
-        key: 'default',
-      }
+    it('bad status does need onboarding', () => {
       expect(
-        needsToOnboard(
-          location,
-          '/bad-onboarding-status' as unknown as OnboardingStatus
-        )
+        needsToOnboard('/bad-onboarding-status' as unknown as OnboardingStatus)
       ).toEqual(true)
     })
-    it('elsewhere with completed does not need onboarding', () => {
-      const location: Location = {
-        pathname: '/somewhere-else',
-        search: '',
-        hash: '',
-        state: null,
-        key: 'default',
-      }
-      expect(needsToOnboard(location, 'completed')).toEqual(false)
+    it('with completed does not need onboarding', () => {
+      expect(needsToOnboard('completed')).toEqual(false)
+    })
+    it('with valid incomplete value needs onboarding', () => {
+      expect(needsToOnboard('/desktop/toolbar')).toEqual(false)
     })
   })
 

@@ -26,10 +26,7 @@ import {
 } from '@src/lib/autoUpdate'
 import { BillingTransition } from '@src/lib/billing'
 import { useApp, useSingletons } from '@src/lib/boot'
-import {
-  ONBOARDING_TOAST_ID,
-  WASM_INIT_FAILED_TOAST_ID,
-} from '@src/lib/constants'
+import { WASM_INIT_FAILED_TOAST_ID } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { defaultLayout, LayoutRootNode } from '@src/lib/layout'
 import { useDefaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
@@ -37,7 +34,6 @@ import { useDefaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
 import { PATHS } from '@src/lib/paths'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { reportRejection } from '@src/lib/trap'
-import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { xStateValueToString } from '@src/lib/xStateValueToString'
 
 import { useFolders, useLastOperation } from '@src/machines/systemIO/hooks'
@@ -47,17 +43,13 @@ import {
   statusBarGlobalItemsValueSpec,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
-import {
-  needsToOnboard,
-  TutorialRequestToast,
-  useApplyRememberedOnboardingWorkflow,
-} from '@src/routes/Onboarding/utils'
+import { useApplyRememberedOnboardingWorkflow } from '@src/routes/Onboarding/utils'
 import { useSelector } from '@xstate/react'
 import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import ModalContainer from 'react-modal-promise'
 // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: project navigation and onboarding query detection (useLocation, useNavigate, useSearchParams).
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 export function OpenedProject() {
   useSignals()
@@ -86,9 +78,6 @@ export function OpenedProject() {
   const lsp = registry.get(lspService)
   const networkHealthStatus = useNetworkHealthStatus()
   const networkMachineStatus = useNetworkMachineStatus()
-
-  // Stream related refs and data
-  const [searchParams] = useSearchParams()
 
   const projectName = project?.name || null
   const projectPath = project?.path || null
@@ -220,46 +209,7 @@ export function OpenedProject() {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
-  const href = 'href' in location ? location.href : ''
-
-  // Show a custom toast to users if they haven't done the onboarding
-  // and they're on the web
-  useEffect(() => {
-    const needsOnboarded =
-      !window.electron &&
-      authToken && // we're logged in,
-      searchParams.size === 0 && // we haven't come via a website "try in browser" link,
-      needsToOnboard(location, onboardingStatus) // and we have an uninitialized onboarding status.
-
-    if (needsOnboarded) {
-      toast.success(
-        () =>
-          TutorialRequestToast({
-            app,
-            onboardingStatus: settingsValues.app.onboardingStatus.current,
-            navigate,
-            accountUrl: withSiteBaseURL('/account'),
-          }),
-        {
-          id: ONBOARDING_TOAST_ID,
-          duration: Number.POSITIVE_INFINITY,
-          icon: null,
-          style: { maxInlineSize: 'min(900px, 100%)' },
-        }
-      )
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    settingsValues.app.onboardingStatus.current,
-    settingsValues.app.theme.current,
-    href,
-    navigate,
-    searchParams.size,
-    authToken,
-  ])
-
-  // This is, at time of writing, the only spot we need @preact/signals-react,
-  // because we can't use the core `effect()` function for this signal, because
+  // We can't use the core `effect()` function for this signal, because
   // it is initially set to `true`, and will break the web app.
   // TODO: get the loading pattern of KclManager in order so that it's for real available,
   // then you might be able to uninstall this package and stick to just using signals-core.
