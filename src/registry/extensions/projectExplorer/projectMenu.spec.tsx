@@ -3,7 +3,8 @@ import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
 import type { App } from '@src/lib/app'
 import type { Project } from '@src/lib/project'
 import getDesktopAppExtension from '@src/registry/extensions/getDesktopApp'
-import { fireEvent, render, screen } from '@testing-library/react'
+import routerExtension from '@src/registry/extensions/router'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { BrowserRouter } from 'react-router-dom'
 import { afterEach, describe, expect, test, vi } from 'vitest'
@@ -49,7 +50,11 @@ function renderWithRouter(children: ReactNode) {
 
 function createProjectMenuApp() {
   const registry = new Registry()
-  registry.configure([projectExplorerExtension, getDesktopAppExtension])
+  registry.configure([
+    projectExplorerExtension,
+    getDesktopAppExtension,
+    routerExtension,
+  ])
   const commandsActor = createActor(
     createMachine({
       context: {
@@ -83,6 +88,7 @@ function createProjectMenuApp() {
       registry,
     } as unknown as App,
     dispose: () => {
+      cleanup()
       commandsActor.stop()
       registry[Symbol.dispose]()
     },
