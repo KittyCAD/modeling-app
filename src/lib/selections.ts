@@ -13,7 +13,6 @@ import { Mesh } from 'three'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { PlaneName } from '@rust/kcl-lib/bindings/PlaneName'
 
-import type { EntityReference as SdkEntityReference } from '@kittycad/lib'
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import {
   EXTRA_SEGMENT_HANDLE,
@@ -2503,8 +2502,7 @@ function setEngineEntitySelectionV2(
       type: 'modeling_cmd_req',
       cmd: {
         type: 'select_entity',
-        // Remove this cast once @kittycad/lib includes the Helix schema variant.
-        entities: entityReferences as SdkEntityReference[],
+        entities: entityReferences,
       },
       cmd_id: uuidv4(),
     },
@@ -2517,31 +2515,6 @@ function getEngineEntityIdForSelection(
 ): string | undefined {
   if (selection.engineEntityId) {
     return selection.engineEntityId
-  }
-
-  const entityRef = selection.entityRef
-  if (entityRef) {
-    switch (entityRef.type) {
-      case 'solid3d':
-        return entityRef.solid3d_id
-      case 'solid2d':
-        return entityRef.solid2d_id
-      case 'face':
-        return entityRef.face_id
-      case 'plane':
-        return entityRef.plane_id
-      case 'solid2d_edge':
-        return entityRef.edge_id
-      case 'segment':
-        return entityRef.segment_id
-      case 'helix':
-        return entityRef.helix_id
-      case 'region':
-        return entityRef.region_id
-      case 'edge':
-      case 'vertex':
-        break
-    }
   }
 
   return resolveToCodeRef(selection, artifactGraph)?.artifact?.id

@@ -6,7 +6,10 @@ vi.mock('@src/lib/clientErrors', async (importOriginal) => {
 })
 
 import type * as ClientErrorsModule from '@src/lib/clientErrors'
-import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from '@src/lib/constants'
+import {
+  EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
+  PENDING_COMMAND_TIMEOUT,
+} from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
 import { Connection } from '@src/lib/engineConnection/connection'
 import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
@@ -81,6 +84,7 @@ function startConnectionManager(
 
 describe('ConnectionManager', () => {
   afterEach(() => {
+    vi.useRealTimers()
     vi.restoreAllMocks()
     vi.unstubAllGlobals()
     reportClientError.mockClear()
@@ -132,6 +136,205 @@ describe('ConnectionManager', () => {
     })
   })
 
+  function reconnectHarness() {
+    const manager = createConnectionManager()
+    addConnectedState(manager)
+    const connection = manager.connection!
+    const close = vi.fn()
+    connection.closeForReconnect = close
+    connection.send = vi.fn()
+    const requestReconnect = () =>
+      manager['handleReconnectRequested'](connection)
+    const sendCommand = (id: string, scene = false) =>
+      manager.sendCommand(
+        id,
+        {
+          command: {
+            type: 'modeling_cmd_req',
+            cmd_id: id,
+            cmd: { type: 'scene_clear_all' },
+          },
+          range: [0, 0, 0],
+          idToRangeMap: {},
+        },
+        scene
+      )
+    return { manager, connection, close, requestReconnect, sendCommand }
+  }
+
+  it('captures the camera only after execution drains and before closing', async () => {
+    const { manager, close, requestReconnect } = reconnectHarness()
+    let complete!: () => void
+    const prepare = vi.fn(
+      () =>
+        new Promise<undefined>((resolve) => {
+          complete = () => resolve(undefined)
+        })
+    )
+    manager['prepareForReconnect'] = prepare
+    const finish = manager.trackExecution()
+    requestReconnect()
+    expect(prepare).not.toHaveBeenCalled()
+    finish()
+    requestReconnect()
+    expect(prepare).toHaveBeenCalledOnce()
+    expect(close).not.toHaveBeenCalled()
+    complete()
+    await vi.waitFor(() => expect(close).toHaveBeenCalledOnce())
+  })
+
+  it('bounds an unresponsive camera capture and aborts it', async () => {
+    vi.useFakeTimers()
+    const { manager, close, requestReconnect } = reconnectHarness()
+    let signal!: AbortSignal
+    manager['prepareForReconnect'] = vi.fn((captureSignal) => {
+      signal = captureSignal
+      return new Promise<undefined>(() => {})
+    })
+    requestReconnect()
+    await vi.advanceTimersByTimeAsync(299)
+    expect(close).not.toHaveBeenCalled()
+    await vi.advanceTimersByTimeAsync(1)
+    expect(signal.aborted).toBe(true)
+    expect(close).toHaveBeenCalledOnce()
+  })
+
+  it('does not close a replacement connection when old camera capture completes', async () => {
+    const { manager, close, requestReconnect } = reconnectHarness()
+    let complete!: () => void
+    manager['prepareForReconnect'] = () =>
+      new Promise<undefined>((resolve) => {
+        complete = () => resolve(undefined)
+      })
+    requestReconnect()
+    addConnectedState(manager)
+    const replacementClose = vi.fn()
+    manager.connection!.closeForReconnect = replacementClose
+    complete()
+    await Promise.resolve()
+    await Promise.resolve()
+    expect(close).not.toHaveBeenCalled()
+    expect(replacementClose).not.toHaveBeenCalled()
+  })
+
+  it('waits through command-free gaps until every execution finishes', () => {
+    const { manager, close, requestReconnect } = reconnectHarness()
+    const finishFirst = manager.trackExecution()
+    const finishSecond = manager.trackExecution()
+    requestReconnect()
+    expect(manager.isReconnectPending).toBe(true)
+    expect(close).not.toHaveBeenCalled()
+    finishFirst()
+    finishFirst()
+    expect(close).not.toHaveBeenCalled()
+    finishSecond()
+    expect(close).toHaveBeenCalledOnce()
+  })
+
+  it.each([false, true])(
+    'waits for command settlement (rejected=%s)',
+    async (rejected) => {
+      vi.useFakeTimers()
+      const { manager, close, requestReconnect, sendCommand } =
+        reconnectHarness()
+      const finish = manager.trackExecution()
+      const result = sendCommand('pending').catch(() => undefined)
+      requestReconnect()
+      finish()
+      expect(close).not.toHaveBeenCalled()
+      if (rejected) {
+        manager.rejectPendingCommand({ cmdId: 'pending' })
+      } else {
+        manager.createMessageHandler()(
+          new MessageEvent('message', {
+            data: JSON.stringify({
+              success: true,
+              request_id: 'pending',
+              resp: {
+                type: 'modeling',
+                data: {
+                  modeling_response: { type: 'scene_clear_all', data: {} },
+                },
+              },
+            }),
+          })
+        )
+      }
+      await result
+      expect(manager.pendingCommands).toEqual({})
+      expect(close).toHaveBeenCalledOnce()
+    }
+  )
+
+  it('releases a timed-out command so reconnect can proceed', async () => {
+    vi.useFakeTimers()
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    const { manager, close, requestReconnect, sendCommand } = reconnectHarness()
+    const result = sendCommand('timeout').catch(() => undefined)
+    requestReconnect()
+    expect(close).not.toHaveBeenCalled()
+    await vi.advanceTimersByTimeAsync(PENDING_COMMAND_TIMEOUT)
+    await result
+    expect(manager.pendingCommands).toEqual({})
+    expect(close).toHaveBeenCalledOnce()
+  })
+
+  it('waits for every recovery even when the original execution finishes', () => {
+    const { manager, close, requestReconnect } = reconnectHarness()
+    const finish = manager.trackExecution()
+    const recoverFirst = manager.captureFailedExecutionCleanup()
+    const recoverSecond = manager.captureFailedExecutionCleanup()
+    requestReconnect()
+    finish()
+    recoverFirst()
+    recoverFirst()
+    expect(close).not.toHaveBeenCalled()
+    recoverSecond()
+    expect(close).toHaveBeenCalledOnce()
+  })
+
+  it('recovery preserves scene commands and newer work', async () => {
+    vi.useFakeTimers()
+    const { manager, close, requestReconnect, sendCommand } = reconnectHarness()
+    manager.trackExecution()
+    const failed = sendCommand('failed').catch(() => undefined)
+    const scene = sendCommand('scene', true).catch(() => undefined)
+    const recover = manager.captureFailedExecutionCleanup()
+    const finishNew = manager.trackExecution()
+    const newer = sendCommand('new').catch(() => undefined)
+    requestReconnect()
+    recover()
+    await failed
+    expect(Object.keys(manager.pendingCommands).sort()).toEqual([
+      'new',
+      'scene',
+    ])
+    expect(close).not.toHaveBeenCalled()
+    manager.rejectPendingCommand({ cmdId: 'new' })
+    manager.rejectPendingCommand({ cmdId: 'scene' })
+    await Promise.all([scene, newer])
+    expect(close).not.toHaveBeenCalled()
+    finishNew()
+    expect(close).toHaveBeenCalledOnce()
+  })
+
+  it('ignores execution and recovery completions after teardown', () => {
+    const { manager, connection, close, requestReconnect } = reconnectHarness()
+    const finish = manager.trackExecution()
+    const recover = manager.captureFailedExecutionCleanup()
+    requestReconnect()
+    manager.tearDown({ route: 'window-offline', initiatedBy: 'client' })
+    addConnectedState(manager)
+    const newClose = vi.fn()
+    manager.connection!.closeForReconnect = newClose
+    finish()
+    recover()
+    manager['handleReconnectRequested'](connection)
+    expect(manager.isReconnectPending).toBe(false)
+    expect(close).not.toHaveBeenCalled()
+    expect(newClose).not.toHaveBeenCalled()
+  })
+
   it.each([1000, 1006])(
     'carries a reconnect request through socket closure %s and manager cleanup',
     (code) => {
@@ -150,6 +353,7 @@ describe('ConnectionManager', () => {
         handleOnDataChannelMessage: vi.fn(),
         recordShutdownTrigger: manager.recordShutdownTrigger.bind(manager),
         tearDownManager: manager.tearDown.bind(manager),
+        onReconnectRequested: manager['handleReconnectRequested'].bind(manager),
         rejectPendingCommand: vi.fn(),
         handleMessage: vi.fn(),
         getCloudProjectId: () => undefined,

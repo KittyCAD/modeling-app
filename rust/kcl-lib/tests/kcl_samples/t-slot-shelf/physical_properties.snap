@@ -18,12 +18,12 @@ description: Physical properties t-slot-shelf.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 6073327.6577569
+    "value": 6034214.792481592
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 11048.02090942203
+    "value": 11079.062676568552
   }
 }

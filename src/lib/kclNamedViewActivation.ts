@@ -221,7 +221,8 @@ async function reapplyActiveView(kclManager: KclManager): Promise<void> {
 }
 
 export async function reapplyActiveViewAfterReconnect(
-  kclManager: KclManager
+  kclManager: KclManager,
+  { restoreCamera = true }: { restoreCamera?: boolean } = {}
 ): Promise<boolean> {
   const context = reapplyContext(kclManager)
   if (context === null) {
@@ -231,7 +232,12 @@ export async function reapplyActiveViewAfterReconnect(
   const { active, execState, view } = context
 
   if (view === undefined) {
-    return fallBackToKclDefault({ active, execState, kclManager })
+    return fallBackToKclDefault({
+      active,
+      execState,
+      kclManager,
+      restoreCamera,
+    })
   }
 
   await applyVisibility({
@@ -239,6 +245,9 @@ export async function reapplyActiveViewAfterReconnect(
     execState,
     kclManager,
   })
+  if (!restoreCamera) {
+    return false
+  }
   await applyNamedViewCamera({
     camera: view.artifact.camera,
     sceneInfra: kclManager.sceneInfra,
@@ -293,17 +302,21 @@ async function fallBackToKclDefault({
   active,
   execState,
   kclManager,
+  restoreCamera = true,
 }: {
   active: ActiveView
   execState: ExecState
   kclManager: KclManager
+  restoreCamera?: boolean
 }): Promise<boolean> {
   await applyVisibility({
     target: { kind: 'kclDefault' },
     execState,
     kclManager,
   })
-  const restored = await restorePreActivationCamera(kclManager)
+  const restored = restoreCamera
+    ? await restorePreActivationCamera(kclManager)
+    : false
   activeViewSignal.value = null
 
   toast.error(

@@ -18,12 +18,12 @@ description: Physical properties gingerbread-man-cookie-cutter.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 735037.2304263146
+    "value": 735037.241172904
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 3340.4760996518235
+    "value": 3340.4786100087827
   }
 }

@@ -2,6 +2,7 @@ use std::f64::consts::TAU;
 use std::sync::Arc;
 
 use indexmap::IndexMap;
+use kcl_api::ObjectId;
 use kcl_api::UnitLength;
 use kcl_error::SourceRange;
 use kittycad_modeling_cmds::ModelingCmd;
@@ -27,7 +28,6 @@ use crate::execution::Segment;
 use crate::execution::SegmentKind;
 use crate::execution::SketchSurface;
 use crate::execution::types::NumericTypeExt;
-use crate::front::ObjectId;
 use crate::parsing::ast::types::TagNode;
 use crate::std::args::TyF64;
 use crate::std::sketch::StraightLineParams;
@@ -533,6 +533,14 @@ pub(crate) async fn create_segments_in_engine(
 #[cfg(test)]
 mod tests {
     use indexmap::IndexMap;
+    use kcl_api::ArcCtor;
+    use kcl_api::ArcDirection;
+    use kcl_api::ControlPointSplineCtor;
+    use kcl_api::Expr;
+    use kcl_api::LineCtor;
+    use kcl_api::Number;
+    use kcl_api::ObjectId;
+    use kcl_api::Point2d;
     use kcl_api::UnitLength;
     use kcl_error::SourceRange;
 
@@ -548,14 +556,6 @@ mod tests {
     use crate::execution::SketchSurface;
     use crate::execution::types::NumericType;
     use crate::execution::types::NumericTypeExt;
-    use crate::front::ArcCtor;
-    use crate::front::ArcDirection;
-    use crate::front::ControlPointSplineCtor;
-    use crate::front::Expr;
-    use crate::front::LineCtor;
-    use crate::front::Number;
-    use crate::front::ObjectId;
-    use crate::front::Point2d;
     use crate::std::args::TyF64;
     use crate::std::sketch::PlaneData;
 

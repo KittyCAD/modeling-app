@@ -657,6 +657,34 @@ describe('reapplying the active view after a reconnection', () => {
     })
   })
 
+  it('restores visibility without replacing a preserved reconnect camera', async () => {
+    const f = fakes()
+    await activateFront(f)
+    f.setCameraToAxis.mockClear()
+    const moved = await reapplyActiveViewAfterReconnect(f.kclManager, {
+      restoreCamera: false,
+    })
+    expect(moved).toBe(false)
+    expect(f.setObjectsHidden).toHaveBeenCalledWith(
+      new Map([['body-1', false]])
+    )
+    expect(f.setCameraToAxis).not.toHaveBeenCalled()
+    expect(f.setCameraView).not.toHaveBeenCalled()
+  })
+
+  it('keeps the preserved camera when an active named view disappears', async () => {
+    const f = fakes()
+    await activateFront(f)
+    f.raw.execState = execStateWith({ views: [] })
+    const moved = await reapplyActiveViewAfterReconnect(f.kclManager, {
+      restoreCamera: false,
+    })
+    expect(moved).toBe(false)
+    expect(f.setCameraView).not.toHaveBeenCalled()
+    expect(activeViewSignal.value).toBeNull()
+    expect(mockToast.error).toHaveBeenCalledOnce()
+  })
+
   it('leaves the camera to the caller while Default View is active', async () => {
     const f = fakes()
 

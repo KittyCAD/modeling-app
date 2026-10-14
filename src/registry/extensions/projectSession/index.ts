@@ -1,11 +1,10 @@
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
   provideService,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
-import type { ZDSProject } from '@src/lang/KclManager'
+import type { ZDSProject } from '@src/lib/projectSession'
 import {
   projectSession,
   type ProjectSessionService,
@@ -32,10 +31,8 @@ export const projectSessionExtension = defineRegistryItemFactory(() => {
   }
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'project-session-extension',
-      providesServices: [provideService(projectSession, serviceImpl)],
-    }),
+    id: 'project-session-extension',
+    providesServices: [provideService(projectSession, serviceImpl)],
   }
 }, 'project-session-extension')
 

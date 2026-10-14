@@ -4,6 +4,9 @@ use std::sync::Arc;
 use ahash::AHashSet;
 use ezpz::Warning;
 use indexmap::IndexMap;
+use kcl_api::Freedom;
+use kcl_api::Object;
+use kcl_api::ObjectKind;
 use kcl_api::UnitLength;
 use kcl_error::SourceRange;
 use uuid::Uuid;
@@ -27,9 +30,6 @@ use crate::execution::UnsolvedSegmentKind;
 use crate::execution::types::CoercionMode;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
-use crate::front::Freedom;
-use crate::front::Object;
-use crate::front::ObjectKind;
 use crate::std::args::TyF64;
 use crate::std::solver::POINT_POINT_2D_COINCIDENT_CHEBYSHEV_TOLERANCE_MM;
 use crate::std::solver::SOLVER_CONVERGENCE_TOLERANCE;
@@ -619,9 +619,9 @@ pub(super) fn create_segment_scene_objects(
                 let point_object = Object {
                     id: segment.object_id,
                     kind: ObjectKind::Segment {
-                        segment: crate::front::Segment::Point(crate::front::Point {
+                        segment: kcl_api::Segment::Point(kcl_api::Point {
                             position: point2d.clone(),
-                            ctor: Some(crate::front::PointCtor {
+                            ctor: Some(kcl_api::PointCtor {
                                 position: ctor.position.clone(),
                             }),
                             owner: None,
@@ -658,7 +658,7 @@ pub(super) fn create_segment_scene_objects(
                 let start_point_object = Object {
                     id: *start_object_id,
                     kind: ObjectKind::Segment {
-                        segment: crate::front::Segment::Point(crate::front::Point {
+                        segment: kcl_api::Segment::Point(kcl_api::Point {
                             position: start_point2d.clone(),
                             ctor: None,
                             owner: Some(segment.object_id),
@@ -684,7 +684,7 @@ pub(super) fn create_segment_scene_objects(
                 let end_point_object = Object {
                     id: *end_object_id,
                     kind: ObjectKind::Segment {
-                        segment: crate::front::Segment::Point(crate::front::Point {
+                        segment: kcl_api::Segment::Point(kcl_api::Point {
                             position: end_point2d.clone(),
                             ctor: None,
                             owner: Some(segment.object_id),
@@ -704,11 +704,11 @@ pub(super) fn create_segment_scene_objects(
                 let segment_object = Object {
                     id: segment.object_id,
                     kind: ObjectKind::Segment {
-                        segment: crate::front::Segment::Line(crate::front::Line {
+                        segment: kcl_api::Segment::Line(kcl_api::Line {
                             start: start_point_object_id,
                             end: end_point_object_id,
                             owner: None,
-                            ctor: crate::front::SegmentCtor::Line(ctor.as_ref().clone()),
+                            ctor: kcl_api::SegmentCtor::Line(ctor.as_ref().clone()),
                             ctor_applicable: true,
                             construction: *construction,
                         }),
@@ -747,7 +747,7 @@ pub(super) fn create_segment_scene_objects(
                 let start_point_object = Object {
                     id: *start_object_id,
                     kind: ObjectKind::Segment {
-                        segment: crate::front::Segment::Point(crate::front::Point {
+                        segment: kcl_api::Segment::Point(kcl_api::Point {
                             position: start_point2d.clone(),
                             ctor: None,
                             owner: Some(segment.object_id),
@@ -773,7 +773,7 @@ pub(super) fn create_segment_scene_objects(
                 let end_point_object = Object {
                     id: *end_object_id,
                     kind: ObjectKind::Segment {
-                        segment: crate::front::Segment::Point(crate::front::Point {
+                        segment: kcl_api::Segment::Point(kcl_api::Point {
                             position: end_point2d.clone(),
                             ctor: None,
                             owner: Some(segment.object_id),
@@ -799,7 +799,7 @@ pub(super) fn create_segment_scene_objects(
                 let center_point_object = Object {
                     id: *center_object_id,
                     kind: ObjectKind::Segment {
-                        segment: crate::front::Segment::Point(crate::front::Point {
+                        segment: kcl_api::Segment::Point(kcl_api::Point {
                             position: center_point2d.clone(),
                             ctor: None,
                             owner: Some(segment.object_id),
@@ -819,11 +819,11 @@ pub(super) fn create_segment_scene_objects(
                 let segment_object = Object {
                     id: segment.object_id,
                     kind: ObjectKind::Segment {
-                        segment: crate::front::Segment::Arc(crate::front::Arc {
+                        segment: kcl_api::Segment::Arc(kcl_api::Arc {
                             start: start_point_object_id,
                             end: end_point_object_id,
                             center: center_point_object_id,
-                            ctor: crate::front::SegmentCtor::Arc(ctor.as_ref().clone()),
+                            ctor: kcl_api::SegmentCtor::Arc(ctor.as_ref().clone()),
                             ctor_applicable: true,
                             construction: *construction,
                             direction: *direction,
@@ -858,7 +858,7 @@ pub(super) fn create_segment_scene_objects(
                 let start_point_object = Object {
                     id: *start_object_id,
                     kind: ObjectKind::Segment {
-                        segment: crate::front::Segment::Point(crate::front::Point {
+                        segment: kcl_api::Segment::Point(kcl_api::Point {
                             position: start_point2d.clone(),
                             ctor: None,
                             owner: Some(segment.object_id),
@@ -884,7 +884,7 @@ pub(super) fn create_segment_scene_objects(
                 let center_point_object = Object {
                     id: *center_object_id,
                     kind: ObjectKind::Segment {
-                        segment: crate::front::Segment::Point(crate::front::Point {
+                        segment: kcl_api::Segment::Point(kcl_api::Point {
                             position: center_point2d.clone(),
                             ctor: None,
                             owner: Some(segment.object_id),
@@ -904,10 +904,10 @@ pub(super) fn create_segment_scene_objects(
                 let segment_object = Object {
                     id: segment.object_id,
                     kind: ObjectKind::Segment {
-                        segment: crate::front::Segment::Circle(crate::front::Circle {
+                        segment: kcl_api::Segment::Circle(kcl_api::Circle {
                             start: start_point_object_id,
                             center: center_point_object_id,
-                            ctor: crate::front::SegmentCtor::Circle(ctor.as_ref().clone()),
+                            ctor: kcl_api::SegmentCtor::Circle(ctor.as_ref().clone()),
                             ctor_applicable: true,
                             construction: *construction,
                         }),
@@ -948,7 +948,7 @@ pub(super) fn create_segment_scene_objects(
                     let point_object = Object {
                         id: *control_object_id,
                         kind: ObjectKind::Segment {
-                            segment: crate::front::Segment::Point(crate::front::Point {
+                            segment: kcl_api::Segment::Point(kcl_api::Point {
                                 position: control_point2d,
                                 ctor: None,
                                 owner: Some(segment.object_id),
@@ -970,11 +970,11 @@ pub(super) fn create_segment_scene_objects(
                     let edge_object = Object {
                         id: *edge_object_id,
                         kind: ObjectKind::Segment {
-                            segment: crate::front::Segment::Line(crate::front::Line {
+                            segment: kcl_api::Segment::Line(kcl_api::Line {
                                 start: control_point_object_ids[index],
                                 end: control_point_object_ids[index + 1],
                                 owner: Some(segment.object_id),
-                                ctor: crate::front::SegmentCtor::Line(crate::front::LineCtor {
+                                ctor: kcl_api::SegmentCtor::Line(kcl_api::LineCtor {
                                     start: ctor.points[index].clone(),
                                     end: ctor.points[index + 1].clone(),
                                     construction: Some(*construction),
@@ -995,10 +995,10 @@ pub(super) fn create_segment_scene_objects(
                 let segment_object = Object {
                     id: segment.object_id,
                     kind: ObjectKind::Segment {
-                        segment: crate::front::Segment::ControlPointSpline(crate::front::ControlPointSpline {
+                        segment: kcl_api::Segment::ControlPointSpline(kcl_api::ControlPointSpline {
                             controls: control_point_object_ids,
                             degree: *degree,
-                            ctor: crate::front::SegmentCtor::ControlPointSpline(ctor.as_ref().clone()),
+                            ctor: kcl_api::SegmentCtor::ControlPointSpline(ctor.as_ref().clone()),
                             ctor_applicable: true,
                             construction: *construction,
                         }),
@@ -1020,6 +1020,11 @@ mod tests {
     use std::sync::Arc;
 
     use indexmap::IndexMap;
+    use kcl_api::Expr;
+    use kcl_api::LineCtor;
+    use kcl_api::Number;
+    use kcl_api::ObjectId;
+    use kcl_api::Point2d;
     use kcl_api::UnitLength;
     use uuid::Uuid;
 
@@ -1034,11 +1039,6 @@ mod tests {
     use crate::execution::PlaneKind;
     use crate::execution::ProfileClosed;
     use crate::execution::types::NumericTypeExt;
-    use crate::front::Expr;
-    use crate::front::LineCtor;
-    use crate::front::Number;
-    use crate::front::ObjectId;
-    use crate::front::Point2d;
     use crate::std::sketch::PlaneData;
 
     #[tokio::test]

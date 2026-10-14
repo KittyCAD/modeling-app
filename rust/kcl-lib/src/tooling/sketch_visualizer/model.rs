@@ -1,7 +1,8 @@
 //! Internal, render-oriented shape model.
 
+use kcl_api::Freedom;
+
 use super::types::SketchVisualizationPoint;
-use crate::front::Freedom;
 
 #[derive(Debug, Clone)]
 pub(super) struct InternalPoint {

@@ -198,7 +198,6 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         'Import from a file in the current project directory (formerly Insert)',
       icon: 'import',
       groupId: 'code',
-      hide: 'web',
       needsReview: true,
       reviewValidation: async () => {
         if (commandProps.kclManager.isExecuting) {

@@ -56,6 +56,7 @@ import { useSelector } from '@xstate/react'
 import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import ModalContainer from 'react-modal-promise'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: project navigation and onboarding query detection (useLocation, useNavigate, useSearchParams).
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 export function OpenedProject() {

@@ -6,6 +6,10 @@ import {
 
 import type { CommandArgumentConfig } from '@src/lib/commandTypes'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
+import { isKclVersionAvailable } from '@src/lib/kclVersionRange'
+import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { markdownToPlainText } from '@src/lib/markdown'
 
 export type StdLibCommandDriftConfig = {
   stdLibName: StdLibCommandName
@@ -99,6 +103,18 @@ const stdLibArgDeprecatedMessage = (arg: StdLibCommandArg) => {
     .join(' ')
 }
 
+export function stdLibCommandArgAvailable<Name extends StdLibCommandName>(
+  stdLibName: Name,
+  argName: (typeof STD_LIB_COMMANDS)[Name]['args'][number]['name'],
+  version: KclVersion,
+  instance: ModuleType
+) {
+  const arg = STD_LIB_COMMANDS[stdLibName].args.find(
+    (arg) => arg.name === argName
+  )
+  return arg !== undefined && isKclVersionAvailable(version, arg, instance)
+}
+
 const hasExistingEditFlowArgument = (
   context: { argumentsToSubmit: Record<string, unknown> },
   argName: string
@@ -112,6 +128,14 @@ const stdLibArgBaseConfig = (
 ) => ({
   inputType: stdLibArgInputType(arg.ty),
   required: arg.required,
+  ...((arg.addedIn || arg.removedIn) && {
+    available: (context: ModelingMachineContext) =>
+      isKclVersionAvailable(
+        context.kclManager.kclProgramVersionSignal.peek(),
+        arg,
+        context.wasmInstance
+      ),
+  }),
   ...(arg.experimental
     ? ({ status: 'experimental' } as const)
     : isDeprecatedStdLibArg(arg)
@@ -194,6 +218,16 @@ export function stdLibCommandArgs<CommandArgs extends object>(
     args,
     options.flowArgOrder
   ) as CommandArgConfigs<CommandArgs>
+}
+
+export function stdLibCommandSummary(
+  stdLibName: StdLibCommandName
+): string | undefined {
+  const command = STD_LIB_COMMANDS[stdLibName]
+  const summary: unknown = 'summary' in command ? command.summary : undefined
+  return typeof summary === 'string'
+    ? markdownToPlainText(summary) || undefined
+    : undefined
 }
 
 export const modelingCommandStdLibDriftConfig = {
@@ -580,6 +614,17 @@ export const modelingCommandStdLibDriftConfig = {
 
 export type ModelingStdLibCommandName =
   keyof typeof modelingCommandStdLibDriftConfig
+
+export function modelingStdLibCommandSummary(
+  commandName: string
+): string | undefined {
+  const configs: Partial<Record<string, StdLibCommandDriftConfig>> =
+    modelingCommandStdLibDriftConfig
+  if (!Object.hasOwn(configs, commandName)) return undefined
+
+  const config = configs[commandName]
+  return config ? stdLibCommandSummary(config.stdLibName) : undefined
+}
 
 export function modelingStdLibCommandName<
   CommandName extends keyof typeof modelingCommandStdLibDriftConfig,

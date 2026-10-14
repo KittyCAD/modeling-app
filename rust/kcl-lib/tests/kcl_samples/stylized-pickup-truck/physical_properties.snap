@@ -18,12 +18,12 @@ description: Physical properties stylized-pickup-truck.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 63634261.42968171
+    "value": 63634261.43064214
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 7209474.975917449
+    "value": 7209475.0386313535
   }
 }

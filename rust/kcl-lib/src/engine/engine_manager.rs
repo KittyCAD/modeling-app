@@ -366,7 +366,7 @@ impl EngineManager {
         Ok(())
     }
 
-    /// Re-run the command to apply the settings.
+    /// Apply graphics settings, if the engine is not CPU-only (geometry-only) mode.
     pub async fn reapply_settings(
         &self,
         batch_context: &EngineBatchContext,
@@ -378,6 +378,19 @@ impl EngineManager {
         if settings.geometry_only {
             return Ok(());
         }
+        self.apply_graphics_settings(batch_context, settings, source_range, id_generator, grid_scale_unit)
+            .await
+    }
+
+    /// Unconditionally apply graphics settings.
+    pub async fn apply_graphics_settings(
+        &self,
+        batch_context: &EngineBatchContext,
+        settings: &crate::ExecutorSettings,
+        source_range: SourceRange,
+        id_generator: &mut IdGenerator,
+        grid_scale_unit: GridScaleBehavior,
+    ) -> Result<(), crate::errors::KclError> {
         // Set the edge visibility.
         self.set_edge_visibility(batch_context, settings.highlight_edges, source_range, id_generator)
             .await?;

@@ -4,7 +4,8 @@ import {
   signal,
   untracked,
 } from '@preact/signals-core'
-import type { KclManager, ZDSProject } from '@src/lang/KclManager'
+import type { KclManager } from '@src/lang/KclManager'
+import { type ZDSProject } from '@src/lib/projectSession'
 import { BillingTransition } from '@src/lib/billing'
 import type { BillingRegistryService } from '@src/lib/billing/registry/contract'
 import { getParentAbsolutePath } from '@src/lib/paths'

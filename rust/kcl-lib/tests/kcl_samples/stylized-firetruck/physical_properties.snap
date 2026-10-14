@@ -18,12 +18,12 @@ description: Physical properties stylized-firetruck.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 102316491.91024904
+    "value": 102316491.91804887
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 14914106.124885924
+    "value": 14914106.105522174
   }
 }

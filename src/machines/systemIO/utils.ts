@@ -464,7 +464,6 @@ type ZookeeperNewFileRequestProps = {
   toolOutput: MlToolResult
   projectNameCurrentlyOpened: string
   fileFocusedOnInEditor?: FileEntry
-  filesToDelete?: RequestedKCLFileDelete[]
 }
 
 export const prepareZookeeperNewFileRequest = ({
@@ -472,7 +471,6 @@ export const prepareZookeeperNewFileRequest = ({
   toolOutput,
   projectNameCurrentlyOpened,
   fileFocusedOnInEditor,
-  filesToDelete = [],
 }: ZookeeperNewFileRequestProps & { fallbackFilePath?: string }) => {
   if (
     toolOutput.type !== 'text_to_cad' &&
@@ -515,14 +513,6 @@ export const prepareZookeeperNewFileRequest = ({
       }
     : undefined
   const filesToDeleteByPath = new Map<string, RequestedKCLFileDelete>()
-
-  for (const file of filesToDelete) {
-    if (isZookeeperProjectEntrypointPath(file.requestedFileName)) continue
-    filesToDeleteByPath.set(
-      normalizeKCLFileDeletePath(file.requestedFileName),
-      file
-    )
-  }
 
   for (const file of zookeeperEditPatch?.changed_files ?? []) {
     if (file.status !== 'deleted') continue

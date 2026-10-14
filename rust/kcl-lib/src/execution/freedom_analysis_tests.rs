@@ -1,14 +1,15 @@
 use std::sync::Arc;
 
+use kcl_api::Freedom;
+use kcl_api::ObjectId;
+use kcl_api::ObjectKind;
+
 use crate::ExecutorContext;
 use crate::ExecutorSettings;
 use crate::engine::engine_manager::EngineManager;
 use crate::execution::ContextType;
 use crate::execution::MockConfig;
 use crate::execution::machine::ExecutorKind;
-use crate::front::Freedom;
-use crate::front::ObjectKind;
-use crate::frontend::api::ObjectId;
 
 async fn run_with_freedom_analysis(kcl: &str) -> Vec<(ObjectId, Freedom)> {
     let program = crate::Program::parse_no_errs(kcl).unwrap();
@@ -35,7 +36,7 @@ async fn run_with_freedom_analysis(kcl: &str) -> Vec<(ObjectId, Freedom)> {
     let mut point_freedoms = Vec::new();
     for obj in &outcome.scene_objects {
         if let ObjectKind::Segment {
-            segment: crate::front::Segment::Point(point),
+            segment: kcl_api::Segment::Point(point),
         } = &obj.kind
         {
             point_freedoms.push((obj.id, point.freedom));

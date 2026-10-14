@@ -18,6 +18,9 @@ pub use id_generator::IdGenerator;
 pub(crate) use import::PreImportedGeometry;
 use indexmap::IndexMap;
 pub use kcl_api::DefaultPlanes;
+use kcl_api::Number;
+use kcl_api::Object;
+use kcl_api::ObjectId;
 pub use kcl_api::Operation;
 pub use kcl_api::artifact::Artifact;
 pub use kcl_api::artifact::ArtifactGraph;
@@ -98,11 +101,9 @@ use crate::execution::cache::CacheResult;
 use crate::execution::cad_op::OperationExt;
 use crate::execution::import_graph::Universe;
 use crate::execution::import_graph::UniverseMap;
-use crate::execution::modeling::kcl_version_to_modeling_cmd;
 use crate::execution::typed_path::TypedPath;
-use crate::front::Number;
-use crate::front::Object;
-use crate::front::ObjectId;
+use crate::front::PointExt;
+use crate::front::SegmentExt;
 use crate::fs::FileManager;
 use crate::fs::FileSystemHandle;
 use crate::modules::ModuleExecutionOutcome;
@@ -110,6 +111,7 @@ use crate::modules::ModuleId;
 use crate::modules::ModulePath;
 use crate::modules::ModuleRepr;
 use crate::modules::ModuleSource;
+use crate::named_views::values as named_views;
 use crate::parsing::ast::types::Expr;
 use crate::parsing::ast::types::ImportPath;
 use crate::parsing::ast::types::NodeRef;
@@ -176,7 +178,6 @@ pub(crate) mod kcl_value_view;
 pub(crate) mod machine;
 mod memory;
 mod modeling;
-mod named_views;
 mod sketch_solve;
 mod solver_arc;
 mod state;
@@ -399,7 +400,7 @@ pub struct ExecOutcome {
 }
 
 /// Per-segment freedom used by the constraint report. Mirrors
-/// [`crate::front::Freedom`] but adds an `Error` variant for when
+/// [`kcl_api::Freedom`] but adds an `Error` variant for when
 /// a point lookup fails.
 #[derive(Debug, Clone, Copy, PartialEq)]
 enum SegmentFreedom {
@@ -410,12 +411,12 @@ enum SegmentFreedom {
     Error,
 }
 
-impl From<crate::front::Freedom> for SegmentFreedom {
-    fn from(f: crate::front::Freedom) -> Self {
+impl From<kcl_api::Freedom> for SegmentFreedom {
+    fn from(f: kcl_api::Freedom) -> Self {
         match f {
-            crate::front::Freedom::Free => Self::Free,
-            crate::front::Freedom::Fixed => Self::Fixed,
-            crate::front::Freedom::Conflict => Self::Conflict,
+            kcl_api::Freedom::Free => Self::Free,
+            kcl_api::Freedom::Fixed => Self::Fixed,
+            kcl_api::Freedom::Conflict => Self::Conflict,
         }
     }
 }
@@ -488,15 +489,15 @@ pub(crate) fn sketch_constraint_status_for_sketch(
     scene_objects: &[Object],
     sketch_obj: &Object,
 ) -> Option<SketchConstraintStatus> {
-    use crate::front::ObjectKind;
-    use crate::front::Segment;
+    use kcl_api::ObjectKind;
+    use kcl_api::Segment;
 
     let ObjectKind::Sketch(sketch) = &sketch_obj.kind else {
         return None;
     };
 
     // Closure to look up a point's freedom by ObjectId.
-    let lookup = |id: ObjectId| -> Option<crate::front::Freedom> {
+    let lookup = |id: ObjectId| -> Option<kcl_api::Freedom> {
         let obj = scene_objects.get(id.0)?;
         if let ObjectKind::Segment {
             segment: Segment::Point(p),
@@ -636,11 +637,12 @@ impl ExecOutcome {
 }
 
 pub(crate) fn render_sketch_png_from_scene_objects(
-    scene_objects: &[crate::front::Object],
+    scene_objects: &[kcl_api::Object],
     sketch_name: &str,
     instance_index: Option<usize>,
 ) -> std::result::Result<Vec<u8>, crate::tooling::sketch_visualizer::SketchVisualizationError> {
-    use crate::front::ObjectKind;
+    use kcl_api::ObjectKind;
+
     use crate::tooling::sketch_visualizer::SketchVisualizationError;
 
     let sketches_matching_name = scene_objects
@@ -708,7 +710,7 @@ pub struct MockConfig {
 #[serde(rename_all = "camelCase")]
 pub struct SegmentDragAnchor {
     pub segment_id: ObjectId,
-    pub target: crate::front::Point2d<Number>,
+    pub target: kcl_api::Point2d<Number>,
 }
 
 impl Default for MockConfig {
@@ -917,15 +919,15 @@ impl From<&Expr> for Metadata {
 }
 
 impl Metadata {
-    pub fn to_source_ref(meta: &[Metadata], node_path: Option<NodePath>) -> crate::front::SourceRef {
+    pub fn to_source_ref(meta: &[Metadata], node_path: Option<NodePath>) -> kcl_api::SourceRef {
         if meta.len() == 1 {
             let meta = &meta[0];
-            return crate::front::SourceRef::Simple {
+            return kcl_api::SourceRef::Simple {
                 range: meta.source_range,
                 node_path,
             };
         }
-        crate::front::SourceRef::BackTrace {
+        kcl_api::SourceRef::BackTrace {
             ranges: meta.iter().map(|m| (m.source_range, node_path.clone())).collect(),
         }
     }
@@ -1209,6 +1211,56 @@ impl ExecutorContext {
         Self::new_with_engine_and_fs(engine, crate::fs::new_file_system_handle(FileManager::new()), settings)
     }
 
+    /// Toggle on engine graphics.
+    /// Make sure to disable them again when you're done.
+    pub async fn enable_engine_graphics(&self, exec_state: &mut ExecState) -> Result<()> {
+        let source_range = Default::default();
+        self.engine
+            .send_modeling_cmd(
+                &self.engine_batch,
+                exec_state.next_uuid(),
+                source_range,
+                &ModelingCmd::ToggleGraphics(kcmc::ToggleGraphics::enabled(true)),
+            )
+            .await
+            .map(|_| ())?;
+
+        Ok(())
+    }
+
+    pub async fn enable_engine_graphics_settings(&self, exec_state: &mut ExecState) -> Result<()> {
+        let source_range = Default::default();
+        let grid_scale_unit = if self.settings.fixed_size_grid {
+            GridScaleBehavior::Fixed(Some(exec_state.length_unit()))
+        } else {
+            GridScaleBehavior::ScaleWithZoom
+        };
+        self.engine
+            .apply_graphics_settings(
+                &self.engine_batch,
+                &self.settings,
+                source_range,
+                exec_state.id_generator(),
+                grid_scale_unit,
+            )
+            .await?;
+        Ok(())
+    }
+
+    pub async fn disable_engine_graphics(&self, exec_state: &mut ExecState) -> Result<()> {
+        let source_range = Default::default();
+        self.engine
+            .send_modeling_cmd(
+                &self.engine_batch,
+                exec_state.next_uuid(),
+                source_range,
+                &ModelingCmd::ToggleGraphics(kcmc::ToggleGraphics::enabled(false)),
+            )
+            .await
+            .map(|_| ())?;
+        Ok(())
+    }
+
     /// Open an engine session for the entrypoint's resolved `Program::language_version()`.
     /// The version is fixed for the lifetime of this connection.
     #[cfg(not(target_arch = "wasm32"))]
@@ -1243,6 +1295,7 @@ impl ExecutorContext {
                     KclVersion::V2 => kittycad::types::KclVersion::Two0,
                     KclVersion::V3Preview => kittycad::types::KclVersion::Three0Preview,
                     KclVersion::V3 => kittycad::types::KclVersion::Three0,
+                    KclVersion::V4Preview => kittycad::types::KclVersion::Four0Preview,
                 }),
             })
             .await?;
@@ -1441,14 +1494,12 @@ impl ExecutorContext {
         exec_state.global.root_module_artifacts.clear();
         exec_state.global.artifacts.clear();
 
-        let modeling_kcl_version = kcl_version.map(kcl_version_to_modeling_cmd);
-
         self.engine
             .clear_scene(
                 &self.engine_batch,
                 &mut exec_state.mod_local.id_generator,
                 source_range,
-                modeling_kcl_version,
+                kcl_version,
                 self.settings.geometry_only,
             )
             .await?;
@@ -5266,7 +5317,7 @@ solid7 = extrude(r7, length = width)
             mem.path_to_source_id
         );
         mem.constraint_state.insert(
-            crate::front::ObjectId(1),
+            kcl_api::ObjectId(1),
             indexmap::indexmap! {
                 crate::execution::ConstraintKey::LineCircle([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]) =>
                     crate::execution::ConstraintState::Tangency(crate::execution::TangencyMode::LineCircle(ezpz::LineSide::Left))
