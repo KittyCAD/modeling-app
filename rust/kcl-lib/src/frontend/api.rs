@@ -2,19 +2,15 @@
 
 #![allow(async_fn_in_trait)]
 
-pub use kcl_api::Object;
-pub use kcl_api::ObjectId;
-use kcl_api::UnitLength;
-use kcl_error::SourceRange;
+use kcl_api::Number;
+use kcl_api::Object;
+use kcl_api::ObjectId;
+use kcl_api::ObjectKind;
 use serde::Deserialize;
 use serde::Serialize;
 
 use crate::ExecOutcome;
 pub use crate::ExecutorSettings as Settings;
-use crate::NodePath;
-use crate::engine::PlaneName;
-use crate::execution::ArtifactId;
-use crate::pretty::NumericSuffix;
 
 pub trait LifecycleApi {
     async fn open_project(&self, project: ProjectId, files: Vec<File>, open_file: FileId) -> Result<()>;
@@ -148,10 +144,15 @@ pub struct File {
     pub text: String,
 }
 
-impl ObjectKind {
+/// Runtime helpers for [`ObjectKind`].
+pub trait ObjectKindExt {
     /// What kind of object is this (point, line, arc, etc)
     /// Suitable for use in user-facing messages.
-    pub fn human_friendly_kind_with_article(&self) -> &'static str {
+    fn human_friendly_kind_with_article(&self) -> &'static str;
+}
+
+impl ObjectKindExt for ObjectKind {
+    fn human_friendly_kind_with_article(&self) -> &'static str {
         match self {
             Self::Nil => "a Nil",
             Self::Plane(..) => "a Plane",
@@ -165,17 +166,8 @@ impl ObjectKind {
     }
 }
 
-impl From<SourceRange> for SourceRef {
-    fn from(value: SourceRange) -> Self {
-        Self::Simple {
-            range: value,
-            node_path: None,
-        }
-    }
-}
-
 impl TryFrom<crate::std::args::TyF64> for Number {
-    type Error = crate::execution::types::NumericSuffixTypeConvertError;
+    type Error = kcl_api::NumericSuffixTypeConvertError;
 
     fn try_from(value: crate::std::args::TyF64) -> std::result::Result<Self, Self::Error> {
         Ok(Number {
@@ -185,8 +177,13 @@ impl TryFrom<crate::std::args::TyF64> for Number {
     }
 }
 
-impl Number {
-    pub fn round(&self, digits: u8) -> Self {
+/// Runtime helpers for [`Number`].
+pub trait NumberExt {
+    fn round(&self, digits: u8) -> Self;
+}
+
+impl NumberExt for Number {
+    fn round(&self, digits: u8) -> Self {
         let factor = 10f64.powi(digits as i32);
         let rounded_value = (self.value * factor).round() / factor;
         // Don't return negative zero.
@@ -194,18 +191,6 @@ impl Number {
         Number {
             value,
             units: self.units,
-        }
-    }
-}
-
-impl From<(f64, UnitLength)> for Number {
-    fn from((value, units): (f64, UnitLength)) -> Self {
-        // Direct conversion from UnitLength to NumericSuffix (never panics)
-        // The From<UnitLength> for NumericSuffix impl is in execution::types
-        let units_suffix = NumericSuffix::from(units);
-        Number {
-            value,
-            units: units_suffix,
         }
     }
 }

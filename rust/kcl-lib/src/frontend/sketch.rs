@@ -1,15 +1,27 @@
 #![allow(async_fn_in_trait)]
 
+use kcl_api::Arc;
+use kcl_api::Circle;
+use kcl_api::Coincident;
+use kcl_api::Constraint;
+use kcl_api::ConstraintSegment;
+use kcl_api::ControlPointSpline;
+use kcl_api::Distance;
+use kcl_api::Freedom;
+use kcl_api::Line;
+use kcl_api::Number;
+use kcl_api::ObjectId;
+use kcl_api::Point;
+use kcl_api::Point2d;
+use kcl_api::Segment;
+use kcl_api::SegmentCtor;
+use kcl_api::SketchCtor;
 use serde::Deserialize;
 use serde::Serialize;
 
 use crate::ExecutorContext;
 use crate::KclErrorWithOutputs;
-use crate::front::Plane;
-use crate::frontend::api::Expr;
 use crate::frontend::api::FileId;
-use crate::frontend::api::Number;
-use crate::frontend::api::ObjectId;
 use crate::frontend::api::ProjectId;
 use crate::frontend::api::SceneGraph;
 use crate::frontend::api::SceneGraphDelta;
@@ -163,17 +175,32 @@ pub trait SketchApi {
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 }
 
-impl Point {
+/// Runtime helpers for [`Point`].
+pub trait PointExt {
     /// The freedom of this point.
-    pub fn freedom(&self) -> Freedom {
+    fn freedom(&self) -> Freedom;
+}
+
+impl PointExt for Point {
+    fn freedom(&self) -> Freedom {
         self.freedom
     }
 }
 
-impl Segment {
+/// Runtime helpers for [`Segment`].
+pub trait SegmentExt {
     /// What kind of geometry is this (point, line, arc, etc)
     /// Suitable for use in user-facing messages.
-    pub fn human_friendly_kind_with_article(&self) -> &'static str {
+    fn human_friendly_kind_with_article(&self) -> &'static str;
+    /// Compute the overall freedom of this segment. For geometry types (Line,
+    /// Arc, Circle) this looks up and merges the freedom of their constituent
+    /// points. For points, returns the point's own freedom directly.
+    /// Returns `None` if a required point lookup failed.
+    fn freedom(&self, lookup: impl Fn(ObjectId) -> Option<Freedom>) -> Option<Freedom>;
+}
+
+impl SegmentExt for Segment {
+    fn human_friendly_kind_with_article(&self) -> &'static str {
         match self {
             Self::Point(_) => "a Point",
             Self::Line(_) => "a Line",
@@ -183,11 +210,7 @@ impl Segment {
         }
     }
 
-    /// Compute the overall freedom of this segment. For geometry types (Line,
-    /// Arc, Circle) this looks up and merges the freedom of their constituent
-    /// points. For points, returns the point's own freedom directly.
-    /// Returns `None` if a required point lookup failed.
-    pub fn freedom(&self, lookup: impl Fn(ObjectId) -> Option<Freedom>) -> Option<Freedom> {
+    fn freedom(&self, lookup: impl Fn(ObjectId) -> Option<Freedom>) -> Option<Freedom> {
         match self {
             Self::Point(p) => Some(p.freedom()),
             Self::Line(l) => l.freedom(&lookup),
@@ -213,10 +236,15 @@ pub struct ConstraintLabelPositionEdit {
     pub label_position: Point2d<Number>,
 }
 
-impl Line {
+/// Runtime helpers for [`Line`].
+pub trait LineExt {
     /// Compute the overall freedom of this line by merging the freedom of its
     /// start and end points. Returns `None` if a point lookup failed.
-    pub fn freedom(&self, lookup: impl Fn(ObjectId) -> Option<Freedom>) -> Option<Freedom> {
+    fn freedom(&self, lookup: impl Fn(ObjectId) -> Option<Freedom>) -> Option<Freedom>;
+}
+
+impl LineExt for Line {
+    fn freedom(&self, lookup: impl Fn(ObjectId) -> Option<Freedom>) -> Option<Freedom> {
         let start = lookup(self.start)?;
         let end = lookup(self.end)?;
         Some(start.merge(end))
@@ -231,10 +259,15 @@ pub enum StartOrEnd<T> {
     End(T),
 }
 
-impl Arc {
+/// Runtime helpers for [`Arc`].
+pub trait ArcExt {
     /// Compute the overall freedom of this arc by merging the freedom of its
     /// start, end, and center points. Returns `None` if a point lookup failed.
-    pub fn freedom(&self, lookup: impl Fn(ObjectId) -> Option<Freedom>) -> Option<Freedom> {
+    fn freedom(&self, lookup: impl Fn(ObjectId) -> Option<Freedom>) -> Option<Freedom>;
+}
+
+impl ArcExt for Arc {
+    fn freedom(&self, lookup: impl Fn(ObjectId) -> Option<Freedom>) -> Option<Freedom> {
         let start = lookup(self.start)?;
         let end = lookup(self.end)?;
         let center = lookup(self.center)?;
@@ -242,20 +275,30 @@ impl Arc {
     }
 }
 
-impl Circle {
+/// Runtime helpers for [`Circle`].
+pub trait CircleExt {
     /// Compute the overall freedom of this circle by merging the freedom of its
     /// start and center points. Returns `None` if a point lookup failed.
-    pub fn freedom(&self, lookup: impl Fn(ObjectId) -> Option<Freedom>) -> Option<Freedom> {
+    fn freedom(&self, lookup: impl Fn(ObjectId) -> Option<Freedom>) -> Option<Freedom>;
+}
+
+impl CircleExt for Circle {
+    fn freedom(&self, lookup: impl Fn(ObjectId) -> Option<Freedom>) -> Option<Freedom> {
         let start = lookup(self.start)?;
         let center = lookup(self.center)?;
         Some(start.merge(center))
     }
 }
 
-impl ControlPointSpline {
+/// Runtime helpers for [`ControlPointSpline`].
+pub trait ControlPointSplineExt {
     /// Compute the overall freedom of this spline by merging the freedom of its
     /// control points. Returns `None` if any required point lookup failed.
-    pub fn freedom(&self, lookup: impl Fn(ObjectId) -> Option<Freedom>) -> Option<Freedom> {
+    fn freedom(&self, lookup: impl Fn(ObjectId) -> Option<Freedom>) -> Option<Freedom>;
+}
+
+impl ControlPointSplineExt for ControlPointSpline {
+    fn freedom(&self, lookup: impl Fn(ObjectId) -> Option<Freedom>) -> Option<Freedom> {
         let mut controls = self.controls.iter();
         let first = lookup(*controls.next()?)?;
         let merged = controls.try_fold(first, |acc, id| lookup(*id).map(|freedom| acc.merge(freedom)))?;
@@ -263,8 +306,15 @@ impl ControlPointSpline {
     }
 }
 
-impl Coincident {
-    pub fn get_segments(&self) -> Vec<ObjectId> {
+/// Runtime helpers for [`Coincident`].
+pub trait CoincidentExt {
+    fn get_segments(&self) -> Vec<ObjectId>;
+    fn segment_ids(&self) -> impl Iterator<Item = ObjectId> + '_;
+    fn contains_segment(&self, segment_id: ObjectId) -> bool;
+}
+
+impl CoincidentExt for Coincident {
+    fn get_segments(&self) -> Vec<ObjectId> {
         self.segments
             .iter()
             .filter_map(|segment| match segment {
@@ -274,33 +324,33 @@ impl Coincident {
             .collect()
     }
 
-    pub fn segment_ids(&self) -> impl Iterator<Item = ObjectId> + '_ {
+    fn segment_ids(&self) -> impl Iterator<Item = ObjectId> + '_ {
         self.segments.iter().filter_map(|segment| match segment {
             ConstraintSegment::Segment(id) => Some(*id),
             ConstraintSegment::Origin(_) => None,
         })
     }
 
-    pub fn contains_segment(&self, segment_id: ObjectId) -> bool {
+    fn contains_segment(&self, segment_id: ObjectId) -> bool {
         self.segment_ids().any(|id| id == segment_id)
     }
 }
 
-impl From<ObjectId> for ConstraintSegment {
-    fn from(value: ObjectId) -> Self {
-        Self::Segment(value)
-    }
+/// Runtime helpers for [`Distance`].
+pub trait DistanceExt {
+    fn segment_ids(&self) -> impl Iterator<Item = ObjectId> + '_;
+    fn contains_segment(&self, segment_id: ObjectId) -> bool;
 }
 
-impl Distance {
-    pub fn segment_ids(&self) -> impl Iterator<Item = ObjectId> + '_ {
+impl DistanceExt for Distance {
+    fn segment_ids(&self) -> impl Iterator<Item = ObjectId> + '_ {
         self.segments.iter().filter_map(|segment| match segment {
             ConstraintSegment::Segment(id) => Some(*id),
             ConstraintSegment::Origin(_) => None,
         })
     }
 
-    pub fn contains_segment(&self, segment_id: ObjectId) -> bool {
+    fn contains_segment(&self, segment_id: ObjectId) -> bool {
         self.segment_ids().any(|id| id == segment_id)
     }
 }

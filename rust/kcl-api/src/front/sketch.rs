@@ -1,6 +1,10 @@
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
-use crate::{Expr, Number, ObjectId, front::Plane};
+use crate::Expr;
+use crate::Number;
+use crate::ObjectId;
+use crate::front::Plane;
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiSketch")]
@@ -431,4 +435,10 @@ pub struct Radius {
 pub struct ConstraintSource {
     pub expr: String,
     pub is_literal: bool,
+}
+
+impl From<ObjectId> for ConstraintSegment {
+    fn from(value: ObjectId) -> Self {
+        Self::Segment(value)
+    }
 }

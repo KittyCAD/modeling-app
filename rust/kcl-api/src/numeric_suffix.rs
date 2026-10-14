@@ -1,8 +1,15 @@
 use core::fmt;
 use std::str::FromStr;
 
-use kcl_error::{CompilationIssue, SourceRange};
-use serde::{Deserialize, Serialize};
+use kcl_error::CompilationIssue;
+use kcl_error::SourceRange;
+use serde::Deserialize;
+use serde::Serialize;
+
+use crate::NumericType;
+use crate::UnitAngle;
+use crate::UnitLength;
+use crate::UnitType;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize, ts_rs::TS)]
 #[repr(u32)]
@@ -89,6 +96,40 @@ impl fmt::Display for NumericSuffix {
             NumericSuffix::Yd => write!(f, "yd"),
             NumericSuffix::Deg => write!(f, "deg"),
             NumericSuffix::Rad => write!(f, "rad"),
+        }
+    }
+}
+
+impl From<UnitLength> for NumericSuffix {
+    fn from(value: UnitLength) -> Self {
+        match value {
+            UnitLength::Millimeters => NumericSuffix::Mm,
+            UnitLength::Centimeters => NumericSuffix::Cm,
+            UnitLength::Meters => NumericSuffix::M,
+            UnitLength::Inches => NumericSuffix::Inch,
+            UnitLength::Feet => NumericSuffix::Ft,
+            UnitLength::Yards => NumericSuffix::Yd,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS)]
+pub struct NumericSuffixTypeConvertError;
+
+impl TryFrom<NumericType> for NumericSuffix {
+    type Error = NumericSuffixTypeConvertError;
+
+    fn try_from(value: NumericType) -> Result<Self, Self::Error> {
+        match value {
+            NumericType::Known(UnitType::Count) => Ok(NumericSuffix::Count),
+            NumericType::Known(UnitType::Length(unit_length)) => Ok(NumericSuffix::from(unit_length)),
+            NumericType::Known(UnitType::GenericLength) => Ok(NumericSuffix::Length),
+            NumericType::Known(UnitType::Angle(UnitAngle::Degrees)) => Ok(NumericSuffix::Deg),
+            NumericType::Known(UnitType::Angle(UnitAngle::Radians)) => Ok(NumericSuffix::Rad),
+            NumericType::Known(UnitType::GenericAngle) => Ok(NumericSuffix::Angle),
+            NumericType::Default { .. } => Ok(NumericSuffix::None),
+            NumericType::Unknown => Ok(NumericSuffix::Unknown),
+            NumericType::Any => Err(NumericSuffixTypeConvertError),
         }
     }
 }

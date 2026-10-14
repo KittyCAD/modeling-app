@@ -1604,6 +1604,11 @@ fn fake_extrude_surface(exec_state: &mut ExecState, path: &Path) -> Option<Extru
 
 #[cfg(test)]
 mod tests {
+    use kcl_api::Expr;
+    use kcl_api::Number;
+    use kcl_api::ObjectId;
+    use kcl_api::Point2d;
+    use kcl_api::PointCtor;
     use kcl_api::UnitLength;
 
     use super::*;
@@ -1613,11 +1618,6 @@ mod tests {
     use crate::execution::parse_execute;
     use crate::execution::types::NumericType;
     use crate::execution::types::NumericTypeExt;
-    use crate::front::Expr;
-    use crate::front::Number;
-    use crate::front::ObjectId;
-    use crate::front::Point2d;
-    use crate::front::PointCtor;
     use crate::std::sketch::PlaneData;
 
     fn point_expr(x: f64, y: f64) -> Point2d<Expr> {

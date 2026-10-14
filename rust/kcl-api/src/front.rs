@@ -6,9 +6,11 @@ use serde::Serialize;
 use crate::ArtifactId;
 use crate::NodePath;
 use crate::NumericSuffix;
+use crate::UnitLength;
 use crate::artifact::PlaneName;
 
 mod sketch;
+pub use sketch::*;
 
 #[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, PartialOrd, Ord, Deserialize, Serialize, JsonSchema, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiObjectId")]
@@ -187,4 +189,24 @@ pub enum Expr {
     Number(Number),
     Var(Number),
     Variable(String),
+}
+
+impl From<SourceRange> for SourceRef {
+    fn from(value: SourceRange) -> Self {
+        Self::Simple {
+            range: value,
+            node_path: None,
+        }
+    }
+}
+
+impl From<(f64, UnitLength)> for Number {
+    fn from((value, units): (f64, UnitLength)) -> Self {
+        // Direct conversion from UnitLength to NumericSuffix (never panics)
+        let units_suffix = NumericSuffix::from(units);
+        Number {
+            value,
+            units: units_suffix,
+        }
+    }
 }

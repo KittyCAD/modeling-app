@@ -1203,13 +1203,13 @@ impl KclValue {
         }
     }
 
-    pub fn to_sketch_expr(&self) -> Option<crate::front::Expr> {
+    pub fn to_sketch_expr(&self) -> Option<kcl_api::Expr> {
         match self {
-            KclValue::Number { value, ty, .. } => Some(crate::front::Expr::Number(crate::front::Number {
+            KclValue::Number { value, ty, .. } => Some(kcl_api::Expr::Number(kcl_api::Number {
                 value: *value,
                 units: (*ty).try_into().ok()?,
             })),
-            KclValue::SketchVar { value, .. } => Some(crate::front::Expr::Var(crate::front::Number {
+            KclValue::SketchVar { value, .. } => Some(kcl_api::Expr::Var(kcl_api::Number {
                 value: value.initial_value,
                 units: value.ty.try_into().ok()?,
             })),

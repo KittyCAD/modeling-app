@@ -1,21 +1,17 @@
 // Clippy does not agree with rustc here for some reason.
 #![allow(clippy::needless_lifetimes)]
 
-use std::fmt;
 use std::iter::Enumerate;
 use std::num::NonZeroUsize;
-use std::str::FromStr;
 
 use anyhow::Result;
+use kcl_api::NumericSuffix;
 use parse_display::Display;
-use serde::Deserialize;
-use serde::Serialize;
 use tower_lsp::lsp_types::SemanticTokenType;
 use winnow::stream::ContainsToken;
 use winnow::stream::Stream;
 use winnow::{self};
 
-use crate::CompilationIssue;
 use crate::ModuleId;
 use crate::SourceRange;
 use crate::errors::KclError;
