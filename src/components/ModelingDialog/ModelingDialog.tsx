@@ -49,7 +49,7 @@ export default function ModelingDialog({
 }) {
   useSignals()
   const state = commands.useState()
-  const { selectedCommand: command, commandInvocationId } = state.context
+  const { selectedCommand: command } = state.context
   const [values, setValues] = useState<Record<string, unknown>>({})
   const [validity, setValidity] = useState<Record<string, boolean>>({})
   const [initializing, setInitializing] = useState(true)
@@ -87,21 +87,23 @@ export default function ModelingDialog({
   )?.name
 
   useEffect(() => {
+    let cancelled = false
     mounted.current = true
     void initializeArguments(initialContext.current)
       .then((defaults) => {
-        if (mounted.current) {
+        if (!cancelled) {
           setValues((previous) => ({ ...defaults, ...previous }))
           setInitializing(false)
         }
       })
       .catch((error: unknown) => {
-        if (mounted.current) {
+        if (!cancelled) {
           trap(error)
           setInitializing(false)
         }
       })
     return () => {
+      cancelled = true
       mounted.current = false
     }
   }, [])
@@ -115,6 +117,14 @@ export default function ModelingDialog({
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (!command || initializing || submitting || checking || invalid) return
+    const isCurrent = () => {
+      const current = commands.actor.getSnapshot().context
+      return (
+        mounted.current &&
+        current.selectedCommand === command &&
+        current.argumentsToSubmit === state.context.argumentsToSubmit
+      )
+    }
     setSubmitting(true)
     try {
       const resolved = await resolveArguments(
@@ -124,17 +134,17 @@ export default function ModelingDialog({
         kclManager.astSignal.value,
         kclManager.artifactGraph
       )
-      if (!mounted.current) return
+      if (!isCurrent()) return
       if (isErr(resolved)) {
         trap(resolved)
         return
       }
       commands.send({
         type: 'Submit command from dialog',
-        data: { command, commandInvocationId, argumentsToSubmit: resolved },
+        data: { argumentsToSubmit: resolved },
       })
     } catch (error) {
-      if (mounted.current) trap(error)
+      if (isCurrent()) trap(error)
     } finally {
       if (mounted.current) setSubmitting(false)
     }

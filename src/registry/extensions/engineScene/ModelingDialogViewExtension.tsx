@@ -1,4 +1,5 @@
 import { lazy, Suspense, useRef } from 'react'
+import { useDialogReset } from '@src/components/ModelingDialog/useDialogReset'
 import { useApp } from '@src/lib/boot'
 import { isModelingDialogCommand } from '@src/lib/commandUtils'
 import { commandScopeService } from '@src/registry/contracts/commands'
@@ -15,7 +16,9 @@ export function ModelingDialogViewExtension({
   const containerRef = useRef<HTMLDivElement>(null)
   const { commands, settings, wasmPromise, registry } = useApp()
   const state = commands.useState()
+  const resetting = useDialogReset(commands.actor)
   if (
+    resetting ||
     state.matches('Closed') ||
     !isModelingDialogCommand(state.context.selectedCommand)
   )
@@ -27,7 +30,6 @@ export function ModelingDialogViewExtension({
     >
       <Suspense fallback={null}>
         <ModelingDialog
-          key={state.context.commandInvocationId}
           containerRef={containerRef}
           kclManager={modelingState.context.kclManager}
           commands={commands}

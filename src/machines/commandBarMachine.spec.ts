@@ -174,12 +174,10 @@ describe('commandBarMachine', () => {
           type: 'Find and select command',
           data: { name: command.name, groupId: command.groupId },
         })
-        const commandInvocationId =
-          actor.getSnapshot().context.commandInvocationId
         const submit = (name: string) =>
           actor.send({
             type: 'Submit command from dialog',
-            data: { command, commandInvocationId, argumentsToSubmit: { name } },
+            data: { argumentsToSubmit: { name } },
           })
         submit('duplicate')
         await vi.waitFor(() => {
@@ -224,8 +222,6 @@ describe('commandBarMachine', () => {
       actor.send({
         type: 'Submit command from dialog',
         data: {
-          command,
-          commandInvocationId: actor.getSnapshot().context.commandInvocationId,
           argumentsToSubmit: { name: 'dialog value' },
         },
       })
@@ -236,15 +232,35 @@ describe('commandBarMachine', () => {
       actor.stop()
     })
 
-    it('rejects an old edit invocation and submits the current one', async () => {
-      const command = createDialogCommand('Extrude')
+    it('cancels pending validation when another edit opens', async () => {
+      let finishValidation!: (result: true) => void
+      const validation = new Promise<true>((resolve) => {
+        finishValidation = resolve
+      })
+      const command = {
+        ...createDialogCommand('Extrude'),
+        args: {
+          name: {
+            inputType: 'string',
+            required: true,
+            validation: ({ data }: { data: unknown }) =>
+              data === 'stale' ? validation : Promise.resolve(true),
+          },
+        },
+      } satisfies Command
       const actor = startActor([command])
       try {
         actor.send({
           type: 'Find and select command',
           data: { name: command.name, groupId: command.groupId },
         })
-        const previousId = actor.getSnapshot().context.commandInvocationId
+        actor.send({
+          type: 'Submit command from dialog',
+          data: { argumentsToSubmit: { name: 'stale' } },
+        })
+        expect(
+          actor.getSnapshot().matches('Checking Arguments for Dialog')
+        ).toBe(true)
         actor.send({
           type: 'Find and select command',
           data: {
@@ -253,14 +269,9 @@ describe('commandBarMachine', () => {
             argDefaultValues: { name: 'current' },
           },
         })
-        actor.send({
-          type: 'Submit command from dialog',
-          data: {
-            command,
-            commandInvocationId: previousId,
-            argumentsToSubmit: { name: 'stale' },
-          },
-        })
+        finishValidation(true)
+        await validation
+        await Promise.resolve()
         expect(command.onSubmit).not.toHaveBeenCalled()
         expect(actor.getSnapshot().context.argumentsToSubmit.name).toBe(
           'current'
@@ -268,9 +279,6 @@ describe('commandBarMachine', () => {
         actor.send({
           type: 'Submit command from dialog',
           data: {
-            command,
-            commandInvocationId:
-              actor.getSnapshot().context.commandInvocationId,
             argumentsToSubmit: { name: 'updated' },
           },
         })

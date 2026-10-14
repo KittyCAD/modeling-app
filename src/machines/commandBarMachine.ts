@@ -64,7 +64,6 @@ export type CommandBarInput = {
 }
 export type CommandBarContext = CommandBarInput & {
   selectedCommand?: Command
-  commandInvocationId: number
   currentArgument?: CommandArgument<unknown> & { name: string }
   argumentsToSubmit: { [x: string]: unknown }
   reviewValidationError?: string
@@ -90,8 +89,6 @@ export type CommandBarMachineEvent =
   | {
       type: 'Submit command from dialog'
       data: {
-        command: Command
-        commandInvocationId: number
         argumentsToSubmit: Record<string, unknown>
       }
     }
@@ -348,7 +345,6 @@ export const commandBarMachine = setup({
       },
     }),
     'Initialize arguments to submit': assign({
-      commandInvocationId: ({ context }) => context.commandInvocationId + 1,
       argumentsToSubmit: ({ context, event }) => {
         if (
           event.type !== 'Select command' &&
@@ -470,11 +466,8 @@ export const commandBarMachine = setup({
       )
     },
     'Has selected command': ({ context }) => !!context.selectedCommand,
-    'Dialog submission matches selected command': ({ context, event }) =>
-      event.type === 'Submit command from dialog' &&
-      isModelingDialogCommand(context.selectedCommand) &&
-      event.data.command === context.selectedCommand &&
-      event.data.commandInvocationId === context.commandInvocationId,
+    'Command uses dialog': ({ context }) =>
+      isModelingDialogCommand(context.selectedCommand),
     'Has review validation error': ({ event }) =>
       event.type === 'xstate.done.actor.validateArguments' &&
       !!event.output.reviewValidationError,
@@ -700,7 +693,6 @@ export const commandBarMachine = setup({
     ...input,
     commands: input.commands || [],
     selectedCommand: undefined,
-    commandInvocationId: 0,
     currentArgument: undefined,
     selectionRanges: {
       otherSelections: [],
@@ -911,7 +903,7 @@ export const commandBarMachine = setup({
     },
 
     'Submit command from dialog': {
-      guard: 'Dialog submission matches selected command',
+      guard: 'Command uses dialog',
       target: '.Checking Arguments for Dialog',
       actions: ['Set arguments to submit', 'Clear current argument'],
     },

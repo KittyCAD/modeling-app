@@ -1,18 +1,17 @@
 import type { CommandArgument } from '@src/lib/commandTypes'
-import type { CommandBarContext } from '@src/machines/commandBarMachine'
 
 export function evaluateCommandBarArg(
   name: string,
   arg: CommandArgument<unknown>,
-  commandBarContext: CommandBarContext
+  context: { argumentsToSubmit: Record<string, unknown> }
 ) {
-  const argumentsToSubmit = commandBarContext.argumentsToSubmit
+  const argumentsToSubmit = context.argumentsToSubmit
   const value =
     typeof argumentsToSubmit[name] === 'function'
-      ? argumentsToSubmit[name](commandBarContext)
+      ? argumentsToSubmit[name](context)
       : argumentsToSubmit[name]
 
-  return { value, ...evaluateCommandArgumentFlags(arg, commandBarContext) }
+  return { value, ...evaluateCommandArgumentFlags(arg, context) }
 }
 
 export function evaluateCommandArgumentFlags(
