@@ -80,6 +80,11 @@ export default function ModelingDialog({
     },
   }
   const visible = getDialogFields(context)
+  const firstFieldName = visible.find(
+    ({ arg }) =>
+      !arg.dialog?.advanced &&
+      !(arg.inputType === 'selection' && context.argumentsToSubmit.nodeToEdit)
+  )?.name
 
   useEffect(() => {
     mounted.current = true
@@ -160,6 +165,7 @@ export default function ModelingDialog({
           description={description}
           isRequired={required}
           inline={false}
+          autoFocus={name === firstFieldName}
           value={getKclInputValue(arg, value)}
           submittedValue={state.context.argumentsToSubmit[name]}
           nodeToEdit={state.context.argumentsToSubmit.nodeToEdit}
@@ -189,6 +195,7 @@ export default function ModelingDialog({
           </span>
           <button
             type="button"
+            autoFocus={name === firstFieldName}
             aria-label={`Select ${label}`}
             aria-pressed={selection.activeName === name}
             disabled={Boolean(state.context.argumentsToSubmit.nodeToEdit)}
@@ -197,7 +204,7 @@ export default function ModelingDialog({
                 ? "Selection edits aren't supported yet."
                 : undefined
             }
-            className="m-0 rounded-sm border border-chalkboard-30 px-2 py-1 text-left text-xs aria-pressed:border-primary aria-pressed:text-primary dark:border-chalkboard-70"
+            className="m-0 rounded-sm border border-chalkboard-30 px-2 py-1 text-left text-xs focus-visible:ring-1 focus-visible:ring-primary aria-pressed:border-primary aria-pressed:text-primary dark:border-chalkboard-70"
             onClick={() => selection.select(name, arg)}
           >
             {isSelections(value) && hasValue(value)
@@ -229,6 +236,7 @@ export default function ModelingDialog({
             {required && ' *'}
           </span>
           <select
+            autoFocus={name === firstFieldName}
             className="rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs dark:border-chalkboard-70"
             value={index < 0 ? '' : String(index)}
             onChange={(event) =>
@@ -265,6 +273,7 @@ export default function ModelingDialog({
         </span>
         <input
           type="text"
+          autoFocus={name === firstFieldName}
           className="rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs dark:border-chalkboard-70"
           value={fieldText(value)}
           onChange={(event) => save(name, event.target.value)}
@@ -335,7 +344,7 @@ export default function ModelingDialog({
           <button
             type="submit"
             disabled={initializing || submitting || checking || invalid}
-            className="m-0 rounded-sm bg-primary px-3 py-1 text-white disabled:opacity-50"
+            className="m-0 rounded-sm bg-primary px-3 py-1 text-white enabled:hover:bg-primary/90 disabled:opacity-50"
           >
             {checking || submitting ? 'Checking...' : 'Submit'}
           </button>
