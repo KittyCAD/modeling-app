@@ -1289,6 +1289,13 @@ pub struct Solid {
     #[serde(skip)]
     #[ts(skip)]
     pub(crate) topology_id: uuid::Uuid,
+    /// Source sketch or region whose tags receive this body's face information
+    /// in caller memory. Match this against the source's artifact ID, independently
+    /// of the body's topology. Modifications preserve it; independent copies clear it.
+    /// When unset, tag updates use the retained sketch's original topology ID.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub(crate) tag_update_source_artifact_id: Option<ArtifactId>,
     /// The semantic body artifact from which a pattern copy was created.
     /// Pattern commands replace `artifact_id` with the copy's engine entity
     /// ID, so retain this to distinguish Sweep-backed bodies from composites.
@@ -1369,6 +1376,16 @@ pub enum SolidCreator {
     Procedural,
 }
 
+/// Whether a new body replaces its source or is an independent copy.
+#[derive(Debug, Clone, Copy)]
+pub(crate) enum NewBodyKind {
+    /// Preserve the source region's tag updates through a replacement operation.
+    Replacement,
+    /// Fork from the source region. Don't update the source region's tags when
+    /// the new body is updated.
+    IndependentCopy,
+}
+
 impl Solid {
     pub fn sketch(&self) -> Option<&Sketch> {
         match &self.creator {
@@ -1402,11 +1419,16 @@ impl Solid {
 
     /// Make this solid a brand-new body produced by an operation. It now owns
     /// the topology of `engine_id`, and any retained pattern provenance no
-    /// longer applies.
-    pub(crate) fn become_new_body(&mut self, engine_id: uuid::Uuid, artifact_id: ArtifactId) {
+    /// longer applies. Independent copies also stop updating their source
+    /// region's tags, including when mock execution does not remap child IDs.
+    pub(crate) fn become_new_body(&mut self, engine_id: uuid::Uuid, artifact_id: ArtifactId, kind: NewBodyKind) {
         self.topology_id = engine_id;
         self.pattern_source_artifact_id = None;
         self.artifact_id = artifact_id;
+        match kind {
+            NewBodyKind::Replacement => {}
+            NewBodyKind::IndependentCopy => self.tag_update_source_artifact_id = None,
+        }
     }
 
     /// Make this solid a pattern copy. It gets a new top-level entity artifact
@@ -1415,6 +1437,7 @@ impl Solid {
     pub(crate) fn become_pattern_copy(&mut self, copy_engine_id: uuid::Uuid) {
         self.pattern_source_artifact_id.get_or_insert(self.artifact_id);
         self.artifact_id = ArtifactId::new(copy_engine_id);
+        self.tag_update_source_artifact_id = None;
     }
 
     pub(crate) fn get_all_edge_cut_ids(&self) -> impl Iterator<Item = uuid::Uuid> + '_ {
