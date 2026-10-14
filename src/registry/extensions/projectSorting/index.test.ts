@@ -16,7 +16,8 @@ describe('project sorting URL contribution', () => {
   })
 
   async function start(path: string, hashRouter = false) {
-    window.history.replaceState({ key: 'existing-router-key' }, '', path)
+    // Opaque history state must survive URL publication; sorting does not own it.
+    window.history.replaceState({ source: 'before-sort' }, '', path)
     registry = new Registry()
     registry.configure([url, projectSorting])
     const adapter = createBrowserUrlAdapter(window, hashRouter)
@@ -57,7 +58,7 @@ describe('project sorting URL contribution', () => {
     expect(sorting.sort.value).toBe('name')
     expect(window.location.search).toBe('?keep=yes&sort_by=name')
     expect(window.location.hash).toBe('#anchor')
-    expect(window.history.state).toEqual({ key: 'existing-router-key' })
+    expect(window.history.state).toEqual({ source: 'before-sort' })
 
     sorting.toggle('name')
     expect(sorting.sort.value).toBe('')
