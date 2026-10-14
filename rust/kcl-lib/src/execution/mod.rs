@@ -109,6 +109,7 @@ use crate::fs::FileSystemHandle;
 use crate::modules::ModuleExecutionOutcome;
 use crate::modules::ModuleId;
 use crate::modules::ModulePath;
+use crate::modules::ModulePathExt as _;
 use crate::modules::ModuleRepr;
 use crate::modules::ModuleSource;
 use crate::named_views::values as named_views;
@@ -181,7 +182,7 @@ mod modeling;
 mod sketch_solve;
 mod solver_arc;
 mod state;
-pub mod typed_path;
+pub use kcl_api::typed_path;
 pub(crate) mod types;
 
 pub(crate) const SKETCH_BLOCK_PARAM_ON: &str = "on";

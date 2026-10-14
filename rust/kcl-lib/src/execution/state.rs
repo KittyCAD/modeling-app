@@ -58,6 +58,7 @@ use crate::modules::ModuleId;
 use crate::modules::ModuleInfo;
 use crate::modules::ModuleLoader;
 use crate::modules::ModulePath;
+use crate::modules::ModulePathExt as _;
 use crate::modules::ModuleRepr;
 use crate::modules::ModuleSource;
 use crate::parsing::ast::types::Annotation;
