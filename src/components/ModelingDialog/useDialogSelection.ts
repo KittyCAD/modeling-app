@@ -1,14 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
+import { useSelectionLifecycle } from '@src/hooks/useSelectionLifecycle'
 import type { KclManager } from '@src/lang/KclManager'
-import type { AppCommandSystem } from '@src/lib/app'
-import { reportRejection } from '@src/lib/trap'
+import { isSelections } from '@src/lib/selections'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { EngineSceneViewExtensionProps } from '@src/registry/contracts/engineScene'
 import {
   hasValue,
-  isSelections,
   type DialogField,
   type SelectionArgument,
 } from '@src/components/ModelingDialog/arguments'
@@ -21,7 +20,6 @@ export function useDialogSelection({
   fields,
   values,
   save,
-  commands,
   kclManager,
   wasmPromise,
   selectionRanges,
@@ -31,7 +29,6 @@ export function useDialogSelection({
   fields: DialogField[]
   values: Record<string, unknown>
   save: (name: string, value: unknown) => void
-  commands: AppCommandSystem
   kclManager: KclManager
   wasmPromise: Promise<ModuleType>
   selectionRanges: Selections
@@ -39,9 +36,14 @@ export function useDialogSelection({
 }) {
   const [activeName, setActiveName] = useState<string>()
   const activated = useRef(false)
-  const selectionRef = useRef(selectionRanges)
-  selectionRef.current = selectionRanges
   const activeArg = fields.find((field) => field.name === activeName)?.arg
+
+  useSelectionLifecycle({
+    arg: activeArg,
+    kclManager,
+    wasmPromise,
+    selection: selectionRanges,
+  })
 
   function select(name: string, arg: SelectionArgument) {
     if (activeName === name) return
@@ -55,10 +57,6 @@ export function useDialogSelection({
       : arg.clearSelectionFirst || activated.current
         ? emptySelection
         : selectionRanges
-    commands.send({
-      type: 'Change current argument',
-      data: { arg: { ...arg, name } },
-    })
     modelingSend({
       type: 'Set selection',
       data: { selectionType: 'completeSelection', selection },
@@ -72,33 +70,6 @@ export function useDialogSelection({
     const field = fields.find((field) => field.arg.inputType === 'selection')
     if (field?.arg.inputType === 'selection') select(field.name, field.arg)
   })
-
-  useEffect(() => {
-    if (!activeArg || activeArg.inputType !== 'selection') return
-    const selectingPlane = activeArg.selectionTypes.includes('plane')
-    if (selectingPlane) void kclManager.showPlanes().catch(reportRejection)
-    let cancelled = false
-    void wasmPromise
-      .then((wasm) => {
-        if (!cancelled && activeArg.selectionFilter)
-          kclManager.setSelectionFilter(
-            activeArg.selectionFilter,
-            wasm,
-            selectionRef.current
-          )
-      })
-      .catch(reportRejection)
-    return () => {
-      cancelled = true
-      if (selectingPlane && !kclManager._isAstEmpty(kclManager.ast))
-        void kclManager.hidePlanes().catch(reportRejection)
-      void wasmPromise
-        .then((wasm) =>
-          kclManager.setSelectionFilterToDefault(wasm, selectionRef.current)
-        )
-        .catch(reportRejection)
-    }
-  }, [activeArg, kclManager, wasmPromise])
 
   const draft = activeName
     ? {

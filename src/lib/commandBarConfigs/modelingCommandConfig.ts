@@ -48,7 +48,7 @@ import {
   KCL_PRELUDE_EXTRUDE_METHOD_VALUES,
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
-import { isEnginePrimitiveSelection } from '@src/lib/selections'
+import { isEnginePrimitiveSelection, isSelections } from '@src/lib/selections'
 import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
 import type { modelingMachine } from '@src/machines/modelingMachine'
@@ -60,7 +60,7 @@ import type {
 
 import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
 import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
-import { capitaliseFC, isArray } from '@src/lib/utils'
+import { capitaliseFC } from '@src/lib/utils'
 import { MODE_SKETCHING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 
 export type { HelixModes } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
@@ -119,17 +119,6 @@ const kclBodyTypeOptions = KCL_PRELUDE_BODY_TYPE_VALUES.map((value) => ({
   name: capitaliseFC(value.toLowerCase()),
   value,
 }))
-
-function isSelections(value: unknown): value is Selections {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'graphSelections' in value &&
-    isArray(value.graphSelections) &&
-    'otherSelections' in value &&
-    isArray(value.otherSelections)
-  )
-}
 
 function isExtrudeRequirementKclCommandValue(
   value: unknown

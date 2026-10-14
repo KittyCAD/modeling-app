@@ -12,7 +12,7 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { MarkdownText } from '@src/components/MarkdownText'
 import type { KclManager } from '@src/lang/KclManager'
 import type { AppCommandSystem, AppSettingsSystem } from '@src/lib/app'
-import { getSelectionTypeDisplayText } from '@src/lib/selections'
+import { getSelectionTypeDisplayText, isSelections } from '@src/lib/selections'
 import { isErr, trap } from '@src/lib/trap'
 import { capitaliseFC } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -24,7 +24,6 @@ import {
   getDialogFields,
   hasValue,
   initializeArguments,
-  isSelections,
   resolveArguments,
   type DialogField,
 } from '@src/components/ModelingDialog/arguments'
@@ -71,7 +70,6 @@ export default function ModelingDialog({
     fields,
     values,
     save,
-    commands,
     kclManager,
     wasmPromise,
     selectionRanges,

@@ -7,11 +7,10 @@ import type RustContext from '@src/lib/rustContext'
 import {
   canSubmitSelectionArg,
   getSelectionCountByType,
+  isSelections,
 } from '@src/lib/selections'
 import { isErr } from '@src/lib/trap'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
-import type { Selections } from '@src/machines/modelingSharedTypes'
-import { isArray } from '@src/lib/utils'
 
 export type DialogField = {
   name: string
@@ -22,17 +21,6 @@ export type SelectionArgument = Extract<
   CommandArgument<unknown>,
   { inputType: 'selection' }
 >
-
-export function isSelections(value: unknown): value is Selections {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'graphSelections' in value &&
-    isArray(value.graphSelections) &&
-    'otherSelections' in value &&
-    isArray(value.otherSelections)
-  )
-}
 
 export function hasValue(value: unknown): boolean {
   return isSelections(value)
