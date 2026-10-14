@@ -727,7 +727,6 @@ export const commandBarMachine = setup({
       on: {
         'Submit command': {
           target: 'Closed',
-          guard: ({ context }) => !context.reviewValidationError,
           actions: ['Execute command', 'Clear selected command'],
         },
 

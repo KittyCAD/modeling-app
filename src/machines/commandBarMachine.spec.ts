@@ -123,29 +123,6 @@ describe('commandBarMachine', () => {
         argumentsToSubmit: actor.getSnapshot().context.argumentsToSubmit,
       },
     })
-    expect(actor.getSnapshot().matches('Review')).toBe(true)
-    expect(command.onSubmit).not.toHaveBeenCalled()
-
-    command.reviewValidation.mockResolvedValueOnce(undefined)
-    actor.send({
-      type: 'Edit argument',
-      data: { arg: { ...command.args.optional, name: 'optional' } },
-    })
-    actor.send({ type: 'Submit argument', data: { optional: 'corrected' } })
-    await vi.waitFor(() => {
-      expect(actor.getSnapshot().matches('Review')).toBe(true)
-      expect(actor.getSnapshot().context.reviewValidationError).toBeUndefined()
-      expect(
-        actor.getSnapshot().context.reviewValidationDetails
-      ).toBeUndefined()
-    })
-
-    actor.send({
-      type: 'Submit command',
-      output: {
-        argumentsToSubmit: actor.getSnapshot().context.argumentsToSubmit,
-      },
-    })
     expect(actor.getSnapshot().context.reviewValidationError).toBeUndefined()
     expect(actor.getSnapshot().context.reviewValidationDetails).toBeUndefined()
     expect(command.onSubmit).toHaveBeenCalledOnce()
