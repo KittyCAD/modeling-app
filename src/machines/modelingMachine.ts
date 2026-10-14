@@ -1,4 +1,5 @@
 import toast from 'react-hot-toast'
+import { isReadOnlyProjectPath } from '@src/lib/fs-zds'
 import { Mesh, Vector2, Vector3 } from 'three'
 import {
   type AnyActorRef,
@@ -4755,6 +4756,8 @@ export const modelingMachine = setup({
     idle: {
       on: {
         'Edit sketch solve': {
+          guard: ({ context }) =>
+            !isReadOnlyProjectPath(context.kclManager.path),
           target: 'animating to existing sketch solve',
           actions: [
             ({ context }) => {
@@ -4763,6 +4766,10 @@ export const modelingMachine = setup({
           ],
         },
         'Enter sketch': [
+          {
+            guard: ({ context }) =>
+              isReadOnlyProjectPath(context.kclManager.path),
+          },
           {
             target: 'animating to existing sketch solve',
             actions: [

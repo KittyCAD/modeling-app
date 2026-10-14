@@ -74,8 +74,8 @@ export class ZDSProject {
   }
 
   /** Clean up resources and watchers for Project */
-  public close() {
-    this.closeAllEditors()
+  public close(preserveEditor?: KclManager) {
+    this.closeAllEditors(preserveEditor)
     window.electron?.watchFileOff(
       this.projectIORefSignal.value.path,
       this.fileWatcherId
@@ -251,9 +251,9 @@ export class ZDSProject {
     this.editors.delete(foundPathSignal[0])
   }
 
-  closeAllEditors() {
+  closeAllEditors(preserveEditor?: KclManager) {
     for (const editor of this.editors.values()) {
-      editor.close()
+      if (editor !== preserveEditor) editor.close()
     }
     this.editors.clear()
   }
