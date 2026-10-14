@@ -50,7 +50,8 @@ function ShareProjectDialog({
             <ActionButton
               Element="button"
               tabIndex={0}
-              className="py-2"
+              type="button"
+              className="h-8"
               onClick={() => onResolve()}
             >
               Done
@@ -58,8 +59,9 @@ function ShareProjectDialog({
             <ActionButton
               Element="button"
               tabIndex={0}
-              iconStart={{ icon: 'clipboard' }}
-              className="py-2"
+              type="button"
+              iconStart={{ icon: 'clipboard', bgClassName: '!bg-transparent' }}
+              className="h-8"
               onClick={() => {
                 void navigator.clipboard.writeText(url).then(
                   () => setCopied(true),
