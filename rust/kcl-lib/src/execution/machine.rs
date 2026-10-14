@@ -159,6 +159,7 @@ use std::future::Future;
 use std::sync::Arc;
 
 use indexmap::IndexMap;
+use kcl_api::ObjectId;
 
 use crate::SourceRange;
 use crate::errors::KclError;
@@ -183,7 +184,6 @@ use crate::execution::kcl_value::KclObjectFields;
 use crate::execution::state::SketchBlockState;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
-use crate::front::ObjectId;
 use crate::parsing::ast::types::Annotation;
 use crate::parsing::ast::types::ArrayExpression;
 use crate::parsing::ast::types::ArrayRangeExpression;

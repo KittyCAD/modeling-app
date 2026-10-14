@@ -5,6 +5,7 @@ use std::cell::RefCell;
 use std::collections::BTreeMap;
 
 use indexmap::IndexMap;
+use kcl_api::NumericSuffix;
 use winnow::combinator::alt;
 use winnow::combinator::delimited;
 use winnow::combinator::opt;
@@ -31,7 +32,6 @@ use super::ast::types::AscribedExpression;
 use super::ast::types::ImportPath;
 use super::ast::types::LabelledExpression;
 use super::sketch_reserved_names::SKETCH_BLOCK_RESERVED_WORDS;
-use super::token::NumericSuffix;
 use super::token::RESERVED_WORDS;
 use crate::IMPORT_FILE_EXTENSIONS;
 use crate::MetaSettings;

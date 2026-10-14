@@ -1,6 +1,6 @@
 //! Cache testing framework.
 
-use kcl_api::Artifact;
+use kcl_api::artifact::Artifact;
 use kcl_lib::ExecError;
 use kcl_lib::ExecOutcome;
 use kcl_lib::NodePathExt;

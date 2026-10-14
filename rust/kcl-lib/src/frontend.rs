@@ -5,7 +5,46 @@ use std::collections::VecDeque;
 use std::ops::ControlFlow;
 
 use indexmap::IndexMap;
+use kcl_api::Angle;
+use kcl_api::ArcCtor;
+use kcl_api::ArcDirection;
+use kcl_api::CapSource;
+use kcl_api::CircleCtor;
+use kcl_api::Coincident;
+use kcl_api::Constraint;
+use kcl_api::ConstraintSegment;
+use kcl_api::ControlPointSplineCtor;
+use kcl_api::Diameter;
+use kcl_api::Distance;
+use kcl_api::EqualRadius;
+use kcl_api::Expr;
+use kcl_api::FixedPoint;
+use kcl_api::Freedom;
+use kcl_api::Horizontal;
+use kcl_api::LineCtor;
+use kcl_api::LinesEqualLength;
+use kcl_api::Midpoint;
+use kcl_api::Number;
+use kcl_api::NumericSuffix;
+use kcl_api::Object;
+use kcl_api::ObjectId;
+use kcl_api::ObjectKind;
+use kcl_api::Parallel;
+use kcl_api::Perpendicular;
+use kcl_api::Plane;
+use kcl_api::Point2d;
+use kcl_api::PointCtor;
+use kcl_api::Radius;
+use kcl_api::Segment;
+use kcl_api::SegmentCtor;
+use kcl_api::SketchCtor;
+use kcl_api::SourceRef;
+use kcl_api::SourceRefRange;
+use kcl_api::Symmetric;
+use kcl_api::Tangent;
 use kcl_api::UnitLength;
+use kcl_api::Vertical;
+use kcl_api::WallSource;
 use kcl_error::CompilationIssue;
 use kcl_error::SourceRange;
 use serde::Serialize;
@@ -33,66 +72,31 @@ use crate::execution::cache::read_old_memory;
 use crate::execution::cache::write_old_memory;
 use crate::execution::types::adjust_length;
 use crate::fmt::format_number_literal;
-use crate::front::Angle;
-use crate::front::ArcCtor;
-use crate::front::ArcDirection;
-use crate::front::CircleCtor;
-use crate::front::ControlPointSplineCtor;
-use crate::front::Distance;
-use crate::front::EqualRadius;
+use crate::front::CoincidentExt;
+use crate::front::DistanceExt;
 use crate::front::Error;
 use crate::front::ExecResult;
-use crate::front::FixedPoint;
-use crate::front::Freedom;
-use crate::front::LinesEqualLength;
-use crate::front::Midpoint;
-use crate::front::Object;
-use crate::front::Parallel;
-use crate::front::Perpendicular;
-use crate::front::PointCtor;
-use crate::front::Symmetric;
-use crate::front::Tangent;
-use crate::frontend::api::CapSource;
-use crate::frontend::api::Expr;
+use crate::front::ObjectKindExt;
+use crate::front::SegmentExt;
 use crate::frontend::api::FileId;
-use crate::frontend::api::Number;
-use crate::frontend::api::ObjectId;
-use crate::frontend::api::ObjectKind;
-use crate::frontend::api::Plane;
 use crate::frontend::api::ProjectId;
 use crate::frontend::api::RestoreSketchCheckpointOutcome;
 use crate::frontend::api::SceneGraph;
 use crate::frontend::api::SceneGraphDelta;
 use crate::frontend::api::SketchCheckpointId;
 use crate::frontend::api::SourceDelta;
-use crate::frontend::api::SourceRef;
-use crate::frontend::api::SourceRefRange;
 use crate::frontend::api::Version;
-use crate::frontend::api::WallSource;
 use crate::frontend::modify::find_defined_names;
 use crate::frontend::modify::next_free_name;
 use crate::frontend::modify::next_free_name_with_padding;
-use crate::frontend::sketch::Coincident;
-use crate::frontend::sketch::Constraint;
 use crate::frontend::sketch::ConstraintLabelPositionEdit;
-use crate::frontend::sketch::ConstraintSegment;
-use crate::frontend::sketch::Diameter;
 use crate::frontend::sketch::ExistingSegmentCtor;
-use crate::frontend::sketch::Horizontal;
-use crate::frontend::sketch::LineCtor;
-use crate::frontend::sketch::Point2d;
-use crate::frontend::sketch::Radius;
-use crate::frontend::sketch::Segment;
-use crate::frontend::sketch::SegmentCtor;
 use crate::frontend::sketch::SketchApi;
-use crate::frontend::sketch::SketchCtor;
-use crate::frontend::sketch::Vertical;
 use crate::id::IncIdGenerator;
 use crate::parsing::ast::types as ast;
 use crate::parsing::ast::types::BoxNode;
 use crate::parsing::ast::types::CallExpressionKw;
 use crate::parsing::ast::types::NodePathExt;
-use crate::pretty::NumericSuffix;
 use crate::std::constraints::LinesAtAngleKind;
 use crate::walk::NodeMut;
 use crate::walk::Visitable;
@@ -4926,7 +4930,7 @@ impl FrontendState {
             self.point_freedom_cache.clear();
             for new_obj in &new_objects {
                 if let ObjectKind::Segment {
-                    segment: crate::front::Segment::Point(point),
+                    segment: kcl_api::Segment::Point(point),
                 } = &new_obj.kind
                 {
                     self.point_freedom_cache.insert(new_obj.id, point.freedom);
@@ -4940,7 +4944,7 @@ impl FrontendState {
             // Before replacing objects, extract and store freedom values from old objects
             for old_obj in &self.scene_graph.objects {
                 if let ObjectKind::Segment {
-                    segment: crate::front::Segment::Point(point),
+                    segment: kcl_api::Segment::Point(point),
                 } = &old_obj.kind
                 {
                     self.point_freedom_cache.insert(old_obj.id, point.freedom);
@@ -4952,7 +4956,7 @@ impl FrontendState {
             for new_obj in new_objects {
                 let mut obj = new_obj;
                 if let ObjectKind::Segment {
-                    segment: crate::front::Segment::Point(point),
+                    segment: kcl_api::Segment::Point(point),
                 } = &mut obj.kind
                 {
                     let new_freedom = point.freedom;
@@ -5281,7 +5285,7 @@ fn solid_expr_for_engine_id(solid_references: &HashMap<Uuid, SolidAstReference>,
 
 fn sketch_face_of_scene_object_ast_expr(
     ast: &mut ast::Node<ast::Program>,
-    on_object: &crate::front::Object,
+    on_object: &kcl_api::Object,
 ) -> Result<Option<ast::Expr>, KclError> {
     match &on_object.kind {
         ObjectKind::Wall(wall) => {
@@ -5358,8 +5362,8 @@ fn sketch_face_of_scene_object_ast_expr(
             );
             // TODO: change this to explicit tag references with tagStart/tagEnd mutations
             let face_expr = match cap.kind {
-                crate::frontend::api::CapKind::Start => ast_name_expr("START".to_owned()),
-                crate::frontend::api::CapKind::End => ast_name_expr("END".to_owned()),
+                kcl_api::CapKind::Start => ast_name_expr("START".to_owned()),
+                kcl_api::CapKind::End => ast_name_expr("END".to_owned()),
             };
 
             Ok(Some(create_face_of_ast(solid_expr, face_expr)))
@@ -5512,7 +5516,7 @@ fn solid_output_index_for_sweep(
         .position(|sibling_sweep| sibling_sweep.id == sweep_id)
 }
 
-fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, artifact_graph: &ArtifactGraph) {
+fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<kcl_api::Object>, artifact_graph: &ArtifactGraph) {
     let mut existing_artifact_ids = scene_objects
         .iter()
         .map(|object| object.artifact_id)
@@ -5566,9 +5570,9 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, 
                     .flatten();
                 let object_source = source_ref_from_source_ref_range(&source.solid);
                 let id = ObjectId(scene_objects.len());
-                scene_objects.push(crate::front::Object {
+                scene_objects.push(kcl_api::Object {
                     id,
-                    kind: ObjectKind::Wall(crate::frontend::api::Wall {
+                    kind: ObjectKind::Wall(kcl_api::Wall {
                         id,
                         source,
                         solid_output_index,
@@ -5593,8 +5597,8 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, 
                 };
                 let id = ObjectId(scene_objects.len());
                 let kind = match cap.sub_type {
-                    CapSubType::Start => crate::frontend::api::CapKind::Start,
-                    CapSubType::End => crate::frontend::api::CapKind::End,
+                    CapSubType::Start => kcl_api::CapKind::Start,
+                    CapSubType::End => kcl_api::CapKind::End,
                 };
                 let solid_code_ref =
                     downstream_composite_code_ref_for_source(artifact_graph, cap.sweep_id).unwrap_or(&sweep.code_ref);
@@ -5607,9 +5611,9 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, 
                     .then(|| solid_output_index_for_sweep(artifact_graph, sweep.id, &sweep.code_ref))
                     .flatten();
                 let object_source = source_ref_from_source_ref_range(&source.solid);
-                scene_objects.push(crate::front::Object {
+                scene_objects.push(kcl_api::Object {
                     id,
-                    kind: ObjectKind::Cap(crate::frontend::api::Cap {
+                    kind: ObjectKind::Cap(kcl_api::Cap {
                         id,
                         kind,
                         source,
@@ -7277,6 +7281,17 @@ fn issue_source_range(error: &KclError) -> SourceRange {
 mod tests {
     use std::sync;
 
+    use kcl_api::Distance;
+    use kcl_api::Fixed;
+    use kcl_api::FixedPoint;
+    use kcl_api::Midpoint;
+    use kcl_api::NumericSuffix;
+    use kcl_api::Object;
+    use kcl_api::Plane;
+    use kcl_api::Sketch;
+    use kcl_api::Tangent;
+    use kcl_api::Vertical;
+
     use super::*;
     use crate::engine::PlaneName;
     use crate::engine::engine_manager::EngineManager;
@@ -7284,16 +7299,6 @@ mod tests {
     use crate::execution::cache::clear_mem_cache;
     use crate::execution::cache::read_old_memory;
     use crate::execution::cache::write_old_memory;
-    use crate::front::Distance;
-    use crate::front::Fixed;
-    use crate::front::FixedPoint;
-    use crate::front::Midpoint;
-    use crate::front::Object;
-    use crate::front::Plane;
-    use crate::front::Sketch;
-    use crate::front::Tangent;
-    use crate::frontend::sketch::Vertical;
-    use crate::pretty::NumericSuffix;
 
     fn find_first_sketch_object(scene_graph: &SceneGraph) -> Option<&Object> {
         for object in &scene_graph.objects {
@@ -7324,7 +7329,7 @@ mod tests {
 
     fn find_cap_object_id_with_solid_output_index(
         scene_graph: &SceneGraph,
-        cap_kind: crate::frontend::api::CapKind,
+        cap_kind: kcl_api::CapKind,
         solid_output_index: usize,
     ) -> Option<ObjectId> {
         for object in &scene_graph.objects {
@@ -14313,7 +14318,7 @@ shell001 = shell(extrude001, faces = capEnd001, thickness = 1)";
             &mut ast,
             &scene_graph,
             &solid_references,
-            &Plane::PrimitiveFace(crate::frontend::api::PrimitiveFacePlane { solid_id, index: 6 }),
+            &Plane::PrimitiveFace(kcl_api::PrimitiveFacePlane { solid_id, index: 6 }),
         )
         .unwrap();
         let face_decl = ast::VariableDeclaration::new(
@@ -14437,7 +14442,7 @@ extrude001 = extrude([region001, region002], length = 5)
             frontend.hack_set_program(&ctx, program.clone()).await.unwrap();
             let cap_object_id = find_cap_object_id_with_solid_output_index(
                 &frontend.scene_graph,
-                crate::frontend::api::CapKind::End,
+                kcl_api::CapKind::End,
                 solid_output_index,
             )
             .unwrap_or_else(|| panic!("expected an end cap object for solid output index {solid_output_index}"));
@@ -14611,8 +14616,8 @@ part = subtract(boxSolid, tools = [cutSolid])
             .find(|object| {
                 matches!(
                     &object.kind,
-                    ObjectKind::Cap(crate::frontend::api::Cap {
-                        kind: crate::frontend::api::CapKind::End,
+                    ObjectKind::Cap(kcl_api::Cap {
+                        kind: kcl_api::CapKind::End,
                         source,
                         ..
                     }) if source.solid.range == composite_range && source.sweep.range == sweep_range
