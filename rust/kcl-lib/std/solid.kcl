@@ -6,6 +6,39 @@
 
 import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, TaggedFace from "std::types"
 
+/// Cut all active native solid bodies on one side of a plane.
+///
+/// Add this call after modeling is complete. Bodies are discovered automatically,
+/// including bodies created inside functions, arrays, objects and KCL modules.
+/// The cutter is a circle sized from the model bounds and extruded beyond the
+/// model. Each body's appearance is reapplied to all of its surviving pieces.
+/// This modifies geometry, including exported geometry; remove the call to restore
+/// the complete model. Consumed and deleted bodies are excluded. Sketches, surface
+/// bodies and foreign imported geometry are not sectioned.
+///
+/// The positive-normal side is removed by default. Bodies entirely on that side
+/// disappear; bodies entirely on the other side remain unchanged. The operation
+/// consumes cut bodies; use the returned bodies for any subsequent modeling.
+///
+/// ```kcl,sketchSolve
+/// @settings(kclVersion = 2.0)
+/// profile = sketch(on = XY) {
+///   outline = circle(center = [0mm, 0mm], start = [10mm, 0mm])
+/// }
+/// body = extrude(region(segments = [profile.outline]), length = 20mm)
+/// appearance(body, color = "#cc7733", metalness = 80, roughness = 30)
+/// sectioned = sectionView(plane = offsetPlane(XY, offset = 10mm))
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn sectionView(
+  /// Cutting plane. The normal follows the right-hand rule of its X and Y axes.
+  plane: Plane,
+  /// Remove the negative-normal side instead.
+  reverse?: bool = false,
+  /// Positive clearance added to the cutter radius and reach.
+  padding?: number(Length) = 1mm,
+): [Solid] {}
+
 /// Blend a transitional edge along a tagged path, smoothing the sharp edge.
 ///
 /// Fillet is similar in function and use to a chamfer, except

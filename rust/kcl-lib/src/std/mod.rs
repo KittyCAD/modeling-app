@@ -26,6 +26,7 @@ pub mod planes;
 pub(crate) mod region_consumption;
 pub mod revolve;
 pub mod runtime;
+pub mod section;
 pub mod segment;
 pub mod shapes;
 pub mod shell;
@@ -510,6 +511,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("solid", "subtract") => (
             |e, a| Box::pin(crate::std::csg::subtract(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solid::subtract"),
+        ),
+        ("solid", "sectionView") => (
+            |e, a| Box::pin(crate::std::section::section_view(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solid::sectionView"),
         ),
         ("solid", "patternTransform") => (
             |e, a| Box::pin(crate::std::patterns::pattern_transform(e, a)),

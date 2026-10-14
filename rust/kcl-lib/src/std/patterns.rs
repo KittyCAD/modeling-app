@@ -389,6 +389,7 @@ async fn send_pattern_transform<T: GeometryTrait>(
 
     let mut geometries = vec![geometry.clone()];
     for id in entity_ids.iter().copied() {
+        exec_state.copy_section_material(geometry.id(&args.ctx).await?, id);
         let mut new_geometry = geometry.clone();
         new_geometry.set_id(id);
         new_geometry.set_artifact_id(id);
@@ -1359,7 +1360,7 @@ async fn execute_pattern_circular<T: GeometryTrait>(
     T::flush_batch(&args, exec_state, &geometry_set).await?;
     let starting: Vec<T> = geometry_set.into();
     if args.ctx.context_type == crate::execution::ContextType::Mock {
-        let seed = starting
+        let mut seed = starting
             .first()
             .cloned()
             .ok_or(KclError::new_internal(KclErrorDetails::new(
@@ -1381,6 +1382,7 @@ async fn execute_pattern_circular<T: GeometryTrait>(
         };
         for _ in 0..num_repetitions {
             let new_id = exec_state.next_uuid();
+            exec_state.copy_section_material(seed.id(&args.ctx).await?, new_id);
             let mut new_geometry = seed.clone();
             new_geometry.set_id(new_id);
             new_geometry.set_artifact_id(new_id);
@@ -1465,6 +1467,7 @@ async fn pattern_circular<T: GeometryTrait>(
 
     let mut geometries = vec![geometry.clone()];
     for id in entity_ids.iter().copied() {
+        exec_state.copy_section_material(geometry.id(&args.ctx).await?, id);
         let mut new_geometry = geometry.clone();
         new_geometry.set_id(id);
         new_geometry.set_artifact_id(id);

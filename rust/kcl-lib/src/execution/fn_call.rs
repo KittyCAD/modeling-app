@@ -655,6 +655,10 @@ impl FunctionSource {
             }
         }
 
+        if let Ok(Some(value)) = &result {
+            exec_state.track_section_value(value);
+        }
+
         coerce_result_type(result, self, exec_state).map(|r| r.map(KclValue::continue_))
     }
 }

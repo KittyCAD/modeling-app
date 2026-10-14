@@ -14,6 +14,7 @@ pub use cache::bust_cache;
 pub use cache::clear_mem_cache;
 use futures::future::BoxFuture;
 pub use geometry::*;
+pub(crate) mod section_scene;
 pub use id_generator::IdGenerator;
 pub(crate) use import::PreImportedGeometry;
 use indexmap::IndexMap;

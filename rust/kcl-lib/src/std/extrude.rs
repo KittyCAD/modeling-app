@@ -413,7 +413,7 @@ pub(crate) async fn build_segment_surface_sketch(
 }
 
 #[allow(clippy::too_many_arguments)]
-async fn inner_extrude(
+pub(super) async fn inner_extrude(
     extrudables: Vec<Extrudable>,
     length: Option<TyF64>,
     to: Option<Point3dAxis3dOrGeometryReference>,
