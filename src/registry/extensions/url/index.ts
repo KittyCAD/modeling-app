@@ -124,7 +124,12 @@ export function createBrowserUrlAdapter(
       usesHashRouter && outer.hash.startsWith('#/')
         ? new URL(outer.hash.slice(1), outer)
         : outer
-    return { outer, route }
+    return {
+      /** The unchanged URL as read from the app. */
+      outer,
+      /** A unified version of the current URL that accounts for hash routing (used by Electron) */
+      route,
+    }
   }
   return {
     captureSearch: () => read().route.search,
