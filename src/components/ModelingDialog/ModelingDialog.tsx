@@ -163,6 +163,7 @@ export default function ModelingDialog({
           arg={arg}
           label={label}
           description={description}
+          placeholder={required ? undefined : 'Use defaults'}
           isRequired={required}
           inline={false}
           autoFocus={name === firstFieldName}
@@ -275,6 +276,9 @@ export default function ModelingDialog({
           type="text"
           autoFocus={name === firstFieldName}
           className="rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs dark:border-chalkboard-70"
+          placeholder={
+            !required && arg.inputType === 'tagDeclarator' ? 'None' : undefined
+          }
           value={fieldText(value)}
           onChange={(event) => save(name, event.target.value)}
         />

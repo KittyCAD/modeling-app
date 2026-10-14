@@ -57,9 +57,18 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     await scene.settled()
 
     await toolbar.helixButton.click()
+    const helixLength = modelingDialog.input(/^length$/i)
+    await expect(helixLength).not.toHaveAttribute(
+      'aria-placeholder',
+      'Use defaults'
+    )
     await modelingDialog.options(/^mode\b/i).selectOption({
       label: 'Edge',
     })
+    await expect(helixLength).toHaveAttribute(
+      'aria-placeholder',
+      'Use defaults'
+    )
     await modelingDialog.selection('Edge').click()
     await editor.selectText('line(')
     await expect(submit).toBeEnabled()
@@ -128,6 +137,7 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     await more.click()
     await expect(submit).toBeInViewport()
     await expect(modelingDialog.cancelButton).toBeInViewport()
+    await expect(tagStart).toHaveAttribute('placeholder', 'None')
     await tagStart.fill('startFace')
     await more.click()
     await page.setBodyDimensions({ width: 1100, height: 540 })

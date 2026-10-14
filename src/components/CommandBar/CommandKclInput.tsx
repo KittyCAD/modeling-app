@@ -5,7 +5,7 @@ import {
   completionKeymap,
   completionStatus,
 } from '@codemirror/autocomplete'
-import { EditorView, keymap, tooltips } from '@codemirror/view'
+import { EditorView, keymap, placeholder, tooltips } from '@codemirror/view'
 import type { ReactNode } from 'react'
 import {
   use,
@@ -73,6 +73,7 @@ export function CommandKclInput({
   arg,
   label,
   description,
+  placeholder: placeholderText,
   isRequired = true,
   inline = true,
   value,
@@ -92,6 +93,7 @@ export function CommandKclInput({
   arg: CommandKclArgument
   label: ReactNode
   description?: ReactNode
+  placeholder?: string
   isRequired?: boolean
   inline?: boolean
   value: string
@@ -170,6 +172,7 @@ export function CommandKclInput({
     theme: new Compartment(),
     varMentions: new Compartment(),
     contentAttributes: new Compartment(),
+    placeholder: new Compartment(),
   })
 
   useEffect(() => {
@@ -228,6 +231,7 @@ export function CommandKclInput({
   const initialEditorProps = useRef({
     value,
     labelId,
+    placeholderText,
     autoFocus,
     theme: settingsValues.app.theme.current,
     varMentionData,
@@ -248,6 +252,9 @@ export function CommandKclInput({
           compartments.varMentions.of(varMentions(initial.varMentionData)),
           compartments.contentAttributes.of(
             getKclEditorContentAttributes(initial.labelId)
+          ),
+          compartments.placeholder.of(
+            initial.placeholderText ? placeholder(initial.placeholderText) : []
           ),
           EditorView.updateListener.of((update) => {
             if (update.docChanged && !isSyncingEditorValueRef.current) {
@@ -330,11 +337,16 @@ export function CommandKclInput({
       return
     }
     miniEditor.dispatch({
-      effects: compartmentsRef.current.contentAttributes.reconfigure(
-        getKclEditorContentAttributes(labelId)
-      ),
+      effects: [
+        compartmentsRef.current.contentAttributes.reconfigure(
+          getKclEditorContentAttributes(labelId)
+        ),
+        compartmentsRef.current.placeholder.reconfigure(
+          placeholderText ? placeholder(placeholderText) : []
+        ),
+      ],
     })
-  }, [labelId])
+  }, [labelId, placeholderText])
 
   useEffect(() => {
     const miniEditor = miniEditorRef.current
