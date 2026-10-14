@@ -221,7 +221,7 @@ const rootOnlyFilenames: ExecState['filenames'] = {
 /** The Rust module holding `RESERVED_DEFAULT_VIEW_NAME`. */
 const NAMED_VIEWS_RS = join(
   process.cwd(),
-  'rust/kcl-lib/src/execution/named_views.rs'
+  'rust/kcl-lib/src/named_views/values.rs'
 )
 
 describe('KCL_DEFAULT_VIEW_NAME', () => {

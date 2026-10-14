@@ -1,7 +1,8 @@
+use kcl_api::Object;
+use kcl_api::Sketch;
+
 use super::extract::Extraction;
 use super::types::SketchVisualizationError;
-use crate::front::Object;
-use crate::front::Sketch;
 
 pub(crate) fn render_sketch_png(
     scene_objects: &[Object],

@@ -368,7 +368,7 @@ dependencies = [
  "spin 0.10.1",
  "wasm-bindgen",
  "wasm-bindgen-futures",
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -1439,7 +1439,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb"
 dependencies = [
  "libc",
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -2562,7 +2562,7 @@ checksum = "3640c1c38b8e4e43584d8df18be5fc6b0aa314ce6ebf51b53313d4306cca8e46"
 dependencies = [
  "hermit-abi",
  "libc",
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -2693,7 +2693,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-api"
-version = "0.2.191"
+version = "0.2.192"
 dependencies = [
  "arbitrary",
  "euler",
@@ -2715,18 +2715,17 @@ dependencies = [
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.191"
+version = "0.1.192"
 dependencies = [
  "anyhow",
  "clap",
  "semver",
- "serde",
  "toml_edit",
 ]
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.2.191"
+version = "0.2.192"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2735,7 +2734,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.191"
+version = "0.1.192"
 dependencies = [
  "convert_case",
  "proc-macro2",
@@ -2745,7 +2744,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-engine-codec"
-version = "0.2.191"
+version = "0.2.192"
 dependencies = [
  "kittycad-modeling-cmds",
  "rmp-serde",
@@ -2754,7 +2753,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-error"
-version = "0.2.191"
+version = "0.2.192"
 dependencies = [
  "miette",
  "pyo3",
@@ -2767,7 +2766,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.191"
+version = "0.2.192"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2798,7 +2797,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.191"
+version = "0.1.192"
 dependencies = [
  "anyhow",
  "clap",
@@ -2818,7 +2817,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.191"
+version = "0.2.192"
 dependencies = [
  "ahash",
  "anyhow",
@@ -2902,7 +2901,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.191"
+version = "0.3.192"
 dependencies = [
  "anyhow",
  "kcl-api",
@@ -2919,7 +2918,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-syntax"
-version = "0.2.191"
+version = "0.2.192"
 dependencies = [
  "logos",
  "proptest",
@@ -2928,7 +2927,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.2.191"
+version = "0.2.192"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -2941,7 +2940,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.191"
+version = "0.1.192"
 dependencies = [
  "anyhow",
  "console_error_panic_hook",
@@ -3524,7 +3523,7 @@ version = "0.50.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7957b9740744892f114936ab4a57b3f487491bbeafaf8083688b16841a4240e5"
 dependencies = [
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -4346,7 +4345,7 @@ dependencies = [
  "once_cell",
  "socket2 0.6.3",
  "tracing",
- "windows-sys 0.60.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -4747,7 +4746,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys 0.12.1",
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -4804,7 +4803,7 @@ dependencies = [
  "security-framework",
  "security-framework-sys",
  "webpki-root-certs",
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -5600,7 +5599,7 @@ dependencies = [
  "getrandom 0.4.3",
  "once_cell",
  "rustix 1.1.4",
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -5609,7 +5608,7 @@ version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d8c27177b12a6399ffc08b98f76f7c9a1f4fe9fc967c784c5a071fa8d93cf7e1"
 dependencies = [
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -6567,7 +6566,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
