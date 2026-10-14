@@ -119,7 +119,7 @@ pub mod lsp_support {
         pub use crate::execution::MockConfig;
 
         pub mod cache {
-            pub use crate::execution::cache::read_old_memory_var;
+            pub use crate::execution::cache::Cache;
         }
 
         pub mod typed_path {
@@ -176,6 +176,7 @@ pub use errors::KclErrorWithOutputs;
 pub use errors::Report;
 pub use errors::ReportWithOutputs;
 pub use errors::render_compilation_issue_miette;
+pub use execution::Cache;
 pub use execution::ConstraintKind;
 pub use execution::EdgeRefactorMeta;
 pub use execution::EnvironmentRef;
@@ -195,8 +196,6 @@ pub use execution::RefactorMetadata;
 pub use execution::SegmentDragAnchor;
 pub use execution::SketchConstraintReport;
 pub use execution::SketchConstraintStatus;
-pub use execution::bust_cache;
-pub use execution::clear_mem_cache;
 pub use execution::kcl_value::is_kcl_version_available;
 pub use execution::typed_path::TypedPath;
 pub use fs::FileSystem;
