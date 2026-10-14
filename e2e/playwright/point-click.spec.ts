@@ -1659,7 +1659,6 @@ fillet(extrude001, radius = 5, edges = [{ sideFaces = [region001.tags.line2, cap
   })
 
   test(`Fillet with large radius should update code even if engine fails`, async ({
-    context,
     page,
     homePage,
     scene,
@@ -1682,17 +1681,13 @@ fillet(extrude001, radius = 5, edges = [{ sideFaces = [region001.tags.line2, cap
 }
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 extrude001 = extrude(region001, length = 5)`
-    // Locators
-    // TODO: find a way to select sweepEdges in a different way
-    const edgeLocation = { x: 649, y: 283 }
 
     // Setup
     await test.step(`Initial test setup`, async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
+      await editor.openPane()
+      await editor.replaceCode('', initialCode)
       await scene.settled()
     })
 
@@ -1700,11 +1695,25 @@ extrude001 = extrude(region001, length = 5)`
     await test.step('Select edges and apply oversized fillet', async () => {
       await test.step(`Select the edge`, async () => {
         await toolbar.closePane(DefaultLayoutPaneID.Code)
-        const [clickOnTheEdge] = scene.makeMouseHelpers(
-          edgeLocation.x,
-          edgeLocation.y
-        )
-        await clickOnTheEdge()
+        // The sweep edge at the short segment endpoint joins region tags line1 and line3.
+        // GLTF is Y-up in metres: KCL [0, -1mm, 2.5mm] becomes [0, 0.0025, 0.001].
+        const findEdge = async () =>
+          (await scene.getProjectedEntities()).find(
+            ({ kind, visible, world }) =>
+              kind === 'edge' &&
+              visible &&
+              Math.abs(world.x) < 1e-7 &&
+              Math.abs(world.y - 0.0025) < 1e-7 &&
+              Math.abs(world.z - 0.001) < 1e-7
+          )
+        await expect.poll(findEdge, { timeout: 30_000 }).toBeDefined()
+        const edge = await findEdge()
+        if (!edge)
+          throw new Error(
+            'Missing visible sweep edge at the short segment endpoint'
+          )
+        await page.mouse.click(edge.x, edge.y)
+        await toolbar.expectSelection('1 edge')
       })
 
       await test.step(`Apply fillet`, async () => {

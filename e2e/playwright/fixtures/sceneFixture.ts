@@ -133,6 +133,15 @@ export class SceneFixture {
       .or(page.getByRole('button', { name: 'Edit Sketch' }))
     this.appHeader = this.page.getByTestId('app-header')
   }
+  /** Read current CSS viewport coordinates; refresh after camera or model changes. */
+  getProjectedEntities = async () =>
+    this.page.evaluate(async () => {
+      const view = window.app.singletons.kclManager.sceneInfra.localRenderer
+      if (!view)
+        throw new Error('Projected entities require the local renderer')
+      return view.getProjectedEntities()
+    })
+
   private _serialiseScene = async (): Promise<SceneSerialised> => {
     const camera = await this.getCameraInfo()
 

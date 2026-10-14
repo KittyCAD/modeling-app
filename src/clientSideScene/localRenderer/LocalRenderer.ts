@@ -5,6 +5,10 @@ import {
   LOCAL_WEBGPU_GTAO_USE_DENOISE,
   LOCAL_WEBGPU_GTAO_USE_NORMAL_MRT,
 } from '@src/clientSideScene/localRenderer/config'
+import {
+  getEntityPoint,
+  projectEntityPoint,
+} from '@src/clientSideScene/localRenderer/projectEntityPoint'
 import { EdgeRenderer } from '@src/clientSideScene/localRenderer/EdgeRenderer'
 import { PlaneRenderer } from '@src/clientSideScene/localRenderer/PlaneRenderer'
 import { EnvMapLoader } from '@src/clientSideScene/localRenderer/EnvMapLoader'
@@ -103,6 +107,7 @@ export class LocalRenderer {
   private currentModel: Object3D | null = null
   private readonly gltfLoader = new GLTFLoader()
   private modelLoadGeneration = 0
+  private projectedModelGeneration = -1
   private pendingModelRefresh = false
   private hasFittedModel = false
   private unregisterExecutionListener: (() => void) | null = null
@@ -734,6 +739,58 @@ export class LocalRenderer {
     this.selectionHighlightRenderer?.render(previewCamera)
   }
 
+  /** Debug/E2E snapshot in CSS viewport pixels, using the same camera and picker as clicks. */
+  async getProjectedEntities() {
+    const camera = this.previewCamera
+    const canvas = this.renderer?.domElement
+    if (
+      !camera ||
+      !canvas ||
+      !this.currentModel ||
+      this.pendingModelRefresh ||
+      this.projectedModelGeneration !== this.modelLoadGeneration ||
+      this.kclManager.isExecuting
+    )
+      return []
+    const generation = this.modelLoadGeneration
+    const rect = canvas.getBoundingClientRect()
+    this.currentModel.updateWorldMatrix(true, true)
+    camera.updateMatrixWorld(true)
+    const entities = []
+    for (const [id, object] of this.targetByEntityId) {
+      const kind =
+        typeof object.userData.edgeUuid === 'string' ? 'edge' : 'face'
+      object.updateWorldMatrix(true, false)
+      const point = getEntityPoint(object.geometry, kind)
+      if (!point) continue
+      point.applyMatrix4(object.matrixWorld)
+      const projected = projectEntityPoint(point, camera, rect)
+      if (!projected) continue
+      const result = await this.integerIdPicker?.pick({
+        x: projected.x - rect.left,
+        y: projected.y - rect.top,
+        streamWidth: rect.width,
+        streamHeight: rect.height,
+        camera,
+      })
+      if (
+        this.disposed ||
+        generation !== this.modelLoadGeneration ||
+        result?.stale
+      )
+        return []
+      entities.push({
+        id,
+        kind,
+        ...projected,
+        world: { x: point.x, y: point.y, z: point.z },
+        // This means the real picker would select this entity at its representative point.
+        visible: result?.target === object,
+      })
+    }
+    return entities
+  }
+
   /**
    * Draws a frame and lends out the canvas. It can only be read during the
    * call: WebGPU and WebGL canvases read back blank in a later task.
@@ -1043,6 +1100,7 @@ export class LocalRenderer {
         this.hasFittedModel = true
       }
       this.invalidateBaseRender()
+      this.projectedModelGeneration = generation
       this.onModelLoadSettled?.(true)
     } catch (error) {
       if (isCurrent()) this.handleModelLoadError(error)
