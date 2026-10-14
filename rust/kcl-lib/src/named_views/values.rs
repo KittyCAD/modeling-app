@@ -1,13 +1,9 @@
-//! Runtime values for named views: the camera intent that `std::view`
-//! constructor functions produce, and the view value `view::named` returns.
+//! Runtime values produced by `std::view` constructors.
 //!
-//! `CameraView` stores what the camera looks at and from which direction, not
-//! a snapshot of engine camera state; absent fields are resolved by whichever
-//! consumer activates the view. `NamedViewValue` pairs one of those cameras
-//! with the visibility the author declared. `Orientation`, `Visibility` and
-//! `Projection` are Rust mirrors of the KCL enums declared in `std/view.kcl`;
-//! the test `kcl_enum_declarations_match_rust_mirrors` pins each pair of
-//! declarations to the same variant list.
+//! - [`CameraView`] stores camera intent. Consumers resolve omitted framing
+//!   parameters when activating the view.
+//! - [`NamedViewValue`] pairs a camera with the view's declared visibility.
+//! - The Rust enums correspond to the KCL enums declared in `std/view.kcl`.
 
 use std::collections::HashSet;
 
