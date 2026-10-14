@@ -179,6 +179,10 @@ export function addNamedView({
   const modifiedAst = structuredClone(ast)
   const pathToEdit = structuredClone(nodeToEdit)
   const namedCall = modelingStdLibCall('Named View')
+  const existingCall = pathToEdit
+    ? namedViewCall({ ast: modifiedAst, pathToNode: pathToEdit, wasmInstance })
+    : undefined
+  if (err(existingCall)) return existingCall
 
   let preserveExcept = Boolean(pathToEdit)
   if (pathToEdit && except) {
@@ -242,13 +246,7 @@ export function addNamedView({
     insertKclVariableIfNeeded(target, modifiedAst, pathToEdit)
     insertKclVariableIfNeeded(distance, modifiedAst, pathToEdit)
   } else if (pathToEdit && !orientation && !projection) {
-    const existingCall = namedViewCall({
-      ast: modifiedAst,
-      pathToNode: pathToEdit,
-      wasmInstance,
-    })
-    if (err(existingCall)) return existingCall
-    camera = existingCall.arguments.find(
+    camera = existingCall?.arguments.find(
       (argument) => argument.label?.name === 'camera'
     )?.arg
   }
@@ -270,11 +268,13 @@ export function addNamedView({
     namedCall.path.map(createIdentifier)
   )
 
+  // The positional argument here is an editable name, not a geometry selection.
+  if (existingCall) existingCall.unlabeled = call.unlabeled
+
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
     pathToEdit,
-    replaceUnlabeled: true,
     labeledSelectionArgNames: preserveExcept ? ['except'] : [],
     variableIfNewDecl: 'view',
     wasmInstance,

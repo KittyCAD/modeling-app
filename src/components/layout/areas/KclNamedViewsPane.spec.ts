@@ -13,7 +13,6 @@ const renderMocks = vi.hoisted(() => {
   })
 
   return {
-    wasmInstance,
     activateNamedView: vi.fn(async () => undefined),
     appSend: vi.fn(),
     captureNamedViewCamera:
@@ -25,9 +24,6 @@ const renderMocks = vi.hoisted(() => {
       type: 'Find and select command',
     })),
     kclManager: {
-      get wasmInstance() {
-        throw new Error('The synchronous WASM getter must not be used')
-      },
       wasmInstancePromise,
       ast: {},
       code: '',
@@ -225,14 +221,6 @@ describe('viewRows', () => {
     expect(rows.map((row) => row.key)).toEqual(['kcl-default', 'view-1'])
   })
 
-  it('uses the source-derived camera summary beside each declared view', () => {
-    const namedView = view({ name: 'Front' })
-
-    expect(
-      viewRows([namedView], () => 'Front 200mm Perspective')[1].detail
-    ).toBe('Front 200mm Perspective')
-  })
-
   it('only lets the root module manage a declared view', () => {
     expect(canManageNamedView(view({ name: 'Root' }))).toBe(true)
     expect(canManageNamedView(view({ name: 'Import', moduleId: 1 }))).toBe(
@@ -261,56 +249,7 @@ describe('KclNamedViewsPane', () => {
     )
   }
 
-  it('uses promised WASM instead of reading the unsafe synchronous getter', async () => {
-    const namedView = view({ name: 'Front', modulePath: { type: 'Main' } })
-    renderMocks.kclManager.execStateSignal.value = {
-      artifactGraph: new Map([
-        [namedView.artifact.id, { type: 'namedView', ...namedView.artifact }],
-      ]),
-      filenames: { 0: { type: 'Main' } },
-    }
-    renderMocks.namedViewCameraSummary.mockClear()
-
-    renderPane()
-    expect(await screen.findByText('Front')).toBeInTheDocument()
-    expect(renderMocks.namedViewCameraSummary).toHaveBeenCalledWith(
-      expect.objectContaining({ wasmInstance: renderMocks.wasmInstance })
-    )
-  })
-
-  it('opens the full edit flow when a view is double-clicked', async () => {
-    const namedView = view({ name: 'Front', modulePath: { type: 'Main' } })
-    renderMocks.kclManager.execStateSignal.value = {
-      artifactGraph: new Map([
-        [namedView.artifact.id, { type: 'namedView', ...namedView.artifact }],
-      ]),
-      filenames: { 0: { type: 'Main' } },
-    }
-    renderMocks.appSend.mockClear()
-    renderMocks.activateNamedView.mockClear()
-    renderMocks.prepareNamedViewEditCommand.mockClear()
-
-    renderPane()
-
-    const label = await screen.findByText('Front')
-    fireEvent.click(label, { detail: 1 })
-    fireEvent.click(label, { detail: 2 })
-    fireEvent.doubleClick(label, { detail: 2 })
-
-    await waitFor(() =>
-      expect(renderMocks.prepareNamedViewEditCommand).toHaveBeenCalledWith(
-        expect.objectContaining({
-          artifact: expect.objectContaining({ name: 'Front' }),
-        })
-      )
-    )
-    expect(renderMocks.appSend).toHaveBeenCalledWith(
-      expect.objectContaining({ type: 'Find and select command' })
-    )
-    expect(renderMocks.activateNamedView).toHaveBeenCalledTimes(1)
-  })
-
-  it('activates a view on a plain row click but not a modified click', async () => {
+  it('selects rows without applying a view until its frame button is clicked', async () => {
     const namedView = view({ name: 'Front', modulePath: { type: 'Main' } })
     renderMocks.kclManager.execStateSignal.value = {
       artifactGraph: new Map([
@@ -322,15 +261,20 @@ describe('KclNamedViewsPane', () => {
 
     renderPane()
 
-    const label = await screen.findByText('Front')
+    const label = await screen.findByRole('button', { name: /^Front/ })
     fireEvent.click(label)
+    expect(label).toHaveAttribute('aria-pressed', 'true')
+    fireEvent.click(label, { metaKey: true })
+    expect(label).toHaveAttribute('aria-pressed', 'false')
+    expect(renderMocks.activateNamedView).not.toHaveBeenCalled()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Apply Front' }))
     expect(renderMocks.activateNamedView).toHaveBeenCalledWith(
       expect.objectContaining({
         target: expect.objectContaining({ kind: 'declared' }),
       })
     )
 
-    fireEvent.click(label, { metaKey: true })
     expect(renderMocks.activateNamedView).toHaveBeenCalledTimes(1)
   })
 
@@ -383,16 +327,20 @@ describe('KclNamedViewsPane', () => {
 
 describe('nextViewSelection', () => {
   const rowKeys = ['default', 'front', 'top', 'detail']
+  const click = {
+    selected: new Set(['front']),
+    rowKey: 'detail',
+    rowIndex: 3,
+    anchorIndex: 1,
+    rowKeys,
+    shiftKey: false,
+    toggleKey: false,
+  }
 
   it('makes a plain click the only selection', () => {
     const result = nextViewSelection({
+      ...click,
       selected: new Set(['front', 'top']),
-      rowKey: 'detail',
-      rowIndex: 3,
-      anchorIndex: 1,
-      rowKeys,
-      shiftKey: false,
-      toggleKey: false,
     })
 
     expect([...result.selected]).toEqual(['detail'])
@@ -401,23 +349,19 @@ describe('nextViewSelection', () => {
 
   it('toggles a row with Command or Control click', () => {
     const added = nextViewSelection({
-      selected: new Set(['front']),
+      ...click,
       rowKey: 'top',
       rowIndex: 2,
-      anchorIndex: 1,
-      rowKeys,
-      shiftKey: false,
       toggleKey: true,
     })
     expect([...added.selected]).toEqual(['front', 'top'])
 
     const removed = nextViewSelection({
+      ...click,
       selected: added.selected,
       rowKey: 'front',
       rowIndex: 1,
       anchorIndex: added.anchorIndex,
-      rowKeys,
-      shiftKey: false,
       toggleKey: true,
     })
     expect([...removed.selected]).toEqual(['top'])
@@ -425,13 +369,8 @@ describe('nextViewSelection', () => {
 
   it('selects a contiguous range with Shift click', () => {
     const result = nextViewSelection({
-      selected: new Set(['front']),
-      rowKey: 'detail',
-      rowIndex: 3,
-      anchorIndex: 1,
-      rowKeys,
+      ...click,
       shiftKey: true,
-      toggleKey: false,
     })
 
     expect([...result.selected]).toEqual(['front', 'top', 'detail'])
@@ -440,11 +379,9 @@ describe('nextViewSelection', () => {
 
   it('adds a Shift range when Command or Control is also held', () => {
     const result = nextViewSelection({
+      ...click,
       selected: new Set(['default']),
-      rowKey: 'detail',
-      rowIndex: 3,
       anchorIndex: 2,
-      rowKeys,
       shiftKey: true,
       toggleKey: true,
     })

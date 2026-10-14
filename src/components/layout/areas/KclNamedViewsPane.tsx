@@ -38,6 +38,7 @@ import {
 } from '@src/lib/kclNamedViewEdit'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { isErr, reportRejection } from '@src/lib/trap'
+import type { RefObject } from 'react'
 import { use, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 
@@ -257,11 +258,6 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
           },
         })
       }
-      const removedKeys = new Set(views.map((view) => view.artifact.id))
-      setSelectedKeys(
-        (current) =>
-          new Set([...current].filter((key) => !removedKeys.has(key)))
-      )
     } catch (reason) {
       toast.error(
         reason instanceof Error
@@ -319,17 +315,12 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
     }
   }
 
-  const selectedViews = rows.flatMap((row) => {
-    if (
-      !selectedKeys.has(row.key) ||
-      row.target.kind !== 'declared' ||
-      lockedKeys.has(namedViewSessionKey(projectPath, row.target.view)) ||
-      !canManageNamedView(row.target.view)
-    ) {
-      return []
-    }
-    return [row.target.view]
-  })
+  const selectedViews = views.filter(
+    (view) =>
+      selectedKeys.has(view.artifact.id) &&
+      canManageNamedView(view) &&
+      !lockedKeys.has(namedViewSessionKey(projectPath, view))
+  )
 
   return (
     <LayoutPanel
@@ -436,21 +427,7 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                   className="reset flex min-w-0 flex-1 items-center gap-2 self-stretch text-left !text-xs"
                   aria-pressed={isSelected}
                   onClick={(event) => {
-                    const toggleKey = event.metaKey || event.ctrlKey
-                    selectRow(event.shiftKey, toggleKey)
-                    if (
-                      event.detail > 1 ||
-                      event.shiftKey ||
-                      toggleKey ||
-                      actionsDisabled ||
-                      isActive
-                    ) {
-                      return
-                    }
-                    activateNamedView({
-                      target: row.target,
-                      kclManager,
-                    }).catch(reportRejection)
+                    selectRow(event.shiftKey, event.metaKey || event.ctrlKey)
                   }}
                   onDoubleClick={(event) => {
                     if (!manageableView || rowActionsDisabled) return
@@ -537,20 +514,23 @@ function ViewStateIcon({ active }: { active: boolean }) {
 }
 
 function PaneIconButton({
+  buttonRef,
   icon,
   label,
   testId,
   disabled,
   onClick,
 }: {
-  icon: 'plus' | 'trash' | 'lockClosed' | 'lockOpen'
+  buttonRef?: RefObject<HTMLButtonElement | null>
+  icon: 'plus' | 'trash' | 'lockClosed' | 'lockOpen' | 'three-dots'
   label: string
   testId: string
   disabled: boolean
-  onClick: () => void
+  onClick?: () => void
 }) {
   return (
     <ActionButton
+      ref={buttonRef}
       Element="button"
       aria-label={label}
       title={label}
@@ -609,20 +589,12 @@ function NamedViewRowMenu({
 
   return (
     <>
-      <ActionButton
-        ref={triggerRef}
-        Element="button"
-        aria-label="Named view actions"
-        title="Named view actions"
-        data-testid="named-view-actions"
+      <PaneIconButton
+        buttonRef={triggerRef}
+        icon="three-dots"
+        label="Named view actions"
+        testId="named-view-actions"
         disabled={disabled}
-        tabIndex={0}
-        iconStart={{
-          icon: 'three-dots',
-          iconClassName: '!text-current',
-          bgClassName: 'bg-transparent dark:bg-transparent',
-        }}
-        className="h-6 w-6 shrink-0 justify-center !p-0 !bg-transparent border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 !outline-none"
       />
       <ContextMenu
         event="mouseup"

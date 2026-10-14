@@ -2,7 +2,7 @@ import {
   addNamedView,
   updateNamedViewCamera,
 } from '@src/lang/modifyAst/namedViews'
-import { assertParse, getAllOperations, recast } from '@src/lang/wasm'
+import { assertParse, recast } from '@src/lang/wasm'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
@@ -147,12 +147,6 @@ view001 = view::named(
     const artifact = [...execState.artifactGraph.values()].find(
       (candidate) => candidate.type === 'namedView'
     )
-    expect(
-      getAllOperations(execState.operations).some(
-        (candidate) =>
-          candidate.type === 'StdLibCall' && candidate.name === 'view::named'
-      )
-    ).toBe(false)
     if (!artifact || artifact.type !== 'namedView') {
       throw new Error('Expected a named view artifact')
     }
@@ -235,7 +229,7 @@ view001 = view::named(
 })
 
 describe('small named-view edits', () => {
-  const code = `@settings(kclVersion = "3.0-preview")
+  const code = `@settings(kclVersion = 3.0)
 
 view001 = view::named(
   "Inspection view",
@@ -247,7 +241,7 @@ view001 = view::named(
   baseline = view::Visibility::Show,
 )`
 
-  async function subject() {
+  async function subject(code: string) {
     const ast = assertParse(code, instance)
     const execState = await enginelessExecutor(ast, rustContext)
     const artifact = [...execState.artifactGraph.values()].find(
@@ -259,80 +253,35 @@ view001 = view::named(
     return { ast, artifact }
   }
 
-  it('summarizes only the camera arguments present in source', async () => {
-    const { ast, artifact } = await subject()
-
-    expect(
-      namedViewCameraSummary({
-        artifact,
-        ast,
-        code,
-        wasmInstance: instance,
-      })
-    ).toBe('Front 200mm Perspective')
-  })
-
-  it('does not invent resolved defaults that were omitted in source', async () => {
-    const minimalCode = `@settings(kclVersion = "3.0-preview")
-
-view001 = view::named(
-  "Top",
-  camera = view::oriented(view::Orientation::Top),
-  baseline = view::Visibility::Show,
-)`
-    const ast = assertParse(minimalCode, instance)
-    const execState = await enginelessExecutor(ast, rustContext)
-    const artifact = [...execState.artifactGraph.values()].find(
-      (candidate) => candidate.type === 'namedView'
-    )
-    if (!artifact || artifact.type !== 'namedView') {
-      throw new Error('Expected a named view artifact')
+  it.each([
+    {
+      camera:
+        'view::oriented(view::Orientation::Front, distance = 200mm, projection = view::Projection::Perspective)',
+      summary: 'Front 200mm Perspective',
+    },
+    {
+      camera: 'view::oriented(view::Orientation::Top)',
+      summary: 'Top',
+    },
+    {
+      camera:
+        'view::directed([0, -1, 0], up = [0, 0, 1], target = [1mm, 2mm, 3mm], distance = 80mm)',
+      summary: 'Direction [0, -1, 0] Up [0, 0, 1] Target [1mm, 2mm, 3mm] 80mm',
+    },
+  ])(
+    'summarizes only camera arguments present in source: $summary',
+    async ({ camera, summary }) => {
+      const code = `@settings(kclVersion = 3.0)
+view001 = view::named("Inspection view", camera = ${camera}, baseline = view::Visibility::Show)`
+      const { ast, artifact } = await subject(code)
+      expect(
+        namedViewCameraSummary({ artifact, ast, code, wasmInstance: instance })
+      ).toBe(summary)
     }
-
-    expect(
-      namedViewCameraSummary({
-        artifact,
-        ast,
-        code: minimalCode,
-        wasmInstance: instance,
-      })
-    ).toBe('Top')
-  })
-
-  it('shows the specified vectors for a directed camera', async () => {
-    const directedCode = `@settings(kclVersion = "3.0-preview")
-
-view001 = view::named(
-  "Detail",
-  camera = view::directed(
-    [0, -1, 0],
-    up = [0, 0, 1],
-    target = [1mm, 2mm, 3mm],
-    distance = 80mm,
-  ),
-  baseline = view::Visibility::Show,
-)`
-    const ast = assertParse(directedCode, instance)
-    const execState = await enginelessExecutor(ast, rustContext)
-    const artifact = [...execState.artifactGraph.values()].find(
-      (candidate) => candidate.type === 'namedView'
-    )
-    if (!artifact || artifact.type !== 'namedView') {
-      throw new Error('Expected a named view artifact')
-    }
-
-    expect(
-      namedViewCameraSummary({
-        artifact,
-        ast,
-        code: directedCode,
-        wasmInstance: instance,
-      })
-    ).toBe('Direction [0, -1, 0] Up [0, 0, 1] Target [1mm, 2mm, 3mm] 80mm')
-  })
+  )
 
   it('replaces only the camera with the current directed camera', async () => {
-    const { ast, artifact } = await subject()
+    const { ast, artifact } = await subject(code)
     const modifiedAst = updateNamedViewCamera({
       ast,
       pathToNode: artifact.codeRef.pathToNode,

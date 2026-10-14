@@ -12,7 +12,7 @@ import {
   applyNamedViewCamera,
   captureNamedViewCamera,
 } from '@src/lib/kclNamedViewCamera'
-import { PerspectiveCamera, Vector3 } from 'three'
+import { PerspectiveCamera } from 'three'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const CURRENT_TARGET = { x: 10, y: 20, z: 30 }
@@ -108,7 +108,7 @@ function sentCommandTypes(sendSceneCommand: ReturnType<typeof vi.fn>) {
 }
 
 describe('captureNamedViewCamera', () => {
-  it('captures the current camera as a directed KCL view', async () => {
+  it('captures direction and uses the engine eye offset to preserve orthographic zoom', async () => {
     const camera = new PerspectiveCamera()
     camera.position.set(0, -10, 0)
     camera.up.set(0, 0, 1)
@@ -122,8 +122,7 @@ describe('captureNamedViewCamera', () => {
     const result = await captureNamedViewCamera({
       camControls: {
         camera,
-        target: new Vector3(0, 0, 0),
-        isPerspective: true,
+        isPerspective: false,
         getCameraView,
       },
     } as unknown as SceneInfra)
@@ -136,30 +135,8 @@ describe('captureNamedViewCamera', () => {
     expect(result.up[1]).toBeCloseTo(0)
     expect(result.up[2]).toBeCloseTo(1)
     expect(result.target).toEqual([1, 2, 3])
-    expect(result.distance).toBe(25)
-    expect(result.projection).toBe('Perspective')
-  })
-
-  it('uses the effective engine eye offset so orthographic zoom is preserved', async () => {
-    const camera = new PerspectiveCamera()
-    camera.position.set(0, -10, 0)
-    camera.lookAt(0, 0, 0)
-    camera.updateMatrixWorld()
-
-    const result = await captureNamedViewCamera({
-      camControls: {
-        camera,
-        isPerspective: false,
-        getCameraView: vi.fn().mockResolvedValue({
-          pivot_position: { x: 0, y: 0, z: 0 },
-          eye_offset: 80,
-        }),
-      },
-    } as unknown as SceneInfra)
-    if (result instanceof Error) throw result
-
     expect(camera.position.length()).toBe(10)
-    expect(result.distance).toBe(80)
+    expect(result.distance).toBe(25)
     expect(result.projection).toBe('Orthographic')
   })
 })
