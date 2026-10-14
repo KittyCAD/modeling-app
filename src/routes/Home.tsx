@@ -609,7 +609,7 @@ const Home = () => {
           className="lg:row-start-1 -row-end-1 grid sm:grid-cols-2 md:mb-12 lg:flex flex-col justify-between"
         >
           <ul className="flex flex-col">
-            {needsToOnboard(location, onboardingStatus) && (
+            {needsToOnboard(onboardingStatus) && (
               <li className="flex group">
                 <ActionButton
                   Element="button"
