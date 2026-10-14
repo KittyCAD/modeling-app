@@ -142,8 +142,19 @@ export class SceneFixture {
       return view.getProjectedEntities()
     })
 
-  /** Index is zero-based within edges filtered by the requested visibility. */
-  findEdge = async (
+  findEdge = (
+    index: number,
+    options?: { timeout?: number; visible?: boolean }
+  ) => this.findEntity('edge', index, options)
+
+  findFace = (
+    index: number,
+    options?: { timeout?: number; visible?: boolean }
+  ) => this.findEntity('face', index, options)
+
+  /** Index is zero-based within entities filtered by kind and visibility. */
+  private findEntity = async (
+    kind: 'edge' | 'face',
     index: number,
     {
       timeout = 30_000,
@@ -151,17 +162,32 @@ export class SceneFixture {
     }: { timeout?: number; visible?: boolean } = {}
   ) => {
     if (!Number.isInteger(index) || index < 0) {
-      throw new Error('Edge index must be a non-negative integer')
+      throw new Error('Entity index must be a non-negative integer')
     }
     const lookup = async () =>
       (await this.getProjectedEntities()).filter(
-        (entity) => entity.kind === 'edge' && entity.visible === visible
+        (entity) => entity.kind === kind && entity.visible === visible
       )[index]
-    await expect.poll(lookup, { timeout }).toBeDefined()
-    const edge = await lookup()
-    if (!edge) {
+    // Pane resizing and camera updates can settle after the UI action completes.
+    let entity: Awaited<ReturnType<typeof lookup>> | undefined
+    await expect
+      .poll(
+        async () => {
+          const next = await lookup()
+          const stable =
+            next !== undefined &&
+            entity?.id === next.id &&
+            entity.x === next.x &&
+            entity.y === next.y
+          entity = next
+          return stable
+        },
+        { timeout }
+      )
+      .toBe(true)
+    if (!entity) {
       throw new Error(
-        `Missing projected edge at index ${index} (visible: ${visible})`
+        `Missing projected ${kind} at index ${index} (visible: ${visible})`
       )
     }
     const bounds = await this.streamWrapper.boundingBox()
@@ -170,8 +196,8 @@ export class SceneFixture {
     }
     // Projected coordinates are viewport pixels; mouse helpers use stream ratios.
     return this.makeMouseHelpers(
-      (edge.x - bounds.x) / bounds.width,
-      (edge.y - bounds.y) / bounds.height,
+      (entity.x - bounds.x) / bounds.width,
+      (entity.y - bounds.y) / bounds.height,
       { format: 'ratio' }
     )
   }

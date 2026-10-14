@@ -348,9 +348,6 @@ hide(sketch002)
 region001 = region(segments = [sketch002.line1, sketch002.line2])
 sketch001 = extrude(region001, length = -12)`
 
-    // Locators
-    const faceLocation = { x: 630, y: 290 }
-
     // Setup
     await test.step(`Initial test setup`, async () => {
       await context.addInitScript((initialCode) => {
@@ -362,17 +359,17 @@ sketch001 = extrude(region001, length = -12)`
       await scene.settled()
     })
 
-    // Click helpers
-    const [clickOnFace] = scene.makeMouseHelpers(faceLocation.x, faceLocation.y)
-
     await test.step('Select the face (Shift-click)', async () => {
       await page.keyboard.down('Shift')
+      // The right-hand wall, matching the original pixel click.
+      const [clickOnFace] = await scene.findFace(1)
       await clickOnFace()
       await expect(toolbar.selectionStatus).toContainText('1 face')
       await page.keyboard.up('Shift')
     })
     await test.step('Deselect the face (Shift-click)', async () => {
       await page.keyboard.down('Shift')
+      const [clickOnFace] = await scene.findFace(1)
       await clickOnFace()
       await expect(toolbar.selectionStatus).not.toContainText('1 face')
       await page.keyboard.up('Shift')
@@ -1028,19 +1025,6 @@ extrude001 = extrude(region001, length = -12)`
     const firstFilletDeclaration = `fillet001 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capEnd001]}], radius=5,)`
     const secondFilletDeclaration = `fillet002 = fillet(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capStart001]}], radius=5,)`
 
-    // Locators
-    // TODO: find a way to not have hardcoded pixel values for region edges and sweepEdges
-    const firstEdgeLocation = { x: 600, y: 195 }
-    const [clickOnFirstEdge] = scene.makeMouseHelpers(
-      firstEdgeLocation.x,
-      firstEdgeLocation.y
-    )
-    const secondEdgeLocation = { x: 600, y: 383 }
-    const [clickOnSecondEdge] = scene.makeMouseHelpers(
-      secondEdgeLocation.x,
-      secondEdgeLocation.y
-    )
-
     // Setup
     await test.step(`Initial test setup`, async () => {
       await context.addInitScript((initialCode) => {
@@ -1053,6 +1037,7 @@ extrude001 = extrude(region001, length = -12)`
 
     // Test 1: Command bar flow with preselected edges
     await test.step(`Select first edge`, async () => {
+      const [clickOnFirstEdge] = await scene.findEdge(3)
       await clickOnFirstEdge()
     })
 
@@ -1181,7 +1166,11 @@ extrude001 = extrude(region001, length = -12)`
     })
 
     await test.step(`Select second edge`, async () => {
+      // Expose the cap-start edge after the first operation changes the model.
+      await editor.closePane()
+      const [clickOnSecondEdge] = await scene.findEdge(2)
       await clickOnSecondEdge()
+      await toolbar.expectSelection('1 edge')
     })
 
     await test.step(`Apply fillet to the second edge`, async () => {
@@ -1786,10 +1775,6 @@ extrude001 = extrude(region001, length = -12)`
     const firstChamferDeclaration = `chamfer001 = chamfer(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capEnd001]}], length=5,)`
     const secondChamferDeclaration = `chamfer002 = chamfer(extrude001, edges=[{sideFaces=[region001.tags.line2,extrude001.faces.capStart001]}], length=5,)`
 
-    // Locators
-    const firstEdgeLocation = { x: 600, y: 193 }
-    const secondEdgeLocation = { x: 600, y: 383 }
-
     // Setup
     await test.step(`Initial test setup`, async () => {
       await context.addInitScript((initialCode) => {
@@ -1801,17 +1786,9 @@ extrude001 = extrude(region001, length = -12)`
       await editor.closePane()
     })
 
-    const [clickOnFirstEdge] = scene.makeMouseHelpers(
-      firstEdgeLocation.x,
-      firstEdgeLocation.y
-    )
-    const [clickOnSecondEdge] = scene.makeMouseHelpers(
-      secondEdgeLocation.x,
-      secondEdgeLocation.y
-    )
-
     // Test 1: Command bar flow with preselected edges
     await test.step(`Select first edge`, async () => {
+      const [clickOnFirstEdge] = await scene.findEdge(4)
       await clickOnFirstEdge()
       await editor.openPane()
     })
@@ -1944,7 +1921,11 @@ extrude001 = extrude(region001, length = -12)`
     })
 
     await test.step(`Select second edge`, async () => {
+      // Expose the cap-start edge after the first operation changes the model.
+      await editor.closePane()
+      const [clickOnSecondEdge] = await scene.findEdge(3)
       await clickOnSecondEdge()
+      await toolbar.expectSelection('1 edge')
     })
 
     await test.step(`Apply chamfer to the second edge`, async () => {
@@ -2224,10 +2205,6 @@ extrude001 = extrude(region001, length = 30)`
     await homePage.goToModelingScene()
     await scene.settled()
 
-    // One dumb hardcoded screen pixel value
-    // Any idea here how to select a cap without clicking in the scene?
-    const testPoint = { x: 575, y: 200 }
-    const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
     const shellDeclaration =
       'shell001 = shell(extrude001, faces = capEnd001, thickness = 5)'
     const shellDeclaration2 =
@@ -2244,11 +2221,6 @@ profile001 = startProfile(sketch001, at = [-219, 25])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
   |> close()
 extrude001 = extrude(profile001, length = 500)`
-    const secondaryShellClickPoint = {
-      x: 0.4935,
-      y: 0.5159,
-      format: 'ratio' as const,
-    }
 
     await test.step(`Go through the command bar flow without preselected faces`, async () => {
       await toolbar.shellButton.click()
@@ -2263,6 +2235,7 @@ extrude001 = extrude(profile001, length = 500)`
         highlightedHeaderArg: 'faces',
         commandName: 'Shell',
       })
+      const [clickOnCap] = await scene.findFace(1)
       await clickOnCap()
       await toolbar.expectSelection('1 face')
       await cmdBar.progressCmdBar()
@@ -2349,11 +2322,6 @@ extrude001 = extrude(profile001, length = 500)`
     })
 
     await test.step('Repeat shell flow on secondary code (pause before selecting face)', async () => {
-      const [clickOnDebugCap] = scene.makeMouseHelpers(
-        secondaryShellClickPoint.x,
-        secondaryShellClickPoint.y,
-        { format: secondaryShellClickPoint.format ?? undefined }
-      )
       await toolbar.shellButton.click()
       await cmdBar.expectState({
         stage: 'arguments',
@@ -2367,6 +2335,7 @@ extrude001 = extrude(profile001, length = 500)`
         commandName: 'Shell',
       })
 
+      const [clickOnDebugCap] = await scene.findFace(2)
       await clickOnDebugCap()
       await toolbar.expectSelection('1 face')
       await cmdBar.progressCmdBar()
@@ -2429,10 +2398,6 @@ extrude001 = extrude(region001, length = 30)`
     await homePage.goToModelingScene()
     await scene.settled()
 
-    // One dumb hardcoded screen pixel value
-    const testPoint = { x: 575, y: 200 }
-    const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
-
     await test.step(`Go through the command bar flow`, async () => {
       await toolbar.selectSurface('delete-face')
       await cmdBar.expectState({
@@ -2445,6 +2410,7 @@ extrude001 = extrude(region001, length = 30)`
         highlightedHeaderArg: 'faces',
         commandName: 'Delete Face',
       })
+      const [clickOnCap] = await scene.findFace(1)
       await clickOnCap()
       await toolbar.expectSelection('1 face')
       await cmdBar.progressCmdBar()
@@ -2510,10 +2476,8 @@ chamfer001 = chamfer(
       { x: 51.38, y: -17.36, z: -68.74 }
     )
 
-    const [clickChamferFace] = scene.makeMouseHelpers(0.4948, 0.6468, {
-      format: 'ratio',
-    })
     await toolbar.selectSurface('delete-face')
+    const [clickChamferFace] = await scene.findFace(2)
     await clickChamferFace()
     await toolbar.expectSelection('1 face')
     await cmdBar.progressCmdBar()
@@ -2570,10 +2534,8 @@ hide(sketch001)`
       { x: 12, y: 8, z: 5 }
     )
 
-    const [clickChamferFace] = scene.makeMouseHelpers(0.5631, 0.5459, {
-      format: 'ratio',
-    })
     await toolbar.selectSurface('delete-face')
+    const [clickChamferFace] = await scene.findFace(2)
     await clickChamferFace()
     await toolbar.expectSelection('1 face')
     await cmdBar.progressCmdBar()
@@ -2632,10 +2594,8 @@ hide(sketch001)`
       { x: 15, y: 10, z: 6 }
     )
 
-    const [clickFilletFace] = scene.makeMouseHelpers(0.6532, 0.4954, {
-      format: 'ratio',
-    })
     await toolbar.selectSurface('delete-face')
+    const [clickFilletFace] = await scene.findFace(4)
     await clickFilletFace()
     await toolbar.expectSelection('1 face')
     await cmdBar.progressCmdBar()
@@ -4975,8 +4935,6 @@ extrude001 = extrude(region001, length = 10)`
 
     await test.step('Add the hole through the command flow', async () => {
       await toolbar.holeButton.click()
-      const testPoint = { x: 600, y: 250 }
-      const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'face',
@@ -4991,6 +4949,7 @@ extrude001 = extrude(region001, length = 10)`
         },
         highlightedHeaderArg: 'face',
       })
+      const [clickOnCap] = await scene.findFace(2)
       await clickOnCap()
       await toolbar.expectSelection('1 face')
       await cmdBar.progressCmdBar()
