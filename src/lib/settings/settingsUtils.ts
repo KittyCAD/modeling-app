@@ -958,9 +958,8 @@ export interface AppSettings {
 /**
  * Finds the TOML settings files for user-level (and project-level if projectPath is provided)
  * settings, deserialize them and validate them, serialize and write the validated TOML back to the locations,
- * and return the settings object and the raw "configuration" object returned from WASM.
- *
- * Relies on WASM for TOML de/serialization.
+ * and return the settings object and the raw "configuration" object that is still used by some utils
+ * from the old WASM-based TOML parsing system.
  */
 export async function loadAndValidateSettings(
   fileOperations: FileOperationsRegistryService,
