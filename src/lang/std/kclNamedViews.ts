@@ -13,7 +13,7 @@ import type {
 /**
  * The name of the view a successful execution leaves behind.
  *
- * `RESERVED_DEFAULT_VIEW_NAME` in `rust/kcl-lib/src/execution/named_views.rs`
+ * `RESERVED_DEFAULT_VIEW_NAME` in `rust/kcl-lib/src/named_views/values.rs`
  * declares the same string. Changing one alone fails a test on each side.
  */
 export const KCL_DEFAULT_VIEW_NAME = 'Default View'
