@@ -5,6 +5,8 @@ use std::sync::Arc;
 use indexmap::IndexMap;
 use itertools::EitherOrBoth;
 use itertools::Itertools;
+use kcl_api::Object;
+use kcl_api::ObjectId;
 use kittycad_modeling_cmds::KclVersion;
 use tokio::sync::RwLock;
 
@@ -25,8 +27,6 @@ use crate::execution::memory::Stack;
 use crate::execution::state::ModuleInfoMap;
 use crate::execution::state::NotYetAdded;
 use crate::execution::state::{self as exec_state};
-use crate::front::Object;
-use crate::front::ObjectId;
 use crate::modules::ModuleId;
 use crate::modules::ModulePath;
 use crate::modules::ModuleSource;

@@ -1,4 +1,3 @@
-pub use artifact::*;
 pub use artifact_id::ArtifactId;
 pub use ast::node_path::NodePath;
 pub use ast::node_path::Step;
@@ -8,6 +7,7 @@ pub use front::*;
 use indexmap::IndexMap;
 use kcl_error::ModuleId;
 pub use kcl_value_view::*;
+pub use numeric_suffix::*;
 pub use numeric_type::*;
 use serde::Deserialize;
 use serde::Serialize;
@@ -22,6 +22,7 @@ mod front;
 pub mod kcl_value_view;
 mod numeric_type;
 pub use kittycad_point as point;
+mod numeric_suffix;
 mod units;
 
 #[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS, PartialEq, Default)]

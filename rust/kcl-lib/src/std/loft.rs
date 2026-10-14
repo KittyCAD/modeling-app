@@ -245,6 +245,11 @@ async fn inner_loft(
 
 #[cfg(test)]
 mod tests {
+    use kcl_api::Expr;
+    use kcl_api::LineCtor;
+    use kcl_api::Number;
+    use kcl_api::ObjectId;
+    use kcl_api::Point2d;
     use kcl_api::UnitLength;
 
     use super::*;
@@ -260,11 +265,6 @@ mod tests {
     use crate::execution::parse_execute;
     use crate::execution::types::NumericType;
     use crate::execution::types::NumericTypeExt;
-    use crate::front::Expr;
-    use crate::front::LineCtor;
-    use crate::front::Number;
-    use crate::front::ObjectId;
-    use crate::front::Point2d;
     use crate::parsing::ast::types::TagDeclarator;
     use crate::std::sketch::PlaneData;
 

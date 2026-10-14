@@ -8,6 +8,16 @@ use std::sync::Arc;
 
 use anyhow::Result;
 use indexmap::IndexMap;
+use kcl_api::ArcCtor;
+use kcl_api::ArcDirection;
+use kcl_api::CircleCtor;
+use kcl_api::ControlPointSplineCtor;
+use kcl_api::Freedom;
+use kcl_api::LineCtor;
+use kcl_api::Number;
+use kcl_api::ObjectId;
+use kcl_api::Point2d as ApiPoint2d;
+use kcl_api::PointCtor;
 use kcl_api::UnitLength;
 use kcl_error::SourceRange;
 use kittycad_modeling_cmds::ModelingCmd;
@@ -37,16 +47,6 @@ use crate::execution::normalize_to_solver_distance_unit;
 use crate::execution::types::NumericType;
 use crate::execution::types::NumericTypeExt;
 use crate::execution::types::adjust_length;
-use crate::front::ArcCtor;
-use crate::front::ArcDirection;
-use crate::front::CircleCtor;
-use crate::front::ControlPointSplineCtor;
-use crate::front::Freedom;
-use crate::front::LineCtor;
-use crate::front::Number;
-use crate::front::ObjectId;
-use crate::front::Point2d as ApiPoint2d;
-use crate::front::PointCtor;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::NodeRef;
 use crate::parsing::ast::types::TagDeclarator;
@@ -2368,7 +2368,7 @@ pub type UnsolvedPoint2dExpr = [UnsolvedExpr; 2];
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct ConstrainablePoint2d {
-    pub vars: crate::front::Point2d<SketchVarId>,
+    pub vars: kcl_api::Point2d<SketchVarId>,
     pub object_id: ObjectId,
 }
 
@@ -2383,7 +2383,7 @@ pub enum ConstrainablePoint2dOrOrigin {
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct ConstrainableLine2d {
-    pub vars: [crate::front::Point2d<SketchVarId>; 2],
+    pub vars: [kcl_api::Point2d<SketchVarId>; 2],
     pub object_id: ObjectId,
 }
 
