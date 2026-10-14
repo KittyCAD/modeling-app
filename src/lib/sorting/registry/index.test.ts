@@ -32,7 +32,7 @@ describe('project sorting URL contribution', () => {
     expect(window.location.search).toBe('?keep=yes')
   })
 
-  it.each(['', 'name', 'name:desc', 'modified', 'modified:desc'] as const)(
+  it.each(['name', 'name:desc', 'modified', 'modified:desc'] as const)(
     'restores the supported preference %j at startup',
     async (sort) => {
       const { sorting } = await start(`/home?sort_by=${sort}&keep=yes`)
@@ -40,6 +40,28 @@ describe('project sorting URL contribution', () => {
       expect(new URL(window.location.href).searchParams.get('sort_by')).toBe(
         sort
       )
+    }
+  )
+
+  it('removes an incoming empty reset parameter while preserving unrelated fields', async () => {
+    const { sorting } = await start('/home?sort_by=&keep=yes')
+    expect(sorting.sort.value).toBe('')
+    expect(window.location.search).toBe('?keep=yes')
+  })
+
+  it.each([
+    ['/home', false, '/home', ''],
+    ['/index.html#/home', true, '/index.html', '#/home'],
+  ] as const)(
+    'returns %s to a URL without a query string when sorting resets',
+    async (path, hashRouter, pathname, hash) => {
+      const { sorting } = await start(path, hashRouter)
+      sorting.toggle('name')
+      sorting.toggle('name')
+      expect(sorting.sort.value).toBe('')
+      expect(window.location.pathname).toBe(pathname)
+      expect(window.location.search).toBe('')
+      expect(window.location.hash).toBe(hash)
     }
   )
 
@@ -62,7 +84,7 @@ describe('project sorting URL contribution', () => {
 
     sorting.toggle('name')
     expect(sorting.sort.value).toBe('')
-    expect(window.location.search).toBe('?keep=yes&sort_by=')
+    expect(window.location.search).toBe('?keep=yes')
 
     // A later URL change is transport state, not new application input.
     window.history.replaceState(null, '', '/home?sort_by=modified')
