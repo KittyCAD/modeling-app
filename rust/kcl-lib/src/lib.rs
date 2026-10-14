@@ -70,6 +70,7 @@ pub mod lint;
 mod log;
 mod lsp_types;
 mod modules;
+pub mod named_views;
 mod parsing;
 mod project;
 mod runtime_flags;
