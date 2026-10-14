@@ -794,12 +794,24 @@ impl SketchApi for FrontendState {
             "No AST produced after adding sketch",
         )?;
 
-        // Make sure to only set this if there are no errors.
-        self.program = new_program.clone();
-
-        // We need to do an engine execute so that the plane object gets created
-        // and is cached.
-        let outcome = ctx.run_with_caching(new_program.clone()).await?;
+        let outcome = if ctx.is_mock() {
+            // Only the new declaration runs. Existing model values and object
+            // IDs come from the synchronized cache; the engine catches up on exit.
+            let mut creation_program = new_program.clone();
+            creation_program.ast.body = creation_program.ast.body.last().cloned().into_iter().collect();
+            ctx.run_mock(
+                &creation_program,
+                &MockConfig {
+                    initialize_sketch: true,
+                    use_prev_memory: !self.program.ast.body.is_empty(),
+                    ..Default::default()
+                },
+            )
+            .await?
+        } else {
+            ctx.run_with_caching(new_program.clone()).await?
+        };
+        self.program = new_program;
         let freedom_analysis_ran = true;
 
         let outcome = self.update_state_after_exec(outcome, freedom_analysis_ran);
@@ -1961,6 +1973,14 @@ impl SketchApi for FrontendState {
 }
 
 impl FrontendState {
+    /// Only default planes can be created before engine materialization. A
+    /// nonempty program must have synchronized, successful execution memory.
+    pub async fn can_create_sketch_locally(&self, args: &SketchCtor) -> bool {
+        matches!(&args.on, Plane::Default(_))
+            && (self.program.ast.body.is_empty()
+                || crate::execution::cache::has_cached_sketch_memory(&self.program.ast).await)
+    }
+
     /// Evaluate an input expression using the current model's settings and cached variables.
     pub async fn evaluate_expression(&self, ctx: &ExecutorContext, mut program: Program) -> ExecResult<ExecOutcome> {
         program.ast.inner_attrs.clone_from(&self.program.ast.inner_attrs);
