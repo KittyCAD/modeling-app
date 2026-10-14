@@ -121,36 +121,6 @@ export function getRouterSearchFromRequestUrl(
   return routerSearch === '?' ? '' : routerSearch
 }
 
-export async function getProjectMetaByRouteId(
-  readAppSettingsFile: (
-    wasmInstance: ModuleType
-  ) => Promise<DeepPartial<Configuration>>,
-  wasmInstance: ModuleType,
-  id?: string,
-  configuration?: DeepPartial<Configuration> | Error
-): Promise<ProjectRoute | undefined> {
-  if (!id) return undefined
-
-  const isPlaywright = localStorage.getItem(IS_PLAYWRIGHT_KEY) === 'true'
-
-  if (configuration === undefined || isPlaywright) {
-    configuration = await readAppSettingsFile(wasmInstance)
-  }
-
-  if (err(configuration)) return Promise.reject(configuration)
-
-  // Should not be possible but I guess logically it could be
-  if (configuration === undefined) {
-    return Promise.reject(new Error('No configuration found'))
-  }
-
-  const route = parseProjectRoute(configuration, id)
-
-  if (err(route)) return Promise.reject(route)
-
-  return route
-}
-
 export function parseProjectRoute(
   configuration: DeepPartial<Configuration>,
   id: string,
