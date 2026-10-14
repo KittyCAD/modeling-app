@@ -283,7 +283,7 @@ describe('Onboarding utility functions', () => {
       expect(needsToOnboard('completed')).toEqual(false)
     })
     it('with valid incomplete value needs onboarding', () => {
-      expect(needsToOnboard('/desktop/toolbar')).toEqual(false)
+      expect(needsToOnboard('/desktop/toolbar')).toEqual(true)
     })
   })
 
