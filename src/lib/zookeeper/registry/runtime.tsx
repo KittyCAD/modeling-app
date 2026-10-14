@@ -398,6 +398,8 @@ export function ZookeeperPaneOutlet({
   const controller = runtime.session.value
   const projectPath = project?.path
 
+  if (project?.cloudSource?.canEdit === false) return null
+
   if (!project || !controller || controller.projectPath !== projectPath) {
     return <ZookeeperPaneLoading layout={layout} onClose={onClose} />
   }
@@ -430,6 +432,8 @@ export const zookeeperRuntimeRegistryItem = defineRegistryItemFactory((ctx) => {
     <ZookeeperPaneOutlet {...props} runtime={runtime} />
   )
   const areaLibrary = computed(() => {
+    const viewOnly =
+      runtime.currentProject.value?.cloudSource?.canEdit === false
     const layoutSystem = layout.value
     const isOpen =
       layoutSystem !== undefined &&
@@ -439,7 +443,7 @@ export const zookeeperRuntimeRegistryItem = defineRegistryItemFactory((ctx) => {
 
     return {
       [AreaType.Zookeeper]: {
-        hide: () => false,
+        hide: () => viewOnly,
         shortcut: 'Ctrl + T',
         cssClassOverrides: {
           button:

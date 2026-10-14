@@ -4,6 +4,7 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { getOpenPanes } from '@src/lib/layout/utils'
 import { zookeeperRuntimeRegistryItem } from '@src/lib/zookeeper/registry/runtime'
 import { layoutService } from '@src/registry/contracts/layout'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import {
   nullableStatusBarItem,
   statusBarLocalItemsValueSpec,
@@ -27,11 +28,16 @@ const ZookeeperCreditsStatusBarItem = () =>
 
 const zookeeperCreditsStatusBarItem = defineRegistryItemFactory((ctx) => {
   const layout = ctx.services.signal(layoutService)
+  const session = ctx.services.signal(projectSession)
   const item = computed(() => {
     const layoutSystem = layout.value
+    const viewOnly =
+      session.value?.project.value?.projectIORefSignal.value.cloudSource
+        ?.canEdit === false
 
     return nullableStatusBarItem(
-      layoutSystem &&
+      !viewOnly &&
+        layoutSystem &&
         getOpenPanes({ rootLayout: layoutSystem.signal.value }).includes(
           DefaultLayoutPaneID.Zookeeper
         )
