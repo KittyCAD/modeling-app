@@ -6,7 +6,6 @@ import toast from 'react-hot-toast'
 import type { KclManager } from '@src/lang/KclManager'
 import type { KclNamedView } from '@src/lang/std/kclNamedViews'
 import {
-  KCL_DEFAULT_VIEW_NAME,
   engineIdsForVisibility,
   getViewUniverse,
   listNamedViews,
@@ -19,6 +18,7 @@ import { NAMED_VIEWS_UI_FEATURE_FLAG } from '@src/lib/constants'
 import { applyNamedViewCamera } from '@src/lib/kclNamedViewCamera'
 import { hiddenArtifactIdsFromOperations } from '@src/lib/operations'
 import { err, reportRejection } from '@src/lib/trap'
+import { getKclDefaultViewName } from '@src/lib/wasm_lib_wrapper'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { StateFrom } from 'xstate'
 
@@ -320,7 +320,7 @@ async function fallBackToKclDefault({
   activeViewSignal.value = null
 
   toast.error(
-    `The view "${active.name}" is no longer in this program. Showing ${KCL_DEFAULT_VIEW_NAME}.`
+    `The view "${active.name}" is no longer in this program. Showing ${getKclDefaultViewName()}.`
   )
 
   return restored
