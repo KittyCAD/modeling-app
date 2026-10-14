@@ -81,6 +81,8 @@ export function OpenedProject() {
 
   const projectName = project?.name || null
   const projectPath = project?.path || null
+  const viewOnly =
+    project?.projectIORefSignal.value.cloudSource?.canEdit === false
 
   const systemIOState = useSelector(systemIOActor, (actor) => actor.value)
 
@@ -276,11 +278,7 @@ export function OpenedProject() {
             file={project?.executingFileEntry.value}
             enableMenu={true}
             nativeFileMenuCreated={nativeFileMenuCreated}
-            projectMenuChildren={
-              project?.projectIORefSignal.value.cloudSource?.canEdit === false
-                ? undefined
-                : undoRedoButtons
-            }
+            projectMenuChildren={viewOnly ? undefined : undoRedoButtons}
           />
         </div>
         <ModalContainer />

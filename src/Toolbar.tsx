@@ -24,6 +24,7 @@ import { commandKey, isModelingDialogCommand } from '@src/lib/commandUtils'
 import { EngineConnectionStateType } from '@src/lib/engineConnection/utils'
 import { type HotkeySequence, hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
+import { PROJECT_ACTION_COMMANDS } from '@src/lib/projectSharing'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import type {
   ToolbarDropdown,
@@ -421,8 +422,23 @@ const Toolbar_ = memo(
 
     if (app.project?.projectIORefSignal.value.cloudSource?.canEdit === false) {
       return (
-        <div className="px-3 py-2 text-sm" data-testid="view-only-indicator">
-          View only
+        <div className="flex items-center justify-center gap-3 px-3 py-2 text-sm">
+          <span data-testid="view-only-indicator">View only</span>
+          <ActionButton
+            Element="button"
+            tabIndex={0}
+            iconStart={{ icon: 'clone' }}
+            className="py-2"
+            data-testid="duplicate-project-to-edit"
+            onClick={() =>
+              app.commands.send({
+                type: 'Find and select command',
+                data: PROJECT_ACTION_COMMANDS.duplicate,
+              })
+            }
+          >
+            Duplicate project to edit
+          </ActionButton>
         </div>
       )
     }
