@@ -6,9 +6,9 @@ import {
   shouldShowFreeCloudProjectTrainingDisclosure,
 } from '@src/lib/projectLibraries/trainingDisclosure'
 import type { HomeProjectActionsService } from '@src/registry/contracts/homeProjects'
-import { projectSortingService } from '@src/registry/contracts/projectSorting'
+import { projectSortingService } from '@src/lib/sorting/registry/contract'
 import { urlService } from '@src/registry/contracts/url'
-import projectSorting from '@src/registry/extensions/projectSorting'
+import projectSorting from '@src/lib/sorting/registry'
 import url, { createBrowserUrlAdapter } from '@src/registry/extensions/url'
 import { getSortFunction } from '@src/lib/sorting'
 import { HomeHeader } from '@src/routes/HomeHeader'

@@ -69,7 +69,7 @@ import {
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import { projectSession } from '@src/registry/contracts/projectSession'
-import { projectSortingService } from '@src/registry/contracts/projectSorting'
+import { projectSortingService } from '@src/lib/sorting/registry/contract'
 import {
   filterStatusBarItemsForScopes,
   statusBarGlobalItemsValueSpec,
