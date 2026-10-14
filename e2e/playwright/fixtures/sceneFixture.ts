@@ -164,7 +164,16 @@ export class SceneFixture {
         `Missing projected edge at index ${index} (visible: ${visible})`
       )
     }
-    return edge
+    const bounds = await this.streamWrapper.boundingBox()
+    if (!bounds || bounds.width <= 0 || bounds.height <= 0) {
+      throw new Error('No stream to click')
+    }
+    // Projected coordinates are viewport pixels; mouse helpers use stream ratios.
+    return this.makeMouseHelpers(
+      (edge.x - bounds.x) / bounds.width,
+      (edge.y - bounds.y) / bounds.height,
+      { format: 'ratio' }
+    )
   }
 
   private _serialiseScene = async (): Promise<SceneSerialised> => {

@@ -1698,8 +1698,8 @@ extrude001 = extrude(region001, length = 5)`
       await test.step(`Select the edge`, async () => {
         await toolbar.closePane(DefaultLayoutPaneID.Code)
         // Third visible edge: the short segment's sweep edge (region tags line1 and line3).
-        const edge = await scene.findEdge(2)
-        await page.mouse.click(edge.x, edge.y)
+        const [clickOnTheEdge] = await scene.findEdge(2)
+        await clickOnTheEdge()
         await toolbar.expectSelection('1 edge')
       })
 
