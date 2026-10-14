@@ -1,12 +1,13 @@
 use core::fmt;
 
+use schemars::JsonSchema;
 use serde::Deserialize;
 use serde::Serialize;
 
 use crate::TypedPath;
 
 #[allow(clippy::large_enum_variant)]
-#[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize, Hash, ts_rs::TS)]
+#[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize, Hash, ts_rs::TS, JsonSchema)]
 #[serde(tag = "type")]
 pub enum ModulePath {
     // The main file of the project.
