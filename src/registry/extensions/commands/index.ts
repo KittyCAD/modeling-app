@@ -4,14 +4,17 @@ import {
   provide,
   provideService,
 } from '@kittycad/registry'
-import { effect, untracked } from '@preact/signals-core'
+import { effect, signal, untracked } from '@preact/signals-core'
 import type { Command } from '@src/lib/commandTypes'
+import { isModelingDialogCommand } from '@src/lib/commandUtils'
+import { uuidv4 } from '@src/lib/utils'
 import {
   type CommandBarMachineEvent,
   commandBarMachine,
 } from '@src/machines/commandBarMachine'
 import {
   COMMAND_PALETTE_OPEN_COMMAND_SCOPE,
+  type CommandDialogSession,
   type CommandSystemService,
   commandKey,
   commandScopeService,
@@ -32,9 +35,10 @@ type FindAndSelectCommandEvent = Extract<
 
 export const commandsExtension = defineRegistryItemFactory((ctx) => {
   const commandsSignal = ctx.valueSpecs.signal(commandsValueSpec)
+  const dialogSession = signal<CommandDialogSession | undefined>(undefined)
 
   let commandBarActor: CommandSystemService['actor'] | undefined
-  let stopCommandPaletteScopeSync: (() => void) | undefined
+  let stopCommandStateSync: (() => void) | undefined
   let stopCommandsEffect: (() => void) | undefined
   let registeredCommands: readonly Command[] = []
   let pendingCommandSelections: FindAndSelectCommandEvent[] = []
@@ -95,11 +99,29 @@ export const commandsExtension = defineRegistryItemFactory((ctx) => {
     }
 
     syncCommandPaletteScope()
-    const commandPaletteScopeSubscription = commandBarActor.subscribe(() =>
-      untracked(syncCommandPaletteScope)
-    )
-    stopCommandPaletteScopeSync = () =>
-      commandPaletteScopeSubscription.unsubscribe()
+    let previousArguments =
+      commandBarActor.getSnapshot().context.argumentsToSubmit
+    const commandStateSubscription = commandBarActor.subscribe({
+      next: (snapshot) => {
+        untracked(syncCommandPaletteScope)
+        const args = snapshot.context.argumentsToSubmit
+        const changed = args !== previousArguments
+        previousArguments = args
+        if (!isModelingDialogCommand(snapshot.context.selectedCommand)) {
+          dialogSession.value = undefined
+        } else if (
+          changed &&
+          !snapshot.matches('Checking Arguments for Dialog')
+        ) {
+          // Submission also replaces arguments; only a new command resets the draft.
+          dialogSession.value = { id: uuidv4() }
+        }
+      },
+      complete: () => {
+        dialogSession.value = undefined
+      },
+    })
+    stopCommandStateSync = () => commandStateSubscription.unsubscribe()
 
     stopCommandsEffect = effect(() => {
       const nextCommands = commandsSignal.value
@@ -129,6 +151,10 @@ export const commandsExtension = defineRegistryItemFactory((ctx) => {
     get actor() {
       return ensureActor()
     },
+    get dialogSession() {
+      ensureActor()
+      return dialogSession
+    },
     send: (event) => {
       ensureActor()
 
@@ -157,12 +183,13 @@ export const commandsExtension = defineRegistryItemFactory((ctx) => {
     providesServices: [provideService(commandSystemService, serviceImpl)],
     dispose: () => {
       pendingCommandSelections = []
-      stopCommandPaletteScopeSync?.()
+      stopCommandStateSync?.()
       ctx.services
         .optional(commandScopeService)
         ?.removeScope(COMMAND_PALETTE_OPEN_COMMAND_SCOPE)
       stopCommandsEffect?.()
       commandBarActor?.stop()
+      dialogSession.value = undefined
     },
   }
 }, 'commands-extension')
