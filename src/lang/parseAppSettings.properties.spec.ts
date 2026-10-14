@@ -1,5 +1,6 @@
 import { join } from 'node:path'
-import { parseAppSettings, serializeConfiguration } from '@src/lang/wasm'
+import { parseAppSettings } from '@src/lang/testHelpers/parseAppSettings'
+import { serializeConfiguration } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import fc from 'fast-check'

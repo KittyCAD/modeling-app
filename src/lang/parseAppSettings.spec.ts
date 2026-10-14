@@ -1,5 +1,5 @@
 import { join } from 'node:path'
-import { parseAppSettings } from '@src/lang/wasm'
+import { parseAppSettings } from '@src/lang/testHelpers/parseAppSettings'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { beforeAll, describe, expect, it } from 'vitest'
