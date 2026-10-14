@@ -1,7 +1,8 @@
 import { useSelector } from '@xstate/react'
-import { use, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { StateFrom } from 'xstate'
 
+import { useSelectionLifecycle } from '@src/hooks/useSelectionLifecycle'
 import type { KclManager } from '@src/lang/KclManager'
 import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
@@ -12,8 +13,6 @@ import {
   getSelectionTypeDisplayText,
   getSemanticSelectionType,
 } from '@src/lib/selections'
-import { reportRejection } from '@src/lib/trap'
-import { toSync } from '@src/lib/utils'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { Marked } from '@ts-stack/markdown'
@@ -34,7 +33,6 @@ function CommandBarSelectionInput({
 }) {
   const { commands, wasmPromise } = useApp()
   const engineCommandManager = kclManager.engineCommandManager
-  const wasmInstance = use(wasmPromise)
   const inputRef = useRef<HTMLInputElement>(null)
   const commandBarState = commands.useState()
   const [hasSubmitted, setHasSubmitted] = useState(false)
@@ -55,33 +53,17 @@ function CommandBarSelectionInput({
     [selectionsByType, arg]
   )
 
+  useSelectionLifecycle({
+    arg,
+    kclManager,
+    wasmPromise,
+    selection,
+    showPlanes: !canSubmitSelection,
+  })
+
   useEffect(() => {
     inputRef.current?.focus()
   }, [selection, inputRef])
-
-  // Show the default planes if the selection type is 'plane'
-  useEffect(() => {
-    if (arg.selectionTypes.includes('plane') && !canSubmitSelection) {
-      toSync(() => {
-        return kclManager.showPlanes()
-      }, reportRejection)()
-    }
-
-    return () => {
-      toSync(() => {
-        const promises = [
-          new Promise(() =>
-            kclManager.setSelectionFilterToDefault(wasmInstance, selection)
-          ),
-        ]
-        if (!kclManager._isAstEmpty(kclManager.ast)) {
-          promises.push(kclManager.hidePlanes())
-        }
-        return Promise.all(promises)
-      }, reportRejection)()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [])
 
   // Fast-forward through this arg if it's marked as skippable
   // and we have a valid selection already
@@ -150,15 +132,6 @@ function CommandBarSelectionInput({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
-
-  // Set selection filter if needed, and reset it when the component unmounts
-  useEffect(() => {
-    if (arg.selectionFilter) {
-      kclManager.setSelectionFilter(arg.selectionFilter, wasmInstance)
-    }
-    return () => kclManager.setSelectionFilterToDefault(wasmInstance, selection)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [arg.selectionFilter, wasmInstance])
 
   return (
     <form {...noAutofillFormProps} id="arg-form" onSubmit={handleSubmit}>
