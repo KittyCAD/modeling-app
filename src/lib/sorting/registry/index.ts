@@ -40,7 +40,9 @@ export const projectSortingExtension = defineRegistryItemFactory(() => {
     initialize: (value) => {
       preference.value = value.sort
     },
-    serialize: () => ({ sort_by: preference.value }),
+    serialize: () => ({
+      sort_by: preference.value === '' ? undefined : preference.value,
+    }),
   })
 
   return {
