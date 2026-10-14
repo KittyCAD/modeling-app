@@ -1659,6 +1659,7 @@ fillet(extrude001, radius = 5, edges = [{ sideFaces = [region001.tags.line2, cap
   })
 
   test(`Fillet with large radius should update code even if engine fails`, async ({
+    context,
     page,
     homePage,
     scene,
@@ -1684,10 +1685,11 @@ extrude001 = extrude(region001, length = 5)`
 
     // Setup
     await test.step(`Initial test setup`, async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
-      await editor.openPane()
-      await editor.replaceCode('', initialCode)
       await scene.settled()
     })
 
@@ -1695,9 +1697,8 @@ extrude001 = extrude(region001, length = 5)`
     await test.step('Select edges and apply oversized fillet', async () => {
       await test.step(`Select the edge`, async () => {
         await toolbar.closePane(DefaultLayoutPaneID.Code)
-        // The sweep edge at the short segment endpoint joins region tags line1 and line3.
-        // GLTF is Y-up in metres: KCL [0, -1mm, 2.5mm] becomes [0, 0.0025, 0.001].
-        const edge = await scene.findEdge({ x: 0, y: 0.0025, z: 0.001 })
+        // Third visible edge: the short segment's sweep edge (region tags line1 and line3).
+        const edge = await scene.findEdge(2)
         await page.mouse.click(edge.x, edge.y)
         await toolbar.expectSelection('1 edge')
       })

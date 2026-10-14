@@ -783,7 +783,6 @@ export class LocalRenderer {
         id,
         kind,
         ...projected,
-        world: { x: point.x, y: point.y, z: point.z },
         // This means the real picker would select this entity at its representative point.
         visible: result?.target === object,
       })

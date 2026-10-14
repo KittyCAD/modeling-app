@@ -142,28 +142,27 @@ export class SceneFixture {
       return view.getProjectedEntities()
     })
 
-  /** Wait for an edge at a GLTF world position (Y-up, metres). */
+  /** Index is zero-based within edges filtered by the requested visibility. */
   findEdge = async (
-    position: { x: number; y: number; z: number },
+    index: number,
     {
-      tolerance = 1e-7,
       timeout = 30_000,
       visible = true,
-    }: { tolerance?: number; timeout?: number; visible?: boolean } = {}
+    }: { timeout?: number; visible?: boolean } = {}
   ) => {
+    if (!Number.isInteger(index) || index < 0) {
+      throw new Error('Edge index must be a non-negative integer')
+    }
     const lookup = async () =>
-      (await this.getProjectedEntities()).find(
-        (entity) =>
-          entity.kind === 'edge' &&
-          (!visible || entity.visible) &&
-          Math.abs(entity.world.x - position.x) < tolerance &&
-          Math.abs(entity.world.y - position.y) < tolerance &&
-          Math.abs(entity.world.z - position.z) < tolerance
-      )
+      (await this.getProjectedEntities()).filter(
+        (entity) => entity.kind === 'edge' && entity.visible === visible
+      )[index]
     await expect.poll(lookup, { timeout }).toBeDefined()
     const edge = await lookup()
     if (!edge) {
-      throw new Error(`Missing projected edge at ${JSON.stringify(position)}`)
+      throw new Error(
+        `Missing projected edge at index ${index} (visible: ${visible})`
+      )
     }
     return edge
   }
