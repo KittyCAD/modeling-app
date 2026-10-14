@@ -92,6 +92,8 @@ export function OpenedProject() {
 
   const projectName = project?.name || null
   const projectPath = project?.path || null
+  const viewOnly =
+    project?.projectIORefSignal.value.cloudSource?.canEdit === false
 
   const systemIOState = useSelector(systemIOActor, (actor) => actor.value)
 
@@ -227,6 +229,7 @@ export function OpenedProject() {
   useEffect(() => {
     const needsOnboarded =
       !window.electron &&
+      !viewOnly &&
       authToken && // we're logged in,
       searchParams.size === 0 && // we haven't come via a website "try in browser" link,
       needsToOnboard(location, onboardingStatus) // and we have an uninitialized onboarding status.
@@ -256,6 +259,7 @@ export function OpenedProject() {
     navigate,
     searchParams.size,
     authToken,
+    viewOnly,
   ])
 
   // This is, at time of writing, the only spot we need @preact/signals-react,
@@ -326,11 +330,7 @@ export function OpenedProject() {
             file={project?.executingFileEntry.value}
             enableMenu={true}
             nativeFileMenuCreated={nativeFileMenuCreated}
-            projectMenuChildren={
-              project?.projectIORefSignal.value.cloudSource?.canEdit === false
-                ? undefined
-                : undoRedoButtons
-            }
+            projectMenuChildren={viewOnly ? undefined : undoRedoButtons}
           />
         </div>
         <ModalContainer />
