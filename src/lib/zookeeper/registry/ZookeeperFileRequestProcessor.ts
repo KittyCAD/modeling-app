@@ -5,6 +5,11 @@ import type { FileEntry, Project } from '@src/lib/project'
 import type { ZookeeperEditPatchHistory } from '@src/lib/zookeeper/registry/ZookeeperEditPatchHistory'
 import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import {
+  mergeZookeeperEditPatches,
+  summarizeZookeeperEditPatch,
+  type ZookeeperEditPatch,
+} from '@src/lib/zookeeper/zookeeperEditPatch'
+import {
   normalizeKCLFileDeletePath,
   prepareZookeeperNewFileRequest,
   type RequestedKCLFileDelete,
@@ -41,6 +46,8 @@ export class ZookeeperFileRequestProcessor {
   private generation = 0
   private lastMessageId: number | undefined
   private queue: Promise<void> = Promise.resolve()
+  private latestAppliedPatch: ZookeeperEditPatch | undefined
+  private latestAppliedExchangeId: number | undefined
 
   constructor(
     private readonly deps: ZookeeperFileRequestProcessorDependencies
@@ -62,6 +69,8 @@ export class ZookeeperFileRequestProcessor {
     this.abortController.abort()
     this.abortController = new AbortController()
     this.lastMessageId = undefined
+    this.latestAppliedPatch = undefined
+    this.latestAppliedExchangeId = undefined
     return this.queue
   }
 
@@ -278,11 +287,25 @@ export class ZookeeperFileRequestProcessor {
 
             kclManager.zookeeperManagerMachineBulkManipulatingFileSystem = true
             dispatched = true
+            const cumulativePatch = payload.zookeeperEditPatch
+              ? this.latestAppliedPatch?.run_id ===
+                payload.zookeeperEditPatch.run_id
+                ? mergeZookeeperEditPatches(
+                    this.latestAppliedPatch,
+                    payload.zookeeperEditPatch
+                  )
+                : payload.zookeeperEditPatch
+              : this.latestAppliedExchangeId === request.exchangeId
+                ? this.latestAppliedPatch
+                : undefined
             systemIOActor.send({
               type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
               data: {
                 files: payload.files,
                 filesToDelete: payload.filesToDelete,
+                fileChangeSummary: cumulativePatch
+                  ? summarizeZookeeperEditPatch(cumulativePatch)
+                  : undefined,
                 override: true,
                 requestedProjectName: payload.requestedProjectName,
                 requestedProjectPath: requestProjectPath,
@@ -315,6 +338,10 @@ export class ZookeeperFileRequestProcessor {
                     return
                   }
                   fileSystemSucceeded = true
+                  if (cumulativePatch) {
+                    this.latestAppliedPatch = cumulativePatch
+                    this.latestAppliedExchangeId = request.exchangeId
+                  }
                   if (!postWriteCompleted) {
                     if (
                       abortSignal.aborted ||

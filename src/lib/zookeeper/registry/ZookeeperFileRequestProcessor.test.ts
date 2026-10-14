@@ -172,6 +172,95 @@ describe('ZookeeperFileRequestProcessor', () => {
     kclManagerState.zookeeperManagerMachineBulkManipulatingFileSystem = false
   })
 
+  test('reports the effective changed-file count rather than the cumulative output count', async () => {
+    const processor = createProcessor()
+    emitZookeeperFileRequest(processor, 'updated code', 1, {
+      type: 'edit_kcl_code',
+      status_code: 201,
+      project_name: 'demo',
+      outputs: {
+        'main.kcl': 'updated code',
+        'unchanged.kcl': 'existing code',
+      },
+      zookeeper_edit_patch: {
+        run_id: 'run-1',
+        changed_files: [
+          {
+            path: 'main.kcl',
+            status: 'modified',
+            diff: '--- a/main.kcl\n+++ b/main.kcl\n@@ -1 +1 @@\n-old\n+updated code\n',
+          },
+        ],
+      },
+    })
+
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
+    expect(mocks.systemIOSend.mock.calls[0][0].data.fileChangeSummary).toEqual({
+      created: 0,
+      modified: 1,
+      deleted: 0,
+    })
+  })
+
+  test('accumulates status counts across writes in one Zookeeper run', async () => {
+    const processor = createProcessor()
+    emitZookeeperFileRequest(processor, 'updated code', 1, {
+      type: 'edit_kcl_code',
+      status_code: 201,
+      project_name: 'demo',
+      outputs: { 'main.kcl': 'updated code' },
+      zookeeper_edit_patch: {
+        run_id: 'run-1',
+        changed_files: [
+          { path: 'main.kcl', status: 'modified', diff: 'change' },
+        ],
+      },
+    })
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
+    const firstRequest = mocks.systemIOSend.mock.calls[0][0].data
+    firstRequest.onFileSystemSuccess()
+    firstRequest.onSuccess()
+
+    emitZookeeperFileRequest(processor, 'updated code', 2, {
+      type: 'edit_kcl_code',
+      status_code: 201,
+      project_name: 'demo',
+      outputs: {
+        'main.kcl': 'updated code',
+        'new.kcl': 'new code',
+      },
+      zookeeper_edit_patch: {
+        run_id: 'run-1',
+        changed_files: [
+          { path: 'new.kcl', status: 'created', contents: 'new code' },
+        ],
+      },
+    })
+
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
+    expect(mocks.systemIOSend.mock.calls[1][0].data.fileChangeSummary).toEqual({
+      created: 1,
+      modified: 1,
+      deleted: 0,
+    })
+
+    const secondRequest = mocks.systemIOSend.mock.calls[1][0].data
+    secondRequest.onFileSystemSuccess()
+    secondRequest.onSuccess()
+    emitZookeeperFileRequest(
+      processor,
+      'updated code',
+      3,
+      zookeeperEditWithoutPatch('updated code')
+    )
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(3))
+    expect(mocks.systemIOSend.mock.calls[2][0].data.fileChangeSummary).toEqual({
+      created: 1,
+      modified: 1,
+      deleted: 0,
+    })
+  })
+
   test('waits for the previous editor refresh before dispatching the next edit', async () => {
     const processor = createProcessor()
 

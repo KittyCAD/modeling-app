@@ -5,6 +5,7 @@ import {
   ZOOKEEPER_FILE_WRITE_TOAST_ID,
 } from '@src/lib/constants'
 import type { Project } from '@src/lib/project'
+import type { ZookeeperFileChangeSummary } from '@src/lib/zookeeper/zookeeperEditPatch'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { reportSystemIOMachineError } from '@src/machines/systemIO/reporting'
 import type {
@@ -158,6 +159,7 @@ export const systemIOMachine = setup({
           data: {
             files: RequestedKCLFile[]
             filesToDelete?: RequestedKCLFileDelete[]
+            fileChangeSummary?: ZookeeperFileChangeSummary
             requestedProjectName: string
             requestedProjectPath?: string
             requestedFileNameWithExtension: string
@@ -715,6 +717,7 @@ export const systemIOMachine = setup({
             context: SystemIOContext
             files: RequestedKCLFile[]
             filesToDelete?: RequestedKCLFileDelete[]
+            fileChangeSummary?: ZookeeperFileChangeSummary
             requestedProjectName: string
             requestedProjectPath?: string
             requestedFileNameWithExtension: string
@@ -1760,6 +1763,7 @@ export const systemIOMachine = setup({
             context,
             files: event.data.files,
             filesToDelete: event.data.filesToDelete,
+            fileChangeSummary: event.data.fileChangeSummary,
             requestedProjectName: event.data.requestedProjectName,
             requestedProjectPath: event.data.requestedProjectPath,
             override: event.data.override,
