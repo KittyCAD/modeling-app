@@ -7,7 +7,6 @@ import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerM
 import {
   normalizeKCLFileDeletePath,
   prepareZookeeperNewFileRequest,
-  type RequestedKCLFileDelete,
   type SystemIOActor,
   SystemIOMachineEvents,
   waitForIdleState,
@@ -27,7 +26,6 @@ type ZookeeperNewFileRequest = {
   toolOutput: MlToolResult
   projectNameCurrentlyOpened: string
   fileFocusedOnInEditor?: FileEntry
-  filesToDelete?: RequestedKCLFileDelete[]
   exchangeId: number
 }
 
@@ -95,29 +93,11 @@ export class ZookeeperFileRequestProcessor {
       return
     }
 
-    const filesToDelete = new Set(
-      lastExchange.responses.flatMap((response) => {
-        if (!('reasoning' in response)) {
-          return []
-        }
-        if (
-          response.reasoning.type !== 'deleted_kcl_file' &&
-          response.reasoning.type !== 'deleted_project_file'
-        ) {
-          return []
-        }
-        return response.reasoning.file_name
-      })
-    )
-
     this.enqueue(
       {
         toolOutput: lastResponse.tool_output.result,
         projectNameCurrentlyOpened: projectName,
         fileFocusedOnInEditor: snapshot.context.fileFocusedOnInEditor,
-        filesToDelete: Array.from(filesToDelete, (requestedFileName) => ({
-          requestedFileName,
-        })),
         exchangeId: exchanges.length - 1,
       },
       () => this.deps.onEditApplied(lastResponse)
