@@ -21,6 +21,7 @@ mod cad_op;
 mod default_planes;
 mod front;
 pub mod kcl_value_view;
+pub mod modules;
 mod numeric_type;
 pub use kittycad_point as point;
 mod numeric_suffix;

@@ -108,6 +108,7 @@ use crate::fs::FileSystemHandle;
 use crate::modules::ModuleExecutionOutcome;
 use crate::modules::ModuleId;
 use crate::modules::ModulePath;
+use crate::modules::ModulePathExt as _;
 use crate::modules::ModuleRepr;
 use crate::modules::ModuleSource;
 use crate::named_views::values as named_views;
