@@ -86,8 +86,12 @@ test(
 
 test(
   'duplicates a view-only project into a writable library and opens the selected file',
-  { tag: '@web' },
+  { tag: ['@web', '@zookeeper'] },
   async ({ context, page }, testInfo) => {
+    let zookeeperConnections = 0
+    await page.routeWebSocket('**/ws/ml/copilot**', () => {
+      zookeeperConnections++
+    })
     const { calls } = await routeCloudProjects(context, {
       remoteProjects: [project],
       listedProjects: [],
@@ -102,9 +106,22 @@ test(
     const editor = new EditorFixture(page)
     await editor.openPane()
     await editor.expectEditor.toContain('nestedValue = 23')
+    await expect(page.getByTestId('ttc-pane-button')).toHaveCount(0)
+    await page.keyboard.press('Control+t')
+    await expect(page.getByTestId('ttc-header')).toHaveCount(0)
+    await expect(page.getByText('Starting Zookeeper...')).toHaveCount(0)
+    expect(zookeeperConnections).toBe(0)
     const originalPath = await page.evaluate(() => window.app.project!.path)
     await page.getByTestId('duplicate-project-to-edit').click()
     await expect(page.getByTestId('view-only-indicator')).toHaveCount(0)
+    await expect(page.getByTestId('ttc-pane-button')).toBeVisible()
+    await page.getByTestId('ttc-pane-button').click()
+    await expect(page.getByTestId('ttc-header')).toBeVisible()
+    await expect(
+      page.getByTestId('ml-ephant-conversation-input')
+    ).toBeEditable()
+    await page.getByTestId('ttc-pane-button').click()
+    await editor.openPane()
     await editor.expectEditor.toContain('nestedValue = 23')
     await expect(page).toHaveURL(/\/file\//)
     const copy = await page.evaluate(async () => {
