@@ -1,6 +1,7 @@
 import { Dialog, Popover, Transition } from '@headlessui/react'
 import { Fragment, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: command-bar lifecycle follows pathname (useLocation).
 import { useLocation } from 'react-router-dom'
 
 import CommandBarArgument from '@src/components/CommandBar/CommandBarArgument'

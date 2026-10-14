@@ -56,9 +56,7 @@ describe('Registry', () => {
     const runtime = defineRegistryItemFactory(() => {
       calls()
       return {
-        item: defineRegistryItem({
-          provides: [provide(registrySignal, 'stable')],
-        }),
+        provides: [provide(registrySignal, 'stable')],
       }
     }, 'stable-runtime')
 
@@ -136,26 +134,24 @@ describe('Registry', () => {
     const weatherConsumerItem = defineRegistryItemFactory(
       ({ valueSpecs, services }) => {
         return {
-          item: defineRegistryItem({
-            id: 'weather.consumer',
-            provides: [
-              provide(
-                dashboardValueSpec,
-                computed(() => {
-                  const weather = services.optional(
-                    weatherContract.weatherSummaryService
-                  )
-                  const temperature = valueSpecs.get(
-                    weatherContract.currentTemperatureValueSpec
-                  )
+          id: 'weather.consumer',
+          provides: [
+            provide(
+              dashboardValueSpec,
+              computed(() => {
+                const weather = services.optional(
+                  weatherContract.weatherSummaryService
+                )
+                const temperature = valueSpecs.get(
+                  weatherContract.currentTemperatureValueSpec
+                )
 
-                  return weather
-                    ? `${weather.summary} ${temperature}F`
-                    : 'Weather unavailable'
-                })
-              ),
-            ],
-          }),
+                return weather
+                  ? `${weather.summary} ${temperature}F`
+                  : 'Weather unavailable'
+              })
+            ),
+          ],
         }
       },
       'weather.consumer'
@@ -192,10 +188,8 @@ describe('Registry', () => {
     const _unreachableRuntimeItem = defineRegistryItemFactory(() => {
       unreachableCalls()
       return {
-        item: defineRegistryItem({
-          id: 'unreachable.runtime',
-          provides: [provide(visitedValueSpec, 'unreachable')],
-        }),
+        id: 'unreachable.runtime',
+        provides: [provide(visitedValueSpec, 'unreachable')],
       }
     }, 'unreachable.runtime')
 
@@ -213,13 +207,11 @@ describe('Registry', () => {
     const events: string[] = []
     const runtime = defineRegistryItemFactory(() => {
       return {
-        item: {
-          provides: [provide(values, 'mounted')],
-          dispose: async () => {
-            events.push('dispose:start')
-            await release.promise
-            events.push('dispose:end')
-          },
+        provides: [provide(values, 'mounted')],
+        dispose: async () => {
+          events.push('dispose:start')
+          await release.promise
+          events.push('dispose:end')
         },
       }
     }, 'async-disposal.runtime')
@@ -243,21 +235,17 @@ describe('Registry', () => {
     const events: string[] = []
     const immediate = defineRegistryItemFactory(() => {
       return {
-        item: {
-          dispose: async () => {
-            events.push('immediate')
-          },
+        dispose: async () => {
+          events.push('immediate')
         },
       }
     }, 'async-disposal.immediate')
     const asynchronous = defineRegistryItemFactory(() => {
       return {
-        item: {
-          dispose: async () => {
-            events.push('async:start')
-            await release.promise
-            events.push('async:end')
-          },
+        dispose: async () => {
+          events.push('async:start')
+          await release.promise
+          events.push('async:end')
         },
       }
     }, 'mixed-disposal.async')
@@ -277,20 +265,16 @@ describe('Registry', () => {
     const events: string[] = []
     const child = defineRegistryItemFactory(() => {
       return {
-        item: {
-          dispose: async () => {
-            events.push('child')
-          },
+        dispose: async () => {
+          events.push('child')
         },
       }
     }, 'async-disposal.child')
     const parent = defineRegistryItemFactory(() => {
       return {
-        item: {
-          uses: [child],
-          dispose: async () => {
-            events.push('parent')
-          },
+        uses: [child],
+        dispose: async () => {
+          events.push('parent')
         },
       }
     }, 'async-disposal.parent')
@@ -310,20 +294,16 @@ describe('Registry', () => {
     const failingRuntime = (id: string, failure: Error) =>
       defineRegistryItemFactory(() => {
         return {
-          item: {
-            dispose: async () => {
-              events.push(id)
-              return Promise.reject(failure)
-            },
+          dispose: async () => {
+            events.push(id)
+            return Promise.reject(failure)
           },
         }
       }, id)
     const healthyRuntime = defineRegistryItemFactory(() => {
       return {
-        item: {
-          dispose: async () => {
-            events.push('healthy')
-          },
+        dispose: async () => {
+          events.push('healthy')
         },
       }
     }, 'async-disposal.healthy')
@@ -353,12 +333,10 @@ describe('Registry', () => {
     const events: string[] = []
     const runtime = defineRegistryItemFactory(() => {
       return {
-        item: {
-          dispose: async () => {
-            events.push('dispose:start')
-            await release.promise
-            events.push('dispose:end')
-          },
+        dispose: async () => {
+          events.push('dispose:start')
+          await release.promise
+          events.push('dispose:end')
         },
       }
     }, 'async-disposal.container')
