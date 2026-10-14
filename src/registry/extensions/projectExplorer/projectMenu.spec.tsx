@@ -161,13 +161,9 @@ describe('project explorer project menu', () => {
       }
       fireEvent.click(duplicateButton)
 
-      expect(app.systemIOActor.send).toHaveBeenCalledWith({
-        type: 'duplicate project',
-        data: {
-          projectName: projectWellFormed.name,
-          projectPath: projectWellFormed.path,
-          requestedProjectName: projectWellFormed.title,
-        },
+      expect(app.commands.send).toHaveBeenCalledWith({
+        type: 'Find and select command',
+        data: { name: 'Duplicate project', groupId: 'application' },
       })
     } finally {
       dispose()
