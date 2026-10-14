@@ -3,6 +3,7 @@ use std::str::FromStr;
 
 use kcl_error::CompilationIssue;
 use kcl_error::SourceRange;
+use schemars::JsonSchema;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -11,7 +12,7 @@ use crate::UnitAngle;
 use crate::UnitLength;
 use crate::UnitType;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize, ts_rs::TS)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize, ts_rs::TS, JsonSchema)]
 #[repr(u32)]
 pub enum NumericSuffix {
     None,

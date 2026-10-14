@@ -22,7 +22,7 @@ impl ObjectId {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiObject")]
 pub struct Object {
     pub id: ObjectId,
@@ -47,7 +47,7 @@ impl Object {
 }
 
 #[allow(clippy::large_enum_variant)]
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiObjectKind")]
 #[serde(tag = "type")]
 pub enum ObjectKind {
@@ -68,7 +68,7 @@ pub enum ObjectKind {
     },
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiCap")]
 #[serde(rename_all = "camelCase")]
 pub struct Cap {
@@ -81,7 +81,7 @@ pub struct Cap {
     pub solid_output_index: Option<usize>,
 }
 
-#[derive(Debug, Clone, Default, PartialEq, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiCapSource")]
 #[serde(rename_all = "camelCase")]
 pub struct CapSource {
@@ -89,7 +89,7 @@ pub struct CapSource {
     pub sweep: SourceRefRange,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiCapKind")]
 #[serde(rename_all = "camelCase")]
 pub enum CapKind {
@@ -97,7 +97,7 @@ pub enum CapKind {
     End,
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiSourceRef")]
 #[serde(tag = "type")]
 pub enum SourceRef {
@@ -116,7 +116,7 @@ impl SourceRef {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiPlane")]
 #[serde(rename_all = "camelCase")]
 pub enum Plane {
@@ -127,7 +127,7 @@ pub enum Plane {
 
 /// An indexed face on a solid which has not yet been materialized as a KCL
 /// `Face` value.
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts")]
 #[serde(rename_all = "camelCase")]
 pub struct PrimitiveFacePlane {
@@ -136,14 +136,14 @@ pub struct PrimitiveFacePlane {
     pub index: usize,
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiFace")]
 #[serde(rename_all = "camelCase")]
 pub struct Face {
     pub id: ObjectId,
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiWall")]
 #[serde(rename_all = "camelCase")]
 pub struct Wall {
@@ -155,7 +155,7 @@ pub struct Wall {
     pub solid_output_index: Option<usize>,
 }
 
-#[derive(Debug, Clone, Default, PartialEq, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiWallSource")]
 #[serde(rename_all = "camelCase")]
 pub struct WallSource {
@@ -167,7 +167,7 @@ pub struct WallSource {
     pub segment: SourceRefRange,
 }
 
-#[derive(Debug, Clone, Default, PartialEq, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiSourceRefRange")]
 #[serde(rename_all = "camelCase")]
 pub struct SourceRefRange {
@@ -175,14 +175,14 @@ pub struct SourceRefRange {
     pub node_path: Option<NodePath>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct Number {
     pub value: f64,
     pub units: NumericSuffix,
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts")]
 #[serde(tag = "type")]
 pub enum Expr {
