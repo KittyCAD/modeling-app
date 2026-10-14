@@ -146,6 +146,9 @@ export function createMachineCommand<
   if ('reviewValidation' in commandConfig) {
     command.reviewValidation = commandConfig.reviewValidation
   }
+  if ('codePreview' in commandConfig) {
+    command.codePreview = commandConfig.codePreview
+  }
   if ('status' in commandConfig) {
     command.status = commandConfig.status
   }
