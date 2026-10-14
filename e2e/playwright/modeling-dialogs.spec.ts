@@ -16,6 +16,7 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     scene,
     editor,
     toolbar,
+    modelingDialog,
   }) => {
     await homePage.goToModelingScene()
     await scene.settled()
@@ -25,21 +26,18 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     await editor.selectText('region(')
     await toolbar.revolveButton.click()
 
-    const dialog = page.getByTestId('modeling-dialog')
-    const submit = dialog.getByRole('button', { name: 'Submit', exact: true })
-    const axisMode = dialog.getByRole('combobox', { name: /axis or edge/i })
+    const { locator: dialog, submitButton: submit } = modelingDialog
+    const axisMode = modelingDialog.options(/axis or edge/i)
     await expect(dialog).toBeVisible()
     await axisMode.selectOption({ label: 'Edge' })
-    await expect(
-      dialog.getByRole('button', { name: 'Select Edge' })
-    ).toBeVisible()
+    await expect(modelingDialog.selection('Edge')).toBeVisible()
     await expect(submit).toBeDisabled()
     await axisMode.selectOption({ label: 'Sketch Axis' })
     await expect(submit).toBeEnabled()
     await axisMode.selectOption({ label: 'Edge' })
-    await dialog.getByRole('button', { name: 'Select Edge' }).click()
+    await modelingDialog.selection('Edge').click()
     await editor.selectText('line(')
-    await dialog.getByRole('textbox', { name: /^angle$/i }).fill('180deg')
+    await modelingDialog.input(/^angle$/i).fill('180deg')
     await expect(submit).toBeEnabled()
     await submit.click()
     await expect(dialog).not.toBeAttached()
@@ -50,7 +48,7 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     await toolbar.openFeatureTreePane()
     await (await toolbar.getFeatureTreeOperation('Revolve', 0)).dblclick()
     await expect(axisMode).not.toBeAttached()
-    await dialog.getByRole('textbox', { name: /^angle$/i }).fill('90deg')
+    await modelingDialog.input(/^angle$/i).fill('90deg')
     await expect(submit).toBeEnabled()
     await submit.click()
     await expect(dialog).not.toBeAttached()
@@ -59,10 +57,10 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     await scene.settled()
 
     await toolbar.helixButton.click()
-    await dialog.getByRole('combobox', { name: /^mode\b/i }).selectOption({
+    await modelingDialog.options(/^mode\b/i).selectOption({
       label: 'Edge',
     })
-    await dialog.getByRole('button', { name: 'Select Edge' }).click()
+    await modelingDialog.selection('Edge').click()
     await editor.selectText('line(')
     await expect(submit).toBeEnabled()
     await submit.click()
@@ -84,6 +82,7 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     scene,
     editor,
     toolbar,
+    modelingDialog,
   }) => {
     await page.setBodyDimensions({ width: 1200, height: 600 })
     await homePage.goToModelingScene()
@@ -94,22 +93,16 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     await editor.selectText('region(')
     await toolbar.extrudeButton.click()
 
-    const dialog = page.getByTestId('modeling-dialog')
-    const length = dialog.getByRole('textbox', { name: /^length$/i })
-    const profiles = dialog.getByRole('button', {
-      name: 'Select Profiles',
-      exact: true,
-    })
-    const submit = dialog.getByRole('button', { name: 'Submit', exact: true })
-    const tagStart = dialog.getByRole('textbox', { name: /^tag start$/i })
+    const { locator: dialog, submitButton: submit } = modelingDialog
+    const length = modelingDialog.input(/^length$/i)
+    const profiles = modelingDialog.selection('Profiles')
+    const tagStart = modelingDialog.input(/^tag start$/i)
     await expect(length).toHaveText('5')
     await expect(tagStart).toBeHidden()
-    await expect(
-      dialog.getByRole('combobox', { name: /^symmetric$/i })
-    ).toBeVisible()
+    await expect(modelingDialog.options(/^symmetric$/i)).toBeVisible()
     await expect(profiles).toContainText(/1 region/i)
 
-    await dialog.getByRole('button', { name: 'Select To', exact: true }).click()
+    await modelingDialog.selection('To').click()
     await expect(profiles).toContainText(/1 region/i)
     await profiles.click()
     await expect(profiles).toContainText(/1 region/i)
@@ -126,12 +119,10 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     await page.mouse.up()
     await expect(dialog).toHaveCSS('position', 'fixed')
     expect((await dialog.boundingBox())?.x).toBeCloseTo(initialPosition.x - 160)
-    const more = dialog.getByText('Advanced', { exact: true })
+    const more = modelingDialog.advanced
     await more.click()
     await expect(submit).toBeInViewport()
-    await expect(
-      dialog.getByRole('button', { name: 'Cancel' })
-    ).toBeInViewport()
+    await expect(modelingDialog.cancelButton).toBeInViewport()
     await tagStart.fill('startFace')
     await more.click()
     await page.setBodyDimensions({ width: 1100, height: 540 })
@@ -173,7 +164,7 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     await more.click()
     await expect(tagStart).toHaveValue('startFace')
     await length.fill('99mm')
-    await dialog.getByRole('button', { name: 'Cancel', exact: true }).click()
+    await modelingDialog.cancelButton.click()
     await expect(dialog).not.toBeAttached()
     await operation.dblclick()
     await expect(length).toHaveText('12mm')
