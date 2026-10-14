@@ -11,7 +11,6 @@ import type {
   change_default_units as ChangeDefaultUnits,
   change_experimental_features as ChangeExperimentalFeatures,
   change_kcl_version as ChangeKclVersion,
-  default_app_settings as DefaultAppSettings,
   default_project_settings as DefaultProjectSettings,
   format_number_literal as FormatNumberLiteral,
   format_number_value as FormatNumberValue,
@@ -25,7 +24,6 @@ import type {
   kcl_language_version as KclLanguageVersion,
   kcl_settings as KclSettings,
   node_path_from_range as NodePathFromRange,
-  parse_app_settings as ParseAppSettings,
   parse_project_settings as ParseProjectSettings,
   parse_wasm as ParseWasm,
   point_to_unit as PointToUnit,
@@ -86,12 +84,6 @@ export const get_tangential_arc_to_info: typeof GetTangentialArcToInfo = (
   ...args
 ) => {
   return getModule().get_tangential_arc_to_info(...args)
-}
-export const default_app_settings: typeof DefaultAppSettings = (...args) => {
-  return getModule().default_app_settings(...args)
-}
-export const parse_app_settings: typeof ParseAppSettings = (...args) => {
-  return getModule().parse_app_settings(...args)
 }
 export const parse_project_settings: typeof ParseProjectSettings = (
   ...args
