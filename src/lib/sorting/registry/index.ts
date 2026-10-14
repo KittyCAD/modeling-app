@@ -14,7 +14,7 @@ import {
 import {
   type ProjectSortingService,
   projectSortingService,
-} from '@src/registry/contracts/projectSorting'
+} from '@src/lib/sorting/registry/contract'
 import {
   defineUrlContribution,
   urlContributionsValueSpec,

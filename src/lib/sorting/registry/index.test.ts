@@ -1,7 +1,7 @@
 import { Registry } from '@kittycad/registry'
-import { projectSortingService } from '@src/registry/contracts/projectSorting'
+import { projectSortingService } from '@src/lib/sorting/registry/contract'
 import { urlService } from '@src/registry/contracts/url'
-import projectSorting from '@src/registry/extensions/projectSorting'
+import projectSorting from '@src/lib/sorting/registry'
 import url, { createBrowserUrlAdapter } from '@src/registry/extensions/url'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
