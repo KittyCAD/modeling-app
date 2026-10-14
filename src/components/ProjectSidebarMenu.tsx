@@ -15,7 +15,7 @@ import { getProjectRelativeFilePath, PATHS } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import type { IndexLoaderData } from '@src/lib/types'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { PROJECT_ACTION_COMMANDS } from '@src/lib/projectSharing'
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
@@ -235,13 +235,6 @@ function ProjectMenuPopover({
     [commandList]
   )
   const machineCount = machineManager.machines.length
-  const getCurrentFileForDuplicate = useCallback(
-    () => ({
-      currentFilePath: app?.project?.executingPath,
-      currentFileContents: app?.project?.executingEditor.value?.code,
-    }),
-    [app]
-  )
 
   // We filter this memoized list so that no orphan "break" elements are rendered.
   const projectMenuItems = useMemo<Exclude<ProjectMenuItem, null>[]>(
@@ -298,14 +291,9 @@ function ProjectMenuPopover({
                 </span>
               ),
               onClick: () => {
-                app.systemIOActor.send({
-                  type: SystemIOMachineEvents.duplicateProject,
-                  data: {
-                    projectName: project.name,
-                    projectPath: project.path,
-                    requestedProjectName: getProjectDisplayName(project),
-                    ...getCurrentFileForDuplicate(),
-                  },
+                commands.send({
+                  type: 'Find and select command',
+                  data: PROJECT_ACTION_COMMANDS.duplicate,
                 })
               },
             }
@@ -508,7 +496,6 @@ function ProjectMenuPopover({
       onProjectClose,
       projectPath,
       project,
-      getCurrentFileForDuplicate,
       contributedProjectMenuItems,
       commands.actor,
       app.systemIOActor,
