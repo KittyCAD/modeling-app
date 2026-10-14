@@ -1697,21 +1697,7 @@ extrude001 = extrude(region001, length = 5)`
         await toolbar.closePane(DefaultLayoutPaneID.Code)
         // The sweep edge at the short segment endpoint joins region tags line1 and line3.
         // GLTF is Y-up in metres: KCL [0, -1mm, 2.5mm] becomes [0, 0.0025, 0.001].
-        const findEdge = async () =>
-          (await scene.getProjectedEntities()).find(
-            ({ kind, visible, world }) =>
-              kind === 'edge' &&
-              visible &&
-              Math.abs(world.x) < 1e-7 &&
-              Math.abs(world.y - 0.0025) < 1e-7 &&
-              Math.abs(world.z - 0.001) < 1e-7
-          )
-        await expect.poll(findEdge, { timeout: 30_000 }).toBeDefined()
-        const edge = await findEdge()
-        if (!edge)
-          throw new Error(
-            'Missing visible sweep edge at the short segment endpoint'
-          )
+        const edge = await scene.findEdge({ x: 0, y: 0.0025, z: 0.001 })
         await page.mouse.click(edge.x, edge.y)
         await toolbar.expectSelection('1 edge')
       })

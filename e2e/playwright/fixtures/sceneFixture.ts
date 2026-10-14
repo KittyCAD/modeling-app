@@ -142,6 +142,32 @@ export class SceneFixture {
       return view.getProjectedEntities()
     })
 
+  /** Wait for an edge at a GLTF world position (Y-up, metres). */
+  findEdge = async (
+    position: { x: number; y: number; z: number },
+    {
+      tolerance = 1e-7,
+      timeout = 30_000,
+      visible = true,
+    }: { tolerance?: number; timeout?: number; visible?: boolean } = {}
+  ) => {
+    const lookup = async () =>
+      (await this.getProjectedEntities()).find(
+        (entity) =>
+          entity.kind === 'edge' &&
+          (!visible || entity.visible) &&
+          Math.abs(entity.world.x - position.x) < tolerance &&
+          Math.abs(entity.world.y - position.y) < tolerance &&
+          Math.abs(entity.world.z - position.z) < tolerance
+      )
+    await expect.poll(lookup, { timeout }).toBeDefined()
+    const edge = await lookup()
+    if (!edge) {
+      throw new Error(`Missing projected edge at ${JSON.stringify(position)}`)
+    }
+    return edge
+  }
+
   private _serialiseScene = async (): Promise<SceneSerialised> => {
     const camera = await this.getCameraInfo()
 
