@@ -208,65 +208,62 @@ export function migrationProject(
             )
         }
         const cloud = app.registry.get(cloudSyncService)
-        await cloud.withLocalProjectMutation(() =>
-          app.fileOperations.withDirectoryLock(root, async (files) => {
-            const stillCurrent = () =>
-              isCurrent() &&
-              historyEditor.path === historyPath &&
-              project.executingEditor.value === historyEditor &&
-              currentBuffersMatch(expected)
-            await replaceMigrationFiles({
-              files,
-              paths,
-              root,
-              expected,
-              replacement,
-              isCurrent: stillCurrent,
-            })
-            // Synchronize buffers before releasing the lock so queued old saves see a new document version.
-            for (const editor of editors) {
-              const contents = replacement.get(
-                fsZds.relative(root, editor.path).replaceAll('\\', '/')
-              )
-              if (contents) {
-                try {
-                  editor.synchronizeCurrentEditorAfterDirectGlobalReplay({
-                    filePath: editor.path,
-                    nextContent: new TextDecoder().decode(contents),
-                  })
-                } catch (error: unknown) {
-                  refreshFailed = true
-                  reportRejection(error)
-                }
+        await cloud.withLocalProjectMutation(async () => {
+          const stillCurrent = () =>
+            isCurrent() &&
+            historyEditor.path === historyPath &&
+            project.executingEditor.value === historyEditor &&
+            currentBuffersMatch(expected)
+          await replaceMigrationFiles({
+            files: app.fileOperations,
+            paths,
+            root,
+            expected,
+            replacement,
+            isCurrent: stillCurrent,
+          })
+          for (const editor of editors) {
+            const contents = replacement.get(
+              fsZds.relative(root, editor.path).replaceAll('\\', '/')
+            )
+            if (contents) {
+              try {
+                editor.synchronizeCurrentEditorAfterDirectGlobalReplay({
+                  filePath: editor.path,
+                  nextContent: new TextDecoder().decode(contents),
+                })
+              } catch (error: unknown) {
+                refreshFailed = true
+                reportRejection(error)
               }
             }
-            if (snapshotFiles.length > 0) {
-              const event = zookeeperEditPatchHistoryEvent({
-                projectPath: root,
-                activeFilePath: historyEditor.path,
-                patch: {
-                  run_id: crypto.randomUUID(),
-                  changed_files: snapshotFiles.map((file) => ({
-                    path: file.relativePath,
-                    status: 'modified',
-                  })),
-                },
-                snapshotFiles,
-              })
-              const activeFile = snapshotFiles.find(
-                (file) => file.absolutePath === historyEditor.path
+          }
+          if (snapshotFiles.length > 0) {
+            const event = zookeeperEditPatchHistoryEvent({
+              projectPath: root,
+              activeFilePath: historyEditor.path,
+              patch: {
+                run_id: crypto.randomUUID(),
+                changed_files: snapshotFiles.map((file) => ({
+                  path: file.relativePath,
+                  status: 'modified',
+                })),
+              },
+              snapshotFiles,
+            })
+            const activeFile = snapshotFiles.find(
+              (file) => file.absolutePath === historyEditor.path
+            )
+            if (activeFile) {
+              historyEditor.restoreEditorHistoryState(historyState)
+              historyEditor.addGlobalHistoryEventWithCodeChange(
+                event,
+                activeFile.nextContent,
+                activeFile.previousContent
               )
-              if (activeFile) {
-                historyEditor.restoreEditorHistoryState(historyState)
-                historyEditor.addGlobalHistoryEventWithCodeChange(
-                  event,
-                  activeFile.nextContent,
-                  activeFile.previousContent
-                )
-              } else historyEditor.addGlobalHistoryEvent(event)
-            }
-          })
-        )
+            } else historyEditor.addGlobalHistoryEvent(event)
+          }
+        })
         try {
           if (isCurrent()) {
             await project.syncReplayedFilesToRust(

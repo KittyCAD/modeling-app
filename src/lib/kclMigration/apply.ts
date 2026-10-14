@@ -1,4 +1,4 @@
-import type { LockedDirectoryOperations } from '@src/lib/fileSystem/fileOperations'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import {
   equalBytes,
   equalFiles,
@@ -16,7 +16,7 @@ export class MigrationRecoveryError extends Error {
   }
 }
 
-/** Caller owns the directory and cloud-sync locks until recovery has finished. */
+/** Caller keeps cloud sync paused until recovery has finished. */
 export async function replaceMigrationFiles({
   files,
   paths,
@@ -25,7 +25,7 @@ export async function replaceMigrationFiles({
   replacement,
   isCurrent,
 }: {
-  files: LockedDirectoryOperations
+  files: FileOperationsRegistryService
   paths: ProjectPaths
   root: string
   expected: ProjectFiles
