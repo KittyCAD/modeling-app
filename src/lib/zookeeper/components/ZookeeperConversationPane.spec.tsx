@@ -20,6 +20,8 @@ vi.mock('@src/lib/zookeeper/components/ZookeeperConversationWelcome', () => ({
   ZookeeperConversationWelcome: () => <div>Welcome</div>,
 }))
 
+import { MigrationConversation } from '@src/lib/kclMigration/conversation'
+
 import type {
   QueuedMessage,
   ZookeeperConversationProps,
@@ -221,6 +223,40 @@ beforeEach(() => {
 })
 
 describe('ZookeeperConversationPane', () => {
+  test('refreshes migration replay only after chat and application reporting finish', async () => {
+    const history = new MigrationConversation(() => '')
+    history.reportingApplication.value = true
+    const fake = createFakeController({
+      actorContext: {
+        awaitingResponse: true,
+        conversation: completedConversation,
+      },
+    })
+    render(
+      <MemoryRouter>
+        <ZookeeperConversationPane
+          {...createPaneProps(fake.controller, { migrationHistory: history })}
+        />
+      </MemoryRouter>
+    )
+    act(() => {
+      history.replayRevision.value = 1
+    })
+    expect(fake.reconnect).not.toHaveBeenCalled()
+    act(() => {
+      history.reportingApplication.value = false
+    })
+    expect(fake.reconnect).not.toHaveBeenCalled()
+    act(() => {
+      fake.setSnapshot({ awaitingResponse: false })
+    })
+    await waitFor(() => expect(fake.reconnect).toHaveBeenCalledTimes(1))
+    act(() => {
+      history.replayRevision.value = 2
+    })
+    await waitFor(() => expect(fake.reconnect).toHaveBeenCalledTimes(2))
+  })
+
   test('maps actor state, controller signals, and visual context to the conversation', () => {
     const attachmentFetches = {
       'prompt:0:0': { status: 'loading' as const },

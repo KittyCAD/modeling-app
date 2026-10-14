@@ -44,8 +44,13 @@ export interface ZookeeperConversationProps {
   // Callers can provide a local component today, then swap to a remotely
   // authored source later without changing the conversation layout below.
   welcomeMessage?: ReactNode
+  afterMessages?: ReactNode
   toolbarActions?: ReactNode
-  localExchanges?: { id: string; afterExchange: number; content: ReactNode }[]
+  localExchanges?: {
+    id: string
+    afterExchange: number
+    content: (onClickClearChat?: () => void) => ReactNode
+  }[]
   onProcess: (
     request: string,
     mode: MlCopilotModeId | undefined,
@@ -705,22 +710,31 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
     })
   }, [isEndOfStream])
 
+  const lastLocalExchange = props.localExchanges?.findLast(
+    (exchange) => exchange.afterExchange >= exchangesLength
+  )
+  const localExchanges =
+    props.localExchanges?.map((exchange) => ({
+      ...exchange,
+      content: exchange.content(
+        exchange === lastLocalExchange ? props.onClickClearChat : undefined
+      ),
+    })) ?? []
   const localExchangesAt = (index: number) =>
-    props.localExchanges
-      ?.filter(
+    localExchanges
+      .filter(
         (exchange) =>
           Math.min(exchange.afterExchange, exchangesLength) === index
       )
       .map((exchange) => (
         <Fragment key={exchange.id}>{exchange.content}</Fragment>
-      )) ?? []
+      ))
   const exchangeCards = [
     ...localExchangesAt(0),
     ...(props.conversation?.exchanges.flatMap(
       (exchange: Exchange, exchangeIndex: number, list) => {
         const isLastResponse =
-          exchangeIndex === list.length - 1 &&
-          localExchangesAt(list.length).length === 0
+          exchangeIndex === list.length - 1 && !lastLocalExchange
         return [
           <ExchangeCard
             key={`exchange-${exchangeIndex}`}
@@ -841,11 +855,12 @@ export const ZookeeperConversation = (props: ZookeeperConversationProps) => {
               {(props.isLoading ||
                 props.showManualConnect ||
                 (props.needsReconnect && props.connectionFailed)) &&
-                props.localExchanges?.map((exchange) => (
+                localExchanges.map((exchange) => (
                   <Fragment key={exchange.id}>{exchange.content}</Fragment>
                 ))}
             </div>
           </div>
+          {props.afterMessages}
           {props.queue.length > 0 && (
             <div className="border-t b-4 px-4 py-2 flex flex-col gap-1">
               <span className="text-xs text-3">Queued</span>

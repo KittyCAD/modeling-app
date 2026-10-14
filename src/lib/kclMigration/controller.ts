@@ -1,5 +1,6 @@
 import { signal } from '@preact/signals-core'
 import { MigrationRecoveryError } from '@src/lib/kclMigration/apply'
+import type { MigrationConversationLink } from '@src/lib/kclMigration/conversation'
 import {
   connectMigration,
   type MigrationConnection,
@@ -25,7 +26,8 @@ export interface MigrationProject {
   capture: () => Promise<MigrationSnapshot>
   apply: (
     expected: ProjectFiles,
-    replacement: ProjectFiles
+    replacement: ProjectFiles,
+    onReplay?: (direction: 'undo' | 'redo') => void
   ) => Promise<string | undefined>
   isCurrent: () => boolean
 }
@@ -49,12 +51,14 @@ export class MigrationController {
   readonly detail = signal('')
   readonly progress = signal<MigrationProgress[]>([])
   readonly progressText = signal('')
+  readonly operationId = signal<string | undefined>(undefined)
   private original: MigrationSnapshot | undefined
   private request: MigrationRequest | undefined
   private readonly abort = new AbortController()
   private connection: MigrationConnection | undefined
   private disposed = false
   private cancelled = false
+  private conversation: MigrationConversationLink | undefined
 
   get busy(): boolean {
     return [
@@ -78,8 +82,9 @@ export class MigrationController {
 
   private current = () => !this.disposed && this.project.isCurrent()
 
-  async start(): Promise<void> {
+  async start(conversation?: MigrationConversationLink): Promise<void> {
     if (!this.current() || this.phase.value !== 'idle') return
+    this.conversation = conversation
     this.phase.value = 'capturing'
     try {
       const original = await this.project.capture()
@@ -96,7 +101,9 @@ export class MigrationController {
           [...original.files].map(([path, bytes]) => [path, Array.from(bytes)])
         ),
         target: MIGRATION_TARGET,
+        conversation_id: conversation?.id,
       }
+      this.operationId.value = this.request.request_id
       await this.connect(false)
     } catch (error: unknown) {
       this.fail(error)
@@ -129,7 +136,13 @@ export class MigrationController {
             this.phase.value = this.cancelled ? 'cancelling' : 'running'
             return
           }
-          this.detail.value = operation.result?.detail ?? ''
+          this.conversation?.completed()
+          this.detail.value = [
+            operation.result?.detail,
+            operation.result?.validation?.summary,
+          ]
+            .filter(Boolean)
+            .join('\n\n')
           if (operation.result?.conversion_not_started === true) {
             this.detail.value +=
               ' This attempt did not count toward your daily migration limit.'
@@ -190,12 +203,19 @@ export class MigrationController {
     if (!this.current() || this.cancelled) return
     this.phase.value = 'applying'
     try {
-      const warning = await this.project.apply(before, after)
+      const operationId = this.operationId.value
+      const conversation = this.conversation
+      const warning = await this.project.apply(before, after, (direction) => {
+        if (operationId)
+          conversation?.reportApplication(
+            operationId,
+            direction === 'undo' ? 'undone' : 'applied'
+          )
+      })
+      if (operationId) conversation?.reportApplication(operationId, 'applied')
       if (this.current()) {
         this.phase.value = 'applied'
-        this.detail.value =
-          warning ||
-          'Migrated to KCL 3.0. Use Undo to restore the previous project.'
+        if (warning) this.detail.value += `\n\n${warning}`
         this.original = undefined
         this.request = undefined
       }

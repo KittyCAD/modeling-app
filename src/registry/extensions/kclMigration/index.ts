@@ -7,6 +7,7 @@ import {
 import { effect, signal } from '@preact/signals-core'
 import type { ZDSProject } from '@src/lib/projectSession'
 import type { MigrationController } from '@src/lib/kclMigration/controller'
+import { MigrationConversation } from '@src/lib/kclMigration/conversation'
 import { authService } from '@src/registry/contracts/auth'
 import {
   type KclMigrationService,
@@ -20,13 +21,20 @@ const migrationSession = defineRegistryItemFactory((ctx) => {
   const projects = ctx.services.signal(projectSession)
   const controller = signal<MigrationController | undefined>(undefined)
   const turns = signal<readonly MigrationTurn[]>([])
+  const history = new MigrationConversation(
+    () => auth.peek()?.token.peek() ?? ''
+  )
   let owner: ZDSProject | undefined
   let token: string | undefined
-  const clear = () => {
+  const clearTurns = () => {
     controller.peek()?.dispose()
     for (const turn of turns.peek()) turn.controller.dispose()
     turns.value = []
     controller.value = undefined
+  }
+  const clear = () => {
+    clearTurns()
+    history.reset()
     owner = undefined
     token = undefined
   }
@@ -34,8 +42,12 @@ const migrationSession = defineRegistryItemFactory((ctx) => {
   const service: KclMigrationService = {
     controller,
     turns,
-    clearConversation: clear,
-    start(project, create, afterExchange) {
+    history,
+    clearConversation() {
+      clearTurns()
+      history.select(undefined)
+    },
+    start(project, create, afterExchange, conversation) {
       if (project !== projects.peek()?.project.peek()) return
       const previous = service.getOrCreate(project, create)
       if (previous?.busy || previous?.phase.peek() === 'recovery_required')
@@ -44,9 +56,14 @@ const migrationSession = defineRegistryItemFactory((ctx) => {
       controller.value = attempt
       turns.value = [
         ...turns.peek(),
-        { id: crypto.randomUUID(), afterExchange, controller: attempt },
+        {
+          id: crypto.randomUUID(),
+          afterExchange,
+          controller: attempt,
+          conversationId: conversation?.id,
+        },
       ]
-      void attempt.start()
+      void attempt.start(conversation)
     },
     getOrCreate(project, create) {
       if (project !== projects.peek()?.project.peek()) return undefined

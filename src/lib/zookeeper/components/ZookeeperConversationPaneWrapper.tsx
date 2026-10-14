@@ -1,7 +1,6 @@
 import { Menu } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { KclMigration } from '@src/components/KclMigration'
-import { KclMigrationPanel } from '@src/components/KclMigrationPanel'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
@@ -15,6 +14,8 @@ import {
   type ZookeeperManagerActor,
 } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { kclMigrationService } from '@src/registry/contracts/kclMigration'
+import { useSelector } from '@xstate/react'
+import { useEffect } from 'react'
 
 export function ZookeeperConversationPaneWrapper(
   props: Pick<AreaTypeComponentProps, 'layout' | 'onClose'> & {
@@ -29,6 +30,15 @@ export function ZookeeperConversationPaneWrapper(
   const { context: contextModeling } = useModelingContext()
   const { controller } = props
   const migration = app.registry.get(kclMigrationService)
+  const conversationId = useSelector(
+    controller.actor,
+    (snapshot) => snapshot.context.conversationId
+  )
+  const project = app.projectSignal.value
+  const token = auth.token.value
+  useEffect(() => {
+    migration.history.select(project && token ? conversationId : undefined)
+  }, [migration, conversationId, project, token])
 
   return (
     <LayoutPanel
@@ -47,19 +57,14 @@ export function ZookeeperConversationPaneWrapper(
         controller={controller}
         migrationController={migration.controller.value}
         migrationTurns={migration.turns.value}
+        migrationHistory={migration.history}
         onClearMigrationConversation={() => migration.clearConversation()}
-        renderMigrationTurn={(turn, onClickClearChat) => (
-          <KclMigrationPanel
-            controller={turn.controller}
-            userAvatar={user?.image}
-            onClickClearChat={onClickClearChat}
-          />
-        )}
         migrationContent={(chatBusy, afterExchange) => (
           <KclMigration
             app={app}
             chatBusy={chatBusy}
             afterExchange={afterExchange}
+            conversationId={conversationId}
           />
         )}
         selectionRanges={contextModeling.selectionRanges}

@@ -71,7 +71,13 @@ describe('Zookeeper project history integration', () => {
     const candidate = new Map(expected)
     candidate.set('main.kcl', new TextEncoder().encode(after))
     candidate.set('parts/shared.kcl', new TextEncoder().encode(siblingAfter))
-    await migrationProject(app, project).apply(expected, candidate)
+    const replayed: string[] = []
+    await migrationProject(app, project).apply(
+      expected,
+      candidate,
+      (direction) => replayed.push(direction)
+    )
+    expect(replayed).toEqual([])
     expect(kclManager.code).toBe(after)
     addManualEdit(kclManager, after.replace('20mm', '30mm'))
     kclManager.undo()
@@ -83,6 +89,7 @@ describe('Zookeeper project history integration', () => {
     kclManager.undo()
     await waitForHistoryIdle(kclManager)
     expect(kclManager.code).toBe(source)
+    expect(replayed).toEqual(['undo'])
     expect(
       await fsZds.readFile(fsZds.join(projectPath, 'parts/shared.kcl'), 'utf8')
     ).toBe(siblingBefore)
@@ -98,6 +105,7 @@ describe('Zookeeper project history integration', () => {
     expect(
       await fsZds.readFile(fsZds.join(projectPath, 'parts/shared.kcl'), 'utf8')
     ).toBe(siblingAfter)
+    expect(replayed).toEqual(['undo', 'redo'])
   })
 
   it('cycles multiple manual edits without changing sibling files', async () => {

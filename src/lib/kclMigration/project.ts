@@ -153,7 +153,7 @@ export function migrationProject(
       }
       return { projectId: id, entrypoint, files }
     },
-    apply: async (expected, replacement) => {
+    apply: async (expected, replacement, onReplay) => {
       if (
         !isCurrent() ||
         project.projectIORefSignal.value.cloudConflict ||
@@ -250,6 +250,7 @@ export function migrationProject(
                 })),
               },
               snapshotFiles,
+              onReplay,
             })
             const activeFile = snapshotFiles.find(
               (file) => file.absolutePath === historyEditor.path
