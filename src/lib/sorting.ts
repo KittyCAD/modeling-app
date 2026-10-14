@@ -3,13 +3,11 @@ import type { CustomIconName } from '@src/components/CustomIcon'
 const DESC = ':desc'
 
 /** Supported project-list sorting choices, including the default reset choice. */
+export type ProjectSortField = 'name' | 'modified'
 export type ProjectSort =
   | ''
-  | 'name'
-  | 'name:desc'
-  | 'modified'
-  | 'modified:desc'
-export type ProjectSortField = 'name' | 'modified'
+  | ProjectSortField
+  | `${ProjectSortField}${typeof DESC}`
 export const DEFAULT_PROJECT_SORT: ProjectSort = 'modified:desc'
 
 export function parseProjectSort(value: string): ProjectSort {
