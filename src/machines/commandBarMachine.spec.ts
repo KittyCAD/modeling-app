@@ -174,6 +174,7 @@ describe('commandBarMachine', () => {
           type: 'Find and select command',
           data: { name: command.name, groupId: command.groupId },
         })
+        const session = actor.getSnapshot().context.dialogSession
         const submit = (name: string) =>
           actor.send({
             type: 'Submit command from dialog',
@@ -185,6 +186,7 @@ describe('commandBarMachine', () => {
           expect(actor.getSnapshot().matches('Gathering arguments')).toBe(true)
         })
         expect(command.onSubmit).not.toHaveBeenCalled()
+        expect(actor.getSnapshot().context.dialogSession).toBe(session)
         expect(validation).toHaveBeenCalledWith(
           expect.objectContaining({ data: 'duplicate' })
         )
@@ -197,6 +199,7 @@ describe('commandBarMachine', () => {
           )
         })
         expect(command.onSubmit).not.toHaveBeenCalled()
+        expect(actor.getSnapshot().context.dialogSession).toBe(session)
 
         submit('unique')
         await vi.waitFor(() =>
@@ -227,6 +230,7 @@ describe('commandBarMachine', () => {
       })
 
       expect(actor.getSnapshot().matches('Gathering arguments')).toBe(true)
+      expect(actor.getSnapshot().context.dialogSession).toBeUndefined()
       expect(actor.getSnapshot().context.argumentsToSubmit.name).toBeUndefined()
       expect(command.onSubmit).not.toHaveBeenCalled()
       actor.stop()
@@ -254,6 +258,8 @@ describe('commandBarMachine', () => {
           type: 'Find and select command',
           data: { name: command.name, groupId: command.groupId },
         })
+        const session = actor.getSnapshot().context.dialogSession
+        expect(session?.signal.aborted).toBe(false)
         actor.send({
           type: 'Submit command from dialog',
           data: { argumentsToSubmit: { name: 'stale' } },
@@ -269,6 +275,10 @@ describe('commandBarMachine', () => {
             argDefaultValues: { name: 'current' },
           },
         })
+        const currentSession = actor.getSnapshot().context.dialogSession
+        expect(session?.signal.aborted).toBe(true)
+        expect(currentSession?.signal.aborted).toBe(false)
+        expect(currentSession?.id).not.toBe(session?.id)
         finishValidation(true)
         await validation
         await Promise.resolve()
@@ -287,6 +297,34 @@ describe('commandBarMachine', () => {
             name: 'updated',
           })
         )
+        expect(currentSession?.signal.aborted).toBe(true)
+        expect(actor.getSnapshot().context.dialogSession).toBeUndefined()
+      } finally {
+        actor.stop()
+      }
+    })
+
+    it('ends the dialog session on close and command-system shutdown', () => {
+      const command = createDialogCommand('Session test')
+      const actor = startActor([command])
+      const open = () => {
+        actor.send({
+          type: 'Find and select command',
+          data: { name: command.name, groupId: command.groupId },
+        })
+        return actor.getSnapshot().context.dialogSession
+      }
+      try {
+        const closedSession = open()
+        expect(closedSession?.signal.aborted).toBe(false)
+        actor.send({ type: 'Close' })
+        expect(closedSession?.signal.aborted).toBe(true)
+        expect(actor.getSnapshot().context.dialogSession).toBeUndefined()
+
+        const stoppedSession = open()
+        expect(stoppedSession?.signal.aborted).toBe(false)
+        actor.stop()
+        expect(stoppedSession?.signal.aborted).toBe(true)
       } finally {
         actor.stop()
       }

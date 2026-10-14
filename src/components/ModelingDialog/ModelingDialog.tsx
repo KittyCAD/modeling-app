@@ -32,6 +32,7 @@ export default function ModelingDialog({
   containerRef,
   kclManager,
   commands,
+  signal,
   settings,
   wasmPromise,
   commandScopes,
@@ -41,6 +42,7 @@ export default function ModelingDialog({
   containerRef: RefObject<HTMLElement | null>
   kclManager: KclManager
   commands: AppCommandSystem
+  signal: AbortSignal
   settings: AppSettingsSystem
   wasmPromise: Promise<ModuleType>
   commandScopes?: CommandScopeService
@@ -91,13 +93,13 @@ export default function ModelingDialog({
     mounted.current = true
     void initializeArguments(initialContext.current)
       .then((defaults) => {
-        if (!cancelled) {
+        if (!cancelled && !signal.aborted) {
           setValues((previous) => ({ ...defaults, ...previous }))
           setInitializing(false)
         }
       })
       .catch((error: unknown) => {
-        if (!cancelled) {
+        if (!cancelled && !signal.aborted) {
           trap(error)
           setInitializing(false)
         }
@@ -106,7 +108,7 @@ export default function ModelingDialog({
       cancelled = true
       mounted.current = false
     }
-  }, [])
+  }, [signal])
 
   const checking = state.matches('Checking Arguments for Dialog')
   const invalid = visible.some(({ name, arg, required }) => {
@@ -117,14 +119,6 @@ export default function ModelingDialog({
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (!command || initializing || submitting || checking || invalid) return
-    const isCurrent = () => {
-      const current = commands.actor.getSnapshot().context
-      return (
-        mounted.current &&
-        current.selectedCommand === command &&
-        current.argumentsToSubmit === state.context.argumentsToSubmit
-      )
-    }
     setSubmitting(true)
     try {
       const resolved = await resolveArguments(
@@ -134,7 +128,7 @@ export default function ModelingDialog({
         kclManager.astSignal.value,
         kclManager.artifactGraph
       )
-      if (!isCurrent()) return
+      if (!mounted.current || signal.aborted) return
       if (isErr(resolved)) {
         trap(resolved)
         return
@@ -144,7 +138,7 @@ export default function ModelingDialog({
         data: { argumentsToSubmit: resolved },
       })
     } catch (error) {
-      if (isCurrent()) trap(error)
+      if (mounted.current && !signal.aborted) trap(error)
     } finally {
       if (mounted.current) setSubmitting(false)
     }
