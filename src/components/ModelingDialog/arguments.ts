@@ -1,4 +1,5 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import { evaluateCommandArgumentFlags } from '@src/components/CommandBar/utils'
 import type { ArtifactGraph, Program } from '@src/lang/wasm'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import { isKclCommandValue } from '@src/lib/commandUtils'
@@ -31,17 +32,11 @@ export function hasValue(value: unknown): boolean {
 export function getDialogFields(context: CommandBarContext): DialogField[] {
   return Object.entries(context.selectedCommand?.args ?? {}).flatMap(
     ([name, arg]) => {
-      const machineContext = arg.machineActor?.getSnapshot().context
-      const hidden =
-        typeof arg.hidden === 'function'
-          ? arg.hidden(context, machineContext)
-          : arg.hidden
-      if (hidden) return []
-      const required =
-        typeof arg.required === 'function'
-          ? arg.required(context, machineContext)
-          : arg.required
-      return [{ name, arg, required }]
+      const { isHidden, isRequired } = evaluateCommandArgumentFlags(
+        arg,
+        context
+      )
+      return isHidden ? [] : [{ name, arg, required: isRequired }]
     }
   )
 }
@@ -56,14 +51,11 @@ export async function initializeArguments(
   )) {
     const current = { ...context, argumentsToSubmit: values }
     const machineContext = arg.machineActor?.getSnapshot().context
-    const required =
-      typeof arg.required === 'function'
-        ? arg.required(current, machineContext)
-        : arg.required
+    const { isRequired } = evaluateCommandArgumentFlags(arg, current)
     let value = values[name]
     if (typeof value === 'function')
       value = await value(current, machineContext, wasm)
-    if (value === undefined && (required || arg.prepopulate || arg.skip)) {
+    if (value === undefined && (isRequired || arg.prepopulate || arg.skip)) {
       if ('defaultValue' in arg) {
         value =
           typeof arg.defaultValue === 'function'
@@ -102,7 +94,7 @@ export async function resolveArguments(
     )) {
       if (
         typeof arg.hidden === 'function' &&
-        arg.hidden(current, arg.machineActor?.getSnapshot().context)
+        evaluateCommandArgumentFlags(arg, current).isHidden
       )
         resolved[name] = undefined
     }
@@ -113,10 +105,8 @@ export async function resolveArguments(
   })) {
     const { name, arg } = field
     const current = { ...context, argumentsToSubmit: resolved }
-    const required =
-      typeof arg.required === 'function'
-        ? arg.required(current, arg.machineActor?.getSnapshot().context)
-        : arg.required
+    // Earlier KCL arguments have now been parsed, which can change requirements.
+    const { isRequired } = evaluateCommandArgumentFlags(arg, current)
     let value = resolved[name]
     if (arg.inputType === 'selection') {
       if (context.argumentsToSubmit.nodeToEdit)
@@ -124,7 +114,7 @@ export async function resolveArguments(
       const selection =
         isSelections(value) && hasValue(value) ? value : undefined
       if (
-        (required && !selection) ||
+        (isRequired && !selection) ||
         (selection &&
           !canSubmitSelectionArg(
             getSelectionCountByType(ast, selection, artifactGraph),
@@ -156,7 +146,7 @@ export async function resolveArguments(
     } else if (typeof value === 'string' && !value.trim()) {
       value = undefined
     }
-    if (required && !hasValue(value))
+    if (isRequired && !hasValue(value))
       return new Error(`Enter ${arg.displayName || name}.`)
     resolved[name] = value
   }

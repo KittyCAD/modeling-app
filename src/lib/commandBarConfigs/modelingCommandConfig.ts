@@ -20,6 +20,7 @@ import type {
   KclCommandValue,
   StateMachineCommandSetConfig,
 } from '@src/lib/commandTypes'
+import { isKclCommandValue } from '@src/lib/commandUtils'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   KCL_AXIS_X,
@@ -120,18 +121,6 @@ const kclBodyTypeOptions = KCL_PRELUDE_BODY_TYPE_VALUES.map((value) => ({
   value,
 }))
 
-function isExtrudeRequirementKclCommandValue(
-  value: unknown
-): value is KclCommandValue {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'valueAst' in value &&
-    'valueText' in value &&
-    'valueCalculated' in value
-  )
-}
-
 export function profileSelectionRequiresBodyType({
   argumentsToSubmit,
 }: {
@@ -172,7 +161,7 @@ export function profileSelectionRequiresBodyType({
 export function extrudeSelectionRequiresBodyType(context: {
   argumentsToSubmit: Record<string, unknown>
 }): boolean {
-  if (!isExtrudeRequirementKclCommandValue(context.argumentsToSubmit.length)) {
+  if (!isKclCommandValue(context.argumentsToSubmit.length)) {
     return false
   }
 
@@ -184,7 +173,7 @@ export function extrudeSelectionRequiresMethod({
 }: {
   argumentsToSubmit: Record<string, unknown>
 }): boolean {
-  if (!isExtrudeRequirementKclCommandValue(argumentsToSubmit.length)) {
+  if (!isKclCommandValue(argumentsToSubmit.length)) {
     return false
   }
 
@@ -297,7 +286,9 @@ const datumInputToKclArray = (value: string) => {
   return `[${datumRefs.map((datumRef) => JSON.stringify(datumRef)).join(', ')}]`
 }
 
-const isKclCommandValue = (value: unknown): value is KclCommandValue =>
+const isKclValueSummary = (
+  value: unknown
+): value is Pick<KclCommandValue, 'valueText' | 'valueCalculated'> =>
   Boolean(
     value &&
       typeof value === 'object' &&
@@ -306,7 +297,7 @@ const isKclCommandValue = (value: unknown): value is KclCommandValue =>
   )
 
 const summarizeDatumKclValue = (value: unknown) =>
-  isKclCommandValue(value)
+  isKclValueSummary(value)
     ? kclDatumArrayToInput(
         value.valueCalculated === 'NAN'
           ? value.valueText
@@ -325,7 +316,7 @@ export const getDefaultGdtTolerance = (
 }
 
 const summarizeGdtToleranceKclValue = (value: unknown) =>
-  isKclCommandValue(value) ? value.valueText : ''
+  isKclValueSummary(value) ? value.valueText : ''
 
 const gdtToleranceProps = {
   inputType: 'kcl',

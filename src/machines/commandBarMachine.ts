@@ -880,10 +880,7 @@ export const commandBarMachine = setup({
         onError: [
           {
             target: 'Gathering arguments',
-            actions: [
-              'Set current argument to first non-skippable',
-              'Notify argument validation error',
-            ],
+            actions: ['Notify argument validation error'],
           },
         ],
       },

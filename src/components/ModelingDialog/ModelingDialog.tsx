@@ -6,7 +6,6 @@ import decamelize from 'decamelize'
 import {
   CommandKclInput,
   getKclInputValue,
-  type CommandKclValidationState,
 } from '@src/components/CommandBar/CommandKclInput'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { MarkdownText } from '@src/components/MarkdownText'
@@ -52,9 +51,7 @@ export default function ModelingDialog({
   const state = commands.useState()
   const { selectedCommand: command, commandInvocationId } = state.context
   const [values, setValues] = useState<Record<string, unknown>>({})
-  const [validity, setValidity] = useState<
-    Record<string, CommandKclValidationState>
-  >({})
+  const [validity, setValidity] = useState<Record<string, boolean>>({})
   const [initializing, setInitializing] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const mounted = useRef(true)
@@ -106,8 +103,7 @@ export default function ModelingDialog({
 
   const checking = state.matches('Checking Arguments for Dialog')
   const invalid = visible.some(({ name, arg, required }) => {
-    if (arg.inputType === 'kcl')
-      return validity[name]?.isChecking || validity[name]?.canSubmit === false
+    if (arg.inputType === 'kcl') return validity[name] === false
     return required && !hasValue(context.argumentsToSubmit[name])
   })
 
@@ -176,12 +172,10 @@ export default function ModelingDialog({
           onChange={(change) => save(name, change.value)}
           onValidationChange={(next) =>
             setValidity((previous) => {
-              const current = previous[name]
-              return current?.canSubmit === next.canSubmit &&
-                current?.isChecking === next.isChecking &&
-                current?.message === next.message
+              const canSubmit = next.canSubmit && !next.isChecking
+              return previous[name] === canSubmit
                 ? previous
-                : { ...previous, [name]: next }
+                : { ...previous, [name]: canSubmit }
             })
           }
         />

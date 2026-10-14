@@ -913,13 +913,6 @@ helix001 = helix(
       const result = addHelix({
         ast,
         artifactGraph,
-        mode: 'Cylinder',
-        axis: 'X',
-        radius: await getKclCommandValue(
-          '5',
-          instanceInThisFile,
-          rustContextInThisFile
-        ),
         cylinder,
         revolutions: (await stringToKclExpression(
           '1',
