@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from 'react'
+import { use, useEffect, useMemo, useState } from 'react'
 import { useSelector } from '@xstate/react'
 import type { AnyStateMachine, SnapshotFrom } from 'xstate'
 import {
@@ -39,10 +39,13 @@ function CommandBarKclInput({
   } = useModelingContext()
   const machineContext = useSelector(arg.machineActor, machineContextSelector)
   const submittedValue = context.argumentsToSubmit[arg.name]
-  const defaultValue =
-    typeof arg.defaultValue === 'function'
-      ? arg.defaultValue(context, machineContext, wasmInstance)
-      : arg.defaultValue
+  const defaultValue = useMemo(
+    () =>
+      typeof arg.defaultValue === 'function'
+        ? arg.defaultValue(context, machineContext, wasmInstance)
+        : arg.defaultValue,
+    [arg, context, machineContext, wasmInstance]
+  )
   const initialValue = getKclInputValue(arg, submittedValue ?? defaultValue)
   const [value, setValue] = useState(initialValue)
   const [resolvedValue, setResolvedValue] = useState<KclCommandValue>()
