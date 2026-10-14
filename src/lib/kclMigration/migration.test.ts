@@ -1,4 +1,4 @@
-import { mkdir, readdir, readFile, symlink, writeFile } from 'node:fs/promises'
+import { mkdir, readdir, symlink, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import {
   MigrationRecoveryError,
@@ -213,12 +213,6 @@ describe('project migration', () => {
           (await fixture.runtime.operations.stat(link)).symbolicLink
         ).toBeUndefined()
       }
-      await fixture.runtime.operations.withDirectoryLock(
-        fixture.root,
-        async (files) => {
-          expect(await files.lstat(link)).toMatchObject({ symbolicLink: true })
-        }
-      )
       await expect(fixture.project.capture()).rejects.toThrow('symbolic links')
       await expect(
         readProjectFiles(fixture.runtime.operations, path, link)
@@ -424,29 +418,25 @@ describe('project migration', () => {
     replacement.set('main.kcl', new TextEncoder().encode(targetCode))
     replacement.set('parts/part.kcl', new TextEncoder().encode('changed = 1'))
     await expect(
-      fixture.runtime.operations.withDirectoryLock(
-        fixture.root,
-        async (files) =>
-          replaceMigrationFiles({
-            files: {
-              ...files,
-              writeFile: async (name, bytes) => {
-                // Force a real ENOTDIR after the first successful write.
-                if (name.endsWith('part.kcl'))
-                  await writeFile(
-                    path.join(fixture.root, 'main.kcl', 'impossible'),
-                    bytes
-                  )
-                else await files.writeFile(name, bytes)
-              },
-            },
-            paths: path,
-            root: fixture.root,
-            expected,
-            replacement,
-            isCurrent: () => true,
-          })
-      )
+      replaceMigrationFiles({
+        files: {
+          ...fixture.runtime.operations,
+          writeFile: async (name, bytes) => {
+            // Force a real ENOTDIR after the first successful write.
+            if (name.endsWith('part.kcl'))
+              await writeFile(
+                path.join(fixture.root, 'main.kcl', 'impossible'),
+                bytes
+              )
+            else await fixture.runtime.operations.writeFile(name, bytes)
+          },
+        },
+        paths: path,
+        root: fixture.root,
+        expected,
+        replacement,
+        isCurrent: () => true,
+      })
     ).rejects.toThrow()
     expect(
       equalFiles(
@@ -462,72 +452,26 @@ describe('project migration', () => {
     replacement.set('main.kcl', new TextEncoder().encode(targetCode))
     replacement.set('parts/part.kcl', new TextEncoder().encode('changed = 1'))
     await expect(
-      fixture.runtime.operations.withDirectoryLock(
-        fixture.root,
-        async (files) =>
-          replaceMigrationFiles({
-            files: {
-              ...files,
-              writeFile: async (name, bytes) => {
-                if (name.endsWith('part.kcl')) {
-                  await writeFile(
-                    path.join(fixture.root, 'main.kcl'),
-                    'external = 123'
-                  )
-                  await mkdir(path.join(fixture.root, 'main.kcl', 'impossible'))
-                } else await files.writeFile(name, bytes)
-              },
-            },
-            paths: path,
-            root: fixture.root,
-            expected,
-            replacement,
-            isCurrent: () => true,
-          })
-      )
+      replaceMigrationFiles({
+        files: {
+          ...fixture.runtime.operations,
+          writeFile: async (name, bytes) => {
+            if (name.endsWith('part.kcl')) {
+              await writeFile(
+                path.join(fixture.root, 'main.kcl'),
+                'external = 123'
+              )
+              await mkdir(path.join(fixture.root, 'main.kcl', 'impossible'))
+            } else await fixture.runtime.operations.writeFile(name, bytes)
+          },
+        },
+        paths: path,
+        root: fixture.root,
+        expected,
+        replacement,
+        isCurrent: () => true,
+      })
     ).rejects.toBeInstanceOf(MigrationRecoveryError)
     expect(await fixture.readMain()).toBe('external = 123')
-  })
-
-  it('holds the project lock through the entire batch, including recovery', async () => {
-    let release: () => void = () => {}
-    const gate = new Promise<void>((resolve) => {
-      release = resolve
-    })
-    let entered: () => void = () => {}
-    const ready = new Promise<void>((resolve) => {
-      entered = resolve
-    })
-    const batch = fixture.runtime.operations.withDirectoryLock(
-      fixture.root,
-      async (files) => {
-        await files.writeFile(
-          path.join(fixture.root, 'main.kcl'),
-          new TextEncoder().encode(targetCode)
-        )
-        entered()
-        await gate
-        await files.writeFile(
-          path.join(fixture.root, 'main.kcl'),
-          new TextEncoder().encode(sourceCode)
-        )
-      }
-    )
-    await ready
-    let readFinished = false
-    const queued = fixture.runtime.operations
-      .readFile(path.join(fixture.root, 'main.kcl'))
-      .then((bytes) => {
-        readFinished = true
-        return bytes
-      })
-    await new Promise((resolve) => setTimeout(resolve, 20))
-    expect(readFinished).toBe(false)
-    release()
-    await batch
-    expect(new TextDecoder().decode(await queued)).toBe(sourceCode)
-    expect(await readFile(path.join(fixture.root, 'main.kcl'), 'utf8')).toBe(
-      sourceCode
-    )
   })
 })

@@ -102,16 +102,14 @@ export async function migrationFixture() {
       expected: Map<string, Uint8Array>,
       replacement: Map<string, Uint8Array>
     ) => {
-      await runtime.operations.withDirectoryLock(root, (files) =>
-        replaceMigrationFiles({
-          files,
-          paths: path,
-          root,
-          expected,
-          replacement,
-          isCurrent: () => current,
-        })
-      )
+      await replaceMigrationFiles({
+        files: runtime.operations,
+        paths: path,
+        root,
+        expected,
+        replacement,
+        isCurrent: () => current,
+      })
       return undefined
     },
   }
