@@ -4,10 +4,8 @@ import type { PrevVariable } from '@src/lang/queryAst'
 import { findAllPreviousVariables } from '@src/lang/queryAst'
 import { getSafeInsertIndex } from '@src/lang/queryAst/getSafeInsertIndex'
 import type { Expr, Program, SourceRange, VariableMap } from '@src/lang/wasm'
-import { parse, resultIsOk } from '@src/lang/wasm'
 import { getCalculatedKclExpressionValue } from '@src/lib/kclHelpers'
 import type RustContext from '@src/lib/rustContext'
-import { err } from '@src/lib/trap'
 import { getInVariableCase } from '@src/lib/utils'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -76,20 +74,7 @@ export function useCalculateKclExpression({
   const wasmInstance = use(rustContext.wasmInstancePromise)
   const [insertIndex, setInsertIndex] = useState(0)
   const [valueNode, setValueNode] = useState<Expr | null>(null)
-  // Gotcha: If we do not attempt to parse numeric literals instantly it means that there is an async action to verify
-  // the value is good. This means all E2E tests have a race condition on when they can hit "next" in the command bar.
-  // Most scenarios automatically pass a numeric literal. We can try to parse that first, otherwise make it go through the slow
-  // async method.
-  // If we pass in numeric literals, we should instantly parse them, they have nothing to do with application memory
-  const _code_value = `const __result__ = ${value}`
-  const codeValueParseResult = parse(_code_value, wasmInstance)
-  let isValueParsable = true
-  if (err(codeValueParseResult) || !resultIsOk(codeValueParseResult)) {
-    isValueParsable = false
-  }
-  const initialCalcResult: number | string =
-    Number.isNaN(parseFloat(value)) || !isValueParsable ? 'NAN' : value
-  const [calcResult, setCalcResult] = useState(initialCalcResult)
+  const [calcResult, setCalcResult] = useState('NAN')
   const [newVariableName, _setNewVariableName] = useState('')
   const [isNewVariableNameUnique, setIsNewVariableNameUnique] = useState(true)
 
@@ -136,14 +121,27 @@ export function useCalculateKclExpression({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [ast, variables, endingSourceRange])
 
+  const calculationInput = useMemo(
+    () => ({ value, availableVarInfo, code, rustContext, options, ast }),
+    [value, availableVarInfo, code, rustContext, options, ast]
+  )
+  const [completedCalculationInput, setCompletedCalculationInput] =
+    useState<typeof calculationInput>()
+
   useEffect(() => {
+    let isCancelled = false
     const execAstAndSetResult = async () => {
       const result = await getCalculatedKclExpressionValue(
         value,
         rustContext,
         options
       )
+      if (isCancelled) {
+        return
+      }
+
       setIsExecuting(false)
+      setCompletedCalculationInput(calculationInput)
       if (result instanceof Error || 'errors' in result || !result.astNode) {
         setCalcResult('NAN')
         setValueNode(null)
@@ -154,24 +152,38 @@ export function useCalculateKclExpression({
       setCalcResult(result?.valueAsString || 'NAN')
       if (result?.astNode) setValueNode(result.astNode)
     }
-    if (!value) return
+    if (!value) {
+      return
+    }
     setIsExecuting(true)
     execAstAndSetResult().catch(() => {
+      if (isCancelled) {
+        return
+      }
+
       setCalcResult('NAN')
       setIsExecuting(false)
       setValueNode(null)
+      setCompletedCalculationInput(calculationInput)
     })
-  }, [value, availableVarInfo, code, rustContext, options, ast])
+    return () => {
+      isCancelled = true
+    }
+  }, [value, rustContext, options, ast, calculationInput])
+
+  // A render for new input must not expose the previous expression's AST,
+  // even before the calculation effect has started.
+  const hasCurrentResult = completedCalculationInput === calculationInput
 
   return {
-    valueNode,
-    calcResult,
+    valueNode: hasCurrentResult ? valueNode : null,
+    calcResult: hasCurrentResult ? calcResult : 'NAN',
     prevVariables: availableVarInfo.variables,
     newVariableInsertIndex: insertIndex,
     newVariableName,
     isNewVariableNameUnique,
     setNewVariableName,
     inputRef,
-    isExecuting,
+    isExecuting: Boolean(value) && (!hasCurrentResult || isExecuting),
   }
 }
