@@ -185,7 +185,6 @@ function BodyItem({
           <VisibilityToggle
             visible={hideOperation === undefined}
             onVisibilityChange={() => {
-              onSelect()
               if (hideOperation === undefined) {
                 onHide({
                   ast: kclManager.ast,

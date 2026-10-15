@@ -11,14 +11,6 @@ import type {
 } from '@src/lang/wasm'
 
 /**
- * The name of the view a successful execution leaves behind.
- *
- * `RESERVED_DEFAULT_VIEW_NAME` in `rust/kcl-lib/src/execution/named_views.rs`
- * declares the same string. Changing one alone fails a test on each side.
- */
-export const KCL_DEFAULT_VIEW_NAME = 'Default View'
-
-/**
  * A KclNamedView is one `view::named` artifact and the module that declared it.
  *
  * The `NamedView` of `@rust/kcl-lib/bindings/NamedView` is a different feature:

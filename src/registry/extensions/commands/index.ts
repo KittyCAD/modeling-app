@@ -1,7 +1,6 @@
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
   provide,
   provideService,
 } from '@kittycad/registry'
@@ -154,19 +153,17 @@ export const commandsExtension = defineRegistryItemFactory((ctx) => {
   }
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'commands-extension',
-      providesServices: [provideService(commandSystemService, serviceImpl)],
-      dispose: () => {
-        pendingCommandSelections = []
-        stopCommandPaletteScopeSync?.()
-        ctx.services
-          .optional(commandScopeService)
-          ?.removeScope(COMMAND_PALETTE_OPEN_COMMAND_SCOPE)
-        stopCommandsEffect?.()
-        commandBarActor?.stop()
-      },
-    }),
+    id: 'commands-extension',
+    providesServices: [provideService(commandSystemService, serviceImpl)],
+    dispose: () => {
+      pendingCommandSelections = []
+      stopCommandPaletteScopeSync?.()
+      ctx.services
+        .optional(commandScopeService)
+        ?.removeScope(COMMAND_PALETTE_OPEN_COMMAND_SCOPE)
+      stopCommandsEffect?.()
+      commandBarActor?.stop()
+    },
   }
 }, 'commands-extension')
 

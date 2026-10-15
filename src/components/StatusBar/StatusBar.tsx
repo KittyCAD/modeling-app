@@ -3,6 +3,7 @@ import { ActionButton } from '@src/components/ActionButton'
 import { ActionIcon } from '@src/components/ActionIcon'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import Tooltip, { type TooltipProps } from '@src/components/Tooltip'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: status-bar links receive router location (useLocation).
 import { useLocation } from 'react-router-dom'
 import { Fragment } from 'react/jsx-runtime'
 

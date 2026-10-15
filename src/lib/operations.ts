@@ -35,7 +35,6 @@ import {
 } from '@src/lang/modifyAst/sweeps'
 import {
   artifactToEntityRef,
-  findOperationArtifact,
   getNodeFromPath,
   getVariableNameFromNodePath,
   retrieveSelectionsFromOpArg,
@@ -64,7 +63,6 @@ import {
   KCL_PRELUDE_EXTRUDE_METHOD_NEW,
   type KclPreludeBodyType,
   type KclPreludeExtrudeMethod,
-  LEGACY_SKETCH_MODE_FEATURE_FLAG,
   LEGACY_SKETCH_MODE_REMOVED_MESSAGE,
 } from '@src/lib/constants'
 import { getStringValue, stringToKclExpression } from '@src/lib/kclHelpers'
@@ -105,13 +103,6 @@ interface StdLibCallInfo {
   supportsTranslate?: boolean
   supportsRotate?: boolean
   supportsScale?: boolean
-}
-
-function hasLegacySketchMode(): boolean {
-  return (
-    window.app?.userFeatures.has(LEGACY_SKETCH_MODE_FEATURE_FLAG, false) ??
-    false
-  )
 }
 
 function retrieveUnlabeledSelectionsForEdit(
@@ -3599,25 +3590,8 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   startSketchOn: {
     label: 'Sketch',
     icon: 'sketch',
-    async prepareToEdit({ operation, artifact, artifactGraph }) {
-      if (!hasLegacySketchMode()) {
-        return { reason: LEGACY_SKETCH_MODE_REMOVED_MESSAGE }
-      }
-      const resolvedArtifact =
-        artifact ??
-        (operation.type === 'StdLibCall'
-          ? (findOperationArtifact(operation, artifactGraph) ?? undefined)
-          : undefined)
-      if (resolvedArtifact) {
-        return {
-          name: 'Enter sketch',
-          groupId: 'modeling',
-        }
-      }
-      return {
-        reason:
-          'Editing sketches on faces or offset planes through the feature tree is not yet supported. Please double-click the path in the scene for now.',
-      }
+    async prepareToEdit() {
+      return { reason: LEGACY_SKETCH_MODE_REMOVED_MESSAGE }
     },
   },
   subtract: {

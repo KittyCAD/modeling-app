@@ -2,6 +2,12 @@ name: Build Wasm
 
 on:
   workflow_call:
+    inputs:
+      skip_wasm_opt:
+        description: Use '--no-opt' for callers that do not run the app.
+        type: boolean
+        required: false
+        default: false
     secrets:
       TAB_API_KEY:
         required: false
@@ -17,14 +23,6 @@ jobs:
       - uses: actions/checkout@v7.0.1
         with:
           repository: kittycad/modeling-app # required for 'workflow_call'
-
-      - uses: actions/setup-node@v7.0.0
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
 
       - name: Use correct Rust toolchain
         shell: bash
@@ -55,7 +53,9 @@ jobs:
 
       - name: Build Wasm
         shell: bash
-        run: npm run build:wasm
+        env:
+          SKIP_WASM_OPT: ${{ inputs.skip_wasm_opt && 'true' || '' }}
+        run: ./scripts/build-wasm.sh
 
       - name: Use committed TypeScript bindings
         shell: bash

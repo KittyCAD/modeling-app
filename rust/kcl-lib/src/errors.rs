@@ -2,6 +2,9 @@ use std::collections::BTreeMap;
 
 use indexmap::IndexMap;
 use kcl_api::NodePath;
+use kcl_api::Number;
+use kcl_api::Object;
+use kcl_api::ObjectId;
 pub use kcl_error::BacktraceItem;
 pub use kcl_error::BacktraceItemKind;
 pub use kcl_error::CompilationIssue;
@@ -27,9 +30,6 @@ use crate::execution::DefaultPlanes;
 use crate::execution::KclValueView;
 use crate::execution::OperationsByModule;
 use crate::execution::RefactorMetadata;
-use crate::front::Number;
-use crate::front::Object;
-use crate::front::ObjectId;
 use crate::lsp_types::IntoDiagnostic;
 use crate::lsp_types::ToLspRange;
 use crate::modules::ModulePath;
@@ -155,7 +155,7 @@ pub struct KclErrorWithOutputs {
     // reason.
     pub _artifact_commands: Vec<ArtifactCommand>,
     pub artifact_graph: ArtifactGraph,
-    #[serde(skip)]
+    #[ts(skip)]
     pub scene_objects: Vec<Object>,
     #[serde(skip)]
     pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
