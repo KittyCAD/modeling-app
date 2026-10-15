@@ -275,6 +275,37 @@ describe('KclManager settings ownership', () => {
     }
   })
 
+  it('applies the latest scene settings when an inactive editor becomes active', async () => {
+    const { app, kclManager } = createKclManagerTestHarness()
+    try {
+      await waitFor(app.settings.actor, (snapshot) => snapshot.matches('idle'))
+      const mocks = mockEngineSettings(kclManager)
+      const settings = app.settings.get()
+      settings.app.theme.user = Themes.Light
+      settings.modeling.highlightEdges.user = false
+      settings.modeling.backfaceColor.user = '#123456'
+      expect(mocks.setTheme).not.toHaveBeenCalled()
+      expect(mocks.setHighlightEdges).not.toHaveBeenCalled()
+      expect(mocks.setDefaultSystemProperties).not.toHaveBeenCalled()
+
+      kclManager.setSceneSettingsActive(true)
+      expect(mocks.setTheme).toHaveBeenLastCalledWith(Themes.Light)
+      expect(mocks.setHighlightEdges).toHaveBeenLastCalledWith(false)
+      expect(mocks.setDefaultSystemProperties).toHaveBeenLastCalledWith(
+        '#123456'
+      )
+
+      kclManager.setSceneSettingsActive(false)
+      mocks.setTheme.mockClear()
+      settings.app.theme.user = Themes.Dark
+      expect(mocks.setTheme).not.toHaveBeenCalled()
+      kclManager.setSceneSettingsActive(true)
+      expect(mocks.setTheme).toHaveBeenCalledExactlyOnceWith(Themes.Dark)
+    } finally {
+      app.dispose()
+    }
+  })
+
   it('follows replacement settings without resending unchanged engine values', async () => {
     const { app, kclManager } = createKclManagerTestHarness()
     try {

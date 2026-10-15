@@ -2766,20 +2766,15 @@ export class KclManager extends File {
     })
     this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
     const disposers: Array<() => void> = []
-    const watchValue = <T>(read: () => T, apply: (value: T) => void) => {
+    const watchValue = <T>(
+      read: () => T,
+      apply: (value: T) => void,
+      scene = false
+    ) => {
       const value = computed(read)
       disposers.push(
         effect(() => {
-          const current = value.value
-          untracked(() => apply(current))
-        })
-      )
-    }
-    const watchSceneValue = <T>(read: () => T, apply: (value: T) => void) => {
-      const value = computed(read)
-      disposers.push(
-        effect(() => {
-          if (!this.sceneSettingsActive.value) return
+          if (scene && !this.sceneSettingsActive.value) return
           const current = value.value
           untracked(() => apply(current))
         })
@@ -2802,13 +2797,14 @@ export class KclManager extends File {
         this.sceneEntitiesManager.updateSketchGrid()
       }
     )
-    watchSceneValue(
+    watchValue(
       () => theme.value,
       (value) => {
         if (this.engineCommandManager.connection) {
           this.engineCommandManager.setTheme(value).catch(reportRejection)
         }
-      }
+      },
+      true
     )
     watchValue(
       () => settings.value.app.allowOrbitInSketchMode.currentSignal.value,
@@ -2816,7 +2812,7 @@ export class KclManager extends File {
         this.sceneInfra.camControls._setting_allowOrbitInSketchMode = value
       }
     )
-    watchSceneValue(
+    watchValue(
       () => settings.value.modeling.cameraProjection.currentSignal.value,
       (value) => {
         const controls = this.sceneInfra.camControls
@@ -2827,7 +2823,8 @@ export class KclManager extends File {
         ) {
           controls.engineCameraProjection = value
         }
-      }
+      },
+      true
     )
     const highlightEdges = computed(
       () => settings.value.modeling.highlightEdges.currentSignal.value
@@ -2835,7 +2832,7 @@ export class KclManager extends File {
     const backfaceColor = computed(
       () => settings.value.modeling.backfaceColor.currentSignal.value
     )
-    watchSceneValue(
+    watchValue(
       () => highlightEdges.value,
       (value) => {
         if (this.engineCommandManager.connection) {
@@ -2843,9 +2840,10 @@ export class KclManager extends File {
             .setHighlightEdges(value)
             .catch(reportRejection)
         }
-      }
+      },
+      true
     )
-    watchSceneValue(
+    watchValue(
       () => backfaceColor.value,
       (value) => {
         if (this.engineCommandManager.connection?.connected) {
@@ -2853,7 +2851,8 @@ export class KclManager extends File {
             .setDefaultSystemProperties(value)
             .catch(reportRejection)
         }
-      }
+      },
+      true
     )
 
     const showSketchGrid = computed(
