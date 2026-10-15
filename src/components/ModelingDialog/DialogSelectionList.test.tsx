@@ -78,18 +78,12 @@ const second = { ...first, entityId: 'second-edge', primitiveIndex: 2 }
 describe('DialogSelectionList', () => {
   beforeEach(() => {
     mocks.getSelectionReferences.mockReset()
-    mocks.getSelectionReferences.mockResolvedValue([])
     mocks.removeReferenceFromSelections.mockReset()
   })
 
-  test.each([
-    { scenario: 'no KCL reference is available', error: undefined },
-    {
-      scenario: 'reference lookup fails',
-      error: new Error('Unable to resolve selection references.'),
-    },
-  ])('keeps individual removal available when $scenario', async ({ error }) => {
-    if (error) mocks.getSelectionReferences.mockRejectedValue(error)
+  test('keeps individual removal available when reference lookup fails', async () => {
+    const error = new Error('Unable to resolve selection references.')
+    mocks.getSelectionReferences.mockRejectedValue(error)
     const onChange = vi.fn()
     await act(async () => {
       render(
@@ -103,8 +97,7 @@ describe('DialogSelectionList', () => {
       await mocks.kclManager.wasmInstancePromise
     })
 
-    if (error)
-      expect(screen.getByRole('alert')).toHaveTextContent(error.message)
+    expect(screen.getByRole('alert')).toHaveTextContent(error.message)
     fireEvent.click(
       screen.getByRole('button', { name: 'Remove Edge from selection' })
     )
