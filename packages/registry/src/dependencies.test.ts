@@ -491,8 +491,14 @@ describe('factory dependencies', () => {
     const container = new Registry()
     container.configure([consumer])
     container.inspect()
-    container.reconfigure(slot, [])
-    expect(() => container.inspect()).toThrow(RegistryDependencyError)
+    expect(() => container.reconfigure(slot, [])).toThrow(
+      RegistryDependencyError
+    )
+    expect(container.get(service).ok).toBe(true)
+    await expect(container.reconfigureAsync(slot, [])).rejects.toBeInstanceOf(
+      RegistryDependencyError
+    )
+    expect(container.get(service).ok).toBe(true)
     await container.reconfigureAsync(slot, [provider])
     expect(create).toHaveBeenCalledTimes(1)
   })

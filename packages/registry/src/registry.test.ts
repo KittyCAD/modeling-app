@@ -69,7 +69,7 @@ describe('Registry', () => {
     expect(container.get(registrySignal)).toEqual(['stable', 'a'])
     expect(calls).toHaveBeenCalledTimes(1)
 
-    container.reconfigure(slot, [
+    void container.reconfigure(slot, [
       defineRegistryItem({ provides: [provide(registrySignal, 'b')] }),
     ])
 

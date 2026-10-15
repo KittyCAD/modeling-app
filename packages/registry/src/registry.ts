@@ -1,6 +1,7 @@
 import {
   type Signal as PreactSignal,
   type ReadonlySignal,
+  batch,
   computed,
   signal,
 } from '@preact/signals-core'
@@ -253,8 +254,8 @@ export class Registry implements ValueSpecReader, ServiceReader {
     return this.latestReconciliation
   }
 
-  /** Replace the content of one slot while preserving unrelated runtime state. */
-  reconfigure(slot: Slot, items: readonly RegistryItem[]): void {
+  /** Commit a slot replacement synchronously; return its cleanup completion. */
+  reconfigure(slot: Slot, items: readonly RegistryItem[]): Promise<void> {
     if (this.flattenDepth > 0) {
       throw new ReconfigurationError(
         'Cannot reconfigure a slot while building the registry graph.'
@@ -267,22 +268,40 @@ export class Registry implements ValueSpecReader, ServiceReader {
       )
     }
 
-    let holder = this.slotContent.get(slot.id)
-    if (!holder) {
-      holder = signal(items)
+    return batch(() => {
+      // Establish the previous graph before staging a replacement. Observers
+      // must see either the committed graph or the restored graph, never a
+      // failed dependency check halfway through a slot change.
+      void this.flat.value
+      const previousSlots = new Map(this.slotContent)
+      const holder =
+        this.slotContent.get(slot.id) ?? signal<readonly RegistryItem[]>([])
+      const previousItems = holder.value
       this.slotContent.set(slot.id, holder)
-    }
-    holder.value = items
+      this.latestReconciliation = Promise.resolve()
+      try {
+        holder.value = items
+        void this.flat.value
+      } catch (error) {
+        holder.value = previousItems
+        // Failed factories can introduce slots while expanding their subtrees.
+        this.slotContent.clear()
+        for (const [id, content] of previousSlots)
+          this.slotContent.set(id, content)
+        void this.flat.value
+        throw error
+      }
+      // Cleanup failures happen after commit and must not restore disposed items.
+      return this.latestReconciliation
+    })
   }
 
   /** Replace one slot and await every runtime instance it unmounts. */
-  reconfigureAsync(slot: Slot, items: readonly RegistryItem[]): Promise<void> {
-    this.latestReconciliation = Promise.resolve()
-    this.reconfigure(slot, items)
-    // Flattening is otherwise lazy. Force this transition so inactive runtime
-    // instances begin disposal even when no value-spec or service is read next.
-    void this.flat.value
-    return this.latestReconciliation
+  async reconfigureAsync(
+    slot: Slot,
+    items: readonly RegistryItem[]
+  ): Promise<void> {
+    return this.reconfigure(slot, items)
   }
 
   /** Resolve a registry value spec or service as a live Preact signal. */

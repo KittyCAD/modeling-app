@@ -75,6 +75,21 @@ Read the diagram from top to bottom:
 - A plugin wraps normal registry item content in extra structure: metadata for discovery, a slot for runtime enable/disable, and a toggle controller service.
 - So a plugin is not separate from the registry system. It is a higher-level, developer-facing packaging pattern built out of normal registry primitives.
 
+### Slot changes and plugin toggles
+
+`reconfigure(slot, items)` builds and commits a replacement synchronously. If
+construction or dependency checks fail, it restores the previous slot contents
+and throws before reactive observers run. Existing runtime instances remain
+mounted; only instances created by the failed attempt are cleaned up. It returns
+a promise for cleanup of runtimes removed by a successful replacement.
+`reconfigureAsync` also returns construction failures as promise rejections.
+
+Plugin toggles update their `active` signal together with a successful graph
+commit. Disabling a plugin required by an active factory rejects and leaves both
+the graph and toggle unchanged, including access to the plugin controller.
+Cleanup failure after commit rejects the completion promise but leaves the new
+graph and activation state in place: already disposed resources cannot be restored.
+
 ## Decoupling Pattern
 
 When one registry item defines `ValueSpec`s or `Service`s that another registry

@@ -595,7 +595,7 @@ export class App implements AppSubsystems {
   }
 
   syncAppCommands = () => {
-    this.registry.reconfigure(appCommandsSlot, [
+    const commandsCleanup = this.registry.reconfigure(appCommandsSlot, [
       defineRegistryItem({
         id: 'app.global-commands',
         provides: [
@@ -623,6 +623,7 @@ export class App implements AppSubsystems {
         ],
       }),
     ])
+    void commandsCleanup.catch(reportRejection)
   }
 
   syncPluginSettingsFromCurrent = () => {
@@ -820,7 +821,7 @@ export class App implements AppSubsystems {
     })
     kclManager.fileOperations = this.fileOperations
 
-    this.registry.reconfigure(appRegistryServicesSlot, [
+    const servicesCleanup = this.registry.reconfigure(appRegistryServicesSlot, [
       defineRegistryItem({
         id: 'app.runtime-services',
         providesServices: [
@@ -834,6 +835,7 @@ export class App implements AppSubsystems {
         ],
       }),
     ])
+    void servicesCleanup.catch(reportRejection)
     this.registry.get(lspService).attachKclManager(kclManager)
 
     if (typeof window !== 'undefined') {

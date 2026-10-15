@@ -1,5 +1,6 @@
 import {
   type ReadonlySignal as ReadonlyPreactSignal,
+  batch,
   computed,
   signal,
 } from '@preact/signals-core'
@@ -352,7 +353,7 @@ function createToggleableRegistryItem({
 }
 
 type SlotToggleControllerProps = {
-  container: Pick<Registry, 'reconfigureAsync'>
+  container: Pick<Registry, 'reconfigure'>
   slot: Slot
   activeItems: readonly RegistryItem[]
   inactiveItems?: readonly RegistryItem[]
@@ -374,15 +375,27 @@ export function createSlotToggleController({
 }: SlotToggleControllerProps): SlotToggleController {
   const active = signal(initialActive)
 
+  // Graph construction can throw before commit; finalizers can reject after
+  // commit. Publish activation only after the former has succeeded, without
+  // waiting for the latter. The async boundary turns construction errors into
+  // rejections for callers such as settings synchronization.
+  const setActive = async (next: boolean): Promise<void> =>
+    batch(() => {
+      const completion = container.reconfigure(
+        slot,
+        next ? activeItems : inactiveItems
+      )
+      active.value = next
+      return completion
+    })
+
   return {
     active,
     enable() {
-      active.value = true
-      return container.reconfigureAsync(slot, activeItems)
+      return setActive(true)
     },
     disable() {
-      active.value = false
-      return container.reconfigureAsync(slot, inactiveItems)
+      return setActive(false)
     },
     toggle() {
       if (active.value) {
