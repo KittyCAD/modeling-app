@@ -74,6 +74,7 @@ describe('CommandBarSelectionMixedInput', () => {
       const app = App.fromDefaults()
       await app.wasmPromise
       const executingEditor = new KclManager('some-file', '', {
+        fileOperations: app.fileOperations,
         textFileIO: app.registry.get(projectSession).textFileIO,
         commandBar: app.commands.actor,
         settings: app.settings.actor,
@@ -111,6 +112,7 @@ describe('CommandBarSelectionMixedInput', () => {
       const app = App.fromDefaults()
       await app.wasmPromise
       const executingEditor = new KclManager('some-file', '', {
+        fileOperations: app.fileOperations,
         textFileIO: app.registry.get(projectSession).textFileIO,
         commandBar: app.commands.actor,
         settings: app.settings.actor,
@@ -145,6 +147,7 @@ describe('CommandBarSelectionMixedInput', () => {
       const app = App.fromDefaults()
       await app.wasmPromise
       const executingEditor = new KclManager('some-file', '', {
+        fileOperations: app.fileOperations,
         textFileIO: app.registry.get(projectSession).textFileIO,
         commandBar: app.commands.actor,
         settings: app.settings.actor,
@@ -179,6 +182,7 @@ describe('CommandBarSelectionMixedInput', () => {
       const app = App.fromDefaults()
       await app.wasmPromise
       const executingEditor = new KclManager('some-file', '', {
+        fileOperations: app.fileOperations,
         textFileIO: app.registry.get(projectSession).textFileIO,
         commandBar: app.commands.actor,
         settings: app.settings.actor,
@@ -228,6 +232,7 @@ describe('CommandBarSelectionMixedInput', () => {
       const app = App.fromDefaults()
       await app.wasmPromise
       const executingEditor = new KclManager('some-file', '', {
+        fileOperations: app.fileOperations,
         textFileIO: app.registry.get(projectSession).textFileIO,
         commandBar: app.commands.actor,
         settings: app.settings.actor,

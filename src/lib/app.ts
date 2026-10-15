@@ -784,6 +784,7 @@ export class App implements AppSubsystems {
     // TODO: Remove this and make the app handle no executing editor,
     // so we don't need to stub with empty strings
     const kclManager = new KclManager('', '', {
+      fileOperations: this.fileOperations,
       textFileIO: this.projectSession.textFileIO,
       settings: this.settings.actor,
       wasmInstancePromise: this.wasmPromise,
@@ -794,7 +795,6 @@ export class App implements AppSubsystems {
       userFeatures: this.userFeatures,
       keymap: this.registry.get(keymapService),
     })
-    kclManager.fileOperations = this.fileOperations
 
     this.registry.reconfigure(appRegistryServicesSlot, [
       defineRegistryItem({

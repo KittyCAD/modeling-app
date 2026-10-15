@@ -121,6 +121,7 @@ export async function buildTheWorldAndConnectToEngine({
     pool === 'cpu'
   )
   const kclManager = new KclManager('some-file', '', {
+    fileOperations: testFileOperations,
     textFileIO: createTextFileIO(testFileOperations),
     wasmInstancePromise: instancePromise,
     settings: settingsActor,
@@ -236,6 +237,7 @@ export async function buildTheWorldAndNoEngineConnection(
     settingsActor
   )
   const kclManager = new KclManager('some-file', '', {
+    fileOperations: testFileOperations,
     textFileIO: createTextFileIO(testFileOperations),
     wasmInstancePromise: instancePromise,
     settings: settingsActor,

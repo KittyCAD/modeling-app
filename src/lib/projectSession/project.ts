@@ -18,10 +18,13 @@ import type { App } from '@src/lib/app'
 import { File } from '@src/lib/projectSession/file'
 import type { TextFileIO } from '@src/lib/projectSession/textFileIO'
 import { projectSession } from '@src/registry/contracts/projectSession'
+import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 
 // Each of our singletons has dependencies on _other_ singletons, so importing
 // can easily become cyclic. Each will have its own Singletons type.
 export interface ProjectSystemDeps {
+  /** Storage access for editor-owned export and thumbnail workflows. */
+  fileOperations: FileOperationsRegistryService
   textFileIO: TextFileIO
   wasmInstancePromise: Promise<ModuleType>
   settings: SettingsActorType
@@ -153,6 +156,7 @@ export class ZDSProject {
     }
 
     const systemDeps: ProjectSystemDeps = {
+      fileOperations: this.app.fileOperations,
       textFileIO: this.textFileIO,
       wasmInstancePromise: this.app.wasmPromise,
       commandBar: this.app.commands.actor,

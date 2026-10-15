@@ -176,7 +176,6 @@ import type {
 } from '@src/machines/modelingMachine'
 import { waitForUserFeaturesSettled } from '@src/machines/userFeaturesMachine'
 import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
-import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import {
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
@@ -347,9 +346,6 @@ export interface PendingFeatureTreeSourceSelection {
 
 export class KclManager extends File {
   // SYSTEM DEPENDENCIES
-
-  /** Application storage facade used by workflows owned by this manager. */
-  fileOperations?: FileOperationsRegistryService
 
   private _wasmInstance: ModuleType | null = null
   /** in the case of WASM crash, we should ensure the new refreshed WASM module is held here. */
@@ -2273,11 +2269,8 @@ export class KclManager extends File {
 
       // Update project thumbnail after successful execution
       if (!isInterrupted && errors.length === 0 && projectFsManager.dir) {
-        if (!this.fileOperations) {
-          return
-        }
         createThumbnailPNGOnDesktop({
-          fileOperations: this.fileOperations,
+          fileOperations: this.systemDeps.fileOperations,
           projectDirectoryWithoutEndingSlash: projectFsManager.dir,
         })
       }
