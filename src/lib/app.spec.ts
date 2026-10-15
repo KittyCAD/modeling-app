@@ -299,6 +299,64 @@ describe('project system', () => {
     }
   })
 
+  it('does not replay scene settings when selecting the executing editor again', async () => {
+    const app = createAppForTest()
+    try {
+      await waitForSettingsIdle(app)
+      const project = await app.openProject(mockProject)
+      const first = await project.openEditor(
+        '/some-dir/test/main.kcl',
+        undefined,
+        ''
+      )
+      const second = await project.openEditor(
+        '/some-dir/test/other.kcl',
+        undefined,
+        '',
+        false
+      )
+      const engine = app.engineCommandManager
+      const theme = vi.spyOn(engine, 'setTheme').mockResolvedValue(undefined)
+      const edges = vi
+        .spyOn(engine, 'setHighlightEdges')
+        .mockResolvedValue(undefined)
+      const backface = vi
+        .spyOn(engine, 'setDefaultSystemProperties')
+        .mockResolvedValue(undefined)
+      const execute = vi
+        .spyOn(first, 'executeCode')
+        .mockResolvedValue(undefined)
+      const clear = vi.spyOn(first.rustContext, 'clearSceneAndBustCache')
+      engine.connection = { connected: true } as typeof engine.connection
+
+      project.executingPath = first.path
+      expect(theme).not.toHaveBeenCalled()
+      expect(edges).not.toHaveBeenCalled()
+      expect(backface).not.toHaveBeenCalled()
+      expect(execute).not.toHaveBeenCalled()
+      expect(clear).not.toHaveBeenCalled()
+
+      const setting = app.settings.get().modeling.highlightEdges
+      setting.user = !setting.current
+      expect(edges).toHaveBeenCalledExactlyOnceWith(setting.current)
+      expect(execute).toHaveBeenCalledTimes(1)
+      edges.mockClear()
+
+      // A different editor still takes ownership and applies current values.
+      project.executingPath = second.path
+      expect(project.executingEditor.peek()).toBe(second)
+      expect(theme).toHaveBeenCalledTimes(1)
+      expect(edges).toHaveBeenCalledTimes(1)
+      expect(backface).toHaveBeenCalledTimes(1)
+      project.executingPath = second.path
+      expect(theme).toHaveBeenCalledTimes(1)
+      expect(edges).toHaveBeenCalledTimes(1)
+      expect(backface).toHaveBeenCalledTimes(1)
+    } finally {
+      app.dispose()
+    }
+  })
+
   it('assigns scene settings to the executing project editor rather than the singleton', async () => {
     const app = createAppForTest()
     try {

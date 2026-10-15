@@ -108,9 +108,11 @@ export class ZDSProject {
     if (found) {
       // TODO: Reconfigure the editor to be an executing one
     }
-    this.executingEditor.peek()?.setSceneSettingsActive(false)
+    const previous = this.executingEditor.peek()
+    const changedEditor = previous !== found
+    if (changedEditor) previous?.setSceneSettingsActive(false)
     this.#executingPath.value = foundPathSignal[0]
-    found.setSceneSettingsActive(true)
+    if (changedEditor) found.setSceneSettingsActive(true)
   }
   findEditor(path: string) {
     return Array.from(this.editors.entries()).find(([p]) => p.value === path)
