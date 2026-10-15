@@ -1,3 +1,6 @@
+import { addExtrude } from '@src/lang/modifyAst/sweeps'
+import { addMirror3D } from '@src/lang/modifyAst/transforms'
+import { addHelix } from '@src/lang/modifyAst/geometry'
 import type { KclManager } from '@src/lang/KclManager'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import {
@@ -2081,7 +2084,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         kind: 'pattern',
       },
     ])(
-      'references original and copied annotation edges after $operation',
+      'keeps original and copied edges across annotation, extrusion and axis inputs after $operation',
       async ({ operation, expected, kind }) => {
         const code = clonedRegionBody
           .replace('kclVersion = 2.0', 'kclVersion = 3.0')
@@ -2109,6 +2112,90 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         const sourceSweep = artifactGraph.get(cap.sweepId)
         if (sourceSweep?.type !== 'sweep')
           throw new Error('Expected source sweep')
+        const edges: Selections = {
+          graphSelections: [
+            { entityRef: { type: 'edge', side_faces: [wall.id, cap.id] } },
+          ],
+          otherSelections: [],
+        }
+        // Axis consumers (revolve, helix, mirror) and edge extrusion must
+        // resolve the same original edge, even after the cap tag is rebound.
+        const helix = addHelix({
+          ast,
+          artifactGraph,
+          edge: edges,
+          wasmInstance: instanceInThisFile,
+          revolutions: await getKclCommandValue(
+            '2',
+            instanceInThisFile,
+            rustContextInThisFile
+          ),
+          angleStart: await getKclCommandValue(
+            '0deg',
+            instanceInThisFile,
+            rustContextInThisFile
+          ),
+          radius: await getKclCommandValue(
+            '1mm',
+            instanceInThisFile,
+            rustContextInThisFile
+          ),
+          length: await getKclCommandValue(
+            '5mm',
+            instanceInThisFile,
+            rustContextInThisFile
+          ),
+        })
+        if (err(helix)) throw helix
+        const helixCode = recast(helix.modifiedAst, instanceInThisFile)
+        if (err(helixCode)) throw helixCode
+        expect(helixCode).toContain('cube1.sketch.tags.')
+        expect(helixCode).toContain('cube1.faces.capEnd001')
+        await executeCode(helixCode, instanceInThisFile, kclManagerInThisFile)
+        expect(kclManagerInThisFile.errors).toEqual([])
+        const extruded = addExtrude({
+          ast,
+          artifactGraph,
+          sketches: edges,
+          wasmInstance: instanceInThisFile,
+          length: await getKclCommandValue(
+            '1mm',
+            instanceInThisFile,
+            rustContextInThisFile
+          ),
+          method: 'NEW',
+          bodyType: 'SURFACE',
+        })
+        if (err(extruded)) throw extruded
+        const extrudedCode = recast(extruded.modifiedAst, instanceInThisFile)
+        if (err(extrudedCode)) throw extrudedCode
+        expect(extrudedCode).toContain('cube1.sketch.tags.')
+        expect(extrudedCode).toContain('cube1.faces.capEnd001')
+        await executeCode(
+          extrudedCode,
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
+        expect(kclManagerInThisFile.errors).toEqual([])
+        const targetBody = [...artifactGraph.values()].findLast(
+          (artifact) => artifact.type === 'sweep'
+        )
+        if (!targetBody) throw new Error('Expected mirror target body')
+        const mirror = addMirror3D({
+          ast,
+          artifactGraph,
+          wasmInstance: instanceInThisFile,
+          variables: kclManagerInThisFile.variables,
+          bodies: createSelectionFromArtifacts([targetBody], artifactGraph),
+          across: edges,
+        })
+        if (err(mirror)) throw mirror
+        const mirrorCode = recast(mirror.modifiedAst, instanceInThisFile)
+        if (err(mirrorCode)) throw mirrorCode
+        expect(mirrorCode).toContain('cube1.sketch.tags.')
+        expect(mirrorCode).toContain('cube1.faces.capEnd001')
+        await executeCode(mirrorCode, instanceInThisFile, kclManagerInThisFile)
+        expect(kclManagerInThisFile.errors).toEqual([])
         const original = addAnnotationGdt({
           ast,
           artifactGraph,
