@@ -263,6 +263,7 @@ export const modelingCommandStdLibDriftConfig = {
   'Named View': {
     stdLibName: 'view::named',
     additionalStdLibNames: ['view::oriented'],
+    editFlow: true,
     flowArgOrder: ['name', 'orientation', 'projection', 'baseline'],
     omittedStdLibArgs: ['camera'],
   },

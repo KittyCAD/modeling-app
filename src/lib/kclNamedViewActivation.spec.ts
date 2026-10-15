@@ -34,6 +34,7 @@ import {
   isSameView,
   isSketchSessionOpen,
   moduleKeyOf,
+  namedViewSessionKey,
   reapplyActiveViewAfterReconnect,
   resetNamedViewSession,
 } from '@src/lib/kclNamedViewActivation'
@@ -235,6 +236,24 @@ describe('isSameView', () => {
         { name: 'Back', moduleKey: 'Main' }
       )
     ).toBe(false)
+  })
+})
+
+describe('namedViewSessionKey', () => {
+  it('survives artifact ID changes but distinguishes projects and views', () => {
+    const original = declaredView('Front')
+    const regenerated = declaredView('Front')
+    regenerated.artifact.id = 'a-new-execution-id'
+
+    expect(namedViewSessionKey('/project-a', original)).toBe(
+      namedViewSessionKey('/project-a', regenerated)
+    )
+    expect(namedViewSessionKey('/project-a', original)).not.toBe(
+      namedViewSessionKey('/project-b', regenerated)
+    )
+    expect(namedViewSessionKey('/project-a', original)).not.toBe(
+      namedViewSessionKey('/project-a', declaredView('Back'))
+    )
   })
 })
 
