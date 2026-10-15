@@ -8,7 +8,6 @@ import {
   getPixelRGBs,
   openAndClearDebugPanel,
   sendCustomCmd,
-  sendSceneCommand,
 } from '@e2e/playwright/test-utils'
 import { expect } from '@e2e/playwright/zoo-test'
 
@@ -504,26 +503,34 @@ export class SceneFixture {
     await this.page.mouse.click(pointOnYAxis.x, pointOnYAxis.y)
   }
 
+  /** Camera poses use the shared camera's engine-world coordinates (millimeters). */
   moveCameraTo = async (
     pos: { x: number; y: number; z: number },
     target: { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 }
   ) => {
-    await doAndWaitForImageDiff(
-      this.page,
-      () =>
-        sendSceneCommand(this.page, {
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'default_camera_look_at',
-            vantage: pos,
-            center: target,
-            up: { x: 0, y: 0, z: 1 },
-          },
-        }),
-      300
+    await this.page.evaluate(
+      ({ pos, target }) => {
+        const controls = window.app.singletons.kclManager.sceneInfra.camControls
+        const camera = controls.camera
+        camera.position.set(pos.x, pos.y, pos.z)
+        controls.target.set(target.x, target.y, target.z)
+        camera.up.set(0, 0, 1)
+        camera.lookAt(controls.target)
+        // Preserve the framing implied by the legacy vantage/center distance.
+        if ('top' in camera) {
+          const distance = camera.position.distanceTo(controls.target)
+          const fov = controls.perspectiveFovBeforeOrtho
+          const halfHeight = distance * Math.tan((fov * Math.PI) / 360)
+          camera.zoom = (camera.top - camera.bottom) / (2 * halfHeight)
+        }
+        camera.updateProjectionMatrix()
+        camera.updateMatrixWorld(true)
+        controls.cameraChange.dispatch()
+      },
+      { pos, target }
     )
   }
+
   /** Forces a refresh of the camera position and target displayed
    *  in the debug panel and then returns the values of the fields
    */
