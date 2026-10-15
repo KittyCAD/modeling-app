@@ -68,7 +68,7 @@ let kclManagerInThisFile: KclManager = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
 let rustContextInThisFile: RustContext = null!
 
-it('resolves each mirrored body to its own array index', async () => {
+it('resolves each mirrored body and face to its own array index', async () => {
   const code = 'a = 0\nb = 0\nmirrors = mirror3d([a, b], across = YZ)'
   const ast = assertParse(code, instanceInThisFile)
   const range: SourceRange = [code.indexOf('mirror3d'), code.length, 0]
@@ -91,23 +91,39 @@ it('resolves each mirrored body to its own array index', async () => {
     [second.id, second],
   ])
   for (const [index, artifact] of [first, second].entries()) {
-    const result = getVariableExprsFromSelection(
-      { graphSelections: [{ artifact, codeRef }], otherSelections: [] },
-      graph,
-      ast,
-      instanceInThisFile
-    )
-    if (err(result)) throw result
-    expect(result.exprs).toHaveLength(1)
-    const expr = result.exprs[0]
-    expect(expr.type).toBe('MemberExpression')
-    if (expr.type !== 'MemberExpression')
-      throw new Error('Expected indexed mirror')
-    expect(expr.computed).toBe(true)
-    expect(expr.property).toMatchObject({
-      type: 'Literal',
-      value: { value: index },
-    })
+    const cap: Extract<Artifact, { type: 'cap' }> = {
+      type: 'cap',
+      id: `${artifact.id}-cap`,
+      subType: 'end',
+      sweepId: artifact.id,
+      pathIds: [],
+      edgeCutEdgeIds: [],
+      faceCodeRef: codeRef,
+      cmdId: '',
+    }
+    graph.set(cap.id, cap)
+    for (const selected of [artifact, cap]) {
+      const result = getVariableExprsFromSelection(
+        {
+          graphSelections: [{ artifact: selected, codeRef }],
+          otherSelections: [],
+        },
+        graph,
+        ast,
+        instanceInThisFile
+      )
+      if (err(result)) throw result
+      expect(result.exprs).toHaveLength(1)
+      const expr = result.exprs[0]
+      expect(expr.type).toBe('MemberExpression')
+      if (expr.type !== 'MemberExpression')
+        throw new Error('Expected indexed mirror')
+      expect(expr.computed).toBe(true)
+      expect(expr.property).toMatchObject({
+        type: 'Literal',
+        value: { value: index },
+      })
+    }
   }
 })
 

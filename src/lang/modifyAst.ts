@@ -37,6 +37,7 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { SimplifiedArgDetails } from '@src/lang/std/stdTypes'
 import type { PathToNodeMap } from '@src/lang/util'
 import type {
+  Artifact,
   ArtifactGraph,
   CallExpressionKw,
   Expr,
@@ -1295,12 +1296,14 @@ export function getSelectionVarsForCall({
   modifiedAst,
   wasmInstance,
   nodeToEdit,
+  artifactTypeFilter,
 }: {
   selection: Selections
   artifactGraph: ArtifactGraph
   modifiedAst: Node<Program>
   wasmInstance: ModuleType
   nodeToEdit?: PathToNode
+  artifactTypeFilter?: Array<Artifact['type']>
 }) {
   // Edit codemods preserve the existing selection argument, so only rebuild
   // selection expressions when creating a new call.
@@ -1314,7 +1317,7 @@ export function getSelectionVarsForCall({
     modifiedAst,
     wasmInstance,
     undefined,
-    { lastChildLookup: true }
+    { lastChildLookup: true, artifactTypeFilter }
   )
 }
 
