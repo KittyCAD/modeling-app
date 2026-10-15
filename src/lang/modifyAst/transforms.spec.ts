@@ -1749,8 +1749,11 @@ extrude001 = extrude(region001, length = 10mm, tagEnd = $capEnd001)`
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain('solid001 = mirror3d(')
       expect(newCode).toContain('across = {')
-      expect(newCode).toContain('sideFaces = [region001.tags.')
-      expect(newCode).toContain('capEnd001')
+      if (err(newCode)) throw newCode
+      expect(newCode.replace(/\s+/g, '')).toContain(
+        'sideFaces=[extrude001.sketch.tags.'
+      )
+      expect(newCode).toContain('extrude001.faces.capEnd001')
     })
   })
 })
