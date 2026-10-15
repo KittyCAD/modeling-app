@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import type { ReactNode } from 'react'
-import { act, fireEvent, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import type { SelectionReference } from '@src/lib/selections'
 import type {
@@ -154,11 +154,9 @@ describe('DialogSelectionList', () => {
     })
 
     const edges = screen.getAllByText('Edge')
-    expect(edges).toHaveLength(2)
-    expect(within(edges[0]).getByRole('tooltip')).toHaveTextContent('firstEdge')
-    expect(within(edges[1]).getByRole('tooltip')).toHaveTextContent(
-      'secondEdge'
-    )
+    expect(edges.map((label) => label.textContent)).toEqual(['Edge', 'Edge'])
+    expect(screen.getByText('firstEdge')).toBeInTheDocument()
+    expect(screen.getByText('secondEdge')).toBeInTheDocument()
     expect(
       screen.queryByRole('button', { name: /copy/i })
     ).not.toBeInTheDocument()

@@ -1,10 +1,11 @@
 import { act, renderHook } from '@testing-library/react'
 import { useState } from 'react'
 import { afterAll, beforeAll, expect, it, vi } from 'vitest'
-import { getDialogFields } from '@src/components/ModelingDialog/arguments'
+import type {
+  DialogField,
+  SelectionArgument,
+} from '@src/components/ModelingDialog/arguments'
 import { useDialogSelection } from '@src/components/ModelingDialog/useDialogSelection'
-import type { Command, CommandArgument } from '@src/lib/commandTypes'
-import { GLOBAL_COMMAND_SCOPES } from '@src/registry/contracts/commands'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 
@@ -33,25 +34,17 @@ function faces(...ids: string[]): Selections {
 }
 
 it('updates only the chosen field and synchronizes the scene only for the active field', () => {
-  const arg: CommandArgument<unknown> = {
+  const arg: SelectionArgument = {
     inputType: 'selection',
     required: false,
     selectionTypes: ['wall'],
     multiple: true,
   }
-  const command: Command = {
-    name: 'Test',
-    groupId: 'modeling',
-    scopes: GLOBAL_COMMAND_SCOPES,
-    needsReview: false,
-    onSubmit: () => {},
-    args: { first: arg, second: arg },
-  }
-  const context = {
-    ...world.commandBarActor.getSnapshot().context,
-    selectedCommand: command,
-  }
-  const fields = getDialogFields(context)
+  const context = world.commandBarActor.getSnapshot().context
+  const fields: DialogField[] = [
+    { name: 'first', arg, required: false },
+    { name: 'second', arg, required: false },
+  ]
   const send = vi.fn()
   const { result } = renderHook(() => {
     const [values, setValues] = useState<Record<string, unknown>>({

@@ -70,11 +70,6 @@ export function DialogSelectionList({
 
   return (
     <div className="flex flex-col px-1 divide-y divide-chalkboard-30 dark:divide-chalkboard-80">
-      {state.status === 'loading' && (
-        <div className="p-2 text-xs text-chalkboard-70 dark:text-chalkboard-30">
-          Resolving selection references...
-        </div>
-      )}
       {state.status === 'error' && (
         <div
           role="alert"
@@ -104,7 +99,7 @@ export function DialogSelectionList({
             className={`flex items-center gap-2 rounded-sm px-2 text-xs ${onChange ? 'py-0' : 'py-1'}`}
           >
             <div className="min-w-0 flex-1 truncate text-chalkboard-80 dark:text-chalkboard-30">
-              {label}
+              <span>{label}</span>
               <Tooltip
                 position="left"
                 contentClassName="max-w-72 text-xs text-left"
@@ -120,19 +115,12 @@ export function DialogSelectionList({
                 className="relative p-0.5 rounded-sm text-2 hover:bg-destroy-80 hover:!text-white focus:bg-destroy-80 focus:!text-white !border-none"
                 aria-label={`Remove ${label} from selection`}
                 onClick={() =>
-                  onChange?.(
-                    reference
-                      ? removeReferenceFromSelections(
-                          selectionRanges,
-                          reference
-                        )
-                      : {
-                          ...selectionRanges,
-                          [row.group]: selectionRanges[row.group].filter(
-                            (_, index) => index !== row.index
-                          ),
-                        }
-                  )
+                  onChange({
+                    ...selectionRanges,
+                    [row.group]: selectionRanges[row.group].filter(
+                      (_, index) => index !== row.index
+                    ),
+                  })
                 }
               >
                 <CustomIcon name="trash" className="h-4 w-4" />
