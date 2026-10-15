@@ -37,6 +37,7 @@ dhat-heap = ["dep:dhat"]
 # This is used for editor extensions that use the lsp server.
 disable-println = []
 engine = []
+remote-execution = ["engine", "kittycad-modeling-cmds/exec-kcl"]
 pyo3 = ["dep:pyo3", "dep:pyo3-stub-gen"]
 # Test-only compiler hooks used by the standalone language-server crate.
 lsp-test-util = []
