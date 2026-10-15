@@ -10,6 +10,7 @@ import { findUniqueName } from '@src/lang/create'
 import { createModelingCodemodReviewValidation } from '@src/lang/modifyAst/modelingCodemod'
 import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
 import type { Artifact, PathToNode } from '@src/lang/wasm'
+import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import {
   modelingStdLibCommandArgs,
@@ -211,6 +212,12 @@ type WithCommandBarEditFlowArgs<Schema> = {
 const isEditingNode = (context: {
   argumentsToSubmit: Record<string, unknown>
 }) => Boolean(context.argumentsToSubmit.nodeToEdit)
+
+// Custom camera expressions remain untouched when editing a named view.
+const preserveNamedViewCamera = (context: {
+  argumentsToSubmit: Record<string, unknown>
+}) =>
+  isEditingNode(context) && context.argumentsToSubmit.orientation === undefined
 
 const isEditingNodeSelection = (context: {
   argumentsToSubmit: Record<string, unknown>
@@ -640,8 +647,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           orientation: {
             inputType: 'options',
-            required: true,
-            defaultValue: 'Isometric',
+            required: (context) => !preserveNamedViewCamera(context),
+            hidden: preserveNamedViewCamera,
+            defaultValue: (context: CommandBarContext) =>
+              isEditingNode(context) ? undefined : 'Isometric',
             options: [
               { name: 'Isometric', value: 'Isometric', isCurrent: true },
               { name: 'Front', value: 'Front' },
@@ -654,7 +663,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           },
           projection: {
             inputType: 'options',
-            required: true,
+            required: (context) => !preserveNamedViewCamera(context),
+            hidden: preserveNamedViewCamera,
             defaultValue: 'Orthographic',
             options: [
               { name: 'Orthographic', value: 'Orthographic', isCurrent: true },
@@ -690,11 +700,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           target: {
             inputType: 'vector3d',
             required: false,
+            hidden: preserveNamedViewCamera,
             dialog: { advanced: true },
           },
           distance: {
             inputType: 'kcl',
             required: false,
+            hidden: preserveNamedViewCamera,
             dialog: { advanced: true },
           },
         },

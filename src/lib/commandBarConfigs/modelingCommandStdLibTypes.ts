@@ -111,10 +111,10 @@ export type NamedViewCommandArgs = Override<
   {
     baseline: Visibility
     except?: Selections
-    orientation: Orientation
+    orientation?: Orientation
     target?: KclCommandValue
     distance?: KclCommandValue
-    projection: Projection
+    projection?: Projection
   }
 >
 

@@ -3,6 +3,10 @@ import { assertParse, recast } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
+import {
+  namedViewCameraSummary,
+  prepareNamedViewEditCommand,
+} from '@src/lib/kclNamedViewEdit'
 import type RustContext from '@src/lib/rustContext'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
@@ -115,4 +119,135 @@ extrude001 = extrude(region001, length = 5mm)`
       )
     ).toBe(true)
   })
+
+  it('preserves unchanged expressions while editing name and camera', async () => {
+    const code = `${settings}
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+}
+region001 = region(segments = [sketch001.line1])
+extrude001 = extrude(region001, length = 5mm)
+exceptions = [extrude001]
+orientation = view::Orientation::Front
+projection = view::Projection::Perspective
+baseline = view::Visibility::Show
+
+view001 = view::named(
+  "Inspection view",
+  camera = view::oriented(
+    orientation,
+    target = [1 + 2, 3, 4],
+    distance = 200mm,
+    projection = projection,
+  ),
+  baseline = baseline,
+  except = exceptions,
+)`
+    const ast = assertParse(code, instance)
+    const execState = await enginelessExecutor(ast, rustContext)
+    const artifact = [...execState.artifactGraph.values()].find(
+      (candidate) => candidate.type === 'namedView'
+    )
+    if (!artifact || artifact.type !== 'namedView') {
+      throw new Error('Expected a named view artifact')
+    }
+
+    const event = await prepareNamedViewEditCommand({
+      artifact,
+      artifactGraph: execState.artifactGraph,
+      ast,
+      code,
+      rustContext,
+    })
+    if (err(event)) throw event
+    if (event.type !== 'Find and select command') {
+      throw new Error(`Expected an edit command, got ${event.type}`)
+    }
+    const defaults = event.data.argDefaultValues
+    expect(defaults).toMatchObject({
+      name: 'Inspection view',
+      orientation: 'Front',
+      projection: 'Perspective',
+      baseline: 'Show',
+      target: { valueText: '[1 + 2, 3, 4]' },
+      distance: { valueText: '200mm' },
+      except: { graphSelections: [{ artifact: { type: 'sweep' } }] },
+    })
+
+    const renamed = addNamedView({
+      ast,
+      artifactGraph: execState.artifactGraph,
+      ...defaults,
+      name: 'Renamed view',
+      wasmInstance: instance,
+    })
+    if (err(renamed)) throw renamed
+    const renamedCode = recast(renamed.modifiedAst, instance)
+    expect(renamedCode).toContain('view::oriented(\n    orientation,')
+    expect(renamedCode).toContain('projection = projection')
+    expect(renamedCode).toContain('baseline = baseline')
+
+    const result = addNamedView({
+      ast,
+      artifactGraph: execState.artifactGraph,
+      ...defaults,
+      name: 'Updated view',
+      orientation: 'Top',
+      projection: 'Orthographic',
+      baseline: 'Hide',
+      wasmInstance: instance,
+    })
+    if (err(result)) throw result
+
+    const updatedCode = recast(result.modifiedAst, instance)
+    if (err(updatedCode)) throw updatedCode
+    expect(updatedCode.match(/view::named/g)).toHaveLength(1)
+    expect(updatedCode).toContain('"Updated view"')
+    expect(updatedCode).toContain('view::Orientation::Top')
+    expect(updatedCode).toContain('view::Projection::Orthographic')
+    expect(updatedCode).toContain('view::Visibility::Hide')
+    expect(updatedCode).toContain('except = exceptions')
+    await enginelessExecutor(result.modifiedAst, rustContext)
+  })
+})
+describe('small named-view edits', () => {
+  async function subject(code: string) {
+    const ast = assertParse(code, instance)
+    const execState = await enginelessExecutor(ast, rustContext)
+    const artifact = [...execState.artifactGraph.values()].find(
+      (candidate) => candidate.type === 'namedView'
+    )
+    if (!artifact || artifact.type !== 'namedView') {
+      throw new Error('Expected a named view artifact')
+    }
+    return { ast, artifact }
+  }
+
+  it.each([
+    {
+      camera:
+        'view::oriented(view::Orientation::Front, distance = 200mm, projection = view::Projection::Perspective)',
+      summary: 'Front 200mm Perspective',
+    },
+    {
+      camera: 'view::oriented(view::Orientation::Top)',
+      summary: 'Top',
+    },
+    {
+      camera:
+        'view::directed([0, -1, 0], up = [0, 0, 1], target = [1mm, 2mm, 3mm], distance = 80mm)',
+      summary: 'Direction [0, -1, 0] Up [0, 0, 1] Target [1mm, 2mm, 3mm] 80mm',
+    },
+  ])(
+    'summarizes only camera arguments present in source: $summary',
+    async ({ camera, summary }) => {
+      const code = `@settings(kclVersion = 3.0)
+view001 = view::named("Inspection view", camera = ${camera}, baseline = view::Visibility::Show)`
+      const { ast, artifact } = await subject(code)
+      expect(
+        namedViewCameraSummary({ artifact, ast, code, wasmInstance: instance })
+      ).toBe(summary)
+    }
+  )
 })
