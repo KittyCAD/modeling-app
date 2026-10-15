@@ -12,7 +12,6 @@ import { ProjectExplorerPane } from '@src/components/layout/areas/ProjectExplore
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { NAMED_VIEWS_UI_FEATURE_FLAG } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import type { AreaLibrary, AreaTypeDefinition } from '@src/lib/layout/types'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
@@ -72,9 +71,8 @@ function ModelingArea() {
 
 export const useDefaultAreaLibrary = () => {
   useSignals()
-  const { settings, layout, registry, userFeatures } = useApp()
+  const { settings, layout, registry } = useApp()
   const { kclManager } = useSingletons()
-  const showNamedViews = userFeatures.useHas(NAMED_VIEWS_UI_FEATURE_FLAG, false)
   const getSettings = settings.get
   const registeredAreaLibrary = registry.signal(
     layoutAreaLibraryValueSpec
@@ -108,7 +106,7 @@ export const useDefaultAreaLibrary = () => {
           Component: BodiesPane,
         },
         namedViews: {
-          hide: () => !showNamedViews,
+          hide: () => false,
           Component: KclNamedViewsPane,
         },
         modeling: {
@@ -170,13 +168,7 @@ export const useDefaultAreaLibrary = () => {
         },
         ...registeredAreaLibrary,
       } satisfies AreaLibrary),
-    [
-      getSettings,
-      kclManager,
-      onCodeNotificationClick,
-      registeredAreaLibrary,
-      showNamedViews,
-    ]
+    [getSettings, kclManager, onCodeNotificationClick, registeredAreaLibrary]
   )
 }
 

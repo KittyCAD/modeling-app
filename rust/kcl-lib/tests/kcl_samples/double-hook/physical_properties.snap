@@ -18,12 +18,12 @@ description: Physical properties double-hook.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 1386.6405493786206
+    "value": 1386.6310485053723
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 1.6801962189191124
+    "value": 1.6802262842370776
   }
 }

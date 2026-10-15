@@ -1,6 +1,11 @@
 import type { KclRuntimeFlags } from '@rust/kcl-lib/bindings/KclRuntimeFlags'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
+type TestRuntimeFlags = KclRuntimeFlags & {
+  use_new_parser: 'Off'
+  test_flag: 'Off' | 'On'
+}
+
 const originalOnmessage = globalThis.onmessage
 
 const mocks = vi.hoisted(() => ({
@@ -61,8 +66,8 @@ describe('KCL LSP worker initialization', () => {
   })
 
   it.each(['On', 'Off'] as const)(
-    'installs %s runtime flags before starting the LSP',
-    async (useNewLexerParser) => {
+    'installs the payload with the test flag %s before starting the LSP',
+    async (testFlag) => {
       // Reload the worker so each case installs its own message handler.
       vi.resetModules()
       mocks.order.length = 0
@@ -77,9 +82,9 @@ describe('KCL LSP worker initialization', () => {
       const workerGlobal = globalThis as typeof globalThis & {
         onmessage: (event: MessageEvent) => void
       }
-      const kclRuntimeFlags: KclRuntimeFlags = {
-        use_new_lexer_parser: useNewLexerParser,
+      const kclRuntimeFlags: TestRuntimeFlags = {
         use_new_parser: 'Off',
+        test_flag: testFlag,
       }
 
       workerGlobal.onmessage(

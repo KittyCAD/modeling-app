@@ -2,6 +2,7 @@ use std::fmt;
 use std::str::FromStr;
 
 use indexmap::IndexMap;
+use kcl_api::NumericSuffix;
 use regex::Regex;
 use tower_lsp::lsp_types::CompletionItem;
 use tower_lsp::lsp_types::CompletionItemKind;
@@ -27,7 +28,6 @@ use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::NonCodeValue;
 use crate::parsing::ast::types::TypeDeclarationDefinition;
 use crate::parsing::ast::types::VariableKind;
-use crate::parsing::token::NumericSuffix;
 
 pub fn walk_prelude() -> ModData {
     visit_module("prelude", "", WalkForNames::All).unwrap()

@@ -12,6 +12,15 @@ import Axis3d, BoundedEdge, Edge, Face, Plane, Point3d, Solid, TaggedEdge, Tagge
 /// a chamfer will cut a sharp transition along an edge while fillet
 /// will smoothly blend the transition.
 ///
+/// ### Face references
+///
+/// In `edges`, `sideFaces` and `endFaces` contain face tags or face UUIDs, not raw sketch segments.
+/// For a side face created by extruding `profile.line1`, use `profileRegion.tags.line1` or
+/// `body.sketch.tags.line1`, where `profileRegion` is the extruded region and `body` is the resulting solid.
+/// For extrusion caps, declare `tagStart = $startCap` or `tagEnd = $endCap`, then refer to
+/// `startCap` or `endCap`. Use `$` only when declaring the tag.
+/// See [Face API Edge References](/docs/kcl-lang/edge-references) for selection examples.
+///
 /// ```kcl,sketchSolve
 /// @settings(kclVersion = 3.0)
 ///
@@ -364,14 +373,15 @@ export fn fillet(
   /// The paths you want to fillet (legacy API)
   @(includeInSnippet = true)
   tags?: [Edge; 1+],
+  /// Preferred for KCL 3. Required unless legacy `tags` is provided. Do not provide both.
   /// Array of edge references; each element is an object with:
-  /// - `sideFaces`: [Face | Tag; 1+] - Adjacent faces that share the edge(s) to fillet
-  /// - `endFaces?`: [Face | Tag] - Optional faces to disambiguate when multiple edges share the same two faces
-  /// - `index?`: number(Count) - Optional index when multiple edges share the same faces (0-based)
+  /// - `sideFaces`: array of one or more face tags or face UUIDs. Adjacent faces that share the edge(s) to fillet.
+  /// - `endFaces?`: array of face tags or face UUIDs. Optional faces to disambiguate when multiple edges share the same two faces.
+  /// - `index?`: number(Count). Optional index when multiple edges share the same faces (0-based).
   edges?: [any],
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
-  /// Create a new tag which refers to this fillet
+  /// Create a new tag which refers to this fillet. For multiple edges, omit `tag` or tag each edge in a separate call.
   tag?: TagDecl,
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
   /// If true, revert to older engine SSI algorithm.
@@ -383,7 +393,8 @@ export fn fillet(
   /// 1 is the original Zoo fillet algorithm,
   /// 2 is the newer algorithm (supports rolling ball fillets).
   /// On KCL 2.0 and before, the default is 1.
-  /// KCL 3.0 and later always use the newest algorithm.
+  /// Use KCL 3.0 or later for the newest algorithm without setting `version`.
+  /// `edges` does not require `version = 2`.
   @(experimental = true, removed_in = "3.0") version?: number(Count),
   /// If true, also fillet edges that are tangent to the selected edges.
   /// Defaults to true.
@@ -396,6 +407,15 @@ export fn fillet(
 /// Chamfer is similar in function and use to a fillet, except
 /// a fillet will blend the transition along an edge, rather than cut
 /// a sharp, straight transitional edge.
+///
+/// ### Face references
+///
+/// In `edges`, `sideFaces` and `endFaces` contain face tags or face UUIDs, not raw sketch segments.
+/// For a side face created by extruding `profile.line1`, use `profileRegion.tags.line1` or
+/// `body.sketch.tags.line1`, where `profileRegion` is the extruded region and `body` is the resulting solid.
+/// For extrusion caps, declare `tagStart = $startCap` or `tagEnd = $endCap`, then refer to
+/// `startCap` or `endCap`. Use `$` only when declaring the tag.
+/// See [Face API Edge References](/docs/kcl-lang/edge-references) for selection examples.
 ///
 /// ```kcl,sketchSolve
 /// // Chamfer a mounting plate.
@@ -702,10 +722,11 @@ export fn chamfer(
   length: number(Length),
   /// The paths you want to chamfer (legacy API)
   tags?: [Edge; 1+],
+  /// Preferred for KCL 3. Required unless legacy `tags` is provided. Do not provide both.
   /// Array of edge references; each element is an object with:
-  /// - `sideFaces`: [Face | Tag; 1+] - Adjacent faces that share the edge(s) to chamfer
-  /// - `endFaces?`: [Face | Tag] - Optional faces to disambiguate when multiple edges share the same two faces
-  /// - `index?`: number(Count) - Optional index when multiple edges share the same faces (0-based)
+  /// - `sideFaces`: array of one or more face tags or face UUIDs. Adjacent faces that share the edge(s) to chamfer.
+  /// - `endFaces?`: array of face tags or face UUIDs. Optional faces to disambiguate when multiple edges share the same two faces.
+  /// - `index?`: number(Count). Optional index when multiple edges share the same faces (0-based).
   edges?: [any],
   /// Chamfering cuts away two faces to create a third face.
   /// If this argument isn't given, the lengths chamfered away from both
@@ -730,7 +751,7 @@ export fn chamfer(
   /// 1 is the original Zoo fillet algorithm,
   /// 2 is the newer algorithm (supports rolling ball fillets).
   /// On KCL 2.0 and before, the default is 1.
-  /// KCL 3.0 and later always use the newest algorithm.
+  /// Use KCL 3.0 or later for the newest algorithm without setting `version`.
   @(experimental = true, removed_in = "3.0") version?: number(Count),
   /// If true, also chamfer edges that are tangent to the selected edges.
   /// Defaults to true.

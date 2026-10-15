@@ -1,27 +1,21 @@
-import type { Page } from '@playwright/test'
-
 import type { CmdBarSerialised } from '@e2e/playwright/fixtures/cmdBarFixture'
 import type { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import type { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import type { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import type { Page } from '@playwright/test'
 import {
   EXPERIMENTAL_POINT_AND_CLICK_FLAG,
   KCL_DEFAULT_INSTANCES,
   KCL_DEFAULT_LENGTH,
-  LEGACY_SKETCH_MODE_FEATURE_FLAG,
 } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
 
 test.describe('Point-and-click tests - sketch v1', { tag: '@desktop' }, () => {
-  // These sketches are KCL 1.0, so editing them needs the legacy sketch flag.
   test.use({
-    userFeatures: [
-      EXPERIMENTAL_POINT_AND_CLICK_FLAG,
-      LEGACY_SKETCH_MODE_FEATURE_FLAG,
-    ],
+    userFeatures: [EXPERIMENTAL_POINT_AND_CLICK_FLAG],
   })
 
   test('Create an Extrude operation with a tag and edit it via Feature Tree', async ({
@@ -254,310 +248,6 @@ profile001 = circle(sketch001, center = [0, 0], radius = 5)`
       }
   })
 
-  test(`Verify axis, origin, and horizontal snapping`, async ({
-    page,
-    homePage,
-    editor,
-    toolbar,
-    scene,
-    context,
-  }) => {
-    const viewPortSize = { width: 1200, height: 500 }
-
-    await page.setBodyDimensions(viewPortSize)
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, `sketch001 = startSketchOn(XZ)`)
-    await homePage.goToModelingScene()
-    await scene.connectionEstablished()
-
-    // Constants and locators
-    // These are mappings from screenspace to KCL coordinates,
-    // until we merge in our coordinate system helpers
-    const originSloppy = {
-      screen: [
-        viewPortSize.width / 2 + 3, // 3px off the center of the screen
-        viewPortSize.height / 2,
-      ],
-    } as const
-    const xAxisSloppy = {
-      screen: [
-        viewPortSize.width * 0.75,
-        viewPortSize.height / 2 - 3, // 3px off the X-axis
-      ],
-    } as const
-    const offYAxis = {
-      screen: [
-        viewPortSize.width * 0.6, // Well off the Y-axis, out of snapping range
-        viewPortSize.height * 0.3,
-      ],
-    } as const
-    const yAxisSloppy = {
-      screen: [
-        viewPortSize.width / 2 + 5, // 5px off the Y-axis
-        viewPortSize.height * 0.3,
-      ],
-    } as const
-    const [clickOriginSloppy] = scene.makeMouseHelpers(...originSloppy.screen)
-    const [clickXAxisSloppy, moveXAxisSloppy] = scene.makeMouseHelpers(
-      ...xAxisSloppy.screen
-    )
-    const [dragToOffYAxis, dragFromOffAxis] = scene.makeDragHelpers(
-      ...offYAxis.screen,
-      { debug: true }
-    )
-
-    const expectedCodeSnippets = {
-      sketchOnXzPlane: 'sketch001 = startSketchOn(XZ)',
-      pointAtOrigin: 'startProfile(sketch001, at = [0, 0])',
-      segmentOnXAxis: 'xLine(length',
-      afterSegmentDraggedOnYAxis:
-        /startProfile\(sketch001, at = \[0, (\d+(\.\d+)?)\]\)/,
-    }
-
-    await test.step(`Start a sketch on the XZ plane`, async () => {
-      const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
-      await op.dblclick()
-      await toolbar.waitUntilSketchingReady()
-      await editor.expectEditor.toContain(expectedCodeSnippets.sketchOnXzPlane)
-    })
-    await test.step(`Place a point a few pixels off the middle, verify it still snaps to 0,0`, async () => {
-      await clickOriginSloppy()
-      await editor.expectEditor.toContain(expectedCodeSnippets.pointAtOrigin)
-    })
-    await test.step(`Add a segment on x-axis after moving the mouse a bit, verify it snaps`, async () => {
-      await moveXAxisSloppy()
-      await clickXAxisSloppy()
-      await editor.expectEditor.toContain(expectedCodeSnippets.segmentOnXAxis)
-    })
-    await test.step(`Unequip line tool`, async () => {
-      await toolbar.lineBtn.click()
-      await expect(toolbar.lineBtn).not.toHaveAttribute('aria-pressed', 'true')
-    })
-    await test.step(`Drag the origin point up and to the right, verify it's past snapping`, async () => {
-      await editor.closePane()
-      await dragToOffYAxis({
-        fromPoint: { x: originSloppy.screen[0], y: originSloppy.screen[1] },
-      })
-      await editor.expectEditor.not.toContain(
-        expectedCodeSnippets.pointAtOrigin
-      )
-    })
-    await test.step(`Drag the origin point left to the y-axis, verify it snaps back`, async () => {
-      await dragFromOffAxis({
-        toPoint: { x: yAxisSloppy.screen[0], y: yAxisSloppy.screen[1] },
-      })
-      await editor.openPane()
-      await expect(editor.codeContent).toContainText(
-        expectedCodeSnippets.afterSegmentDraggedOnYAxis
-      )
-      await editor.closePane()
-    })
-  })
-
-  test(`Verify user can double-click to edit a sketch`, async ({
-    context,
-    page,
-    homePage,
-    editor,
-    toolbar,
-    scene,
-    cmdBar,
-  }) => {
-    page.on('console', console.log)
-
-    const initialCode = `closedSketch = startSketchOn(XZ)
-  |> circle(center = [8, 5], radius = 2)
-openSketch = startSketchOn(XY)
-  |> startProfile(at = [-5, 0])
-  |> line(endAbsolute = [0, 5])
-  |> xLine(length = 5)
-  |> tangentialArc(endAbsolute = [10, 0])
-`
-
-    await context.addInitScript((code) => {
-      localStorage.setItem('persistCode', code)
-    }, initialCode)
-
-    await homePage.goToModelingScene()
-
-    const [_clickOpenPath, moveToOpenPath, dblClickOpenPath] =
-      scene.makeMouseHelpers(0.65, 0.5, { format: 'ratio' })
-
-    const [_clickCircle, moveToCircle, dblClickCircle] = scene.makeMouseHelpers(
-      0.63,
-      0.5,
-      { format: 'ratio' }
-    )
-
-    await test.step(`Double-click on the closed sketch`, async () => {
-      await scene.settled()
-      await editor.closePane()
-      await moveToCircle()
-      await page.waitForTimeout(1000)
-      await dblClickCircle()
-      await page.waitForTimeout(1000)
-      await expect(toolbar.exitSketchBtn).toBeVisible()
-      await editor.openPane()
-      await editor.expectState({
-        activeLines: [`|>circle(center=[8,5],radius=2)`],
-        diagnostics: [],
-      })
-    })
-    await page.waitForTimeout(1000)
-
-    await toolbar.exitSketch()
-    await page.waitForTimeout(1000)
-    await editor.closePane()
-
-    // Drag the sketch line out of the axis view which blocks the click
-    await page.dragAndDrop('#stream', '#stream', {
-      sourcePosition: await scene.convertPagePositionToStream(
-        0.7,
-        0.5,
-        'ratio'
-      ),
-      targetPosition: await scene.convertPagePositionToStream(
-        0.7,
-        0.4,
-        'ratio'
-      ),
-    })
-
-    await page.waitForTimeout(500)
-
-    await test.step(`Double-click on the open sketch`, async () => {
-      await moveToOpenPath()
-      // There is a full execution after exiting sketch that clears the scene.
-      await page.waitForTimeout(500)
-      await dblClickOpenPath()
-      await expect(toolbar.exitSketchBtn).toBeVisible()
-      // Wait for enter sketch mode to complete
-      await page.waitForTimeout(500)
-      await editor.openPane()
-      await editor.expectState({
-        activeLines: [`|>tangentialArc(endAbsolute=[10,0])`],
-        diagnostics: [],
-      })
-    })
-  })
-
-  test(`Shift-click to select and deselect sketch segments`, async ({
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-    context,
-  }) => {
-    // Locators
-    const firstPointLocation = { x: 200, y: 100 }
-    const secondPointLocation = { x: 800, y: 100 }
-    const thirdPointLocation = { x: 800, y: 400 }
-    // @pierremtb: moved the select location to the arrow at the end after the engine zoom fix
-    // got in https://github.com/KittyCAD/engine/pull/3804, seemed like it allowed for more
-    // error margin but unclear why
-    const firstSegmentLocation = { x: 799, y: 100 }
-    const secondSegmentLocation = { x: 800, y: 399 }
-
-    // Click helpers
-    const [clickFirstPoint] = scene.makeMouseHelpers(
-      firstPointLocation.x,
-      firstPointLocation.y
-    )
-    const [clickSecondPoint] = scene.makeMouseHelpers(
-      secondPointLocation.x,
-      secondPointLocation.y
-    )
-    const [clickThirdPoint] = scene.makeMouseHelpers(
-      thirdPointLocation.x,
-      thirdPointLocation.y
-    )
-    const [clickFirstSegment] = scene.makeMouseHelpers(
-      firstSegmentLocation.x,
-      firstSegmentLocation.y
-    )
-    const [clickSecondSegment] = scene.makeMouseHelpers(
-      secondSegmentLocation.x,
-      secondSegmentLocation.y
-    )
-    const timeout = 150
-
-    // Setup
-    await test.step(`Initial test setup`, async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, `sketch001 = startSketchOn(XY)`)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled()
-    })
-
-    await test.step('Select and deselect a single sketch segment', async () => {
-      await test.step('Get into sketch mode', async () => {
-        await editor.closePane()
-        const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
-        await op.dblclick()
-        await toolbar.waitUntilSketchingReady()
-        await toolbar.closeFeatureTreePane()
-        if ((await toolbar.lineBtn.getAttribute('aria-pressed')) !== 'true') {
-          await page.keyboard.press('l')
-        }
-        await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
-      })
-      await test.step('Draw sketch', async () => {
-        await clickFirstPoint()
-        await page.waitForTimeout(timeout)
-        await clickSecondPoint()
-        await page.waitForTimeout(timeout)
-        await clickThirdPoint()
-        await page.waitForTimeout(timeout)
-      })
-      await test.step('Deselect line tool', async () => {
-        const btnLine = page.getByTestId('line')
-        const btnLineAriaPressed = await btnLine.getAttribute('aria-pressed')
-        if (btnLineAriaPressed === 'true') {
-          await btnLine.click()
-        }
-        await page.waitForTimeout(timeout)
-      })
-      await test.step('Select the first segment', async () => {
-        // @pierremtb: I believe we can't click too fast after deselecting the line tool,
-        // otherwise the segment gets instantly deselected again.
-        // There's a non-zero chance it's an actual bug.
-        await page.waitForTimeout(timeout * 5)
-        await clickFirstSegment()
-        await page.waitForTimeout(timeout)
-        await expect(toolbar.selectionStatus).toContainText('1 edge')
-      })
-      await test.step('Select the second segment (Shift-click)', async () => {
-        await page.keyboard.down('Shift')
-        await page.waitForTimeout(timeout)
-        await clickSecondSegment()
-        await page.waitForTimeout(timeout)
-        await page.keyboard.up('Shift')
-        await expect(toolbar.selectionStatus).toContainText('2 edges')
-      })
-      await test.step('Deselect the first segment', async () => {
-        await page.keyboard.down('Shift')
-        await page.waitForTimeout(timeout)
-        await clickFirstSegment()
-        await page.waitForTimeout(timeout)
-        await page.keyboard.up('Shift')
-        await expect(toolbar.selectionStatus).toContainText('1 edge')
-      })
-      await test.step('Deselect the second segment', async () => {
-        await page.keyboard.down('Shift')
-        await page.waitForTimeout(timeout)
-        await clickSecondSegment()
-        await page.waitForTimeout(timeout)
-        await page.keyboard.up('Shift')
-        await expect(toolbar.selectionStatus).toContainText('No selection')
-      })
-    })
-  })
-
   test(`Offset plane point-and-click`, async ({
     context,
     page,
@@ -582,7 +272,7 @@ openSketch = startSketchOn(XY)
         currentArgValue: '',
         headerArguments: { Plane: '', Offset: '' },
         highlightedHeaderArg: 'plane',
-        commandName: 'Offset plane',
+        commandName: 'Offset Plane',
       })
       await toolbar.selectDefaultPlane('Front plane')
       await cmdBar.progressCmdBar()
@@ -592,13 +282,13 @@ openSketch = startSketchOn(XY)
         currentArgValue: '5',
         headerArguments: { Plane: '1 plane', Offset: '' },
         highlightedHeaderArg: 'offset',
-        commandName: 'Offset plane',
+        commandName: 'Offset Plane',
       })
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
         headerArguments: { Plane: '1 plane', Offset: '5' },
-        commandName: 'Offset plane',
+        commandName: 'Offset Plane',
       })
       await cmdBar.submit()
     })
@@ -1063,6 +753,7 @@ profile001 = ${circleCode}`
     })
 
     await test.step('Go through the edit flow via feature tree', async () => {
+      await scene.settled()
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const op = await toolbar.getFeatureTreeOperation('Sweep', 0)
       await op.dblclick()
@@ -1110,6 +801,7 @@ profile001 = ${circleCode}`
     })
 
     await test.step('Delete sweep via feature tree selection', async () => {
+      await scene.settled()
       const sweep = await toolbar.getFeatureTreeOperation('Sweep', 0)
       await sweep.click()
       await page.keyboard.press('Delete')
@@ -1207,6 +899,7 @@ extrude001 = extrude(sketch001, length = -12)
       oldValue: string,
       newValue: string
     ) {
+      await scene.settled()
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       const operationButton = await toolbar.getFeatureTreeOperation(
         'Fillet',
@@ -1313,152 +1006,6 @@ fillet001 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
     })
   })
 
-  test(`Fillet point-and-click delete`, async ({
-    context,
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    // Code samples
-    const initialCode = `sketch001 = startSketchOn(XY)
-  |> startProfile(at = [-12, -6])
-  |> line(end = [0, 12])
-  |> line(end = [24, 0], tag = $seg02)
-  |> line(end = [0, -12])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
-  |> close()
-extrude001 = extrude(sketch001, length = -12)
-  |> fillet(radius = 5, tags = [seg01]) // fillet01
-  |> fillet(radius = 5, tags = [seg02]) // fillet02
-fillet03 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])
-fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
-`
-    const standaloneFilletCode = `sketch001 = startSketchOn(XY)
-  |> startProfile(at = [-12, -6])
-  |> line(end = [0, 12])
-  |> line(end = [24, 0], tag = $seg02)
-  |> line(end = [0, -12])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
-  |> close()
-extrude001 = extrude(sketch001, length = -12, tagEnd = $capEnd001)
-fillet03 = fillet(extrude001, radius = 5, edges = [{ sideFaces = [seg01, capEnd001] }])
-fillet(extrude001, radius = 5, edges = [{ sideFaces = [seg02, capEnd001] }])
-`
-    const firstPipedFilletDeclaration = 'fillet(radius = 5, tags = [seg01])'
-    const secondPipedFilletDeclaration = 'fillet(radius = 5, tags = [seg02])'
-    const standaloneAssignedFilletDeclaration =
-      'fillet03 = fillet(extrude001, radius = 5, edges = [{ sideFaces = [seg01, capEnd001] }])'
-    const standaloneUnassignedFilletDeclaration =
-      'fillet(extrude001, radius = 5, edges = [{ sideFaces = [seg02, capEnd001] }])'
-    const legacyStandaloneAssignedFilletDeclaration =
-      'fillet03 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg01)])'
-    const legacyStandaloneUnassignedFilletDeclaration =
-      'fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])'
-
-    // Setup
-    await test.step(`Initial test setup`, async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled()
-    })
-
-    // Test
-    await test.step('Delete fillet via feature tree selection', async () => {
-      await test.step('Open Feature Tree Pane', async () => {
-        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-        await scene.settled()
-      })
-
-      await test.step('Delete piped fillet via feature tree selection', async () => {
-        await test.step('Verify all fillets are present in the editor', async () => {
-          await editor.expectEditor.toContain(firstPipedFilletDeclaration)
-          await editor.expectEditor.toContain(secondPipedFilletDeclaration)
-          await editor.expectEditor.toContain(
-            legacyStandaloneAssignedFilletDeclaration
-          )
-          await editor.expectEditor.toContain(
-            legacyStandaloneUnassignedFilletDeclaration
-          )
-        })
-        await test.step('Delete piped fillet', async () => {
-          const operationButton = await toolbar.getFeatureTreeOperation(
-            'Fillet',
-            0
-          )
-          await operationButton.click({ button: 'left' })
-          await page.keyboard.press('Delete')
-          await scene.settled()
-        })
-        await test.step('Verify piped fillet is deleted but other fillets are not (in the editor)', async () => {
-          await editor.expectEditor.not.toContain(firstPipedFilletDeclaration)
-          await editor.expectEditor.not.toContain(secondPipedFilletDeclaration)
-          await editor.expectEditor.toContain(
-            legacyStandaloneAssignedFilletDeclaration
-          )
-          await editor.expectEditor.toContain(
-            legacyStandaloneUnassignedFilletDeclaration
-          )
-        })
-      })
-
-      await test.step('Load standalone fillets using new edge syntax', async () => {
-        await scene.waitForExecutionDoneAfter(() =>
-          editor.replaceCode('', standaloneFilletCode)
-        )
-        await scene.settled()
-        await editor.expectEditor.toContain(standaloneAssignedFilletDeclaration)
-        await editor.expectEditor.toContain(
-          standaloneUnassignedFilletDeclaration
-        )
-      })
-
-      await test.step('Delete standalone assigned fillet via feature tree selection', async () => {
-        await test.step('Delete standalone assigned fillet', async () => {
-          const operationButton = await toolbar.getFeatureTreeOperation(
-            'fillet03',
-            0
-          )
-          await operationButton.click({ button: 'left' })
-          await page.keyboard.press('Delete')
-          await scene.settled()
-        })
-        await test.step('Verify standalone assigned fillet is deleted but other two fillets are not (in the editor)', async () => {
-          await editor.expectEditor.not.toContain(secondPipedFilletDeclaration)
-          await editor.expectEditor.not.toContain(
-            standaloneAssignedFilletDeclaration
-          )
-          await editor.expectEditor.toContain(
-            standaloneUnassignedFilletDeclaration
-          )
-        })
-      })
-
-      await test.step('Delete standalone unassigned fillet via feature tree selection', async () => {
-        await test.step('Delete standalone unassigned fillet', async () => {
-          const operationButton = await toolbar.getFeatureTreeOperation(
-            'Fillet',
-            0
-          )
-          await operationButton.click({ button: 'left' })
-          await page.keyboard.press('Delete')
-          await scene.settled()
-        })
-        await test.step('Verify standalone unassigned fillet is deleted but other fillet is not (in the editor)', async () => {
-          await editor.expectEditor.not.toContain(secondPipedFilletDeclaration)
-          await editor.expectEditor.not.toContain(
-            standaloneUnassignedFilletDeclaration
-          )
-        })
-      })
-    })
-  })
-
   test(`Shell point-and-click`, async ({
     context,
     page,
@@ -1503,6 +1050,7 @@ extrude001 = extrude(sketch001, length = 30)`
         commandName: 'Shell',
       })
       await clickOnCap()
+      await toolbar.expectSelection('1 face')
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'arguments',
@@ -1619,6 +1167,7 @@ extrude001 = extrude(sketch001, length = 30)`
         commandName: 'Delete Face',
       })
       await clickOnCap()
+      await toolbar.expectSelection('1 face')
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'review',
@@ -3031,6 +2580,7 @@ extrude001 = extrude(sketch001, length = 30)
             highlightedHeaderArg: 'faces',
           })
           await clickOnCap()
+          await toolbar.expectSelection('1 face')
         })
 
         await test.step('Configure tolerance', async () => {
@@ -3487,6 +3037,7 @@ extrude001 = extrude(sketch001, length = 30)
             highlightedHeaderArg: 'faces',
           })
           await clickOnCap()
+          await toolbar.expectSelection('1 face')
         })
 
         await test.step('Configure name', async () => {
@@ -3833,6 +3384,7 @@ extrude001 = extrude(profile001, length = 10)`
         highlightedHeaderArg: 'face',
       })
       await clickOnCap()
+      await toolbar.expectSelection('1 face')
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         stage: 'arguments',

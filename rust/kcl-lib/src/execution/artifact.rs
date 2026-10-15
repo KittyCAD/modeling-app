@@ -1,6 +1,7 @@
 use ahash::AHashMap;
 use ahash::AHashSet;
 use indexmap::IndexMap;
+use kcl_api::Constraint;
 use kcl_api::NodePath;
 use kcl_api::artifact::*;
 use kittycad_modeling_cmds::EnableSketchMode;
@@ -30,7 +31,6 @@ use crate::execution::Visibility;
 use crate::execution::cmd_id_ref_to_artifact_id;
 use crate::execution::geometry::PlaneInfo;
 use crate::execution::state::ModuleInfoMap;
-use crate::front::Constraint;
 use crate::modules::ModulePath;
 use crate::parsing::ast::types::BodyItem;
 use crate::parsing::ast::types::ImportPath;

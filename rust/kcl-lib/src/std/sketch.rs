@@ -4,6 +4,7 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use indexmap::IndexMap;
+use kcl_api::SourceRef;
 use kcl_api::UnitLength;
 use kcl_error::SourceRange;
 use kcmc::ModelingCmd;
@@ -62,7 +63,6 @@ use crate::execution::types::NumericType;
 use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
-use crate::front::SourceRef;
 use crate::parsing::ast::types::TagNode;
 use crate::std::CircularDirection;
 use crate::std::EQUAL_POINTS_DIST_EPSILON;
@@ -1198,9 +1198,9 @@ pub async fn ensure_sketch_plane_in_engine(
         )
         .await?;
     let plane_object_id = exec_state.next_object_id();
-    let plane_object = crate::front::Object {
+    let plane_object = kcl_api::Object {
         id: plane_object_id,
-        kind: crate::front::ObjectKind::Plane(crate::front::Plane::Object(plane_object_id)),
+        kind: kcl_api::ObjectKind::Plane(kcl_api::Plane::Object(plane_object_id)),
         label: Default::default(),
         comments: Default::default(),
         artifact_id: ArtifactId::new(plane.id),

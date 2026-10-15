@@ -4,7 +4,6 @@ import {
   createSlotToggleController,
   defineRegistryItem,
   defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
   provide,
   provideService,
 } from '../helpers'
@@ -230,23 +229,21 @@ export const searchRegistryItem = defineRegistryItemFactory(() => {
   }
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'search-registry-item',
-      providesServices: [provideService(searchService, serviceImpl)],
-      provides: [
-        provide(
-          toolbarValueSpec,
-          computed(() => ({
-            id: 'search.toggle',
-            label: isOpen.value ? 'Close Search' : 'Open Search',
-            run: () => {
-              isOpen.value = !isOpen.value
-            },
-          })),
-          { key: 'search.toggle' }
-        ),
-      ],
-    }),
+    id: 'search-registry-item',
+    providesServices: [provideService(searchService, serviceImpl)],
+    provides: [
+      provide(
+        toolbarValueSpec,
+        computed(() => ({
+          id: 'search.toggle',
+          label: isOpen.value ? 'Close Search' : 'Open Search',
+          run: () => {
+            isOpen.value = !isOpen.value
+          },
+        })),
+        { key: 'search.toggle' }
+      ),
+    ],
   }
 }, 'search-registry-item-factory')
 
@@ -262,25 +259,23 @@ export const searchRegistryItem = defineRegistryItemFactory(() => {
 export const searchStatusRegistryItem = defineRegistryItemFactory(
   ({ services }) => {
     return {
-      item: defineRegistryItem({
-        id: 'search-status-registry-item',
-        provides: [
-          provide(
-            toolbarValueSpec,
-            computed(() => {
-              const search = services.get(searchService)
-              return {
-                id: 'search.status',
-                label: search.query.value
-                  ? `Searching: ${search.query.value}`
-                  : 'Search Idle',
-                run: () => search.open(),
-              }
-            }),
-            { key: 'search.status', precedence: 'low' }
-          ),
-        ],
-      }),
+      id: 'search-status-registry-item',
+      provides: [
+        provide(
+          toolbarValueSpec,
+          computed(() => {
+            const search = services.get(searchService)
+            return {
+              id: 'search.status',
+              label: search.query.value
+                ? `Searching: ${search.query.value}`
+                : 'Search Idle',
+              run: () => search.open(),
+            }
+          }),
+          { key: 'search.status', precedence: 'low' }
+        ),
+      ],
     }
   },
   'search-status-registry-item'
@@ -316,25 +311,23 @@ export const workspaceToggleRegistryItem = defineRegistryItemFactory(
     })
 
     return {
-      item: defineRuntimeRegistryItem({
-        id: 'workspace-toggle-registry-item',
-        providesServices: [provideService(workspaceToggleService, controller)],
-        provides: [
-          provide(
-            toolbarValueSpec,
-            computed(() => ({
-              id: 'workspace.toggle',
-              label: controller.active.value
-                ? 'Disable Team Workspace'
-                : 'Enable Team Workspace',
-              run: () => {
-                void controller.toggle()
-              },
-            })),
-            { key: 'workspace.toggle', precedence: 'high' }
-          ),
-        ],
-      }),
+      id: 'workspace-toggle-registry-item',
+      providesServices: [provideService(workspaceToggleService, controller)],
+      provides: [
+        provide(
+          toolbarValueSpec,
+          computed(() => ({
+            id: 'workspace.toggle',
+            label: controller.active.value
+              ? 'Disable Team Workspace'
+              : 'Enable Team Workspace',
+            run: () => {
+              void controller.toggle()
+            },
+          })),
+          { key: 'workspace.toggle', precedence: 'high' }
+        ),
+      ],
     }
   },
   'workspace-toggle-registry-item'
@@ -357,21 +350,19 @@ export const analyticsProviderRegistryItem = defineRegistryItemFactory(() => {
   }
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'analytics-provider-registry-item',
-      providesServices: [provideService(analyticsService, serviceImpl)],
-      provides: [
-        provide(
-          toolbarValueSpec,
-          computed(() => ({
-            id: 'analytics.track',
-            label: `Track Analytics Event (${eventCount.value})`,
-            run: () => serviceImpl.track('toolbar'),
-          })),
-          { key: 'analytics.track', precedence: 'low' }
-        ),
-      ],
-    }),
+    id: 'analytics-provider-registry-item',
+    providesServices: [provideService(analyticsService, serviceImpl)],
+    provides: [
+      provide(
+        toolbarValueSpec,
+        computed(() => ({
+          id: 'analytics.track',
+          label: `Track Analytics Event (${eventCount.value})`,
+          run: () => serviceImpl.track('toolbar'),
+        })),
+        { key: 'analytics.track', precedence: 'low' }
+      ),
+    ],
   }
 }, 'analytics-provider-registry-item')
 
@@ -385,32 +376,30 @@ export const analyticsProviderRegistryItem = defineRegistryItemFactory(() => {
 export const analyticsStatusRegistryItem = defineRegistryItemFactory(
   ({ services }) => {
     return {
-      item: defineRegistryItem({
-        id: 'analytics-status-registry-item',
-        provides: [
-          provide(
-            toolbarValueSpec,
-            computed(() => {
-              const analytics = services.optional(analyticsService)
+      id: 'analytics-status-registry-item',
+      provides: [
+        provide(
+          toolbarValueSpec,
+          computed(() => {
+            const analytics = services.optional(analyticsService)
 
-              if (!analytics) {
-                return {
-                  id: 'analytics.status',
-                  label: 'Analytics Unavailable',
-                  run: () => {},
-                }
-              }
-
+            if (!analytics) {
               return {
                 id: 'analytics.status',
-                label: `Analytics Events: ${analytics.eventCount.value}`,
-                run: () => analytics.track('status'),
+                label: 'Analytics Unavailable',
+                run: () => {},
               }
-            }),
-            { key: 'analytics.status', precedence: 'low' }
-          ),
-        ],
-      }),
+            }
+
+            return {
+              id: 'analytics.status',
+              label: `Analytics Events: ${analytics.eventCount.value}`,
+              run: () => analytics.track('status'),
+            }
+          }),
+          { key: 'analytics.status', precedence: 'low' }
+        ),
+      ],
     }
   },
   'analytics-status-registry-item'
@@ -431,27 +420,23 @@ function createAnalyticsToggleRegistryItem(initialActive: boolean) {
       })
 
       return {
-        item: defineRuntimeRegistryItem({
-          id: 'analytics-toggle-registry-item',
-          providesServices: [
-            provideService(analyticsToggleService, controller),
-          ],
-          provides: [
-            provide(
-              toolbarValueSpec,
-              computed(() => ({
-                id: 'analytics.toggle',
-                label: controller.active.value
-                  ? 'Disable Analytics Provider'
-                  : 'Enable Analytics Provider',
-                run: () => {
-                  void controller.toggle()
-                },
-              })),
-              { key: 'analytics.toggle', precedence: 'high' }
-            ),
-          ],
-        }),
+        id: 'analytics-toggle-registry-item',
+        providesServices: [provideService(analyticsToggleService, controller)],
+        provides: [
+          provide(
+            toolbarValueSpec,
+            computed(() => ({
+              id: 'analytics.toggle',
+              label: controller.active.value
+                ? 'Disable Analytics Provider'
+                : 'Enable Analytics Provider',
+              run: () => {
+                void controller.toggle()
+              },
+            })),
+            { key: 'analytics.toggle', precedence: 'high' }
+          ),
+        ],
       }
     },
     `analytics-toggle-registry-item:${initialActive ? 'active' : 'inactive'}`
@@ -501,25 +486,23 @@ export const notesPlugin = createPlugin({
 const notesHelperPluginRegistryItem = defineRegistryItemFactory(
   ({ services }) => {
     return {
-      item: defineRegistryItem({
-        id: 'notes-helper-plugin.registry-item',
-        provides: [
-          provide(
-            notesPanelValueSpec,
-            computed(() => {
-              const notesApi = services.optional(notesPluginApiService)
-              return {
-                id: 'notes.helper',
-                label: notesApi
-                  ? `${notesApi.pluginTitle} Helper: Suggested summary`
-                  : 'Notes Helper unavailable',
-                visible: notesApi !== undefined,
-              }
-            }),
-            { key: 'notes.helper' }
-          ),
-        ],
-      }),
+      id: 'notes-helper-plugin.registry-item',
+      provides: [
+        provide(
+          notesPanelValueSpec,
+          computed(() => {
+            const notesApi = services.optional(notesPluginApiService)
+            return {
+              id: 'notes.helper',
+              label: notesApi
+                ? `${notesApi.pluginTitle} Helper: Suggested summary`
+                : 'Notes Helper unavailable',
+              visible: notesApi !== undefined,
+            }
+          }),
+          { key: 'notes.helper' }
+        ),
+      ],
     }
   },
   'notes-helper-plugin.registry-item'

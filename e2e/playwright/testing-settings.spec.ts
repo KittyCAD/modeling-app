@@ -1,10 +1,10 @@
+import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import {
   TEST_SETTINGS,
   TEST_SETTINGS_CORRUPTED,
   TEST_SETTINGS_DEFAULT_THEME,
   TEST_SETTINGS_KEY,
 } from '@e2e/playwright/storageStates'
-import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import {
   createProject,
   executorInputPath,
@@ -16,7 +16,6 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 import type { UnitLength } from '@kittycad/lib/dist/types/src'
 import type { Page } from '@playwright/test'
 import {
-  LEGACY_SKETCH_MODE_FEATURE_FLAG,
   PROJECT_SETTINGS_FILE_NAME,
   SETTINGS_FILE_NAME,
 } from '@src/lib/constants'
@@ -25,9 +24,6 @@ import { Themes } from '@src/lib/theme'
 import { isArray, uuidv4 } from '@src/lib/utils'
 import * as fsp from 'fs/promises'
 import path, { join } from 'path'
-
-// Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
-test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
 
 const settingsSwitchTab = (page: Page) => async (tab: 'user' | 'proj') => {
   const projectSettingsTab = page.getByRole('radio', { name: 'Project' })
@@ -576,77 +572,6 @@ test.describe(
           await expect
             .poll(() => fsp.readFile(mainFilePath, 'utf8'))
             .toContain('@settings(defaultLengthUnit = in)')
-        })
-      }
-    )
-
-    test(
-      'Changing theme in sketch mode',
-      { tag: ['@macos', '@windows'] },
-      async ({ context, page, homePage, toolbar, scene, cmdBar }) => {
-        const u = await getUtils(page)
-        await context.addInitScript(() => {
-          localStorage.setItem(
-            'persistCode',
-            `sketch001 = startSketchOn(XZ)
-    |> startProfile(at = [0, 0])
-    |> line(end = [5, 0])
-    |> line(end = [0, 5])
-    |> line(end = [-5, 0])
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close()
-  extrude001 = extrude(sketch001, length = 5)
-  `
-          )
-        })
-        await page.setBodyDimensions({ width: 1200, height: 500 })
-        await homePage.goToModelingScene()
-        await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 15_000 })
-        await scene.settled()
-        await page.waitForTimeout(1000)
-
-        // Selectors and constants
-        const lineToolButton = page.getByTestId('line')
-        const segmentOverlays = page.getByTestId('segment-overlay')
-        const sketchOriginLocation = { x: 600, y: 250 }
-        const darkThemeSegmentColor: [number, number, number] = [249, 249, 249]
-        const lightThemeSegmentColor: [number, number, number] = [28, 28, 28]
-
-        await test.step(`Get into sketch mode`, async () => {
-          await page.mouse.click(700, 200)
-          await toolbar.editSketch()
-
-          // We use the line tool as a proxy for sketch mode
-          await expect(lineToolButton).toBeVisible()
-          await expect(segmentOverlays).toHaveCount(5)
-          // but we allow more time to pass for animating to the sketch
-          await page.waitForTimeout(1000)
-        })
-
-        await test.step(`Check the sketch line color before`, async () => {
-          await expect
-            .poll(() =>
-              u.getGreatestPixDiff(sketchOriginLocation, darkThemeSegmentColor)
-            )
-            .toBeLessThan(15)
-        })
-
-        await test.step(`Change theme to light using command palette`, async () => {
-          await page.keyboard.press('ControlOrMeta+K')
-          await page.getByRole('option', { name: 'theme' }).click()
-          await page.getByRole('option', { name: 'light' }).click()
-          await expect(page.getByText('theme to "light"')).toBeVisible()
-
-          // Make sure we haven't left sketch mode
-          await expect(lineToolButton).toBeVisible()
-        })
-
-        await test.step(`Check the sketch line color after`, async () => {
-          await expect
-            .poll(() =>
-              u.getGreatestPixDiff(sketchOriginLocation, lightThemeSegmentColor)
-            )
-            .toBeLessThan(15)
         })
       }
     )

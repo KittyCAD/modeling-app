@@ -37,6 +37,7 @@ import {
   useState,
 } from 'react'
 import toast from 'react-hot-toast'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: publish workflow navigation (useNavigate).
 import { useNavigate } from 'react-router-dom'
 
 type PublishButtonProps = {

@@ -142,6 +142,17 @@ import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
 
+export function isSelections(value: unknown): value is Selections {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'graphSelections' in value &&
+    isArray(value.graphSelections) &&
+    'otherSelections' in value &&
+    isArray(value.otherSelections)
+  )
+}
+
 type NormalizableEdgeReference = Partial<
   Extract<EntityReference, { type: 'edge' }>
 > & {
@@ -2468,31 +2479,6 @@ function getEngineEntityIdForSelection(
 ): string | undefined {
   if (selection.engineEntityId) {
     return selection.engineEntityId
-  }
-
-  const entityRef = selection.entityRef
-  if (entityRef) {
-    switch (entityRef.type) {
-      case 'solid3d':
-        return entityRef.solid3d_id
-      case 'solid2d':
-        return entityRef.solid2d_id
-      case 'face':
-        return entityRef.face_id
-      case 'plane':
-        return entityRef.plane_id
-      case 'solid2d_edge':
-        return entityRef.edge_id
-      case 'segment':
-        return entityRef.segment_id
-      case 'helix':
-        return entityRef.helix_id
-      case 'region':
-        return entityRef.region_id
-      case 'edge':
-      case 'vertex':
-        break
-    }
   }
 
   return resolveToCodeRef(selection, artifactGraph)?.artifact?.id

@@ -18,12 +18,12 @@ description: Physical properties surgical-drill-guide.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 27956.215690217337
+    "value": 27957.55954245571
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 74.10358453519007
+    "value": 74.11038897186158
   }
 }

@@ -18,12 +18,12 @@ description: Physical properties spinning-highrise-tower.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 74421039588.80902
+    "value": 74421039589.7627
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 71881049851.09966
+    "value": 71881049720.12837
   }
 }

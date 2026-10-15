@@ -18,12 +18,12 @@ description: Physical properties bike-hub-washer.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 2011.6153253120217
+    "value": 2011.6005282879712
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 2.3758538786518755
+    "value": 2.375912673546754
   }
 }

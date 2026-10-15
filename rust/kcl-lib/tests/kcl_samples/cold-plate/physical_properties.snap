@@ -18,12 +18,12 @@ description: Physical properties cold-plate.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 428772.49386481254
+    "value": 428774.2064498801
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 1895.032607496516
+    "value": 1895.034989822316
   }
 }

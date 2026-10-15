@@ -1090,6 +1090,7 @@ pub(crate) async fn after_surface_creation(
         id: body_id,
         value_id: body_id,
         topology_id: body_id,
+        tag_update_source_artifact_id: None,
         pattern_source_artifact_id: None,
         best_guess_body_type: Some(BodyType::Surface),
         artifact_id: extrude_cmd_id,
@@ -1385,6 +1386,7 @@ pub(crate) async fn do_post_extrude<'a>(
         id,
         value_id: extrude_cmd_id.into(),
         topology_id,
+        tag_update_source_artifact_id: None,
         pattern_source_artifact_id: None,
         best_guess_body_type: Some(body_type),
         artifact_id: extrude_cmd_id,
@@ -1585,6 +1587,11 @@ fn fake_extrude_surface(exec_state: &mut ExecState, path: &Path) -> Option<Extru
 
 #[cfg(test)]
 mod tests {
+    use kcl_api::Expr;
+    use kcl_api::Number;
+    use kcl_api::ObjectId;
+    use kcl_api::Point2d;
+    use kcl_api::PointCtor;
     use kcl_api::UnitLength;
 
     use super::*;
@@ -1594,11 +1601,6 @@ mod tests {
     use crate::execution::parse_execute;
     use crate::execution::types::NumericType;
     use crate::execution::types::NumericTypeExt;
-    use crate::front::Expr;
-    use crate::front::Number;
-    use crate::front::ObjectId;
-    use crate::front::Point2d;
-    use crate::front::PointCtor;
     use crate::std::sketch::PlaneData;
 
     fn point_expr(x: f64, y: f64) -> Point2d<Expr> {
