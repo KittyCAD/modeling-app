@@ -616,6 +616,104 @@ extrude(exampleSketch, length = -5)
   })
 
   describe('Testing addPatternLinear3D', () => {
+    it.each(['linear', 'circular'] as const)(
+      'patterns a cloned body after extruding a sketch on its face (%s)',
+      async (kind) => {
+        const code = `@settings(kclVersion = 3.0)
+cubeSize = 20mm
+cubeProfile = sketch(on = XY) {
+  bottomEdge = line(start = [var 0mm, var 0mm], end = [var 20mm, var 0mm])
+  rightEdge = line(start = [var 20mm, var 0mm], end = [var 20mm, var 20mm])
+  topEdge = line(start = [var 20mm, var 20mm], end = [var 0mm, var 20mm])
+  leftEdge = line(start = [var 0mm, var 20mm], end = [var 0mm, var 0mm])
+  coincident([bottomEdge.start, ORIGIN])
+  coincident([bottomEdge.end, rightEdge.start])
+  coincident([rightEdge.end, topEdge.start])
+  coincident([topEdge.end, leftEdge.start])
+  coincident([leftEdge.end, bottomEdge.start])
+  horizontal(bottomEdge)
+  vertical(rightEdge)
+  horizontal(topEdge)
+  vertical(leftEdge)
+  distance([bottomEdge.start, bottomEdge.end]) == cubeSize
+  distance([rightEdge.start, rightEdge.end]) == cubeSize
+}
+cubeRegion = region(segments = [cubeProfile.bottomEdge, cubeProfile.rightEdge], intersectionIndex = -1, direction = CCW)
+originalCube = extrude(cubeRegion, length = cubeSize, tagEnd = $capEnd001)
+hide(cubeProfile)
+translatedCube = clone(originalCube) |> translate(x = 50mm, global = true)
+face001 = faceOf(translatedCube, face = END)
+sketch001 = sketch(on = face001) {
+  line1 = line(start = [var 54.38mm, var 6.26mm], end = [var 59.9mm, var 16mm])
+  line2 = line(start = [var 59.9mm, var 16mm], end = [var 66.59mm, var 5.18mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 66.59mm, var 5.18mm], end = [var 54.38mm, var 6.26mm])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line1.start])
+}
+hidden001 = hide(sketch001)
+region001 = region(segments = [sketch001.line1, sketch001.line2], direction = CW)
+extrude001 = extrude(region001, length = 5mm)`
+        const { ast, artifactGraph } = await getAstAndArtifactGraph(
+          code,
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
+        expect(kclManagerInThisFile.errors).toEqual([])
+        const body = [...artifactGraph.values()].find(
+          (artifact) =>
+            artifact.type === 'sweep' &&
+            code
+              .slice(artifact.codeRef.range[0], artifact.codeRef.range[1])
+              .includes('clone(originalCube)')
+        )
+        if (body?.type !== 'sweep') throw new Error('Expected cloned sweep')
+        const common = {
+          ast,
+          artifactGraph,
+          solids: {
+            graphSelections: [{ artifact: body, codeRef: body.codeRef }],
+            otherSelections: [],
+          },
+          instances: await getKclCommandValue('3', rustContextInThisFile),
+          axis: 'Y',
+          wasmInstance: instanceInThisFile,
+        }
+        const result =
+          kind === 'linear'
+            ? addPatternLinear3D({
+                ...common,
+                distance: await getKclCommandValue(
+                  '30mm',
+                  rustContextInThisFile
+                ),
+              })
+            : addPatternCircular3D({
+                ...common,
+                center: await getKclCommandValue(
+                  '[0mm, 0mm, 0mm]',
+                  rustContextInThisFile
+                ),
+              })
+        if (err(result)) throw result
+        const newCode = recast(result.modifiedAst, instanceInThisFile)
+        if (err(newCode)) throw newCode
+        expect(newCode).toMatch(
+          kind === 'linear'
+            ? /patternLinear3d\(\s*translatedCube,/
+            : /patternCircular3d\(\s*translatedCube,/
+        )
+
+        await getAstAndArtifactGraph(
+          newCode,
+          instanceInThisFile,
+          kclManagerInThisFile
+        )
+        expect(kclManagerInThisFile.errors).toEqual([])
+      },
+      60_000
+    )
+
     it('should add patternLinear3d with named axis', async () => {
       const code = `
 exampleSketch = startSketchOn(XZ)

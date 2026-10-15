@@ -59,6 +59,7 @@ export function addPatternCircular3D({
     modifiedAst,
     wasmInstance,
     nodeToEdit: mNodeToEdit,
+    artifactTypeFilter: ['sweep', 'compositeSolid', 'pattern'],
   })
   if (err(vars)) {
     return vars
@@ -227,6 +228,7 @@ export function addPatternLinear3D({
     modifiedAst,
     wasmInstance,
     nodeToEdit: mNodeToEdit,
+    artifactTypeFilter: ['sweep', 'compositeSolid', 'pattern'],
   })
   if (err(vars)) {
     return vars

@@ -4938,7 +4938,12 @@ impl FrontendState {
                     self.point_freedom_cache.insert(new_obj.id, point.freedom);
                 }
             }
-            add_wall_and_cap_face_objects(&mut new_objects, &outcome.artifact_graph);
+            add_wall_and_cap_face_objects(
+                &mut new_objects,
+                &outcome.artifact_graph,
+                &self.program.ast,
+                &self.solid_references,
+            );
             // Objects are already correct from the analysis, just use them as-is
             self.scene_graph.objects = new_objects;
         } else {
@@ -4999,7 +5004,12 @@ impl FrontendState {
                 updated_objects.push(obj);
             }
 
-            add_wall_and_cap_face_objects(&mut updated_objects, &outcome.artifact_graph);
+            add_wall_and_cap_face_objects(
+                &mut updated_objects,
+                &outcome.artifact_graph,
+                &self.program.ast,
+                &self.solid_references,
+            );
             self.scene_graph.objects = updated_objects;
         }
         outcome
@@ -5518,7 +5528,34 @@ fn solid_output_index_for_sweep(
         .position(|sibling_sweep| sibling_sweep.id == sweep_id)
 }
 
-fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<kcl_api::Object>, artifact_graph: &ArtifactGraph) {
+fn copied_face_solid_reference(
+    ast: &ast::Node<ast::Program>,
+    solid_references: &HashMap<Uuid, SolidAstReference>,
+    body_id: Uuid,
+) -> Option<(SourceRefRange, Option<usize>)> {
+    let reference = solid_references.get(&body_id)?;
+    ast.body.iter().find_map(|item| {
+        let ast::BodyItem::VariableDeclaration(declaration) = item else {
+            return None;
+        };
+        (declaration.declaration.id.name == reference.variable_name).then(|| {
+            (
+                SourceRefRange {
+                    range: SourceRange::from(&declaration.declaration.init),
+                    node_path: None,
+                },
+                reference.output_index,
+            )
+        })
+    })
+}
+
+fn add_wall_and_cap_face_objects(
+    scene_objects: &mut Vec<kcl_api::Object>,
+    artifact_graph: &ArtifactGraph,
+    ast: &ast::Node<ast::Program>,
+    solid_references: &HashMap<Uuid, SolidAstReference>,
+) {
     let mut existing_artifact_ids = scene_objects
         .iter()
         .map(|object| object.artifact_id)
@@ -5570,6 +5607,13 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<kcl_api::Object>, artif
                     && solid_code_ref.node_path == sweep.code_ref.node_path)
                     .then(|| solid_output_index_for_sweep(artifact_graph, sweep.id, &sweep.code_ref))
                     .flatten();
+                // Copied face command IDs identify the output engine body.
+                let mut source = source;
+                let mut solid_output_index = solid_output_index;
+                if let Some((solid, output_index)) = copied_face_solid_reference(ast, solid_references, wall.cmd_id) {
+                    source.solid = solid;
+                    solid_output_index = output_index;
+                }
                 let object_source = source_ref_from_source_ref_range(&source.solid);
                 let id = ObjectId(scene_objects.len());
                 scene_objects.push(kcl_api::Object {
@@ -5612,6 +5656,13 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<kcl_api::Object>, artif
                     && solid_code_ref.node_path == sweep.code_ref.node_path)
                     .then(|| solid_output_index_for_sweep(artifact_graph, sweep.id, &sweep.code_ref))
                     .flatten();
+                // Copied face command IDs identify the output engine body.
+                let mut source = source;
+                let mut solid_output_index = solid_output_index;
+                if let Some((solid, output_index)) = copied_face_solid_reference(ast, solid_references, cap.cmd_id) {
+                    source.solid = solid;
+                    solid_output_index = output_index;
+                }
                 let object_source = source_ref_from_source_ref_range(&source.solid);
                 scene_objects.push(kcl_api::Object {
                     id,
@@ -14374,6 +14425,121 @@ shell001 = shell(extrude001, faces = capEnd001, thickness = 1)";
 
         let program = Program::parse(&new_source).unwrap().0.unwrap();
         ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_new_sketch_on_patterned_composite_wall() {
+        let initial_source = r#"@settings(kclVersion = 3.0)
+cubeSize = 20mm
+cubeProfile = sketch(on = XY) {
+  bottomEdge = line(start = [var 0mm, var 0mm], end = [var 20mm, var 0mm])
+  rightEdge = line(start = [var 20mm, var 0mm], end = [var 20mm, var 20mm])
+  topEdge = line(start = [var 20mm, var 20mm], end = [var 0mm, var 20mm])
+  leftEdge = line(start = [var 0mm, var 20mm], end = [var 0mm, var 0mm])
+  coincident([bottomEdge.start, ORIGIN])
+  coincident([bottomEdge.end, rightEdge.start])
+  coincident([rightEdge.end, topEdge.start])
+  coincident([topEdge.end, leftEdge.start])
+  coincident([leftEdge.end, bottomEdge.start])
+  horizontal(bottomEdge)
+  vertical(rightEdge)
+  horizontal(topEdge)
+  vertical(leftEdge)
+  distance([bottomEdge.start, bottomEdge.end]) == cubeSize
+  distance([rightEdge.start, rightEdge.end]) == cubeSize
+}
+cubeRegion = region(segments = [cubeProfile.bottomEdge, cubeProfile.rightEdge], intersectionIndex = -1, direction = CCW)
+originalCube = extrude(cubeRegion, length = cubeSize, tagEnd = $capEnd001)
+hide(cubeProfile)
+translatedCube = clone(originalCube) |> translate(x = 50mm, global = true)
+face001 = faceOf(translatedCube, face = END)
+sketch001 = sketch(on = face001) {
+  line1 = line(start = [var 54.38mm, var 6.26mm], end = [var 59.9mm, var 16mm])
+  line2 = line(start = [var 59.9mm, var 16mm], end = [var 66.59mm, var 5.18mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 66.59mm, var 5.18mm], end = [var 54.38mm, var 6.26mm])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line1.start])
+}
+hidden001 = hide(sketch001)
+region001 = region(segments = [sketch001.line1, sketch001.line2], direction = CW)
+extrude001 = extrude(region001, length = 50mm)
+pattern001 = patternLinear3d(translatedCube, instances = 4, distance = 30mm, axis = Y)
+"#;
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let ctx = ExecutorContext::new_geometry_only_with_default_client().await.unwrap();
+        let mut frontend = FrontendState::new();
+        let SetProgramOutcome::Success { exec_outcome, .. } = frontend.hack_set_program(&ctx, program).await.unwrap()
+        else {
+            panic!("Expected successful initial execution");
+        };
+        let pattern = exec_outcome
+            .artifact_graph
+            .values()
+            .find_map(|artifact| match artifact {
+                Artifact::Pattern(pattern) => Some(pattern),
+                _ => None,
+            })
+            .unwrap();
+        let copy_id = pattern.copy_ids[1];
+        let wall = exec_outcome
+            .artifact_graph
+            .values()
+            .find_map(|artifact| match artifact {
+                Artifact::Wall(wall) if wall.cmd_id == Uuid::from(copy_id) => {
+                    let segment = exec_outcome.artifact_graph.get(&wall.seg_id)?;
+                    let Artifact::Segment(segment) = segment else {
+                        return None;
+                    };
+                    let source = segment
+                        .original_seg_id
+                        .and_then(|id| exec_outcome.artifact_graph.get(&id))
+                        .and_then(|artifact| match artifact {
+                            Artifact::Segment(source) => Some(source),
+                            _ => None,
+                        })
+                        .unwrap_or(segment);
+                    initial_source[source.code_ref.range.start()..source.code_ref.range.end()]
+                        .contains("54.38mm")
+                        .then_some(wall)
+                }
+                _ => None,
+            })
+            .expect("Expected copied triangle wall");
+        let object_id = frontend
+            .scene_graph
+            .objects
+            .iter()
+            .find(|object| object.artifact_id == wall.id)
+            .unwrap()
+            .id;
+        let selected_face_id = Uuid::from(wall.id);
+        let (source, _, _) = frontend
+            .new_sketch(
+                &ctx,
+                ProjectId(0),
+                FileId(0),
+                Version(0),
+                SketchCtor {
+                    on: Plane::Object(object_id),
+                },
+            )
+            .await
+            .unwrap();
+        assert!(
+            source
+                .text
+                .contains("faceOf(pattern001[2], face = region001.tags.line1)"),
+            "{}",
+            source.text
+        );
+        let program = Program::parse(&source.text).unwrap().0.unwrap();
+        let result = ctx.run_with_caching(program).await.map_err(|e| e.error).unwrap();
+        let Some(KclValueView::Face { value: face }) = result.variables.get("face002") else {
+            panic!("Expected new face");
+        };
+        assert_eq!(face.id, selected_face_id);
         ctx.close().await;
     }
 
