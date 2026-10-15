@@ -15,6 +15,7 @@ import {
   modelingStdLibCommandStatus,
   modelingStdLibCommandUsesExperimentalFeatures,
   type StdLibCommandDriftConfig,
+  stdLibCommandArgs,
   stdLibCommandStatus,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import { STD_LIB_COMMANDS } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
@@ -570,6 +571,22 @@ function pointAndClickStdLibArgs(config: StdLibCommandDriftConfig) {
 }
 
 describe('stdlib command arg derivation', () => {
+  it('preserves generated docs through aliases without replacing input hints', () => {
+    const args = stdLibCommandArgs<Record<string, unknown>>('gdt::position', {
+      argAliases: { faces: 'objects', edges: 'objects' },
+      overrides: { objects: { description: 'Pick the features to annotate.' } },
+    })
+    const docs = STD_LIB_COMMANDS['gdt::position'].args
+      .filter((arg) => arg.name === 'faces' || arg.name === 'edges')
+      .map((arg) => arg.docs?.trim())
+      .filter(Boolean)
+      .join('\n\n')
+
+    expect(args.objects.documentation).toBe(docs)
+    expect(args.objects.description).toBe('Pick the features to annotate.')
+    expect(args.tolerance.description).toBeUndefined()
+  })
+
   it('derives base command-bar arg config from KCL stdlib metadata', () => {
     const args = modelingStdLibCommandArgs<ModelingCommandSchema['Extrude']>(
       'Extrude',

@@ -189,6 +189,8 @@ export type CommandArgumentConfig<
   available?: (context: C) => boolean
   displayName?: string
   description?: string
+  /** Reference documentation shown on demand, separate from command-bar hints. */
+  documentation?: string
   status?: CommandArgumentStatus
   statusMessage?: string
   required: CommandArgumentRequired<C>
@@ -365,6 +367,8 @@ export type CommandArgument<
 > = {
   displayName?: string
   description?: string
+  /** Reference documentation shown on demand, separate from command-bar hints. */
+  documentation?: string
   status?: CommandArgumentStatus
   statusMessage?: string
   required:

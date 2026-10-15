@@ -188,6 +188,7 @@ export function stdLibCommandArgs<CommandArgs extends object>(
 ): CommandArgConfigs<CommandArgs> {
   const omitted = new Set(options.omitted ?? [])
   const includeDeprecated = new Set(options.includeDeprecated ?? [])
+  const documentationByArg = new Map<string, string>()
   const args: Record<string, Record<string, unknown>> = Object.fromEntries(
     STD_LIB_COMMANDS[stdLibName].args
       .filter(
@@ -196,10 +197,19 @@ export function stdLibCommandArgs<CommandArgs extends object>(
       .filter((arg) => !omitted.has(arg.name))
       .map((arg) => {
         const commandArgName = options.argAliases?.[arg.name] ?? arg.name
+        // One UI field can represent several stdlib arguments.
+        const documentation = [
+          documentationByArg.get(commandArgName),
+          arg.docs?.trim(),
+        ]
+          .filter(Boolean)
+          .join('\n\n')
+        documentationByArg.set(commandArgName, documentation)
         return [
           commandArgName,
           {
             ...stdLibArgBaseConfig(arg, commandArgName),
+            documentation: documentation || undefined,
             ...(options.overrides?.[commandArgName] ?? {}),
           },
         ]

@@ -205,6 +205,7 @@ export function buildCommandArgument<
   const baseCommandArgument = {
     displayName: arg.displayName,
     description: arg.description,
+    documentation: arg.documentation,
     status: arg.status,
     statusMessage: arg.statusMessage,
     required,
