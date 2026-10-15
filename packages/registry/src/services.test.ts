@@ -52,7 +52,7 @@ describe('services', () => {
     })
     const registry = new Registry()
     registry.configure([consumer])
-    const record = registry.get(pluginsValueSpec)[0]!
+    const record = registry.get(pluginsValueSpec)[0]
     const toggle = registry.get(record.service)
     const originalProvider = registry.get(api)
     const originalConsumer = registry.get(result)
@@ -128,7 +128,7 @@ describe('services', () => {
     })
     const registry = new Registry()
     registry.configure([plugin])
-    const record = registry.get(pluginsValueSpec)[0]!
+    const record = registry.get(pluginsValueSpec)[0]
     const toggle = registry.get(record.service)
     await expect(toggle.enable()).rejects.toBe(failure)
     expect(toggle.active.value).toBe(false)
@@ -164,7 +164,7 @@ describe('services', () => {
     })
     const registry = new Registry()
     registry.configure([plugin])
-    const toggle = registry.get(registry.get(pluginsValueSpec)[0]!.service)
+    const toggle = registry.get(registry.get(pluginsValueSpec)[0].service)
     const completion = toggle.disable()
     expect(toggle.active.value).toBe(false)
     expect(registry.optional(api)).toBeUndefined()
