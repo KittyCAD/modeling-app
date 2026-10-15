@@ -3637,10 +3637,12 @@ export function getOperationLabel(op: Operation): string {
     case 'VariableDeclaration':
       return 'Parameter'
     case 'GroupBegin':
-      if (op.group.type === 'FunctionCall') {
-        return op.group.name ?? 'anonymous'
+      switch (op.group.type) {
+        case 'FunctionCall':
+          return op.group.name ?? 'anonymous'
+        case 'SketchBlock':
+          return 'Sketch'
       }
-      return 'Solve Sketch'
     case 'ModuleInstance':
       return op.name
     case 'GroupEnd':
