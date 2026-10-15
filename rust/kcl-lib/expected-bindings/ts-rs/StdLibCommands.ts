@@ -2448,9 +2448,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The leader's end marker. The default is `gdt::LeaderType::Dot`. `None` hides only the marker, not the leader line.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the leader marker. The default is `1.0`. Dots stay the same screen size as `fontSize` changes; arrowheads scale with `fontSize`. Has no visual effect for `None`. Must be greater than `0`.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -2559,9 +2571,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The leader's end marker. The default is `gdt::LeaderType::Dot`. `None` hides only the marker, not the leader line.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the leader marker. The default is `1.0`. Dots stay the same screen size as `fontSize` changes; arrowheads scale with `fontSize`. Has no visual effect for `None`. Must be greater than `0`.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -2682,9 +2706,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The leader's end marker. The default is `gdt::LeaderType::Dot`. `None` hides only the marker, not the leader line.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the leader marker. The default is `1.0`. Dots stay the same screen size as `fontSize` changes; arrowheads scale with `fontSize`. Has no visual effect for `None`. Must be greater than `0`.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -2817,9 +2853,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The leader's end marker. The default is `gdt::LeaderType::Dot`. `None` hides only the marker, not the leader line.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the leader marker. The default is `1.0`. Dots stay the same screen size as `fontSize` changes; arrowheads scale with `fontSize`. Has no visual effect for `None`. Must be greater than `0`.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -2940,9 +2988,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The leader's end marker. The default is `gdt::LeaderType::Dot`. `None` hides only the marker, not the leader line.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the leader marker. The default is `1.0`. Dots stay the same screen size as `fontSize` changes; arrowheads scale with `fontSize`. Has no visual effect for `None`. Must be greater than `0`.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3039,9 +3099,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The leader's end marker. The default is `gdt::LeaderType::Dot`. `None` hides only the marker, not the leader line.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the leader marker. The default is `1.0`. Dots stay the same screen size as `fontSize` changes; arrowheads scale with `fontSize`. Has no visual effect for `None`. Must be greater than `0`.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3285,9 +3357,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The leader's end marker. The default is `gdt::LeaderType::Dot`. `None` hides only the marker, not the leader line.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the leader marker. The default is `1.0`. Dots stay the same screen size as `fontSize` changes; arrowheads scale with `fontSize`. Has no visual effect for `None`. Must be greater than `0`.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3495,9 +3579,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The leader's end marker. The default is `gdt::LeaderType::Dot`. `None` hides only the marker, not the leader line.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the leader marker. The default is `1.0`. Dots stay the same screen size as `fontSize` changes; arrowheads scale with `fontSize`. Has no visual effect for `None`. Must be greater than `0`.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3630,9 +3726,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The leader's end marker. The default is `gdt::LeaderType::Dot`. `None` hides only the marker, not the leader line.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the leader marker. The default is `1.0`. Dots stay the same screen size as `fontSize` changes; arrowheads scale with `fontSize`. Has no visual effect for `None`. Must be greater than `0`.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3765,9 +3873,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The leader's end marker. The default is `gdt::LeaderType::Dot`. `None` hides only the marker, not the leader line.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the leader marker. The default is `1.0`. Dots stay the same screen size as `fontSize` changes; arrowheads scale with `fontSize`. Has no visual effect for `None`. Must be greater than `0`.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -3900,9 +4020,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The leader's end marker. The default is `gdt::LeaderType::Dot`. `None` hides only the marker, not the leader line.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the leader marker. The default is `1.0`. Dots stay the same screen size as `fontSize` changes; arrowheads scale with `fontSize`. Has no visual effect for `None`. Must be greater than `0`.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -4023,9 +4155,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The leader's end marker. The default is `gdt::LeaderType::Dot`. `None` hides only the marker, not the leader line.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the leader marker. The default is `1.0`. Dots stay the same screen size as `fontSize` changes; arrowheads scale with `fontSize`. Has no visual effect for `None`. Must be greater than `0`.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -4146,9 +4290,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The leader's end marker. The default is `gdt::LeaderType::Dot`. `None` hides only the marker, not the leader line.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the leader marker. The default is `1.0`. Dots stay the same screen size as `fontSize` changes; arrowheads scale with `fontSize`. Has no visual effect for `None`. Must be greater than `0`.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -4281,9 +4437,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The leader's end marker. The default is `gdt::LeaderType::Dot`. `None` hides only the marker, not the leader line.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the leader marker. The default is `1.0`. Dots stay the same screen size as `fontSize` changes; arrowheads scale with `fontSize`. Has no visual effect for `None`. Must be greater than `0`.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -4404,9 +4572,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The leader's end marker. The default is `gdt::LeaderType::Dot`. `None` hides only the marker, not the leader line.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the leader marker. The default is `1.0`. Dots stay the same screen size as `fontSize` changes; arrowheads scale with `fontSize`. Has no visual effect for `None`. Must be greater than `0`.",
         "required": false,
         "special": false,
         "experimental": false,
@@ -4539,9 +4719,21 @@ export default {
         "removedIn": null
       },
       {
+        "name": "leaderType",
+        "ty": "LeaderType",
+        "docs": "The leader's end marker. The default is `gdt::LeaderType::Dot`. `None` hides only the marker, not the leader line.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
         "name": "leaderScale",
         "ty": "number(_)",
-        "docs": "Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.",
+        "docs": "Visual scale of the leader marker. The default is `1.0`. Dots stay the same screen size as `fontSize` changes; arrowheads scale with `fontSize`. Has no visual effect for `None`. Must be greater than `0`.",
         "required": false,
         "special": false,
         "experimental": false,

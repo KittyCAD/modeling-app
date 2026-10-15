@@ -31,3 +31,6 @@ Functions for working with geometric dimensioning and tolerancing (GD&T). This c
 * [`gdt::straightness`](/docs/kcl-std/functions/std-gdt-straightness)
 * [`gdt::symmetry`](/docs/kcl-std/functions/std-gdt-symmetry)
 
+## Types
+
+* [`gdt::LeaderType`](/docs/kcl-std/types/std-gdt-LeaderType)
