@@ -151,20 +151,10 @@ function createSketchSolveHarness(objects: ApiObject[] = []) {
   ).start()
   startedActors.push(actor)
 
-  return { actor, getPlaneIntersectPoint, rustContext, scene, kclManager }
+  return { actor, getPlaneIntersectPoint, rustContext, scene }
 }
 
 describe('sketchSolveMachine selection clearing', () => {
-  it('syncs the initial sketch outcome before tools are used', () => {
-    const { actor, kclManager } = createSketchSolveHarness()
-    const { sketchExecOutcome } = actor.getSnapshot().context
-
-    expect(kclManager.syncSketchSolveOutcome).toHaveBeenCalledWith(
-      kclManager.code,
-      sketchExecOutcome?.sceneGraphDelta
-    )
-  })
-
   it('clears the selection when an equipped child tool completes', () => {
     vi.spyOn(console, 'log').mockImplementation(() => undefined)
     const { actor } = createSketchSolveHarness()

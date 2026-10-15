@@ -44,6 +44,8 @@ import {
 } from '@src/lang/testHelpers/kclManagerTestHarness'
 import type { Artifact, ArtifactGraph } from '@src/lang/wasm'
 import { defaultNodePath, emptyExecState } from '@src/lang/wasm'
+import { getOperationVariableName } from '@src/lib/operations'
+import { createSceneGraphDelta } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
 
 function createDeferred<T>() {
   let resolve!: (value: T) => void
@@ -262,6 +264,52 @@ describe('KclManager live operation updates', () => {
       expect.stringContaining('Live operation updates failed')
     )
     consoleErrorSpy.mockRestore()
+  })
+})
+
+describe('KclManager sketch outcomes', () => {
+  it('resolves a new sketch name without executing the editor code', async () => {
+    const { kclManager } = createKclManagerTestHarness()
+    try {
+      const instance = await kclManager.wasmInstancePromise
+      await vi.waitFor(() =>
+        expect(kclManager.kclProgramVersionSignal.value).not.toBeNull()
+      )
+      const code =
+        '@settings(kclVersion = 3.0)\nsketch001 = sketch(on = XY) {}\n'
+      const operation: Operation = {
+        type: 'GroupBegin',
+        group: { type: 'SketchBlock', sketchId: 1 },
+        sourceRange: [code.indexOf('sketch(on'), code.indexOf('}') + 1, 0],
+        nodePath: {
+          steps: [
+            { type: 'ProgramBodyItem', index: 0 },
+            { type: 'VariableDeclarationDeclaration' },
+            { type: 'VariableDeclarationInit' },
+          ],
+        },
+      }
+      const delta = createSceneGraphDelta([])
+      delta.exec_outcome.operations.map[0] = [operation, { type: 'GroupEnd' }]
+
+      expect(kclManager.ast.body).toHaveLength(0)
+      kclManager.updateCodeEditor(code, {
+        shouldExecute: false,
+        shouldWriteToDisk: false,
+      })
+      kclManager.syncSketchSolveOutcome(code, delta, {
+        refreshLintDiagnostics: false,
+      })
+
+      await vi.waitFor(() =>
+        expect(
+          getOperationVariableName(operation, kclManager.ast, instance)
+        ).toBe('sketch001')
+      )
+      expect(kclManager.variables).toEqual({})
+    } finally {
+      kclManager.close()
+    }
   })
 })
 
