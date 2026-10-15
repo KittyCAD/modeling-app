@@ -1405,6 +1405,82 @@ export function getVariableExprsFromSelection(
   const pushedNames = {} as Record<string, boolean>
   for (const s of selection.graphSelections) {
     const resolvedForSegment = resolveToCodeRef(s, artifactGraph)
+    const copiedBody = resolvedForSegment?.artifact
+    const copyPattern = copiedBody
+      ? getPatternArtifactForCopyId(copiedBody.id, artifactGraph)
+      : undefined
+    if (
+      copiedBody &&
+      copyPattern?.type === 'pattern' &&
+      copyPattern.copyIds.includes(copiedBody.id)
+    ) {
+      const expr = getPatternExprFromSelection(
+        { artifact: copyPattern, engineEntityId: copiedBody.id },
+        ast,
+        wasmInstance
+      )
+      if (expr) {
+        const key = splitOutputExprKey(expr)
+        if (!pushedNames[key]) {
+          exprs.push(expr)
+          pushedNames[key] = true
+        }
+        continue
+      }
+    }
+    const mirroredBody = resolvedForSegment?.artifact
+    if (
+      mirroredBody &&
+      (mirroredBody.type === 'sweep' || mirroredBody.type === 'compositeSolid')
+    ) {
+      const call = getNodeFromPath<CallExpressionKw>(
+        ast,
+        mirroredBody.codeRef.pathToNode,
+        wasmInstance,
+        'CallExpressionKw'
+      )
+      if (
+        !err(call) &&
+        call.node.type === 'CallExpressionKw' &&
+        call.node.callee.name.name === 'mirror3d'
+      ) {
+        const declaration = getNodeFromPath<VariableDeclaration>(
+          ast,
+          mirroredBody.codeRef.pathToNode,
+          wasmInstance,
+          'VariableDeclaration'
+        )
+        // mirror3d returns an array; its output bodies are inserted in result
+        // order and share the call location. Select the matching array entry.
+        const outputs = [...artifactGraph.values()].filter(
+          (artifact) =>
+            (artifact.type === 'sweep' || artifact.type === 'compositeSolid') &&
+            artifact.codeRef.range.every(
+              (value, index) => value === mirroredBody.codeRef.range[index]
+            )
+        )
+        const index = outputs.findIndex(
+          (artifact) => artifact.id === mirroredBody.id
+        )
+        if (
+          !err(declaration) &&
+          declaration.node.type === 'VariableDeclaration' &&
+          index >= 0
+        ) {
+          const expr = createMemberExpression(
+            declaration.node.declaration.id.name,
+            createLiteral(index, wasmInstance),
+            true
+          )
+          const key = splitOutputExprKey(expr)
+          if (!pushedNames[key]) {
+            exprs.push(expr)
+            pushedNames[key] = true
+          }
+          continue
+        }
+      }
+    }
     const patternExpr = getPatternExprFromSelection(s, ast, wasmInstance)
     if (patternExpr) {
       const key = splitOutputExprKey(patternExpr)

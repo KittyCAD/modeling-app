@@ -23,6 +23,7 @@ import { isFaceArtifact } from '@src/lang/modifyAst/faces'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import {
   getVariableExprsFromSelection,
+  isEnginePrimitiveSelection,
   resolveToCodeRef,
   traverse,
   valueOrVariable,
@@ -52,6 +53,37 @@ const GDT_LABELED_SELECTION_ARG_NAMES = [
   'to',
   'face',
 ] as const
+
+function withPrimitiveEdges(selections: Selections): Selections {
+  return {
+    ...selections,
+    graphSelections: [
+      ...selections.graphSelections,
+      ...selections.otherSelections.flatMap((selection): Selection[] =>
+        isEnginePrimitiveSelection(selection) &&
+        selection.primitiveType === 'edge' &&
+        selection.parentEntityId
+          ? [
+              {
+                entityRef: { type: 'edge', side_faces: [] },
+                engineEntityId: selection.entityId,
+                engineTopologyFallback: {
+                  parentId: selection.parentEntityId,
+                  primitiveIndex: selection.primitiveIndex,
+                },
+              },
+            ]
+          : []
+      ),
+    ],
+    otherSelections: selections.otherSelections.filter(
+      (selection) =>
+        !isEnginePrimitiveSelection(selection) ||
+        selection.primitiveType !== 'edge' ||
+        !selection.parentEntityId
+    ),
+  }
+}
 
 function getGdtEdgeBodySelection(
   selection: Selection,
@@ -191,6 +223,8 @@ function buildFaceAndEdgeGdtExprs({
     }
   }
 
+  objects = withPrimitiveEdges(objects)
+
   const faceSelections = resolveSelectionsForTags(
     withoutEdgeLikeSelections(objects),
     artifactGraph,
@@ -275,7 +309,7 @@ function buildGdtEdgeExpressions({
   let modifiedAst = ast
   const edgeExprs: Expr[] = []
 
-  for (const selection of selections.graphSelections) {
+  for (const selection of withPrimitiveEdges(selections).graphSelections) {
     const payload = getEdgeRefPayloadFromSelection(selection)
     if (!payload) continue
 
@@ -290,6 +324,25 @@ function buildGdtEdgeExpressions({
       : null
     if (bodyVariables instanceof Error) return bodyVariables
     const bodyExpr = bodyVariables?.exprs[0]
+    const topology = getEngineTopologyFallbackNormalized(selection)
+    const missingFaces =
+      payload.side_faces.length === 0 ||
+      [...payload.side_faces, ...(payload.end_faces ?? [])].some(
+        (id) => !artifactGraph.has(id)
+      )
+    // Use a primitive query only when semantic face artifacts are unavailable.
+    if (topology && bodyExpr && missingFaces) {
+      edgeExprs.push(
+        createCallExpressionStdLibKw('edgeId', bodyExpr, [
+          createLabeledArg(
+            'index',
+            createLiteral(topology.primitiveIndex, wasmInstance)
+          ),
+        ])
+      )
+      continue
+    }
+
     const originalEdgeSelection =
       selection.artifact?.type === 'segment'
         ? {
