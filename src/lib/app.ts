@@ -9,7 +9,7 @@ import {
 import { effect, type Signal, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import { KclManager } from '@src/lang/KclManager'
-import { File, ZDSProject } from '@src/lib/projectSession'
+import { ZDSProject } from '@src/lib/projectSession'
 import { lspService } from '@src/lang/lsp/registry/contract'
 import { type BillingRegistryService, billingService } from '@src/lib/billing'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
@@ -781,14 +781,10 @@ export class App implements AppSubsystems {
    * Build the world!
    */
   buildSingletons() {
-    File.ioImplementations.read = async (path) =>
-      new TextDecoder().decode(await this.fileOperations.readFile(path))
-    File.ioImplementations.write = (path, content) =>
-      this.fileOperations.writeFile(path, content)
-
     // TODO: Remove this and make the app handle no executing editor,
     // so we don't need to stub with empty strings
     const kclManager = new KclManager('', '', {
+      textFileIO: this.projectSession.textFileIO,
       settings: this.settings.actor,
       wasmInstancePromise: this.wasmPromise,
       commandBar: this.commands.actor,

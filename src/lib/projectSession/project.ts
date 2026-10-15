@@ -16,10 +16,13 @@ import type RustContext from '@src/lib/rustContext'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { App } from '@src/lib/app'
 import { File } from '@src/lib/projectSession/file'
+import type { TextFileIO } from '@src/lib/projectSession/textFileIO'
+import { projectSession } from '@src/registry/contracts/projectSession'
 
 // Each of our singletons has dependencies on _other_ singletons, so importing
 // can easily become cyclic. Each will have its own Singletons type.
 export interface ProjectSystemDeps {
+  textFileIO: TextFileIO
   wasmInstancePromise: Promise<ModuleType>
   settings: SettingsActorType
   commandBar: CommandBarActorType
@@ -62,7 +65,8 @@ export class ZDSProject {
 
   constructor(
     public projectIORefSignal: Signal<Project>,
-    private app: App
+    private app: App,
+    public readonly textFileIO: TextFileIO
   ) {
     this.files = this.collectProjectFiles(projectIORefSignal.value)
     window.electron?.watchFileOn(
@@ -83,7 +87,11 @@ export class ZDSProject {
 
   /** Open a project, with the option to open an initial editor too */
   static async open(projectRef: Signal<Project>, app: App) {
-    return new ZDSProject(projectRef, app)
+    return new ZDSProject(
+      projectRef,
+      app,
+      app.registry.get(projectSession).textFileIO
+    )
   }
 
   get executingPath() {
@@ -145,6 +153,7 @@ export class ZDSProject {
     }
 
     const systemDeps: ProjectSystemDeps = {
+      textFileIO: this.textFileIO,
       wasmInstancePromise: this.app.wasmPromise,
       commandBar: this.app.commands.actor,
       settings: this.app.settings.actor,
@@ -166,6 +175,7 @@ export class ZDSProject {
       if (previousEditorFileIndex > -1) {
         this.files[previousEditorFileIndex] = new File(
           providedEditor.path,
+          this.textFileIO,
           providedEditor.id
         )
       }
@@ -173,7 +183,7 @@ export class ZDSProject {
     const newEditor = await KclManager.fromFile(
       foundFileIndex > -1
         ? this.files[foundFileIndex]
-        : new File(path, this.nextFileId++),
+        : new File(path, this.textFileIO, this.nextFileId++),
       systemDeps,
       providedEditor,
       providedCode,
@@ -273,7 +283,7 @@ export class ZDSProject {
     if (path.endsWith('.kcl')) {
       switch (eventType) {
         case 'add':
-          const newFile = new File(path, this.nextFileId++)
+          const newFile = new File(path, this.textFileIO, this.nextFileId++)
           this.files.push(newFile)
           newFile
             .asRustApiFile()
@@ -312,7 +322,7 @@ export class ZDSProject {
         if (entry.name.endsWith('.kcl')) {
           const id = this.nextFileId++
           const path = entry.path
-          files.push(new File(path, id))
+          files.push(new File(path, this.textFileIO, id))
         } else {
           this.collectProjectFiles(entry, files)
         }
@@ -364,7 +374,11 @@ export class ZDSProject {
         continue
       }
 
-      const newFile = new File(replayFile.absolutePath, this.nextFileId++)
+      const newFile = new File(
+        replayFile.absolutePath,
+        this.textFileIO,
+        this.nextFileId++
+      )
       this.files.push(newFile)
       await editor.rustContext
         .sendAddFile({

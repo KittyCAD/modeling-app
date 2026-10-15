@@ -628,7 +628,7 @@ export class KclManager extends File {
     // Your current file is changed, read it from disk and write it into the code manager and execute the AST,
     // unless the change was initiated by us (the currently running instance).
     const requestedDocumentVersion = this._documentVersion
-    File.ioImplementations
+    this.textFileIO
       .read(path)
       .then((code) => {
         if (requestedDocumentVersion !== this._documentVersion) {
@@ -1836,7 +1836,7 @@ export class KclManager extends File {
     systemDeps: ProjectSystemDeps,
     fileId = 0
   ) {
-    super(path, fileId)
+    super(path, systemDeps.textFileIO, fileId)
     // Register our additional, KclManager-specific watch event handler
     this.onWatchEvent.push(this.#onWatchEvent)
     this.systemDeps = systemDeps
@@ -3810,7 +3810,7 @@ export class KclManager extends File {
     let currentDiskCode: string | null = null
     try {
       currentDiskCode = normalizeLineEndings(
-        await File.ioImplementations.read(requestedPath)
+        await this.textFileIO.read(requestedPath)
       )
     } catch (err: unknown) {
       if (isPathNotFoundError(err)) {

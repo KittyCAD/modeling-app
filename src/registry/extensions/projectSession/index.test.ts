@@ -1,8 +1,17 @@
-import { Registry } from '@kittycad/registry'
+import {
+  defineRegistryItem,
+  provideService,
+  Registry,
+} from '@kittycad/registry'
 import type { ZDSProject } from '@src/lib/projectSession'
+import { File } from '@src/lib/projectSession/file'
+import {
+  type FileOperationsRegistryService,
+  fileOperationsService,
+} from '@src/registry/contracts/fileOperations'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import projectSessionRegistryItem from '@src/registry/extensions/projectSession'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 describe('project session extension', () => {
   let registry: Registry | undefined
@@ -51,5 +60,56 @@ describe('project session extension', () => {
 
     expect(session.getCurrentProjectLibraryId()).toBeUndefined()
     expect(session.currentProjectLibraryId.value).toBeUndefined()
+  })
+
+  it('keeps file reads and writes isolated between registries without an editor', async () => {
+    const createSession = (text: string) => {
+      const readFile = vi.fn(async () => new TextEncoder().encode(text))
+      const writeFile = vi.fn(async (_path: string, _content: string) => {})
+      const operations = {
+        readFile,
+        writeFile,
+      } as unknown as FileOperationsRegistryService
+      const registry = new Registry()
+      registry.configure([
+        projectSessionRegistryItem,
+        defineRegistryItem({
+          providesServices: [provideService(fileOperationsService, operations)],
+        }),
+      ])
+      const session = registry.get(projectSession)
+      const file = new File('/project/main.kcl', session.textFileIO, 7)
+      return { registry, file, readFile, writeFile }
+    }
+    const first = createSession('first: \u03c0')
+    const second = createSession('second')
+    try {
+      await expect(first.file.asRustApiFile()).resolves.toEqual({
+        id: 7,
+        path: '/project/main.kcl',
+        text: 'first: \u03c0',
+      })
+      await expect(second.file.read()).resolves.toBe('second')
+      await first.file.write('first edit')
+      await second.file.write('second edit')
+      expect(first.writeFile).toHaveBeenCalledExactlyOnceWith(
+        '/project/main.kcl',
+        'first edit'
+      )
+      expect(second.writeFile).toHaveBeenCalledExactlyOnceWith(
+        '/project/main.kcl',
+        'second edit'
+      )
+      second.registry[Symbol.dispose]()
+      await expect(first.file.read()).resolves.toBe('first: \u03c0')
+      const failure = new Error('read denied')
+      first.readFile.mockRejectedValueOnce(failure)
+      await expect(first.file.read()).rejects.toBe(failure)
+      first.writeFile.mockRejectedValueOnce(failure)
+      await expect(first.file.write('failed edit')).rejects.toBe(failure)
+    } finally {
+      second.registry[Symbol.dispose]()
+      first.registry[Symbol.dispose]()
+    }
   })
 })

@@ -1,5 +1,6 @@
 import { type Signal, signal } from '@preact/signals-core'
 import type { ApiFile } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { TextFileIO } from '@src/lib/projectSession/textFileIO'
 import { uuidv4 } from '@src/lib/utils'
 
 export class File extends EventTarget {
@@ -30,11 +31,11 @@ export class File extends EventTarget {
   }
 
   read() {
-    return File.ioImplementations.read(this.pathSignal.value)
+    return this.textFileIO.read(this.pathSignal.value)
   }
 
   write(newContent: string) {
-    return File.ioImplementations.write(this.pathSignal.value, newContent)
+    return this.textFileIO.write(this.pathSignal.value, newContent)
   }
 
   watch() {
@@ -57,6 +58,7 @@ export class File extends EventTarget {
 
   constructor(
     path: string,
+    public readonly textFileIO: TextFileIO,
     public id = 0
   ) {
     super()
@@ -72,12 +74,8 @@ export class File extends EventTarget {
     }))
   }
 
-  /** Allows environments to swap their implementation of these IO-interfacing functions */
+  /** Platform watch hooks; text reads and writes are injected per file. */
   static ioImplementations = {
-    read: (_path: string): Promise<string> =>
-      Promise.reject(new Error('File IO has not been configured')),
-    write: (_path: string, _content: string): Promise<void> =>
-      Promise.reject(new Error('File IO has not been configured')),
     watch: window.electron?.watchFileOn || (() => {}),
     unwatch: window.electron?.watchFileOff || (() => {}),
   }

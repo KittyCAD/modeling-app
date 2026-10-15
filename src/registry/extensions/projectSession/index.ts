@@ -6,15 +6,26 @@ import {
 import { signal } from '@preact/signals-core'
 import type { ZDSProject } from '@src/lib/projectSession'
 import {
+  createTextFileIO,
+  type TextFileIO,
+} from '@src/lib/projectSession/textFileIO'
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
+import {
   projectSession,
   type ProjectSessionService,
 } from '@src/registry/contracts/projectSession'
 
-export const projectSessionExtension = defineRegistryItemFactory(() => {
+export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
   const project = signal<ZDSProject | undefined>(undefined)
   const currentProjectLibraryId = signal<string | undefined>(undefined)
+  let textFileIO: TextFileIO | undefined
 
   const serviceImpl: ProjectSessionService = {
+    get textFileIO() {
+      return (textFileIO ??= createTextFileIO(
+        ctx.services.get(fileOperationsService)
+      ))
+    },
     project,
     currentProjectLibraryId,
     getProject: () => project.value,
