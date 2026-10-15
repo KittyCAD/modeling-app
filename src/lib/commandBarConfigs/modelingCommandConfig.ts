@@ -20,6 +20,7 @@ import type {
   KclCommandValue,
   StateMachineCommandSetConfig,
 } from '@src/lib/commandTypes'
+import { isKclCommandValue } from '@src/lib/commandUtils'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   KCL_AXIS_X,
@@ -48,7 +49,7 @@ import {
   KCL_PRELUDE_EXTRUDE_METHOD_VALUES,
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
-import { isEnginePrimitiveSelection } from '@src/lib/selections'
+import { isEnginePrimitiveSelection, isSelections } from '@src/lib/selections'
 import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
 import type { modelingMachine } from '@src/machines/modelingMachine'
@@ -60,7 +61,7 @@ import type {
 
 import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
 import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
-import { capitaliseFC, isArray } from '@src/lib/utils'
+import { capitaliseFC } from '@src/lib/utils'
 import { MODE_SKETCHING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 
 export type { HelixModes } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
@@ -120,29 +121,6 @@ const kclBodyTypeOptions = KCL_PRELUDE_BODY_TYPE_VALUES.map((value) => ({
   value,
 }))
 
-function isSelections(value: unknown): value is Selections {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'graphSelections' in value &&
-    isArray(value.graphSelections) &&
-    'otherSelections' in value &&
-    isArray(value.otherSelections)
-  )
-}
-
-function isExtrudeRequirementKclCommandValue(
-  value: unknown
-): value is KclCommandValue {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'valueAst' in value &&
-    'valueText' in value &&
-    'valueCalculated' in value
-  )
-}
-
 export function profileSelectionRequiresBodyType({
   argumentsToSubmit,
 }: {
@@ -183,7 +161,7 @@ export function profileSelectionRequiresBodyType({
 export function extrudeSelectionRequiresBodyType(context: {
   argumentsToSubmit: Record<string, unknown>
 }): boolean {
-  if (!isExtrudeRequirementKclCommandValue(context.argumentsToSubmit.length)) {
+  if (!isKclCommandValue(context.argumentsToSubmit.length)) {
     return false
   }
 
@@ -195,7 +173,7 @@ export function extrudeSelectionRequiresMethod({
 }: {
   argumentsToSubmit: Record<string, unknown>
 }): boolean {
-  if (!isExtrudeRequirementKclCommandValue(argumentsToSubmit.length)) {
+  if (!isKclCommandValue(argumentsToSubmit.length)) {
     return false
   }
 
@@ -308,7 +286,9 @@ const datumInputToKclArray = (value: string) => {
   return `[${datumRefs.map((datumRef) => JSON.stringify(datumRef)).join(', ')}]`
 }
 
-const isKclCommandValue = (value: unknown): value is KclCommandValue =>
+const isKclValueSummary = (
+  value: unknown
+): value is Pick<KclCommandValue, 'valueText' | 'valueCalculated'> =>
   Boolean(
     value &&
       typeof value === 'object' &&
@@ -317,7 +297,7 @@ const isKclCommandValue = (value: unknown): value is KclCommandValue =>
   )
 
 const summarizeDatumKclValue = (value: unknown) =>
-  isKclCommandValue(value)
+  isKclValueSummary(value)
     ? kclDatumArrayToInput(
         value.valueCalculated === 'NAN'
           ? value.valueText
@@ -336,7 +316,7 @@ export const getDefaultGdtTolerance = (
 }
 
 const summarizeGdtToleranceKclValue = (value: unknown) =>
-  isKclCommandValue(value) ? value.valueText : ''
+  isKclValueSummary(value) ? value.valueText : ''
 
 const gdtToleranceProps = {
   inputType: 'kcl',
@@ -387,6 +367,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   ModelingCommandSchema
 > = {
   'Enter sketch': {
+    forceCommandBar: true,
     description: 'Enter sketch mode.',
     icon: 'sketch',
   },
@@ -396,6 +377,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       description: 'Start drawing straight lines.',
       icon: 'line',
       displayName: 'Line',
+      forceCommandBar: true,
       args: {
         tool: {
           defaultValue: 'line',
@@ -410,6 +392,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       description: 'Start drawing an arc tangent to the current segment.',
       icon: 'arc',
       displayName: 'Tangential Arc',
+      forceCommandBar: true,
       args: {
         tool: {
           defaultValue: 'tangentialArc',
@@ -424,6 +407,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       description: 'Start drawing a rectangle.',
       icon: 'rectangle',
       displayName: 'Rectangle',
+      forceCommandBar: true,
       args: {
         tool: {
           defaultValue: 'rectangle',
@@ -435,6 +419,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   ],
   Export: {
+    forceCommandBar: true,
     description: 'Export the current model.',
     icon: 'floppyDiskArrow',
     needsReview: true,
@@ -678,12 +663,15 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             hidden: isEditingNodeSelection,
           },
           tagStart: {
+            dialog: { advanced: true },
             // TODO: add validation like for Clone command
           },
           twistCenter: {
+            dialog: { advanced: true },
             defaultValue: KCL_DEFAULT_ORIGIN_2D,
           },
           direction: {
+            dialog: { advanced: true },
             inputType: 'selection',
             selectionTypes: [
               'segment',
@@ -695,6 +683,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             clearSelectionFirst: true,
             hidden: isEditingNodeSelection,
           },
+          tagEnd: { dialog: { advanced: true } },
+          draftAngle: { dialog: { advanced: true } },
+          twistAngle: { dialog: { advanced: true } },
+          twistAngleStep: { dialog: { advanced: true } },
+          hideSeams: { dialog: { advanced: true } },
           method: {
             inputType: 'options',
             required: extrudeSelectionRequiresMethod,
@@ -824,11 +817,17 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
               { name: 'Sketch Axis', isCurrent: true, value: 'Axis' },
               { name: 'Edge', isCurrent: false, value: 'Edge' },
             ],
-            hidden: isEditingNodeSelection,
+            hidden: isEditingNode,
           },
           axis: {
             required: (context) =>
               ['Axis'].includes(context.argumentsToSubmit.axisOrEdge as string),
+            hidden: (context: {
+              argumentsToSubmit: Record<string, unknown>
+              selectedCommand?: { useModelingDialog?: boolean }
+            }) =>
+              context.selectedCommand?.useModelingDialog === true &&
+              context.argumentsToSubmit.axisOrEdge === 'Edge',
             inputType: 'options',
             displayName: 'Sketch Axis',
             options: [
@@ -1005,6 +1004,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   'Boolean Subtract': {
+    forceCommandBar: true,
     icon: 'booleanSubtract',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1032,6 +1032,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Boolean Union': {
+    forceCommandBar: true,
     icon: 'booleanUnion',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1053,6 +1054,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Boolean Intersect': {
+    forceCommandBar: true,
     icon: 'booleanIntersect',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1074,6 +1076,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Boolean Split': {
+    forceCommandBar: true,
     icon: 'split',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1149,7 +1152,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             { name: 'Edge', isCurrent: false, value: 'Edge' },
             { name: 'Cylinder', isCurrent: false, value: 'Cylinder' },
           ],
-          hidden: isEditingNodeSelection,
+          hidden: isEditingNode,
         },
         axis: {
           inputType: 'options',
@@ -1403,6 +1406,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Constrain length': {
+    forceCommandBar: true,
     scopes: [MODE_SKETCHING_COMMAND_SCOPE],
     description: 'Constrain the length of one or more segments.',
     icon: 'dimension',
@@ -1490,6 +1494,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   Appearance: {
+    forceCommandBar: true,
     icon: 'extrude',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1515,6 +1520,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   Delete: {
+    forceCommandBar: true,
     icon: 'trash',
     needsReview: true,
     status: modelingStdLibCommandStatus('Delete'),
@@ -1532,6 +1538,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Translate: {
+    forceCommandBar: true,
     icon: 'move',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1567,6 +1574,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   Rotate: {
+    forceCommandBar: true,
     icon: 'rotate',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1608,6 +1616,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Scale: {
+    forceCommandBar: true,
     icon: 'scale',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1639,6 +1648,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   Clone: {
+    forceCommandBar: true,
     icon: 'clone',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1687,6 +1697,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   'Mirror 3D': {
+    forceCommandBar: true,
     icon: 'mirror3d',
     displayName: 'Mirror',
     needsReview: true,
@@ -1722,6 +1733,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Pattern Circular 3D': {
+    forceCommandBar: true,
     icon: 'patternCircular3d',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -1760,6 +1772,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     }),
   },
   'Pattern Linear 3D': {
+    forceCommandBar: true,
     icon: 'patternLinear3d',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2140,6 +2153,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Annotation': {
+    forceCommandBar: true,
     icon: 'text',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2166,6 +2180,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Note': {
+    forceCommandBar: true,
     icon: 'note',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2187,6 +2202,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Flip Surface': {
+    forceCommandBar: true,
     icon: 'flipSurface',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2206,6 +2222,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'Join Surfaces': {
+    forceCommandBar: true,
     icon: 'joinSurfaces',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
