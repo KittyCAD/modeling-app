@@ -1,6 +1,12 @@
 import { Suspense } from 'react'
+import type { ReactNode } from 'react'
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
+import type { SelectionReference } from '@src/lib/selections'
+import type {
+  EnginePrimitiveSelection,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
 
 const mocks = vi.hoisted(() => {
   const unresolvedFace = {
@@ -14,6 +20,10 @@ const mocks = vi.hoisted(() => {
 
   return {
     getSelectionReferences: vi.fn(),
+    removeReferenceFromSelections:
+      vi.fn<
+        (selections: Selections, reference: SelectionReference) => Selections
+      >(),
     send: vi.fn(),
     selectionRanges: {
       graphSelections: [],
@@ -45,6 +55,16 @@ vi.mock('@src/components/Tooltip', () => ({
   default: () => null,
 }))
 
+vi.mock('@src/components/ToolbarDropdownPanel', () => ({
+  ToolbarDropdownPanel: ({
+    open,
+    children,
+  }: {
+    open: boolean
+    children: ReactNode
+  }) => (open ? <div>{children}</div> : null),
+}))
+
 vi.mock('@src/hooks/useModelingContext', () => ({
   useModelingContext: () => ({
     context: { selectionRanges: mocks.selectionRanges },
@@ -64,15 +84,18 @@ vi.mock('@src/lib/selections', () => ({
   isDefaultPlaneSelection: () => false,
   isEnginePrimitiveSelection: (selection: { type?: string }) =>
     selection.type === 'enginePrimitive',
-  removeReferenceFromSelections: vi.fn(),
+  removeReferenceFromSelections: mocks.removeReferenceFromSelections,
 }))
 
+import { SelectionReferencesList } from '@src/components/SelectionReferencesList'
 import { SelectionReferencesPopover } from '@src/components/SelectionReferencesPopover'
+import { useSingletons } from '@src/lib/boot'
 
 describe('SelectionReferencesPopover', () => {
   beforeEach(() => {
     mocks.getSelectionReferences.mockReset()
     mocks.getSelectionReferences.mockResolvedValue([])
+    mocks.removeReferenceFromSelections.mockReset()
     mocks.send.mockReset()
   })
 
@@ -110,6 +133,76 @@ describe('SelectionReferencesPopover', () => {
           otherSelections: [],
         },
       },
+    })
+  })
+
+  test('lists individual edges with details and removal in dialogs', async () => {
+    const first: EnginePrimitiveSelection = {
+      ...mocks.unresolvedFace,
+      primitiveType: 'edge',
+      entityId: 'first-edge',
+    }
+    const second = { ...first, entityId: 'second-edge', primitiveIndex: 2 }
+    const selectionRanges: Selections = {
+      graphSelections: [],
+      otherSelections: [first, second],
+    }
+    const onChange = vi.fn()
+    mocks.getSelectionReferences.mockResolvedValue([
+      {
+        id: first.entityId,
+        label: 'Edge',
+        code: 'firstEdge',
+        enginePrimitiveSelection: first,
+      },
+      {
+        id: second.entityId,
+        label: 'Edge',
+        code: 'secondEdge',
+        enginePrimitiveSelection: second,
+      },
+    ])
+    mocks.removeReferenceFromSelections.mockImplementation(
+      (selections, reference) => ({
+        ...selections,
+        otherSelections: selections.otherSelections.filter(
+          (selection) => selection !== reference.enginePrimitiveSelection
+        ),
+      })
+    )
+    function DialogSelections() {
+      const { kclManager } = useSingletons()
+      return (
+        <SelectionReferencesList
+          variant="dialog"
+          kclManager={kclManager}
+          wasmPromise={kclManager.wasmInstancePromise}
+          selectionRanges={selectionRanges}
+          onChange={onChange}
+        />
+      )
+    }
+    await act(async () => {
+      render(
+        <Suspense>
+          <DialogSelections />
+        </Suspense>
+      )
+      await mocks.wasmInstancePromise
+    })
+
+    expect(screen.getAllByText('Edge')).toHaveLength(2)
+    fireEvent.click(
+      screen.getAllByRole('button', { name: 'Edge selection details' })[0]
+    )
+    expect(screen.getByText('firstEdge')).toBeInTheDocument()
+    expect(screen.queryByText('secondEdge')).not.toBeInTheDocument()
+    fireEvent.click(
+      screen.getAllByRole('button', { name: 'Remove Edge from selection' })[0]
+    )
+    expect(onChange).toHaveBeenCalledWith({
+      graphSelections: [],
+      otherSelections: [second],
     })
   })
 })

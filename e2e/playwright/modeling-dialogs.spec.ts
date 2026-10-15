@@ -267,7 +267,9 @@ body002 = clone(body001)
     await removeProfile.click()
     await profiles.click()
     await expect(profiles).toHaveText('Select in the scene')
+    await editor.selectText('line(')
     await editor.selectText('region(')
+    await expect(profiles).toContainText(/1 region/i)
     await removeProfile.click()
     await expect(submit).toBeDisabled()
     await expect(profiles).toBeFocused()
@@ -352,62 +354,6 @@ body002 = clone(body001)
     await editor.expectEditor.toContain('length = 8mm')
     await editor.expectEditor.toContain('tagStart = $startFace')
     await editor.expectEditor.not.toContain('99mm')
-    await scene.settled()
-  })
-
-  test('Reorders Loft sections by dragging and keyboard before submitting', async ({
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    modelingDialog,
-  }) => {
-    const code = `@settings(kclVersion = 3.0)
-sketch001 = sketch(on = XY) {
-  circle1 = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
-}
-region001 = region(segments = [sketch001.circle1])
-plane002 = offsetPlane(XY, offset = 5)
-sketch002 = sketch(on = plane002) {
-  circle1 = circle(start = [var 3mm, var 0mm], center = [var 0mm, var 0mm])
-}
-region002 = region(segments = [sketch002.circle1])
-plane003 = offsetPlane(XY, offset = 10)
-sketch003 = sketch(on = plane003) {
-  circle1 = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
-}
-region003 = region(segments = [sketch003.circle1])`
-    await homePage.goToModelingScene()
-    await scene.settled()
-    await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
-    await toolbar.loftButton.click()
-    await editor.selectText('region001 = region(')
-    await page.keyboard.down(process.platform === 'linux' ? 'Control' : 'Meta')
-    await editor.codeContent.getByText('region002 = region(').click()
-    await editor.codeContent.getByText('region003 = region(').click()
-    await page.keyboard.up(process.platform === 'linux' ? 'Control' : 'Meta')
-
-    const { locator: dialog } = modelingDialog
-    const profiles = dialog.getByRole('group', { name: 'Profiles selections' })
-    const handles = profiles.getByRole('button', { name: /^Reorder Region/ })
-    await expect(handles).toHaveCount(3)
-    await handles.nth(2).dragTo(handles.nth(0))
-    await profiles
-      .getByRole('button', { name: 'Region selection details' })
-      .first()
-      .click()
-    await expect(page.getByTitle('region003', { exact: true })).toBeVisible()
-    await page.keyboard.press('Escape')
-    await handles.nth(2).focus()
-    await page.keyboard.press('ArrowUp')
-    await expect(handles.nth(1)).toBeFocused()
-    await modelingDialog.submitButton.click()
-    await expect(dialog).not.toBeAttached()
-    await editor.expectEditor.toContain(
-      'loft([region003, region002, region001])',
-      { shouldNormalise: true }
-    )
     await scene.settled()
   })
 })

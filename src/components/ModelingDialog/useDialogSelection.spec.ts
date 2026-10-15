@@ -157,13 +157,6 @@ it('updates only the chosen field and synchronizes the scene only for the active
 
   act(() => result.current.select('second', arg))
   send.mockClear()
-  act(() => result.current.update('first', faces('two', 'one')))
-  expect(send).not.toHaveBeenCalled()
-  expect(result.current.scene).toEqual(faces('other'))
-  act(() => result.current.select('first', arg))
-  expect(result.current.scene).toEqual(faces('two', 'one'))
-  act(() => result.current.select('second', arg))
-  send.mockClear()
   act(() => result.current.update('first', faces('two')))
   expect(send).not.toHaveBeenCalled()
   expect(result.current.scene).toEqual(faces('other'))
@@ -171,7 +164,7 @@ it('updates only the chosen field and synchronizes the scene only for the active
 
   act(() => result.current.select('first', arg))
   expect(result.current.scene).toEqual(faces('two'))
-  act(() => result.current.update('first', faces()))
+  act(() => result.current.clear())
   expect(result.current.scene).toEqual(faces())
   act(() => result.current.select('second', arg))
   act(() => result.current.select('first', arg))

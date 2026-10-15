@@ -34,13 +34,6 @@ type SelectionRow = {
   selection: Selections
 }
 
-function moveItem<T>(items: T[], from: number, to: number): T[] {
-  const next = [...items]
-  const [item] = next.splice(from, 1)
-  next.splice(to, 0, item)
-  return next
-}
-
 async function copyCode(code: string) {
   try {
     await navigator.clipboard.writeText(code)
@@ -55,22 +48,17 @@ export function SelectionReferencesList({
   wasmPromise,
   selectionRanges,
   onChange,
-  onReorder,
   variant = 'statusBar',
 }: {
   kclManager: KclManager
   wasmPromise: Promise<ModuleType>
   selectionRanges: Selections
   onChange?: (selection: Selections) => void
-  onReorder?: (selection: Selections) => void
   variant?: 'statusBar' | 'dialog'
 }) {
   useSignals()
   const wasmInstance = use(wasmPromise)
   const sceneGeneration = kclManager.engineSceneGenerationSignal.value
-  const handles = useRef(new Map<string, HTMLButtonElement>())
-  const [dragged, setDragged] = useState<string>()
-  const [dropTarget, setDropTarget] = useState<string>()
   const [state, setState] = useState<SelectionReferenceState>({
     status: 'idle',
     references: [],
@@ -150,36 +138,6 @@ export function SelectionReferencesList({
     }),
   ]
 
-  function move(row: SelectionRow, to: number) {
-    if (
-      !onReorder ||
-      to < 0 ||
-      to >= selectionRanges[row.group].length ||
-      to === row.index
-    )
-      return
-    onReorder(
-      row.group === 'graphSelections'
-        ? {
-            ...selectionRanges,
-            graphSelections: moveItem(
-              selectionRanges.graphSelections,
-              row.index,
-              to
-            ),
-          }
-        : {
-            ...selectionRanges,
-            otherSelections: moveItem(
-              selectionRanges.otherSelections,
-              row.index,
-              to
-            ),
-          }
-    )
-    requestAnimationFrame(() => handles.current.get(row.key)?.focus())
-  }
-
   return (
     <div className="flex flex-col gap-1 p-1 divide-y divide-chalkboard-30 dark:divide-chalkboard-80">
       {state.status === 'loading' && (
@@ -221,69 +179,11 @@ export function SelectionReferencesList({
                 )?.replace(/^1 /, '') ?? 'Selection'
               ))
         const code = reference?.code
-        const reorderable =
-          variant === 'dialog' &&
-          onReorder &&
-          selectionRanges[row.group].length > 1
-        const source = rows.find((item) => item.key === dragged)
         return (
           <div
             key={row.key}
-            className={`flex items-center gap-2 rounded-sm px-2 py-1 text-xs ${dropTarget === row.key ? 'ring-1 ring-primary' : ''}`}
-            onDragOver={(event) => {
-              if (
-                !reorderable ||
-                source?.group !== row.group ||
-                source.key === row.key
-              )
-                return
-              event.preventDefault()
-              event.dataTransfer.dropEffect = 'move'
-              setDropTarget(row.key)
-            }}
-            onDragLeave={() => setDropTarget(undefined)}
-            onDrop={(event) => {
-              if (!reorderable || source?.group !== row.group) return
-              event.preventDefault()
-              move(source, row.index)
-              setDragged(undefined)
-              setDropTarget(undefined)
-            }}
+            className="flex items-center gap-2 rounded-sm px-2 py-1 text-xs"
           >
-            {reorderable && (
-              <button
-                type="button"
-                draggable
-                ref={(button) => {
-                  if (button) handles.current.set(row.key, button)
-                  else handles.current.delete(row.key)
-                }}
-                aria-label={`Reorder ${label} ${row.index + 1}`}
-                aria-keyshortcuts="ArrowUp ArrowDown"
-                className="relative cursor-grab rounded-sm p-0.5 text-2 !border-none active:cursor-grabbing"
-                onDragStart={(event) => {
-                  event.dataTransfer.effectAllowed = 'move'
-                  event.dataTransfer.setData('text/plain', row.key)
-                  setDragged(row.key)
-                }}
-                onDragEnd={() => {
-                  setDragged(undefined)
-                  setDropTarget(undefined)
-                }}
-                onKeyDown={(event) => {
-                  if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown')
-                    return
-                  event.preventDefault()
-                  event.stopPropagation()
-                  move(row, row.index + (event.key === 'ArrowUp' ? -1 : 1))
-                }}
-              >
-                <CustomIcon name="sixDots" className="h-4 w-4" />
-                <Tooltip position="left">
-                  Drag or use Up/Down to reorder.
-                </Tooltip>
-              </button>
-            )}
             <span
               className={`min-w-0 flex-1 truncate ${primitive && !reference && variant === 'statusBar' ? 'text-destroy-80 dark:text-destroy-40' : 'text-chalkboard-80 dark:text-chalkboard-30'}`}
             >
@@ -335,7 +235,10 @@ export function SelectionReferencesList({
                   )
                 }
               >
-                <CustomIcon name="close" className="h-4 w-4" />
+                <CustomIcon
+                  name={variant === 'dialog' ? 'trash' : 'close'}
+                  className="h-4 w-4"
+                />
                 <Tooltip
                   position="left"
                   contentClassName="max-w-64 text-xs text-left"

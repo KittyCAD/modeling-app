@@ -225,59 +225,56 @@ export default function ModelingDialog({
                 </button>
               )}
           </div>
-          <button
-            type="button"
-            ref={(button) => {
-              if (button) selectionInputs.current.set(name, button)
-              else selectionInputs.current.delete(name)
-            }}
-            autoFocus={name === firstFieldName}
-            aria-label={`Select ${label}`}
-            aria-pressed={selection.activeName === name}
-            disabled={Boolean(state.context.argumentsToSubmit.nodeToEdit)}
-            title={
-              state.context.argumentsToSubmit.nodeToEdit
-                ? "Selection edits aren't supported yet."
-                : undefined
-            }
-            className="m-0 rounded-sm border border-chalkboard-30 px-2 py-1 text-left text-xs focus-visible:ring-1 focus-visible:ring-primary aria-pressed:border-primary aria-pressed:text-primary dark:border-chalkboard-70"
-            onClick={() => selection.select(name, arg)}
+          <div
+            role="group"
+            aria-label={`${label} selections`}
+            className={`rounded-sm border ${selection.activeName === name ? 'border-primary' : 'border-chalkboard-30 dark:border-chalkboard-70'}`}
           >
-            {isSelections(value) && hasValue(value)
-              ? getSelectionTypeDisplayText(
-                  kclManager.astSignal.value,
-                  value,
-                  kclManager.artifactGraph
-                )
-              : 'Select in the scene'}
-          </button>
-          {isSelections(value) && hasValue(value) && (
-            <div
-              role="group"
-              aria-label={`${label} selections`}
-              className="max-h-32 overflow-auto rounded-sm border border-chalkboard-30 dark:border-chalkboard-70"
+            <button
+              type="button"
+              ref={(button) => {
+                if (button) selectionInputs.current.set(name, button)
+                else selectionInputs.current.delete(name)
+              }}
+              autoFocus={name === firstFieldName}
+              aria-label={`Select ${label}`}
+              aria-pressed={selection.activeName === name}
+              disabled={Boolean(state.context.argumentsToSubmit.nodeToEdit)}
+              title={
+                state.context.argumentsToSubmit.nodeToEdit
+                  ? "Selection edits aren't supported yet."
+                  : undefined
+              }
+              className="m-0 w-full rounded-sm border-0 bg-transparent px-2 py-1 text-left text-xs focus-visible:ring-1 focus-visible:ring-primary aria-pressed:text-primary"
+              onClick={() => selection.select(name, arg)}
             >
-              <SelectionReferencesList
-                variant="dialog"
-                kclManager={kclManager}
-                wasmPromise={wasmPromise}
-                selectionRanges={value}
-                onReorder={
-                  arg.multiple && !state.context.argumentsToSubmit.nodeToEdit
-                    ? (next) => selection.update(name, next)
-                    : undefined
-                }
-                onChange={
-                  state.context.argumentsToSubmit.nodeToEdit
-                    ? undefined
-                    : (next) => {
-                        selection.update(name, next)
-                        selectionInputs.current.get(name)?.focus()
-                      }
-                }
-              />
-            </div>
-          )}
+              {isSelections(value) && hasValue(value)
+                ? getSelectionTypeDisplayText(
+                    kclManager.astSignal.value,
+                    value,
+                    kclManager.artifactGraph
+                  )
+                : 'Select in the scene'}
+            </button>
+            {isSelections(value) && hasValue(value) && (
+              <div className="max-h-32 overflow-auto">
+                <SelectionReferencesList
+                  variant="dialog"
+                  kclManager={kclManager}
+                  wasmPromise={wasmPromise}
+                  selectionRanges={value}
+                  onChange={
+                    state.context.argumentsToSubmit.nodeToEdit
+                      ? undefined
+                      : (next) => {
+                          selection.update(name, next)
+                          selectionInputs.current.get(name)?.focus()
+                        }
+                  }
+                />
+              </div>
+            )}
+          </div>
           {description}
         </div>
       )
