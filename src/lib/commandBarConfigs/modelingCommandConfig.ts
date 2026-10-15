@@ -631,6 +631,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   'Named View': {
     icon: 'namedView',
+    forceDialog: true,
     status: modelingStdLibCommandStatus('Named View'),
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(

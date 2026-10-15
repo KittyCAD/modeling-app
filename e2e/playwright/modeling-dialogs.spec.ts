@@ -200,10 +200,10 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
 
 test.describe('Named View dialog', { tag: '@web' }, () => {
   test.use({
-    userFeatures: ['modeling_dialogs', NAMED_VIEWS_UI_FEATURE_FLAG],
+    userFeatures: [NAMED_VIEWS_UI_FEATURE_FLAG],
   })
 
-  test('Creates, edits visibility, and removes from the pane', async ({
+  test('Creates, edits visibility, and removes from the pane without modeling_dialogs', async ({
     page,
     homePage,
     scene,
