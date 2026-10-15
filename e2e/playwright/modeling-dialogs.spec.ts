@@ -116,6 +116,16 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     await page.keyboard.press('Shift+Tab')
     await expect(profiles).not.toHaveCSS('box-shadow', 'none')
 
+    const beforeHelp = await dialog.boundingBox()
+    await dialog.getByRole('button', { name: 'Command help' }).click()
+    const docs = page.getByRole('link', { name: 'KCL docs', exact: true })
+    await expect(docs).toBeInViewport()
+    expect(await dialog.boundingBox()).toEqual(beforeHelp)
+    await expect(dialog).not.toHaveCSS('position', 'fixed')
+    await page.keyboard.press('Escape')
+    await expect(docs).not.toBeVisible()
+    await expect(dialog).toBeVisible()
+
     await modelingDialog.selection('To').click()
     await expect(profiles).toContainText(/1 region/i)
     await profiles.click()

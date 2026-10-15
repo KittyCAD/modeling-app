@@ -10,6 +10,7 @@ import { isKclVersionAvailable } from '@src/lib/kclVersionRange'
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { markdownToPlainText } from '@src/lib/markdown'
+import { KCL_STDLIB_FUNCTIONS_PATH } from '@src/lib/constants'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 export type StdLibCommandDriftConfig = {
@@ -239,7 +240,7 @@ export function stdLibDocsLink(
   return {
     label,
     url: withSiteBaseURL(
-      `/docs/kcl-std/functions/${qualName.replaceAll('::', '-')}`
+      `${KCL_STDLIB_FUNCTIONS_PATH}/${qualName.replaceAll('::', '-')}`
     ),
   }
 }
