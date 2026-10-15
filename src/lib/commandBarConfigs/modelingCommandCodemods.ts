@@ -1,4 +1,10 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import { resolveSourceEdgeSelections } from '@src/lang/modifyAst/resolveSourceEdgeSelections'
+import { isModelingResponse } from '@src/lib/kcSdkGuards'
+import { normalizeEntityReference } from '@src/lib/selections'
+import { isErr } from '@src/lib/trap'
+import { isArray, uuidv4 } from '@src/lib/utils'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 import {
   addIntersect,
@@ -202,6 +208,55 @@ const withArtifactGraph = <
       ),
   })
 
+// A code-selected sketch edge can border either cap after extrusion. Query its
+// topology before the synchronous codemod instead of assuming the start cap.
+const withSourceEdgeReferences = <Args extends { selection: Selections }>(
+  codemod: ModelingCodemod<Args>
+): ModelingCodemod<Args> => ({
+  ...codemod,
+  run: async (context) => {
+    const { kclManager } = context
+    const artifactGraph = kclManager.artifactGraph
+    const ast = kclManager.ast
+    const sceneGeneration = kclManager.engineSceneGenerationSignal.value
+    const selection = await resolveSourceEdgeSelections(
+      context.args.selection,
+      artifactGraph,
+      async (entityId) => {
+        const response = await kclManager.engineCommandManager.sendSceneCommand(
+          {
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: { type: 'query_entity_type', entity_id: entityId },
+          }
+        )
+        const result = isArray(response) ? response[0] : response
+        if (isModelingResponse(result)) {
+          const modelingResponse = result.resp.data.modeling_response
+          if (modelingResponse.type === 'query_entity_type') {
+            const reference = normalizeEntityReference(
+              modelingResponse.data.reference
+            )
+            if (reference) return reference
+          }
+        }
+        return new Error('Could not resolve the selected edge topology.')
+      }
+    )
+    if (isErr(selection)) return selection
+    if (
+      kclManager.artifactGraph !== artifactGraph ||
+      kclManager.ast !== ast ||
+      kclManager.engineSceneGenerationSignal.value !== sceneGeneration
+    ) {
+      return new Error(
+        'The model changed while resolving the selected edge. Please select it again.'
+      )
+    }
+    return codemod.run({ ...context, args: { ...context.args, selection } })
+  },
+})
+
 const withArtifactGraphAndVariables = <
   Name extends CommandName,
   Add extends AddFunction<
@@ -275,8 +330,8 @@ export const modelingCommandCodemods = {
   'Herringbone Gear': withAst('Herringbone Gear', addHerringboneGear),
   'Spur Gear': withAst('Spur Gear', addSpurGear),
   'Ring Gear': withAst('Ring Gear', addRingGear),
-  Fillet: withArtifactGraph('Fillet', addFillet),
-  Chamfer: withArtifactGraph('Chamfer', addChamfer),
+  Fillet: withSourceEdgeReferences(withArtifactGraph('Fillet', addFillet)),
+  Chamfer: withSourceEdgeReferences(withArtifactGraph('Chamfer', addChamfer)),
   Appearance: withArtifactGraph('Appearance', addAppearance),
   Delete: withArtifactGraph('Delete', addDelete, {
     focusPath: false,
