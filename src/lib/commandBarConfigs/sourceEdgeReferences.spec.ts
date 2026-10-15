@@ -8,7 +8,7 @@ import {
   type Artifact,
   type ArtifactGraph,
 } from '@src/lang/wasm'
-import { retrieveEdgeSelectionsFromEdgeRefs } from '@src/lang/modifyAst/edges'
+import { retrieveEdgeSelectionsFromOpArg } from '@src/lang/modifyAst/edges'
 import { enterEditFlow } from '@src/lib/operations'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import { isErr } from '@src/lib/trap'
@@ -304,7 +304,7 @@ it('preserves single-face edge bounds and index when recovering edit selections'
     ],
   ])
   removeObsoleteEdges(graph)
-  const selections = retrieveEdgeSelectionsFromEdgeRefs(
+  const selections = retrieveEdgeSelectionsFromOpArg(
     {
       sourceRange: [0, 0, 0],
       value: {
