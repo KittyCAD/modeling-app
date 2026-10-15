@@ -24,6 +24,7 @@ const mocks = vi.hoisted(() => {
     kclManager: {
       artifactGraph: new Map(),
       engineCommandManager: {},
+      engineSceneGenerationSignal: { value: 0 },
       wasmInstancePromise,
     },
   }
@@ -59,29 +60,10 @@ vi.mock('@src/lib/boot', () => ({
 
 vi.mock('@src/lib/selections', () => ({
   getSelectionReferences: mocks.getSelectionReferences,
-  getUnresolvedEnginePrimitiveSelections: (
-    enginePrimitives: typeof mocks.selectionRanges.otherSelections,
-    references: Array<{ enginePrimitiveSelection?: { entityId: string } }>
-  ) =>
-    enginePrimitives.filter(
-      (selection) =>
-        !references.some(
-          (reference) =>
-            reference.enginePrimitiveSelection?.entityId === selection.entityId
-        )
-    ),
+  getSelectionTypeDisplayText: () => '1 face',
   isDefaultPlaneSelection: () => false,
   isEnginePrimitiveSelection: (selection: { type?: string }) =>
     selection.type === 'enginePrimitive',
-  removeEnginePrimitiveSelectionFromSelections: (
-    selections: typeof mocks.selectionRanges,
-    selectionToRemove: typeof mocks.unresolvedFace
-  ) => ({
-    graphSelections: selections.graphSelections,
-    otherSelections: selections.otherSelections.filter(
-      (selection) => selection.entityId !== selectionToRemove.entityId
-    ),
-  }),
   removeReferenceFromSelections: vi.fn(),
 }))
 
@@ -94,7 +76,14 @@ describe('SelectionReferencesPopover', () => {
     mocks.send.mockReset()
   })
 
-  test('shows and removes an engine primitive that has no KCL reference', async () => {
+  test.each([
+    { scenario: 'no KCL reference is available', error: undefined },
+    {
+      scenario: 'reference lookup fails',
+      error: new Error('Unable to resolve selection references.'),
+    },
+  ])('keeps individual removal available when $scenario', async ({ error }) => {
+    if (error) mocks.getSelectionReferences.mockRejectedValue(error)
     await act(async () => {
       render(
         <Suspense fallback={<div>Loading Wasm...</div>}>
@@ -104,6 +93,7 @@ describe('SelectionReferencesPopover', () => {
       await mocks.wasmInstancePromise
     })
 
+    if (error) await screen.findByText(error.message)
     const removeButton = await screen.findByRole('button', {
       name: 'Remove unresolved face from selection',
     })

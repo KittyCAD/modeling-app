@@ -9,6 +9,7 @@ import {
 } from '@src/components/CommandBar/CommandKclInput'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { MarkdownText } from '@src/components/MarkdownText'
+import { SelectionReferencesList } from '@src/components/SelectionReferencesList'
 import Tooltip from '@src/components/Tooltip'
 import type { KclManager } from '@src/lang/KclManager'
 import type { AppCommandSystem, AppSettingsSystem } from '@src/lib/app'
@@ -57,7 +58,7 @@ export default function ModelingDialog({
   const [initializing, setInitializing] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const mounted = useRef(true)
-  const activeSelectionRef = useRef<HTMLButtonElement>(null)
+  const selectionInputs = useRef(new Map<string, HTMLButtonElement>())
   const initialContext = useRef(state.context)
   const fields = getDialogFields({
     ...state.context,
@@ -216,7 +217,7 @@ export default function ModelingDialog({
                   disabled={!hasValue(value)}
                   onClick={() => {
                     selection.clear()
-                    activeSelectionRef.current?.focus()
+                    selectionInputs.current.get(name)?.focus()
                   }}
                   className="m-0 border-0 bg-transparent p-0 text-xs text-chalkboard-70 enabled:hover:underline disabled:opacity-50 dark:text-chalkboard-40"
                 >
@@ -225,8 +226,11 @@ export default function ModelingDialog({
               )}
           </div>
           <button
-            ref={selection.activeName === name ? activeSelectionRef : undefined}
             type="button"
+            ref={(button) => {
+              if (button) selectionInputs.current.set(name, button)
+              else selectionInputs.current.delete(name)
+            }}
             autoFocus={name === firstFieldName}
             aria-label={`Select ${label}`}
             aria-pressed={selection.activeName === name}
@@ -247,6 +251,33 @@ export default function ModelingDialog({
                 )
               : 'Select in the scene'}
           </button>
+          {isSelections(value) && hasValue(value) && (
+            <div
+              role="group"
+              aria-label={`${label} selections`}
+              className="max-h-32 overflow-auto rounded-sm border border-chalkboard-30 dark:border-chalkboard-70"
+            >
+              <SelectionReferencesList
+                variant="dialog"
+                kclManager={kclManager}
+                wasmPromise={wasmPromise}
+                selectionRanges={value}
+                onReorder={
+                  arg.multiple && !state.context.argumentsToSubmit.nodeToEdit
+                    ? (next) => selection.update(name, next)
+                    : undefined
+                }
+                onChange={
+                  state.context.argumentsToSubmit.nodeToEdit
+                    ? undefined
+                    : (next) => {
+                        selection.update(name, next)
+                        selectionInputs.current.get(name)?.focus()
+                      }
+                }
+              />
+            </div>
+          )}
           {description}
         </div>
       )

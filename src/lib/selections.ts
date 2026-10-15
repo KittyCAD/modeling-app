@@ -1293,6 +1293,28 @@ export async function getSelectionReferences({
     }
 
     if (!isPrimitiveReferenceArtifact(selection.artifact)) {
+      const artifact = resolveToCodeRef(selection, artifactGraph)?.artifact
+      const label =
+        artifact?.type === 'sketchBlock'
+          ? 'Sketch'
+          : artifact?.type === 'solid2d'
+            ? 'Profile'
+            : artifact?.type === 'path'
+              ? artifact.subType === 'region'
+                ? 'Region'
+                : 'Profile'
+              : undefined
+      if (label) {
+        references.push(
+          ...createExpressionReferences({
+            label,
+            selection,
+            artifactGraph,
+            kclManager,
+            wasmInstance,
+          })
+        )
+      }
       continue
     }
 

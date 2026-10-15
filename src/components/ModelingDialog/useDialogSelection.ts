@@ -85,16 +85,19 @@ export function useDialogSelection({
     activated.current = true
   }
 
+  function update(name: string, selection: Selections) {
+    if (context.argumentsToSubmit.nodeToEdit) return
+    save(name, selection)
+    if (name === activeName) {
+      modelingSend({
+        type: 'Set selection',
+        data: { selectionType: 'completeSelection', selection },
+      })
+    }
+  }
+
   function clear() {
-    if (!activeName || context.argumentsToSubmit.nodeToEdit) return
-    save(activeName, undefined)
-    modelingSend({
-      type: 'Set selection',
-      data: {
-        selectionType: 'completeSelection',
-        selection: emptySelection,
-      },
-    })
+    if (activeName) update(activeName, emptySelection)
   }
 
   useEffect(() => {
@@ -109,5 +112,5 @@ export function useDialogSelection({
         [activeName]: hasValue(selection) ? selection : undefined,
       }
     : values
-  return { activeName, selectionRanges: selection, draft, select, clear }
+  return { activeName, selectionRanges: selection, draft, select, update, clear }
 }
