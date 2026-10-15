@@ -248,13 +248,6 @@ body002 = clone(body001)
     await expect(docs).not.toBeVisible()
     await expect(dialog).toBeVisible()
 
-    await page.getByRole('button', { name: 'Clear Profiles selection' }).click()
-    await expect(profiles).toHaveText('Select in the scene')
-    await expect(profiles).toBeFocused()
-    await expect(submit).toBeDisabled()
-    await editor.selectText('region(')
-    await expect(profiles).toContainText(/1 region/i)
-
     await modelingDialog.selection('To').click()
     await expect(profiles).toContainText(/1 region/i)
     await expect(

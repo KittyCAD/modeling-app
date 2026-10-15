@@ -204,27 +204,10 @@ export default function ModelingDialog({
     if (arg.inputType === 'selection')
       return (
         <div key={name} className="flex flex-col gap-1">
-          <div className="flex items-center justify-between gap-2">
-            <span className="capitalize">
-              {label}
-              {required && ' *'}
-            </span>
-            {selection.activeName === name &&
-              !state.context.argumentsToSubmit.nodeToEdit && (
-                <button
-                  type="button"
-                  aria-label={`Clear ${label} selection`}
-                  disabled={!hasValue(value)}
-                  onClick={() => {
-                    selection.clear()
-                    selectionInputs.current.get(name)?.focus()
-                  }}
-                  className="m-0 border-0 bg-transparent p-0 text-xs text-chalkboard-70 enabled:hover:underline disabled:opacity-50 dark:text-chalkboard-40"
-                >
-                  Clear
-                </button>
-              )}
-          </div>
+          <span className="capitalize">
+            {label}
+            {required && ' *'}
+          </span>
           <div
             role="group"
             aria-label={`${label} selections`}

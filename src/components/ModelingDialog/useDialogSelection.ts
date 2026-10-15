@@ -96,10 +96,6 @@ export function useDialogSelection({
     }
   }
 
-  function clear() {
-    if (activeName) update(activeName, emptySelection)
-  }
-
   useEffect(() => {
     if (activated.current || context.argumentsToSubmit.nodeToEdit) return
     const field = fields.find((field) => field.arg.inputType === 'selection')
@@ -112,5 +108,5 @@ export function useDialogSelection({
         [activeName]: hasValue(selection) ? selection : undefined,
       }
     : values
-  return { activeName, selectionRanges: selection, draft, select, update, clear }
+  return { activeName, selectionRanges: selection, draft, select, update }
 }
