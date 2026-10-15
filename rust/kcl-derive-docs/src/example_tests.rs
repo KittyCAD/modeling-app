@@ -106,6 +106,8 @@ pub const TEST_NAMES: &[&str] = &[
     "std-gdt-distance-0",
     "std-gdt-distance-1",
     "std-gdt-distance-2",
+    "std-gdt-diameter-0",
+    "std-gdt-radius-0",
     "std-gdt-perpendicularity-0",
     "std-gdt-perpendicularity-1",
     "std-gdt-parallelism-0",

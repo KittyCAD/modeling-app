@@ -1993,6 +1993,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Distance': {
+    displayName: 'Dimension',
     icon: 'dimension',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2011,6 +2012,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
               'segment',
               'sweepEdge',
               'enginePrimitiveEdge',
+              'enginePrimitiveFace',
             ],
             multiple: true,
             required: true,

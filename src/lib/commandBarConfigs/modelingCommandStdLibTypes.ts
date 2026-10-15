@@ -259,7 +259,10 @@ export type GdtProfileCommandArgs = Override<
 >
 export type GdtDistanceCommandArgs = Override<
   Omit<PointAndClickCommandArgs<'GDT Distance'>, 'from' | 'to' | 'edges'>,
-  { objects: Selections } & GdtFrameArgs
+  {
+    objects: Selections
+    dimensionFunction?: 'distance' | 'diameter' | 'radius'
+  } & GdtFrameArgs
 >
 export type GdtPerpendicularityCommandArgs =
   GdtObjectsCommandArgs<'GDT Perpendicularity'>
