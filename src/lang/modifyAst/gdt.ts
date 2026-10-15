@@ -32,7 +32,10 @@ import {
   getArtifactOfTypes,
   getCapForPathId,
 } from '@src/lang/std/artifactGraph'
-import { getEngineTopologyFallbackNormalized } from '@src/lib/primitiveBodySelection'
+import {
+  getEngineTopologyFallbackNormalized,
+  hasUnscopedCopiedFaces,
+} from '@src/lib/primitiveBodySelection'
 import type { ArtifactGraph, Expr, PathToNode, Program } from '@src/lang/wasm'
 import { modelingStdLibCall } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
@@ -293,8 +296,17 @@ function buildGdtEdgeExpressions({
       [...payload.side_faces, ...(payload.end_faces ?? [])].some(
         (id) => !artifactGraph.has(id)
       )
-    // Use a primitive query only when semantic face artifacts are unavailable.
-    if (topology && bodyExpr && missingFaces) {
+    // Copied constituent faces may exist in the graph without body-scoped tags.
+    if (
+      topology &&
+      bodyExpr &&
+      (missingFaces ||
+        hasUnscopedCopiedFaces(
+          payload.side_faces,
+          topology.parentId,
+          artifactGraph
+        ))
+    ) {
       edgeExprs.push(
         createCallExpressionStdLibKw('edgeId', bodyExpr, [
           createLabeledArg(

@@ -74,6 +74,7 @@ import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import {
   getBodySelectionFromPrimitiveParentEntityId,
   getEngineTopologyFallbackNormalized,
+  hasUnscopedCopiedFaces,
 } from '@src/lib/primitiveBodySelection'
 import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
@@ -235,7 +236,7 @@ export function addFillet({
         modelingStdLibCommandName('Fillet'),
         data.solidsExpr,
         [
-          createLabeledArg('edges', data.edgeRefsExpr),
+          createLabeledArg(data.argumentName ?? 'edges', data.edgeRefsExpr),
           ...structuredClone(nonSelectionArgs),
         ]
       )
@@ -402,7 +403,7 @@ export function addChamfer({
         modelingStdLibCommandName('Chamfer'),
         data.solidsExpr,
         [
-          createLabeledArg('edges', data.edgeRefsExpr),
+          createLabeledArg(data.argumentName ?? 'edges', data.edgeRefsExpr),
           ...structuredClone(nonSelectionArgs),
         ]
       )
@@ -2507,6 +2508,21 @@ export function refactorZ0006Unified(
   wasmInstance: ModuleType,
   sourceRange?: Z0006SourceRange
 ): string | Error {
+  // Source-region tags cannot identify these copied composite faces. Preserve
+  // the body-scoped edgeId fallback rather than changing the selected edge.
+  edgeRefactorMetadata = edgeRefactorMetadata.filter(
+    (meta) =>
+      meta.stdlibFn !== 'edgeId' ||
+      !meta.faceIds.some((id) => {
+        const face = artifactGraph.get(id)
+        if (face?.type !== 'wall' && face?.type !== 'cap') return false
+        const body = artifactGraph.get(face.cmdId)
+        return (
+          (body?.type === 'sweep' || body?.type === 'compositeSolid') &&
+          hasUnscopedCopiedFaces(meta.faceIds, body.id, artifactGraph)
+        )
+      })
+  )
   const toFixFC = filterCallsBySourceRange(
     findFilletChamferCallsToFixUnified(
       ast,
@@ -2705,20 +2721,89 @@ function groupSelectionsByBodyAndCreateEdgeRefs(
         {
           solidsExpr: Expr | null
           edgeRefsExpr: Expr
+          argumentName?: 'tags' | 'edges'
           pathIfPipe?: PathToNode
         }
       >
     }
   | Error {
+  const primitiveCopies: { parentId: string; primitiveIndex: number }[] = []
+  const graphSelections = selections.graphSelections.filter((selection) => {
+    const topology = getEngineTopologyFallbackNormalized(selection)
+    const faces =
+      selection.entityRef?.type === 'edge' ? selection.entityRef.side_faces : []
+    if (
+      topology &&
+      hasUnscopedCopiedFaces(faces, topology.parentId, artifactGraph)
+    ) {
+      // Copied composite faces retain source-region tags. Their edge index
+      // is scoped to the selected output and avoids ambiguous sketch tags.
+      primitiveCopies.push(topology)
+      return false
+    }
+    return true
+  })
+  selections = {
+    graphSelections,
+    otherSelections: selections.otherSelections,
+  }
   let modifiedAst = ast
   const bodies = new Map<
     string,
     {
       solidsExpr: Expr | null
       edgeRefsExpr: Expr
+      argumentName?: 'tags' | 'edges'
       pathIfPipe?: PathToNode
     }
   >()
+  for (const topology of primitiveCopies) {
+    const body = getBodySelectionFromPrimitiveParentEntityId(
+      topology.parentId,
+      artifactGraph,
+      {
+        bodyArtifactTypes: ['sweep', 'compositeSolid', 'pattern'],
+        lookUpPatternCopies: true,
+      }
+    )
+    if (!body)
+      return new Error('Could not resolve the selected copied edge body')
+    const vars = getVariableExprsFromSelection(
+      { graphSelections: [body], otherSelections: [] },
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      nodeToEdit
+    )
+    if (err(vars)) return vars
+    if (vars.exprs.length !== 1)
+      return new Error('Could not resolve the selected copied edge body')
+    const bodyExpr = vars.exprs[0]
+    const edge = createCallExpressionStdLibKw(
+      'edgeId',
+      structuredClone(bodyExpr),
+      [
+        createLabeledArg(
+          'index',
+          createLiteral(topology.primitiveIndex, wasmInstance)
+        ),
+      ]
+    )
+    // Fillet/chamfer accept UUIDs through tags; edges requires sideFaces objects.
+    // Keep these calls separate from semantic edges on the same body.
+    const key = `primitive:${getEdgeBodyKey(bodyExpr, vars.pathIfPipe)}`
+    const existing = bodies.get(key)
+    if (existing?.edgeRefsExpr.type === 'ArrayExpression') {
+      existing.edgeRefsExpr.elements.push(edge)
+    } else {
+      bodies.set(key, {
+        solidsExpr: bodyExpr,
+        edgeRefsExpr: createArrayExpression([edge]),
+        argumentName: 'tags',
+        pathIfPipe: vars.pathIfPipe,
+      })
+    }
+  }
   const handledSelections = new Set<Selection>()
 
   const v2Selections = selections.graphSelections || []

@@ -113,3 +113,19 @@ export function getEngineTopologyFallbackNormalized(v2: Selection): {
   if (!parentId || !Number.isFinite(primitiveIndex)) return null
   return { parentId, primitiveIndex }
 }
+
+/** Copied faces whose constituent sweeps still belong to the source body. */
+export function hasUnscopedCopiedFaces(
+  faceIds: string[],
+  parentId: string,
+  artifactGraph: ArtifactGraph
+): boolean {
+  return faceIds.some((id) => {
+    const face = artifactGraph.get(id)
+    return (
+      (face?.type === 'wall' || face?.type === 'cap') &&
+      face.cmdId === parentId &&
+      face.sweepId !== parentId
+    )
+  })
+}
