@@ -44,7 +44,7 @@ it('clears the active collector and keeps other drafts when switching fields', (
     multiple: true,
     required: false,
   } satisfies SelectionArgument
-  const { result } = renderHook(() => {
+  const DialogLogicWithTwoSelectionFields = () => {
     const [values, setValues] = useState<Record<string, unknown>>({
       first,
       second,
@@ -70,7 +70,9 @@ it('clears the active collector and keeps other drafts when switching fields', (
           setSelectionRanges(event.data.selection)
       },
     })
-  })
+  }
+  
+  const { result } = renderHook(DialogLogicWithTwoSelectionFields)
 
   act(() => result.current.select('second', arg))
   expect(result.current.selectionRanges).toEqual(second)
