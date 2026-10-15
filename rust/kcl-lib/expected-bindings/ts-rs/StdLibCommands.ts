@@ -4936,7 +4936,7 @@ export default {
     "addedIn": null,
     "summary": "Get the shared edge between two faces.",
     "deprecated": false,
-    "deprecatedSince": null,
+    "deprecatedSince": "3.0",
     "experimental": false,
     "docHidden": false,
     "args": [
@@ -4963,7 +4963,7 @@ export default {
     "addedIn": null,
     "summary": "Get the next adjacent edge to the edge given.",
     "deprecated": false,
-    "deprecatedSince": null,
+    "deprecatedSince": "3.0",
     "experimental": false,
     "docHidden": false,
     "args": [
@@ -4990,7 +4990,7 @@ export default {
     "addedIn": null,
     "summary": "Get the opposite edge to the edge given.",
     "deprecated": false,
-    "deprecatedSince": null,
+    "deprecatedSince": "3.0",
     "experimental": false,
     "docHidden": false,
     "args": [
@@ -5017,7 +5017,7 @@ export default {
     "addedIn": null,
     "summary": "Get the previous adjacent edge to the edge given.",
     "deprecated": false,
-    "deprecatedSince": null,
+    "deprecatedSince": "3.0",
     "experimental": false,
     "docHidden": false,
     "args": [
