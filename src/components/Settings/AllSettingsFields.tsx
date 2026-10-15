@@ -33,6 +33,7 @@ import {
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 import type { ForwardedRef } from 'react'
 import { forwardRef, useMemo } from 'react'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: settings filesystem path and hash-based highlighting (useLocation, useNavigate).
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Fragment } from 'react/jsx-runtime'
 

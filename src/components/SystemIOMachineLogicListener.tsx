@@ -31,6 +31,7 @@ import {
 } from '@src/machines/systemIO/utils'
 import { shouldNavigateToRequestedPath } from '@src/routes/Onboarding/navigation'
 import { useEffect } from 'react'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: SystemIO file navigation and query forwarding (useLocation, useNavigate, useNavigation).
 import { useLocation, useNavigate, useNavigation } from 'react-router-dom'
 
 export function SystemIOMachineLogicListener() {

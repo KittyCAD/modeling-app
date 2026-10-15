@@ -1,11 +1,10 @@
 //! Cache testing framework.
 
-use kcl_api::Artifact;
+use kcl_api::artifact::Artifact;
 use kcl_lib::ExecError;
 use kcl_lib::ExecOutcome;
 use kcl_lib::NodePathExt;
 use kcl_lib::NodePathStep;
-use kcl_lib::bust_cache;
 use kcl_lib::exec::Operation;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
@@ -45,7 +44,7 @@ async fn cache_test(
     .await
     .unwrap();
 
-    bust_cache().await;
+    ctx.bust_cache().await;
     let mut img_results = Vec::new();
     for (index, variation) in variations.iter().enumerate() {
         let program = kcl_lib::Program::parse_no_errs(variation.code).unwrap();
@@ -1033,7 +1032,7 @@ view002 = view::named(
     let ctx = kcl_lib::ExecutorContext::new_geometry_only_with_version(kittycad_modeling_cmds::KclVersion::V2)
         .await
         .unwrap();
-    bust_cache().await;
+    ctx.bust_cache().await;
 
     ctx.run_with_caching(kcl_lib::Program::parse_no_errs(first).unwrap())
         .await

@@ -24,6 +24,7 @@ import {
   useOnboardingPanes,
 } from '@src/routes/Onboarding/utils'
 import { useEffect, useState } from 'react'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: onboarding sends prompts through query parameters (useSearchParams).
 import { type RouteObject, useSearchParams } from 'react-router-dom'
 
 type DesktopOnboardingRoute = RouteObject & {

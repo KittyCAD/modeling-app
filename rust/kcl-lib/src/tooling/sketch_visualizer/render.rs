@@ -12,13 +12,13 @@ use image::DynamicImage;
 use image::ImageFormat;
 use image::Rgba;
 use image::RgbaImage;
+use kcl_api::Freedom;
 
 use super::model::InternalPoint;
 use super::model::InternalSegment;
 use super::types::SketchVisualizationBounds;
 use super::types::SketchVisualizationError;
 use super::types::SketchVisualizationPoint;
-use crate::front::Freedom;
 
 const CANVAS_WIDTH: u32 = 1024;
 const CANVAS_HEIGHT: u32 = 1024;

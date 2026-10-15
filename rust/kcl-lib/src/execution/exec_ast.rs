@@ -7,9 +7,15 @@ use ezpz::Constraint;
 use ezpz::NonLinearSystemError;
 use ezpz::datatypes::inputs::DatumPoint;
 use indexmap::IndexMap;
+use kcl_api::ArcDirection;
 use kcl_api::Group;
+use kcl_api::LineCtor;
 use kcl_api::NumericType;
+use kcl_api::Object;
+use kcl_api::ObjectId;
+use kcl_api::ObjectKind;
 use kcl_api::Operation;
+use kcl_api::PointCtor;
 use kcl_api::UnitAngle;
 
 use crate::CompilationIssue;
@@ -92,16 +98,11 @@ use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::execution::types::resolve_named_type_def;
 use crate::execution::types::type_value_named_by_segment;
-use crate::front::ArcDirection;
-use crate::front::LineCtor;
-use crate::front::Object;
-use crate::front::ObjectId;
-use crate::front::ObjectKind;
-use crate::front::PointCtor;
 use crate::modules::ModuleExecutionOutcome;
 use crate::modules::ModuleId;
 use crate::modules::ModuleItems;
 use crate::modules::ModulePath;
+use crate::modules::ModulePathExt as _;
 use crate::modules::ModuleRepr;
 use crate::parsing::ast::types::ABSOLUTE_PATHS_NOT_SUPPORTED;
 use crate::parsing::ast::types::Annotation;
@@ -900,8 +901,8 @@ fn default_plane_name_from_expr(expr: &Expr) -> Option<crate::engine::PlaneName>
 
 fn sketch_on_frontend_plane(
     arguments: &[crate::parsing::ast::types::LabeledArg],
-    on_object_id: crate::front::ObjectId,
-) -> crate::front::Plane {
+    on_object_id: kcl_api::ObjectId,
+) -> kcl_api::Plane {
     for arg in arguments {
         let Some(label) = &arg.label else {
             continue;
@@ -910,12 +911,12 @@ fn sketch_on_frontend_plane(
             continue;
         }
         if let Some(name) = default_plane_name_from_expr(&arg.arg) {
-            return crate::front::Plane::Default(name);
+            return kcl_api::Plane::Default(name);
         }
         break;
     }
 
-    crate::front::Plane::Object(on_object_id)
+    kcl_api::Plane::Object(on_object_id)
 }
 
 impl<'a> StatementKind<'a> {
@@ -2888,10 +2889,11 @@ impl Node<SketchBlock> {
         };
         let sketch_ctor_on = sketch_on_frontend_plane(&self.arguments, on_object_id);
         let sketch_block_artifact_id = {
+            use kcl_api::Plane;
+            use kcl_api::SourceRef;
+
             use crate::execution::CodeRef;
             use crate::execution::SketchBlock;
-            use crate::front::Plane;
-            use crate::front::SourceRef;
 
             let on_object = exec_state.mod_local.artifacts.scene_object_by_id(on_object_id);
 
@@ -2927,8 +2929,8 @@ impl Node<SketchBlock> {
             // Create the sketch scene object and replace its placeholder.
             let sketch_scene_object = Object {
                 id: sketch_id,
-                kind: ObjectKind::Sketch(crate::frontend::sketch::Sketch {
-                    args: crate::front::SketchCtor { on: sketch_ctor_on },
+                kind: ObjectKind::Sketch(kcl_api::Sketch {
+                    args: kcl_api::SketchCtor { on: sketch_ctor_on },
                     plane: on_object_id,
                     segments: Default::default(),
                     constraints: Default::default(),
@@ -5001,7 +5003,7 @@ impl Node<BinaryExpression> {
                         use crate::unparser::ExprContext;
                         let mut buf = String::new();
                         number_binary_part.recast(&mut buf, &Default::default(), 0, ExprContext::Other);
-                        crate::frontend::sketch::ConstraintSource {
+                        kcl_api::ConstraintSource {
                             expr: buf,
                             is_literal: matches!(number_binary_part, BinaryPart::Literal(_)),
                         }
@@ -5130,11 +5132,12 @@ impl Node<BinaryExpression> {
                                     )?
                                 }
                             }
+                            use kcl_api::Angle;
+                            use kcl_api::SourceRef;
+
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::front::Angle;
-                            use crate::front::SourceRef;
 
                             let Some(sketch_id) = sketch_block_state.sketch_id else {
                                 let message = "Sketch id missing for constraint artifact".to_owned();
@@ -5147,7 +5150,7 @@ impl Node<BinaryExpression> {
                                     (Some(front_angle_sector(sector)), Some(inverse))
                                 }
                             };
-                            let sketch_constraint = crate::front::Constraint::Angle(Angle {
+                            let sketch_constraint = kcl_api::Constraint::Angle(Angle {
                                 lines: vec![line0.object_id, line1.object_id],
                                 angle: n.try_into().map_err(|_| {
                                     internal_err("Failed to convert angle units numeric suffix:", range)
@@ -5268,19 +5271,20 @@ impl Node<BinaryExpression> {
                                     ));
                                 }
                             }
+                            use kcl_api::ConstraintSegment;
+                            use kcl_api::Distance;
+                            use kcl_api::SourceRef;
+
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::front::Distance;
-                            use crate::front::SourceRef;
-                            use crate::frontend::sketch::ConstraintSegment;
 
                             let Some(sketch_id) = sketch_block_state.sketch_id else {
                                 let message = "Sketch id missing for constraint artifact".to_owned();
                                 debug_assert!(false, "{}", &message);
                                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                             };
-                            let sketch_constraint = crate::front::Constraint::Distance(Distance {
+                            let sketch_constraint = kcl_api::Constraint::Distance(Distance {
                                 segments: vec![
                                     match p0 {
                                         crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => {
@@ -5414,19 +5418,20 @@ impl Node<BinaryExpression> {
                                 n.n,
                             ));
 
+                            use kcl_api::ConstraintSegment;
+                            use kcl_api::Distance;
+                            use kcl_api::SourceRef;
+
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::front::Distance;
-                            use crate::front::SourceRef;
-                            use crate::frontend::sketch::ConstraintSegment;
 
                             let Some(sketch_id) = sketch_block_state.sketch_id else {
                                 let message = "Sketch id missing for constraint artifact".to_owned();
                                 debug_assert!(false, "{}", &message);
                                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                             };
-                            let sketch_constraint = crate::front::Constraint::Distance(Distance {
+                            let sketch_constraint = kcl_api::Constraint::Distance(Distance {
                                 segments: input_object_ids
                                     .iter()
                                     .copied()
@@ -5557,19 +5562,20 @@ impl Node<BinaryExpression> {
                                 n.n,
                             ));
 
+                            use kcl_api::ConstraintSegment;
+                            use kcl_api::Distance;
+                            use kcl_api::SourceRef;
+
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::front::Distance;
-                            use crate::front::SourceRef;
-                            use crate::frontend::sketch::ConstraintSegment;
 
                             let Some(sketch_id) = sketch_block_state.sketch_id else {
                                 let message = "Sketch id missing for constraint artifact".to_owned();
                                 debug_assert!(false, "{}", &message);
                                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                             };
-                            let sketch_constraint = crate::front::Constraint::Distance(Distance {
+                            let sketch_constraint = kcl_api::Constraint::Distance(Distance {
                                 segments: input_object_ids.iter().copied().map(ConstraintSegment::from).collect(),
                                 distance: n.try_into().map_err(|_| {
                                     internal_err("Failed to convert distance units numeric suffix:", range)
@@ -5652,19 +5658,20 @@ impl Node<BinaryExpression> {
                                 range,
                             )?;
 
+                            use kcl_api::ConstraintSegment;
+                            use kcl_api::Distance;
+                            use kcl_api::SourceRef;
+
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::front::Distance;
-                            use crate::front::SourceRef;
-                            use crate::frontend::sketch::ConstraintSegment;
 
                             let Some(sketch_id) = sketch_block_state.sketch_id else {
                                 let message = "Sketch id missing for constraint artifact".to_owned();
                                 debug_assert!(false, "{}", &message);
                                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                             };
-                            let sketch_constraint = crate::front::Constraint::Distance(Distance {
+                            let sketch_constraint = kcl_api::Constraint::Distance(Distance {
                                 segments: input_object_ids
                                     .iter()
                                     .copied()
@@ -5791,19 +5798,20 @@ impl Node<BinaryExpression> {
                                 range,
                             )?;
 
+                            use kcl_api::ConstraintSegment;
+                            use kcl_api::Distance;
+                            use kcl_api::SourceRef;
+
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::front::Distance;
-                            use crate::front::SourceRef;
-                            use crate::frontend::sketch::ConstraintSegment;
 
                             let Some(sketch_id) = sketch_block_state.sketch_id else {
                                 let message = "Sketch id missing for constraint artifact".to_owned();
                                 debug_assert!(false, "{}", &message);
                                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                             };
-                            let sketch_constraint = crate::front::Constraint::Distance(Distance {
+                            let sketch_constraint = kcl_api::Constraint::Distance(Distance {
                                 segments: input_object_ids.iter().copied().map(ConstraintSegment::from).collect(),
                                 distance: n.try_into().map_err(|_| {
                                     internal_err("Failed to convert distance units numeric suffix:", range)
@@ -5973,19 +5981,20 @@ impl Node<BinaryExpression> {
                                     ezpz::CircleSide::Exterior,
                                 ));
 
+                            use kcl_api::ConstraintSegment;
+                            use kcl_api::Distance;
+                            use kcl_api::SourceRef;
+
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::front::Distance;
-                            use crate::front::SourceRef;
-                            use crate::frontend::sketch::ConstraintSegment;
 
                             let Some(sketch_id) = sketch_block_state.sketch_id else {
                                 let message = "Sketch id missing for constraint artifact".to_owned();
                                 debug_assert!(false, "{}", &message);
                                 return Err(KclError::new_internal(KclErrorDetails::new(message, vec![range])));
                             };
-                            let sketch_constraint = crate::front::Constraint::Distance(Distance {
+                            let sketch_constraint = kcl_api::Constraint::Distance(Distance {
                                 segments: input_object_ids.iter().copied().map(ConstraintSegment::from).collect(),
                                 distance: n.try_into().map_err(|_| {
                                     internal_err("Failed to convert distance units numeric suffix:", range)
@@ -6199,18 +6208,19 @@ impl Node<BinaryExpression> {
                                 return Err(internal_err(message, self));
                             };
                             sketch_block_state.solver_constraints.push(solver_constraint);
+                            use kcl_api::SourceRef;
+
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::front::SourceRef;
                             let segment_object_id = match target_segment {
                                 CircularSegmentConstraintTarget::Arc { object_id, .. }
                                 | CircularSegmentConstraintTarget::Circle { object_id } => object_id,
                             };
 
                             let constraint = if is_diameter {
-                                use crate::frontend::sketch::Diameter;
-                                crate::front::Constraint::Diameter(Diameter {
+                                use kcl_api::Diameter;
+                                kcl_api::Constraint::Diameter(Diameter {
                                     arc: segment_object_id,
                                     diameter: n.try_into().map_err(|_| {
                                         internal_err("Failed to convert diameter units numeric suffix:", range)
@@ -6219,8 +6229,8 @@ impl Node<BinaryExpression> {
                                     source,
                                 })
                             } else {
-                                use crate::frontend::sketch::Radius;
-                                crate::front::Constraint::Radius(Radius {
+                                use kcl_api::Radius;
+                                kcl_api::Constraint::Radius(Radius {
                                     arc: segment_object_id,
                                     radius: n.try_into().map_err(|_| {
                                         internal_err("Failed to convert radius units numeric suffix:", range)
@@ -6311,14 +6321,15 @@ impl Node<BinaryExpression> {
                                     ));
                                 }
                             }
+                            use kcl_api::ConstraintSegment;
+                            use kcl_api::Distance;
+                            use kcl_api::SourceRef;
+
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::front::Distance;
-                            use crate::front::SourceRef;
-                            use crate::frontend::sketch::ConstraintSegment;
 
-                            let constraint = crate::front::Constraint::HorizontalDistance(Distance {
+                            let constraint = kcl_api::Constraint::HorizontalDistance(Distance {
                                 segments: vec![
                                     match p0 {
                                         crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => {
@@ -6423,14 +6434,15 @@ impl Node<BinaryExpression> {
                                     ));
                                 }
                             }
+                            use kcl_api::ConstraintSegment;
+                            use kcl_api::Distance;
+                            use kcl_api::SourceRef;
+
                             use crate::execution::Artifact;
                             use crate::execution::CodeRef;
                             use crate::execution::SketchBlockConstraint;
-                            use crate::front::Distance;
-                            use crate::front::SourceRef;
-                            use crate::frontend::sketch::ConstraintSegment;
 
-                            let constraint = crate::front::Constraint::VerticalDistance(Distance {
+                            let constraint = kcl_api::Constraint::VerticalDistance(Distance {
                                 segments: vec![
                                     match p0 {
                                         crate::execution::ConstrainablePoint2dOrOrigin::Point(point) => {
@@ -7517,7 +7529,7 @@ sketch(on = XY) {
             .iter()
             .find_map(|object| match &object.kind {
                 ObjectKind::Constraint {
-                    constraint: crate::front::Constraint::Angle(angle),
+                    constraint: kcl_api::Constraint::Angle(angle),
                 } => Some(angle),
                 _ => None,
             })
@@ -7566,7 +7578,7 @@ sketch(on = XY) {
             .iter()
             .find_map(|object| match &object.kind {
                 ObjectKind::Constraint {
-                    constraint: crate::front::Constraint::Angle(angle),
+                    constraint: kcl_api::Constraint::Angle(angle),
                 } => Some(angle),
                 _ => None,
             })
@@ -7638,7 +7650,7 @@ sketch(on = XY) {
             .iter()
             .find_map(|object| match &object.kind {
                 ObjectKind::Constraint {
-                    constraint: crate::front::Constraint::Angle(angle),
+                    constraint: kcl_api::Constraint::Angle(angle),
                 } => Some(angle),
                 _ => None,
             })
@@ -7865,6 +7877,7 @@ d = b + c
 
         let exec_ctxt = ExecutorContext {
             engine: Arc::new(engine_manager::EngineManager::new_mock()),
+            cache: crate::Cache::default(),
             engine_batch: crate::engine::EngineBatchContext::default(),
             fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
             settings: ExecutorSettings {

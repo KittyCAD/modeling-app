@@ -55,7 +55,7 @@ use crate::bridge::sketch_constraints::SketchConstraintReport;
 const HEARTBEAT_INTERVAL_SECONDS: u64 = 5;
 
 mod bridge;
-mod connection;
+mod kcl_session;
 
 fn tokio() -> &'static tokio::runtime::Runtime {
     use std::sync::OnceLock;
@@ -1298,10 +1298,10 @@ fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<kcl_api::UnitMass>()?;
     m.add_class::<kcl_api::UnitVolume>()?;
 
-    m.add_class::<connection::KclSession>()?;
+    m.add_class::<kcl_session::KclSession>()?;
     m.add_class::<ExecOutcome>()?;
-    m.add_function(wrap_pyfunction!(connection::new_kcl_session, m)?)?;
-    m.add_function(wrap_pyfunction!(connection::new_kcl_session_code, m)?)?;
+    m.add_function(wrap_pyfunction!(kcl_session::new_kcl_session, m)?)?;
+    m.add_function(wrap_pyfunction!(kcl_session::new_kcl_session_code, m)?)?;
 
     // These are fine to add top level since we rename them in pyo3 derives.
     m.add_class::<kcmc::format::step::import::Options>()?;

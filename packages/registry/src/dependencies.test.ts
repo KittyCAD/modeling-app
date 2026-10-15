@@ -15,22 +15,20 @@ describe('factory dependencies', () => {
     const provider = defineRegistryItemFactory(() => {
       events.push('provider')
       return {
-        item: {
-          providesServices: [provideService(service, { read: () => 'loaded' })],
-          dispose: () => {
-            events.push('dispose provider')
-          },
+        providesServices: [provideService(service, { read: () => 'loaded' })],
+        dispose: () => {
+          events.push('dispose provider')
         },
       }
     }, 'provider')
     const unusedDependency = defineRegistryItemFactory(() => {
       events.push('unused dependency')
-      return { item: {} }
+      return {}
     })
     const duplicate = defineRegistryItemFactory(
       () => {
         events.push('duplicate')
-        return { item: {} }
+        return {}
       },
       'provider',
       [unusedDependency]
@@ -39,15 +37,13 @@ describe('factory dependencies', () => {
       ({ services }) => {
         events.push('consumer')
         return {
-          item: {
-            providesServices: [
-              provideService(result, {
-                read: () => services.get(service).read(),
-              }),
-            ],
-            dispose: () => {
-              events.push('dispose consumer')
-            },
+          providesServices: [
+            provideService(result, {
+              read: () => services.get(service).read(),
+            }),
+          ],
+          dispose: () => {
+            events.push('dispose consumer')
           },
         }
       },
@@ -75,7 +71,7 @@ describe('factory dependencies', () => {
       const consumer = defineRegistryItemFactory(
         ({ services }) => {
           services.get(service)
-          return { item: {} }
+          return {}
         },
         'consumer',
         dependencies
@@ -95,15 +91,13 @@ describe('factory dependencies', () => {
       uses: [
         defineRegistryItemFactory(() => {
           unused()
-          return { item: {} }
+          return {}
         }),
       ],
     }
-    const consumer = defineRegistryItemFactory(
-      () => ({ item: {} }),
-      'consumer',
-      [duplicate]
-    )
+    const consumer = defineRegistryItemFactory(() => ({}), 'consumer', [
+      duplicate,
+    ])
     const container = new Registry()
     container.configure([original, consumer])
     expect(container.get(values)).toEqual(['original'])
@@ -114,10 +108,8 @@ describe('factory dependencies', () => {
     const unused = vi.fn()
     const values = appendValueSpec<string>('values')
     const first = defineRegistryItemFactory(() => ({
-      item: {
-        id: 'shared',
-        provides: [provide(values, 'first')],
-      },
+      id: 'shared',
+      provides: [provide(values, 'first')],
     }))
     const duplicate = {
       id: 'shared',
@@ -125,7 +117,7 @@ describe('factory dependencies', () => {
       uses: [
         defineRegistryItemFactory(() => {
           unused()
-          return { item: {} }
+          return {}
         }),
       ],
     }
@@ -139,12 +131,12 @@ describe('factory dependencies', () => {
     const events: string[] = []
     const first = defineRegistryItemFactory(() => {
       events.push('first')
-      return { item: {} }
+      return {}
     })
     const second = defineRegistryItemFactory(
       () => {
         events.push('second')
-        return { item: {} }
+        return {}
       },
       'second',
       [first]
@@ -152,7 +144,7 @@ describe('factory dependencies', () => {
     const third = defineRegistryItemFactory(
       () => {
         events.push('third')
-        return { item: {} }
+        return {}
       },
       'third',
       [second]
@@ -170,7 +162,7 @@ describe('factory dependencies', () => {
     const first = defineRegistryItemFactory(
       () => {
         called()
-        return { item: {} }
+        return {}
       },
       'first',
       [{ uses: children }]
@@ -178,7 +170,7 @@ describe('factory dependencies', () => {
     const second = defineRegistryItemFactory(
       () => {
         called()
-        return { item: {} }
+        return {}
       },
       'second',
       [first]
@@ -186,7 +178,7 @@ describe('factory dependencies', () => {
     children.push(second)
     const unrelated = defineRegistryItemFactory(() => {
       called()
-      return { item: {} }
+      return {}
     })
     const container = new Registry()
     container.configure([unrelated, first])
@@ -204,11 +196,9 @@ describe('factory dependencies', () => {
     const provider = (name: string) =>
       defineRegistryItemFactory(
         () => ({
-          item: {
-            providesServices: [provideService(service, { name })],
-            dispose: () => {
-              events.push(`provider:${name}`)
-            },
+          providesServices: [provideService(service, { name })],
+          dispose: () => {
+            events.push(`provider:${name}`)
           },
         }),
         `provider:${name}`
@@ -218,13 +208,11 @@ describe('factory dependencies', () => {
         calls()
         const live = services.signal(service)
         return {
-          item: {
-            providesServices: [
-              provideService(output, { name: () => live.value?.name }),
-            ],
-            dispose: () => {
-              events.push('consumer')
-            },
+          providesServices: [
+            provideService(output, { name: () => live.value?.name }),
+          ],
+          dispose: () => {
+            events.push('consumer')
           },
         }
       },
@@ -255,17 +243,15 @@ describe('factory dependencies', () => {
         calls()
         const live = valueSpecs.signal(values)
         return {
-          item: {
-            provides: [
-              provide(
-                values,
-                computed(() => source.value.toUpperCase())
-              ),
-            ],
-            providesServices: [
-              provideService(output, { values: () => live.value }),
-            ],
-          },
+          provides: [
+            provide(
+              values,
+              computed(() => source.value.toUpperCase())
+            ),
+          ],
+          providesServices: [
+            provideService(output, { values: () => live.value }),
+          ],
         }
       },
       'consumer',
@@ -282,18 +268,14 @@ describe('factory dependencies', () => {
   it('disposes dependents first through synchronous disposal', () => {
     const events: string[] = []
     const dependency = defineRegistryItemFactory(() => ({
-      item: {
-        dispose: () => {
-          events.push('dependency')
-        },
+      dispose: () => {
+        events.push('dependency')
       },
     }))
     const consumer = defineRegistryItemFactory(
       () => ({
-        item: {
-          dispose: () => {
-            events.push('consumer')
-          },
+        dispose: () => {
+          events.push('consumer')
         },
       }),
       'consumer',
@@ -311,10 +293,8 @@ describe('factory dependencies', () => {
     const provider = defineRegistryItemFactory(() => {
       events.push('create')
       return {
-        item: {
-          dispose: () => {
-            events.push('dispose')
-          },
+        dispose: () => {
+          events.push('dispose')
         },
       }
     })

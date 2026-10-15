@@ -1,5 +1,6 @@
 import { signal } from '@preact/signals-core'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: observe query cleanup in the legacy prompt flow (useLocation).
 import { MemoryRouter, useLocation } from 'react-router-dom'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 

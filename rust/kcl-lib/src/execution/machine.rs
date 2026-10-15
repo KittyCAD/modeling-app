@@ -159,6 +159,7 @@ use std::future::Future;
 use std::sync::Arc;
 
 use indexmap::IndexMap;
+use kcl_api::ObjectId;
 
 use crate::SourceRange;
 use crate::errors::KclError;
@@ -183,7 +184,6 @@ use crate::execution::kcl_value::KclObjectFields;
 use crate::execution::state::SketchBlockState;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
-use crate::front::ObjectId;
 use crate::parsing::ast::types::Annotation;
 use crate::parsing::ast::types::ArrayExpression;
 use crate::parsing::ast::types::ArrayRangeExpression;
@@ -3084,6 +3084,7 @@ result = countdown(9000)
         let program = crate::Program::parse_no_errs(code).unwrap();
         let exec_ctxt = ExecutorContext {
             engine: std::sync::Arc::new(crate::engine::engine_manager::EngineManager::new_mock()),
+            cache: crate::Cache::default(),
             engine_batch: crate::engine::EngineBatchContext::default(),
             fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
             settings: crate::execution::ExecutorSettings::default(),
