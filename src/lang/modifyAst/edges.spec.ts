@@ -7,6 +7,8 @@ import {
   addChamfer,
   addFillet,
   deleteEdgeTreatment,
+  refactorZ0006Unified,
+  retrieveEdgeSelectionsFromEdgeRefs,
   retrieveEdgeSelectionsFromOpArgs,
   retrieveEdgeSelectionsFromSingleEdgeRef,
 } from '@src/lang/modifyAst/edges'
@@ -1174,28 +1176,51 @@ ${extrudedTriangle}`
       expect(kclManagerInThisFile.errors).toEqual([])
     })
 
-    it('should edit a basic fillet call with a legacy edge tag', async () => {
-      const { artifactGraph, ast, operations } = await getAstAndArtifactGraph(
+    it('should migrate a legacy fillet edge before editing its radius', async () => {
+      const legacy = await getAstAndArtifactGraph(
         extrudedTriangleWithFillet,
         instanceInThisFile,
         kclManagerInThisFile
       )
+      expect(kclManagerInThisFile.errors).toEqual([])
+      const execState = kclManagerInThisFile.execState
+      // Feature-tree editing migrates legacy edge UUIDs before recovering selections.
+      const migratedCode = refactorZ0006Unified(
+        legacy.ast,
+        execState.edgeRefactorMetadata,
+        execState.directTagFilletMetadata,
+        legacy.artifactGraph,
+        instanceInThisFile
+      )
+      if (err(migratedCode)) throw migratedCode
+      expect(migratedCode).not.toContain('getCommonEdge')
+      expect(migratedCode).toContain('edges = [')
+      const { artifactGraph, ast, operations } = await getAstAndArtifactGraph(
+        migratedCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      expect(kclManagerInThisFile.errors).toEqual([])
+      expect(
+        [...artifactGraph.values()].some(
+          (artifact) => artifact.type === 'sweepEdge'
+        )
+      ).toBe(false)
       const operation = getAllOperations(operations).find(
         (op) => op.type === 'StdLibCall' && op.name === 'fillet'
       )
       if (
         !operation ||
         operation.type !== 'StdLibCall' ||
-        !operation.labeledArgs?.tags
+        !operation.labeledArgs?.edges
       ) {
-        throw new Error('Legacy fillet operation or tags argument not found')
+        throw new Error('Migrated fillet operation or edges argument not found')
       }
-      const selection = retrieveEdgeSelectionsFromOpArgs(
-        operation.unlabeledArg,
-        operation.labeledArgs.tags,
-        artifactGraph,
-        extrudedTriangleWithFillet
+      const selection = retrieveEdgeSelectionsFromEdgeRefs(
+        operation.labeledArgs.edges,
+        artifactGraph
       )
+      if (err(selection)) throw selection
       expect(selection.graphSelections).toHaveLength(1)
       expect(selection.graphSelections[0].entityRef).toMatchObject({
         type: 'edge',
@@ -1220,10 +1245,16 @@ ${extrudedTriangle}`
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
-        extrudedTriangleWithFillet.replace('radius = 1', 'radius = 1.1')
+        migratedCode.trim().replace('radius = 1', 'radius = 1.1')
       )
-      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
-    })
+      if (err(newCode)) throw newCode
+      await getAstAndArtifactGraph(
+        newCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      expect(kclManagerInThisFile.errors).toEqual([])
+    }, 30_000)
 
     it('should edit a piped fillet call with a legacy edge tag', async () => {
       const code = `sketch001 = startSketchOn(XY)
