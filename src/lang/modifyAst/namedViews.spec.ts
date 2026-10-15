@@ -1,4 +1,7 @@
-import { addNamedView } from '@src/lang/modifyAst/namedViews'
+import {
+  addNamedView,
+  updateNamedViewCamera,
+} from '@src/lang/modifyAst/namedViews'
 import { assertParse, recast } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
@@ -214,6 +217,100 @@ view001 = view::named("Inspection view", camera = oriented(view::Orientation::Fr
     })
     expect(event).toEqual(
       new Error('Editing custom cameras is not supported yet.')
+    )
+  })
+})
+
+describe('updateNamedViewCamera', () => {
+  const code = `@settings(kclVersion = 3.0)
+
+view001 = view::named(
+  "Inspection view",
+  camera = view::oriented(
+    view::Orientation::Front,
+    distance = 200mm,
+    projection = view::Projection::Perspective,
+  ),
+  baseline = view::Visibility::Show,
+)`
+
+  async function subject(code: string) {
+    const ast = assertParse(code, instance)
+    const execState = await enginelessExecutor(ast, rustContext)
+    const artifact = [...execState.artifactGraph.values()].find(
+      (candidate) => candidate.type === 'namedView'
+    )
+    if (!artifact || artifact.type !== 'namedView') {
+      throw new Error('Expected a named view artifact')
+    }
+    return { ast, artifact }
+  }
+
+  it('replaces only the camera with the current directed camera', async () => {
+    const { ast, artifact } = await subject(code)
+    const modifiedAst = updateNamedViewCamera({
+      ast,
+      pathToNode: artifact.codeRef.pathToNode,
+      camera: {
+        direction: [0.25, -0.5, -0.75],
+        up: [0, 0, 1],
+        target: [10, 20, 30],
+        distance: 125.5,
+        projection: 'Orthographic',
+      },
+      wasmInstance: instance,
+    })
+    if (err(modifiedAst)) throw modifiedAst
+
+    const execState = await enginelessExecutor(modifiedAst, rustContext)
+    const updatedCode = recast(modifiedAst, instance)
+    if (err(updatedCode)) throw updatedCode
+    expect(updatedCode).toContain(`camera = view::directed(
+    [0.25, -0.5, -0.75],
+    up = [0, 0, 1],
+    target = [10mm, 20mm, 30mm],
+    distance = 125.5mm,
+    projection = view::Projection::Orthographic,
+  )`)
+    expect(updatedCode).toContain('"Inspection view"')
+    expect(updatedCode).toContain('baseline = view::Visibility::Show')
+
+    const updatedView = [...execState.artifactGraph.values()].find(
+      (candidate) => candidate.type === 'namedView'
+    )
+    if (!updatedView || updatedView.type !== 'namedView') {
+      throw new Error('Expected the updated named view artifact')
+    }
+    const event = await prepareNamedViewEditCommand({
+      artifact: updatedView,
+      artifactGraph: execState.artifactGraph,
+      ast: modifiedAst,
+      code: updatedCode,
+      rustContext,
+    })
+    if (err(event)) throw event
+    if (event.type !== 'Find and select command') {
+      throw new Error(`Expected an edit command, got ${event.type}`)
+    }
+    expect(event.data.argDefaultValues).toMatchObject({
+      name: 'Inspection view',
+      orientation: undefined,
+      projection: undefined,
+      nodeToEdit: updatedView.codeRef.pathToNode,
+    })
+    const renamed = addNamedView({
+      ast: modifiedAst,
+      artifactGraph: execState.artifactGraph,
+      name: 'Close-up',
+      baseline: 'Hide',
+      nodeToEdit: updatedView.codeRef.pathToNode,
+      wasmInstance: instance,
+    })
+    if (err(renamed)) throw renamed
+    expect(recast(renamed.modifiedAst, instance)).toBe(
+      updatedCode
+        .replace('"Inspection view"', '"Close-up"')
+        .replace('view::Visibility::Show', 'view::Visibility::Hide')
     )
   })
 })
