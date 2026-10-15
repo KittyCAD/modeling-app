@@ -50,6 +50,7 @@ import {
   getSegmentForEdgeCut,
   getSweepArtifactFromSelection,
   type ResolvedGraphSelection,
+  type CodeRef as SelectionCodeRef,
 } from '@src/lang/std/artifactGraph'
 import { findKwArg } from '@src/lang/util'
 import type {
@@ -3536,26 +3537,30 @@ function faceRefToArtifactId(v: OpKclValue): string | null {
   return null
 }
 
-/** Resolve a source anchor for an explicit edge reference, without graph edges. */
-function findEdgeArtifactFromFaceIds(
+/** Find the source-code location associated with an explicit edge reference. */
+function findCodeRefForEdgeReference(
   faceIds: string[],
   artifactGraph: ArtifactGraph
-): Artifact | null {
+): SelectionCodeRef | null {
   const artifacts = faceIds.flatMap((id) => {
     const artifact = artifactGraph.get(id)
     return artifact ? [artifact] : []
   })
   // Legacy selectors can name a sketch segment directly. Face API selectors
   // already identify the edge: a face is sufficient to recover a code anchor.
-  return (
-    artifacts.find(
-      (artifact) => artifact.type === 'segment' || artifact.type === 'edgeCut'
-    ) ??
-    artifacts.find(
-      (artifact) => getCodeRefsByArtifactId(artifact.id, artifactGraph)?.length
-    ) ??
-    null
+  const directArtifact = artifacts.find(
+    (artifact) => artifact.type === 'segment' || artifact.type === 'edgeCut'
   )
+  if (directArtifact) {
+    return (
+      getCodeRefsByArtifactId(directArtifact.id, artifactGraph)?.[0] ?? null
+    )
+  }
+  for (const artifact of artifacts) {
+    const codeRef = getCodeRefsByArtifactId(artifact.id, artifactGraph)?.[0]
+    if (codeRef) return codeRef
+  }
+  return null
 }
 
 /**
@@ -3612,13 +3617,9 @@ export function retrieveEdgeSelectionsFromSingleEdgeRef(
   if (faceIds.length === 0) {
     return new Error('edgeRef sideFaces array needs at least one face')
   }
-  const edgeArtifact = findEdgeArtifactFromFaceIds(faceIds, artifactGraph)
-  if (!edgeArtifact) {
-    return new Error('Could not find edge from faces in artifact graph')
-  }
-  const codeRefs = getCodeRefsByArtifactId(edgeArtifact.id, artifactGraph)
-  if (!codeRefs?.length) {
-    return new Error('Edge artifact has no codeRef')
+  const codeRef = findCodeRefForEdgeReference(faceIds, artifactGraph)
+  if (!codeRef) {
+    return new Error('Could not find a code reference for the selected edge')
   }
   const endFacesProp = edgeRef.endFaces ?? edgeRef.end_faces
   const endFaceIds =
@@ -3636,7 +3637,7 @@ export function retrieveEdgeSelectionsFromSingleEdgeRef(
     ...(index !== undefined ? { index } : {}),
   }
   return {
-    graphSelections: [{ entityRef, codeRef: codeRefs[0] }],
+    graphSelections: [{ entityRef, codeRef }],
     otherSelections: [],
   }
 }
