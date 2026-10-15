@@ -326,7 +326,7 @@ export default function ModelingDialog({
               aria-label="Cancel"
               onMouseDown={(event) => event.stopPropagation()}
               onClick={() => commands.send({ type: 'Close' })}
-              className="group m-0 p-0 border-none bg-transparent hover:bg-transparent"
+              className="group m-0 rounded-sm p-0 border-none bg-transparent hover:bg-transparent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-appForeground"
             >
               <CustomIcon
                 name="close"

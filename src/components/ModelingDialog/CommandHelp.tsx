@@ -19,7 +19,7 @@ export function CommandHelp({
     <Popover className="flex" onMouseDown={(event) => event.stopPropagation()}>
       <Popover.Button
         aria-label="Command help"
-        className="m-0 rounded-sm border-0 bg-transparent p-0 text-chalkboard-70 hover:text-primary dark:text-chalkboard-40"
+        className="m-0 rounded-sm border-0 bg-transparent p-0 text-chalkboard-70 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-appForeground ui-open:bg-primary ui-open:text-chalkboard-10 dark:text-chalkboard-40 dark:ui-open:text-chalkboard-10"
         style={{ anchorName }}
       >
         <CustomIcon name="questionMark" className="h-5 w-5" />
