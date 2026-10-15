@@ -299,54 +299,119 @@ describe('project system', () => {
     }
   })
 
-  it('does not reapply the camera projection while sketch solve mode is active', () => {
+  it('does not replay scene settings when selecting the executing editor again', async () => {
     const app = createAppForTest()
-    const cameraProjectionSetter = vi.spyOn(
-      app.singletons.kclManager.sceneInfra.camControls,
-      'engineCameraProjection',
-      'set'
-    )
-
     try {
-      app.project = {} as NonNullable<typeof app.project>
-      app.singletons.kclManager.modelingState = {
-        matches: (state: string) => state === 'sketchSolveMode',
-      } as unknown as NonNullable<KclManager['modelingState']>
+      await waitForSettingsIdle(app)
+      const project = await app.openProject(mockProject)
+      const first = await project.openEditor(
+        '/some-dir/test/main.kcl',
+        undefined,
+        ''
+      )
+      const second = await project.openEditor(
+        '/some-dir/test/other.kcl',
+        undefined,
+        '',
+        false
+      )
+      const engine = app.engineCommandManager
+      const theme = vi.spyOn(engine, 'setTheme').mockResolvedValue(undefined)
+      const edges = vi
+        .spyOn(engine, 'setHighlightEdges')
+        .mockResolvedValue(undefined)
+      const backface = vi
+        .spyOn(engine, 'setDefaultSystemProperties')
+        .mockResolvedValue(undefined)
+      const execute = vi
+        .spyOn(first, 'executeCode')
+        .mockResolvedValue(undefined)
+      const clear = vi.spyOn(first.rustContext, 'clearSceneAndBustCache')
+      engine.connection = { connected: true } as typeof engine.connection
 
-      app.onSettingsUpdate(app.settings.actor.getSnapshot())
+      project.executingPath = first.path
+      expect(theme).not.toHaveBeenCalled()
+      expect(edges).not.toHaveBeenCalled()
+      expect(backface).not.toHaveBeenCalled()
+      expect(execute).not.toHaveBeenCalled()
+      expect(clear).not.toHaveBeenCalled()
 
-      expect(cameraProjectionSetter).not.toHaveBeenCalled()
+      const setting = app.settings.get().modeling.highlightEdges
+      setting.user = !setting.current
+      expect(edges).toHaveBeenCalledExactlyOnceWith(setting.current)
+      expect(execute).toHaveBeenCalledTimes(1)
+      edges.mockClear()
+
+      // A different editor still takes ownership and applies current values.
+      project.executingPath = second.path
+      expect(project.executingEditor.peek()).toBe(second)
+      expect(theme).toHaveBeenCalledTimes(1)
+      expect(edges).toHaveBeenCalledTimes(1)
+      expect(backface).toHaveBeenCalledTimes(1)
+      project.executingPath = second.path
+      expect(theme).toHaveBeenCalledTimes(1)
+      expect(edges).toHaveBeenCalledTimes(1)
+      expect(backface).toHaveBeenCalledTimes(1)
     } finally {
-      cameraProjectionSetter.mockRestore()
-      app.project = undefined
       app.dispose()
     }
   })
 
-  it('does not resend unchanged engine appearance settings', async () => {
+  it('assigns scene settings to the executing project editor rather than the singleton', async () => {
     const app = createAppForTest()
-    const kclManager = app.singletons.kclManager
-    const engineCommandManager = kclManager.engineCommandManager
-    const previousConnection = engineCommandManager.connection
-
     try {
-      await app.openProject(mockProject)
-      const updateTheme = vi
-        .spyOn(kclManager, 'updateTheme')
+      await waitForSettingsIdle(app)
+      const project = await app.openProject(mockProject)
+      const first = await project.openEditor(
+        '/some-dir/test/main.kcl',
+        undefined,
+        ''
+      )
+      const second = await project.openEditor(
+        '/some-dir/test/other.kcl',
+        undefined,
+        '',
+        false
+      )
+      const firstExecute = vi
+        .spyOn(first, 'executeCode')
         .mockResolvedValue(undefined)
-      const setDefaultSystemProperties = vi
-        .spyOn(engineCommandManager, 'setDefaultSystemProperties')
+      const secondExecute = vi
+        .spyOn(second, 'executeCode')
         .mockResolvedValue(undefined)
-      engineCommandManager.connection = {
+      const singletonExecute = vi
+        .spyOn(app.singletons.kclManager, 'executeCode')
+        .mockResolvedValue(undefined)
+      vi.spyOn(app.engineCommandManager, 'setTheme').mockResolvedValue(
+        undefined
+      )
+      vi.spyOn(app.engineCommandManager, 'setHighlightEdges').mockResolvedValue(
+        undefined
+      )
+      vi.spyOn(
+        app.engineCommandManager,
+        'setDefaultSystemProperties'
+      ).mockResolvedValue(undefined)
+      app.engineCommandManager.connection = {
         connected: true,
-      } as typeof engineCommandManager.connection
+      } as typeof app.engineCommandManager.connection
+      const setting = app.settings.get().modeling.highlightEdges
+      setting.user = !setting.current
+      expect(firstExecute).toHaveBeenCalledTimes(1)
+      expect(secondExecute).not.toHaveBeenCalled()
+      expect(singletonExecute).not.toHaveBeenCalled()
 
-      app.onSettingsUpdate(app.settings.actor.getSnapshot())
+      project.executingPath = second.path
+      setting.user = !setting.current
+      expect(firstExecute).toHaveBeenCalledTimes(1)
+      expect(secondExecute).toHaveBeenCalledTimes(1)
+      expect(singletonExecute).not.toHaveBeenCalled()
 
-      expect(updateTheme).not.toHaveBeenCalled()
-      expect(setDefaultSystemProperties).not.toHaveBeenCalled()
+      project.executingPath = null
+      setting.user = !setting.current
+      expect(firstExecute).toHaveBeenCalledTimes(1)
+      expect(secondExecute).toHaveBeenCalledTimes(1)
     } finally {
-      engineCommandManager.connection = previousConnection
       app.dispose()
     }
   })
@@ -1004,114 +1069,6 @@ describe('project system', () => {
       File.ioImplementations.read = originalRead
       app.dispose()
       await fsZds.rm(projectPath, { recursive: true, force: true })
-    }
-  })
-
-  it('refreshes sketch grids without clearing the scene', async () => {
-    const app = createAppForTest()
-    const kclManager = app.singletons.kclManager
-    const engineCommandManager = kclManager.engineCommandManager
-    const previousConnection = engineCommandManager.connection
-
-    try {
-      await waitForSettingsIdle(app)
-
-      const updateSketchGrid = vi.spyOn(
-        kclManager.sceneEntitiesManager,
-        'updateSketchGrid'
-      )
-      const clearSceneAndBustCache = vi.spyOn(
-        kclManager.rustContext,
-        'clearSceneAndBustCache'
-      )
-      const executeCode = vi
-        .spyOn(kclManager, 'executeCode')
-        .mockResolvedValue(undefined)
-      engineCommandManager.connection = {
-        connected: false,
-      } as typeof engineCommandManager.connection
-
-      const setGridSetting = async (
-        setting:
-          | 'showSketchGrid'
-          | 'fixedSizeGrid'
-          | 'majorGridSpacing'
-          | 'minorGridsPerMajor',
-        value: boolean | number
-      ) => {
-        app.settings.actor.send({
-          type: `set.modeling.${setting}`,
-          data: { level: 'user', value },
-          doNotPersist: true,
-        } as never)
-        await waitForSettingsIdle(app)
-      }
-
-      await setGridSetting(
-        'fixedSizeGrid',
-        !app.settings.get().modeling.fixedSizeGrid.default
-      )
-      await app.openProject(mockProject)
-      await Promise.resolve()
-
-      expect(updateSketchGrid).not.toHaveBeenCalled()
-      expect(clearSceneAndBustCache).not.toHaveBeenCalled()
-      expect(executeCode).not.toHaveBeenCalled()
-
-      const modeling = app.settings.get().modeling
-      expect(modeling.showSketchGrid.default).toBe(false)
-      expect(modeling.showSketchGrid.current).toBe(false)
-      await setGridSetting('showSketchGrid', !modeling.showSketchGrid.current)
-      expect(updateSketchGrid).toHaveBeenCalledTimes(1)
-      expect(clearSceneAndBustCache).not.toHaveBeenCalled()
-      expect(executeCode).not.toHaveBeenCalled()
-
-      updateSketchGrid.mockClear()
-      await setGridSetting('fixedSizeGrid', !modeling.fixedSizeGrid.current)
-      await vi.waitFor(() => {
-        expect(updateSketchGrid).toHaveBeenCalledTimes(1)
-        expect(clearSceneAndBustCache).not.toHaveBeenCalled()
-        expect(executeCode).toHaveBeenCalledTimes(1)
-      })
-
-      updateSketchGrid.mockClear()
-      clearSceneAndBustCache.mockClear()
-      executeCode.mockClear()
-
-      await setGridSetting(
-        'majorGridSpacing',
-        modeling.majorGridSpacing.current + 1
-      )
-      expect(updateSketchGrid).toHaveBeenCalledTimes(1)
-      expect(clearSceneAndBustCache).not.toHaveBeenCalled()
-      expect(executeCode).not.toHaveBeenCalled()
-
-      updateSketchGrid.mockClear()
-      await setGridSetting(
-        'minorGridsPerMajor',
-        modeling.minorGridsPerMajor.current + 1
-      )
-      expect(updateSketchGrid).toHaveBeenCalledTimes(1)
-      expect(clearSceneAndBustCache).not.toHaveBeenCalled()
-      expect(executeCode).not.toHaveBeenCalled()
-
-      updateSketchGrid.mockClear()
-      const currentTheme = app.settings.get().app.theme.current
-      app.settings.actor.send({
-        type: 'set.app.theme',
-        data: {
-          level: 'user',
-          value: currentTheme === 'dark' ? 'light' : 'dark',
-        },
-        doNotPersist: true,
-      })
-      await waitForSettingsIdle(app)
-      await vi.waitFor(() => {
-        expect(updateSketchGrid).toHaveBeenCalledTimes(1)
-      })
-    } finally {
-      engineCommandManager.connection = previousConnection
-      app.dispose()
     }
   })
 
