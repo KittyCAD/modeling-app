@@ -1,3 +1,4 @@
+use schemars::JsonSchema;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -6,7 +7,7 @@ use crate::Number;
 use crate::ObjectId;
 use crate::front::Plane;
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiSketch")]
 pub struct Sketch {
     pub args: SketchCtor,
@@ -18,14 +19,14 @@ pub struct Sketch {
 /// Arguments for creating a new sketch. This is similar to the constructor of
 /// other kinds of objects in that it is the inputs to the sketch, not the
 /// outputs.
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct SketchCtor {
     /// The sketch surface.
     pub on: Plane,
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiSegment")]
 #[serde(tag = "type")]
 pub enum Segment {
@@ -36,7 +37,7 @@ pub enum Segment {
     ControlPointSpline(ControlPointSpline),
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiPoint")]
 pub struct Point {
     pub position: Point2d<Number>,
@@ -46,7 +47,7 @@ pub struct Point {
     pub constraints: Vec<ObjectId>,
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiLine")]
 pub struct Line {
     pub start: ObjectId,
@@ -65,7 +66,7 @@ pub struct Line {
     pub construction: bool,
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiArc")]
 pub struct Arc {
     pub start: ObjectId,
@@ -83,7 +84,7 @@ pub struct Arc {
     pub direction: ArcDirection,
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiCircle")]
 pub struct Circle {
     pub start: ObjectId,
@@ -94,7 +95,7 @@ pub struct Circle {
     pub construction: bool,
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts")]
 #[serde(tag = "type")]
 pub enum SegmentCtor {
@@ -120,7 +121,7 @@ impl SegmentCtor {
 }
 
 /// The direction that an arc sweeps from its start point to its end point.
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts")]
 #[serde(rename_all = "lowercase")]
 pub enum ArcDirection {
@@ -150,7 +151,7 @@ impl ArcDirection {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiControlPointSpline")]
 pub struct ControlPointSpline {
     pub controls: Vec<ObjectId>,
@@ -160,20 +161,20 @@ pub struct ControlPointSpline {
     pub construction: bool,
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiPoint2d")]
 pub struct Point2d<U: std::fmt::Debug + Clone + ts_rs::TS> {
     pub x: U,
     pub y: U,
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct PointCtor {
     pub position: Point2d<Expr>,
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct LineCtor {
     pub start: Point2d<Expr>,
@@ -183,7 +184,7 @@ pub struct LineCtor {
     pub construction: Option<bool>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub enum Freedom {
     Free,
@@ -206,7 +207,7 @@ impl Freedom {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct ArcCtor {
     pub start: Point2d<Expr>,
@@ -222,7 +223,7 @@ pub struct ArcCtor {
     pub construction: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct CircleCtor {
     pub start: Point2d<Expr>,
@@ -232,7 +233,7 @@ pub struct CircleCtor {
     pub construction: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct ControlPointSplineCtor {
     pub points: Vec<Point2d<Expr>>,
@@ -241,7 +242,7 @@ pub struct ControlPointSplineCtor {
     pub construction: Option<bool>,
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiConstraint")]
 #[serde(tag = "type")]
 // When adding a new constraint type, check trim compatibility. New constraints
@@ -269,7 +270,7 @@ pub enum Constraint {
     Vertical(Vertical),
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct Diameter {
     pub arc: ObjectId,
@@ -283,7 +284,7 @@ pub struct Diameter {
     pub source: ConstraintSource,
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts", optional_fields)]
 pub struct EqualRadius {
     pub input: Vec<ObjectId>,
@@ -291,21 +292,21 @@ pub struct EqualRadius {
 
 /// Multiple fixed constraints, allowing callers to add fixed constraints on
 /// multiple points at once.
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct Fixed {
     pub points: Vec<FixedPoint>,
 }
 
 /// A fixed constraint on a single point.
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct FixedPoint {
     pub point: ObjectId,
     pub position: Point2d<Number>,
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts")]
 #[serde(untagged)]
 pub enum Horizontal {
@@ -313,13 +314,13 @@ pub enum Horizontal {
     Points { points: Vec<ConstraintSegment> },
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct LinesEqualLength {
     pub lines: Vec<ObjectId>,
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct Midpoint {
     pub point: ConstraintSegment,
@@ -327,7 +328,7 @@ pub struct Midpoint {
     pub segment: ObjectId,
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts")]
 #[serde(untagged)]
 pub enum Vertical {
@@ -335,37 +336,37 @@ pub enum Vertical {
     Points { points: Vec<ConstraintSegment> },
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts", optional_fields)]
 pub struct Parallel {
     pub lines: Vec<ObjectId>,
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts", optional_fields)]
 pub struct Perpendicular {
     pub lines: Vec<ObjectId>,
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts", optional_fields)]
 pub struct Symmetric {
     pub input: Vec<ObjectId>,
     pub axis: ObjectId,
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts", optional_fields)]
 pub struct Tangent {
     pub input: Vec<ObjectId>,
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct Coincident {
     pub segments: Vec<ConstraintSegment>,
 }
-#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts")]
 #[serde(untagged)]
 pub enum ConstraintSegment {
@@ -377,14 +378,14 @@ impl ConstraintSegment {
     pub const ORIGIN: Self = Self::Origin(OriginLiteral::Origin);
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts")]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum OriginLiteral {
     Origin,
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct Distance {
     pub segments: Vec<ConstraintSegment>,
@@ -397,7 +398,7 @@ pub struct Distance {
     pub source: ConstraintSource,
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct Angle {
     pub lines: Vec<ObjectId>,
@@ -416,7 +417,7 @@ pub struct Angle {
     pub source: ConstraintSource,
 }
 
-#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct Radius {
     pub arc: ObjectId,
@@ -430,7 +431,7 @@ pub struct Radius {
     pub source: ConstraintSource,
 }
 
-#[derive(Debug, Clone, Default, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[derive(Debug, Clone, Default, PartialEq, Deserialize, Serialize, ts_rs::TS, JsonSchema)]
 #[ts(export, export_to = "FrontendApi.ts")]
 pub struct ConstraintSource {
     pub expr: String,

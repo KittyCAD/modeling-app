@@ -46,6 +46,7 @@ impl ExecutionCallbacks for JsExecutionCallbacks {
 #[wasm_bindgen]
 pub struct Context {
     engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
+    pub(crate) cache: kcl_lib::Cache,
     engine: Arc<kcl_lib::wasm_engine::EngineConnection>,
     response_context: Arc<kcl_lib::wasm_engine::ResponseContext>,
     fs: kcl_lib::FileSystemHandle,
@@ -75,6 +76,7 @@ impl Context {
         let response_context = Arc::new(kcl_lib::wasm_engine::ResponseContext::new());
         Ok(Self {
             engine_manager: engine_manager.clone(),
+            cache: kcl_lib::Cache::default(),
             engine: Arc::new(kcl_lib::wasm_engine::EngineConnection::new_wasm_transport(
                 engine_manager,
                 response_context.clone(),
@@ -92,6 +94,7 @@ impl Context {
     pub fn clone_with_execute_callbacks(&self, execution_callbacks: JsExecutionCallbacks) -> Self {
         Self {
             engine_manager: self.engine_manager.clone(),
+            cache: self.cache.clone(),
             engine: self.engine.clone(),
             response_context: self.response_context.clone(),
             fs: self.fs.clone(),
@@ -122,7 +125,8 @@ impl Context {
             kcl_lib::ExecutorContext::new_mock(self.mock_engine.clone(), self.fs.clone(), settings)
         } else {
             kcl_lib::ExecutorContext::new_with_engine_and_fs(self.engine.clone(), self.fs.clone(), settings)
-        };
+        }
+        .with_cache(self.cache.clone());
 
         ctx.execution_callbacks = self
             .execution_callbacks

@@ -1,10 +1,14 @@
 //! A typed path type so that in wasm we can track if its a windows or unix path.
 //! On non-wasm platforms, this is just a std::path::PathBuf.
 
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash, schemars::JsonSchema)]
 pub struct TypedPath(
-    #[cfg(target_arch = "wasm32")] pub typed_path::TypedPathBuf,
-    #[cfg(not(target_arch = "wasm32"))] pub std::path::PathBuf,
+    #[cfg(target_arch = "wasm32")]
+    #[schemars(with = "String")]
+    pub typed_path::TypedPathBuf,
+    #[cfg(not(target_arch = "wasm32"))]
+    #[schemars(with = "String")]
+    pub std::path::PathBuf,
 );
 
 impl std::fmt::Display for TypedPath {
@@ -238,7 +242,7 @@ impl ts_rs::TS for TypedPath {
 #[cfg(not(target_arch = "wasm32"))]
 fn normalise_import<S: AsRef<str>>(raw: S) -> std::path::PathBuf {
     let s = raw.as_ref();
-    // On Unix we need to swap `\` → `/`.  On Windows we leave it alone.
+    // On Unix we need to swap `\` to `/`. On Windows we leave it alone.
     // (Windows happily consumes `/`)
     if cfg!(unix) && s.contains('\\') {
         std::path::PathBuf::from(s.replace('\\', "/"))

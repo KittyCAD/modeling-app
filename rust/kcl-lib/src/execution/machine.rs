@@ -3084,6 +3084,7 @@ result = countdown(9000)
         let program = crate::Program::parse_no_errs(code).unwrap();
         let exec_ctxt = ExecutorContext {
             engine: std::sync::Arc::new(crate::engine::engine_manager::EngineManager::new_mock()),
+            cache: crate::Cache::default(),
             engine_batch: crate::engine::EngineBatchContext::default(),
             fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
             settings: crate::execution::ExecutorSettings::default(),
