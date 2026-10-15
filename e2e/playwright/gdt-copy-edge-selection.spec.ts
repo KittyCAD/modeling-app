@@ -40,7 +40,10 @@ test.describe(
         expected: 'copiedCubes[2]',
       },
     ]) {
-      for (const target of [{ x: 10, expected: 'originalCube' }]) {
+      for (const target of [
+        { x: 10, expected: 'originalCube' },
+        { x: example.x, expected: example.expected },
+      ]) {
         test(`selects ${target.expected} edge after ${example.name}`, async ({
           context,
           page,

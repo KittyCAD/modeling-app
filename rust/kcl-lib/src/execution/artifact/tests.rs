@@ -1480,7 +1480,8 @@ fn pattern_artifact_links_to_source_geometry() {
         PatternSubType::Circular,
         path_id,
         &face_edge_infos,
-        code_ref,
+        code_ref.clone(),
+        &AHashMap::default(),
     );
 
     assert!(matches!(
@@ -1511,6 +1512,31 @@ fn pattern_artifact_links_to_source_geometry() {
             .iter()
             .any(|artifact| matches!(artifact, Artifact::Wall(_) | Artifact::Cap(_) | Artifact::SweepEdge(_)))
     );
+
+    let map = AHashMap::from_iter([
+        (path_id, ArtifactId::new(copy_id)),
+        (sweep_id, ArtifactId::new(copy_id)),
+        (wall_id, ArtifactId::new(copy_wall_id)),
+        (cap_id, ArtifactId::new(copy_cap_id)),
+        (edge_id, ArtifactId::new(copy_edge_id)),
+    ]);
+    let mapped = pattern_artifact_updates(
+        &artifacts,
+        pattern_id,
+        PatternSubType::Circular,
+        path_id,
+        &face_edge_infos,
+        code_ref,
+        &AHashMap::from_iter([(copy_id, map)]),
+    );
+    assert!(mapped.iter().any(|artifact| matches!(artifact, Artifact::Wall(wall)
+        if wall.id == ArtifactId::new(copy_wall_id) && wall.sweep_id == ArtifactId::new(copy_id))));
+    assert!(mapped.iter().any(|artifact| matches!(artifact, Artifact::Cap(cap)
+        if cap.id == ArtifactId::new(copy_cap_id) && cap.sweep_id == ArtifactId::new(copy_id))));
+    assert!(mapped.iter().any(|artifact| matches!(artifact, Artifact::Sweep(sweep)
+        if sweep.id == ArtifactId::new(copy_id))));
+    assert!(!mapped.iter().any(|artifact| matches!(artifact, Artifact::Path(path)
+        if path.id == ArtifactId::new(copy_id))));
 }
 
 #[test]
@@ -1549,6 +1575,7 @@ fn pattern_artifact_does_not_materialize_composite_solid_copies() {
         source_id,
         &face_edge_infos,
         CodeRef::placeholder(SourceRange::synthetic()),
+        &AHashMap::default(),
     );
 
     assert!(!updated.iter().any(|artifact| artifact.id() == ArtifactId::new(copy_id)));
@@ -1667,6 +1694,7 @@ fn entity_clone_resolves_pattern_copy_lazily() {
         source_sweep_id,
         &face_edge_infos,
         code_ref,
+        &AHashMap::default(),
     ) {
         merge_artifact_into_map(&mut artifacts, update);
     }

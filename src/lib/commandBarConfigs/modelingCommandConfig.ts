@@ -2165,7 +2165,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
-            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            selectionTypes: [
+              'cap',
+              'wall',
+              'edgeCut',
+              'segment',
+              'sweepEdge',
+              'enginePrimitiveEdge',
+            ],
             multiple: true,
             required: true,
             hidden: isEditingNodeSelection,
