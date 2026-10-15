@@ -155,7 +155,7 @@ pub struct KclErrorWithOutputs {
     // reason.
     pub _artifact_commands: Vec<ArtifactCommand>,
     pub artifact_graph: ArtifactGraph,
-    #[serde(skip)]
+    #[ts(skip)]
     pub scene_objects: Vec<Object>,
     #[serde(skip)]
     pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
