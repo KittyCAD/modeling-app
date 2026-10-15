@@ -93,9 +93,7 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
       { x: 15, y: 10, z: 6 }
     )
 
-    const [clickChamferBoundaryEdge] = scene.makeMouseHelpers(0.4091, 0.5557, {
-      format: 'ratio',
-    })
+    const [clickChamferBoundaryEdge] = await scene.findEdge(9)
     await clickChamferBoundaryEdge()
     await expect(toolbar.selectionStatus).toContainText('1 edge')
     await toolbar.filletButton.click()
@@ -134,9 +132,7 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     await editor.closePane()
     await scene.moveCameraTo({ x: 48, y: -38, z: 34 }, { x: 15, y: 11, z: 7 })
 
-    const [clickShellRimEdge] = scene.makeMouseHelpers(0.3679, 0.3356, {
-      format: 'ratio',
-    })
+    const [clickShellRimEdge] = await scene.findEdge(9)
     await clickShellRimEdge()
     await expect(toolbar.selectionStatus).toContainText('1 edge')
     await toolbar.filletButton.click()
@@ -194,9 +190,7 @@ test.describe('Face API selection regressions', { tag: '@web' }, () => {
     await editor.closePane()
     await scene.moveCameraTo({ x: 48, y: -42, z: 34 }, { x: 13, y: 9, z: 5 })
 
-    const [clickOuterCsgEdge] = scene.makeMouseHelpers(0.6081, 0.4918, {
-      format: 'ratio',
-    })
+    const [clickOuterCsgEdge] = await scene.findEdge(2)
     await clickOuterCsgEdge()
     await toolbar.extrudeButton.click()
     await cmdBar.expectState({
