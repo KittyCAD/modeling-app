@@ -1109,12 +1109,33 @@ ${extrudedTriangle}`
         instanceInThisFile,
         kclManagerInThisFile
       )
+      expect(kclManagerInThisFile.errors).toEqual([])
       const segment = [...artifactGraph.values()].find(
         (artifact) => artifact.type === 'segment'
       )
       if (!segment) throw new Error('Segment artifact not found')
+      const path = artifactGraph.get(segment.pathId)
+      if (path?.type !== 'path') throw new Error('Segment path not found')
+      const endCap = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'cap' &&
+          artifact.sweepId === path.sweepId &&
+          artifact.subType === 'end'
+      )
+      if (!segment.surfaceId || !endCap) {
+        throw new Error('Wall or end-cap face not found')
+      }
+      // Select the end-cap edge explicitly; the sketch segment is on the start cap.
       const selection: Selections = {
-        graphSelections: [selectionFromSegmentEdge(segment, artifactGraph)],
+        graphSelections: [
+          {
+            entityRef: {
+              type: 'edge',
+              side_faces: [segment.surfaceId, endCap.id],
+            },
+            codeRef: segment.codeRef,
+          },
+        ],
         otherSelections: [],
       }
       const radius = (await stringToKclExpression(
@@ -1145,7 +1166,12 @@ ${extrudedTriangle}`
   radius = 1,
   tangentChain = false,
 )`)
-      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+      await getAstAndArtifactGraph(
+        newCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      expect(kclManagerInThisFile.errors).toEqual([])
     })
 
     it('should edit a basic fillet call with a legacy edge tag', async () => {

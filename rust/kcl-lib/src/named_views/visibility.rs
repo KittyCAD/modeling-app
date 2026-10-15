@@ -31,9 +31,7 @@ pub fn engine_id_for_artifact(id: ArtifactId, artifact: &Artifact, artifact_grap
         | Artifact::SketchBlockConstraint(_)
         | Artifact::Wall(_)
         | Artifact::Cap(_)
-        | Artifact::SweepEdge(_)
         | Artifact::EdgeCut(_)
-        | Artifact::EdgeCutEdge(_)
         | Artifact::NamedView(_) => None,
     }
 }
