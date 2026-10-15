@@ -71,7 +71,7 @@ it('clears the active collector and keeps other drafts when switching fields', (
       },
     })
   }
-  
+
   const { result } = renderHook(DialogLogicWithTwoSelectionFields)
 
   act(() => result.current.select('second', arg))
