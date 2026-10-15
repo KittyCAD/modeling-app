@@ -177,6 +177,13 @@ obstruction = extrude(region002, length = 20mm)`
     await page.keyboard.press('Shift+Tab')
     await expect(profiles).not.toHaveCSS('box-shadow', 'none')
 
+    await page.getByRole('button', { name: 'Clear Profiles selection' }).click()
+    await expect(profiles).toHaveText('Select in the scene')
+    await expect(profiles).toBeFocused()
+    await expect(submit).toBeDisabled()
+    await editor.selectText('region(')
+    await expect(profiles).toContainText(/1 region/i)
+
     await modelingDialog.selection('To').click()
     await expect(profiles).toContainText(/1 region/i)
     await profiles.click()
