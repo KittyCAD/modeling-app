@@ -7,11 +7,17 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useReliesOnEngine } from '@src/hooks/useReliesOnEngine'
+import { updateModelingState } from '@src/lang/modelingWorkflows'
+import { updateNamedViewCamera } from '@src/lang/modifyAst/namedViews'
 import type { KclNamedView } from '@src/lang/std/kclNamedViews'
 import { listNamedViews } from '@src/lang/std/kclNamedViews'
 import { ROOT_MODULE_ID } from '@src/lang/wasm'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { EXPERIMENTAL_POINT_AND_CLICK_FLAG, FILE_EXT } from '@src/lib/constants'
+import {
+  EXECUTION_TYPE_REAL,
+  EXPERIMENTAL_POINT_AND_CLICK_FLAG,
+  FILE_EXT,
+} from '@src/lib/constants'
 import { sendDeleteCommand } from '@src/lib/featureTree'
 import type {
   ActivationTarget,
@@ -24,6 +30,7 @@ import {
   isSketchSessionOpen,
   moduleKeyOf,
 } from '@src/lib/kclNamedViewActivation'
+import { captureNamedViewCamera } from '@src/lib/kclNamedViewCamera'
 import { prepareNamedViewEditCommand } from '@src/lib/kclNamedViewEdit'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { isErr, reportRejection } from '@src/lib/trap'
@@ -184,6 +191,52 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
     }
   }
 
+  const updateViewCamera = async (view: KclNamedView) => {
+    const ast = kclManager.ast
+    const code = kclManager.code
+    const path = kclManager.path
+    const projectPath = kclManager.systemDeps.projectPath.value
+    setIsChangingSource(true)
+    try {
+      const camera = await captureNamedViewCamera(kclManager.sceneInfra)
+      if (isErr(camera)) {
+        toast.error(camera.message)
+        return
+      }
+
+      const wasmInstance = await kclManager.wasmInstancePromise
+      if (
+        ast !== kclManager.ast ||
+        code !== kclManager.code ||
+        path !== kclManager.path ||
+        projectPath !== kclManager.systemDeps.projectPath.value
+      ) {
+        toast.error('The source changed while capturing the camera. Try again.')
+        return
+      }
+      const modifiedAst = updateNamedViewCamera({
+        ast,
+        pathToNode: view.artifact.codeRef.pathToNode,
+        camera,
+        wasmInstance,
+      })
+      if (isErr(modifiedAst)) {
+        toast.error(modifiedAst.message)
+        return
+      }
+
+      await updateModelingState(modifiedAst, EXECUTION_TYPE_REAL, kclManager)
+    } catch (reason) {
+      toast.error(
+        reason instanceof Error
+          ? reason.message
+          : `Could not update “${view.artifact.name}”.`
+      )
+    } finally {
+      setIsChangingSource(false)
+    }
+  }
+
   return (
     <LayoutPanel
       title={props.layout.label}
@@ -274,11 +327,17 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                   </span>
                 </button>
                 {manageableView ? (
-                  <NamedViewRowMenu
-                    disabled={actionsDisabled}
-                    onEdit={() => editView(manageableView)}
-                    onRemove={() => void removeView(manageableView)}
-                  />
+                  <div className="flex shrink-0 items-center gap-0.5">
+                    <CameraUpdateButton
+                      disabled={actionsDisabled}
+                      onClick={() => void updateViewCamera(manageableView)}
+                    />
+                    <NamedViewRowMenu
+                      disabled={actionsDisabled}
+                      onEdit={() => editView(manageableView)}
+                      onRemove={() => void removeView(manageableView)}
+                    />
+                  </div>
                 ) : row.target.kind === 'declared' &&
                   !canManageNamedView(row.target.view) ? (
                   <CustomIcon
@@ -328,6 +387,34 @@ function PaneIconButton({
       className="h-6 w-6 shrink-0 justify-center !p-0 !bg-transparent hover:text-primary border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 !outline-none disabled:opacity-40"
       onClick={onClick}
     />
+  )
+}
+
+function CameraUpdateButton({
+  disabled,
+  onClick,
+}: {
+  disabled: boolean
+  onClick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      aria-label="Update from current camera"
+      title="Update from current camera"
+      data-testid="named-view-update-camera"
+      disabled={disabled}
+      className="reset relative grid h-6 w-6 shrink-0 place-items-center rounded-sm text-chalkboard-70 hover:text-primary disabled:opacity-35 dark:text-chalkboard-30"
+      onClick={onClick}
+    >
+      <CustomIcon name="camera" className="h-5 w-5" aria-hidden />
+      <span
+        aria-hidden
+        className="absolute right-0 top-0 grid h-2.5 w-2.5 place-items-center rounded-full bg-chalkboard-10 text-[9px] font-bold leading-none dark:bg-chalkboard-90"
+      >
+        +
+      </span>
+    </button>
   )
 }
 
