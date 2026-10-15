@@ -611,6 +611,23 @@ function buildEdgeExpr(
     wasmInstance,
     { edgeContext }
   )
+  if (err(regularTagResult) && edgeArtifact.type === 'segment') {
+    const directTagResult = mutateAstWithTagForSketchSegment(
+      structuredClone(ast),
+      resolved.codeRef.pathToNode,
+      wasmInstance
+    )
+    if (!err(directTagResult)) {
+      return {
+        modifiedAst: directTagResult.modifiedAst,
+        edgeExpr: createCallExpressionStdLibKw(
+          'getBoundedEdge',
+          structuredClone(sourceSurfaceExpr),
+          [createLabeledArg('edge', createLocalName(directTagResult.tag))]
+        ),
+      }
+    }
+  }
   if (err(regularTagResult)) return regularTagResult
   if (regularTagResult.exprs.length === 0) {
     return new Error('Expected at least one tag for each blend edge.')
@@ -3519,43 +3536,26 @@ function faceRefToArtifactId(v: OpKclValue): string | null {
   return null
 }
 
-/**
- * Finds an edge artifact (segment, edgeCut, or sweepEdge) given the set of face
- * artifact IDs from an edgeRef. For getCommonEdge(faces=[seg01, capStart001]),
- * one "face" may be the segment (the edge) and one the cap; or both may be
- * wall/cap and we find the segment whose commonSurfaceIds match.
- */
+/** Resolve a source anchor for an explicit edge reference, without graph edges. */
 function findEdgeArtifactFromFaceIds(
   faceIds: string[],
   artifactGraph: ArtifactGraph
 ): Artifact | null {
-  if (faceIds.length === 0) return null
-  const faceArtifacts: Artifact[] = []
-  for (const id of faceIds) {
-    const a = artifactGraph.get(id)
-    if (a) faceArtifacts.push(a)
-  }
-  if (faceArtifacts.length === 0) return null
-  const edgeType = (
-    a: Artifact
-  ): a is Artifact & { type: 'segment' | 'edgeCut' } =>
-    a.type === 'segment' || a.type === 'edgeCut'
-  const asEdge = faceArtifacts.find(edgeType)
-  if (asEdge) return asEdge
-  const faceIdSet = new Set(faceIds)
-  for (const [, artifact] of artifactGraph) {
-    if (artifact.type !== 'segment') continue
-    const commonIds = artifact.commonSurfaceIds
-    if (!commonIds?.length) continue
-    const commonSet = new Set(commonIds)
-    if (
-      faceIdSet.size === commonSet.size &&
-      [...faceIdSet].every((id) => commonSet.has(id))
-    ) {
-      return artifact
-    }
-  }
-  return null
+  const artifacts = faceIds.flatMap((id) => {
+    const artifact = artifactGraph.get(id)
+    return artifact ? [artifact] : []
+  })
+  // Legacy selectors can name a sketch segment directly. Face API selectors
+  // already identify the edge: a face is sufficient to recover a code anchor.
+  return (
+    artifacts.find(
+      (artifact) => artifact.type === 'segment' || artifact.type === 'edgeCut'
+    ) ??
+    artifacts.find(
+      (artifact) => getCodeRefsByArtifactId(artifact.id, artifactGraph)?.length
+    ) ??
+    null
+  )
 }
 
 /**
@@ -3576,22 +3576,12 @@ export function retrieveEdgeSelectionsFromEdgeRefs(
 
   for (const item of edgeRefItems) {
     if (item.type !== 'Object' || !item.value) continue
-    // Selection recovery only needs the primary graph edge so edit/delete flows
-    // can reselect an operation in the scene. `endFaces` and `index` refine how
-    // the engine resolves ambiguous edge specifiers, but they are not needed to
-    // recover the editable artifact from the current artifact graph.
-    const facesProp = item.value.sideFaces
-    if (facesProp?.type !== 'Array') continue
-    const faceIds = facesProp.value
-      .map(faceRefToArtifactId)
-      .filter((id): id is string => Boolean(id))
-    if (faceIds.length < 2) continue
-    const edgeArtifact = findEdgeArtifactFromFaceIds(faceIds, artifactGraph)
-    if (!edgeArtifact) continue
-    const codeRefs = getCodeRefsByArtifactId(edgeArtifact.id, artifactGraph)
-    if (!codeRefs?.length) continue
-    const entityRef: EntityReference = { type: 'edge', side_faces: faceIds }
-    graphSelections.push({ entityRef, codeRef: codeRefs[0] })
+    const selection = retrieveEdgeSelectionsFromSingleEdgeRef(
+      { ...edgeRefsArg, value: item },
+      artifactGraph
+    )
+    if (err(selection)) return selection
+    graphSelections.push(...selection.graphSelections)
   }
 
   return { graphSelections, otherSelections: [] }
@@ -3619,8 +3609,8 @@ export function retrieveEdgeSelectionsFromSingleEdgeRef(
     const id = faceRefToArtifactId(v)
     if (id) faceIds.push(id)
   }
-  if (faceIds.length < 2) {
-    return new Error('edgeRef sideFaces array needs at least 2 faces')
+  if (faceIds.length === 0) {
+    return new Error('edgeRef sideFaces array needs at least one face')
   }
   const edgeArtifact = findEdgeArtifactFromFaceIds(faceIds, artifactGraph)
   if (!edgeArtifact) {

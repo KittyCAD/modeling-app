@@ -71,6 +71,7 @@ import {
   getCapCodeRef,
   getCodeRefsByArtifactId,
   getOriginalSegmentArtifact,
+  getSegmentArtifactForEdgeCut,
   getPatternArtifactForCopyId,
   getSketchBlockForArtifact,
   getSketchBlockForPathArtifact,
@@ -602,14 +603,7 @@ function getTaggableEdgeArtifact(
     return null
   }
 
-  const consumedEdge = getArtifactOfTypes(
-    {
-      key: selection.artifact.consumedEdgeId ?? '',
-      types: ['segment', 'sweepEdge'],
-    },
-    artifactGraph
-  )
-  return err(consumedEdge) ? null : consumedEdge
+  return getSegmentArtifactForEdgeCut(selection.artifact, artifactGraph)
 }
 
 function getEdgeTagCallExpr(tag: Expr, artifact: Artifact): Expr {

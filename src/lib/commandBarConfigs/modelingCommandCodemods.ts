@@ -1,4 +1,10 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import { resolveSourceEdgeSelections } from '@src/lang/modifyAst/resolveSourceEdgeSelections'
+import { isModelingResponse } from '@src/lib/kcSdkGuards'
+import { normalizeEntityReference } from '@src/lib/selections'
+import { isErr } from '@src/lib/trap'
+import { isArray, uuidv4 } from '@src/lib/utils'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 import {
   addIntersect,
@@ -202,6 +208,63 @@ const withArtifactGraph = <
       ),
   })
 
+// A code-selected sketch edge can border either cap after extrusion. Query its
+// topology before the synchronous codemod instead of assuming the start cap.
+const withSourceEdgeReferences = <
+  Args extends { selection?: Selections; objects?: Selections },
+>(
+  codemod: ModelingCodemod<Args>,
+  selectionKey: 'selection' | 'objects' = 'selection'
+): ModelingCodemod<Args> => ({
+  ...codemod,
+  run: async (context) => {
+    const { kclManager } = context
+    const selections = context.args[selectionKey]
+    if (!selections) return codemod.run(context)
+    const artifactGraph = kclManager.artifactGraph
+    const ast = kclManager.ast
+    const sceneGeneration = kclManager.engineSceneGenerationSignal.value
+    const selection = await resolveSourceEdgeSelections(
+      selections,
+      artifactGraph,
+      async (entityId) => {
+        const response = await kclManager.engineCommandManager.sendSceneCommand(
+          {
+            type: 'modeling_cmd_req',
+            cmd_id: uuidv4(),
+            cmd: { type: 'query_entity_type', entity_id: entityId },
+          }
+        )
+        const result = isArray(response) ? response[0] : response
+        if (isModelingResponse(result)) {
+          const modelingResponse = result.resp.data.modeling_response
+          if (modelingResponse.type === 'query_entity_type') {
+            const reference = normalizeEntityReference(
+              modelingResponse.data.reference
+            )
+            if (reference) return reference
+          }
+        }
+        return new Error('Could not resolve the selected edge topology.')
+      }
+    )
+    if (isErr(selection)) return selection
+    if (
+      kclManager.artifactGraph !== artifactGraph ||
+      kclManager.ast !== ast ||
+      kclManager.engineSceneGenerationSignal.value !== sceneGeneration
+    ) {
+      return new Error(
+        'The model changed while resolving the selected edge. Please select it again.'
+      )
+    }
+    return codemod.run({
+      ...context,
+      args: { ...context.args, [selectionKey]: selection },
+    })
+  },
+})
+
 const withArtifactGraphAndVariables = <
   Name extends CommandName,
   Add extends AddFunction<
@@ -275,8 +338,8 @@ export const modelingCommandCodemods = {
   'Herringbone Gear': withAst('Herringbone Gear', addHerringboneGear),
   'Spur Gear': withAst('Spur Gear', addSpurGear),
   'Ring Gear': withAst('Ring Gear', addRingGear),
-  Fillet: withArtifactGraph('Fillet', addFillet),
-  Chamfer: withArtifactGraph('Chamfer', addChamfer),
+  Fillet: withSourceEdgeReferences(withArtifactGraph('Fillet', addFillet)),
+  Chamfer: withSourceEdgeReferences(withArtifactGraph('Chamfer', addChamfer)),
   Appearance: withArtifactGraph('Appearance', addAppearance),
   Delete: withArtifactGraph('Delete', addDelete, {
     focusPath: false,
@@ -295,25 +358,58 @@ export const modelingCommandCodemods = {
     addPatternLinear3D
   ),
   'GDT Flatness': withGdtDefaults('GDT Flatness', addFlatnessGdt),
-  'GDT Straightness': withGdtDefaults('GDT Straightness', addStraightnessGdt),
-  'GDT Circularity': withGdtDefaults('GDT Circularity', addCircularityGdt),
-  'GDT Cylindricity': withGdtDefaults('GDT Cylindricity', addCylindricityGdt),
-  'GDT Position': withGdtDefaults('GDT Position', addPositionGdt),
-  'GDT Profile': withGdtDefaults('GDT Profile', addProfileGdt),
-  'GDT Distance': withGdtDefaults('GDT Distance', addDistanceGdt),
-  'GDT Perpendicularity': withGdtDefaults(
-    'GDT Perpendicularity',
-    addPerpendicularityGdt
+  'GDT Straightness': withSourceEdgeReferences(
+    withGdtDefaults('GDT Straightness', addStraightnessGdt),
+    'objects'
   ),
-  'GDT Angularity': withGdtDefaults('GDT Angularity', addAngularityGdt),
-  'GDT Concentricity': withGdtDefaults(
-    'GDT Concentricity',
-    addConcentricityGdt
+  'GDT Circularity': withSourceEdgeReferences(
+    withGdtDefaults('GDT Circularity', addCircularityGdt),
+    'objects'
   ),
-  'GDT Symmetry': withGdtDefaults('GDT Symmetry', addSymmetryGdt),
-  'GDT Runout': withGdtDefaults('GDT Runout', addRunoutGdt),
-  'GDT Parallelism': withGdtDefaults('GDT Parallelism', addParallelismGdt),
-  'GDT Annotation': withGdtDefaults('GDT Annotation', addAnnotationGdt),
+  'GDT Cylindricity': withSourceEdgeReferences(
+    withGdtDefaults('GDT Cylindricity', addCylindricityGdt),
+    'objects'
+  ),
+  'GDT Position': withSourceEdgeReferences(
+    withGdtDefaults('GDT Position', addPositionGdt),
+    'objects'
+  ),
+  'GDT Profile': withSourceEdgeReferences(
+    withGdtDefaults('GDT Profile', addProfileGdt),
+    'objects'
+  ),
+  'GDT Distance': withSourceEdgeReferences(
+    withGdtDefaults('GDT Distance', addDistanceGdt),
+    'objects'
+  ),
+  'GDT Perpendicularity': withSourceEdgeReferences(
+    withGdtDefaults('GDT Perpendicularity', addPerpendicularityGdt),
+    'objects'
+  ),
+  'GDT Angularity': withSourceEdgeReferences(
+    withGdtDefaults('GDT Angularity', addAngularityGdt),
+    'objects'
+  ),
+  'GDT Concentricity': withSourceEdgeReferences(
+    withGdtDefaults('GDT Concentricity', addConcentricityGdt),
+    'objects'
+  ),
+  'GDT Symmetry': withSourceEdgeReferences(
+    withGdtDefaults('GDT Symmetry', addSymmetryGdt),
+    'objects'
+  ),
+  'GDT Runout': withSourceEdgeReferences(
+    withGdtDefaults('GDT Runout', addRunoutGdt),
+    'objects'
+  ),
+  'GDT Parallelism': withSourceEdgeReferences(
+    withGdtDefaults('GDT Parallelism', addParallelismGdt),
+    'objects'
+  ),
+  'GDT Annotation': withSourceEdgeReferences(
+    withGdtDefaults('GDT Annotation', addAnnotationGdt),
+    'objects'
+  ),
   'GDT Note': withAst('GDT Note', addNoteGdt),
   'GDT Datum': withGdtDefaults('GDT Datum', addDatumGdt),
   'Flip Surface': withArtifactGraph('Flip Surface', addFlipSurface),
