@@ -101,6 +101,8 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     )
     await editor.selectText('region(')
     await toolbar.extrudeButton.click()
+    await expect(toolbar.extrudeButton).toHaveAttribute('aria-pressed', 'true')
+    await expect(toolbar.revolveButton).toHaveAttribute('aria-pressed', 'false')
 
     const { locator: dialog, submitButton: submit } = modelingDialog
     const length = modelingDialog.input(/^length$/i)
@@ -170,10 +172,12 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     await editor.expectEditor.toContain('length = 12mm')
     await editor.expectEditor.toContain('tagStart = $startFace')
     await scene.settled()
+    await expect(toolbar.extrudeButton).toHaveAttribute('aria-pressed', 'false')
 
     await toolbar.openFeatureTreePane()
     const operation = await toolbar.getFeatureTreeOperation('Extrude', 0)
     await operation.dblclick()
+    await expect(toolbar.extrudeButton).toHaveAttribute('aria-pressed', 'true')
     await expect(length).toHaveText('12mm')
     await expect(length).toBeFocused()
     await expect(tagStart).toBeHidden()
@@ -182,6 +186,7 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     await length.fill('99mm')
     await modelingDialog.cancelButton.click()
     await expect(dialog).not.toBeAttached()
+    await expect(toolbar.extrudeButton).toHaveAttribute('aria-pressed', 'false')
     await operation.dblclick()
     await expect(length).toHaveText('12mm')
     await expect(tagStart).toBeHidden()
