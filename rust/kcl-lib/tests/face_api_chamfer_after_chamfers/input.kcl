@@ -1,0 +1,53 @@
+@settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  bottom = line(start = [0, 0], end = [30, 0])
+  right = line(start = [30, 0], end = [30, 20])
+  top = line(start = [30, 20], end = [0, 20])
+  left = line(start = [0, 20], end = [0, 0])
+}
+region001 = region(point = [15, 10], sketch = sketch001)
+body001 = extrude(
+  region001,
+  length = 12,
+  tagEnd = $endCap,
+  tagStart = $capStart001,
+)
+
+hide(sketch001)
+chamfer001 = chamfer(
+  body001,
+  edges = [
+    {
+      sideFaces = [
+        region001.tags.right,
+        region001.tags.bottom
+      ],
+      endFaces = [endCap, capStart001]
+    }
+  ],
+  length = 15,
+  tag = $seg01,
+)
+chamfer002 = chamfer(
+  body001,
+  edges = [
+    {
+      sideFaces = [
+        region001.tags.right,
+        region001.tags.top
+      ],
+      endFaces = [endCap, capStart001]
+    }
+  ],
+  length = 10,
+)
+chamfer003 = chamfer(
+  body001,
+  edges = [
+    {
+      sideFaces = [seg01, capStart001],
+    }
+  ],
+  length = 2,
+)
