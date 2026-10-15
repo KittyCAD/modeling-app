@@ -268,9 +268,6 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
     editor,
     homePage,
   }) => {
-    const [clickEdge] = scene.makeMouseHelpers(0.1709, 0.4864, {
-      format: 'ratio',
-    })
     await context.addInitScript((code) => {
       localStorage.setItem('persistCode', code)
     }, testCode)
@@ -288,7 +285,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       { x: 7.72, y: 11.81, z: 8.2 }
     )
 
-    // Click on the split edge using ratio clicks to select it first
+    const [clickEdge] = await scene.findEdge(3)
     await clickEdge()
 
     // Base state object that we'll mutate as we progress

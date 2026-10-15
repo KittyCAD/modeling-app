@@ -504,14 +504,40 @@ export class SceneFixture {
     await this.page.mouse.click(pointOnYAxis.x, pointOnYAxis.y)
   }
 
+  /** Camera poses use the shared camera's engine-world coordinates (millimeters). */
   moveCameraTo = async (
     pos: { x: number; y: number; z: number },
     target: { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 }
   ) => {
     await doAndWaitForImageDiff(
       this.page,
-      () =>
-        sendSceneCommand(this.page, {
+      async () => {
+        const movedLocally = await this.page.evaluate(
+          ({ pos, target }) => {
+            const infra = window.app.singletons.kclManager.sceneInfra
+            if (!infra.localRenderer) return false
+            const controls = infra.camControls
+            const camera = controls.camera
+            camera.position.set(pos.x, pos.y, pos.z)
+            controls.target.set(target.x, target.y, target.z)
+            camera.up.set(0, 0, 1)
+            camera.lookAt(controls.target)
+            // Preserve the framing implied by the legacy vantage/center distance.
+            if ('top' in camera) {
+              const distance = camera.position.distanceTo(controls.target)
+              const fov = controls.perspectiveFovBeforeOrtho
+              const halfHeight = distance * Math.tan((fov * Math.PI) / 360)
+              camera.zoom = (camera.top - camera.bottom) / (2 * halfHeight)
+            }
+            camera.updateProjectionMatrix()
+            camera.updateMatrixWorld(true)
+            controls.cameraChange.dispatch()
+            return true
+          },
+          { pos, target }
+        )
+        if (movedLocally) return
+        await sendSceneCommand(this.page, {
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
@@ -520,7 +546,8 @@ export class SceneFixture {
             center: target,
             up: { x: 0, y: 0, z: 1 },
           },
-        }),
+        })
+      },
       300
     )
   }
