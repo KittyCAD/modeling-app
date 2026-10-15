@@ -238,9 +238,8 @@ export interface RegistryLike extends DisposableLike {
   get<I, O>(valueSpec: ValueSpec<I, O>): O
   signal<T>(service: Service<T>): ReadonlyPreactSignal<T | undefined>
   signal<I, O>(valueSpec: ValueSpec<I, O>): ReadonlyPreactSignal<O>
-  /** Commit synchronously, throwing on graph failure; await the result for cleanup. */
+  /** Commit immediately; await cleanup and receive construction failures as rejections. */
   reconfigure(slot: Slot, items: readonly RegistryItem[]): Promise<void>
-  reconfigureAsync(slot: Slot, items: readonly RegistryItem[]): Promise<void>
   optional<T>(service: Service<T>): T | undefined
   debugService<T>(
     service: Service<T>

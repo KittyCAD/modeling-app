@@ -77,12 +77,12 @@ Read the diagram from top to bottom:
 
 ### Slot changes and plugin toggles
 
-`reconfigure(slot, items)` builds and commits a replacement synchronously. If
-construction or dependency checks fail, it restores the previous slot contents
-and throws before reactive observers run. Existing runtime instances remain
-mounted; only instances created by the failed attempt are cleaned up. It returns
-a promise for cleanup of runtimes removed by a successful replacement.
-`reconfigureAsync` also returns construction failures as promise rejections.
+`reconfigure(slot, items)` returns a promise and builds and commits a replacement
+before returning. If construction or dependency checks fail, it restores the
+previous slot contents before reactive observers run and rejects the promise.
+Existing runtime instances remain mounted; only instances created by the failed
+attempt are cleaned up. Awaiting the promise also waits for cleanup of runtimes
+removed by a successful replacement.
 
 Plugin toggles update their `active` signal together with a successful graph
 commit. Disabling a plugin required by an active factory rejects and leaves both

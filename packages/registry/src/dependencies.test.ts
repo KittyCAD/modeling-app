@@ -242,8 +242,8 @@ describe('factory dependencies', () => {
     container.configure([consumer, unrelated.of()])
     const original = container.get(output)
     expect(original.name()).toBe('one')
-    await container.reconfigureAsync(unrelated, [{}])
-    await container.reconfigureAsync(slot, [provider('two')])
+    await container.reconfigure(unrelated, [{}])
+    await container.reconfigure(slot, [provider('two')])
     expect(container.get(output)).toBe(original)
     expect(original.name()).toBe('two')
     expect(calls).toHaveBeenCalledTimes(1)
@@ -491,15 +491,11 @@ describe('factory dependencies', () => {
     const container = new Registry()
     container.configure([consumer])
     container.inspect()
-    expect(() => container.reconfigure(slot, [])).toThrow(
+    await expect(container.reconfigure(slot, [])).rejects.toBeInstanceOf(
       RegistryDependencyError
     )
     expect(container.get(service).ok).toBe(true)
-    await expect(container.reconfigureAsync(slot, [])).rejects.toBeInstanceOf(
-      RegistryDependencyError
-    )
-    expect(container.get(service).ok).toBe(true)
-    await container.reconfigureAsync(slot, [provider])
+    await container.reconfigure(slot, [provider])
     expect(create).toHaveBeenCalledTimes(1)
   })
 

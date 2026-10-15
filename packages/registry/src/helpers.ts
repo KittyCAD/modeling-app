@@ -1,8 +1,6 @@
 import {
   type ReadonlySignal as ReadonlyPreactSignal,
-  batch,
   computed,
-  signal,
 } from '@preact/signals-core'
 import { CombineMutationError, ServiceResolutionError } from './errors'
 import type { Registry } from './registry'
@@ -24,7 +22,7 @@ import type {
   ValueSpec,
   ValueSpecContribution,
 } from './types'
-import { appendValueSpec } from './valueSpec'
+import { appendValueSpec, firstWinsValueSpec } from './valueSpec'
 
 export const precedenceRank: Record<Precedence, number> = {
   highest: 0,
@@ -353,7 +351,7 @@ function createToggleableRegistryItem({
 }
 
 type SlotToggleControllerProps = {
-  container: Pick<Registry, 'reconfigure'>
+  container: Pick<Registry, 'reconfigure' | 'signal'>
   slot: Slot
   activeItems: readonly RegistryItem[]
   inactiveItems?: readonly RegistryItem[]
@@ -373,21 +371,19 @@ export function createSlotToggleController({
   inactiveItems = [],
   initialActive = false,
 }: SlotToggleControllerProps): SlotToggleController {
-  const active = signal(initialActive)
-
-  // Graph construction can throw before commit; finalizers can reject after
-  // commit. Publish activation only after the former has succeeded, without
-  // waiting for the latter. The async boundary turns construction errors into
-  // rejections for callers such as settings synchronization.
-  const setActive = async (next: boolean): Promise<void> =>
-    batch(() => {
-      const completion = container.reconfigure(
-        slot,
-        next ? activeItems : inactiveItems
-      )
-      active.value = next
-      return completion
-    })
+  // Activation belongs to the committed slot contents. A rejected replacement
+  // restores this contribution too; cleanup failure leaves it committed. Until
+  // the first toggle, the default reflects the slot's initial configuration.
+  const activation = firstWinsValueSpec<boolean>(
+    'slot-toggle.active',
+    initialActive
+  )
+  const active = container.signal(activation)
+  const setActive = (next: boolean): Promise<void> =>
+    container.reconfigure(slot, [
+      { provides: [provide(activation, next)] },
+      ...(next ? activeItems : inactiveItems),
+    ])
 
   return {
     active,

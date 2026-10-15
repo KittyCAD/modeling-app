@@ -253,18 +253,20 @@ describe('services', () => {
     expect(() => container.inspect()).toThrow(ServiceResolutionError)
   })
 
-  it('throws when a factory reconfigures a slot during graph construction', () => {
+  it('rejects when a factory reconfigures a slot during graph construction', async () => {
     const slot = new Slot()
+    let completion: Promise<void> | undefined
 
     const badFactory = defineRegistryItemFactory(({ container }) => {
-      void container.reconfigure(slot, [])
+      completion = container.reconfigure(slot, [])
       return {}
     }, 'bad-reconfigure-factory')
 
     const container = new Registry()
     container.configure([slot.of(defineRegistryItem({})), badFactory])
 
-    expect(() => container.inspect()).toThrow(ReconfigurationError)
+    container.inspect()
+    await expect(completion).rejects.toBeInstanceOf(ReconfigurationError)
   })
 
   it('throws when a same-container service method is called while combining', () => {
@@ -301,10 +303,11 @@ describe('services', () => {
     expect(() => container.get(registrySignal)).toThrow(CombineMutationError)
   })
 
-  it('throws when reconfigure is called during value-spec combine', () => {
+  it('rejects when reconfigure is called during value-spec combine', async () => {
     const registrySignal = appendValueSpec<number>('numbers')
     const slot = new Slot()
     const container = new Registry()
+    let completion: Promise<void> | undefined
 
     container.configure([
       slot.of(defineRegistryItem({})),
@@ -313,7 +316,7 @@ describe('services', () => {
           provide(
             registrySignal,
             computed(() => {
-              void container.reconfigure(slot, [])
+              completion = container.reconfigure(slot, [])
               return 1
             })
           ),
@@ -321,7 +324,8 @@ describe('services', () => {
       }),
     ])
 
-    expect(() => container.get(registrySignal)).toThrow(ReconfigurationError)
+    expect(container.get(registrySignal)).toEqual([1])
+    await expect(completion).rejects.toBeInstanceOf(ReconfigurationError)
   })
 
   it('toggle controller reconfigures a slot and preserves unrelated runtime instances', async () => {

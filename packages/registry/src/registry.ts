@@ -254,8 +254,8 @@ export class Registry implements ValueSpecReader, ServiceReader {
     return this.latestReconciliation
   }
 
-  /** Commit a slot replacement synchronously; return its cleanup completion. */
-  reconfigure(slot: Slot, items: readonly RegistryItem[]): Promise<void> {
+  /** Commit a slot replacement immediately; reject on construction or cleanup failure. */
+  async reconfigure(slot: Slot, items: readonly RegistryItem[]): Promise<void> {
     if (this.flattenDepth > 0) {
       throw new ReconfigurationError(
         'Cannot reconfigure a slot while building the registry graph.'
@@ -294,14 +294,6 @@ export class Registry implements ValueSpecReader, ServiceReader {
       // Cleanup failures happen after commit and must not restore disposed items.
       return this.latestReconciliation
     })
-  }
-
-  /** Replace one slot and await every runtime instance it unmounts. */
-  async reconfigureAsync(
-    slot: Slot,
-    items: readonly RegistryItem[]
-  ): Promise<void> {
-    return this.reconfigure(slot, items)
   }
 
   /** Resolve a registry value spec or service as a live Preact signal. */
