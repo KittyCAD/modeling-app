@@ -1028,10 +1028,6 @@ extrude001 = extrude(sketch001, length = 30)`
     await homePage.goToModelingScene()
     await scene.settled()
 
-    // One dumb hardcoded screen pixel value
-    // Any idea here how to select a cap without clicking in the scene?
-    const testPoint = { x: 575, y: 200 }
-    const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
     const shellDeclaration =
       'shell001 = shell(extrude001, faces = capEnd001, thickness = 5)'
     const editedShellDeclaration =
@@ -1050,6 +1046,7 @@ extrude001 = extrude(sketch001, length = 30)`
         highlightedHeaderArg: 'faces',
         commandName: 'Shell',
       })
+      const [clickOnCap] = await scene.findFace(1)
       await clickOnCap()
       await toolbar.expectSelection('1 face')
       await cmdBar.progressCmdBar()
@@ -1151,10 +1148,6 @@ extrude001 = extrude(sketch001, length = 30)`
     await homePage.goToModelingScene()
     await scene.settled()
 
-    // One dumb hardcoded screen pixel value
-    const testPoint = { x: 575, y: 200 }
-    const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
-
     await test.step(`Go through the command bar flow`, async () => {
       await toolbar.selectSurface('delete-face')
       await cmdBar.expectState({
@@ -1167,6 +1160,7 @@ extrude001 = extrude(sketch001, length = 30)`
         highlightedHeaderArg: 'faces',
         commandName: 'Delete Face',
       })
+      const [clickOnCap] = await scene.findFace(1)
       await clickOnCap()
       await toolbar.expectSelection('1 face')
       await cmdBar.progressCmdBar()
@@ -3368,8 +3362,6 @@ extrude001 = extrude(profile001, length = 10)`
 
     await test.step('Add the hole through the command flow', async () => {
       await toolbar.holeButton.click()
-      const testPoint = { x: 600, y: 250 }
-      const [clickOnCap] = scene.makeMouseHelpers(testPoint.x, testPoint.y)
       await cmdBar.expectState({
         stage: 'arguments',
         currentArgKey: 'face',
@@ -3384,6 +3376,7 @@ extrude001 = extrude(profile001, length = 10)`
         },
         highlightedHeaderArg: 'face',
       })
+      const [clickOnCap] = await scene.findFace(2)
       await clickOnCap()
       await toolbar.expectSelection('1 face')
       await cmdBar.progressCmdBar()
