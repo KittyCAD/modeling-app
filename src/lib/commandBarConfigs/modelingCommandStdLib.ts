@@ -10,6 +10,7 @@ import { isKclVersionAvailable } from '@src/lib/kclVersionRange'
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { markdownToPlainText } from '@src/lib/markdown'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 export type StdLibCommandDriftConfig = {
   stdLibName: StdLibCommandName
@@ -228,6 +229,19 @@ export function stdLibCommandSummary(
   return typeof summary === 'string'
     ? markdownToPlainText(summary) || undefined
     : undefined
+}
+
+export function stdLibDocsLink(
+  stdLibName: StdLibCommandName,
+  label = 'KCL docs'
+) {
+  const { qualName } = STD_LIB_COMMANDS[stdLibName]
+  return {
+    label,
+    url: withSiteBaseURL(
+      `/docs/kcl-std/functions/${qualName.replaceAll('::', '-')}`
+    ),
+  }
 }
 
 export const modelingCommandStdLibDriftConfig = {
@@ -624,6 +638,15 @@ export function modelingStdLibCommandSummary(
 
   const config = configs[commandName]
   return config ? stdLibCommandSummary(config.stdLibName) : undefined
+}
+
+export function modelingStdLibCommandDocsLink(commandName: string) {
+  const configs: Partial<Record<string, StdLibCommandDriftConfig>> =
+    modelingCommandStdLibDriftConfig
+  if (!Object.hasOwn(configs, commandName)) return undefined
+
+  const config = configs[commandName]
+  return config ? stdLibDocsLink(config.stdLibName) : undefined
 }
 
 export function modelingStdLibCommandName<

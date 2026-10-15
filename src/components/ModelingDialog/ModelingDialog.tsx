@@ -27,6 +27,7 @@ import {
   type DialogField,
 } from '@src/components/ModelingDialog/arguments'
 import { useDialogSelection } from '@src/components/ModelingDialog/useDialogSelection'
+import { CommandHelp } from '@src/components/ModelingDialog/CommandHelp'
 
 export default function ModelingDialog({
   containerRef,
@@ -335,6 +336,7 @@ export default function ModelingDialog({
         className="flex min-h-0 flex-col text-xs"
       >
         <div className="flex min-h-0 flex-col gap-3 overflow-y-auto p-3">
+          <CommandHelp command={command} />
           {initializing ? (
             <p>Loading arguments...</p>
           ) : (
