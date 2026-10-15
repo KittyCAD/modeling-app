@@ -626,6 +626,81 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
+  'Named View': {
+    icon: 'namedView',
+    forceDialog: true,
+    status: 'experimental',
+    needsReview: true,
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['Named View']
+    ),
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Named View']>(
+      'Named View',
+      {
+        overrides: {
+          orientation: {
+            inputType: 'options',
+            required: true,
+            defaultValue: 'Isometric',
+            options: [
+              { name: 'Isometric', value: 'Isometric', isCurrent: true },
+              { name: 'Front', value: 'Front' },
+              { name: 'Back', value: 'Back' },
+              { name: 'Left', value: 'Left' },
+              { name: 'Right', value: 'Right' },
+              { name: 'Top', value: 'Top' },
+              { name: 'Bottom', value: 'Bottom' },
+            ],
+          },
+          projection: {
+            inputType: 'options',
+            required: true,
+            defaultValue: 'Orthographic',
+            options: [
+              { name: 'Orthographic', value: 'Orthographic', isCurrent: true },
+              { name: 'Perspective', value: 'Perspective' },
+            ],
+          },
+          baseline: {
+            inputType: 'options',
+            required: true,
+            defaultValue: 'Show',
+            options: [
+              { name: 'Show all', value: 'Show', isCurrent: true },
+              { name: 'Hide all', value: 'Hide' },
+            ],
+          },
+          except: {
+            inputType: 'selection',
+            displayName: 'Exceptions',
+            selectionTypes: [
+              'path',
+              'pathRegion',
+              'sketchBlock',
+              'sweep',
+              'compositeSolid',
+              'gdtAnnotation',
+              'helix',
+              'plane',
+              'importedGeometry',
+            ],
+            multiple: true,
+            required: false,
+          },
+          target: {
+            inputType: 'vector3d',
+            required: false,
+            dialog: { advanced: true },
+          },
+          distance: {
+            inputType: 'kcl',
+            required: false,
+            dialog: { advanced: true },
+          },
+        },
+      }
+    ),
+  },
   Extrude: {
     icon: 'extrude',
     needsReview: true,

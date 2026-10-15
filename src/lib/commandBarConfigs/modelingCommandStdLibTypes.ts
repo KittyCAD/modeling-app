@@ -1,3 +1,6 @@
+import type { Orientation } from '@rust/kcl-lib/bindings/Orientation'
+import type { Projection } from '@rust/kcl-lib/bindings/Projection'
+import type { Visibility } from '@rust/kcl-lib/bindings/Visibility'
 import type { HoleBody, HoleBottom, HoleType } from '@src/lang/modifyAst/faces'
 import type { ProfileGdtFunction } from '@src/lang/modifyAst/gdt'
 import type { SweepRelativeTo } from '@src/lang/modifyAst/sweeps'
@@ -102,6 +105,18 @@ type GdtObjectsCommandArgs<Name extends ModelingStdLibCommandName> =
   GdtObjectsArgs<PointAndClickCommandArgs<Name>>
 
 export type HelixModes = 'Axis' | 'Edge' | 'Cylinder'
+
+export type NamedViewCommandArgs = Override<
+  PointAndClickCommandArgs<'Named View'>,
+  {
+    baseline: Visibility
+    except?: Selections
+    orientation: Orientation
+    target?: KclCommandValue
+    distance?: KclCommandValue
+    projection: Projection
+  }
+>
 
 export type ExtrudeCommandArgs = Override<
   PointAndClickCommandArgs<'Extrude'>,
@@ -294,6 +309,7 @@ export type BlendCommandArgs = PointAndClickCommandArgs<'Blend'>
 export type JoinSurfacesCommandArgs = PointAndClickCommandArgs<'Join Surfaces'>
 
 export type StdLibModelingCommandSchema = {
+  'Named View': NamedViewCommandArgs
   Extrude: ExtrudeCommandArgs
   Sweep: SweepCommandArgs
   Loft: LoftCommandArgs
