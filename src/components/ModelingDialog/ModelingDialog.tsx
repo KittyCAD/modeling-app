@@ -9,7 +9,7 @@ import {
 } from '@src/components/CommandBar/CommandKclInput'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { MarkdownText } from '@src/components/MarkdownText'
-import { SelectionReferencesList } from '@src/components/SelectionReferencesList'
+import { DialogSelectionList } from '@src/components/ModelingDialog/DialogSelectionList'
 import Tooltip from '@src/components/Tooltip'
 import type { KclManager } from '@src/lang/KclManager'
 import type { AppCommandSystem, AppSettingsSystem } from '@src/lib/app'
@@ -228,7 +228,7 @@ export default function ModelingDialog({
                   ? "Selection edits aren't supported yet."
                   : undefined
               }
-              className="m-0 w-full rounded-sm border-0 bg-transparent px-2 py-1 text-left text-xs focus-visible:ring-1 focus-visible:ring-primary aria-pressed:text-primary"
+              className="m-0 w-full rounded-sm border-0 bg-transparent px-2 py-1 text-left text-[10px] focus-visible:ring-1 focus-visible:ring-primary aria-pressed:text-primary"
               onClick={() => selection.select(name, arg)}
             >
               {isSelections(value) && hasValue(value)
@@ -241,8 +241,7 @@ export default function ModelingDialog({
             </button>
             {isSelections(value) && hasValue(value) && (
               <div className="max-h-32 overflow-auto">
-                <SelectionReferencesList
-                  variant="dialog"
+                <DialogSelectionList
                   kclManager={kclManager}
                   wasmPromise={wasmPromise}
                   selectionRanges={value}

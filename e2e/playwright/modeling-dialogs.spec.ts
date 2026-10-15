@@ -214,8 +214,8 @@ body002 = clone(body001)
     const profileReferences = dialog.getByRole('group', {
       name: 'Profiles selections',
     })
-    const profileDetails = profileReferences.getByRole('button', {
-      name: 'Region selection details',
+    const profileReference = profileReferences.getByText('region001', {
+      exact: true,
     })
     const removeProfile = profileReferences.getByRole('button', {
       name: 'Remove Region from selection',
@@ -225,15 +225,11 @@ body002 = clone(body001)
     await expect(tagStart).toBeHidden()
     await expect(modelingDialog.options(/^symmetric$/i)).toBeVisible()
     await expect(profiles).toContainText(/1 region/i)
-    await expect(profileDetails).toBeVisible()
     await expect(profiles).toBeFocused()
-    await page.keyboard.press('Tab')
-    await expect(profileDetails).toBeFocused()
     await page.keyboard.press('Tab')
     await expect(removeProfile).toBeFocused()
     await page.keyboard.press('Tab')
     await expect(length).toBeFocused()
-    await page.keyboard.press('Shift+Tab')
     await page.keyboard.press('Shift+Tab')
     await page.keyboard.press('Shift+Tab')
     await expect(profiles).not.toHaveCSS('box-shadow', 'none')
@@ -250,12 +246,14 @@ body002 = clone(body001)
 
     await modelingDialog.selection('To').click()
     await expect(profiles).toContainText(/1 region/i)
+    await expect(profileReference).toBeHidden()
+    await profileReferences.getByText('Region', { exact: true }).hover()
+    await expect(profileReference).toBeVisible()
     await expect(
-      profileReferences.getByTitle('region001', { exact: true })
-    ).toBeHidden()
-    await profileDetails.click()
-    await expect(page.getByTitle('region001', { exact: true })).toBeVisible()
-    await page.keyboard.press('Escape')
+      profileReferences.getByRole('button', { name: /copy/i })
+    ).toHaveCount(0)
+    await profiles.hover()
+    await expect(profileReference).toBeHidden()
     await expect(dialog).toBeVisible()
     await removeProfile.click()
     await profiles.click()
