@@ -7,6 +7,7 @@ import {
   createLabeledArg,
   createLiteral,
   createLocalName,
+  createMemberExpression,
 } from '@src/lang/create'
 import {
   createPoint2dExpression,
@@ -20,12 +21,22 @@ import {
 } from '@src/lang/modifyAst/edges'
 import { isFaceArtifact } from '@src/lang/modifyAst/faces'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
-import { resolveToCodeRef, traverse, valueOrVariable } from '@src/lang/queryAst'
+import {
+  getVariableExprsFromSelection,
+  resolveToCodeRef,
+  traverse,
+  valueOrVariable,
+} from '@src/lang/queryAst'
 import {
   type ResolvedGraphSelection,
   getArtifactOfTypes,
   getCapForPathId,
+  getMergedSweepBodyArtifact,
 } from '@src/lang/std/artifactGraph'
+import {
+  getBodySelectionFromPrimitiveParentEntityId,
+  getEngineTopologyFallbackNormalized,
+} from '@src/lib/primitiveBodySelection'
 import type { ArtifactGraph, Expr, PathToNode, Program } from '@src/lang/wasm'
 import { modelingStdLibCall } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
@@ -41,6 +52,35 @@ const GDT_LABELED_SELECTION_ARG_NAMES = [
   'to',
   'face',
 ] as const
+
+function getGdtEdgeBodySelection(
+  selection: Selection,
+  artifactGraph: ArtifactGraph
+): Selection | null {
+  const topology = getEngineTopologyFallbackNormalized(selection)
+  if (topology) {
+    const body = getBodySelectionFromPrimitiveParentEntityId(
+      topology.parentId,
+      artifactGraph,
+      {
+        bodyArtifactTypes: ['sweep', 'compositeSolid', 'pattern'],
+        lookUpPatternCopies: true,
+        codeRefLookup: 'first',
+      }
+    )
+    if (body) return body
+  }
+  const faces = getEdgeRefPayloadFromSelection(selection)?.side_faces ?? []
+  for (const id of faces) {
+    const face = artifactGraph.get(id)
+    if (face?.type !== 'wall' && face?.type !== 'cap') continue
+    const sweep = artifactGraph.get(face.sweepId)
+    if (sweep?.type !== 'sweep') continue
+    const body = getMergedSweepBodyArtifact(sweep, artifactGraph, false)
+    if (!err(body)) return { artifact: body, codeRef: body.codeRef }
+  }
+  return null
+}
 
 function setCallInAst(args: Parameters<typeof setBaseCallInAst>[0]) {
   return setBaseCallInAst({
@@ -239,6 +279,17 @@ function buildGdtEdgeExpressions({
     const payload = getEdgeRefPayloadFromSelection(selection)
     if (!payload) continue
 
+    const bodySelection = getGdtEdgeBodySelection(selection, artifactGraph)
+    const bodyVariables = bodySelection
+      ? getVariableExprsFromSelection(
+          { graphSelections: [bodySelection], otherSelections: [] },
+          artifactGraph,
+          modifiedAst,
+          wasmInstance
+        )
+      : null
+    if (bodyVariables instanceof Error) return bodyVariables
+    const bodyExpr = bodyVariables?.exprs[0]
     const originalEdgeSelection =
       selection.artifact?.type === 'segment'
         ? {
@@ -247,12 +298,19 @@ function buildGdtEdgeExpressions({
           }
         : undefined
 
+    // Raw cap tags can be rebound by clone and mirror. Scope both faces to
+    // the selected body so an original edge keeps referring to the original.
     const edgeRefResult = createEdgeRefObjectExpression(
       payload,
       wasmInstance,
       modifiedAst,
       artifactGraph,
-      originalEdgeSelection
+      originalEdgeSelection,
+      selection.codeRef,
+      bodyExpr
+        ? createMemberExpression(structuredClone(bodyExpr), 'sketch')
+        : undefined,
+      bodyExpr
     )
     if (err(edgeRefResult)) return edgeRefResult
 
