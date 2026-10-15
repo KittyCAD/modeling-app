@@ -55,6 +55,7 @@ export default function ModelingDialog({
   const [initializing, setInitializing] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const mounted = useRef(true)
+  const activeSelectionRef = useRef<HTMLButtonElement>(null)
   const initialContext = useRef(state.context)
   const fields = getDialogFields({
     ...state.context,
@@ -200,11 +201,29 @@ export default function ModelingDialog({
     if (arg.inputType === 'selection')
       return (
         <div key={name} className="flex flex-col gap-1">
-          <span className="capitalize">
-            {label}
-            {required && ' *'}
-          </span>
+          <div className="flex items-center justify-between gap-2">
+            <span className="capitalize">
+              {label}
+              {required && ' *'}
+            </span>
+            {selection.activeName === name &&
+              !state.context.argumentsToSubmit.nodeToEdit && (
+                <button
+                  type="button"
+                  aria-label={`Clear ${label} selection`}
+                  disabled={!hasValue(value)}
+                  onClick={() => {
+                    selection.clear()
+                    activeSelectionRef.current?.focus()
+                  }}
+                  className="m-0 border-0 bg-transparent p-0 text-xs text-chalkboard-70 enabled:hover:underline disabled:opacity-50 dark:text-chalkboard-40"
+                >
+                  Clear
+                </button>
+              )}
+          </div>
           <button
+            ref={selection.activeName === name ? activeSelectionRef : undefined}
             type="button"
             autoFocus={name === firstFieldName}
             aria-label={`Select ${label}`}
