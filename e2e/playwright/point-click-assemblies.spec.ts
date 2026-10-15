@@ -237,10 +237,7 @@ test.describe(
       const selectedObjects = selectionType === 'scene' ? '1 path' : '1 other'
       async function selectBracket() {
         if (selectionType === 'scene') {
-          // The bracket is only visible in the lower-right of the default view
-          const [clickBracketInScene] = scene.makeMouseHelpers(0.75, 0.92, {
-            format: 'ratio',
-          })
+          const [clickBracketInScene] = await scene.findFace(4)
           await clickBracketInScene()
           await expect(toolbar.selectionStatus).toContainText(/1 (path|face)/)
           return
