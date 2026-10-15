@@ -1508,7 +1508,7 @@ chamfer001 = chamfer(extrude001, tags = edge001, length = 1)`
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
-    it('keeps mixed sweep-edge face references and primitive edges on the same chamfer body', async () => {
+    it('keeps mixed face references and primitive edges on the same chamfer body', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         extrudedTriangle,
         instanceInThisFile,
@@ -1521,8 +1521,26 @@ chamfer001 = chamfer(extrude001, tags = edge001, length = 1)`
       if (!sweep || !segment)
         throw new Error('Chamfer body or segment not found')
 
+      const endCap = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'cap' &&
+          artifact.sweepId === sweep.id &&
+          artifact.subType === 'end'
+      )
+      if (!segment.surfaceId || !endCap) {
+        throw new Error('Wall or end-cap face not found')
+      }
+      // Primitive edge 0 is the start-cap edge; keep the face query on the other cap.
       const selection: Selections = {
-        graphSelections: [selectionFromSegmentEdge(segment, artifactGraph)],
+        graphSelections: [
+          {
+            entityRef: {
+              type: 'edge',
+              side_faces: [segment.surfaceId, endCap.id],
+            },
+            codeRef: segment.codeRef,
+          },
+        ],
         otherSelections: [
           {
             entityId: 'irrelevant-for-this-test',
