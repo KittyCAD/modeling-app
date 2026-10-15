@@ -65,6 +65,18 @@ export function useDialogSelection({
     activated.current = true
   }
 
+  function clear() {
+    if (!activeName || context.argumentsToSubmit.nodeToEdit) return
+    save(activeName, undefined)
+    modelingSend({
+      type: 'Set selection',
+      data: {
+        selectionType: 'completeSelection',
+        selection: emptySelection,
+      },
+    })
+  }
+
   useEffect(() => {
     if (activated.current || context.argumentsToSubmit.nodeToEdit) return
     const field = fields.find((field) => field.arg.inputType === 'selection')
@@ -77,5 +89,5 @@ export function useDialogSelection({
         [activeName]: hasValue(selectionRanges) ? selectionRanges : undefined,
       }
     : values
-  return { activeName, selectionRanges, draft, select }
+  return { activeName, selectionRanges, draft, select, clear }
 }
