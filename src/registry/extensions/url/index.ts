@@ -115,14 +115,19 @@ export default defineRegistryItem({
  * routing, without feeding that URL back into application initialization.
  */
 export function createBrowserUrlAdapter(
-  browser: Pick<Window, 'location' | 'history'>,
+  browser: {
+    location: Pick<Location, 'href'>
+    history: Pick<History, 'state' | 'replaceState'>
+  },
   usesHashRouter: boolean
 ): UrlAdapter {
   const read = () => {
     const outer = new URL(browser.location.href)
+    // A file: base retains Windows drive letters even for root-relative paths.
+    // The hash is an app route, independent of the outer document's location.
     const route =
       usesHashRouter && outer.hash.startsWith('#/')
-        ? new URL(outer.hash.slice(1), outer)
+        ? new URL(outer.hash.slice(1), 'https://url-state.invalid')
         : outer
     return {
       /** The unchanged URL as read from the app. */
