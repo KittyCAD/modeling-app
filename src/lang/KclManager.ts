@@ -1021,9 +1021,7 @@ export class KclManager extends File {
     const execState = execStateFromRust(sceneGraphDelta.exec_outcome)
 
     this.diagnostics = []
-    if (options.refreshLintDiagnostics !== false) {
-      void this.refreshSketchSolveLintDiagnostics(code, execState)
-    }
+    this.refreshSketchSolveAst(code, execState, options).catch(reportRejection)
 
     this.execState = execState
     this.lastSuccessfulVariables = execState.variables
@@ -1040,13 +1038,27 @@ export class KclManager extends File {
     void this.updateArtifactGraph(execState.artifactGraph)
   }
 
-  private async refreshSketchSolveLintDiagnostics(
+  private async refreshSketchSolveAst(
     code: string,
-    execState: ExecState
+    execState: ExecState,
+    options: { refreshLintDiagnostics?: boolean }
   ): Promise<void> {
     const instance = await this.systemDeps.wasmInstancePromise
+    if (this.code !== code) {
+      return
+    }
     const parseResult = parse(code, instance)
     if (err(parseResult) || !resultIsOk(parseResult)) {
+      return
+    }
+
+    // Sketch tools skip normal execution, so keep the AST used by the feature
+    // tree aligned with the source and operations returned by the sketch API.
+    this.ast = parseResult.program
+    this._kclProgramVersion.value = parseResult.kclVersion
+    this._astParseFailed = false
+
+    if (options.refreshLintDiagnostics === false) {
       return
     }
 
