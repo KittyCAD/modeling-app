@@ -1520,6 +1520,16 @@ clone001 = clone(extrude001)`
   })
 
   describe('variable name of operations', () => {
+    it('finds the variable name of an empty sketch block', async () => {
+      const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
+      const code =
+        '@settings(kclVersion = 3.0)\n\nsketch001 = sketch(on = XY) {}'
+      const op = sketchBlockBegin()
+      if (op.type !== 'GroupBegin') throw new Error('Expected sketch group')
+      op.nodePath = await buildNodePath(code, 'sketch(on = XY) {}', instance)
+      const program = assertParse(code, instance)
+      expect(getOperationVariableName(op, program, instance)).toBe('sketch001')
+    })
     it('finds the variable name with simple assignment', async () => {
       const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
       const op = stdlib('stdLibFn')

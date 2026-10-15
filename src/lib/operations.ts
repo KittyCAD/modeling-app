@@ -3776,6 +3776,7 @@ export function getOperationVariableName(
 
   if (
     op.type !== 'StdLibCall' &&
+    !(op.type === 'GroupBegin' && op.group.type === 'SketchBlock') &&
     !(op.type === 'GroupBegin' && op.group.type === 'FunctionCall') &&
     op.type !== 'ModuleInstance'
   ) {
