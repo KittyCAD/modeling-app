@@ -612,6 +612,11 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'flipSurface',
     flowArgOrder: ['surface'],
   },
+  'Planar Surface': {
+    stdLibName: 'planarSurface',
+    editFlow: true,
+    flowArgOrder: ['curves'],
+  },
   'Delete Face': {
     stdLibName: 'deleteFace',
     flowArgOrder: ['faces'],
