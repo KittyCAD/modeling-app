@@ -266,6 +266,51 @@ describe('browser URL adapter', () => {
     expect(dispatch).not.toHaveBeenCalled()
   })
 
+  it.each([
+    'file:///C:/Users/test/Design%20Studio/index.html',
+    'file:///Applications/Design%20Studio/index.html',
+  ])(
+    'preserves hash routes when publishing query state under %s',
+    (documentUrl) => {
+      const historyState = { key: 'router-key' }
+      const browser = {
+        location: { href: `${documentUrl}?outer=yes#/home` },
+        history: {
+          state: historyState,
+          replaceState: vi.fn(
+            (_state: unknown, _unused: string, url?: string | URL | null) => {
+              browser.location.href = String(url)
+            }
+          ),
+        },
+      }
+      const adapter = createBrowserUrlAdapter(browser, true)
+
+      // An absent preference still publishes at startup; it must leave the route alone.
+      expect(adapter.captureSearch()).toBe('')
+      adapter.publish({ sort_by: undefined })
+      expect(browser.location.href).toBe(`${documentUrl}?outer=yes#/home`)
+      expect(browser.history.replaceState).not.toHaveBeenCalled()
+
+      // Later publication must also preserve an encoded file route and its fragment.
+      browser.location.href = `${documentUrl}?outer=yes#/file/%2Fproject%2Fmain.kcl?keep=yes#anchor`
+      adapter.publish({ sort_by: 'name' })
+      expect(browser.location.href).toBe(
+        `${documentUrl}?outer=yes#/file/%2Fproject%2Fmain.kcl?keep=yes&sort_by=name#anchor`
+      )
+      expect(adapter.captureSearch()).toBe('?keep=yes&sort_by=name')
+      adapter.publish({ sort_by: undefined })
+      expect(browser.location.href).toBe(
+        `${documentUrl}?outer=yes#/file/%2Fproject%2Fmain.kcl?keep=yes#anchor`
+      )
+      expect(browser.history.replaceState).toHaveBeenLastCalledWith(
+        historyState,
+        '',
+        browser.location.href
+      )
+    }
+  )
+
   it('captures and publishes desktop hash-route query fields', () => {
     window.history.replaceState(
       null,
