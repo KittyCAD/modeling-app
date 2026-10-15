@@ -1,4 +1,12 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest'
 
 const { mockToast } = vi.hoisted(() => ({
   mockToast: {
@@ -19,6 +27,7 @@ import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 import type { KclManager } from '@src/lang/KclManager'
 import type { KclNamedView } from '@src/lang/std/kclNamedViews'
 import type { Artifact, ExecState, KclNamedViewArtifact } from '@src/lang/wasm'
+import { initialiseWasmNode } from '@src/lang/wasmUtilsNode'
 import {
   activateNamedView,
   activeViewSignal,
@@ -28,6 +37,11 @@ import {
   reapplyActiveViewAfterReconnect,
   resetNamedViewSession,
 } from '@src/lib/kclNamedViewActivation'
+import { getKclDefaultViewName } from '@src/lib/wasm_lib_wrapper'
+
+beforeAll(async () => {
+  await initialiseWasmNode()
+})
 
 const MAIN_PATH: ModulePath = { type: 'Main' }
 
@@ -559,6 +573,7 @@ describe('reapplying the active view after an execution', () => {
     expect(activeViewSignal.value).toBeNull()
     expect(mockToast.error).toHaveBeenCalledOnce()
     expect(mockToast.error.mock.calls[0][0]).toContain('Front')
+    expect(mockToast.error.mock.calls[0][0]).toContain(getKclDefaultViewName())
   })
 })
 
