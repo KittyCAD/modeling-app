@@ -259,9 +259,6 @@ part001 = startSketchOn(XZ)
     scene,
   }) => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
-    const [clickBracket] = scene.makeMouseHelpers(0.45, 0.45, {
-      format: 'ratio',
-    })
     const [clickEmptyScene] = scene.makeMouseHelpers(0.5, 0.9, {
       format: 'ratio',
     })
@@ -288,6 +285,7 @@ part001 = startSketchOn(XZ)
 
     await test.step('Right click on bracket navigates to its source', async () => {
       await expect(laterCode).not.toBeInViewport()
+      const [clickBracket] = await scene.findFace(1)
       await clickBracket()
       await expect(page.getByText('1 face')).toBeVisible()
       await clickBracket({ shouldRightClick: true })
@@ -328,8 +326,7 @@ shell001 = shell(extrude001, faces = endCap001, thickness = 0.2)`
     await homePage.goToModelingScene()
     await scene.settled()
 
-    // Two dumb hardcoded screen ratio values
-    const [clickOnFace] = scene.makeMouseHelpers(0.6, 0.6, { format: 'ratio' })
+    const [clickOnFace] = await scene.findFace(0)
     const [clearSelection] = scene.makeMouseHelpers(0.8, 0.8, {
       format: 'ratio',
     })
