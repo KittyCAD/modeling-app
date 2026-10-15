@@ -1,7 +1,7 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import { Draggable } from '@kittycad/ui-components'
 import type { RefObject } from 'react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import decamelize from 'decamelize'
 import {
   CommandKclInput,
@@ -29,6 +29,7 @@ import {
   type DialogField,
 } from '@src/components/ModelingDialog/arguments'
 import { useDialogSelection } from '@src/components/ModelingDialog/useDialogSelection'
+import { ArgumentHelp } from '@src/components/ModelingDialog/ArgumentHelp'
 import { CommandHelp } from '@src/components/ModelingDialog/CommandHelp'
 
 export default function ModelingDialog({
@@ -52,6 +53,7 @@ export default function ModelingDialog({
 }) {
   useSignals()
   const state = commands.useState()
+  const fieldIdPrefix = useId()
   const { selectedCommand: command } = state.context
   const [values, setValues] = useState<Record<string, unknown>>({})
   const [validity, setValidity] = useState<Record<string, boolean>>({})
@@ -156,6 +158,7 @@ export default function ModelingDialog({
   }
 
   function renderField({ name, arg, required }: DialogField) {
+    const fieldId = `${fieldIdPrefix}-${name}`
     const label =
       arg.displayName || capitaliseFC(decamelize(name, { separator: ' ' }))
     const value = context.argumentsToSubmit[name]
@@ -164,6 +167,18 @@ export default function ModelingDialog({
         text={arg.description}
         className="parsed-markdown text-xs text-chalkboard-70 dark:text-chalkboard-40"
       />
+    )
+    const help = arg.documentation && (
+      <ArgumentHelp label={label} text={arg.documentation} />
+    )
+    const fieldLabel = (
+      <div className="flex items-center justify-between gap-1">
+        <label htmlFor={fieldId} className="capitalize">
+          {label}
+          {required && ' *'}
+        </label>
+        {help}
+      </div>
     )
     const machineContext = arg.machineActor?.getSnapshot().context
     if (arg.inputType === 'kcl')
@@ -177,6 +192,7 @@ export default function ModelingDialog({
           name={name}
           arg={arg}
           label={label}
+          labelAction={help}
           description={description}
           placeholder={required ? undefined : 'Use defaults'}
           isRequired={required}
@@ -205,16 +221,14 @@ export default function ModelingDialog({
     if (arg.inputType === 'selection')
       return (
         <div key={name} className="flex flex-col gap-1">
-          <span className="capitalize">
-            {label}
-            {required && ' *'}
-          </span>
+          {fieldLabel}
           <div
             role="group"
             aria-label={`${label} selections`}
             className={`rounded-sm border ${selection.activeName === name ? 'border-primary' : 'border-chalkboard-30 dark:border-chalkboard-70'}`}
           >
             <button
+              id={fieldId}
               type="button"
               ref={(button) => {
                 if (button) selectionInputs.current.set(name, button)
@@ -273,12 +287,10 @@ export default function ModelingDialog({
             : arg.options
       const index = choices.findIndex((choice) => choice.value === value)
       return (
-        <label key={name} className="flex flex-col gap-1">
-          <span className="capitalize">
-            {label}
-            {required && ' *'}
-          </span>
+        <div key={name} className="flex flex-col gap-1">
+          {fieldLabel}
           <select
+            id={fieldId}
             autoFocus={name === firstFieldName}
             className="rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs dark:border-chalkboard-70"
             value={index < 0 ? '' : String(index)}
@@ -305,16 +317,14 @@ export default function ModelingDialog({
             ))}
           </select>
           {description}
-        </label>
+        </div>
       )
     }
     return (
-      <label key={name} className="flex flex-col gap-1">
-        <span className="capitalize">
-          {label}
-          {required && ' *'}
-        </span>
+      <div key={name} className="flex flex-col gap-1">
+        {fieldLabel}
         <input
+          id={fieldId}
           type="text"
           autoFocus={name === firstFieldName}
           className="rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs dark:border-chalkboard-70"
@@ -325,7 +335,7 @@ export default function ModelingDialog({
           onChange={(event) => save(name, event.target.value)}
         />
         {description}
-      </label>
+      </div>
     )
   }
 
