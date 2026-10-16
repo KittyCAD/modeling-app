@@ -1,5 +1,6 @@
 import { type Signal, signal, computed } from '@preact/signals-core'
 import type { ApiFile } from '@rust/kcl-lib/bindings/FrontendApi'
+import { ProjectEditorHistory } from '@src/lib/projectSession/editorHistory'
 import { KclManager } from '@src/lang/KclManager'
 import { getStringAfterLastSeparator } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
@@ -20,6 +21,7 @@ import { File } from '@src/lib/projectSession/file'
 // Each of our singletons has dependencies on _other_ singletons, so importing
 // can easily become cyclic. Each will have its own Singletons type.
 export interface ProjectSystemDeps {
+  editorHistory?: ProjectEditorHistory
   wasmInstancePromise: Promise<ModuleType>
   settings: SettingsActorType
   commandBar: CommandBarActorType
@@ -35,7 +37,9 @@ export interface ProjectSystemDeps {
  * that connects to the geometry engine.
  */
 export class ZDSProject {
+  private closed = false
   private nextFileId = 0
+  private readonly editorHistory = new ProjectEditorHistory()
   files: File[] = []
   get path() {
     return this.projectIORefSignal.value.path
@@ -74,7 +78,10 @@ export class ZDSProject {
 
   /** Clean up resources and watchers for Project */
   public close() {
+    if (this.closed) return
+    this.closed = true
     this.closeAllEditors()
+    this.editorHistory.dispose()
     window.electron?.watchFileOff(
       this.projectIORefSignal.value.path,
       this.fileWatcherId
@@ -145,6 +152,7 @@ export class ZDSProject {
     }
 
     const systemDeps: ProjectSystemDeps = {
+      editorHistory: this.editorHistory,
       wasmInstancePromise: this.app.wasmPromise,
       commandBar: this.app.commands.actor,
       settings: this.app.settings.actor,
@@ -199,6 +207,14 @@ export class ZDSProject {
       newEditor.path = path
     }
 
+    // The singleton can move between files within this retained project.
+    // Drop its old path entry so one editor never aliases multiple buffers.
+    if (providedEditor) {
+      for (const [key, editor] of this.editors) {
+        if (editor === providedEditor && key.peek() !== path)
+          this.editors.delete(key)
+      }
+    }
     if (!foundEditor) {
       this.set(signal(path), newEditor)
     }
@@ -243,15 +259,20 @@ export class ZDSProject {
       console.warn(`Attempted to close nonexistent editor with path "${path}"`)
       return
     }
-    foundPathSignal[1].close()
+    if (this.executingEditor.peek() === foundPathSignal[1]) {
+      this.executingPath = null
+    }
+    const editor = foundPathSignal[1]
+    this.editorHistory.files.set(path, editor.captureEditorHistoryState())
+    editor.close()
+    this.files = this.files.map((file) =>
+      file === editor ? new File(path, editor.id) : file
+    )
     this.editors.delete(foundPathSignal[0])
   }
 
   closeAllEditors() {
-    for (const editor of this.editors.values()) {
-      editor.close()
-    }
-    this.editors.clear()
+    for (const path of this.editors.keys()) this.closeEditor(path.peek())
   }
 
   /** Handle updates from the disk representation of the project */
@@ -310,9 +331,15 @@ export class ZDSProject {
     if (fileOrDir.children) {
       for (let entry of fileOrDir.children) {
         if (entry.name.endsWith('.kcl')) {
-          const id = this.nextFileId++
           const path = entry.path
-          files.push(new File(path, id))
+          const existing =
+            this.files.find((file) => file.path === path) ??
+            this.findEditor(path)?.[1]
+          files.push(
+            existing?.path === path
+              ? existing
+              : new File(path, existing?.id ?? this.nextFileId++)
+          )
         } else {
           this.collectProjectFiles(entry, files)
         }
@@ -320,6 +347,16 @@ export class ZDSProject {
     }
 
     return files
+  }
+
+  /** Refresh membership without replacing the project's editors or undo history. */
+  refreshFiles(project: Project) {
+    if (this.closed || project.path !== this.path) return
+    this.files = this.collectProjectFiles(project)
+    this.projectIORefSignal.value = {
+      ...this.projectIORefSignal.peek(),
+      ...project,
+    }
   }
 
   /** Get all the KCL files in this project as a flat array. */
