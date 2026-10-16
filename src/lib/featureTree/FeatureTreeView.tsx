@@ -1,5 +1,6 @@
 import {
   registerFeatureTree,
+  type FeatureTreeSelectionDetail,
   type ZooFeatureTree,
   type ZooFeatureTreeRow,
 } from '@kittycad/ui-components/web-components'
@@ -170,8 +171,28 @@ export function FeatureTreeRow({
   useLayoutEffect(() => () => tree?.unregister(nodeId), [tree, nodeId])
   useLayoutEffect(() => {
     const row = ref.current!
+    const owner = row.closest<ZooFeatureTree>('zoo-feature-tree')
+    // Mouse and keyboard selection converge on the tree's controlled selection event.
     const select = (event: Event) => {
-      if (event.target === row && !disabled) onSelect?.(event)
+      const { nodeId: selectedNodeId } = (
+        event as CustomEvent<FeatureTreeSelectionDetail>
+      ).detail
+      if (selectedNodeId === nodeId && !disabled) onSelect?.(event)
+    }
+    const activate = (event: KeyboardEvent) => {
+      // The tree handles selection first. Actions and editors retain their own Enter.
+      if (
+        !disabled &&
+        !event.isComposing &&
+        !event.repeat &&
+        !event.altKey &&
+        !event.ctrlKey &&
+        !event.metaKey &&
+        event.key === 'Enter' &&
+        event.defaultPrevented &&
+        event.composedPath()[0] === row
+      )
+        onDoubleClick?.(event)
     }
     const menu = (event: Event) => {
       if (event.target !== row || disabled) return
@@ -195,15 +216,17 @@ export function FeatureTreeRow({
       )
         onDoubleClick?.(event)
     }
-    row.addEventListener('zoo-select', select)
+    owner?.addEventListener('zoo-selection-change', select)
+    owner?.addEventListener('keydown', activate)
     row.addEventListener('zoo-context-menu', menu)
     row.addEventListener('dblclick', doubleClick)
     return () => {
-      row.removeEventListener('zoo-select', select)
+      owner?.removeEventListener('zoo-selection-change', select)
+      owner?.removeEventListener('keydown', activate)
       row.removeEventListener('zoo-context-menu', menu)
       row.removeEventListener('dblclick', doubleClick)
     }
-  }, [disabled, onSelect, onDoubleClick])
+  }, [disabled, nodeId, onSelect, onDoubleClick])
   return createElement(
     'zoo-feature-tree-row',
     {

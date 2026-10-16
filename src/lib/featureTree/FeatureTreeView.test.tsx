@@ -3,6 +3,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/components/ContextMenu', () => ({ ContextMenu: () => null }))
 
+import { useState } from 'react'
+
 import type { ZooFeatureTree } from '@kittycad/ui-components/web-components'
 import {
   FeatureTree,
@@ -11,6 +13,62 @@ import {
 
 afterEach(cleanup)
 describe('ZDS feature tree adapter', () => {
+  it('selects focused rows with Space and selects then edits with Enter', async () => {
+    const parentSelect = vi.fn()
+    const select = vi.fn()
+    const edit = vi.fn()
+    function ControlledTree() {
+      const [selected, setSelected] = useState(false)
+      return (
+        <FeatureTree>
+          <FeatureTreeRow
+            nodeId="parent"
+            label="Parent"
+            defaultOpen
+            onSelect={parentSelect}
+          >
+            <FeatureTreeRow
+              nodeId="child"
+              label="Child"
+              selected={selected}
+              onSelect={() => {
+                select()
+                setSelected(true)
+              }}
+              onDoubleClick={edit}
+              visibility={{ visible: true, onVisibilityChange: vi.fn() }}
+            />
+          </FeatureTreeRow>
+        </FeatureTree>
+      )
+    }
+    const view = render(<ControlledTree />)
+    const tree =
+      view.container.querySelector<ZooFeatureTree>('zoo-feature-tree')!
+    const child =
+      view.container.querySelector<HTMLElement>('[node-id="child"]')!
+    await waitFor(() => expect(child.getAttribute('role')).toBe('treeitem'))
+    child.focus()
+    fireEvent.keyDown(child, { key: ' ' })
+    await waitFor(() => expect(tree.selectedIds).toEqual(['child']))
+    expect(select).toHaveBeenCalledOnce()
+    expect(edit).not.toHaveBeenCalled()
+    expect(parentSelect).not.toHaveBeenCalled()
+
+    fireEvent.keyDown(child, { key: 'Enter' })
+    expect(select).toHaveBeenCalledTimes(2)
+    expect(edit).toHaveBeenCalledOnce()
+    expect(select.mock.invocationCallOrder[1]).toBeLessThan(
+      edit.mock.invocationCallOrder[0]
+    )
+
+    fireEvent.keyDown(view.getByRole('button', { name: 'Hide Child' }), {
+      key: 'Enter',
+    })
+    expect(select).toHaveBeenCalledTimes(2)
+    expect(edit).toHaveBeenCalledOnce()
+    expect(parentSelect).not.toHaveBeenCalled()
+  })
   it('keeps the clicked representation selected when a feature and body share a source selection', async () => {
     const view = render(
       <FeatureTree>
