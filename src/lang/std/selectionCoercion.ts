@@ -27,50 +27,26 @@ export function coerceSelectionsToBody(
   selections: Selections,
   artifactGraph: ArtifactGraph
 ): Selections | Error {
-  const bodySelections: Array<
-    Selection & { artifact: Artifact; codeRef: CodeRef }
-  > = []
+  const bodySelections: Array<{ artifact: Artifact; codeRef: CodeRef }> = []
   const passthroughSelections: Selection[] = []
   const codeRefOnlyV2: Array<Selection> = []
   const remainingOtherSelections: Selections['otherSelections'] = []
   const seenBodyIds = new Set<string>()
-
-  function appendPatternSelection(
-    selection: Selection,
-    artifact: Extract<Artifact, { type: 'pattern' }>
-  ) {
-    const index =
-      selection.patternIndex ??
-      (selection.engineEntityId
-        ? artifact.copyIds.indexOf(selection.engineEntityId) + 1
-        : undefined)
-    const bodyId =
-      index === undefined ? artifact.id : `${artifact.id}[${index}]`
-    if (seenBodyIds.has(bodyId)) return
-    seenBodyIds.add(bodyId)
-    passthroughSelections.push(selection)
-  }
 
   for (const selV2 of selections.graphSelections) {
     const topologyFallback = getEngineTopologyFallbackNormalized(selV2)
     if (topologyFallback) {
       const bodySelection = getBodySelectionFromPrimitiveParentEntityId(
         topologyFallback.parentId,
-        artifactGraph,
-        {
-          bodyArtifactTypes: ['sweep', 'compositeSolid', 'pattern'],
-          lookUpPatternCopies: true,
-        }
+        artifactGraph
       )
-      if (bodySelection?.artifact?.type === 'pattern') {
-        appendPatternSelection(bodySelection, bodySelection.artifact)
-        continue
-      }
-      if (bodySelection?.artifact && bodySelection.codeRef) {
-        if (seenBodyIds.has(bodySelection.artifact.id)) continue
+      if (
+        bodySelection?.artifact &&
+        bodySelection.codeRef &&
+        !seenBodyIds.has(bodySelection.artifact.id)
+      ) {
         seenBodyIds.add(bodySelection.artifact.id)
         bodySelections.push({
-          ...bodySelection,
           artifact: bodySelection.artifact,
           codeRef: bodySelection.codeRef,
         })
@@ -99,13 +75,14 @@ export function coerceSelectionsToBody(
           }
         : null
 
-    if (!selection || !selection.artifact) {
-      passthroughSelections.push(selV2)
+    if (!selection) {
       continue
     }
 
-    if (selection.artifact.type === 'pattern') {
-      appendPatternSelection({ ...selV2, ...selection }, selection.artifact)
+    if (!selection.artifact) {
+      if (selection.codeRef.range[1] - selection.codeRef.range[0] !== 0) {
+        codeRefOnlyV2.push({ codeRef: selection.codeRef })
+      }
       continue
     }
 
@@ -116,8 +93,7 @@ export function coerceSelectionsToBody(
           { key: maybeSweepId, types: ['sweep'] },
           artifactGraph
         )
-        if (!err(sweepWithType)) {
-          if (seenBodyIds.has(sweepWithType.id)) continue
+        if (!err(sweepWithType) && !seenBodyIds.has(sweepWithType.id)) {
           seenBodyIds.add(sweepWithType.id)
           bodySelections.push({
             artifact: sweepWithType,
@@ -127,16 +103,17 @@ export function coerceSelectionsToBody(
         }
       }
 
-      codeRefOnlyV2.push({ ...selV2, ...selection })
+      if (
+        selection.artifact.codeRef.range[1] -
+          selection.artifact.codeRef.range[0] !==
+        0
+      ) {
+        codeRefOnlyV2.push({ codeRef: selection.artifact.codeRef })
+      }
       continue
     }
 
-    if (
-      selection.artifact.type === 'helix' ||
-      selection.artifact.type === 'plane' ||
-      selection.artifact.type === 'sketchBlock' ||
-      selection.artifact.type === 'solid2d'
-    ) {
+    if (selection.artifact.type === 'helix') {
       passthroughSelections.push(selV2)
       continue
     }
@@ -152,10 +129,6 @@ export function coerceSelectionsToBody(
       if (entityRef && !seenBodyIds.has(selection.artifact.id)) {
         seenBodyIds.add(selection.artifact.id)
         bodySelections.push({
-          // Do not carry a selected face/edge ID onto its parent body.
-          ...(!selV2.entityRef || selV2.entityRef.type === 'solid3d'
-            ? selV2
-            : {}),
           artifact: selection.artifact,
           codeRef: selection.codeRef,
         })
@@ -172,8 +145,7 @@ export function coerceSelectionsToBody(
         { key: maybeSweep.id, types: ['sweep'] },
         artifactGraph
       )
-      if (!err(sweepWithType)) {
-        if (seenBodyIds.has(sweepWithType.id)) continue
+      if (!err(sweepWithType) && !seenBodyIds.has(sweepWithType.id)) {
         seenBodyIds.add(sweepWithType.id)
         bodySelections.push({
           artifact: sweepWithType,
@@ -213,21 +185,15 @@ export function coerceSelectionsToBody(
     ) {
       const bodySelection = getBodySelectionFromPrimitiveParentEntityId(
         selection.parentEntityId,
-        artifactGraph,
-        {
-          bodyArtifactTypes: ['sweep', 'compositeSolid', 'pattern'],
-          lookUpPatternCopies: true,
-        }
+        artifactGraph
       )
-      if (bodySelection?.artifact?.type === 'pattern') {
-        appendPatternSelection(bodySelection, bodySelection.artifact)
-        continue
-      }
-      if (bodySelection?.artifact && bodySelection.codeRef) {
-        if (seenBodyIds.has(bodySelection.artifact.id)) continue
+      if (
+        bodySelection?.artifact &&
+        bodySelection.codeRef &&
+        !seenBodyIds.has(bodySelection.artifact.id)
+      ) {
         seenBodyIds.add(bodySelection.artifact.id)
         bodySelections.push({
-          ...bodySelection,
           artifact: bodySelection.artifact,
           codeRef: bodySelection.codeRef,
         })
@@ -241,7 +207,6 @@ export function coerceSelectionsToBody(
   const graphSelections: Selection[] = [
     ...bodySelections
       .map((s) => ({
-        ...s,
         entityRef: artifactToEntityRef(s.artifact.type, s.artifact.id),
         codeRef: s.codeRef,
       }))
@@ -281,7 +246,7 @@ export function coerceSelectionsForBodyOnlySelectionTypes(
       type === 'path' ||
       type === 'helix'
   )
-  if (!selectionTypes?.length || !onlyAcceptsBodyLikeObjects) {
+  if (!onlyAcceptsBodyLikeObjects) {
     return selections
   }
 

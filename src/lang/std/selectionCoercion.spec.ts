@@ -8,56 +8,8 @@ import type { Selections } from '@src/machines/modelingSharedTypes'
 import { describe, expect, it } from 'vitest'
 
 describe('coerceSelectionsToBody', () => {
-  it('preserves the identity of pattern body selections', () => {
-    const pattern: Artifact = {
-      type: 'pattern',
-      id: 'pattern-command-id',
-      subType: 'linear',
-      sourceId: 'source-body-id',
-      copyIds: ['copy-body-1', 'copy-body-2'],
-      copyFaceIds: [],
-      copyEdgeIds: [],
-      codeRef: {
-        range: [0, 100, 0],
-        pathToNode: [],
-        nodePath: { steps: [] },
-      },
-    }
-    const artifactGraph: ArtifactGraph = new Map([[pattern.id, pattern]])
-    const selections: Selections = {
-      graphSelections: [
-        {
-          artifact: pattern,
-          codeRef: pattern.codeRef,
-          engineEntityId: 'copy-body-1',
-          patternIndex: 1,
-        },
-        {
-          artifact: pattern,
-          codeRef: pattern.codeRef,
-          engineEntityId: 'copy-body-2',
-          patternIndex: 2,
-        },
-      ],
-      otherSelections: [],
-    }
-
-    const result = coerceSelectionsToBody(selections, artifactGraph)
-
-    expect(result).not.toBeInstanceOf(Error)
-    if (!(result instanceof Error)) {
-      expect(result.graphSelections).toEqual(selections.graphSelections)
-    }
-    const withoutEngineIds: Selections = {
-      ...selections,
-      graphSelections: selections.graphSelections.map(
-        ({ engineEntityId: _, ...selection }) => selection
-      ),
-    }
-    expect(coerceSelectionsToBody(withoutEngineIds, artifactGraph)).toEqual(
-      withoutEngineIds
-    )
-  })
+  // Tests below are not redundant: they assert selectionsV2 behavior for codeRef-only selections
+  // that resolve to path or edgeCut (no entityRef). Coerce must pass these through unchanged.
 
   it('should pass through path artifact unchanged', () => {
     const artifactGraph: ArtifactGraph = new Map()
@@ -75,6 +27,7 @@ describe('coerceSelectionsToBody', () => {
     artifactGraph.set('path-1', path)
 
     // Path is not an EntityReference the engine returns; use codeRef-only selection.
+    // Coerce passes through codeRef-only as-is (no artifact to resolve to body).
     const selections: Selections = {
       graphSelections: [
         {
@@ -150,6 +103,7 @@ describe('coerceSelectionsToBody', () => {
     artifactGraph.set('edge-cut-1', edgeCut)
 
     // Edge-cut is not an EntityReference the engine returns; use codeRef-only selection.
+    // Coerce passes through codeRef-only as-is.
     const selections: Selections = {
       graphSelections: [
         {
@@ -354,11 +308,9 @@ describe('coerceSelectionsToBody', () => {
     )
 
     expect(result?.graphSelections).toHaveLength(2)
-    expect(result?.graphSelections).toContainEqual(
-      expect.objectContaining({
-        codeRef: { range: [200, 300, 0], pathToNode: [] },
-      })
-    )
+    expect(result?.graphSelections).toContainEqual({
+      codeRef: { range: [200, 300, 0], pathToNode: [] },
+    })
     expect(result?.graphSelections).toContainEqual(
       expect.objectContaining({
         entityRef: { type: 'solid3d', solid3d_id: 'sweep-1' },
@@ -504,18 +456,8 @@ describe('coerceSelectionsToBody', () => {
     const selections: Selections = {
       graphSelections: [
         {
-          entityRef: { type: 'face', face_id: 'unmapped-face' },
-          engineEntityId: 'unmapped-face',
-          codeRef: sweepOne.codeRef,
-        },
-        {
           entityRef: { type: 'solid3d', solid3d_id: sweepOne.id },
           codeRef: sweepOne.codeRef,
-        },
-        {
-          entityRef: { type: 'solid3d', solid3d_id: sweepOne.id },
-          codeRef: sweepOne.codeRef,
-          engineEntityId: 'sweep-1-engine',
         },
         {
           entityRef: { type: 'face', face_id: 'shell-inner-face' },
@@ -542,25 +484,5 @@ describe('coerceSelectionsToBody', () => {
         { type: 'solid3d', solid3d_id: 'sweep-2' },
       ])
     }
-  })
-
-  it('retains unresolved selections for validation', () => {
-    const body = {
-      entityRef: { type: 'solid3d', solid3d_id: 'body' },
-    } satisfies Selections['graphSelections'][number]
-    const unresolved = {
-      entityRef: { type: 'face', face_id: 'missing' },
-    } satisfies Selections['graphSelections'][number]
-    const result = coerceSelectionsToBody(
-      {
-        graphSelections: [body, unresolved],
-        otherSelections: [],
-      },
-      new Map()
-    )
-    expect(result).toEqual({
-      graphSelections: [body, unresolved],
-      otherSelections: [],
-    })
   })
 })
