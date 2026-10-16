@@ -17,7 +17,10 @@ import { isErr, trap } from '@src/lib/trap'
 import { capitaliseFC } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import type { CommandScopeService } from '@src/registry/contracts/commands'
+import type {
+  CommandDialogSession,
+  CommandScopeService,
+} from '@src/registry/contracts/commands'
 import type { EngineSceneViewExtensionProps } from '@src/registry/contracts/engineScene'
 import {
   fieldText,
@@ -34,6 +37,7 @@ export default function ModelingDialog({
   containerRef,
   kclManager,
   commands,
+  session,
   settings,
   wasmPromise,
   commandScopes,
@@ -43,6 +47,7 @@ export default function ModelingDialog({
   containerRef: RefObject<HTMLElement | null>
   kclManager: KclManager
   commands: AppCommandSystem
+  session: CommandDialogSession
   settings: AppSettingsSystem
   wasmPromise: Promise<ModuleType>
   commandScopes?: CommandScopeService
@@ -94,13 +99,13 @@ export default function ModelingDialog({
     mounted.current = true
     void initializeArguments(initialContext.current)
       .then((defaults) => {
-        if (!cancelled) {
+        if (!cancelled && commands.dialogSession.peek() === session) {
           setValues((previous) => ({ ...defaults, ...previous }))
           setInitializing(false)
         }
       })
       .catch((error: unknown) => {
-        if (!cancelled) {
+        if (!cancelled && commands.dialogSession.peek() === session) {
           trap(error)
           setInitializing(false)
         }
@@ -109,7 +114,7 @@ export default function ModelingDialog({
       cancelled = true
       mounted.current = false
     }
-  }, [])
+  }, [commands, session])
 
   const checking = state.matches('Checking Arguments for Dialog')
   const invalid = visible.some(({ name, arg, required }) => {
@@ -120,14 +125,8 @@ export default function ModelingDialog({
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (!command || initializing || submitting || checking || invalid) return
-    const isCurrent = () => {
-      const current = commands.actor.getSnapshot().context
-      return (
-        mounted.current &&
-        current.selectedCommand === command &&
-        current.argumentsToSubmit === state.context.argumentsToSubmit
-      )
-    }
+    const isCurrent = () =>
+      mounted.current && commands.dialogSession.peek() === session
     setSubmitting(true)
     try {
       const resolved = await resolveArguments(

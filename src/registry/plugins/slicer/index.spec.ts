@@ -4,6 +4,7 @@ import {
   pluginsValueSpec,
   provideService,
 } from '@kittycad/registry'
+import { signal } from '@preact/signals-core'
 import { DefaultLayoutToolbarID } from '@src/lib/layout/configs/default'
 import {
   type CommandSystemService,
@@ -27,6 +28,7 @@ import slicer from '.'
 
 function createCommandSystemService(send: CommandSystemService['send']) {
   return {
+    dialogSession: signal(undefined),
     actor: {} as CommandSystemService['actor'],
     send,
     useState: vi.fn(),

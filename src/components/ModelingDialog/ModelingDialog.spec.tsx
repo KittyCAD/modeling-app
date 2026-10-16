@@ -1,25 +1,52 @@
+import {
+  Registry,
+  defineRegistryItem,
+  provideService,
+} from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
+import { useSignals } from '@preact/signals-react/runtime'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { useSelector } from '@xstate/react'
 import { useRef } from 'react'
 import { afterAll, afterEach, beforeAll, expect, it, vi } from 'vitest'
 import ModelingDialog from '@src/components/ModelingDialog/ModelingDialog'
 import * as dialogArguments from '@src/components/ModelingDialog/arguments'
-import { useDialogReset } from '@src/components/ModelingDialog/useDialogReset'
 import type { Command } from '@src/lib/commandTypes'
-import { GLOBAL_COMMAND_SCOPES } from '@src/registry/contracts/commands'
+import {
+  GLOBAL_COMMAND_SCOPES,
+  commandSystemService,
+  type CommandSystemService,
+} from '@src/registry/contracts/commands'
+import { machineManagerService } from '@src/registry/contracts/machineManager'
+import { provideWasmPromise } from '@src/registry/contracts/wasm'
+import { commandsExtension } from '@src/registry/extensions/commands'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 
 let world: Awaited<ReturnType<typeof buildTheWorldAndNoEngineConnection>>
+const registry = new Registry()
+let commands: CommandSystemService
 
 beforeAll(async () => {
   world = await buildTheWorldAndNoEngineConnection()
+  registry.configure([
+    commandsExtension,
+    defineRegistryItem({
+      id: 'dialog-test-services',
+      provides: [provideWasmPromise(Promise.resolve(world.instance))],
+      providesServices: [
+        provideService(machineManagerService, {
+          manager: world.machineManager,
+        }),
+      ],
+    }),
+  ])
+  commands = registry.get(commandSystemService)
 })
 
 afterEach(() => vi.restoreAllMocks())
 
 afterAll(() => {
+  registry[Symbol.dispose]()
   world.commandBarActor.stop()
   world.settingsActor.stop()
   world.engineCommandManager.tearDown({
@@ -29,24 +56,21 @@ afterAll(() => {
 })
 
 function Harness() {
-  const actor = world.commandBarActor
-  const state = useSelector(actor, (snapshot) => snapshot)
-  const resetting = useDialogReset(actor)
+  useSignals()
+  const session = commands.dialogSession.value
   const containerRef = useRef<HTMLDivElement>(null)
   const settings = getOnlySettingsFromContext(
     world.settingsActor.getSnapshot().context
   )
   return (
     <div ref={containerRef}>
-      {!resetting && !state.matches('Closed') && (
+      {session && (
         <ModelingDialog
+          key={session.id}
+          session={session}
           containerRef={containerRef}
           kclManager={world.kclManager}
-          commands={{
-            actor,
-            send: (event) => actor.send(event),
-            useState: () => useSelector(actor, (snapshot) => snapshot),
-          }}
+          commands={commands}
           settings={{
             actor: world.settingsActor,
             current: signal(settings),
@@ -84,7 +108,7 @@ it('keeps a failed draft, resets for another edit, and discards its pending subm
       },
     },
   } satisfies Command
-  const actor = world.commandBarActor
+  const actor = commands.actor
   actor.send({ type: 'Add commands', data: { commands: [command] } })
   const edit = (name: string) =>
     actor.send({
@@ -151,4 +175,9 @@ it('keeps a failed draft, resets for another edit, and discards its pending subm
       detail: undefined,
     })
   )
+  expect(commands.dialogSession.peek()).toBeUndefined()
+  act(() => edit('third'))
+  expect(commands.dialogSession.peek()).toBeDefined()
+  act(() => registry[Symbol.dispose]())
+  expect(commands.dialogSession.peek()).toBeUndefined()
 })
