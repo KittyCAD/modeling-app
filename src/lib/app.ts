@@ -6,7 +6,7 @@ import {
   type RegistryItem,
   Slot,
 } from '@kittycad/registry'
-import { effect, type Signal, signal } from '@preact/signals-core'
+import { computed, effect, type Signal, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import { KclManager } from '@src/lang/KclManager'
 import { ZDSProject } from '@src/lib/projectSession'
@@ -785,13 +785,12 @@ export class App implements AppSubsystems {
     // so we don't need to stub with empty strings
     const kclManager = new KclManager('', '', {
       machineManager: this.machineManager,
-      getProject: () => this.project?.projectIORefSignal.value,
+      project: computed(() => this.project?.projectIORefSignal.value),
       fileOperations: this.fileOperations,
       textFileIO: this.projectSession.textFileIO,
       settings: this.settings.actor,
       wasmInstancePromise: this.wasmPromise,
       commandBar: this.commands.actor,
-      projectPath: signal(''),
       engineCommandManager: this.engineCommandManager,
       rustContext: this.rustContext,
       userFeatures: this.userFeatures,

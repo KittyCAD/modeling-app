@@ -1,4 +1,9 @@
-import { type Signal, signal, computed } from '@preact/signals-core'
+import {
+  type Signal,
+  type ReadonlySignal,
+  signal,
+  computed,
+} from '@preact/signals-core'
 import type { ApiFile } from '@rust/kcl-lib/bindings/FrontendApi'
 import { KclManager } from '@src/lang/KclManager'
 import { getStringAfterLastSeparator } from '@src/lib/paths'
@@ -25,14 +30,14 @@ import type { FileOperationsRegistryService } from '@src/registry/contracts/file
 // can easily become cyclic. Each will have its own Singletons type.
 export interface ProjectSystemDeps {
   machineManager: MachineManager
-  getProject: () => Project | undefined
+  /** Live metadata for the editor's owning project; absent before a project opens. */
+  project: ReadonlySignal<Project | undefined>
   /** Storage access for editor-owned export and thumbnail workflows. */
   fileOperations: FileOperationsRegistryService
   textFileIO: TextFileIO
   wasmInstancePromise: Promise<ModuleType>
   settings: SettingsActorType
   commandBar: CommandBarActorType
-  projectPath: Signal<string>
   engineCommandManager: ConnectionManager
   rustContext: RustContext
   userFeatures: UserFeaturesSettleService
@@ -164,7 +169,7 @@ export class ZDSProject {
 
     const systemDeps: ProjectSystemDeps = {
       machineManager: this.app.machineManager,
-      getProject: () => this.projectIORefSignal.value,
+      project: this.projectIORefSignal,
       fileOperations: this.app.fileOperations,
       textFileIO: this.textFileIO,
       wasmInstancePromise: this.app.wasmPromise,
@@ -173,11 +178,10 @@ export class ZDSProject {
       engineCommandManager: this.app.engineCommandManager,
       rustContext: this.app.rustContext,
       userFeatures: this.app.userFeatures,
-      projectPath: computed(() => this.projectIORefSignal.value.path),
     }
 
     if (providedEditor) {
-      providedEditor.systemDeps.projectPath = systemDeps.projectPath
+      providedEditor.systemDeps.project = systemDeps.project
     }
 
     const foundFileIndex = this.files.findIndex((f) => f.path === path)

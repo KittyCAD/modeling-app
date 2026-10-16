@@ -700,7 +700,7 @@ export class KclManager extends File {
     // a KclManager without a ZDSProject.
     if (
       path !== this.path ||
-      !this.systemDeps.projectPath.value ||
+      !this.systemDeps.project.value?.path ||
       this.path.length < 1
     ) {
       return
@@ -1940,7 +1940,7 @@ export class KclManager extends File {
     this.systemDeps = systemDeps
     this.modelingProjectRef = {
       get current() {
-        return systemDeps.getProject()
+        return systemDeps.project.value
       },
     }
     const getSettings = () =>
@@ -3012,12 +3012,12 @@ export class KclManager extends File {
         untracked(() => {
           if (!active || !this.engineCommandManager.connection) return
           const path = this.path
-          const projectPath = this.systemDeps.projectPath.peek()
+          const projectPath = this.systemDeps.project.peek()?.path
           const isCurrent = () =>
             !cancelled &&
             this.sceneSettingsActive.peek() &&
             this.path === path &&
-            this.systemDeps.projectPath.peek() === projectPath
+            this.systemDeps.project.peek()?.path === projectPath
           const executeIfCurrent = () => {
             if (isCurrent()) return this.executeCode()
           }

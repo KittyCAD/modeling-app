@@ -1,3 +1,5 @@
+import { signal } from '@preact/signals-core'
+import { createProjectForTest } from '@src/unitTestUtils'
 import type { Diagnostic } from '@codemirror/lint'
 import { EditorView } from '@codemirror/view'
 import type {
@@ -1413,7 +1415,7 @@ describe('KclManager diagnostics', () => {
     const { kclManager } = createKclManagerTestHarness('from disk')
 
     kclManager.path = '/tmp/kcl-manager-watch-test.kcl'
-    ;(kclManager as any).systemDeps.projectPath.value = '/tmp/project'
+    kclManager.systemDeps.project = signal(createProjectForTest('/tmp/project'))
     ;(kclManager as any).markFileCodeAsSynced('from disk')
 
     vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('external edit')
@@ -1433,7 +1435,7 @@ describe('KclManager diagnostics', () => {
 
     kclManager.path = '/tmp/kcl-manager-zookeeper-watch-test.kcl'
     kclManager.zookeeperManagerMachineBulkManipulatingFileSystem = true
-    ;(kclManager as any).systemDeps.projectPath.value = '/tmp/project'
+    kclManager.systemDeps.project = signal(createProjectForTest('/tmp/project'))
     ;(kclManager as any).markFileCodeAsSynced('from disk')
 
     vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('zookeeper edit')
@@ -1453,12 +1455,11 @@ describe('KclManager diagnostics', () => {
     const updateCodeEditorSpy = vi.spyOn(kclManager, 'updateCodeEditor')
     const testInternals = kclManager as unknown as {
       markFileCodeAsSynced(code: string): void
-      systemDeps: { projectPath: { value: string } }
     }
 
     kclManager.path = '/tmp/kcl-manager-zookeeper-watch-test.kcl'
     kclManager.zookeeperManagerMachineBulkManipulatingFileSystem = true
-    testInternals.systemDeps.projectPath.value = '/tmp/project'
+    kclManager.systemDeps.project = signal(createProjectForTest('/tmp/project'))
     testInternals.markFileCodeAsSynced('from disk')
 
     vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue(
@@ -1481,11 +1482,10 @@ describe('KclManager diagnostics', () => {
     const updateCodeEditorSpy = vi.spyOn(kclManager, 'updateCodeEditor')
     const testInternals = kclManager as unknown as {
       markFileCodeAsSynced(code: string): void
-      systemDeps: { projectPath: { value: string } }
     }
 
     kclManager.path = '/tmp/kcl-manager-external-watch-test.kcl'
-    testInternals.systemDeps.projectPath.value = '/tmp/project'
+    kclManager.systemDeps.project = signal(createProjectForTest('/tmp/project'))
     testInternals.markFileCodeAsSynced('from disk')
 
     vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('external edit')
@@ -1508,12 +1508,11 @@ describe('KclManager diagnostics', () => {
     const updateCodeEditorSpy = vi.spyOn(kclManager, 'updateCodeEditor')
     const testInternals = kclManager as unknown as {
       markFileCodeAsSynced(code: string): void
-      systemDeps: { projectPath: { value: string } }
     }
 
     kclManager.path = '/tmp/kcl-manager-zookeeper-history-pending-test.kcl'
     kclManager.zookeeperHistoryRecordingInProgress = true
-    testInternals.systemDeps.projectPath.value = '/tmp/project'
+    kclManager.systemDeps.project = signal(createProjectForTest('/tmp/project'))
     testInternals.markFileCodeAsSynced('from disk')
 
     vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue(
@@ -1650,7 +1649,7 @@ describe('KclManager diagnostics', () => {
     const updateCodeEditorSpy = vi.spyOn(kclManager, 'updateCodeEditor')
 
     kclManager.path = '/tmp/kcl-manager-watch-test.kcl'
-    ;(kclManager as any).systemDeps.projectPath.value = '/tmp/project'
+    kclManager.systemDeps.project = signal(createProjectForTest('/tmp/project'))
     ;(kclManager as any).markFileCodeAsSynced('local base')
 
     vi.spyOn(kclManager.textFileIO, 'read').mockReturnValue(

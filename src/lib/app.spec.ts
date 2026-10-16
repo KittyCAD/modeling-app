@@ -463,6 +463,46 @@ describe('project system', () => {
     }
   })
 
+  it('rebinds the legacy editor to the next owning project signal', async () => {
+    const app = createAppForTest()
+    const read = vi
+      .spyOn(app.registry.get(projectSession).textFileIO, 'read')
+      .mockResolvedValue('')
+    const editor = app.singletons.kclManager
+    try {
+      const first = await app.openProject(mockProject)
+      await first.openEditor(
+        fsZds.join(first.path, 'main.kcl'),
+        editor,
+        '',
+        false
+      )
+      expect(editor.systemDeps.project === first.projectIORefSignal).toBe(true)
+      const next = await app.openProject({
+        ...mockProject,
+        name: 'next',
+        path: '/some-dir/next',
+      })
+      await next.openEditor(
+        fsZds.join(next.path, 'main.kcl'),
+        editor,
+        '',
+        false
+      )
+      expect(editor.systemDeps.project === next.projectIORefSignal).toBe(true)
+      first.projectIORefSignal.value = {
+        ...first.projectIORefSignal.value,
+        title: 'Old project',
+      }
+      expect(editor.modelingProjectRef.current).toBe(
+        next.projectIORefSignal.value
+      )
+    } finally {
+      read.mockRestore()
+      app.dispose()
+    }
+  })
+
   it('annotates opened projects with their owning library path', async () => {
     const app = createAppForTest()
 

@@ -75,7 +75,7 @@ describe('CommandBarSelectionMixedInput', () => {
       await app.wasmPromise
       const executingEditor = new KclManager('some-file', '', {
         machineManager: app.machineManager,
-        getProject: () => undefined,
+        project: signal(undefined),
         fileOperations: app.fileOperations,
         textFileIO: app.registry.get(projectSession).textFileIO,
         commandBar: app.commands.actor,
@@ -84,7 +84,6 @@ describe('CommandBarSelectionMixedInput', () => {
         engineCommandManager: app.engineCommandManager,
         rustContext: app.rustContext,
         userFeatures: app.userFeatures,
-        projectPath: signal('some-project'),
       })
       const mockModelingSend = vi.spyOn(
         executingEditor.engineCommandManager,
@@ -115,7 +114,7 @@ describe('CommandBarSelectionMixedInput', () => {
       await app.wasmPromise
       const executingEditor = new KclManager('some-file', '', {
         machineManager: app.machineManager,
-        getProject: () => undefined,
+        project: signal(undefined),
         fileOperations: app.fileOperations,
         textFileIO: app.registry.get(projectSession).textFileIO,
         commandBar: app.commands.actor,
@@ -124,7 +123,6 @@ describe('CommandBarSelectionMixedInput', () => {
         engineCommandManager: app.engineCommandManager,
         rustContext: app.rustContext,
         userFeatures: app.userFeatures,
-        projectPath: signal('some-project'),
       })
       const mockModelingSend = vi.spyOn(
         executingEditor.engineCommandManager,
@@ -152,7 +150,7 @@ describe('CommandBarSelectionMixedInput', () => {
       await app.wasmPromise
       const executingEditor = new KclManager('some-file', '', {
         machineManager: app.machineManager,
-        getProject: () => undefined,
+        project: signal(undefined),
         fileOperations: app.fileOperations,
         textFileIO: app.registry.get(projectSession).textFileIO,
         commandBar: app.commands.actor,
@@ -161,7 +159,6 @@ describe('CommandBarSelectionMixedInput', () => {
         engineCommandManager: app.engineCommandManager,
         rustContext: app.rustContext,
         userFeatures: app.userFeatures,
-        projectPath: signal('some-project'),
       })
       const mockModelingSend = vi.spyOn(
         executingEditor.engineCommandManager,
@@ -189,7 +186,7 @@ describe('CommandBarSelectionMixedInput', () => {
       await app.wasmPromise
       const executingEditor = new KclManager('some-file', '', {
         machineManager: app.machineManager,
-        getProject: () => undefined,
+        project: signal(undefined),
         fileOperations: app.fileOperations,
         textFileIO: app.registry.get(projectSession).textFileIO,
         commandBar: app.commands.actor,
@@ -198,7 +195,6 @@ describe('CommandBarSelectionMixedInput', () => {
         engineCommandManager: app.engineCommandManager,
         rustContext: app.rustContext,
         userFeatures: app.userFeatures,
-        projectPath: signal('some-project'),
       })
       const mockModelingSend = vi.spyOn(
         executingEditor.engineCommandManager,
@@ -241,7 +237,7 @@ describe('CommandBarSelectionMixedInput', () => {
       await app.wasmPromise
       const executingEditor = new KclManager('some-file', '', {
         machineManager: app.machineManager,
-        getProject: () => undefined,
+        project: signal(undefined),
         fileOperations: app.fileOperations,
         textFileIO: app.registry.get(projectSession).textFileIO,
         commandBar: app.commands.actor,
@@ -250,7 +246,6 @@ describe('CommandBarSelectionMixedInput', () => {
         engineCommandManager: app.engineCommandManager,
         rustContext: app.rustContext,
         userFeatures: app.userFeatures,
-        projectPath: signal('some-project'),
       })
       const mockModelingSend = vi.spyOn(
         executingEditor.engineCommandManager,

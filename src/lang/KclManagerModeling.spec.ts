@@ -1,3 +1,5 @@
+import { signal } from '@preact/signals-core'
+import type { Project } from '@src/lib/project'
 import { KclManager } from '@src/lang/KclManager'
 import { createKclManagerTestHarness } from '@src/lang/testHelpers/kclManagerTestHarness'
 import { File } from '@src/lib/projectSession'
@@ -142,14 +144,13 @@ describe('editor-owned modeling actor', () => {
       kcl_file_count: 1,
       readWriteAccess: true,
     }
-    const getProject = vi
-      .spyOn(kclManager.systemDeps, 'getProject')
-      .mockReturnValue(project)
+    const projectSignal = signal<Project | undefined>(project)
+    kclManager.systemDeps.project = projectSignal
     try {
       const actor = await kclManager.modelingActorPromise
       expect(actor.getSnapshot().context.projectRef?.current).toBe(project)
       const updatedProject = { ...project, name: 'renamed' }
-      getProject.mockReturnValue(updatedProject)
+      projectSignal.value = updatedProject
       expect(actor.getSnapshot().context.projectRef?.current).toBe(
         updatedProject
       )

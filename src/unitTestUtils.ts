@@ -1,3 +1,4 @@
+import type { Project } from '@src/lib/project'
 import { defineRegistryItem } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import env from '@src/env'
@@ -31,6 +32,20 @@ import {
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import { join } from 'path'
 import { createActor } from 'xstate'
+
+/** Minimal project metadata for editors whose tests need an owning project. */
+export function createProjectForTest(path = 'some-project'): Project {
+  return {
+    name: 'test',
+    path,
+    children: [],
+    default_file: join(path, 'main.kcl'),
+    directory_count: 0,
+    kcl_file_count: 0,
+    metadata: null,
+    readWriteAccess: true,
+  }
+}
 
 /**
  * Throw x if it's an Error. Only use this in tests.
@@ -122,7 +137,7 @@ export async function buildTheWorldAndConnectToEngine({
   )
   const kclManager = new KclManager('some-file', '', {
     machineManager,
-    getProject: () => undefined,
+    project: signal(createProjectForTest()),
     fileOperations: testFileOperations,
     textFileIO: createTextFileIO(testFileOperations, {
       watch: () => {},
@@ -134,7 +149,6 @@ export async function buildTheWorldAndConnectToEngine({
     engineCommandManager,
     rustContext,
     userFeatures: createSettledUserFeaturesForTest(),
-    projectPath: signal('some-project'),
   })
 
   await new Promise((resolve, reject) => {
@@ -243,7 +257,7 @@ export async function buildTheWorldAndNoEngineConnection(
   )
   const kclManager = new KclManager('some-file', '', {
     machineManager,
-    getProject: () => undefined,
+    project: signal(createProjectForTest()),
     fileOperations: testFileOperations,
     textFileIO: createTextFileIO(testFileOperations, {
       watch: () => {},
@@ -255,7 +269,6 @@ export async function buildTheWorldAndNoEngineConnection(
     engineCommandManager,
     rustContext,
     userFeatures,
-    projectPath: signal('some-project'),
   })
 
   settingsActor.start()
