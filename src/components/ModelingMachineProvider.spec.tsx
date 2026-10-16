@@ -22,7 +22,6 @@ vi.mock('@src/hooks/useMenu', () => ({ useMenuListener: vi.fn() }))
 vi.mock('@src/hooks/useSketchModeMenuEnableDisable', () => ({
   useSketchModeMenuEnableDisable: vi.fn(),
 }))
-vi.mock('@src/hooks/useStateMachineCommands', () => ({ default: vi.fn() }))
 
 import { ModelingMachineProvider } from '@src/components/ModelingMachineProvider'
 import { useModelingContext } from '@src/hooks/useModelingContext'
@@ -131,6 +130,13 @@ it('renders project opens and file switches without showing the full-app loading
     })
     expect(readyActor?.getSnapshot().status).toBe('active')
     expect(screen.getByText('Editing other.kcl')).toBeVisible()
+    const exportCommand = app.commands.actor
+      .getSnapshot()
+      .context.commands.find(
+        (command) => command.groupId === 'modeling' && command.name === 'Export'
+      )
+    expect(exportCommand).toBeDefined()
+    expect(exportCommand?.machineActor === readyActor).toBe(true)
     expect(mocks.loading).not.toHaveBeenCalled()
   } finally {
     cleanup()
