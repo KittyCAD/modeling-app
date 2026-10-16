@@ -73,6 +73,7 @@ obstruction = extrude(region002, length = 20mm)`
 
   test('Uses dialogs for supported commands and the palette for unsupported inputs', async ({
     page,
+    cmdBar,
     homePage,
     scene,
     editor,
@@ -145,10 +146,8 @@ obstruction = extrude(region002, length = 20mm)`
     await page.keyboard.press('Escape')
     await expect(dialog).not.toBeAttached()
 
-    await page
-      .getByRole('button', { name: 'caret down gdt: open menu' })
-      .click()
-    await page.getByTestId('dropdown-gdt-note').click()
+    await cmdBar.openCmdBar()
+    await cmdBar.chooseCommand('Export')
     await expect(page.getByTestId('command-bar')).toBeVisible()
     await expect(dialog).not.toBeAttached()
     await page.keyboard.press('Escape')

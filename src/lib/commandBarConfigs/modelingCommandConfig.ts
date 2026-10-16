@@ -2139,7 +2139,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Annotation': {
-    forceCommandBar: true,
     icon: 'text',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
@@ -2166,7 +2165,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     ),
   },
   'GDT Note': {
-    forceCommandBar: true,
     icon: 'note',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(

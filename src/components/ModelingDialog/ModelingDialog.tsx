@@ -297,14 +297,15 @@ export default function ModelingDialog({
         </label>
       )
     }
+    const Input = arg.inputType === 'text' ? 'textarea' : 'input'
     return (
       <label key={name} className="flex flex-col gap-1">
         <span className="capitalize">
           {label}
           {required && ' *'}
         </span>
-        <input
-          type="text"
+        <Input
+          rows={arg.inputType === 'text' ? 3 : undefined}
           autoFocus={name === firstFieldName}
           className="rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs dark:border-chalkboard-70"
           placeholder={
