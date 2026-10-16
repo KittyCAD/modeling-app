@@ -49,8 +49,11 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
-      - run: npm ci
-      - uses: taiki-e/install-action@c30ba1cbe2face7f695d394a2c95af204d417b29
+      - name: Install packages
+        run: npm ci
+
+      - name: Install wasm-pack
+        uses: taiki-e/install-action@c30ba1cbe2face7f695d394a2c95af204d417b29
         with:
           tool: wasm-pack
 
@@ -68,6 +71,41 @@ jobs:
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
           CI_SUITE: unit
+
+      # Keep workspace tests inside the existing required npm-test-unit check.
+      # They have their own TAB suites so UI failures and history stay separate.
+
+      - name: npm run test --workspace=@kittycad/ui-components
+        if: ${{ !cancelled() && github.event_name != 'schedule' }}
+        run: |-
+          rm -f test-results/junit.xml
+          npm run test --workspace=@kittycad/ui-components -- --reporter=default --reporter=junit --outputFile=../../test-results/junit.xml || true # let TAB determine failure
+          .github/ci-cd-scripts/upload-results.sh
+        env:
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: ui-components
+
+      - name: npm run test:browser --workspace=@kittycad/ui-components
+        if: ${{ !cancelled() && github.event_name != 'schedule' }}
+        run: |-
+          # The standalone browser suite is introduced by the Lit components PR.
+          if ! node -e 'process.exit(require("./packages/ui-components/package.json").scripts["test:browser"] ? 0 : 1)'; then
+            echo "No UI component browser suite is configured on this branch."
+            exit 0
+          fi
+          npm exec -- playwright install --with-deps chromium
+          rm -f test-results/junit.xml
+          npm run test:browser --workspace=@kittycad/ui-components -- --reporter=list,junit || true # let TAB determine failure
+          .github/ci-cd-scripts/upload-results.sh
+        env:
+          TAB_API_URL: ${{ vars.TAB_API_URL }}
+          TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
+          CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+          CI_PR_NUMBER: ${{ github.event.pull_request.number }}
+          CI_SUITE: ui-components
 
   npm-test-integration:
     runs-on: namespace-profile-ubuntu-2-cores

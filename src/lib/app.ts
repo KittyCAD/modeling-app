@@ -868,8 +868,6 @@ export class App implements AppSubsystems {
       }
     }
 
-    this.commands.actor.send({ type: 'Set kclManager', data: kclManager })
-
     return {
       kclManager,
     }

@@ -1,27 +1,19 @@
-import { use } from 'react'
-import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useSelectionReferences } from '@src/hooks/useSelectionReferences'
 import { useSingletons } from '@src/lib/boot'
 import {
   type SelectionReference,
-  getSelectionReferences,
   getUnresolvedEnginePrimitiveSelections,
-  isDefaultPlaneSelection,
   isEnginePrimitiveSelection,
   removeEnginePrimitiveSelectionFromSelections,
   removeReferenceFromSelections,
 } from '@src/lib/selections'
 import type { EnginePrimitiveSelection } from '@src/machines/modelingSharedTypes'
 import { reportRejection } from '@src/lib/trap'
-
-type SelectionReferenceState =
-  | { status: 'idle' | 'loading'; references: SelectionReference[] }
-  | { status: 'ready'; references: SelectionReference[] }
-  | { status: 'error'; references: SelectionReference[]; message: string }
 
 async function copyCode(code: string) {
   try {
@@ -35,54 +27,12 @@ async function copyCode(code: string) {
 export function SelectionReferencesPopover() {
   const { kclManager } = useSingletons()
   const { context, send } = useModelingContext()
-  const wasmInstance = use(kclManager.wasmInstancePromise)
   const selectionRanges = context.selectionRanges
-  const [state, setState] = useState<SelectionReferenceState>({
-    status: 'idle',
-    references: [],
+  const state = useSelectionReferences({
+    kclManager,
+    wasmPromise: kclManager.wasmInstancePromise,
+    selectionRanges,
   })
-
-  useEffect(() => {
-    let cancelled = false
-    setState({ status: 'loading', references: [] })
-
-    getSelectionReferences({
-      graphSelections: selectionRanges.graphSelections,
-      defaultPlaneSelections: selectionRanges.otherSelections.filter(
-        isDefaultPlaneSelection
-      ),
-      enginePrimitives: selectionRanges.otherSelections.filter(
-        isEnginePrimitiveSelection
-      ),
-      artifactGraph: kclManager.artifactGraph,
-      engineCommandManager: kclManager.engineCommandManager,
-      kclManager,
-      wasmInstance,
-    })
-      .then((references) => {
-        if (cancelled) {
-          return
-        }
-        setState({ status: 'ready', references })
-      })
-      .catch((error) => {
-        if (cancelled) {
-          return
-        }
-        setState({
-          status: 'error',
-          references: [],
-          message:
-            error instanceof Error
-              ? error.message
-              : 'Unable to resolve selection references.',
-        })
-      })
-
-    return () => {
-      cancelled = true
-    }
-  }, [selectionRanges, kclManager, wasmInstance])
 
   if (state.status === 'loading') {
     return (

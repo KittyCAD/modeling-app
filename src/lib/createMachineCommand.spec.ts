@@ -58,6 +58,7 @@ const commandBarConfig = {
       availableArg: {
         inputType: 'string',
         required: false,
+        documentation: 'Reference documentation.',
       },
       experimentalArg: {
         inputType: 'string',
@@ -205,7 +206,7 @@ describe('createMachineCommand', () => {
     ])
   })
 
-  test('hides experimental arguments by default', () => {
+  test('preserves metadata while hiding experimental arguments by default', () => {
     const actor = createActor(testMachine).start()
 
     const command = createMachineCommand<typeof testMachine, TestCommandSchema>(
@@ -226,6 +227,8 @@ describe('createMachineCommand', () => {
       args: {
         availableArg: {
           hidden: undefined,
+          documentation:
+            commandBarConfig.WithArguments.args.availableArg.documentation,
         },
         deprecatedArg: {
           hidden: undefined,
