@@ -6,10 +6,11 @@ import { isErr } from '@src/lib/trap'
 import { defaultRegistryItemIds } from '@src/registry/defaultComposition'
 import { loadAppStartupComposition } from '@src/registry/loadAppComposition'
 import { selectElectronPlugins } from '@src/registry/electronPlugins'
-import { afterAll, describe, expect, it } from 'vitest'
+import { afterAll, afterEach, describe, expect, it, vi } from 'vitest'
 
 const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'app-composition-'))
 afterAll(() => fs.rmSync(directory, { recursive: true, force: true }))
+afterEach(() => vi.unstubAllGlobals())
 
 function load(contents: string) {
   const filename = 'app config.toml'
@@ -99,4 +100,25 @@ describe('disk app configuration', () => {
         )
     }
   )
+})
+
+describe('embedded Desktop composition precedence', () => {
+  it('uses the embedded selection when no CLI manifest was supplied', () => {
+    const embedded = {
+      registryItemIds: defaultRegistryItemIds.filter(
+        (id) => id !== 'zoo:commandBar'
+      ),
+    }
+    vi.stubGlobal('__APP_STARTUP_COMPOSITION__', embedded)
+    expect(
+      loadAppStartupComposition(parseCLIArgs(['electron']), directory)
+    ).toEqual(embedded)
+  })
+
+  it('lets an explicit CLI manifest override the embedded selection', () => {
+    vi.stubGlobal('__APP_STARTUP_COMPOSITION__', { registryItemIds: [] })
+    expect(load('schema-version = 1\nbase = "zoo:default"')).toEqual({
+      registryItemIds: defaultRegistryItemIds,
+    })
+  })
 })

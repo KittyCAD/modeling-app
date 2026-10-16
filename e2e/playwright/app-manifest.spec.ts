@@ -1,3 +1,5 @@
+import { getAppCompositionDefine } from '@root/vite.appManifest'
+import { defaultRegistryItemIds } from '@src/registry/defaultComposition'
 import { _electron as electron, expect, test } from '@playwright/test'
 import fs from 'node:fs/promises'
 import os from 'node:os'
@@ -86,7 +88,8 @@ test.describe('app manifest startup @desktop', () => {
     }
   })
 
-  test('uses the default composition without an argument', async () => {
+  test('uses the embedded composition without a CLI argument', async () => {
+    const expected = await getAppCompositionDefine('development')
     const directory = await fs.mkdtemp(
       path.join(os.tmpdir(), 'app-manifest-default-')
     )
@@ -101,13 +104,46 @@ test.describe('app manifest startup @desktop', () => {
       const composition = await page.evaluate(() =>
         window.electron?.getStartupComposition()
       )
-      expect(composition?.registryItemIds).toContain('zoo:commandBar')
-      expect(composition?.registryItemIds).toContain('zoo:slicer')
+      expect(JSON.stringify(composition)).toBe(
+        expected.__APP_STARTUP_COMPOSITION__
+      )
       const pluginSettings = await page.evaluate(() =>
         Object.keys(window.app.settings.actor.getSnapshot().context.plugins)
       )
-      expect(pluginSettings).toContain('command-bar')
-      expect(pluginSettings).toContain('slicer')
+      expect(pluginSettings.includes('command-bar')).toBe(
+        composition?.registryItemIds.includes('zoo:commandBar')
+      )
+      expect(pluginSettings.includes('slicer')).toBe(
+        composition?.registryItemIds.includes('zoo:slicer')
+      )
+    } finally {
+      await instance.close()
+      await fs.rm(directory, { recursive: true, force: true })
+    }
+  })
+
+  test('lets a CLI manifest override the embedded selection', async () => {
+    const directory = await fs.mkdtemp(
+      path.join(os.tmpdir(), 'app-manifest-override-')
+    )
+    const manifestPath = path.join(directory, 'default.toml')
+    await fs.writeFile(manifestPath, 'schema-version = 1\nbase = "zoo:default"')
+    const bootstrapPath = await createBootstrap(directory)
+    const instance = await electron.launch({
+      args: [bootstrapPath, '--no-sandbox', '--app-config', manifestPath],
+      env: { ...process.env, NODE_ENV: 'test' },
+    })
+    try {
+      const page = await instance.firstWindow()
+      await page.waitForFunction(() => Boolean(window.app))
+      expect(
+        await page.evaluate(() => window.electron?.getStartupComposition())
+      ).toEqual({ registryItemIds: defaultRegistryItemIds })
+      expect(
+        await page.evaluate(() =>
+          Object.keys(window.app.settings.actor.getSnapshot().context.plugins)
+        )
+      ).toContain('command-bar')
     } finally {
       await instance.close()
       await fs.rm(directory, { recursive: true, force: true })

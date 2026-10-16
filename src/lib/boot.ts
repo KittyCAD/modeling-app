@@ -1,3 +1,4 @@
+import { getEmbeddedAppComposition } from '@src/registry/embeddedComposition'
 import { App } from '@src/lib/app'
 import {
   StorageName,
@@ -42,7 +43,7 @@ if (typeof window !== 'undefined' && isPlaywright()) {
  */
 const startupComposition = window.electron
   ? await window.electron.getStartupComposition()
-  : undefined
+  : getEmbeddedAppComposition()
 export const app = App.fromDefaults({
   registryItemIds: startupComposition?.registryItemIds,
 })

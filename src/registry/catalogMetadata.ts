@@ -19,7 +19,7 @@ export const bundledRegistryItemMetadata = {
   'zoo:getDesktopApp': { requiredForStartup: false },
   'zoo:homeProjects': { requiredForStartup: true },
   'zoo:interactionPerformance': {
-    requiredForStartup: import.meta.env.VITE_INTERACTION_PERFORMANCE === '1',
+    requiredForStartup: false,
   },
   'zoo:keymap': { requiredForStartup: true },
   'zoo:layout': { requiredForStartup: true },
@@ -45,4 +45,17 @@ export function isBundledRegistryItemId(
   id: string
 ): id is BundledRegistryItemId {
   return Object.hasOwn(bundledRegistryItemMetadata, id)
+}
+
+/** Build-specific service requirements supplement the shell's static requirements. */
+export function getRequiredRegistryItemIds(
+  interactionPerformanceEnabled = false
+): BundledRegistryItemId[] {
+  return Object.keys(bundledRegistryItemMetadata)
+    .filter(isBundledRegistryItemId)
+    .filter(
+      (id) =>
+        bundledRegistryItemMetadata[id].requiredForStartup ||
+        (id === 'zoo:interactionPerformance' && interactionPerformanceEnabled)
+    )
 }
