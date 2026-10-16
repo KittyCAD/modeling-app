@@ -1,5 +1,6 @@
 import { type Signal, signal, computed } from '@preact/signals-core'
 import type { ApiFile } from '@rust/kcl-lib/bindings/FrontendApi'
+import { ProjectEditorHistory } from '@src/lib/projectSession/editorHistory'
 import { KclManager } from '@src/lang/KclManager'
 import { getStringAfterLastSeparator } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
@@ -20,6 +21,7 @@ import { File } from '@src/lib/projectSession/file'
 // Each of our singletons has dependencies on _other_ singletons, so importing
 // can easily become cyclic. Each will have its own Singletons type.
 export interface ProjectSystemDeps {
+  editorHistory?: ProjectEditorHistory
   wasmInstancePromise: Promise<ModuleType>
   settings: SettingsActorType
   commandBar: CommandBarActorType
@@ -35,7 +37,9 @@ export interface ProjectSystemDeps {
  * that connects to the geometry engine.
  */
 export class ZDSProject {
+  private closed = false
   private nextFileId = 0
+  private readonly editorHistory = new ProjectEditorHistory()
   files: File[] = []
   get path() {
     return this.projectIORefSignal.value.path
@@ -74,7 +78,10 @@ export class ZDSProject {
 
   /** Clean up resources and watchers for Project */
   public close() {
+    if (this.closed) return
+    this.closed = true
     this.closeAllEditors()
+    this.editorHistory.dispose()
     window.electron?.watchFileOff(
       this.projectIORefSignal.value.path,
       this.fileWatcherId
@@ -145,6 +152,7 @@ export class ZDSProject {
     }
 
     const systemDeps: ProjectSystemDeps = {
+      editorHistory: this.editorHistory,
       wasmInstancePromise: this.app.wasmPromise,
       commandBar: this.app.commands.actor,
       settings: this.app.settings.actor,
@@ -243,15 +251,20 @@ export class ZDSProject {
       console.warn(`Attempted to close nonexistent editor with path "${path}"`)
       return
     }
-    foundPathSignal[1].close()
+    if (this.executingEditor.peek() === foundPathSignal[1]) {
+      this.executingPath = null
+    }
+    const editor = foundPathSignal[1]
+    this.editorHistory.files.set(path, editor.captureEditorHistoryState())
+    editor.close()
+    this.files = this.files.map((file) =>
+      file === editor ? new File(path, editor.id) : file
+    )
     this.editors.delete(foundPathSignal[0])
   }
 
   closeAllEditors() {
-    for (const editor of this.editors.values()) {
-      editor.close()
-    }
-    this.editors.clear()
+    for (const path of this.editors.keys()) this.closeEditor(path.peek())
   }
 
   /** Handle updates from the disk representation of the project */

@@ -299,6 +299,46 @@ describe('project system', () => {
     }
   })
 
+  it('keeps project undo history when an editor is closed and recreated', async () => {
+    const app = createAppForTest()
+    const path = '/some-dir/test/main.kcl'
+    let diskCode = 'value = 1\n'
+    vi.spyOn(File.ioImplementations, 'read').mockImplementation(
+      async () => diskCode
+    )
+    try {
+      const project = await app.openProject(mockProject)
+      const first = await project.openEditor(path)
+      const history = first.globalHistoryView
+      first.updateCodeEditor('value = 2\n', {
+        shouldExecute: false,
+        shouldSyncRust: false,
+        shouldWriteToDisk: false,
+      })
+      diskCode = first.code
+      project.closeEditor(path)
+      const second = await project.openEditor(path)
+      expect(second).not.toBe(first)
+      expect(second.globalHistoryView).toBe(history)
+      expect(second.code).toBe('value = 2\n')
+      second.undo()
+      expect(second.code).toBe('value = 1\n')
+      expect(first.code).toBe('value = 2\n')
+      second.redo()
+      expect(second.code).toBe('value = 2\n')
+      const other = await app.openProject({
+        ...mockProject,
+        name: 'other',
+        path: '/some-dir/other',
+      })
+      const third = await other.openEditor('/some-dir/other/main.kcl')
+      expect(third.globalHistoryView).not.toBe(history)
+      expect(third.undoDepth.value).toBe(0)
+    } finally {
+      app.dispose()
+    }
+  })
+
   it('does not replay scene settings when selecting the executing editor again', async () => {
     const app = createAppForTest()
     try {
