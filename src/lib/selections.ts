@@ -2741,9 +2741,19 @@ export function getSelectionTypeDisplayText(
 export function canSubmitSelectionArg(
   selectionsByType: 'none' | Map<ResolvedSelectionType, number>,
   argument: CommandArgument<unknown> & {
-    inputType: 'selection' | 'selectionMixed'
-  }
+    inputType: 'selection'
+  },
+  selection?: Selections
 ) {
+  // Preserve the former mixed input's acceptance of non-empty code selections.
+  if (
+    argument.allowCodeReferences &&
+    selection?.graphSelections.some(
+      ({ codeRef }) => codeRef && codeRef.range[0] !== codeRef.range[1]
+    )
+  )
+    return true
+
   return (
     selectionsByType !== 'none' &&
     [...selectionsByType.entries()].every(([type, count]) => {

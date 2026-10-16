@@ -118,7 +118,8 @@ export async function resolveArguments(
         (selection &&
           !canSubmitSelectionArg(
             getSelectionCountByType(ast, selection, artifactGraph),
-            arg
+            arg,
+            selection
           ))
       ) {
         return new Error(`Select ${arg.displayName || name}.`)
