@@ -1,7 +1,5 @@
 import type { KclManager } from '@src/lang/KclManager'
-import { createLocalName, createVariableDeclaration } from '@src/lang/create'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
-import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
 import {
   codeRefFromRange,
@@ -32,7 +30,6 @@ import {
   createSelectionFromPathArtifact,
   enginelessExecutor,
   getAstAndArtifactGraph,
-  getKclCommandValue,
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -516,74 +513,50 @@ sketch001 = sketch(on = XY) {
   bottom = line(start = [0mm, 0mm], end = [2mm, 0mm])
   left = line(start = [0mm, 2mm], end = [0mm, 0mm])`,
     },
-  ])(
-    'creates, edits, and deletes a surface from $name',
-    async ({ boundary }) => {
-      for (const plane of ['XY', 'XZ']) {
-        const source = `@settings(kclVersion = 2.0, experimentalFeatures = allow)
+  ])('creates and deletes a surface from $name', async ({ boundary }) => {
+    for (const plane of ['XY', 'XZ']) {
+      const source = `@settings(kclVersion = 2.0, experimentalFeatures = allow)
 sketch001 = sketch(on = ${plane}) {
   ${boundary}
 }`
-        const code = `${source}\nsurface001 = planarSurface(sketch001)`
-        const { ast, artifactGraph, operations, variables } = await setup(code)
-        expect(kclManagerInThisFile.errors).toEqual([])
-        const operation = getAllOperations(operations).find(
-          (op) => op.type === 'StdLibCall' && op.name === 'planarSurface'
-        )
-        if (!operation || operation.type !== 'StdLibCall') {
-          throw new Error('Missing Planar Surface operation')
-        }
-        const selection = {
-          codeRef: codeRefFromRange(operation.sourceRange, ast),
-          artifact:
-            getArtifactFromRange(operation.sourceRange, artifactGraph) ??
-            undefined,
-        }
-        // Boundary normalization must leave the feature-tree operation editable
-        // and deletable without removing the source sketch.
-        expect(selection.artifact).toMatchObject({
-          type: 'sweep',
-          subType: 'planarSurface',
-        })
-        const tolerance = await getKclCommandValue(
-          '0.01mm',
-          instanceInThisFile,
-          rustContextInThisFile
-        )
-        const edited = addPlanarSurface({
-          ast,
-          artifactGraph,
-          curves: { graphSelections: [], otherSelections: [] },
-          nodeToEdit: selection.codeRef.pathToNode,
-          tolerance,
-          wasmInstance: instanceInThisFile,
-        })
-        if (err(edited)) throw edited
-        const editedCode = recast(edited.modifiedAst, instanceInThisFile)
-        if (err(editedCode)) throw editedCode
-        expect(editedCode).toContain(
-          'planarSurface(sketch001, tolerance = 0.01mm)'
-        )
-        await setup(editedCode)
-        expect(kclManagerInThisFile.errors).toEqual([])
-        const deleted = await deleteFromSelection(
-          ast,
-          selection,
-          variables,
-          artifactGraph,
-          instanceInThisFile
-        )
-        if (err(deleted)) throw deleted
-        expect(recast(deleted, instanceInThisFile)).toBe(
-          recast(assertParse(source, instanceInThisFile), instanceInThisFile)
-        )
-        const deletedCode = recast(deleted, instanceInThisFile)
-        if (err(deletedCode)) throw deletedCode
-        await setup(deletedCode)
-        expect(kclManagerInThisFile.errors).toEqual([])
+      const code = `${source}\nsurface001 = planarSurface(sketch001)`
+      const { ast, artifactGraph, operations, variables } = await setup(code)
+      expect(kclManagerInThisFile.errors).toEqual([])
+      const operation = getAllOperations(operations).find(
+        (op) => op.type === 'StdLibCall' && op.name === 'planarSurface'
+      )
+      if (!operation || operation.type !== 'StdLibCall') {
+        throw new Error('Missing Planar Surface operation')
       }
+      const selection = {
+        codeRef: codeRefFromRange(operation.sourceRange, ast),
+        artifact:
+          getArtifactFromRange(operation.sourceRange, artifactGraph) ??
+          undefined,
+      }
+      // Boundary normalization must keep the feature-tree operation deletable
+      // without removing the source sketch.
+      expect(selection.artifact).toMatchObject({
+        type: 'sweep',
+        subType: 'planarSurface',
+      })
+      const deleted = await deleteFromSelection(
+        ast,
+        selection,
+        variables,
+        artifactGraph,
+        instanceInThisFile
+      )
+      if (err(deleted)) throw deleted
+      expect(recast(deleted, instanceInThisFile)).toBe(
+        recast(assertParse(source, instanceInThisFile), instanceInThisFile)
+      )
+      const deletedCode = recast(deleted, instanceInThisFile)
+      if (err(deletedCode)) throw deletedCode
+      await setup(deletedCode)
+      expect(kclManagerInThisFile.errors).toEqual([])
     }
-  )
+  })
 
   it.each([
     {
@@ -1255,50 +1228,6 @@ third = extrude(sketch001.line3, length = 5mm, bodyType = SURFACE)`
     )
   })
 
-  it.each([false, true])(
-    'rejects tolerance depending on a later variable in an anonymous source pipe (create variable: %s)',
-    async (createVariable) => {
-      const { ast, artifactGraph } = await setup(`${circle}
-extrude(sketch001.circle1, length = 5mm, bodyType = SURFACE)
-laterTolerance = 0.01mm`)
-      const edge = await oppositeEdgeSelection(artifactGraph)
-      const value = await getKclCommandValue(
-        '0.01mm',
-        instanceInThisFile,
-        rustContextInThisFile
-      )
-      const toleranceValue = {
-        ...value,
-        valueAst: createLocalName('laterTolerance'),
-        valueText: 'laterTolerance',
-      }
-      const tolerance = createVariable
-        ? {
-            ...toleranceValue,
-            variableName: 'surfaceTolerance',
-            variableIdentifierAst: createLocalName('surfaceTolerance'),
-            variableDeclarationAst: createVariableDeclaration(
-              'surfaceTolerance',
-              toleranceValue.valueAst
-            ),
-            insertIndex: ast.body.length,
-          }
-        : toleranceValue
-      const result = addPlanarSurface({
-        ast,
-        artifactGraph,
-        curves: { graphSelections: [edge], otherSelections: [] },
-        tolerance,
-        wasmInstance: instanceInThisFile,
-      })
-      expect(result).toEqual(
-        new Error(
-          'Assign a variable to the anonymous body before using values defined later in the file.'
-        )
-      )
-    }
-  )
-
   it('keeps an unresolved primitive edgeId inside an anonymous surface pipe', async () => {
     const surfaceCode =
       'extrude(sketch001.circle1, length = 5mm, bodyType = SURFACE)'
@@ -1500,49 +1429,6 @@ extrude001 = extrude(sketch001.circle1, length = 5mm, bodyType = SURFACE)
     )
   })
 
-  it('offsets a variable-less sketch pipe when inserting a tolerance variable', async () => {
-    const { ast, artifactGraph } = await setup(`startSketchOn(XY)
-  |> circle(center = [0, 0], radius = 10)`)
-    const path = [...artifactGraph.values()].find(
-      (artifact) => artifact.type === 'path'
-    )
-    if (!path) throw new Error('Missing sketch')
-    const value = await getKclCommandValue(
-      '0.01mm',
-      instanceInThisFile,
-      rustContextInThisFile
-    )
-    const result = addPlanarSurface({
-      ast,
-      artifactGraph,
-      curves: createSelectionFromArtifacts([path], artifactGraph),
-      tolerance: {
-        ...value,
-        variableName: 'surfaceTolerance',
-        variableIdentifierAst: createLocalName('surfaceTolerance'),
-        variableDeclarationAst: createVariableDeclaration(
-          'surfaceTolerance',
-          value.valueAst
-        ),
-        insertIndex: 0,
-      },
-      wasmInstance: instanceInThisFile,
-    })
-    if (err(result)) throw result
-    expect(
-      recast(result.modifiedAst, instanceInThisFile)
-    ).toContain(`surfaceTolerance = 0.01mm
-startSketchOn(XY)
-  |> circle(center = [0, 0], radius = 10)
-  |> planarSurface(tolerance = surfaceTolerance)`)
-    expect(
-      await mockExecAstAndReportErrors(
-        result.modifiedAst,
-        rustContextInThisFile
-      )
-    ).toBeUndefined()
-  })
-
   it('rejects empty, multiple-region, and mixed region/edge selections', async () => {
     const { ast, artifactGraph } = await setup()
     const sketch = [...artifactGraph.values()].find(
@@ -1582,119 +1468,5 @@ startSketchOn(XY)
     expect(recast(ast, instanceInThisFile)).toBe(
       recast(assertParse(circle, instanceInThisFile), instanceInThisFile)
     )
-  })
-
-  it.each([
-    'surface001 = planarSurface([sketch001.circle1])',
-    'surface001 = planarSurface(region(point = [0mm, 0mm], sketch = sketch001))',
-  ])('preserves input while editing tolerance: %s', async (surfaceCall) => {
-    const ast = assertParse(
-      `${circle}
-${surfaceCall}`,
-      instanceInThisFile
-    )
-    const tolerance = await getKclCommandValue(
-      '0.01mm',
-      instanceInThisFile,
-      rustContextInThisFile
-    )
-    const result = addPlanarSurface({
-      ast,
-      artifactGraph: new Map(),
-      curves: { graphSelections: [], otherSelections: [] },
-      tolerance,
-      nodeToEdit: createPathToNodeForLastVariable(ast, false),
-      wasmInstance: instanceInThisFile,
-    })
-    if (err(result)) throw result
-    expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
-      surfaceCall.slice(0, -1) + ', tolerance = 0.01mm)'
-    )
-    expect(
-      await mockExecAstAndReportErrors(
-        result.modifiedAst,
-        rustContextInThisFile
-      )
-    ).toBeUndefined()
-  })
-
-  it('preserves a piped input when editing tolerance', async () => {
-    const code = `sketch001 = startSketchOn(XY)
-surface001 = circle(sketch001, center = [0, 0], radius = 10)
-  |> planarSurface(tolerance = 0.01mm)`
-    const ast = assertParse(code, instanceInThisFile)
-    const tolerance = await getKclCommandValue(
-      '0.02mm',
-      instanceInThisFile,
-      rustContextInThisFile
-    )
-    const result = addPlanarSurface({
-      ast,
-      artifactGraph: new Map(),
-      curves: { graphSelections: [], otherSelections: [] },
-      tolerance,
-      nodeToEdit: [
-        ...createPathToNodeForLastVariable(ast, false),
-        ['body', 'PipeExpression'],
-        [1, 'index'],
-      ],
-      wasmInstance: instanceInThisFile,
-    })
-    if (err(result)) throw result
-    expect(recast(result.modifiedAst, instanceInThisFile)).toBe(
-      code.replace('0.01mm', '0.02mm') + '\n'
-    )
-    expect(
-      await mockExecAstAndReportErrors(
-        result.modifiedAst,
-        rustContextInThisFile
-      )
-    ).toBeUndefined()
-  })
-
-  it('ignores stale curve defaults when editing tolerance without adding selection helpers', async () => {
-    const code = `${circle}
-surface001 = planarSurface(region(point = [0mm, 0mm], sketch = sketch001))`
-    const ast = assertParse(code, instanceInThisFile)
-    const tolerance = await getKclCommandValue(
-      '0.01mm',
-      instanceInThisFile,
-      rustContextInThisFile
-    )
-    const result = addPlanarSurface({
-      ast,
-      artifactGraph: new Map(),
-      curves: {
-        graphSelections: [{ codeRef: { range: [0, 0, 0], pathToNode: [] } }],
-        otherSelections: [
-          {
-            type: 'engineRegion',
-            id: 'stale-region',
-            sketchId: 'missing-sketch',
-            point: { x: 0, y: 0 },
-          },
-        ],
-      },
-      tolerance,
-      nodeToEdit: createPathToNodeForLastVariable(ast, false),
-      wasmInstance: instanceInThisFile,
-    })
-    if (err(result)) throw result
-    const expected = assertParse(
-      code.replace(
-        'sketch = sketch001))',
-        'sketch = sketch001), tolerance = 0.01mm)'
-      ),
-      instanceInThisFile
-    )
-    expect(recast(result.modifiedAst, instanceInThisFile)).toBe(
-      recast(expected, instanceInThisFile)
-    )
-    expect(
-      await mockExecAstAndReportErrors(
-        result.modifiedAst,
-        rustContextInThisFile
-      )
-    ).toBeUndefined()
   })
 })

@@ -226,19 +226,14 @@ export function addPlanarSurface({
   ast,
   artifactGraph,
   curves,
-  tolerance,
-  nodeToEdit,
   wasmInstance,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   curves: Selections
-  tolerance?: KclCommandValue
-  nodeToEdit?: PathToNode
   wasmInstance: ModuleType
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   let modifiedAst = structuredClone(ast)
-  const mNodeToEdit = structuredClone(nodeToEdit)
   let curvesExpr: Expr | null = null
   let pathIfPipe: PathToNode | undefined
   const recordCurvePipe = (curvePath?: PathToNode): Error | undefined => {
@@ -255,265 +250,251 @@ export function addPlanarSurface({
     pathIfPipe = structuredClone(curvePath)
   }
 
-  // Curves are hidden in the edit command. Keep the original expression,
-  // including its loop order and any inline region or edge calls.
-  if (!mNodeToEdit) {
-    const engineRegions = curves.otherSelections.filter(isEngineRegionSelection)
-    const selectionCount =
-      curves.graphSelections.length + curves.otherSelections.length
-    if (selectionCount === 0) {
-      return new Error('Select a closed region or a closed loop of edges.')
+  const engineRegions = curves.otherSelections.filter(isEngineRegionSelection)
+  const selectionCount =
+    curves.graphSelections.length + curves.otherSelections.length
+  if (selectionCount === 0) {
+    return new Error('Select a closed region or a closed loop of edges.')
+  }
+  if (
+    curves.otherSelections.some(
+      (selection) =>
+        !isEngineRegionSelection(selection) &&
+        !(
+          isEnginePrimitiveSelection(selection) &&
+          selection.primitiveType === 'edge'
+        )
+    )
+  ) {
+    return new Error('Planar Surface requires a region or edges.')
+  }
+
+  const exprs: Expr[] = []
+  let sketchCount = engineRegions.length
+  let solvedSegmentCount = 0
+  const primitiveEdges = getPrimitiveEdgeSelections(curves)
+  for (const originalSelection of curves.graphSelections) {
+    if (originalSelection.entityRef?.type === 'edge') {
+      const edgeResult = getPlanarBodyEdgeExpression({
+        selection: originalSelection,
+        modifiedAst,
+        artifactGraph,
+        wasmInstance,
+      })
+      if (isErr(edgeResult)) return edgeResult
+      modifiedAst = edgeResult.modifiedAst
+      const pipeResult = recordCurvePipe(edgeResult.pathIfPipe)
+      if (isErr(pipeResult)) return pipeResult
+      exprs.push(edgeResult.expr)
+      continue
     }
+    const resolved = resolveToCodeRef(originalSelection, artifactGraph)
+    if (!resolved)
+      return new Error('Could not resolve the selected curve in code.')
+    let selection: ResolvedGraphSelection = {
+      ...originalSelection,
+      ...resolved,
+    }
+    if (selection.artifact?.type === 'solid2d') {
+      const path = artifactGraph.get(selection.artifact.pathId)
+      if (path?.type !== 'path') {
+        return new Error('Could not resolve the selected region in code.')
+      }
+      selection = { ...selection, artifact: path, codeRef: path.codeRef }
+    }
+    const artifact = selection.artifact
     if (
-      curves.otherSelections.some(
-        (selection) =>
-          !isEngineRegionSelection(selection) &&
-          !(
-            isEnginePrimitiveSelection(selection) &&
-            selection.primitiveType === 'edge'
-          )
-      )
+      artifact?.type !== 'path' &&
+      artifact?.type !== 'segment' &&
+      artifact?.type !== 'primitiveEdge'
     ) {
       return new Error('Planar Surface requires a region or edges.')
     }
 
-    const exprs: Expr[] = []
-    let sketchCount = engineRegions.length
-    let solvedSegmentCount = 0
-    const primitiveEdges = getPrimitiveEdgeSelections(curves)
-    for (const originalSelection of curves.graphSelections) {
-      if (originalSelection.entityRef?.type === 'edge') {
-        const edgeResult = getPlanarBodyEdgeExpression({
-          selection: originalSelection,
-          modifiedAst,
-          artifactGraph,
-          wasmInstance,
-        })
-        if (isErr(edgeResult)) return edgeResult
-        modifiedAst = edgeResult.modifiedAst
-        const pipeResult = recordCurvePipe(edgeResult.pathIfPipe)
-        if (isErr(pipeResult)) return pipeResult
-        exprs.push(edgeResult.expr)
-        continue
-      }
-      const resolved = resolveToCodeRef(originalSelection, artifactGraph)
-      if (!resolved)
-        return new Error('Could not resolve the selected curve in code.')
-      let selection: ResolvedGraphSelection = {
-        ...originalSelection,
-        ...resolved,
-      }
-      if (selection.artifact?.type === 'solid2d') {
-        const path = artifactGraph.get(selection.artifact.pathId)
-        if (path?.type !== 'path') {
-          return new Error('Could not resolve the selected region in code.')
-        }
-        selection = { ...selection, artifact: path, codeRef: path.codeRef }
-      }
-      const artifact = selection.artifact
+    if (artifact.type === 'primitiveEdge') {
+      const edgeCall = getNodeFromPath<Node<CallExpressionKw>>(
+        modifiedAst,
+        selection.codeRef.pathToNode,
+        wasmInstance,
+        'CallExpressionKw'
+      )
       if (
-        artifact?.type !== 'path' &&
-        artifact?.type !== 'segment' &&
-        artifact?.type !== 'primitiveEdge'
+        isErr(edgeCall) ||
+        edgeCall.node.type !== 'CallExpressionKw' ||
+        edgeCall.node.callee.name.name !== 'edgeId'
       ) {
-        return new Error('Planar Surface requires a region or edges.')
+        return new Error(
+          'Could not resolve the selected edge reference in code.'
+        )
       }
-
-      if (artifact.type === 'primitiveEdge') {
-        const edgeCall = getNodeFromPath<Node<CallExpressionKw>>(
-          modifiedAst,
-          selection.codeRef.pathToNode,
-          wasmInstance,
-          'CallExpressionKw'
-        )
-        if (
-          isErr(edgeCall) ||
-          edgeCall.node.type !== 'CallExpressionKw' ||
-          edgeCall.node.callee.name.name !== 'edgeId'
-        ) {
-          return new Error(
-            'Could not resolve the selected edge reference in code.'
-          )
-        }
-        const variableName = getVariableNameFromNodePath(
-          selection.codeRef.pathToNode,
-          modifiedAst,
-          wasmInstance
-        )
-        exprs.push(
-          variableName
-            ? createLocalName(variableName)
-            : structuredClone(edgeCall.node)
-        )
-        continue
-      }
-
-      const segmentPath =
-        artifact.type === 'segment'
-          ? artifactGraph.get(artifact.pathId)
-          : undefined
-      const isSolvedSegment =
-        artifact.type === 'segment' &&
-        !artifact.sourceSegmentId &&
-        !(segmentPath?.type === 'path' && segmentPath.sweepId) &&
-        getSketchVariableNameForSegment(
-          modifiedAst,
-          artifact.id,
-          artifactGraph,
-          wasmInstance
-        ) !== null
-      const isSurfaceEdge =
-        artifact.type === 'segment' &&
-        !isSolvedSegment &&
-        !isErr(getSweepArtifactFromSelection(selection, artifactGraph))
-
-      if (isSurfaceEdge) {
-        const result = getPlanarSegmentEdgeExpression({
-          selection,
-          modifiedAst,
-          artifactGraph,
-          wasmInstance,
-        })
-        if (isErr(result)) return result
-        modifiedAst = result.modifiedAst
-        const pipeResult = recordCurvePipe(result.pathIfPipe)
-        if (isErr(pipeResult)) return pipeResult
-        exprs.push(result.expr)
-      } else {
-        if (isSolvedSegment) solvedSegmentCount++
-        if (
-          artifact.type === 'path' ||
-          (artifact.type === 'segment' && !isSolvedSegment)
-        )
-          sketchCount++
-        const result = getVariableExprsFromSelection(
-          { graphSelections: [selection], otherSelections: [] },
-          artifactGraph,
-          modifiedAst,
-          wasmInstance
-        )
-        if (isErr(result)) return result
-        if (result.exprs.length !== 1) {
-          return new Error('Could not resolve the selected curve in code.')
-        }
-        pathIfPipe = structuredClone(result.pathIfPipe) ?? pathIfPipe
-        exprs.push(...result.exprs)
-      }
+      const variableName = getVariableNameFromNodePath(
+        selection.codeRef.pathToNode,
+        modifiedAst,
+        wasmInstance
+      )
+      exprs.push(
+        variableName
+          ? createLocalName(variableName)
+          : structuredClone(edgeCall.node)
+      )
+      continue
     }
 
-    if (sketchCount > 0 && (sketchCount !== 1 || selectionCount !== 1)) {
-      return new Error('Select one region, or edges forming one closed loop.')
-    }
-    if (solvedSegmentCount > 0 && solvedSegmentCount !== selectionCount) {
-      return new Error('Select edges from a sketch or from a surface.')
-    }
+    const segmentPath =
+      artifact.type === 'segment'
+        ? artifactGraph.get(artifact.pathId)
+        : undefined
+    const isSolvedSegment =
+      artifact.type === 'segment' &&
+      !artifact.sourceSegmentId &&
+      !(segmentPath?.type === 'path' && segmentPath.sweepId) &&
+      getSketchVariableNameForSegment(
+        modifiedAst,
+        artifact.id,
+        artifactGraph,
+        wasmInstance
+      ) !== null
+    const isSurfaceEdge =
+      artifact.type === 'segment' &&
+      !isSolvedSegment &&
+      !isErr(getSweepArtifactFromSelection(selection, artifactGraph))
 
-    for (const primitiveEdge of primitiveEdges) {
-      let bodySelection = primitiveEdge.parentEntityId
-        ? getBodySelectionFromPrimitiveParentEntityId(
-            primitiveEdge.parentEntityId,
-            artifactGraph
-          )
-        : null
-      if (!bodySelection?.artifact || !bodySelection.codeRef)
-        return new Error('Could not resolve the selected edge body in code.')
-      if (bodySelection.artifact.type === 'sweep') {
-        const canonicalBody = getMergedSweepBodyArtifact(
-          bodySelection.artifact,
+    if (isSurfaceEdge) {
+      const result = getPlanarSegmentEdgeExpression({
+        selection,
+        modifiedAst,
+        artifactGraph,
+        wasmInstance,
+      })
+      if (isErr(result)) return result
+      modifiedAst = result.modifiedAst
+      const pipeResult = recordCurvePipe(result.pathIfPipe)
+      if (isErr(pipeResult)) return pipeResult
+      exprs.push(result.expr)
+    } else {
+      if (isSolvedSegment) solvedSegmentCount++
+      if (
+        artifact.type === 'path' ||
+        (artifact.type === 'segment' && !isSolvedSegment)
+      )
+        sketchCount++
+      const result = getVariableExprsFromSelection(
+        { graphSelections: [selection], otherSelections: [] },
+        artifactGraph,
+        modifiedAst,
+        wasmInstance
+      )
+      if (isErr(result)) return result
+      if (result.exprs.length !== 1) {
+        return new Error('Could not resolve the selected curve in code.')
+      }
+      pathIfPipe = structuredClone(result.pathIfPipe) ?? pathIfPipe
+      exprs.push(...result.exprs)
+    }
+  }
+
+  if (sketchCount > 0 && (sketchCount !== 1 || selectionCount !== 1)) {
+    return new Error('Select one region, or edges forming one closed loop.')
+  }
+  if (solvedSegmentCount > 0 && solvedSegmentCount !== selectionCount) {
+    return new Error('Select edges from a sketch or from a surface.')
+  }
+
+  for (const primitiveEdge of primitiveEdges) {
+    let bodySelection = primitiveEdge.parentEntityId
+      ? getBodySelectionFromPrimitiveParentEntityId(
+          primitiveEdge.parentEntityId,
           artifactGraph
         )
-        if (isErr(canonicalBody)) return canonicalBody
-        bodySelection = {
-          artifact: canonicalBody,
-          codeRef: canonicalBody.codeRef,
-        }
+      : null
+    if (!bodySelection?.artifact || !bodySelection.codeRef)
+      return new Error('Could not resolve the selected edge body in code.')
+    if (bodySelection.artifact.type === 'sweep') {
+      const canonicalBody = getMergedSweepBodyArtifact(
+        bodySelection.artifact,
+        artifactGraph
+      )
+      if (isErr(canonicalBody)) return canonicalBody
+      bodySelection = {
+        artifact: canonicalBody,
+        codeRef: canonicalBody.codeRef,
       }
-      const body = getVariableExprsFromSelection(
-        { graphSelections: [bodySelection], otherSelections: [] },
-        artifactGraph,
-        modifiedAst,
-        wasmInstance,
-        undefined,
-        {
-          lastChildLookup: bodySelection.artifact?.type !== 'sweep',
-          artifactTypeFilter: ['compositeSolid', 'sweep'],
-        }
-      )
-      if (isErr(body)) return body
-      if (body.exprs.length !== 1)
-        return new Error('Could not resolve the selected edge body in code.')
-      const pipeResult = recordCurvePipe(body.pathIfPipe)
-      if (isErr(pipeResult)) return pipeResult
-      exprs.push(
-        createCallExpressionStdLibKw('edgeId', body.exprs[0], [
-          createLabeledArg(
-            'index',
-            createLiteral(primitiveEdge.primitiveIndex, wasmInstance)
-          ),
-        ])
-      )
     }
-
-    if (engineRegions.length > 0) {
-      const hideResult = addHideCallsForRegionSketches({
-        engineRegions,
-        modifiedAst,
-        artifactGraph,
-        wasmInstance,
-      })
-      if (isErr(hideResult)) return hideResult
-      modifiedAst = hideResult
-      const regionResult = insertRegionVariablesAndOffsetPathToNode({
-        engineRegions,
-        modifiedAst,
-        artifactGraph,
-        wasmInstance,
-      })
-      if (isErr(regionResult)) return regionResult
-      exprs.push(...regionResult)
-    }
-
-    if (exprs.length !== selectionCount) {
-      return new Error('Could not resolve all selected curves in code.')
-    }
-    // The stdlib takes one Sketch directly, but requires arrays for curves,
-    // including a single closed curve such as a circle.
-    if (sketchCount > 0) {
-      curvesExpr = exprs[0]
-    } else {
-      const exprBySelection = new Map(
-        [...curves.graphSelections, ...primitiveEdges].map(
-          (selection, index) => [selection, exprs[index]]
-        )
-      )
-      const orderedExprs: Expr[] = []
-      for (const selection of getOrderedGraphAndPrimitiveSelections(curves)) {
-        const expression = exprBySelection.get(selection)
-        if (!expression)
-          return new Error('Could not resolve the selected curve in code.')
-        orderedExprs.push(expression)
+    const body = getVariableExprsFromSelection(
+      { graphSelections: [bodySelection], otherSelections: [] },
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      undefined,
+      {
+        lastChildLookup: bodySelection.artifact?.type !== 'sweep',
+        artifactTypeFilter: ['compositeSolid', 'sweep'],
       }
-      curvesExpr = createArrayExpression(orderedExprs)
-    }
-    if (curvesExpr?.type === 'PipeSubstitution') curvesExpr = null
+    )
+    if (isErr(body)) return body
+    if (body.exprs.length !== 1)
+      return new Error('Could not resolve the selected edge body in code.')
+    const pipeResult = recordCurvePipe(body.pathIfPipe)
+    if (isErr(pipeResult)) return pipeResult
+    exprs.push(
+      createCallExpressionStdLibKw('edgeId', body.exprs[0], [
+        createLabeledArg(
+          'index',
+          createLiteral(primitiveEdge.primitiveIndex, wasmInstance)
+        ),
+      ])
+    )
   }
+
+  if (engineRegions.length > 0) {
+    const hideResult = addHideCallsForRegionSketches({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (isErr(hideResult)) return hideResult
+    modifiedAst = hideResult
+    const regionResult = insertRegionVariablesAndOffsetPathToNode({
+      engineRegions,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (isErr(regionResult)) return regionResult
+    exprs.push(...regionResult)
+  }
+
+  if (exprs.length !== selectionCount) {
+    return new Error('Could not resolve all selected curves in code.')
+  }
+  // The stdlib takes one Sketch directly, but requires arrays for curves,
+  // including a single closed curve such as a circle.
+  if (sketchCount > 0) {
+    curvesExpr = exprs[0]
+  } else {
+    const exprBySelection = new Map(
+      [...curves.graphSelections, ...primitiveEdges].map((selection, index) => [
+        selection,
+        exprs[index],
+      ])
+    )
+    const orderedExprs: Expr[] = []
+    for (const selection of getOrderedGraphAndPrimitiveSelections(curves)) {
+      const expression = exprBySelection.get(selection)
+      if (!expression)
+        return new Error('Could not resolve the selected curve in code.')
+      orderedExprs.push(expression)
+    }
+    curvesExpr = createArrayExpression(orderedExprs)
+  }
+  if (curvesExpr?.type === 'PipeSubstitution') curvesExpr = null
 
   const call = createCallExpressionStdLibKw(
     modelingStdLibCommandName('Planar Surface'),
     curvesExpr,
-    tolerance ? [createLabeledArg('tolerance', valueOrVariable(tolerance))] : []
+    []
   )
-  if (tolerance && 'variableName' in tolerance && tolerance.variableName) {
-    const targetPath = mNodeToEdit ?? pathIfPipe
-    const targetIndex = targetPath?.[1]?.[0]
-    insertVariableAndOffsetPathToNode(
-      tolerance,
-      modifiedAst,
-      typeof targetIndex === 'number' && tolerance.insertIndex <= targetIndex
-        ? targetPath
-        : undefined
-    )
-  }
   const pipeIndex = pathIfPipe?.[1]?.[0]
   if (
     typeof pipeIndex === 'number' &&
@@ -526,7 +507,6 @@ export function addPlanarSurface({
   const pathToNode = setCallInAst({
     ast: modifiedAst,
     call,
-    pathToEdit: mNodeToEdit,
     pathIfNewPipe: pathIfPipe,
     variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.SURFACE,
     wasmInstance,

@@ -2243,8 +2243,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
               'engineRegion',
             ],
             multiple: true,
-            // Tolerance edits preserve authored curves, including unresolved edges.
-            hidden: isEditingNode,
           },
         },
       }
