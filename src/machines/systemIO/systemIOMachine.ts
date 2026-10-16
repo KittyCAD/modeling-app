@@ -1,4 +1,3 @@
-import type { App } from '@src/lib/app'
 import {
   DEFAULT_PROJECT_NAME,
   MAX_PROJECT_NAME_LENGTH,
@@ -12,6 +11,7 @@ import type {
   RequestedKCLFileDelete,
   RequestedProjectFile,
   SystemIOContext,
+  SystemIOHost,
   SystemIOInput,
 } from '@src/machines/systemIO/utils'
 import {
@@ -36,12 +36,7 @@ import { assertEvent, assign, enqueueActions, fromPromise, setup } from 'xstate'
  * some/dir/report      = relativePathFileWithoutExtension
  */
 
-/**
- * Handles any system level I/O for folders and files
- * This machine will be initializes once within the applications runtime
- * and exist for the entire life cycle of the application and able to be access
- * at a global level.
- */
+/** Filesystem workflows whose actor is owned by the systemIO registry extension. */
 export const systemIOMachine = setup({
   types: {
     context: {} as SystemIOContext,
@@ -581,7 +576,7 @@ export const systemIOMachine = setup({
           requestedFileNameWithExtension: string
           requestedCode: string
           requestedSubRoute?: string
-          app: App
+          app: SystemIOHost
         }
       }): Promise<{
         message: string
@@ -754,7 +749,7 @@ export const systemIOMachine = setup({
           absolutePathToParentDirectory: string
           requestedProjectName?: string
           requestedFileNameWithExtension?: string
-          app: App
+          app: SystemIOHost
         }
       }) => {
         return {
@@ -775,7 +770,7 @@ export const systemIOMachine = setup({
           requestedFileNameWithExtension: string
           fileNameWithExtension: string
           absolutePathToParentDirectory: string
-          app: App
+          app: SystemIOHost
         }
       }) => {
         return {
