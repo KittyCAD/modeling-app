@@ -785,15 +785,7 @@ export class App implements AppSubsystems {
     // so we don't need to stub with empty strings
     const kclManager = new KclManager('', '', {
       machineManager: this.machineManager,
-      getProject: () => {
-        const project = this.project?.projectIORefSignal.value
-        return (
-          this.systemIOActor
-            .getSnapshot()
-            .context.folders?.find((folder) => folder.path === project?.path) ??
-          project
-        )
-      },
+      getProject: () => this.project?.projectIORefSignal.value,
       fileOperations: this.fileOperations,
       textFileIO: this.projectSession.textFileIO,
       settings: this.settings.actor,

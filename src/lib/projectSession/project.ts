@@ -164,11 +164,7 @@ export class ZDSProject {
 
     const systemDeps: ProjectSystemDeps = {
       machineManager: this.app.machineManager,
-      getProject: () =>
-        this.app.systemIOActor
-          .getSnapshot()
-          .context.folders?.find((project) => project.path === this.path) ??
-        this.projectIORefSignal.value,
+      getProject: () => this.projectIORefSignal.value,
       fileOperations: this.app.fileOperations,
       textFileIO: this.textFileIO,
       wasmInstancePromise: this.app.wasmPromise,

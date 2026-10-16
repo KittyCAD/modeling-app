@@ -423,6 +423,46 @@ describe('project system', () => {
     }
   })
 
+  it('resolves editor metadata from the open project signal without consulting SystemIO', async () => {
+    const app = createAppForTest()
+    const read = vi
+      .spyOn(app.registry.get(projectSession).textFileIO, 'read')
+      .mockResolvedValue('')
+    let restoreSnapshot = () => {}
+    try {
+      expect(
+        app.singletons.kclManager.modelingProjectRef.current
+      ).toBeUndefined()
+      const project = await app.openProject(mockProject)
+      const editor = await project.openEditor(
+        fsZds.join(project.path, 'main.kcl'),
+        undefined,
+        '',
+        false
+      )
+      const getSnapshot = vi.spyOn(app.systemIOActor, 'getSnapshot')
+      restoreSnapshot = () => getSnapshot.mockRestore()
+      for (const title of ['Opened project', 'Updated project']) {
+        project.projectIORefSignal.value = {
+          ...project.projectIORefSignal.value,
+          title,
+        }
+        getSnapshot.mockClear()
+        expect(app.singletons.kclManager.modelingProjectRef.current).toBe(
+          project.projectIORefSignal.value
+        )
+        expect(editor.modelingProjectRef.current).toBe(
+          project.projectIORefSignal.value
+        )
+        expect(getSnapshot).not.toHaveBeenCalled()
+      }
+    } finally {
+      restoreSnapshot()
+      read.mockRestore()
+      app.dispose()
+    }
+  })
+
   it('annotates opened projects with their owning library path', async () => {
     const app = createAppForTest()
 
