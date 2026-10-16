@@ -38,7 +38,9 @@ function getSketchEdgeIndices(
   for (const region of regions) {
     for (const loop of [region.outerLoop, ...(region.holeLoops ?? [])]) {
       for (const entry of brep.loops[loop]?.edges ?? []) {
-        if (entry) indices.add(entry[0])
+        if (entry) {
+          indices.add(entry[0])
+        }
       }
     }
   }
@@ -47,7 +49,9 @@ function getSketchEdgeIndices(
 
 export function getBodyEdges(gltf: KITTYCAD_GLTF): DrawnEdge[] {
   const brep = gltf.userData.gltfExtensions?.KITTYCAD_boundary_representation
-  if (!brep) return []
+  if (!brep) {
+    return []
+  }
   const sketchEdges = getSketchEdgeIndices(gltf, brep)
   return brep.edges.flatMap((edge, index) =>
     sketchEdges.has(index) ? [] : [{ index, uuid: edge.extras?.KITTYCAD?.uuid }]

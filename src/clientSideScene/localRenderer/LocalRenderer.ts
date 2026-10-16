@@ -1115,7 +1115,9 @@ export class LocalRenderer {
       this.edgeRenderer?.addTo(gltf.scene)
       this.sketchLineRenderer?.buildEdges(gltf, getSketchSegmentEdges(gltf))
       this.sketchLineRenderer?.addTo(gltf.scene)
-      for (const mesh of createRegionMeshes(gltf)) gltf.scene.add(mesh)
+      for (const mesh of createRegionMeshes(gltf)) {
+        gltf.scene.add(mesh)
+      }
 
       this.rebuildSelectionTargets()
       const bounds = new Box3().setFromObject(gltf.scene)

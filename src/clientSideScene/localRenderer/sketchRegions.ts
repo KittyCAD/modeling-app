@@ -23,6 +23,8 @@ import { MeshBasicNodeMaterial } from 'three/webgpu'
 // Points closer than 1 nm (1e-9 m) count as one.
 const POINT_TOLERANCE = 1e-9
 
+type RegionPlane = { origin: Vector3; xAxis: Vector3; yAxis: Vector3 }
+
 /**
  * Meshes covering the closed regions of the exported sketches. They are never
  * drawn. They are tagged like faces, so a region is hovered, clicked and
@@ -31,19 +33,25 @@ const POINT_TOLERANCE = 1e-9
 export function createRegionMeshes(gltf: KITTYCAD_GLTF): Mesh[] {
   const brep = gltf.userData.gltfExtensions?.KITTYCAD_boundary_representation
   const regions = gltf.userData.KITTYCAD?.regions ?? []
-  if (!brep || regions.length === 0) return []
+  if (!brep || regions.length === 0) {
+    return []
+  }
 
   const material = new MeshBasicNodeMaterial({ side: DoubleSide })
   material.visible = false
   const meshes = regions.flatMap((region) => {
     const geometry = region.regionId && createRegionGeometry(region, brep)
-    if (!geometry) return []
+    if (!geometry) {
+      return []
+    }
     const mesh = new Mesh(geometry, material)
     mesh.name = `region_${region.regionId}`
     mesh.userData.faceUuid = region.regionId
     return [mesh]
   })
-  if (meshes.length === 0) material.dispose()
+  if (meshes.length === 0) {
+    material.dispose()
+  }
   return meshes
 }
 
@@ -51,30 +59,34 @@ function createRegionGeometry(
   region: KITTYCAD_GLTF_SKETCH_REGION,
   brep: KITTYCAD_GLTF_BREP
 ) {
-  const origin = new Vector3(...region.planeOrigin)
-  const xAxis = new Vector3(...region.planeXAxis)
-  const yAxis = new Vector3(...region.planeYAxis)
-  const toPlane = (point: Vector3) => {
-    const offset = point.clone().sub(origin)
-    return new Vector2(offset.dot(xAxis), offset.dot(yAxis))
+  const plane: RegionPlane = {
+    origin: new Vector3(...region.planeOrigin),
+    xAxis: new Vector3(...region.planeXAxis),
+    yAxis: new Vector3(...region.planeYAxis),
   }
 
-  const contour = sampleLoop(brep, region.outerLoop).map(toPlane)
-  if (contour.length < 3) return null
+  const contour = toPlane(sampleLoop(brep, region.outerLoop), plane)
+  if (contour.length < 3) {
+    return null
+  }
   const holes = (region.holeLoops ?? [])
-    .map((loop) => sampleLoop(brep, loop).map(toPlane))
+    .map((loop) => toPlane(sampleLoop(brep, loop), plane))
     .filter((hole) => hole.length >= 3)
   // Triangulation expects the outline counter-clockwise and holes clockwise.
-  if (ShapeUtils.isClockWise(contour)) contour.reverse()
+  if (ShapeUtils.isClockWise(contour)) {
+    contour.reverse()
+  }
   for (const hole of holes) {
-    if (!ShapeUtils.isClockWise(hole)) hole.reverse()
+    if (!ShapeUtils.isClockWise(hole)) {
+      hole.reverse()
+    }
   }
   const triangles = ShapeUtils.triangulateShape(contour, holes)
-  if (triangles.length === 0) return null
+  if (triangles.length === 0) {
+    return null
+  }
 
-  const positions = [...contour, ...holes.flat()].flatMap(({ x, y }) =>
-    origin.clone().addScaledVector(xAxis, x).addScaledVector(yAxis, y).toArray()
-  )
+  const positions = fromPlane([...contour, ...holes.flat()], plane)
   const geometry = new BufferGeometry()
   geometry.setAttribute(
     'position',
@@ -85,26 +97,44 @@ function createRegionGeometry(
   return geometry
 }
 
+// The points' coordinates within the region's plane.
+function toPlane(points: Vector3[], { origin, xAxis, yAxis }: RegionPlane) {
+  return points.map((point) => {
+    const offset = point.clone().sub(origin)
+    return new Vector2(offset.dot(xAxis), offset.dot(yAxis))
+  })
+}
+
+// The flattened 3D positions of points within the region's plane.
+function fromPlane(points: Vector2[], { origin, xAxis, yAxis }: RegionPlane) {
+  return points.flatMap(({ x, y }) =>
+    origin.clone().addScaledVector(xAxis, x).addScaledVector(yAxis, y).toArray()
+  )
+}
+
 // The points around one boundary loop, without repeating the closing point.
 function sampleLoop(brep: KITTYCAD_GLTF_BREP, loopIndex: number) {
   const parts: Vector3[][] = []
   for (const entry of brep.loops[loopIndex]?.edges ?? []) {
     const edge = entry && brep.edges[entry[0]]
     const curve = edge && brep.curves3D[edge.curve[0]]
-    if (!edge || !curve) continue
+    if (!edge || !curve) {
+      continue
+    }
     const points = sampleEdge(edge, curve, brep.vertices)
-    if (!isErr(points) && points.length > 0) parts.push(points)
+    if (!isErr(points) && points.length > 0) {
+      parts.push(points)
+    }
   }
 
   // The edges follow each other around the loop, but each may be sampled in
   // either direction, so turn each one to start where the previous one ends.
   const [first, second] = parts
-  if (second) {
-    const distanceToSecond = (point: Vector3) =>
-      Math.min(point.distanceTo(second[0]), point.distanceTo(second.at(-1)!))
-    if (distanceToSecond(first[0]) < distanceToSecond(first.at(-1)!)) {
-      first.reverse()
-    }
+  if (
+    second &&
+    distanceToEnds(first[0], second) < distanceToEnds(first.at(-1)!, second)
+  ) {
+    first.reverse()
   }
   const points: Vector3[] = []
   for (const part of parts) {
@@ -125,4 +155,12 @@ function sampleLoop(brep: KITTYCAD_GLTF_BREP, loopIndex: number) {
     points.pop()
   }
   return points
+}
+
+// How close a point is to the nearer end of a sampled edge.
+function distanceToEnds(point: Vector3, edgePoints: Vector3[]) {
+  return Math.min(
+    point.distanceTo(edgePoints[0]),
+    point.distanceTo(edgePoints.at(-1)!)
+  )
 }

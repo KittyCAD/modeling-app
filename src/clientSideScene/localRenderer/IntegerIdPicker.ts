@@ -114,9 +114,13 @@ export class IntegerIdPicker {
     }
     if (edges) {
       this.edgeObject = this.addLines(edges)
-      if (this.edgeObject) this.edgeObject.visible = this.edgesVisible
+      if (this.edgeObject) {
+        this.edgeObject.visible = this.edgesVisible
+      }
     }
-    if (sketchLines) this.addLines(sketchLines)
+    if (sketchLines) {
+      this.addLines(sketchLines)
+    }
   }
 
   // One batch of lines, each segment drawn with its target ID.
@@ -130,12 +134,16 @@ export class IntegerIdPicker {
         selectionIds.fill(id, firstSegment, firstSegment + count)
       }
     }
-    if (segmentCount === 0) return null
+    if (segmentCount === 0) {
+      return null
+    }
 
     const geometry = new LineSegmentsGeometry()
     for (const name of ['instanceStart', 'instanceEnd']) {
       const sourceAttribute = source.geometry.getAttribute(name)
-      if (sourceAttribute) geometry.setAttribute(name, sourceAttribute)
+      if (sourceAttribute) {
+        geometry.setAttribute(name, sourceAttribute)
+      }
     }
     geometry.instanceCount = segmentCount
     geometry.boundingBox = source.geometry.boundingBox
