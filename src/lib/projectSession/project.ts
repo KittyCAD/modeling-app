@@ -1,4 +1,9 @@
-import { type Signal, signal, computed } from '@preact/signals-core'
+import {
+  type Signal,
+  type ReadonlySignal,
+  signal,
+  computed,
+} from '@preact/signals-core'
 import type { ApiFile } from '@rust/kcl-lib/bindings/FrontendApi'
 import { KclManager } from '@src/lang/KclManager'
 import { getStringAfterLastSeparator } from '@src/lib/paths'
@@ -15,6 +20,7 @@ import type { ConnectionManager } from '@src/lib/engineConnection'
 import type RustContext from '@src/lib/rustContext'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { App } from '@src/lib/app'
+import type { MachineManager } from '@src/lib/MachineManager'
 import { File } from '@src/lib/projectSession/file'
 import type { TextFileIO } from '@src/lib/projectSession/textFileIO'
 import { projectSession } from '@src/registry/contracts/projectSession'
@@ -23,13 +29,15 @@ import type { FileOperationsRegistryService } from '@src/registry/contracts/file
 // Each of our singletons has dependencies on _other_ singletons, so importing
 // can easily become cyclic. Each will have its own Singletons type.
 export interface ProjectSystemDeps {
+  machineManager: MachineManager
+  /** Live metadata for the editor's owning project; absent before a project opens. */
+  project: ReadonlySignal<Project | undefined>
   /** Storage access for editor-owned export and thumbnail workflows. */
   fileOperations: FileOperationsRegistryService
   textFileIO: TextFileIO
   wasmInstancePromise: Promise<ModuleType>
   settings: SettingsActorType
   commandBar: CommandBarActorType
-  projectPath: Signal<string>
   engineCommandManager: ConnectionManager
   rustContext: RustContext
   userFeatures: UserFeaturesSettleService
@@ -152,10 +160,16 @@ export class ZDSProject {
       (!providedEditor || found !== providedEditor || found.path === path)
     ) {
       console.warn(`Attempted to overwrite editor with path "${path}"`)
+      if (isExecuting) {
+        await found.modelingActorPromise
+        assertCurrent()
+      }
       return found
     }
 
     const systemDeps: ProjectSystemDeps = {
+      machineManager: this.app.machineManager,
+      project: this.projectIORefSignal,
       fileOperations: this.app.fileOperations,
       textFileIO: this.textFileIO,
       wasmInstancePromise: this.app.wasmPromise,
@@ -164,11 +178,10 @@ export class ZDSProject {
       engineCommandManager: this.app.engineCommandManager,
       rustContext: this.app.rustContext,
       userFeatures: this.app.userFeatures,
-      projectPath: computed(() => this.projectIORefSignal.value.path),
     }
 
     if (providedEditor) {
-      providedEditor.systemDeps.projectPath = systemDeps.projectPath
+      providedEditor.systemDeps.project = systemDeps.project
     }
 
     const foundFileIndex = this.files.findIndex((f) => f.path === path)
@@ -247,6 +260,12 @@ export class ZDSProject {
         engineCommandManager: newEditor.engineCommandManager,
         settingsActor: this.app.settings.actor,
       })
+    }
+    if (isExecuting) {
+      // Finish preparing modeling before the route commits its view. Rendering
+      // an already loaded file must not introduce another Suspense loading screen.
+      await newEditor.modelingActorPromise
+      assertCurrent()
     }
     return newEditor
   }

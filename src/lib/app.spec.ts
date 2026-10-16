@@ -32,6 +32,13 @@ import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { createTestWasmRegistryItem } from '@src/unitTestUtils'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 
+// Modeling imports UI factories, but these headless tests must never bootstrap
+// the global browser App or replace their configured filesystem.
+vi.mock('@src/lib/boot', () => ({
+  useApp: vi.fn(),
+  useSingletons: vi.fn(),
+}))
+
 const mockProject: Project = {
   name: 'test',
   default_file: 'main.kcl',
@@ -412,6 +419,86 @@ describe('project system', () => {
       expect(firstExecute).toHaveBeenCalledTimes(1)
       expect(secondExecute).toHaveBeenCalledTimes(1)
     } finally {
+      app.dispose()
+    }
+  })
+
+  it('resolves editor metadata from the open project signal without consulting SystemIO', async () => {
+    const app = createAppForTest()
+    const read = vi
+      .spyOn(app.registry.get(projectSession).textFileIO, 'read')
+      .mockResolvedValue('')
+    let restoreSnapshot = () => {}
+    try {
+      expect(
+        app.singletons.kclManager.modelingProjectRef.current
+      ).toBeUndefined()
+      const project = await app.openProject(mockProject)
+      const editor = await project.openEditor(
+        fsZds.join(project.path, 'main.kcl'),
+        undefined,
+        '',
+        false
+      )
+      const getSnapshot = vi.spyOn(app.systemIOActor, 'getSnapshot')
+      restoreSnapshot = () => getSnapshot.mockRestore()
+      for (const title of ['Opened project', 'Updated project']) {
+        project.projectIORefSignal.value = {
+          ...project.projectIORefSignal.value,
+          title,
+        }
+        getSnapshot.mockClear()
+        expect(app.singletons.kclManager.modelingProjectRef.current).toBe(
+          project.projectIORefSignal.value
+        )
+        expect(editor.modelingProjectRef.current).toBe(
+          project.projectIORefSignal.value
+        )
+        expect(getSnapshot).not.toHaveBeenCalled()
+      }
+    } finally {
+      restoreSnapshot()
+      read.mockRestore()
+      app.dispose()
+    }
+  })
+
+  it('rebinds the legacy editor to the next owning project signal', async () => {
+    const app = createAppForTest()
+    const read = vi
+      .spyOn(app.registry.get(projectSession).textFileIO, 'read')
+      .mockResolvedValue('')
+    const editor = app.singletons.kclManager
+    try {
+      const first = await app.openProject(mockProject)
+      await first.openEditor(
+        fsZds.join(first.path, 'main.kcl'),
+        editor,
+        '',
+        false
+      )
+      expect(editor.systemDeps.project === first.projectIORefSignal).toBe(true)
+      const next = await app.openProject({
+        ...mockProject,
+        name: 'next',
+        path: '/some-dir/next',
+      })
+      await next.openEditor(
+        fsZds.join(next.path, 'main.kcl'),
+        editor,
+        '',
+        false
+      )
+      expect(editor.systemDeps.project === next.projectIORefSignal).toBe(true)
+      first.projectIORefSignal.value = {
+        ...first.projectIORefSignal.value,
+        title: 'Old project',
+      }
+      expect(editor.modelingProjectRef.current).toBe(
+        next.projectIORefSignal.value
+      )
+    } finally {
+      read.mockRestore()
       app.dispose()
     }
   })
