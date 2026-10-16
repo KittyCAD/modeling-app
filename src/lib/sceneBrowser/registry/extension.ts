@@ -3,29 +3,40 @@ import {
   provide,
   provideService,
 } from '@kittycad/registry'
+import type { Command } from '@src/lib/commandTypes'
 import type { ZooFeatureTree } from '@kittycad/ui-components/web-components'
-import { signal } from '@preact/signals-core'
+import { computed, signal } from '@preact/signals-core'
 import {
   sceneBrowserService,
   SCENE_BROWSER_FOCUSED_SCOPE,
   TOGGLE_BROWSER_COMMAND,
 } from '@src/lib/sceneBrowser/registry/contract'
 import {
+  commandsValueSpec,
   FILE_COMMAND_SCOPES,
-  provideCommand,
   provideCommandScope,
 } from '@src/registry/contracts/commands'
 import { engineSceneViewExtensionsValueSpec } from '@src/registry/contracts/engineScene'
 import { provideKeymapItem } from '@src/registry/contracts/keymap'
 import { createElement, lazy, Suspense } from 'react'
+import { SCENE_BROWSER_FEATURE } from '@src/lib/sceneBrowser/featureFlag'
+import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
+import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 
 const Browser = lazy(() =>
   import('@src/lib/sceneBrowser/SceneBrowser').then((module) => ({
-    default: module.SceneBrowser,
+    default: module.SceneBrowserView,
   }))
 )
 
-export const sceneBrowserExtension = defineRegistryItemFactory(() => {
+export const sceneBrowserExtension = defineRegistryItemFactory((ctx) => {
+  const userFeatures = ctx.services.signal(userFeaturesService)
+  const enabled = () => {
+    const context = userFeatures.value?.context.value
+    return context
+      ? userFeaturesContextHas(context, SCENE_BROWSER_FEATURE, false)
+      : false
+  }
   const collapsed = signal(false)
   const tree = signal<ZooFeatureTree | null>(null)
   const service = {
@@ -47,19 +58,27 @@ export const sceneBrowserExtension = defineRegistryItemFactory(() => {
         displayName: 'Scene browser focused',
         priority: 500,
       }),
-      provideCommand({
-        id: TOGGLE_BROWSER_COMMAND,
-        name: TOGGLE_BROWSER_COMMAND,
-        groupId: 'sceneBrowser',
-        displayName: 'Toggle scene browser',
-        scopes: FILE_COMMAND_SCOPES,
-        icon: 'model',
-        needsReview: false,
-        onSubmit: () => {
-          service.toggle()
-          return true
-        },
-      }),
+      provide(
+        commandsValueSpec,
+        computed<Command>(() => ({
+          id: TOGGLE_BROWSER_COMMAND,
+          name: TOGGLE_BROWSER_COMMAND,
+          groupId: 'sceneBrowser',
+          displayName: 'Toggle scene browser',
+          scopes: enabled()
+            ? FILE_COMMAND_SCOPES
+            : [SCENE_BROWSER_FOCUSED_SCOPE],
+          hideFromSearch: !enabled(),
+          disabled: !enabled(),
+          icon: 'model',
+          needsReview: false,
+          onSubmit: () => {
+            if (!enabled()) return
+            service.toggle()
+            return true
+          },
+        }))
+      ),
       provideKeymapItem({
         id: TOGGLE_BROWSER_COMMAND,
         command: TOGGLE_BROWSER_COMMAND,

@@ -4,14 +4,13 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
 import { useApp } from '@src/lib/boot'
+import { SCENE_BROWSER_FEATURE } from '@src/lib/sceneBrowser/featureFlag'
 import {
   FeatureTree,
   FeatureTreeRow,
 } from '@src/lib/featureTree/FeatureTreeView'
-import { SceneBrowserAppearanceContext } from '@src/lib/sceneBrowser/appearance'
 import {
   sceneBrowserSections,
-  sceneBrowserAppearance,
   sceneBrowserService,
   SCENE_BROWSER_FOCUSED_SCOPE,
   TOGGLE_BROWSER_COMMAND,
@@ -34,6 +33,12 @@ import './SceneBrowser.css'
 
 const SECTION_PREFIX = 'browser-section:'
 
+export function SceneBrowserView() {
+  const { userFeatures } = useApp()
+  const enabled = userFeatures.useHas(SCENE_BROWSER_FEATURE, false)
+  return enabled ? <SceneBrowser /> : null
+}
+
 /** A docked Browser has one scroll area, one tree, and one width shared by all sections. */
 export function SceneBrowser() {
   useSignals()
@@ -50,7 +55,6 @@ export function SceneBrowser() {
     platform
   )
   const sections = registry.signal(sceneBrowserSections).value
-  const appearance = registry.signal(sceneBrowserAppearance).value
   const service = registry.get(sceneBrowserService)
   const scopes = registry.optional(commandScopeService)
   const [collapsedSections, setCollapsedSections] = useState<
@@ -132,86 +136,84 @@ export function SceneBrowser() {
   }, [])
   if (!sections.length) return null
   return (
-    <SceneBrowserAppearanceContext.Provider value={appearance}>
-      <aside
-        ref={asideRef}
-        className={`scene-browser${collapsed ? ' is-collapsed' : ''}`}
-        aria-label="Scene browser"
-        data-appearance={appearance}
+    <aside
+      ref={asideRef}
+      className={`scene-browser${collapsed ? ' is-collapsed' : ''}`}
+      aria-label="Scene browser"
+      data-appearance="hud"
+    >
+      <button
+        ref={toggleRef}
+        type="button"
+        className="scene-browser-title"
+        aria-label={
+          collapsed ? 'Expand scene browser' : 'Collapse scene browser'
+        }
+        aria-describedby={tooltipId}
+        aria-expanded={!collapsed}
+        aria-controls={contentId}
+        onClick={() => service.toggle()}
       >
-        <button
-          ref={toggleRef}
-          type="button"
-          className="scene-browser-title"
-          aria-label={
-            collapsed ? 'Expand scene browser' : 'Collapse scene browser'
+        <CustomIcon
+          name="sidebar"
+          aria-hidden="true"
+          className="scene-browser-toggle-icon"
+        />
+        {!collapsed && <span>Scene browser</span>}
+        <Tooltip id={tooltipId} position="right" delay={250}>
+          {collapsed ? 'Expand scene browser' : 'Collapse scene browser'}
+          {shortcut && <kbd className="hotkey ml-2">{shortcut}</kbd>}
+        </Tooltip>
+      </button>
+      {!collapsed && (
+        <Resizable
+          size={{ width, height: 'auto' }}
+          style={{ minHeight: 0 }}
+          minWidth={Math.min(200, availableWidth ?? 200)}
+          maxWidth={availableWidth ?? '100vw'}
+          enable={{ right: true }}
+          onResizeStop={(_event, _direction, element) =>
+            setWidth(element.offsetWidth)
           }
-          aria-describedby={tooltipId}
-          aria-expanded={!collapsed}
-          aria-controls={contentId}
-          onClick={() => service.toggle()}
         >
-          <CustomIcon
-            name="sidebar"
-            aria-hidden="true"
-            className="scene-browser-toggle-icon"
-          />
-          {!collapsed && <span>Scene browser</span>}
-          <Tooltip id={tooltipId} position="right" delay={250}>
-            {collapsed ? 'Expand scene browser' : 'Collapse scene browser'}
-            {shortcut && <kbd className="hotkey ml-2">{shortcut}</kbd>}
-          </Tooltip>
-        </button>
-        {!collapsed && (
-          <Resizable
-            size={{ width, height: 'auto' }}
-            style={{ minHeight: 0 }}
-            minWidth={Math.min(200, availableWidth ?? 200)}
-            maxWidth={availableWidth ?? '100vw'}
-            enable={{ right: true }}
-            onResizeStop={(_event, _direction, element) =>
-              setWidth(element.offsetWidth)
-            }
+          <div
+            id={contentId}
+            className="scene-browser-content"
+            style={{
+              maxHeight: availableHeight
+                ? Math.max(
+                    0,
+                    availableHeight -
+                      (toggleRef.current?.clientHeight ?? 26) -
+                      2
+                  )
+                : undefined,
+            }}
           >
-            <div
-              id={contentId}
-              className="scene-browser-content"
-              style={{
-                maxHeight: availableHeight
-                  ? Math.max(
-                      0,
-                      availableHeight -
-                        (toggleRef.current?.clientHeight ?? 26) -
-                        2
-                    )
-                  : undefined,
-              }}
-            >
-              <FeatureTree label="Scene browser" onMount={mount}>
-                {sections.map(({ id, title, Component, Menu }) => (
-                  <FeatureTreeRow
-                    key={id}
-                    nodeId={`${SECTION_PREFIX}${id}`}
-                    label={title}
-                    defaultOpen={!collapsedSections.has(id)}
-                    actions={Menu && <Menu />}
-                    onSelect={() =>
-                      setCollapsedSections((previous) => {
-                        const next = new Set(previous)
-                        if (next.has(id)) next.delete(id)
-                        else next.add(id)
-                        return next
-                      })
-                    }
-                  >
-                    <Component />
-                  </FeatureTreeRow>
-                ))}
-              </FeatureTree>
-            </div>
-          </Resizable>
-        )}
-      </aside>
-    </SceneBrowserAppearanceContext.Provider>
+            <FeatureTree label="Scene browser" onMount={mount}>
+              {sections.map(({ id, title, Component, Menu }) => (
+                <FeatureTreeRow
+                  key={id}
+                  nodeId={`${SECTION_PREFIX}${id}`}
+                  label={title}
+                  defaultOpen={!collapsedSections.has(id)}
+                  actions={Menu && <Menu />}
+                  onSelect={() =>
+                    setCollapsedSections((previous) => {
+                      const next = new Set(previous)
+                      if (next.has(id)) next.delete(id)
+                      else next.add(id)
+                      return next
+                    })
+                  }
+                >
+                  <Component />
+                </FeatureTreeRow>
+              ))}
+            </FeatureTree>
+          </div>
+        </Resizable>
+      )}
+    </aside>
   )
 }
