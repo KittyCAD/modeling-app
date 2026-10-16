@@ -301,6 +301,7 @@ export function useQueryParamEffects() {
       commandData.name === 'add-kcl-file-to-project' &&
       commandData.groupId === 'application' &&
       commandData.argDefaultValues?.source === 'kcl-samples' &&
+      commandData.argDefaultValues?.method !== 'newProject' &&
       typeof samplePath === 'string' &&
       (requestedProjectName === 'browser' ||
         requestedProjectName === DEFAULT_WEB_PROJECT_NAME)
@@ -379,7 +380,10 @@ export function useQueryParamEffects() {
         commandData.argDefaultValues.projectName =
           currentProjectName ?? DEFAULT_WEB_PROJECT_NAME
       }
-      if (commandData.argDefaultValues?.projectName) {
+      if (
+        commandData.argDefaultValues?.projectName &&
+        !commandData.argDefaultValues.method
+      ) {
         commandData.argDefaultValues.method = 'existingProject'
       }
     }
@@ -400,6 +404,7 @@ export function useQueryParamEffects() {
     if (
       !isDesktop() &&
       commandData.name === 'add-kcl-file-to-project' &&
+      commandData.argDefaultValues?.method === 'existingProject' &&
       commandData.argDefaultValues?.projectName
     ) {
       const projectNameArg = String(commandData.argDefaultValues.projectName)
