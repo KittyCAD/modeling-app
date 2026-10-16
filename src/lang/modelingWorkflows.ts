@@ -62,6 +62,7 @@ export async function updateModelingState(
     focusPath?: Array<PathToNode>
     isDeleting?: boolean
     skipErrorsOnMockExecution?: boolean
+    checkSource?: () => Error | undefined
   }
 ): Promise<void> {
   let updatedAst: {
@@ -77,6 +78,9 @@ export async function updateModelingState(
     }
   }
 
+  const beforeUpdateError = options?.checkSource?.()
+  if (beforeUpdateError) return Promise.reject(beforeUpdateError)
+
   // Step 1: Update AST without executing (prepare selections)
   updatedAst = await kclManager.updateAst(
     ast,
@@ -84,10 +88,14 @@ export async function updateModelingState(
     options
   )
 
+  const beforeWriteError = options?.checkSource?.()
+  if (beforeWriteError) return Promise.reject(beforeWriteError)
+
   // Step 2: Update the code editor and save file
   await kclManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst, {
     isDeleting: options?.isDeleting,
     allowProgrammaticDocumentChanges: true,
+    checkSource: options?.checkSource,
   })
 
   // Step 3: Set focus on the newly added code if needed

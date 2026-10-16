@@ -4044,6 +4044,7 @@ export class KclManager extends File {
       {
         isDeleting: boolean
         allowProgrammaticDocumentChanges: boolean
+        checkSource: () => Error | undefined
       } & UpdateCodeEditorOptions
     >
   ) {
@@ -4062,6 +4063,8 @@ export class KclManager extends File {
         ? requestedUserDocumentVersion !== this._userDocumentVersion
         : requestedDocumentVersion !== this._documentVersion
     const wasmInstance = await this.wasmInstancePromise
+    const sourceError = resolvedOptions.checkSource?.()
+    if (sourceError) return Promise.reject(sourceError)
     if (hasStaleVersion()) return
 
     // We clear the AST when it cannot be parsed. If we are trying to write an

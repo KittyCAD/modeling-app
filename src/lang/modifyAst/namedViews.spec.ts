@@ -1,4 +1,7 @@
-import { addNamedView } from '@src/lang/modifyAst/namedViews'
+import {
+  addNamedView,
+  updateNamedViewCamera,
+} from '@src/lang/modifyAst/namedViews'
 import { assertParse, recast } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
@@ -250,5 +253,56 @@ view001 = view::named("Inspection view", camera = camera001, baseline = view::Vi
       'view::named("Renamed view", camera = camera001, baseline = view::Visibility::Hide)'
     )
     await enginelessExecutor(result.modifiedAst, rustContext)
+  })
+})
+
+describe('updateNamedViewCamera', () => {
+  const code = `@settings(kclVersion = 3.0)
+
+view001 = view::named(
+  "Inspection view",
+  camera = view::oriented(
+    view::Orientation::Front,
+    distance = 200mm,
+    projection = view::Projection::Perspective,
+  ),
+  baseline = view::Visibility::Show,
+)`
+
+  it('replaces only the camera with the current directed camera', async () => {
+    const ast = assertParse(code, instance)
+    const execState = await enginelessExecutor(ast, rustContext)
+    const artifact = [...execState.artifactGraph.values()].find(
+      (candidate) => candidate.type === 'namedView'
+    )
+    if (!artifact || artifact.type !== 'namedView') {
+      throw new Error('Expected a named view artifact')
+    }
+    const modifiedAst = updateNamedViewCamera({
+      ast,
+      pathToNode: artifact.codeRef.pathToNode,
+      camera: {
+        direction: [0.25, -0.5, -0.75],
+        up: [0, 0, 1],
+        target: [10, 20, 30],
+        distance: 125.5,
+        projection: 'Orthographic',
+      },
+      wasmInstance: instance,
+    })
+    if (err(modifiedAst)) throw modifiedAst
+
+    await enginelessExecutor(modifiedAst, rustContext)
+    const updatedCode = recast(modifiedAst, instance)
+    if (err(updatedCode)) throw updatedCode
+    expect(updatedCode).toContain(`camera = view::directed(
+    [0.25, -0.5, -0.75],
+    up = [0, 0, 1],
+    target = [10mm, 20mm, 30mm],
+    distance = 125.5mm,
+    projection = view::Projection::Orthographic,
+  )`)
+    expect(updatedCode).toContain('"Inspection view"')
+    expect(updatedCode).toContain('baseline = view::Visibility::Show')
   })
 })

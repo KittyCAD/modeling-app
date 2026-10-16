@@ -1857,6 +1857,32 @@ describe('KclManager diagnostics', () => {
     expect(kclManager.code).toBe('local newer')
   })
 
+  it('checks source ownership at the editor write boundary', async () => {
+    const { kclManager } = createKclManagerTestHarness('x = 1')
+    const originalWasmPromise = kclManager.wasmInstancePromise
+    const deferredWasm = createDeferred<Awaited<typeof originalWasmPromise>>()
+    const ast = await kclManager.safeParse('x = 2')
+    if (!ast) throw new Error('Expected test KCL to parse')
+    kclManager.path = '/project/main.kcl'
+    kclManager.wasmInstancePromise = deferredWasm.promise
+
+    const pendingRewrite = kclManager.updateEditorWithAstAndWriteToFile(ast, {
+      shouldExecute: false,
+      shouldWriteToDisk: false,
+      allowProgrammaticDocumentChanges: true,
+      checkSource: () => {
+        if (kclManager.path !== '/project/main.kcl') {
+          return new Error('The file changed')
+        }
+      },
+    })
+    kclManager.path = '/project/other.kcl'
+    deferredWasm.resolve(await originalWasmPromise)
+
+    await expect(pendingRewrite).rejects.toThrow('The file changed')
+    expect(kclManager.code).toBe('x = 1')
+  })
+
   it('allows ast-driven editor rewrites to survive intermediate programmatic updates when requested', async () => {
     const { kclManager } = createKclManagerTestHarness('x = 1')
     const originalWasmPromise = kclManager.wasmInstancePromise

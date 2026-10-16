@@ -7,11 +7,17 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useReliesOnEngine } from '@src/hooks/useReliesOnEngine'
+import { updateModelingState } from '@src/lang/modelingWorkflows'
+import { updateNamedViewCamera } from '@src/lang/modifyAst/namedViews'
 import type { KclNamedView } from '@src/lang/std/kclNamedViews'
 import { listNamedViews } from '@src/lang/std/kclNamedViews'
 import { ROOT_MODULE_ID } from '@src/lang/wasm'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { EXPERIMENTAL_POINT_AND_CLICK_FLAG, FILE_EXT } from '@src/lib/constants'
+import {
+  EXECUTION_TYPE_REAL,
+  EXPERIMENTAL_POINT_AND_CLICK_FLAG,
+  FILE_EXT,
+} from '@src/lib/constants'
 import { sendDeleteCommand } from '@src/lib/featureTree'
 import type {
   ActivationTarget,
@@ -24,6 +30,7 @@ import {
   isSketchSessionOpen,
   moduleKeyOf,
 } from '@src/lib/kclNamedViewActivation'
+import { captureNamedViewCamera } from '@src/lib/kclNamedViewCamera'
 import { prepareNamedViewEditCommand } from '@src/lib/kclNamedViewEdit'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { isErr, reportRejection } from '@src/lib/trap'
@@ -184,6 +191,62 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
     }
   }
 
+  const updateViewCamera = async (view: KclNamedView) => {
+    const ast = kclManager.ast
+    const code = kclManager.code
+    const path = kclManager.path
+    const projectPath = kclManager.systemDeps.project.value?.path
+    const checkSource = () => {
+      if (
+        code !== kclManager.code ||
+        path !== kclManager.path ||
+        projectPath !== kclManager.systemDeps.project.value?.path
+      ) {
+        return new Error(
+          'The source changed while updating the named view. Try again.'
+        )
+      }
+    }
+    setIsChangingSource(true)
+    try {
+      const camera = await captureNamedViewCamera(
+        kclManager.sceneInfra.camControls
+      )
+      if (isErr(camera)) {
+        toast.error(camera.message)
+        return
+      }
+
+      const wasmInstance = await kclManager.wasmInstancePromise
+      if (ast !== kclManager.ast || checkSource()) {
+        toast.error('The source changed while capturing the camera. Try again.')
+        return
+      }
+      const modifiedAst = updateNamedViewCamera({
+        ast,
+        pathToNode: view.artifact.codeRef.pathToNode,
+        camera,
+        wasmInstance,
+      })
+      if (isErr(modifiedAst)) {
+        toast.error(modifiedAst.message)
+        return
+      }
+
+      await updateModelingState(modifiedAst, EXECUTION_TYPE_REAL, kclManager, {
+        checkSource,
+      })
+    } catch (reason) {
+      toast.error(
+        reason instanceof Error
+          ? reason.message
+          : `Could not update “${view.artifact.name}”.`
+      )
+    } finally {
+      setIsChangingSource(false)
+    }
+  }
+
   return (
     <LayoutPanel
       title={props.layout.label}
@@ -274,11 +337,20 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                   </span>
                 </button>
                 {manageableView ? (
-                  <NamedViewRowMenu
-                    disabled={actionsDisabled}
-                    onEdit={() => editView(manageableView)}
-                    onRemove={() => void removeView(manageableView)}
-                  />
+                  <div className="flex shrink-0 items-center gap-0.5">
+                    <PaneIconButton
+                      icon="camera"
+                      label="Update from current camera"
+                      testId="named-view-update-camera"
+                      disabled={actionsDisabled}
+                      onClick={() => void updateViewCamera(manageableView)}
+                    />
+                    <NamedViewRowMenu
+                      disabled={actionsDisabled}
+                      onEdit={() => editView(manageableView)}
+                      onRemove={() => void removeView(manageableView)}
+                    />
+                  </div>
                 ) : row.target.kind === 'declared' &&
                   !canManageNamedView(row.target.view) ? (
                   <CustomIcon
@@ -305,7 +377,7 @@ function PaneIconButton({
   onClick,
 }: {
   buttonRef?: RefObject<HTMLButtonElement | null>
-  icon: 'plus' | 'three-dots'
+  icon: 'plus' | 'three-dots' | 'camera'
   label: string
   testId: string
   disabled: boolean
