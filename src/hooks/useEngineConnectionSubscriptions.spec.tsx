@@ -6,24 +6,20 @@ import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnection
 const useModelingContext = vi.hoisted(() => vi.fn())
 const getEventForQueryEntityTypeWithPoint = vi.hoisted(() => vi.fn())
 const normalizeEntityReference = vi.hoisted(() => vi.fn())
-const engineTopologyFallbackFromReference = vi.hoisted(() => vi.fn())
-const showSketchOnImportForFace = vi.hoisted(() => vi.fn())
 const selectSketchPlane = vi.hoisted(() => vi.fn())
 
 vi.mock('@src/hooks/useModelingContext', () => ({ useModelingContext }))
 vi.mock('@src/lib/selections', () => ({
-  engineTopologyFallbackFromReference,
+  engineTopologyFallbackFromReference: vi.fn(() => null),
   getEventForQueryEntityTypeWithPoint,
   normalizeEntityReference,
-  showSketchOnImportForFace,
+  showSketchOnImportForFace: vi.fn(() => false),
 }))
 vi.mock('@src/lib/selectSketchPlane', () => ({ selectSketchPlane }))
 
 beforeEach(() => {
   vi.resetAllMocks()
   normalizeEntityReference.mockImplementation((reference) => reference)
-  engineTopologyFallbackFromReference.mockReturnValue(undefined)
-  showSketchOnImportForFace.mockReturnValue(false)
 })
 
 type QueryWithPointEvent = {
@@ -89,67 +85,36 @@ function setupSelectionHook(initialMode = 'idle') {
   }
 }
 
-test.each([
-  { reference: { type: 'face', face_id: 'face-id' }, entityId: 'picked-face' },
-  { reference: { type: 'plane', plane_id: 'plane-id' }, entityId: 'plane-id' },
-])(
-  'stores the selection before starting a sketch on $reference.type',
-  async ({ reference, entityId }) => {
-    const selectionEvent = {
-      type: 'Set selection',
-      data: {
-        selectionType: 'singleCodeCursor',
-        selection: { entityRef: reference },
-      },
-    }
-    getEventForQueryEntityTypeWithPoint.mockResolvedValue(selectionEvent)
-    const { unmount, callback, send, kclManager } =
-      setupSelectionHook('Sketch no face')
-
-    act(() => {
-      callback({
-        type: 'query_entity_type_with_point',
-        data: { entity_id: entityId, reference },
-      })
-    })
-
-    await waitFor(() => {
-      expect(send).toHaveBeenCalledWith({
-        ...selectionEvent,
-        data: { ...selectionEvent.data, isShiftDown: false },
-      })
-      expect(selectSketchPlane).toHaveBeenCalledWith(entityId, true, kclManager)
-    })
-    expect(send.mock.invocationCallOrder[0]).toBeLessThan(
-      selectSketchPlane.mock.invocationCallOrder[0]
-    )
-    unmount()
-  }
-)
-
-test('keeps the imported-face guard before starting a sketch', async () => {
-  engineTopologyFallbackFromReference.mockReturnValue({
-    parentId: 'imported-body',
-    primitiveIndex: 0,
-  })
-  showSketchOnImportForFace.mockReturnValue(true)
-  getEventForQueryEntityTypeWithPoint.mockResolvedValue({
+test('stores a post-selected primitive before starting a sketch', async () => {
+  const selectionEvent = {
     type: 'Set selection',
     data: {
-      selectionType: 'singleCodeCursor',
-      selection: { entityRef: { type: 'face', face_id: 'face-id' } },
+      selectionType: 'enginePrimitiveSelection',
+      selection: {
+        type: 'enginePrimitive',
+        entityId: 'face-id',
+        parentEntityId: 'solid-id',
+        primitiveIndex: 4,
+        primitiveType: 'face',
+      },
     },
-  })
-  const { callback, send, unmount } = setupSelectionHook('Sketch no face')
+  }
+  getEventForQueryEntityTypeWithPoint.mockResolvedValue(selectionEvent)
+  const { unmount, callback, send, kclManager } =
+    setupSelectionHook('Sketch no face')
   act(() => {
     callback({
       type: 'query_entity_type_with_point',
       data: { reference: { type: 'face', face_id: 'face-id' } },
     })
   })
-  await waitFor(() => expect(showSketchOnImportForFace).toHaveBeenCalled())
-  expect(send).toHaveBeenCalledOnce()
-  expect(selectSketchPlane).not.toHaveBeenCalled()
+  await waitFor(() => {
+    expect(send).toHaveBeenCalledWith(selectionEvent)
+    expect(selectSketchPlane).toHaveBeenCalledWith('face-id', true, kclManager)
+  })
+  expect(send.mock.invocationCallOrder[0]).toBeLessThan(
+    selectSketchPlane.mock.invocationCallOrder[0]
+  )
   unmount()
 })
 

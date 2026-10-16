@@ -173,26 +173,21 @@ export function useEngineConnectionSubscriptions() {
       event: 'query_entity_type_with_point',
       callback: (engineEvent) => {
         const selectingSketchPlane = stateRef.current.matches('Sketch no face')
-        const isShiftDown = kclManager.isShiftDown
-        if (stateRef.current.matches('sketchSolveMode')) return
-        // Topology lookup can await the engine while mapped edges resolve
-        // immediately. Preserve arrival order and the Shift state from each response.
-        pendingClick = pendingClick
-          .then(async () => {
-            if (
-              !active ||
-              stateRef.current.matches('sketchSolveMode') ||
-              selectingSketchPlane !==
-                stateRef.current.matches('Sketch no face')
-            ) {
-              return
-            }
+        const isSketchSolveMode = stateRef.current.matches('sketchSolveMode')
 
+        if (isSketchSolveMode) {
+          return
+        }
+
+        // Handle sketch plane selection directly when in 'Sketch no face' state
+        if (selectingSketchPlane) {
+          ;(async () => {
+            if (!engineEvent || !('data' in engineEvent)) return
             const data = engineEvent.data as { reference?: unknown } | undefined
-            const entityRef = selectingSketchPlane
-              ? normalizeEntityReference(data?.reference)
-              : null
-            if (selectingSketchPlane && !entityRef) return
+            if (!data?.reference) return
+
+            const entityRef = normalizeEntityReference(data.reference)
+            if (!entityRef) return
 
             const event = await getEventForQueryEntityTypeWithPoint(
               engineEvent,
@@ -203,25 +198,10 @@ export function useEngineConnectionSubscriptions() {
                 wasmInstance,
               }
             )
-            // Check ownership again after the asynchronous topology lookup.
-            if (
-              !active ||
-              stateRef.current.matches('sketchSolveMode') ||
-              selectingSketchPlane !==
-                stateRef.current.matches('Sketch no face')
-            ) {
-              return
-            }
-            if (event?.type === 'Set selection') {
-              send({ ...event, data: { ...event.data, isShiftDown } })
-            } else if (event) {
-              send(event)
-            }
-            if (!selectingSketchPlane || !entityRef) return
+            if (!stateRef.current.matches('Sketch no face')) return
+            if (event) send(event)
 
-            const topology = engineTopologyFallbackFromReference(
-              data?.reference
-            )
+            const topology = engineTopologyFallbackFromReference(data.reference)
             if (
               entityRef.type === 'face' &&
               topology &&
@@ -249,8 +229,55 @@ export function useEngineConnectionSubscriptions() {
               context.store.useSketchSolveMode?.current,
               kclManager
             )
+          })().catch(reportRejection)
+          return
+        }
+        // Resolve clicks in order: topology lookups can outlast later mapped picks.
+        const isShiftDown = kclManager.isShiftDown
+        const applySelection = async () => {
+          if (
+            !active ||
+            stateRef.current.matches('sketchSolveMode') ||
+            stateRef.current.matches('Sketch no face')
+          ) {
+            return
+          }
+          const event = await getEventForQueryEntityTypeWithPoint(engineEvent, {
+            engineCommandManager,
+            kclManager,
+            rustContext,
+            wasmInstance,
           })
-          .catch(reportRejection)
+          // Check state again, in case it changed before
+          // getEventForQueryEntityTypeWithPoint returned.
+          if (
+            !active ||
+            stateRef.current.matches('sketchSolveMode') ||
+            selectingSketchPlane !== stateRef.current.matches('Sketch no face')
+          ) {
+            return
+          }
+          if (event?.type === 'Set selection') {
+            send({ ...event, data: { ...event.data, isShiftDown } })
+          } else if (event) {
+            send(event)
+          }
+          if (selectingSketchPlane) {
+            const entityId = (
+              engineEvent.data as typeof engineEvent.data & {
+                entity_id?: string
+              }
+            ).entity_id
+            if (entityId) {
+              await selectSketchPlane(
+                entityId,
+                context.store.useSketchSolveMode?.current,
+                kclManager
+              )
+            }
+          }
+        }
+        pendingClick = pendingClick.then(applySelection).catch(reportRejection)
       },
     })
     return () => {
