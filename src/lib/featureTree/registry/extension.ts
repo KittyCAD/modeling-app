@@ -2,6 +2,7 @@ import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 import type { Command, CommandScopes } from '@src/lib/commandTypes'
 import {
   FEATURE_TREE_COMMANDS,
+  FEATURE_TREE_EDIT_EVENT,
   FEATURE_TREE_FOCUSED_SCOPE,
 } from '@src/lib/featureTree/registry/contract'
 import { commandsValueSpec } from '@src/registry/contracts/commands'
@@ -106,20 +107,33 @@ export const featureTreeExtension = defineRegistryItemFactory((ctx) => {
     {
       id: FEATURE_TREE_COMMANDS.actions,
       title: 'Focus tree row actions',
-      key: 'f2',
+      keys: ['f2'],
       run: () => browser.value?.tree.value?.focusActions(),
     },
     {
       id: FEATURE_TREE_COMMANDS.row,
       title: 'Return to tree row',
-      key: 'escape',
+      keys: ['escape'],
       run: () => browser.value?.tree.value?.focusRow(),
     },
     {
       id: FEATURE_TREE_COMMANDS.menu,
       title: 'Open tree row context menu',
-      key: 'shift+f10',
+      keys: ['shift+f10'],
       run: () => browser.value?.tree.value?.requestContextMenu(),
+    },
+    {
+      id: FEATURE_TREE_COMMANDS.edit,
+      title: 'Edit focused feature',
+      keys: ['shift+enter', 'shift+space'],
+      run: () => {
+        const tree = browser.value?.tree.value
+        const nodeId = tree?.focusedNodeId
+        if (tree && nodeId)
+          tree.dispatchEvent(
+            new CustomEvent(FEATURE_TREE_EDIT_EVENT, { detail: { nodeId } })
+          )
+      },
     },
   ]
   return {
@@ -144,14 +158,16 @@ export const featureTreeExtension = defineRegistryItemFactory((ctx) => {
             ])
           )
         ),
-        provideKeymapItem({
-          id: binding.id,
-          title: binding.title,
-          source: 'Feature tree',
-          command: binding.id,
-          when: [FEATURE_TREE_FOCUSED_SCOPE],
-          keystrokes: [binding.key],
-        }),
+        ...binding.keys.map((key, index) =>
+          provideKeymapItem({
+            id: index === 0 ? binding.id : `${binding.id}.${index}`,
+            title: binding.title,
+            source: 'Feature tree',
+            command: binding.id,
+            when: [FEATURE_TREE_FOCUSED_SCOPE],
+            keystrokes: [key],
+          })
+        ),
       ]),
       provide(keymapEventOwnersValueSpec, {
         id: 'feature-tree',

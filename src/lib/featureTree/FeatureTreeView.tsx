@@ -4,6 +4,7 @@ import {
   type ZooFeatureTree,
   type ZooFeatureTreeRow,
 } from '@kittycad/ui-components/web-components'
+import { FEATURE_TREE_EDIT_EVENT } from '@src/lib/featureTree/registry/contract'
 import type { ContextMenuProps } from '@src/components/ContextMenu'
 import { ContextMenu } from '@src/components/ContextMenu'
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -179,20 +180,14 @@ export function FeatureTreeRow({
       ).detail
       if (selectedNodeId === nodeId && !disabled) onSelect?.(event)
     }
-    const activate = (event: KeyboardEvent) => {
-      // The tree handles selection first. Actions and editors retain their own Enter.
-      if (
-        !disabled &&
-        !event.isComposing &&
-        !event.repeat &&
-        !event.altKey &&
-        !event.ctrlKey &&
-        !event.metaKey &&
-        event.key === 'Enter' &&
-        event.defaultPrevented &&
-        event.composedPath()[0] === row
-      )
-        onDoubleClick?.(event)
+    const edit = (event: Event) => {
+      const { nodeId: editedNodeId } = (
+        event as CustomEvent<{ nodeId: string }>
+      ).detail
+      if (editedNodeId !== nodeId || disabled) return
+      // Capture both callbacks before selection can synchronously rerender the row.
+      onSelect?.(event)
+      onDoubleClick?.(event)
     }
     const menu = (event: Event) => {
       if (event.target !== row || disabled) return
@@ -217,12 +212,12 @@ export function FeatureTreeRow({
         onDoubleClick?.(event)
     }
     owner?.addEventListener('zoo-selection-change', select)
-    owner?.addEventListener('keydown', activate)
+    owner?.addEventListener(FEATURE_TREE_EDIT_EVENT, edit)
     row.addEventListener('zoo-context-menu', menu)
     row.addEventListener('dblclick', doubleClick)
     return () => {
       owner?.removeEventListener('zoo-selection-change', select)
-      owner?.removeEventListener('keydown', activate)
+      owner?.removeEventListener(FEATURE_TREE_EDIT_EVENT, edit)
       row.removeEventListener('zoo-context-menu', menu)
       row.removeEventListener('dblclick', doubleClick)
     }

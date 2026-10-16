@@ -70,6 +70,14 @@ describe('feature tree registry contribution', () => {
       when: [FEATURE_TREE_FOCUSED_SCOPE],
       keystrokes: ['shift+f10'],
     })
+    expect(
+      registry
+        .get(keymapValueSpec)
+        .items.filter(({ command }) => command === FEATURE_TREE_COMMANDS.edit)
+    ).toMatchObject([
+      { when: [FEATURE_TREE_FOCUSED_SCOPE], keystrokes: ['shift+enter'] },
+      { when: [FEATURE_TREE_FOCUSED_SCOPE], keystrokes: ['shift+space'] },
+    ])
     const actions = vi.fn()
     const toggleBinding = registry
       .get(keymapValueSpec)
