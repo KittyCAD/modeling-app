@@ -1132,7 +1132,7 @@ impl ExecState {
             .values()
             .chain(self.global.artifacts.artifacts.values())
             .filter_map(|artifact| match artifact {
-                Artifact::NamedView(view) => Some((view.code_ref.range.module_id(), view.name.as_str())),
+                Artifact::NamedView(view) => Some((view.declaring_module_id, view.name.as_str())),
                 _ => None,
             })
     }

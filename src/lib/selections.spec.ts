@@ -19,6 +19,7 @@ import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
   canSubmitSelectionArg,
+  type ResolvedSelectionType,
   codeToIdSelections,
   findLastRangeStartingBefore,
   getEventForQueryEntityTypeWithPoint,
@@ -3980,6 +3981,27 @@ describe('canSubmitSelectionArg', () => {
     expect(canSubmitSelectionArg(new Map([['wall', 1]]), bodyArgument)).toBe(
       false
     )
+  })
+
+  test('preserves legacy acceptance of non-empty code selections', () => {
+    const source: Selection = {
+      codeRef: { range: [1, 2, 0], pathToNode: [] },
+    }
+    const counts = new Map<ResolvedSelectionType, number>([['other', 2]])
+    const arg = { ...bodyArgument, allowCodeReferences: true }
+
+    expect(
+      canSubmitSelectionArg(counts, arg, {
+        graphSelections: [source, source],
+        otherSelections: [],
+      })
+    ).toBe(true)
+    expect(
+      canSubmitSelectionArg(counts, arg, {
+        graphSelections: [{ codeRef: { range: [1, 1, 0], pathToNode: [] } }],
+        otherSelections: [],
+      })
+    ).toBe(false)
   })
 })
 
