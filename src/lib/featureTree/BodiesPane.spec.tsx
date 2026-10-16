@@ -1,4 +1,10 @@
-import { cleanup, fireEvent, render, within } from '@testing-library/react'
+import {
+  cleanup,
+  fireEvent,
+  render,
+  waitFor,
+  within,
+} from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const state = vi.hoisted(() => ({
@@ -58,7 +64,7 @@ afterEach(() => {
   vi.clearAllMocks()
 })
 describe('Bodies scene tree', () => {
-  it('keeps pattern copy identity in selection, visibility and delete actions', () => {
+  it('keeps pattern copy identity in keyboard selection, visibility and delete actions', async () => {
     const pattern: Artifact = {
       type: 'pattern',
       id: 'pattern',
@@ -77,11 +83,11 @@ describe('Bodies scene tree', () => {
     )
     const tree = view.container.querySelector('zoo-feature-tree')!
     expect(tree.getAttribute('aria-label')).toBe('Bodies')
-    const row = view.container.querySelector('[node-id="copy-2"]')!
-    expect(within(row as HTMLElement).getByText('Body 2')).toBeTruthy()
-    row.dispatchEvent(
-      new CustomEvent('zoo-select', { bubbles: true, composed: true })
-    )
+    const row = view.container.querySelector<HTMLElement>('[node-id="copy-2"]')!
+    expect(within(row).getByText('Body 2')).toBeTruthy()
+    await waitFor(() => expect(row.getAttribute('role')).toBe('treeitem'))
+    row.focus()
+    fireEvent.keyDown(row, { key: ' ' })
     expect(state.send).toHaveBeenCalledWith(
       expect.objectContaining({
         type: 'Set selection',
