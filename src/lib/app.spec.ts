@@ -1,3 +1,4 @@
+import { watch, type FSWatcher } from 'node:fs'
 import type { Feature } from '@kittycad/lib'
 import { pluginsValueSpec } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
@@ -6,6 +7,7 @@ import { File } from '@src/lib/projectSession'
 import { App } from '@src/lib/app'
 import { IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+import { watchMigrationSource } from '@src/lib/kclMigration/project'
 import type { Project } from '@src/lib/project'
 import {
   DIRECTORY_PROJECT_LIBRARY_TYPE,
@@ -257,6 +259,54 @@ function hasDefaultDirectoryLibrarySetting(app: App) {
 }
 
 describe('project system', () => {
+  it('refreshes migration eligibility for a closed entrypoint and releases its watcher', async () => {
+    const projectPath = `/tmp/app-migration-source-${crypto.randomUUID()}`
+    const mainPath = fsZds.join(projectPath, 'main.kcl')
+    const source = '@settings(kclVersion = 2.0)\nx = 1\n'
+    const target = '@settings(kclVersion = 3.0)\nx = 1\n'
+    const app = createAppForTest()
+    const originalIO = { ...File.ioImplementations }
+    const watchers = new Map<string, FSWatcher>()
+    let stop: (() => void) | undefined
+    let isKcl2 = false
+    File.ioImplementations.watch = (path, key, onChange) => {
+      watchers.set(
+        key,
+        watch(path, (event) => onChange(event, path))
+      )
+    }
+    File.ioImplementations.unwatch = (_path, key) => {
+      watchers.get(key)?.close()
+      watchers.delete(key)
+    }
+    try {
+      await writeText(mainPath, source)
+      const project = await app.openProject({
+        ...mockProject,
+        path: projectPath,
+        default_file: mainPath,
+        children: [{ name: 'main.kcl', path: mainPath, children: null }],
+      })
+      stop = watchMigrationSource(app, project, (value) => {
+        isKcl2 = value
+      })
+      await vi.waitFor(() => expect(isKcl2).toBe(true))
+      expect(watchers.size).toBe(1)
+      await writeText(mainPath, target)
+      await vi.waitFor(() => expect(isKcl2).toBe(false))
+      await writeText(mainPath, source)
+      await vi.waitFor(() => expect(isKcl2).toBe(true))
+      stop()
+      expect(watchers.size).toBe(0)
+    } finally {
+      stop?.()
+      app.dispose()
+      for (const watcher of watchers.values()) watcher.close()
+      Object.assign(File.ioImplementations, originalIO)
+      await fsZds.rm(projectPath, { recursive: true, force: true })
+    }
+  })
+
   it('always closes a the last project before opening a new one', async () => {
     const app = createAppForTest()
     vi.fn(window.electron?.watchFileOn).mockImplementation(() => {})

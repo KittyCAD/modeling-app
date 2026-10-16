@@ -8,6 +8,7 @@ import {
   exists as existsOperation,
   type FileOperations,
   fileOperationsLayer,
+  lstat as lstatOperation,
   move as moveOperation,
   pendingFileOperations,
   readDirectory as readDirectoryOperation,
@@ -74,6 +75,7 @@ export function createFileOperationsRuntime(
   const operations: FileOperationsRegistryService = {
     pending: () => runRuntimePromise(pendingFileOperations),
     stat: (path) => runFileOperationsPromise('stat', statOperation(path)),
+    lstat: (path) => runFileOperationsPromise('lstat', lstatOperation(path)),
     canReadWrite: (path) =>
       runFileOperationsPromise('access', canReadWriteOperation(path)),
     exists: (path) => runFileOperationsPromise('exists', existsOperation(path)),
