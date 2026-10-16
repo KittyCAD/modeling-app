@@ -58,7 +58,6 @@ import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import {
   getBodySelectionFromPrimitiveParentEntityId,
   getEngineTopologyFallbackNormalized,
-  getOrderedGraphAndPrimitiveSelections,
   isEnginePrimitiveSelection,
   isEngineRegionSelection,
 } from '@src/lib/selections'
@@ -473,20 +472,7 @@ export function addPlanarSurface({
   if (sketchCount > 0) {
     curvesExpr = exprs[0]
   } else {
-    const exprBySelection = new Map(
-      [...curves.graphSelections, ...primitiveEdges].map((selection, index) => [
-        selection,
-        exprs[index],
-      ])
-    )
-    const orderedExprs: Expr[] = []
-    for (const selection of getOrderedGraphAndPrimitiveSelections(curves)) {
-      const expression = exprBySelection.get(selection)
-      if (!expression)
-        return new Error('Could not resolve the selected curve in code.')
-      orderedExprs.push(expression)
-    }
-    curvesExpr = createArrayExpression(orderedExprs)
+    curvesExpr = createArrayExpression(exprs)
   }
   if (curvesExpr?.type === 'PipeSubstitution') curvesExpr = null
 

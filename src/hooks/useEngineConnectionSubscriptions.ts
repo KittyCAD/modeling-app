@@ -167,8 +167,6 @@ export function useEngineConnectionSubscriptions() {
         }, HOVER_ENTITY_REFERENCE_DEBOUNCE_MS)
       },
     })
-    let active = true
-    let pendingClick = Promise.resolve()
     const unSubClick = engineCommandManager.subscribeTo({
       event: 'query_entity_type_with_point',
       callback: (engineEvent) => {
@@ -232,16 +230,8 @@ export function useEngineConnectionSubscriptions() {
           })().catch(reportRejection)
           return
         }
-        // Resolve clicks in order: topology lookups can outlast later mapped picks.
-        const isShiftDown = kclManager.isShiftDown
-        const applySelection = async () => {
-          if (
-            !active ||
-            stateRef.current.matches('sketchSolveMode') ||
-            stateRef.current.matches('Sketch no face')
-          ) {
-            return
-          }
+        // Normal flow for other states
+        ;(async () => {
           const event = await getEventForQueryEntityTypeWithPoint(engineEvent, {
             engineCommandManager,
             kclManager,
@@ -251,17 +241,12 @@ export function useEngineConnectionSubscriptions() {
           // Check state again, in case it changed before
           // getEventForQueryEntityTypeWithPoint returned.
           if (
-            !active ||
             stateRef.current.matches('sketchSolveMode') ||
             selectingSketchPlane !== stateRef.current.matches('Sketch no face')
           ) {
             return
           }
-          if (event?.type === 'Set selection') {
-            send({ ...event, data: { ...event.data, isShiftDown } })
-          } else if (event) {
-            send(event)
-          }
+          if (event) send(event)
           if (selectingSketchPlane) {
             const entityId = (
               engineEvent.data as typeof engineEvent.data & {
@@ -276,12 +261,10 @@ export function useEngineConnectionSubscriptions() {
               )
             }
           }
-        }
-        pendingClick = pendingClick.then(applySelection).catch(reportRejection)
+        })().catch(reportRejection)
       },
     })
     return () => {
-      active = false
       clearHoverTimer()
       unSubHover()
       unSubClick()

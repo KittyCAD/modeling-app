@@ -4,7 +4,6 @@ import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
 import {
   codeRefFromRange,
   getArtifactFromRange,
-  getOriginalSegmentArtifact,
 } from '@src/lang/std/artifactGraph'
 import { engineIdForArtifact } from '@src/lang/std/kclNamedViews'
 import {
@@ -20,11 +19,7 @@ import {
 } from '@src/lang/wasm'
 import { artifactToEntityRef } from '@src/lang/queryAst'
 import type RustContext from '@src/lib/rustContext'
-import {
-  getEventForQueryEntityTypeWithPoint,
-  getPrimitiveSelectionForEntity,
-  getOrderedGraphAndPrimitiveSelections,
-} from '@src/lib/selections'
+import { getPrimitiveSelectionForEntity } from '@src/lib/selections'
 import {
   createSelectionFromArtifacts,
   createSelectionFromPathArtifact,
@@ -37,31 +32,14 @@ import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { uuidv4 } from '@src/lib/utils'
 import type { ArtifactGraph } from '@src/lang/wasm'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
-import { modelingMachine } from '@src/machines/modelingMachine'
-import { generateModelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest'
-import { createActor } from 'xstate'
-
-// These unrelated sketch dialogs initialize the browser app on import.
-vi.mock('@src/components/SetHorVertDistanceModal', () => ({
-  createInfoModal: vi.fn(),
-  GetInfoModal: vi.fn(),
-}))
-vi.mock('@src/components/SetAngleLengthModal', () => ({
-  createSetAngleLengthModal: vi.fn(),
-  SetAngleLengthModal: vi.fn(),
-}))
+import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
 let rustContextInThisFile: RustContext = null!
-let worldInThisFile: Awaited<
-  ReturnType<typeof buildTheWorldAndConnectToEngine>
-> = null!
-
 /**
  * Every it test could build the world and connect to the engine but this is too resource intensive and will
  * spam engine connections.
@@ -73,12 +51,8 @@ beforeEach(async () => {
     return
   }
 
-  worldInThisFile = await buildTheWorldAndConnectToEngine({
-    webrtc: false,
-    pool: 'cpu',
-  })
   const { instance, kclManager, engineCommandManager, rustContext } =
-    worldInThisFile
+    await buildTheWorldAndConnectToEngine({ webrtc: false, pool: 'cpu' })
   instanceInThisFile = instance
   kclManagerInThisFile = kclManager
   engineCommandManagerInThisFile = engineCommandManager
@@ -778,153 +752,6 @@ surface001 = planarSurface(region001)`
       )
     ).toBeUndefined()
   })
-
-  it('preserves viewport click order when a closed loop mixes mapped and topology-fallback edges', async () => {
-    const { ast, artifactGraph } = await setup(`${triangle}
-region001 = region(point = [2mm, 2mm], sketch = sketch001)
-extrude001 = extrude(region001, length = 5mm)`)
-    expect(kclManagerInThisFile.errors).toEqual([])
-    const surface = [...artifactGraph.values()].find(
-      (artifact): artifact is Extract<Artifact, { type: 'sweep' }> =>
-        artifact.type === 'sweep'
-    )
-    if (!surface) throw new Error('Missing surface')
-    const faces = surface.surfaceIds.map((id) => artifactGraph.get(id))
-    const cap = faces.find(
-      (artifact) => artifact?.type === 'cap' && artifact.subType === 'end'
-    )
-    if (!cap) throw new Error('Missing end cap')
-    const walls = faces
-      .filter(
-        (artifact): artifact is Extract<Artifact, { type: 'wall' }> =>
-          artifact?.type === 'wall'
-      )
-      .sort((left, right) => {
-        const leftSegment = getOriginalSegmentArtifact(
-          left.segId,
-          artifactGraph
-        )
-        const rightSegment = getOriginalSegmentArtifact(
-          right.segId,
-          artifactGraph
-        )
-        if (!leftSegment || !rightSegment)
-          throw new Error('Missing source segment')
-        return leftSegment.codeRef.range[0] - rightSegment.codeRef.range[0]
-      })
-    expect(walls).toHaveLength(3)
-    const edges: Selection[] = []
-    for (const wall of walls)
-      edges.push(
-        await oppositeEdgeSelection(artifactGraph, surface, wall.segId)
-      )
-    const actor = createActor(modelingMachine, {
-      input: generateModelingMachineDefaultContext({
-        ...worldInThisFile,
-        wasmInstance: instanceInThisFile,
-      }),
-    }).start()
-    const clickEdge = async (index: number, isShiftDown = true) => {
-      const event = await getEventForQueryEntityTypeWithPoint(
-        index === 1
-          ? {
-              entity_id: edges[index].engineEntityId!,
-              reference: { type: 'edge', side_faces: [] },
-            }
-          : {
-              reference: {
-                type: 'edge',
-                side_faces: [walls[index].id, cap.id],
-              },
-            },
-        {
-          engineCommandManager: engineCommandManagerInThisFile,
-          kclManager: kclManagerInThisFile,
-          rustContext: rustContextInThisFile,
-          wasmInstance: instanceInThisFile,
-        }
-      )
-      if (event?.type !== 'Set selection')
-        throw new Error('Missing viewport selection event')
-      expect(event.data.selectionType).toBe(
-        index === 1 ? 'enginePrimitiveSelection' : 'singleCodeCursor'
-      )
-      if (event.data.selectionType === 'singleCodeCursor') {
-        event.data.selection.engineEntityId = edges[index].engineEntityId
-      }
-      actor.send({ ...event, data: { ...event.data, isShiftDown } })
-    }
-    const selectedEdgeIds = () =>
-      getOrderedGraphAndPrimitiveSelections(
-        actor.getSnapshot().context.selectionRanges
-      ).map((selection) =>
-        'type' in selection ? selection.entityId : selection.engineEntityId
-      )
-    const createSurface = () => {
-      const result = addPlanarSurface({
-        ast,
-        artifactGraph,
-        curves: actor.getSnapshot().context.selectionRanges,
-        wasmInstance: instanceInThisFile,
-      })
-      if (err(result)) throw result
-      const newCode = recast(result.modifiedAst, instanceInThisFile)
-      if (err(newCode)) throw newCode
-      const call = result.modifiedAst.body.findLast(
-        (statement) => statement.type === 'VariableDeclaration'
-      )
-      if (
-        call?.type !== 'VariableDeclaration' ||
-        call.declaration.init.type !== 'CallExpressionKw' ||
-        call.declaration.init.unlabeled?.type !== 'ArrayExpression'
-      ) {
-        throw new Error('Missing planar surface edge array')
-      }
-      return {
-        newCode,
-        names: call.declaration.init.unlabeled.elements.map((expr) =>
-          expr.type === 'CallExpressionKw' ? expr.callee.name.name : expr.type
-        ),
-      }
-    }
-    try {
-      await clickEdge(0, false)
-      await clickEdge(1)
-      await clickEdge(2)
-      expect(selectedEdgeIds()).toEqual(
-        edges.map((edge) => edge.engineEntityId)
-      )
-      expect(createSurface().names).toEqual([
-        'getCommonEdge',
-        'edgeId',
-        'getCommonEdge',
-      ])
-      await clickEdge(0)
-      await clickEdge(0)
-      expect(selectedEdgeIds()).toEqual([
-        edges[1].engineEntityId,
-        edges[2].engineEntityId,
-        edges[0].engineEntityId,
-      ])
-      await clickEdge(1)
-      await clickEdge(1)
-      expect(selectedEdgeIds()).toEqual([
-        edges[2].engineEntityId,
-        edges[0].engineEntityId,
-        edges[1].engineEntityId,
-      ])
-      const { newCode, names } = createSurface()
-      expect(names).toEqual(['getCommonEdge', 'getCommonEdge', 'edgeId'])
-      await getAstAndArtifactGraph(
-        newCode,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      expect(kclManagerInThisFile.errors).toEqual([])
-    } finally {
-      actor.stop()
-    }
-  }, 10_000)
 
   it.each(['path', 'solid2d'] as const)(
     'uses a legacy closed sketch directly from a %s selection',

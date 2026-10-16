@@ -180,7 +180,6 @@ import {
   getEngineTopologyFallbackNormalized,
   isEnginePrimitiveSelection,
   isEngineRegionSelection,
-  reconcileSelectionOrder,
   selectionBodyFace,
   tryEnterSketchOnDoubleClickFromScene,
   updateExtraSegments,
@@ -1699,7 +1698,6 @@ export const modelingMachine = setup({
             event.output) ||
           null
         if (!setSelections) return {}
-        const isShiftDown = setSelections.isShiftDown ?? kclManager.isShiftDown
         let selections: Selections = {
           graphSelections: [],
           otherSelections: [],
@@ -1708,7 +1706,7 @@ export const modelingMachine = setup({
           const sel = setSelections.selection
           const isEmpty =
             !sel || (typeof sel === 'object' && !sel.entityRef && !sel.codeRef)
-          if (isEmpty && isShiftDown) {
+          if (isEmpty && kclManager.isShiftDown) {
             // if the user is holding shift, but they didn't select anything
             // don't nuke their other selections (frustrating to have one bad click ruin your
             // whole selection)
@@ -1716,17 +1714,18 @@ export const modelingMachine = setup({
               graphSelections: selectionRanges.graphSelections || [],
               otherSelections: selectionRanges.otherSelections,
             }
-          } else if (isEmpty && !isShiftDown) {
+          } else if (isEmpty && !kclManager.isShiftDown) {
             selections = {
               graphSelections: [],
               otherSelections: [],
             }
-          } else if (!isEmpty && !isShiftDown) {
+          } else if (!isEmpty && !kclManager.isShiftDown) {
             selections = {
               graphSelections: [sel],
               otherSelections: [],
             }
-          } else if (!isEmpty && isShiftDown) {
+          } else if (!isEmpty && kclManager.isShiftDown) {
+            // Handle Shift key – compare V2 to V2 via selectionV2Equals
             const newV2 = sel
             const current = selectionRanges.graphSelections || []
             const alreadySelected = current.some((s) =>
@@ -1779,19 +1778,13 @@ export const modelingMachine = setup({
           updateSceneObjectColors()
 
           return {
-            selectionRanges: reconcileSelectionOrder(
-              selectionRanges,
-              selections
-            ),
+            selectionRanges: selections,
           }
         }
 
         if (setSelections.selectionType === 'mirrorCodeMirrorSelections') {
           return {
-            selectionRanges: reconcileSelectionOrder(
-              selectionRanges,
-              setSelections.selection
-            ),
+            selectionRanges: setSelections.selection,
           }
         }
 
@@ -1802,7 +1795,7 @@ export const modelingMachine = setup({
               selection.entityId === setSelections.selection.entityId
           )
 
-          const otherSelections = isShiftDown
+          const otherSelections = kclManager.isShiftDown
             ? shouldDeselect
               ? selectionRanges.otherSelections.filter(
                   (selection) =>
@@ -1815,7 +1808,9 @@ export const modelingMachine = setup({
             : [setSelections.selection]
 
           const selections: Selections = {
-            graphSelections: isShiftDown ? selectionRanges.graphSelections : [],
+            graphSelections: kclManager.isShiftDown
+              ? selectionRanges.graphSelections
+              : [],
             otherSelections,
           }
           const { engineEvents } = handleSelectionBatch({
@@ -1838,10 +1833,7 @@ export const modelingMachine = setup({
           })
 
           return {
-            selectionRanges: reconcileSelectionOrder(
-              selectionRanges,
-              selections
-            ),
+            selectionRanges: selections,
           }
         }
 
@@ -1852,7 +1844,7 @@ export const modelingMachine = setup({
               selection.id === setSelections.selection.id
           )
 
-          const otherSelections = isShiftDown
+          const otherSelections = kclManager.isShiftDown
             ? shouldDeselect
               ? selectionRanges.otherSelections.filter(
                   (selection) =>
@@ -1865,7 +1857,9 @@ export const modelingMachine = setup({
             : [setSelections.selection]
 
           const selections: Selections = {
-            graphSelections: isShiftDown ? selectionRanges.graphSelections : [],
+            graphSelections: kclManager.isShiftDown
+              ? selectionRanges.graphSelections
+              : [],
             otherSelections,
           }
           const { engineEvents } = handleSelectionBatch({
@@ -1885,10 +1879,7 @@ export const modelingMachine = setup({
           })
 
           return {
-            selectionRanges: reconcileSelectionOrder(
-              selectionRanges,
-              selections
-            ),
+            selectionRanges: selections,
           }
         }
 
@@ -1896,7 +1887,7 @@ export const modelingMachine = setup({
           setSelections.selectionType === 'axisSelection' ||
           setSelections.selectionType === 'defaultPlaneSelection'
         ) {
-          if (isShiftDown) {
+          if (kclManager.isShiftDown) {
             selections = {
               graphSelections: selectionRanges.graphSelections || [],
               otherSelections: [setSelections.selection],
@@ -1933,10 +1924,7 @@ export const modelingMachine = setup({
           }
 
           return {
-            selectionRanges: reconcileSelectionOrder(
-              selectionRanges,
-              selections
-            ),
+            selectionRanges: selections,
           }
         }
 
@@ -1970,16 +1958,10 @@ export const modelingMachine = setup({
 
           if (!sketchDetails)
             return {
-              selectionRanges: reconcileSelectionOrder(
-                selectionRanges,
-                setSelections.selection
-              ),
+              selectionRanges: setSelections.selection,
             }
           return {
-            selectionRanges: reconcileSelectionOrder(
-              selectionRanges,
-              setSelections.selection
-            ),
+            selectionRanges: setSelections.selection,
             sketchDetails: {
               ...sketchDetails,
               sketchEntryNodePath:
