@@ -5,7 +5,6 @@ import { useRef } from 'react'
 import { afterAll, afterEach, beforeAll, expect, it, vi } from 'vitest'
 import ModelingDialog from '@src/components/ModelingDialog/ModelingDialog'
 import * as dialogArguments from '@src/components/ModelingDialog/arguments'
-import { useDialogReset } from '@src/components/ModelingDialog/useDialogReset'
 import type { Command } from '@src/lib/commandTypes'
 import { GLOBAL_COMMAND_SCOPES } from '@src/registry/contracts/commands'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
@@ -31,15 +30,17 @@ afterAll(() => {
 function Harness() {
   const actor = world.commandBarActor
   const state = useSelector(actor, (snapshot) => snapshot)
-  const resetting = useDialogReset(actor)
+  const session = state.context.dialogSession
   const containerRef = useRef<HTMLDivElement>(null)
   const settings = getOnlySettingsFromContext(
     world.settingsActor.getSnapshot().context
   )
   return (
     <div ref={containerRef}>
-      {!resetting && !state.matches('Closed') && (
+      {session && (
         <ModelingDialog
+          key={session.id}
+          signal={session.signal}
           containerRef={containerRef}
           kclManager={world.kclManager}
           commands={{

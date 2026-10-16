@@ -17,8 +17,15 @@ import { reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { UserFeaturesService } from '@src/machines/userFeaturesMachine'
 import toast from 'react-hot-toast'
-import { assertEvent, assign, fromPromise, setup } from 'xstate'
-import type { ActorRefFrom } from 'xstate'
+import {
+  assertEvent,
+  assign,
+  enqueueActions,
+  fromCallback,
+  fromPromise,
+  setup,
+} from 'xstate'
+import type { ActorRefFrom, EventObject } from 'xstate'
 
 export type CommandBarActorType = ActorRefFrom<typeof commandBarMachine>
 
@@ -64,6 +71,7 @@ export type CommandBarInput = {
 }
 export type CommandBarContext = CommandBarInput & {
   selectedCommand?: Command
+  dialogSession?: { id: string; signal: AbortSignal }
   currentArgument?: CommandArgument<unknown> & { name: string }
   argumentsToSubmit: { [x: string]: unknown }
   reviewValidationError?: string
@@ -151,6 +159,21 @@ export const commandBarMachine = setup({
     events: {} as CommandBarMachineEvent,
   },
   actions: {
+    'Start dialog session': assign({
+      dialogSession: ({ context, spawn }) => {
+        if (!isModelingDialogCommand(context.selectedCommand)) return undefined
+        const controller = new AbortController()
+        const actor = spawn('Dialog session', {
+          id: 'dialogSession',
+          input: controller,
+        })
+        return { id: actor.sessionId, signal: controller.signal }
+      },
+    }),
+    'Stop dialog session': enqueueActions(({ enqueue }) => {
+      enqueue.stopChild('dialogSession')
+      enqueue.assign({ dialogSession: undefined })
+    }),
     enqueueValidArgsToSubmit: assign({
       argumentsToSubmit: ({ context, event }) => {
         if (event.type !== 'xstate.done.actor.validateSingleArgument') return {}
@@ -473,6 +496,12 @@ export const commandBarMachine = setup({
       !!event.output.reviewValidationError,
   },
   actors: {
+    // XState also runs this cleanup when the command system itself stops.
+    'Dialog session': fromCallback<EventObject, AbortController>(
+      ({ input }) => {
+        return () => input.abort()
+      }
+    ),
     'Validate argument': fromPromise(
       ({
         input,
@@ -706,6 +735,7 @@ export const commandBarMachine = setup({
   initial: 'Closed',
   states: {
     Closed: {
+      entry: 'Stop dialog session',
       on: {
         Open: {
           target: 'Selecting command',
@@ -719,6 +749,7 @@ export const commandBarMachine = setup({
     },
 
     'Selecting command': {
+      entry: 'Stop dialog session',
       on: {
         'Select command': {
           target: 'Command selected',
@@ -728,6 +759,7 @@ export const commandBarMachine = setup({
     },
 
     'Command selected': {
+      entry: ['Stop dialog session', 'Start dialog session'],
       always: [
         {
           target: 'Closed',

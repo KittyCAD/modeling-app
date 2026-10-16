@@ -1,7 +1,5 @@
 import { lazy, Suspense, useRef } from 'react'
-import { useDialogReset } from '@src/components/ModelingDialog/useDialogReset'
 import { useApp } from '@src/lib/boot'
-import { isModelingDialogCommand } from '@src/lib/commandUtils'
 import { commandScopeService } from '@src/registry/contracts/commands'
 import type { EngineSceneViewExtensionProps } from '@src/registry/contracts/engineScene'
 
@@ -16,13 +14,8 @@ export function ModelingDialogViewExtension({
   const containerRef = useRef<HTMLDivElement>(null)
   const { commands, settings, wasmPromise, registry } = useApp()
   const state = commands.useState()
-  const resetting = useDialogReset(commands.actor)
-  if (
-    resetting ||
-    state.matches('Closed') ||
-    !isModelingDialogCommand(state.context.selectedCommand)
-  )
-    return null
+  const session = state.context.dialogSession
+  if (!session) return null
   return (
     <div
       ref={containerRef}
@@ -30,6 +23,8 @@ export function ModelingDialogViewExtension({
     >
       <Suspense fallback={null}>
         <ModelingDialog
+          key={session.id}
+          signal={session.signal}
           containerRef={containerRef}
           kclManager={modelingState.context.kclManager}
           commands={commands}
