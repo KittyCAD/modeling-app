@@ -206,7 +206,11 @@ const withArtifactGraph = <
 
 // A sketch segment does not identify which solid edge the user intends.
 const withSolidEdgeSelections = <
-  Args extends { selection?: Selections; objects?: Selections },
+  Args extends {
+    selection?: Selections
+    objects?: Selections
+    nodeToEdit?: PathToNode
+  },
 >(
   codemod: ModelingCodemod<Args>,
   selectionKey: 'selection' | 'objects' = 'selection'
@@ -214,7 +218,7 @@ const withSolidEdgeSelections = <
   ...codemod,
   run: (context) => {
     const selections = context.args[selectionKey]
-    if (selections) {
+    if (selections && !context.args.nodeToEdit) {
       const error = validateSolidEdgeSelections(
         selections,
         context.kclManager.artifactGraph
