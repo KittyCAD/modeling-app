@@ -58,6 +58,7 @@ export default function ModelingDialog({
   const [initializing, setInitializing] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const mounted = useRef(true)
+  // Restore focus to the corresponding field after removing a selection.
   const selectionInputs = useRef(new Map<string, HTMLButtonElement>())
   const initialContext = useRef(state.context)
   const fields = getDialogFields({
