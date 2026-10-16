@@ -20,6 +20,7 @@ import {
   emptyOperationsByModule,
   getAllOperations,
   ROOT_MODULE_ID,
+  type OperationsByModule,
   type SourceRange,
 } from '@src/lang/wasm'
 import { useApp, useSingletons } from '@src/lib/boot'
@@ -70,6 +71,7 @@ import { browserSaveFile } from '@src/lib/browserSaveFile'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { exportSketchToDxf } from '@src/lib/exportDxf'
 import {
+  type FeatureTreeVisibilityState,
   prepareEditCommand,
   resolveFeatureTreeVisibility,
   sendDeleteCommand,
@@ -287,7 +289,33 @@ export const FeatureTreePaneContents = memo(() => {
     unfilteredOperationsByModule,
     ROOT_MODULE_ID
   )
-  const visibilityOperations = getAllOperations(kclManager.operationsByModule)
+  const getVisibilityState = useMemo(() => {
+    const operationsCache = new WeakMap<OperationsByModule, Operation[]>()
+
+    // Keep the complete operation stream behind a function. Passing it to every
+    // row makes React's performance tracking copy the entire project repeatedly.
+    return (item: Operation): FeatureTreeVisibilityState => {
+      if (
+        !(item.type === 'StdLibCall' && item.name === 'helix') &&
+        !(item.type === 'GroupBegin' && item.group.type === 'SketchBlock')
+      ) {
+        return { canToggleVisibility: false }
+      }
+
+      const operationsByModule = kclManager.operationsByModule
+      let visibilityOperations = operationsCache.get(operationsByModule)
+      if (!visibilityOperations) {
+        visibilityOperations = getAllOperations(operationsByModule)
+        operationsCache.set(operationsByModule, visibilityOperations)
+      }
+
+      return resolveFeatureTreeVisibility({
+        item,
+        operations: visibilityOperations,
+        artifactGraph: kclManager.artifactGraph,
+      })
+    }
+  }, [kclManager])
   const isShowingStaleFeatureTree = hasParseErrors && operationList.length > 0
 
   // Live execution tracking: expand only the active module branch.
@@ -398,7 +426,7 @@ export const FeatureTreePaneContents = memo(() => {
               modelingActor={modelingActor}
               engineCommandManager={engineCommandManager}
               onSelect={selectOperation}
-              visibilityOperations={visibilityOperations}
+              getVisibilityState={getVisibilityState}
               liveActiveModuleId={liveActiveModuleId}
               liveLatestOperationKey={liveLatestOperationKey}
             />
@@ -426,7 +454,7 @@ function OperationItemGroup({
   modelingActor,
   engineCommandManager,
   onSelect,
-  visibilityOperations,
+  getVisibilityState,
   isModuleOwned = false,
   liveLatestOperationKey,
 }: Omit<OperationProps, 'item'> & {
@@ -459,7 +487,7 @@ function OperationItemGroup({
           modelingActor={modelingActor}
           engineCommandManager={engineCommandManager}
           onSelect={onSelect}
-          visibilityOperations={visibilityOperations}
+          getVisibilityState={getVisibilityState}
           isModuleOwned={isModuleOwned}
           liveLatestOperationKey={liveLatestOperationKey}
         />
@@ -489,7 +517,7 @@ function OperationItemGroup({
               modelingActor={modelingActor}
               engineCommandManager={engineCommandManager}
               onSelect={onSelect}
-              visibilityOperations={visibilityOperations}
+              getVisibilityState={getVisibilityState}
               isModuleOwned={isModuleOwned}
               liveLatestOperationKey={liveLatestOperationKey}
             />
@@ -509,7 +537,7 @@ function OperationItemGroup({
                   modelingActor={modelingActor}
                   engineCommandManager={engineCommandManager}
                   onSelect={onSelect}
-                  visibilityOperations={visibilityOperations}
+                  getVisibilityState={getVisibilityState}
                   size="sm"
                   isModuleOwned={isModuleOwned}
                   liveLatestOperationKey={liveLatestOperationKey}
@@ -548,7 +576,7 @@ function OperationItemGroup({
                 modelingActor={modelingActor}
                 engineCommandManager={engineCommandManager}
                 onSelect={onSelect}
-                visibilityOperations={visibilityOperations}
+                getVisibilityState={getVisibilityState}
                 size="sm"
                 isModuleOwned={isModuleOwned}
                 liveLatestOperationKey={liveLatestOperationKey}
@@ -571,7 +599,7 @@ function OperationBranchGroup({
   modelingActor,
   engineCommandManager,
   onSelect,
-  visibilityOperations,
+  getVisibilityState,
   isModuleOwned = false,
   liveActiveModuleId,
   liveLatestOperationKey,
@@ -591,7 +619,7 @@ function OperationBranchGroup({
         modelingActor={modelingActor}
         engineCommandManager={engineCommandManager}
         onSelect={onSelect}
-        visibilityOperations={visibilityOperations}
+        getVisibilityState={getVisibilityState}
         isModuleOwned={true}
         liveLatestOperationKey={liveLatestOperationKey}
       />
@@ -634,7 +662,7 @@ function OperationBranchGroup({
             modelingActor={modelingActor}
             engineCommandManager={engineCommandManager}
             onSelect={onSelect}
-            visibilityOperations={visibilityOperations}
+            getVisibilityState={getVisibilityState}
             isModuleOwned={true}
             liveLatestOperationKey={liveLatestOperationKey}
           />
@@ -654,7 +682,7 @@ function OperationBranchGroup({
                 modelingActor={modelingActor}
                 engineCommandManager={engineCommandManager}
                 onSelect={onSelect}
-                visibilityOperations={visibilityOperations}
+                getVisibilityState={getVisibilityState}
                 isModuleOwned={true}
                 liveLatestOperationKey={liveLatestOperationKey}
               />
@@ -837,7 +865,7 @@ interface OperationProps {
   engineCommandManager: ConnectionManager
   modelingActor: ReturnType<typeof useModelingContext>['actor']
   onSelect: (sourceRange: SourceRange) => void
-  visibilityOperations: Operation[]
+  getVisibilityState: (item: Operation) => FeatureTreeVisibilityState
   size?: 'default' | 'sm'
   isModuleOwned?: boolean
   /** During live execution, the module that received the latest operation. */
@@ -975,7 +1003,7 @@ const OperationItem = ({
   size,
   isModuleOwned = false,
   referenceModuleId,
-  visibilityOperations,
+  getVisibilityState,
   liveLatestOperationKey,
 }: OperationProps) => {
   useSignals()
@@ -1474,11 +1502,8 @@ const OperationItem = ({
 
   const enabled = (!sketchNoFace || isOffsetPlane(item)) && !isStaleReference
 
-  const visibilityState = resolveFeatureTreeVisibility({
-    item,
-    operations: visibilityOperations,
-    artifactGraph: kclManager.artifactGraph,
-  })
+  const visibilityState =
+    isModuleOwned || isStaleReference ? undefined : getVisibilityState(item)
 
   return (
     <OperationItemWrapper
@@ -1562,7 +1587,7 @@ const OperationItem = ({
       visibilityToggle={
         !isStaleReference &&
         !isModuleOwned &&
-        visibilityState.canToggleVisibility
+        visibilityState?.canToggleVisibility
           ? {
               visible: visibilityState.hideOperation === undefined,
               onVisibilityChange: () => {
