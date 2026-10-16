@@ -10,6 +10,67 @@ region001 = region(segments = [sketch001.circle1])`
 test.describe('Modeling dialogs', { tag: '@web' }, () => {
   test.use({ userFeatures: ['modeling_dialogs'] })
 
+  test('Preserves an Extrude draft while hiding an obstruction', async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    modelingDialog,
+  }) => {
+    const code = `@settings(kclVersion = 3.0)
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region001 = region(segments = [sketch001.circle1])
+sketch002 = sketch(on = XY) {
+  circle1 = circle(start = [var 12mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region002 = region(segments = [sketch002.circle1])
+obstruction = extrude(region002, length = 20mm)`
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
+    await toolbar.openFeatureTreePane()
+    await toolbar.extrudeButton.click()
+    const length = modelingDialog.input(/^length$/i)
+    const profiles = modelingDialog.selection('Profiles')
+    await expect(length).toHaveText('5')
+    await length.fill('12mm')
+    await expect(profiles).toHaveText('Select in the scene')
+
+    const row = page
+      .locator('#bodies-list-pane')
+      .getByRole('button', { name: 'Body 1', exact: true })
+      .locator('..')
+    await row.hover()
+    await scene.waitForExecutionDoneAfter(() =>
+      row.getByTestId('feature-tree-visibility-toggle').click()
+    )
+    await editor.expectEditor.toContain(/hide\(\s*(?:\[\s*)?obstruction/)
+    await expect(modelingDialog.locator).toBeVisible()
+    await expect(length).toHaveText('12mm')
+    await expect(profiles).toHaveText('Select in the scene')
+
+    await editor.selectText('region001 = region')
+    await expect(profiles).toContainText(/1 region/i)
+    // Show and hide the obstruction again without replacing the chosen profile.
+    for (let toggle = 0; toggle < 2; toggle++) {
+      await row.hover()
+      await scene.waitForExecutionDoneAfter(() =>
+        row.getByTestId('feature-tree-visibility-toggle').click()
+      )
+      await expect(profiles).toContainText(/1 region/i)
+      await expect(length).toHaveText('12mm')
+    }
+    await expect(modelingDialog.submitButton).toBeEnabled()
+    await scene.waitForExecutionDoneAfter(() =>
+      modelingDialog.submitButton.click()
+    )
+    await expect(modelingDialog.locator).not.toBeAttached()
+    await editor.expectEditor.toContain('extrude(region001, length = 12mm)')
+  })
+
   test('Uses dialogs for supported commands and the palette for mixed selections', async ({
     page,
     homePage,
@@ -101,6 +162,8 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     )
     await editor.selectText('region(')
     await toolbar.extrudeButton.click()
+    await expect(toolbar.extrudeButton).toHaveAttribute('aria-pressed', 'true')
+    await expect(toolbar.revolveButton).toHaveAttribute('aria-pressed', 'false')
 
     const { locator: dialog, submitButton: submit } = modelingDialog
     const length = modelingDialog.input(/^length$/i)
@@ -115,6 +178,23 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     await expect(length).toBeFocused()
     await page.keyboard.press('Shift+Tab')
     await expect(profiles).not.toHaveCSS('box-shadow', 'none')
+
+    const beforeHelp = await dialog.boundingBox()
+    await dialog.getByRole('button', { name: 'Command help' }).click()
+    const docs = page.getByRole('link', { name: 'KCL docs', exact: true })
+    await expect(docs).toBeInViewport()
+    expect(await dialog.boundingBox()).toEqual(beforeHelp)
+    await expect(dialog).not.toHaveCSS('position', 'fixed')
+    await page.keyboard.press('Escape')
+    await expect(docs).not.toBeVisible()
+    await expect(dialog).toBeVisible()
+
+    await page.getByRole('button', { name: 'Clear Profiles selection' }).click()
+    await expect(profiles).toHaveText('Select in the scene')
+    await expect(profiles).toBeFocused()
+    await expect(submit).toBeDisabled()
+    await editor.selectText('region(')
+    await expect(profiles).toContainText(/1 region/i)
 
     await modelingDialog.selection('To').click()
     await expect(profiles).toContainText(/1 region/i)
@@ -170,10 +250,12 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     await editor.expectEditor.toContain('length = 12mm')
     await editor.expectEditor.toContain('tagStart = $startFace')
     await scene.settled()
+    await expect(toolbar.extrudeButton).toHaveAttribute('aria-pressed', 'false')
 
     await toolbar.openFeatureTreePane()
     const operation = await toolbar.getFeatureTreeOperation('Extrude', 0)
     await operation.dblclick()
+    await expect(toolbar.extrudeButton).toHaveAttribute('aria-pressed', 'true')
     await expect(length).toHaveText('12mm')
     await expect(length).toBeFocused()
     await expect(tagStart).toBeHidden()
@@ -182,6 +264,7 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     await length.fill('99mm')
     await modelingDialog.cancelButton.click()
     await expect(dialog).not.toBeAttached()
+    await expect(toolbar.extrudeButton).toHaveAttribute('aria-pressed', 'false')
     await operation.dblclick()
     await expect(length).toHaveText('12mm')
     await expect(tagStart).toBeHidden()

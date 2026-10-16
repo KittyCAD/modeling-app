@@ -2,8 +2,13 @@ import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 
 import { viewRows } from '@src/components/layout/areas/KclNamedViewsPane'
 import type { KclNamedView } from '@src/lang/std/kclNamedViews'
-import { KCL_DEFAULT_VIEW_NAME } from '@src/lang/std/kclNamedViews'
-import { describe, expect, it } from 'vitest'
+import { initialiseWasmNode } from '@src/lang/wasmUtilsNode'
+import { getKclDefaultViewName } from '@src/lib/wasm_lib_wrapper'
+import { beforeAll, describe, expect, it } from 'vitest'
+
+beforeAll(async () => {
+  await initialiseWasmNode()
+})
 
 const CODE_REF = {
   range: [0, 0, 0] as [number, number, number],
@@ -57,7 +62,7 @@ describe('viewRows', () => {
     expect(viewRows([])).toEqual([
       {
         key: 'kcl-default',
-        label: KCL_DEFAULT_VIEW_NAME,
+        label: getKclDefaultViewName(),
         identity: null,
         target: { kind: 'kclDefault' },
       },
@@ -71,7 +76,7 @@ describe('viewRows', () => {
     ])
 
     expect(rows.map((row) => row.label)).toEqual([
-      KCL_DEFAULT_VIEW_NAME,
+      getKclDefaultViewName(),
       'Front',
       'Plate in context',
     ])
@@ -85,7 +90,7 @@ describe('viewRows', () => {
     ])
 
     expect(rows.map((row) => row.label)).toEqual([
-      KCL_DEFAULT_VIEW_NAME,
+      getKclDefaultViewName(),
       'main::Front',
       'bracket::Front',
       'Side',
@@ -112,7 +117,7 @@ describe('viewRows', () => {
     ])
 
     expect(rows.map((row) => row.label)).toEqual([
-      KCL_DEFAULT_VIEW_NAME,
+      getKclDefaultViewName(),
       'Front',
       'Front',
     ])
