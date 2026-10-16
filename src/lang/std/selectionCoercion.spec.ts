@@ -327,6 +327,18 @@ describe('coerceSelectionsToBody', () => {
       codeRef: objectCodeRef,
       pathIds: [],
     },
+    {
+      type: 'importedGeometry',
+      id: 'import-1',
+      codeRef: objectCodeRef,
+      consumed: false,
+    },
+    {
+      type: 'gdtAnnotation',
+      id: 'annotation-1',
+      codeRef: objectCodeRef,
+      consumed: false,
+    },
   ])('preserves $type while coercing a face', (object) => {
     const artifactGraph: ArtifactGraph = new Map()
     artifactGraph.set('sweep-1', {

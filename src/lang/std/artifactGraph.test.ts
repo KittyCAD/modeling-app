@@ -438,6 +438,29 @@ describe('getSketchBlockForArtifact', () => {
 })
 
 describe('getArtifactFromRange', () => {
+  it('prefers an annotation over its same-range helper plane', () => {
+    const plane: Artifact = {
+      type: 'plane',
+      id: 'plane',
+      codeRef,
+      pathIds: [],
+    }
+    const annotation: Artifact = {
+      type: 'gdtAnnotation',
+      id: 'annotation',
+      codeRef,
+      consumed: false,
+    }
+    const artifactGraph = new Map<string, Artifact>([
+      [plane.id, plane],
+      [annotation.id, annotation],
+    ])
+    expect(getArtifactFromRange(codeRef.range, artifactGraph)).toBe(annotation)
+    expect(getArtifactFromRange(codeRef.range, artifactGraph, 'plane')).toBe(
+      plane
+    )
+  })
+
   it('prefers the requested sketchBlock over a same-range path match', () => {
     const artifactGraph: ArtifactGraph = new Map()
     const range: [number, number, number] = [10, 40, 0]

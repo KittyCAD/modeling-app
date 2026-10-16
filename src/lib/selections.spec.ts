@@ -4018,6 +4018,43 @@ describe('canSubmitSelectionArg', () => {
     ).toBe(false)
   })
 
+  test.each(['importedGeometry', 'gdtAnnotation'] satisfies Artifact['type'][])(
+    'validates resolved %s selections against allowed types',
+    (type) => {
+      const artifact = {
+        type,
+        id: 'object',
+        codeRef: {
+          range: [30, 39, 0],
+          pathToNode: [],
+          nodePath: { steps: [] },
+        },
+        consumed: false,
+      } satisfies Artifact
+      const artifactGraph: ArtifactGraph = new Map([[artifact.id, artifact]])
+      const selection: Selections = {
+        graphSelections: [{ codeRef: artifact.codeRef }],
+        otherSelections: [],
+      }
+      const arg = {
+        selectionTypes: [type],
+        multiple: true,
+        allowCodeReferences: true,
+      }
+      expect(canSubmitSelectionArg(ast, selection, arg, artifactGraph)).toBe(
+        true
+      )
+      expect(
+        canSubmitSelectionArg(
+          ast,
+          selection,
+          { ...arg, selectionTypes: ['sweep'] },
+          artifactGraph
+        )
+      ).toBe(false)
+    }
+  )
+
   test('distinguishes default planes from named planes', () => {
     const selection: Selections = {
       graphSelections: [],

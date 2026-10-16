@@ -460,6 +460,19 @@ describe('Sweep-like bodyType argument', () => {
   })
 })
 
+it('preserves supported non-body object selections', () => {
+  expect(modelingMachineCommandConfig.Appearance).toMatchObject({
+    args: {
+      objects: { selectionTypes: expect.arrayContaining(['importedGeometry']) },
+    },
+  })
+  expect(modelingMachineCommandConfig.Delete).toMatchObject({
+    args: {
+      objects: { selectionTypes: expect.arrayContaining(['gdtAnnotation']) },
+    },
+  })
+})
+
 describe('Transform arguments', () => {
   it('prepopulates clearable transform values', () => {
     for (const [commandName, argName, defaultValue] of [
@@ -499,6 +512,7 @@ describe('Transform arguments', () => {
       }
       const selectionTypes = objectsArg.selectionTypes
       expect(selectionTypes).toContain('sketchBlock')
+      expect(selectionTypes).toContain('importedGeometry')
       if (
         commandName === 'Translate' ||
         commandName === 'Scale' ||

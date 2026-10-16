@@ -1092,8 +1092,11 @@ export function getArtifactFromRange(
         if (preferredType && artifact.type === preferredType) {
           preferredMatch = artifact
         }
-        // Favor explicit preferredType first, then sketchBlock, then helix/path, then first match.
-        if (artifact.type === 'sketchBlock') {
+        // Prefer the operation over helper geometry sharing its source range.
+        if (
+          artifact.type === 'sketchBlock' ||
+          artifact.type === 'gdtAnnotation'
+        ) {
           favoredCandidate = artifact
         } else if (
           (artifact.type === 'helix' || artifact.type === 'path') &&
