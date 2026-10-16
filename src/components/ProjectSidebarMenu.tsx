@@ -392,7 +392,6 @@ function ProjectMenuPopover({
         {
           id: 'download-project-zip',
           Element: 'button' as const,
-          className: isDesktop() ? 'hidden' : '',
           children: (
             <>
               <span className={projectMenuItemLabelClassName}>

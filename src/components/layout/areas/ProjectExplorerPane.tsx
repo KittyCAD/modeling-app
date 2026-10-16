@@ -209,9 +209,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
             onCollapseExplorer={() => {
               setCollapsedPressed(performance.now())
             }}
-            onDownloadProject={
-              !window.electron ? downloadProjectZip : undefined
-            }
+            onDownloadProject={downloadProjectZip}
           />
         }
         onClose={props.onClose}

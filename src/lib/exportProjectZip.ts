@@ -3,6 +3,7 @@ import {
   EXPORT_TOAST_MESSAGES,
   PROJECT_SETTINGS_FILE_NAME,
 } from '@src/lib/constants'
+import { exportSave } from '@src/lib/exportSave'
 import fsZds from '@src/lib/fs-zds'
 import { toProjectRelativePath, toWebSafePath } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
@@ -50,7 +51,23 @@ export async function exportProjectZip({
     return
   }
 
-  await browserSaveFile(archive.blob, archive.fileName, toastId)
+  if (window.electron) {
+    await exportSave({
+      fileOperations,
+      files: [
+        {
+          name: archive.fileName,
+          contents: Array.from(
+            new Uint8Array(await archive.blob.arrayBuffer())
+          ),
+        },
+      ],
+      fileName: archive.fileName,
+      toastId,
+    })
+  } else {
+    await browserSaveFile(archive.blob, archive.fileName, toastId)
+  }
 }
 
 export async function createProjectZipArchive({

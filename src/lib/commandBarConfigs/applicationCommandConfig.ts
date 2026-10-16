@@ -762,7 +762,7 @@ export function createApplicationCommands({
 
   return [
     addKCLFileToProject,
-    ...(!isDesktop() ? [exportProjectZipCommand] : []),
+    exportProjectZipCommand,
     ...(isDesktop() ? [checkForUpdatesCommand] : []),
     resetLayoutCommand,
     setLayoutCommand,
