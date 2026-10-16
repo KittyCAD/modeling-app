@@ -4,7 +4,11 @@ import {
   FEATURE_TREE_COMMANDS,
   FEATURE_TREE_FOCUSED_SCOPE,
 } from '@src/lib/featureTree/registry/contract'
-import { provideCommand } from '@src/registry/contracts/commands'
+import { commandsValueSpec } from '@src/registry/contracts/commands'
+import { computed } from '@preact/signals-core'
+import { SCENE_BROWSER_FEATURE } from '@src/lib/sceneBrowser/featureFlag'
+import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
+import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import {
   sceneBrowserSections,
   sceneBrowserService,
@@ -70,6 +74,13 @@ export function ownsFeatureTreeKey(event: KeyboardEvent) {
 
 export const featureTreeExtension = defineRegistryItemFactory((ctx) => {
   const browser = ctx.services.signal(sceneBrowserService)
+  const userFeatures = ctx.services.signal(userFeaturesService)
+  const enabled = () => {
+    const context = userFeatures.value?.context.value
+    return context
+      ? userFeaturesContextHas(context, SCENE_BROWSER_FEATURE, false)
+      : false
+  }
   const command = (
     id: string,
     title: string,
@@ -82,8 +93,11 @@ export const featureTreeExtension = defineRegistryItemFactory((ctx) => {
     displayName: title,
     scopes,
     icon: 'model',
+    disabled: !enabled(),
+    hideFromSearch: !enabled(),
     needsReview: false,
     onSubmit: () => {
+      if (!enabled()) return
       run()
       return true
     },
@@ -122,10 +136,13 @@ export const featureTreeExtension = defineRegistryItemFactory((ctx) => {
         keystrokes: ['shift+t'],
       }),
       ...bindings.flatMap((binding) => [
-        provideCommand(
-          command(binding.id, binding.title, binding.run, [
-            FEATURE_TREE_FOCUSED_SCOPE,
-          ])
+        provide(
+          commandsValueSpec,
+          computed(() =>
+            command(binding.id, binding.title, binding.run, [
+              FEATURE_TREE_FOCUSED_SCOPE,
+            ])
+          )
         ),
         provideKeymapItem({
           id: binding.id,

@@ -1,4 +1,8 @@
-import { Registry } from '@kittycad/registry'
+import {
+  Registry,
+  defineRegistryItem,
+  provideService,
+} from '@kittycad/registry'
 import {
   FEATURE_TREE_COMMANDS,
   FEATURE_TREE_FOCUSED_SCOPE,
@@ -7,11 +11,15 @@ import {
   featureTreeExtension,
   ownsFeatureTreeKey,
 } from '@src/lib/featureTree/registry/extension'
-import { commandsValueSpec } from '@src/registry/contracts/commands'
+import {
+  commandsValueSpec,
+  FILE_COMMAND_SCOPES,
+  isCommandAvailable,
+  isCommandSearchable,
+} from '@src/registry/contracts/commands'
 import {
   sceneBrowserSections,
   sceneBrowserService,
-  sceneBrowserAppearance,
   TOGGLE_BROWSER_COMMAND,
 } from '@src/lib/sceneBrowser/registry/contract'
 import { sceneBrowserExtension } from '@src/lib/sceneBrowser/registry/extension'
@@ -21,13 +29,31 @@ import {
   resolveKeymapItems,
 } from '@src/registry/contracts/keymap'
 import { engineSceneViewExtensionsValueSpec } from '@src/registry/contracts/engineScene'
+import { signal } from '@preact/signals-core'
+import {
+  userFeaturesService,
+  type UserFeaturesRegistryService,
+} from '@src/registry/contracts/userFeatures'
+import { SCENE_BROWSER_FEATURE } from '@src/lib/sceneBrowser/featureFlag'
+import type { UserFeaturesContext } from '@src/machines/userFeaturesMachine'
 import { describe, expect, it, vi } from 'vitest'
 
 describe('feature tree registry contribution', () => {
   it('contributes Browser sections, scoped editable bindings and semantic commands', async () => {
     const registry = new Registry()
-    registry.configure([sceneBrowserExtension, featureTreeExtension])
-    expect(registry.get(sceneBrowserAppearance)).toBe('hud')
+    registry.configure([
+      sceneBrowserExtension,
+      featureTreeExtension,
+      defineRegistryItem({
+        providesServices: [
+          provideService(userFeaturesService, {
+            context: signal({
+              featureIds: new Set([SCENE_BROWSER_FEATURE]),
+            } as UserFeaturesContext),
+          } as unknown as UserFeaturesRegistryService),
+        ],
+      }),
+    ])
     const service = registry.get(sceneBrowserService)
     expect(
       registry.get(engineSceneViewExtensionsValueSpec).map(({ id }) => id)
@@ -79,6 +105,53 @@ describe('feature tree registry contribution', () => {
       .find((command) => command.id === FEATURE_TREE_COMMANDS.actions)!
     await command.onSubmit({} as never)
     expect(actions).toHaveBeenCalledOnce()
+    registry[Symbol.dispose]()
+  })
+  it('keeps disabled commands out of search and leaves the file shortcut to the legacy pane until enabled', async () => {
+    const context = signal({
+      featureIds: new Set<string>(),
+    } as UserFeaturesContext)
+    const registry = new Registry()
+    registry.configure([
+      sceneBrowserExtension,
+      featureTreeExtension,
+      defineRegistryItem({
+        providesServices: [
+          provideService(userFeaturesService, {
+            context,
+          } as unknown as UserFeaturesRegistryService),
+        ],
+      }),
+    ])
+    const browser = registry.get(sceneBrowserService)
+    const actions = vi.fn()
+    browser.setTree({ focusActions: actions } as unknown as NonNullable<
+      typeof browser.tree.value
+    >)
+    const toggle = () =>
+      registry
+        .get(commandsValueSpec)
+        .find(({ id }) => id === TOGGLE_BROWSER_COMMAND)!
+    const scopes = new Set<string>(FILE_COMMAND_SCOPES)
+    expect(isCommandAvailable(toggle(), scopes)).toBe(false)
+    expect(isCommandSearchable(toggle(), scopes)).toBe(false)
+    await toggle().onSubmit({} as never)
+    expect(browser.collapsed.value).toBe(false)
+    context.value = {
+      ...context.value,
+      featureIds: new Set([SCENE_BROWSER_FEATURE]),
+    }
+    expect(isCommandAvailable(toggle(), scopes)).toBe(true)
+    expect(isCommandSearchable(toggle(), scopes)).toBe(true)
+    await toggle().onSubmit({} as never)
+    expect(browser.collapsed.value).toBe(true)
+    context.value = { ...context.value, featureIds: new Set() }
+    const action = registry
+      .get(commandsValueSpec)
+      .find(({ id }) => id === FEATURE_TREE_COMMANDS.actions)!
+    await action.onSubmit({} as never)
+    expect(actions).not.toHaveBeenCalled()
+    expect(isCommandAvailable(toggle(), scopes)).toBe(false)
     registry[Symbol.dispose]()
   })
   it('owns widget keys but leaves editing and modified global shortcuts alone', () => {

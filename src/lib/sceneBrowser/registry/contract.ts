@@ -23,17 +23,7 @@ export interface SceneBrowserService {
   toggle: () => void
 }
 
-export type SceneBrowserAppearance = 'hud' | 'default'
-
 export const sceneBrowserContract = defineContract({
-  sceneBrowserAppearance: defineValueSpec<
-    SceneBrowserAppearance,
-    SceneBrowserAppearance
-  >({
-    name: 'scene-browser.appearance',
-    defaultValue: 'hud',
-    combine: (appearances) => appearances.at(-1) ?? 'hud',
-  }),
   sceneBrowserSections: defineValueSpec<
     SceneBrowserSection,
     readonly SceneBrowserSection[]
@@ -47,11 +37,8 @@ export const sceneBrowserContract = defineContract({
     'scene-browser.service'
   ),
 })
-export const {
-  sceneBrowserSections,
-  sceneBrowserService,
-  sceneBrowserAppearance,
-} = sceneBrowserContract
+export const { sceneBrowserSections, sceneBrowserService } =
+  sceneBrowserContract
 export const TOGGLE_BROWSER_COMMAND = 'zds.sceneBrowser.toggle'
 
 export const SCENE_BROWSER_FOCUSED_SCOPE = 'scene-browser.focused'
