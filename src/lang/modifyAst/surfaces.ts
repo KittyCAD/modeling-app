@@ -18,8 +18,10 @@ import { addHideCallsForRegionSketches } from '@src/lang/modifyAst/sweeps'
 import {
   createEdgeRefObjectExpression,
   entityReferenceToEdgeRefPayload,
+  getPrimitiveEdgeSelections,
 } from '@src/lang/modifyAst/edges'
 import {
+  createSketchTagMemberExpression,
   modifyAstWithTagsForSelection,
   resolveEdgeSelectionContext,
 } from '@src/lang/modifyAst/tagManagement'
@@ -28,6 +30,7 @@ import {
   getSketchSegmentName,
   getSketchVariableNameForSegment,
   getNodeFromPath,
+  getVariableNameFromNodePath,
   getVariableExprsFromSelection,
   stringifyPathToNode,
   resolveToCodeRef,
@@ -48,7 +51,6 @@ import type {
   Expr,
   PathToNode,
   Program,
-  VariableDeclaration,
 } from '@src/lang/wasm'
 import { modelingStdLibCommandName } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
@@ -62,11 +64,7 @@ import {
 } from '@src/lib/selections'
 import { err, isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type {
-  EnginePrimitiveSelection,
-  Selection,
-  Selections,
-} from '@src/machines/modelingSharedTypes'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
 /**
  * Adds a flipSurface call to the AST.
@@ -282,11 +280,7 @@ export function addPlanarSurface({
     const exprs: Expr[] = []
     let sketchCount = engineRegions.length
     let solvedSegmentCount = 0
-    const primitiveEdges = curves.otherSelections.filter(
-      (selection): selection is EnginePrimitiveSelection =>
-        isEnginePrimitiveSelection(selection) &&
-        selection.primitiveType === 'edge'
-    )
+    const primitiveEdges = getPrimitiveEdgeSelections(curves)
     for (const originalSelection of curves.graphSelections) {
       if (originalSelection.entityRef?.type === 'edge') {
         const edgeResult = getPlanarBodyEdgeExpression({
@@ -341,22 +335,14 @@ export function addPlanarSurface({
             'Could not resolve the selected edge reference in code.'
           )
         }
-        const variable = getNodeFromPath<VariableDeclaration>(
-          modifiedAst,
+        const variableName = getVariableNameFromNodePath(
           selection.codeRef.pathToNode,
-          wasmInstance,
-          'VariableDeclaration'
+          modifiedAst,
+          wasmInstance
         )
-        const init =
-          isErr(variable) || variable.node.type !== 'VariableDeclaration'
-            ? null
-            : variable.node.declaration.init
         exprs.push(
-          init?.type === 'CallExpressionKw' &&
-            init.start === edgeCall.node.start &&
-            !isErr(variable) &&
-            variable.node.type === 'VariableDeclaration'
-            ? createLocalName(variable.node.declaration.id.name)
+          variableName
+            ? createLocalName(variableName)
             : structuredClone(edgeCall.node)
         )
         continue
@@ -740,13 +726,7 @@ function getPlanarSegmentEdgeExpression({
   }
   return {
     modifiedAst,
-    expr: createMemberExpression(
-      createMemberExpression(
-        createMemberExpression(context.selectedBodyExpr, 'sketch'),
-        'tags'
-      ),
-      tag
-    ),
+    expr: createSketchTagMemberExpression(context.selectedBodyExpr, tag),
     pathIfPipe: context.pathIfPipe,
   }
 }

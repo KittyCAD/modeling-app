@@ -60,7 +60,10 @@ import { capitaliseFC, isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { EdgeCutInfo } from '@src/machines/modelingSharedTypes'
 
-function createSketchTagMemberExpression(base: Expr, tagName: string): Expr {
+export function createSketchTagMemberExpression(
+  base: Expr,
+  tagName: string
+): Expr {
   return createMemberExpression(
     createMemberExpression(
       createMemberExpression(structuredClone(base), 'sketch'),
