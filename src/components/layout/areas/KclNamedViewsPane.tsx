@@ -120,12 +120,12 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
     const ast = kclManager.ast
     const code = kclManager.code
     const path = kclManager.path
-    const projectPath = kclManager.systemDeps.projectPath.value
+    const projectPath = kclManager.systemDeps.project.value?.path
     const sourceIsCurrent = () =>
       ast === kclManager.ast &&
       code === kclManager.code &&
       path === kclManager.path &&
-      projectPath === kclManager.systemDeps.projectPath.value
+      projectPath === kclManager.systemDeps.project.value?.path
     const artifact = execState.artifactGraph.get(view.artifact.id)
     if (artifact?.type !== 'namedView') {
       toast.error(`Could not find “${view.artifact.name}”.`)
