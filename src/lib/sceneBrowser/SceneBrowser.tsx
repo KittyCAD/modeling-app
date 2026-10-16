@@ -3,6 +3,7 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
+import { getFeatureTreeAppearance } from '@src/lib/featureTree/settings'
 import { useApp } from '@src/lib/boot'
 import { SCENE_BROWSER_FEATURE } from '@src/lib/sceneBrowser/featureFlag'
 import {
@@ -42,7 +43,8 @@ export function SceneBrowserView() {
 /** A docked Browser has one scroll area, one tree, and one width shared by all sections. */
 export function SceneBrowser() {
   useSignals()
-  const { registry } = useApp()
+  const { registry, settings } = useApp()
+  const appearance = getFeatureTreeAppearance(settings.useSettings())
   const platform = usePlatform()
   const keymap = registry.optional(keymapService)
   const shortcut = keymapKeystrokesDisplay(
@@ -140,7 +142,7 @@ export function SceneBrowser() {
       ref={asideRef}
       className={`scene-browser${collapsed ? ' is-collapsed' : ''}`}
       aria-label="Scene browser"
-      data-appearance="hud"
+      data-appearance={appearance}
     >
       <button
         ref={toggleRef}
@@ -190,7 +192,11 @@ export function SceneBrowser() {
                 : undefined,
             }}
           >
-            <FeatureTree label="Scene browser" onMount={mount}>
+            <FeatureTree
+              label="Scene browser"
+              onMount={mount}
+              appearance={appearance}
+            >
               {sections.map(({ id, title, Component, Menu }) => (
                 <FeatureTreeRow
                   key={id}

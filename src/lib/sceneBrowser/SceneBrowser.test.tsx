@@ -1,3 +1,4 @@
+import { featureTreeSettings } from '@src/lib/featureTree/settings'
 import {
   Registry,
   defineRegistryItem,
@@ -20,9 +21,14 @@ import {
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const state = vi.hoisted(() => {
-  const state: { registry: Registry | null; enabled: boolean } = {
+  const state: {
+    registry: Registry | null
+    enabled: boolean
+    settings: unknown
+  } = {
     registry: null,
     enabled: true,
+    settings: null,
   }
   return state
 })
@@ -30,6 +36,7 @@ vi.mock('@src/lib/boot', () => ({
   useApp: () => ({
     registry: state.registry!,
     userFeatures: { useHas: () => state.enabled },
+    settings: { useSettings: () => state.settings },
   }),
 }))
 vi.mock('@src/components/Tooltip', () => ({
@@ -80,6 +87,9 @@ afterEach(() => {
 })
 describe('docked Browser tree', () => {
   function setup(keymap?: Signal<KeymapTree>) {
+    const display =
+      featureTreeSettings.modeling.featureTreeDisplay.createSetting()
+    state.settings = { modeling: { featureTreeDisplay: display } }
     const registry = new Registry()
     state.registry = registry
     registry.configure([
@@ -123,7 +133,7 @@ describe('docked Browser tree', () => {
       view.container.querySelector<ZooFeatureTree>('zoo-feature-tree')!
     const row = (id: string) =>
       view.container.querySelector<ZooFeatureTreeRow>(`[node-id="${id}"]`)!
-    return { registry, view, tree, row }
+    return { registry, view, tree, row, display }
   }
   it('renders only for users with the flag and cleans up the tree when disabled', () => {
     const { view: initial, registry } = setup()
@@ -271,6 +281,29 @@ describe('docked Browser tree', () => {
       expect(row('browser-section:history').expanded).toBe(false)
     )
     expect(row('browser-section:bodies').expanded).toBe(true)
+  })
+  it('updates appearance without replacing the unified tree or expanding closed sections', async () => {
+    const { view, tree, row, display } = setup()
+    await waitFor(() =>
+      expect(row('browser-section:bodies').expanded).toBe(true)
+    )
+    fireEvent.click(
+      row('browser-section:bodies').shadowRoot!.querySelector(
+        '[part="content"]'
+      )!
+    )
+    await waitFor(() =>
+      expect(row('browser-section:bodies').expanded).toBe(false)
+    )
+    act(() => {
+      display.user = 'standard'
+    })
+    expect(
+      view.getByRole('complementary').getAttribute('data-appearance')
+    ).toBe('default')
+    expect(view.container.querySelector('zoo-feature-tree')).toBe(tree)
+    await waitFor(() => expect(row('plane').appearance).toBe('default'))
+    expect(row('browser-section:bodies').expanded).toBe(false)
   })
   it('limits dragging to the available scene width and minimum usable tree width', () => {
     vi.spyOn(document.body, 'clientWidth', 'get').mockReturnValue(600)
