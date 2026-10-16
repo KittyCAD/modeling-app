@@ -1538,21 +1538,6 @@ export function getVariableExprsFromSelection(
         if (sweepArtifact?.type === 'sweep') {
           artifactForLastChildLookup = sweepArtifact
         }
-      } else if (artifact.type === 'edgeCut') {
-        const edgeCutVariable = getNodeFromPath<VariableDeclaration>(
-          ast,
-          artifact.codeRef.pathToNode,
-          wasmInstance,
-          'VariableDeclaration'
-        )
-        if (!err(edgeCutVariable)) {
-          const name = edgeCutVariable.node.declaration.id.name
-          if (!pushedNames[name]) {
-            exprs.push(createLocalName(name))
-            pushedNames[name] = true
-          }
-          continue
-        }
       }
     }
 

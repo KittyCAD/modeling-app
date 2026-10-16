@@ -10,8 +10,6 @@ import {
   getMergedSweepBodyArtifact,
   getSegmentArtifactForEdgeCut,
   getEdgeCutConsumedCodeRef,
-  expandWall,
-  expandCap,
   isFaceFromLegacySketch,
 } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, PathToNode } from '@src/lang/wasm'
@@ -892,17 +890,5 @@ describe('edge-independent artifact traversal', () => {
     expect(
       getSweepArtifactFromSelection({ artifact: cut, codeRef }, artifactGraph)
     ).toBe(artifactGraph.get('sweep-cut'))
-  })
-
-  it('expands wall and cap treatments without edge-cut edge lists', () => {
-    const { artifactGraph, cut } = fixture()
-    const wall = artifactGraph.get('wall-cut')
-    const cap = artifactGraph.get('cap-cut')
-    if (wall?.type !== 'wall' || cap?.type !== 'cap')
-      throw new Error('Expected faces')
-    expect(expandWall(wall, artifactGraph).edgeCuts).toEqual([cut])
-    expect(expandCap(cap, artifactGraph).edgeCuts).toEqual([])
-    cut.surfaceId = cap.id
-    expect(expandCap(cap, artifactGraph).edgeCuts).toEqual([cut])
   })
 })

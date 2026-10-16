@@ -63,7 +63,6 @@ export interface CapArtifactRich extends BaseArtifact {
   type: 'cap'
   subType: CapSubType
   faceCodeRef: CodeRef
-  edgeCuts: Array<EdgeCut>
   paths: Array<PathArtifact>
   sweep?: SweepArtifact
 }
@@ -71,7 +70,6 @@ export interface WallArtifactRich extends BaseArtifact {
   type: 'wall'
   id: ArtifactId
   segment: PathArtifact
-  edgeCuts: Array<EdgeCut>
   sweep: SweepArtifact
   paths: Array<PathArtifact>
   faceCodeRef: CodeRef
@@ -233,10 +231,6 @@ export function expandWall(
       )
     : []
   const sweep = artifactGraph.get(wall.sweepId) as SweepArtifact
-  const edgeCuts = Array.from(artifactGraph.values()).filter(
-    (artifact): artifact is Extract<Artifact, { type: 'edgeCut' }> =>
-      artifact.type === 'edgeCut' && artifact.surfaceId === wall.id
-  )
   const segment = artifactGraph.get(wall.segId) as PathArtifact
   return {
     type: 'wall',
@@ -244,7 +238,6 @@ export function expandWall(
     paths,
     sweep,
     segment,
-    edgeCuts,
   }
 }
 export function expandCap(
@@ -270,16 +263,11 @@ export function expandCap(
     artifactGraph
   )
   const sweep = err(maybeSweep) ? undefined : maybeSweep
-  const edgeCuts = Array.from(artifactGraph.values()).filter(
-    (artifact): artifact is Extract<Artifact, { type: 'edgeCut' }> =>
-      artifact.type === 'edgeCut' && artifact.surfaceId === cap.id
-  )
   return {
     type: 'cap',
     ...keptProperties,
     paths,
     sweep,
-    edgeCuts,
   }
 }
 
