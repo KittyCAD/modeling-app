@@ -98,7 +98,6 @@ export const useDefaultAreaLibrary = () => {
       Object.freeze({
         featureTree: {
           hide: () => false,
-          shortcut: 'Shift + T',
           Component: FeatureTreePane,
         },
         bodies: {

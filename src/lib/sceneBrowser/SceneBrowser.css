@@ -1,0 +1,101 @@
+.scene-browser {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: 100%;
+  min-height: 0;
+  color: var(--chalkboard-110, #18181b);
+  --zoo-tree-color: var(--chalkboard-110, #18181b);
+  --zoo-tree-muted-color: var(--chalkboard-70, #52525b);
+  --zoo-tree-hover-background: color-mix(in srgb, currentColor 8%, transparent);
+  --zoo-tree-selected-background: color-mix(
+    in srgb,
+    var(--primary, #548bd4) 18%,
+    transparent
+  );
+  --zoo-tree-focus-color: var(--primary, #548bd4);
+  --zoo-tree-guide-color: color-mix(in srgb, currentColor 35%, transparent);
+  --zoo-tree-divider-color: color-mix(in srgb, currentColor 18%, transparent);
+  --zoo-tree-font:
+    400 0.75rem / 1.35 "Inter", ui-sans-serif, system-ui, sans-serif;
+  --zoo-tree-row-height: 1.5rem;
+  --zoo-tree-gap: 0.25rem;
+  --zoo-tree-indent: 0.25rem;
+  --zoo-tree-padding: 0;
+  --zoo-tree-row-padding: 0.0625rem 0.25rem;
+  --zoo-tree-content-padding: 0;
+  --zoo-tree-disclosure-height: 1.25rem;
+  border: 1px solid transparent;
+  border-radius: 0 0.375rem 0.375rem 0;
+  border-inline-start: 0;
+}
+.scene-browser[data-appearance="hud"] {
+  background: rgb(255 255 255 / 0.06);
+  box-shadow: none;
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+.dark .scene-browser {
+  color: var(--chalkboard-10, #f4f4f5);
+  --zoo-tree-color: var(--chalkboard-10, #f4f4f5);
+  --zoo-tree-muted-color: var(--chalkboard-40, #a1a1aa);
+}
+.scene-browser-title {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 2.5rem;
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 0;
+  margin: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.5rem;
+  text-align: start;
+}
+/* Draw the divider without changing header geometry when the tray collapses. */
+.scene-browser:not(.is-collapsed) .scene-browser-title {
+  box-shadow: inset 0 -1px 0 var(--zoo-tree-divider-color);
+}
+.scene-browser-title:hover {
+  background: rgb(130 180 240 / 0.08);
+}
+.scene-browser-title:focus-visible {
+  outline: 2px solid var(--zoo-tree-focus-color, #548bd4);
+  outline-offset: -2px;
+}
+.scene-browser-toggle-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+}
+.scene-browser.is-collapsed .scene-browser-title {
+  width: 2.5rem;
+}
+.scene-browser[data-appearance="hud"].is-collapsed {
+  background: color-mix(in srgb, var(--chalkboard-10) 55%, transparent);
+  border-color: color-mix(in srgb, currentColor 20%, transparent);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+}
+.dark .scene-browser[data-appearance="hud"].is-collapsed {
+  background: color-mix(in srgb, var(--chalkboard-100) 55%, transparent);
+}
+.scene-browser-content {
+  min-height: 0;
+  max-height: calc(100dvh - 2rem);
+  overflow: auto;
+}
+.scene-browser {
+  --zoo-tree-divider-outset: 0.25rem;
+}
+.scene-browser[data-appearance="hud"] {
+  --zoo-tree-divider-outset: 0.625rem;
+}
