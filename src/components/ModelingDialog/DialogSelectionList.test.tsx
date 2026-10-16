@@ -3,18 +3,12 @@ import type { ReactNode } from 'react'
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 import type { KclManager } from '@src/lang/KclManager'
-import type { SelectionReference } from '@src/lib/selections'
-import type {
-  EnginePrimitiveSelection,
-  Selections,
-} from '@src/machines/modelingSharedTypes'
+import type { selectionMatchesReference } from '@src/lib/selections'
+import type { EnginePrimitiveSelection } from '@src/machines/modelingSharedTypes'
 
 const mocks = vi.hoisted(() => ({
   getSelectionReferences: vi.fn(),
-  removeReferenceFromSelections:
-    vi.fn<
-      (selections: Selections, reference: SelectionReference) => Selections
-    >(),
+  selectionMatchesReference: vi.fn<typeof selectionMatchesReference>(),
   kclManager: {
     artifactGraph: new Map(),
     engineCommandManager: {},
@@ -39,7 +33,7 @@ vi.mock('@src/lib/selections', () => ({
   isDefaultPlaneSelection: () => false,
   isEnginePrimitiveSelection: (selection: { type?: string }) =>
     selection.type === 'enginePrimitive',
-  removeReferenceFromSelections: mocks.removeReferenceFromSelections,
+  selectionMatchesReference: mocks.selectionMatchesReference,
 }))
 
 import { DialogSelectionList } from '@src/components/ModelingDialog/DialogSelectionList'
@@ -56,7 +50,7 @@ const second = { ...first, entityId: 'second-edge', primitiveIndex: 2 }
 describe('DialogSelectionList', () => {
   beforeEach(() => {
     mocks.getSelectionReferences.mockReset()
-    mocks.removeReferenceFromSelections.mockReset()
+    mocks.selectionMatchesReference.mockReset()
   })
 
   test('keeps individual removal available when reference lookup fails', async () => {
@@ -103,13 +97,8 @@ describe('DialogSelectionList', () => {
         enginePrimitiveSelection: second,
       },
     ])
-    mocks.removeReferenceFromSelections.mockImplementation(
-      (selections, reference) => ({
-        ...selections,
-        otherSelections: selections.otherSelections.filter(
-          (selection) => selection !== reference.enginePrimitiveSelection
-        ),
-      })
+    mocks.selectionMatchesReference.mockImplementation(
+      (selection, reference) => selection === reference.enginePrimitiveSelection
     )
     await act(async () => {
       render(

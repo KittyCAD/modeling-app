@@ -132,6 +132,7 @@ import type {
 import type { EntityReference } from '@src/machines/modelingSharedTypes'
 import type {
   EngineTopologyFallback,
+  NonCodeSelection,
   Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
@@ -1463,43 +1464,49 @@ export function removeEnginePrimitiveSelectionFromSelections(
   }
 }
 
+export function selectionMatchesReference(
+  selection: Selection | NonCodeSelection,
+  reference: SelectionReference
+): boolean {
+  if (typeof selection === 'string') return false
+
+  if ('name' in selection) {
+    return Boolean(
+      reference.defaultPlaneSelection &&
+        isSameDefaultPlaneSelection(selection, reference.defaultPlaneSelection)
+    )
+  }
+
+  if ('type' in selection) {
+    return Boolean(
+      reference.enginePrimitiveSelection &&
+        isEnginePrimitiveSelection(selection) &&
+        isSameEnginePrimitiveSelection(
+          selection,
+          reference.enginePrimitiveSelection
+        )
+    )
+  }
+
+  return Boolean(
+    reference.graphSelection &&
+      isSameGraphSelection(selection, reference.graphSelection)
+  )
+}
+
 export function removeReferenceFromSelections(
   selections: Selections,
   reference: SelectionReference
 ): Selections {
-  const graphSelectionToRemove = reference.graphSelection
-  const defaultPlaneSelectionToRemove = reference.defaultPlaneSelection
-  const enginePrimitiveSelectionToRemove = reference.enginePrimitiveSelection
-
   return {
-    graphSelections: graphSelectionToRemove
+    graphSelections: reference.graphSelection
       ? selections.graphSelections.filter(
-          (selection) =>
-            !isSameGraphSelection(selection, graphSelectionToRemove)
+          (selection) => !selectionMatchesReference(selection, reference)
         )
       : selections.graphSelections,
-    otherSelections: selections.otherSelections.filter((selection) => {
-      if (
-        defaultPlaneSelectionToRemove &&
-        isDefaultPlaneSelection(selection) &&
-        isSameDefaultPlaneSelection(selection, defaultPlaneSelectionToRemove)
-      ) {
-        return false
-      }
-
-      if (
-        enginePrimitiveSelectionToRemove &&
-        isEnginePrimitiveSelection(selection) &&
-        isSameEnginePrimitiveSelection(
-          selection,
-          enginePrimitiveSelectionToRemove
-        )
-      ) {
-        return false
-      }
-
-      return true
-    }),
+    otherSelections: selections.otherSelections.filter(
+      (selection) => !selectionMatchesReference(selection, reference)
+    ),
   }
 }
 

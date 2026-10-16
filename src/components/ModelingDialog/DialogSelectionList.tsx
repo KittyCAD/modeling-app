@@ -6,7 +6,7 @@ import { entityReferenceKey } from '@src/lang/queryAst'
 import {
   getSelectionTypeDisplayText,
   isEnginePrimitiveSelection,
-  removeReferenceFromSelections,
+  selectionMatchesReference,
 } from '@src/lib/selections'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { capitaliseFC } from '@src/lib/utils'
@@ -79,10 +79,9 @@ export function DialogSelectionList({
         </div>
       )}
       {rows.map((row) => {
-        const reference = state.references.find(
-          (reference) =>
-            removeReferenceFromSelections(row.selection, reference)[row.group]
-              .length === 0
+        const selectedItem = row.selection[row.group][0]
+        const reference = state.references.find((reference) =>
+          selectionMatchesReference(selectedItem, reference)
         )
         const label =
           reference?.label ??
