@@ -571,20 +571,22 @@ function pointAndClickStdLibArgs(config: StdLibCommandDriftConfig) {
 }
 
 describe('stdlib command arg derivation', () => {
-  it('preserves generated docs through aliases without replacing input hints', () => {
+  it('only derives docs for fields backed by a single stdlib argument', () => {
     const args = stdLibCommandArgs<Record<string, unknown>>('gdt::position', {
-      argAliases: { faces: 'objects', edges: 'objects' },
+      argAliases: { faces: 'objects', edges: 'objects', tolerance: 'value' },
       overrides: { objects: { description: 'Pick the features to annotate.' } },
     })
     const docs = STD_LIB_COMMANDS['gdt::position'].args
-      .filter((arg) => arg.name === 'faces' || arg.name === 'edges')
-      .map((arg) => arg.docs?.trim())
-      .filter(Boolean)
-      .join('\n\n')
 
-    expect(args.objects.documentation).toBe(docs)
+    expect(args.objects.documentation).toBeUndefined()
     expect(args.objects.description).toBe('Pick the features to annotate.')
-    expect(args.tolerance.description).toBeUndefined()
+    expect(args.value.documentation).toBe(
+      docs.find((arg) => arg.name === 'tolerance')?.docs?.trim()
+    )
+    expect(args.datums.documentation).toBe(
+      docs.find((arg) => arg.name === 'datums')?.docs?.trim()
+    )
+    expect(args.value.description).toBeUndefined()
   })
 
   it('derives base command-bar arg config from KCL stdlib metadata', () => {
