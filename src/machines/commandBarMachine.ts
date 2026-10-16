@@ -1,4 +1,3 @@
-import type { KclManager } from '@src/lang/KclManager'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type {
   Command,
@@ -69,7 +68,6 @@ export type CommandBarContext = CommandBarInput & {
   reviewValidationError?: string
   reviewValidationDetails?: CommandReviewValidationDetails
   machineManager: MachineManager
-  kclManager?: KclManager
   userFeatures?: UserFeaturesService
 }
 
@@ -142,7 +140,6 @@ export type CommandBarMachineEvent =
       type: 'Change current argument'
       data: { [x: string]: CommandArgumentWithName<unknown> }
     }
-  | { type: 'Set kclManager'; data: KclManager }
 
 export const commandBarMachine = setup({
   types: {
@@ -161,12 +158,6 @@ export const commandBarMachine = setup({
           ...context.argumentsToSubmit,
           [argName]: argData,
         }
-      },
-    }),
-    'Set kclManager': assign({
-      kclManager: ({ event }) => {
-        assertEvent(event, 'Set kclManager')
-        return event.data
       },
     }),
     'Set userFeatures': assign({
@@ -878,9 +869,6 @@ export const commandBarMachine = setup({
     },
   },
   on: {
-    'Set kclManager': {
-      actions: 'Set kclManager',
-    },
     'Set userFeatures': {
       actions: 'Set userFeatures',
     },
