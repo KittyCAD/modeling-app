@@ -57,13 +57,17 @@ export function ZookeeperHeaderButton({ app, className }: AppHeaderItemProps) {
         aria-label="Zookeeper"
         aria-pressed={isOpen}
         onClick={toggle}
-        className={`${className} ${isOpen ? '!border-primary !bg-primary/10 !text-primary dark:!bg-primary/20 dark:!text-primary' : ''}`}
+        className={`${className} m-0 !h-6 !p-0 !border-ml-green !bg-ml-green !text-chalkboard-100 hover:brightness-95 ${isOpen ? 'ring-1 ring-inset ring-chalkboard-100/40' : ''}`}
       >
-        <CustomIcon
-          name={isRunning ? 'loading' : 'sidebarRight'}
-          className={`w-5 h-5 ${isRunning ? 'animate-spin' : ''}`}
-          aria-hidden
-        />
+        {isRunning ? (
+          <CustomIcon
+            name="loading"
+            className="w-5 h-5 animate-spin"
+            aria-hidden
+          />
+        ) : (
+          <span className="bg-img-mel w-5 h-5 rounded-sm" aria-hidden />
+        )}
       </button>
       <Tooltip
         position="bottom-right"

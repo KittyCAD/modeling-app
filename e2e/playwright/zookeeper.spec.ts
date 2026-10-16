@@ -29,6 +29,17 @@ test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
     const viewport = page.locator('[data-panel-id="modeling-scene"]')
     await expect(toggle).toHaveAttribute('aria-pressed', 'true')
     await expect(page.getByTestId('ttc-pane-button')).toHaveCount(1)
+    const headerHeights = await toggle.evaluate((button) => {
+      const header = button.closest('header')!
+      const wrapper = button.parentElement!
+      const withToggle = header.getBoundingClientRect().height
+      wrapper.style.display = 'none'
+      const withoutToggle = header.getBoundingClientRect().height
+      wrapper.style.removeProperty('display')
+      return { withToggle, withoutToggle }
+    })
+    expect(headerHeights.withToggle).toBe(headerHeights.withoutToggle)
+    await expect(toggle.locator('.bg-img-mel')).toBeVisible()
     await expect(rightPane.locator('[data-pane-toolbar]')).toBeHidden()
 
     const handle = page.locator(
@@ -121,9 +132,9 @@ test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
       expect(zookeeperConnectionCount).toBe(1)
       holdResponses = false
       releaseResponses()
-      await expect(
-        zookeeperPaneButton.locator('svg[aria-label="sidebar right"]')
-      ).toBeVisible({ timeout: 30_000 })
+      await expect(zookeeperPaneButton.locator('.bg-img-mel')).toBeVisible({
+        timeout: 30_000,
+      })
       expect(zookeeperConnectionCount).toBe(1)
 
       await toolbar.openPane(DefaultLayoutPaneID.Code)

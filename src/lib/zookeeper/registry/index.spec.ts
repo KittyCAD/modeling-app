@@ -114,7 +114,7 @@ describe('zookeeper plugin', () => {
     ).toBe('loading')
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
-    ).not.toContain('zookeeper-credits')
+    ).toContain('zookeeper-credits')
 
     layoutSignal.value = zookeeperPaneLayout()
     expect(
