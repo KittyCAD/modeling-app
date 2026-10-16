@@ -4,6 +4,9 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { computed, effect, signal } from '@preact/signals-core'
+import { resolveSceneBrowserLayout } from '@src/lib/featureTree/migrateLayout'
+import { SCENE_BROWSER_FEATURE } from '@src/lib/sceneBrowser/featureFlag'
+import isEqual from 'react-fast-compare'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
 import type { Layout, LayoutService } from '@src/lib/layout/types'
 import {
@@ -186,6 +189,12 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
         coreLayoutService.applyContributions(contributions)
       }
     })
+    const stopSceneBrowserLayoutEffect = effect(() => {
+      const enabled = userFeatures.has(SCENE_BROWSER_FEATURE, false)
+      const currentLayout = layoutSignal.value
+      const nextLayout = resolveSceneBrowserLayout(currentLayout, enabled)
+      if (!isEqual(currentLayout, nextLayout)) layoutSignal.value = nextLayout
+    })
     const saveEffectUnsubscribeFn = effect(() =>
       saveLayout({ layout: layoutSignal.value, layoutName: layoutConfigName })
     )
@@ -194,6 +203,7 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
     disposeLayout = () => {
       settingsSubscription.unsubscribe()
       stopUserFeatureLayoutEffect()
+      stopSceneBrowserLayoutEffect()
       stopLayoutContributionsEffect()
       saveEffectUnsubscribeFn()
       setLayoutSaveHandler(undefined)
