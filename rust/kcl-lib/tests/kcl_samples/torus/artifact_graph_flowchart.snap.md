@@ -18,22 +18,17 @@ flowchart LR
     %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   7[Wall]
     %% face_code_ref=Missing NodePath
-  8["SweepEdge Adjacent"]
-  9["SketchBlock<br>[299, 396, 0]"]
+  8["SketchBlock<br>[299, 396, 0]"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   1 <--x 4
-  1 <--x 9
+  1 <--x 8
   2 --- 3
   2 <--x 4
-  9 --- 2
+  8 --- 2
   3 <--x 5
   4 --- 5
   4 ---- 6
-  6 <--x 5
   5 --- 7
-  5 --- 8
   6 --- 7
-  6 --- 8
-  7 --- 8
 ```

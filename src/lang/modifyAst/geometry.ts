@@ -188,6 +188,18 @@ export function addHelix({
   }
 }
 
+/**
+ * Converts an explicit axis or a point-and-click selection into the KCL
+ * expression used by axis-based operations such as revolve, helix, and mirror.
+ *
+ * Explicit X/Y/Z axes are returned directly. For selections, the function
+ * prefers a complete Face API edge reference, then a directly addressable
+ * sketch segment, and finally adds the tags needed to describe the selected
+ * edge in KCL. Faces do not define axes; callers must provide an edge selection
+ * rather than relying on a fillet or chamfer face to imply its source edge. If
+ * the artifact graph cannot resolve the selected edge, an Error is returned
+ * without modifying the input AST.
+ */
 export function getAxisExpression(
   axis: string | undefined,
   edge: Selections | undefined,

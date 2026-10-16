@@ -149,8 +149,9 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       // Assert code contains revolve
       await editor.expectEditor.toContain(`revolve`)
       await editor.expectEditor.toContain(`sideFaces = [seg01]`)
-      await editor.expectEditor.toContain(
-        `endFaces = [rectangleSegmentA002, seg02]`
+      // The bounding faces are an unordered pair in the topology query.
+      await expect(editor.codeContent).toContainText(
+        /endFaces = \[(?:rectangleSegmentA002,\s*seg02|seg02,\s*rectangleSegmentA002)\]/
       )
       await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
     })

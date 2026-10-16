@@ -75,7 +75,6 @@ fn sweep(sub_type: SweepSubType, artifact_id: ArtifactId, path_id: Option<Artifa
         sub_type,
         path_id,
         surface_ids: Vec::new(),
-        edge_ids: Vec::new(),
         code_ref: Default::default(),
         source_sweep_id: None,
         trajectory_id: None,

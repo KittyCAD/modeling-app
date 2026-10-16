@@ -7,12 +7,17 @@ import {
   addChamfer,
   addFillet,
   deleteEdgeTreatment,
+  refactorZ0006Unified,
+  retrieveEdgeSelectionsFromEdgeRefs,
   retrieveEdgeSelectionsFromOpArgs,
   retrieveEdgeSelectionsFromSingleEdgeRef,
 } from '@src/lang/modifyAst/edges'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import type { ResolvedGraphSelection } from '@src/lang/std/artifactGraph'
+import type {
+  ResolvedGraphSelection,
+  SegmentArtifact,
+} from '@src/lang/std/artifactGraph'
 import {
   codeRefFromRange,
   getCodeRefsByArtifactId,
@@ -24,7 +29,6 @@ import {
   type ArtifactGraph,
   type CallExpressionKw,
   type PathToNode,
-  type SweepEdgeArtifact,
   assertParse,
   getAllOperations,
   recast,
@@ -141,20 +145,29 @@ sketch002 = sketch(on = XY) {
 extrude002 = extrude(sketch002.line1, length = 5, bodyType = SURFACE)
 hidden001 = hide(sketch002)
 hidden002 = hide(sketch001)`
-  // Face API creation tests use edge references with adjacent face IDs.
-  // Legacy tags edit tests also cover UUIDs identifying sweepEdge artifacts.
-
-  function selectionFromSweepEdge(
-    edge: SweepEdgeArtifact,
+  function selectionFromSegmentEdge(
+    segment: SegmentArtifact,
     artifactGraph: ArtifactGraph
   ): Selection {
-    const sideFaces = edge.commonSurfaceIds
-    if (!sideFaces || sideFaces.length < 2) {
-      throw new Error('Sweep edge adjacent faces not found')
+    const commonFaces = getCommonFacesForEdge(segment, artifactGraph)
+    if (err(commonFaces)) throw commonFaces
+    if (commonFaces.length < 2) throw new Error('Adjacent faces not found')
+    return {
+      entityRef: {
+        type: 'edge',
+        side_faces: commonFaces.slice(0, 2).map((face) => face.id),
+      },
+      codeRef: segment.codeRef,
     }
-    const codeRef = getCodeRefsByArtifactId(edge.id, artifactGraph)?.[0]
-    if (!codeRef) throw new Error('Sweep edge code reference not found')
-    return { entityRef: { type: 'edge', side_faces: sideFaces }, codeRef }
+  }
+
+  function segmentForSweep(sweepId: string, artifactGraph: ArtifactGraph) {
+    for (const artifact of artifactGraph.values()) {
+      if (artifact.type !== 'segment') continue
+      const path = artifactGraph.get(artifact.pathId)
+      if (path?.type === 'path' && path.sweepId === sweepId) return artifact
+    }
+    return undefined
   }
 
   describe('Testing addFillet', () => {
@@ -492,29 +505,17 @@ part = subtract(extrude001, tools = extrude002)`
         (sweep) => sweep.codeRef.range[0] < code.indexOf('sketch002 =')
       )
       if (!sourceSweep) throw new Error('Original extrusion not found')
-      const sweepEdge = [...artifactGraph.values()].find(
-        (artifact) =>
-          artifact.type === 'sweepEdge' &&
-          artifact.sweepId === sourceSweep.id &&
-          artifact.subType === 'opposite'
-      )
+      const segment = segmentForSweep(sourceSweep.id, artifactGraph)
       const part = [...artifactGraph.values()].find(
         (artifact) => artifact.type === 'compositeSolid'
       )
-      if (!sweepEdge || sweepEdge.type !== 'sweepEdge' || !part) {
+      if (!segment || !part) {
         throw new Error('Source edge or Boolean result not found')
       }
-      const sideFaces = sweepEdge.commonSurfaceIds
-      if (!sideFaces || sideFaces.length < 2) {
-        throw new Error('Source edge adjacent faces not found')
-      }
-      const codeRef = getCodeRefsByArtifactId(sweepEdge.id, artifactGraph)?.[0]
-      if (!codeRef) throw new Error('Source edge code reference not found')
+      const edgeSelection = selectionFromSegmentEdge(segment, artifactGraph)
 
       const selection: Selections = {
-        graphSelections: [
-          { entityRef: { type: 'edge', side_faces: sideFaces }, codeRef },
-        ],
+        graphSelections: [edgeSelection],
         otherSelections: [
           {
             entityId: 'irrelevant-for-this-test',
@@ -558,7 +559,7 @@ part = subtract(extrude001, tools = extrude002)`
         kclManagerInThisFile
       )
       expect(kclManagerInThisFile.errors).toEqual([])
-    })
+    }, 30_000)
 
     it('should add a basic fillet call with edge selection (selectionV2)', async () => {
       const codeWithTags = `sketch001 = startSketchOn(XY)
@@ -1064,14 +1065,12 @@ ${extrudedTriangle}`
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const sweepEdge = [...artifactGraph.values()].find(
-        (a) => a.type === 'sweepEdge'
+      const segment = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'segment'
       )
-      if (!sweepEdge || sweepEdge.type !== 'sweepEdge') {
-        throw new Error('sweepEdge artifact not found')
-      }
+      if (!segment) throw new Error('Segment artifact not found')
       const selection: Selections = {
-        graphSelections: [selectionFromSweepEdge(sweepEdge, artifactGraph)],
+        graphSelections: [selectionFromSegmentEdge(segment, artifactGraph)],
         otherSelections: [],
       }
       const radius = (await stringToKclExpression(
@@ -1112,14 +1111,33 @@ ${extrudedTriangle}`
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const sweepEdge = [...artifactGraph.values()].find(
-        (a) => a.type === 'sweepEdge'
+      expect(kclManagerInThisFile.errors).toEqual([])
+      const segment = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'segment'
       )
-      if (!sweepEdge || sweepEdge.type !== 'sweepEdge') {
-        throw new Error('sweepEdge artifact not found')
+      if (!segment) throw new Error('Segment artifact not found')
+      const path = artifactGraph.get(segment.pathId)
+      if (path?.type !== 'path') throw new Error('Segment path not found')
+      const endCap = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'cap' &&
+          artifact.sweepId === path.sweepId &&
+          artifact.subType === 'end'
+      )
+      if (!segment.surfaceId || !endCap) {
+        throw new Error('Wall or end-cap face not found')
       }
+      // Select the end-cap edge explicitly; the sketch segment is on the start cap.
       const selection: Selections = {
-        graphSelections: [selectionFromSweepEdge(sweepEdge, artifactGraph)],
+        graphSelections: [
+          {
+            entityRef: {
+              type: 'edge',
+              side_faces: [segment.surfaceId, endCap.id],
+            },
+            codeRef: segment.codeRef,
+          },
+        ],
         otherSelections: [],
       }
       const radius = (await stringToKclExpression(
@@ -1150,31 +1168,59 @@ ${extrudedTriangle}`
   radius = 1,
   tangentChain = false,
 )`)
-      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+      await getAstAndArtifactGraph(
+        newCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      expect(kclManagerInThisFile.errors).toEqual([])
     })
 
-    it('should edit a basic fillet call on sweepEdge', async () => {
-      const { artifactGraph, ast, operations } = await getAstAndArtifactGraph(
+    it('should migrate a legacy fillet edge before editing its radius', async () => {
+      const legacy = await getAstAndArtifactGraph(
         extrudedTriangleWithFillet,
         instanceInThisFile,
         kclManagerInThisFile
       )
+      expect(kclManagerInThisFile.errors).toEqual([])
+      const execState = kclManagerInThisFile.execState
+      // Feature-tree editing migrates legacy edge UUIDs before recovering selections.
+      const migratedCode = refactorZ0006Unified(
+        legacy.ast,
+        execState.edgeRefactorMetadata,
+        execState.directTagFilletMetadata,
+        legacy.artifactGraph,
+        instanceInThisFile
+      )
+      if (err(migratedCode)) throw migratedCode
+      expect(migratedCode).not.toContain('getCommonEdge')
+      expect(migratedCode).toContain('edges = [')
+      const { artifactGraph, ast, operations } = await getAstAndArtifactGraph(
+        migratedCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      expect(kclManagerInThisFile.errors).toEqual([])
+      expect(
+        [...artifactGraph.values()].some(
+          (artifact) => artifact.type === 'sweepEdge'
+        )
+      ).toBe(false)
       const operation = getAllOperations(operations).find(
         (op) => op.type === 'StdLibCall' && op.name === 'fillet'
       )
       if (
         !operation ||
         operation.type !== 'StdLibCall' ||
-        !operation.labeledArgs?.tags
+        !operation.labeledArgs?.edges
       ) {
-        throw new Error('Legacy fillet operation or tags argument not found')
+        throw new Error('Migrated fillet operation or edges argument not found')
       }
-      const selection = retrieveEdgeSelectionsFromOpArgs(
-        operation.unlabeledArg,
-        operation.labeledArgs.tags,
-        artifactGraph,
-        extrudedTriangleWithFillet
+      const selection = retrieveEdgeSelectionsFromEdgeRefs(
+        operation.labeledArgs.edges,
+        artifactGraph
       )
+      if (err(selection)) throw selection
       expect(selection.graphSelections).toHaveLength(1)
       expect(selection.graphSelections[0].entityRef).toMatchObject({
         type: 'edge',
@@ -1199,12 +1245,18 @@ ${extrudedTriangle}`
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(
-        extrudedTriangleWithFillet.replace('radius = 1', 'radius = 1.1')
+        migratedCode.trim().replace('radius = 1', 'radius = 1.1')
       )
-      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
-    })
+      if (err(newCode)) throw newCode
+      await getAstAndArtifactGraph(
+        newCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      expect(kclManagerInThisFile.errors).toEqual([])
+    }, 30_000)
 
-    it('should edit a piped fillet call on sweepEdge', async () => {
+    it('should migrate a piped legacy fillet before editing its radius', async () => {
       const code = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [-18.43, -11.95])
   |> angledLine(angle = 0, length = 20, tag = $rectangleSegmentA001)
@@ -1214,27 +1266,43 @@ profile001 = startProfile(sketch001, at = [-18.43, -11.95])
   |> close()
 extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
   |> fillet(tags = getCommonEdge(faces = [rectangleSegmentA001, capEnd001]), radius = 2.5)`
-      const { artifactGraph, ast, operations } = await getAstAndArtifactGraph(
+      const legacy = await getAstAndArtifactGraph(
         code,
         instanceInThisFile,
         kclManagerInThisFile
       )
+      expect(kclManagerInThisFile.errors).toEqual([])
+      const execState = kclManagerInThisFile.execState
+      const migratedCode = refactorZ0006Unified(
+        legacy.ast,
+        execState.edgeRefactorMetadata,
+        execState.directTagFilletMetadata,
+        legacy.artifactGraph,
+        instanceInThisFile
+      )
+      if (err(migratedCode)) throw migratedCode
+      expect(migratedCode).not.toContain('getCommonEdge')
+      const { artifactGraph, ast, operations } = await getAstAndArtifactGraph(
+        migratedCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      expect(kclManagerInThisFile.errors).toEqual([])
       const operation = getAllOperations(operations).find(
         (op) => op.type === 'StdLibCall' && op.name === 'fillet'
       )
       if (
         !operation ||
         operation.type !== 'StdLibCall' ||
-        !operation.labeledArgs?.tags
+        !operation.labeledArgs?.edges
       ) {
-        throw new Error('Legacy fillet operation or tags argument not found')
+        throw new Error('Migrated fillet operation or edges argument not found')
       }
-      const selection = retrieveEdgeSelectionsFromOpArgs(
-        operation.unlabeledArg,
-        operation.labeledArgs.tags,
-        artifactGraph,
-        code
+      const selection = retrieveEdgeSelectionsFromEdgeRefs(
+        operation.labeledArgs.edges,
+        artifactGraph
       )
+      if (err(selection)) throw selection
       expect(selection.graphSelections).toHaveLength(1)
       expect(selection.graphSelections[0].entityRef).toMatchObject({
         type: 'edge',
@@ -1265,9 +1333,17 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
       }
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(code.replace('radius = 2.5', 'radius = 2'))
-      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
-    })
+      expect(newCode).toContain(
+        migratedCode.trim().replace('radius = 2.5', 'radius = 2')
+      )
+      if (err(newCode)) throw newCode
+      await getAstAndArtifactGraph(
+        newCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      expect(kclManagerInThisFile.errors).toEqual([])
+    }, 30_000)
 
     it('should add fillet calls on two bodies from separate sketches', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
@@ -1284,14 +1360,9 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
 
       const selection: Selections = {
         graphSelections: sweeps.map((sweep) => {
-          const edge = [...artifactGraph.values()].find(
-            (artifact) =>
-              artifact.type === 'sweepEdge' && artifact.sweepId === sweep.id
-          )
-          if (!edge || edge.type !== 'sweepEdge') {
-            throw new Error('Body sweep edge not found')
-          }
-          return selectionFromSweepEdge(edge, artifactGraph)
+          const segment = segmentForSweep(sweep.id, artifactGraph)
+          if (!segment) throw new Error('Body segment not found')
+          return selectionFromSegmentEdge(segment, artifactGraph)
         }),
         otherSelections: [],
       }
@@ -1329,16 +1400,16 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
         kclManagerInThisFile
       )
 
-      // Find a sweepEdge from the revolve
-      const sweepEdge = [...artifactGraph.values()].find(
-        (a) => a.type === 'sweepEdge'
+      const sweep = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweep'
       )
-      if (!sweepEdge || sweepEdge.type !== 'sweepEdge') {
-        throw new Error('Revolve sweep edge not found')
-      }
+      const segment = sweep
+        ? segmentForSweep(sweep.id, artifactGraph)
+        : undefined
+      if (!segment) throw new Error('Revolve segment not found')
 
       const selection: Selections = {
-        graphSelections: [selectionFromSweepEdge(sweepEdge, artifactGraph)],
+        graphSelections: [selectionFromSegmentEdge(segment, artifactGraph)],
         otherSelections: [],
       }
 
@@ -1461,22 +1532,39 @@ chamfer001 = chamfer(extrude001, tags = edge001, length = 1)`
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
-    it('keeps mixed sweep-edge face references and primitive edges on the same chamfer body', async () => {
+    it('keeps mixed face references and primitive edges on the same chamfer body', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         extrudedTriangle,
         instanceInThisFile,
         kclManagerInThisFile
       )
       const sweep = [...artifactGraph.values()].find((a) => a.type === 'sweep')
-      const sweepEdge = [...artifactGraph.values()].find(
-        (a) => a.type === 'sweepEdge'
-      )
-      if (!sweep || !sweepEdge || sweepEdge.type !== 'sweepEdge') {
-        throw new Error('Chamfer body or sweep edge not found')
-      }
+      const segment = sweep
+        ? segmentForSweep(sweep.id, artifactGraph)
+        : undefined
+      if (!sweep || !segment)
+        throw new Error('Chamfer body or segment not found')
 
+      const endCap = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'cap' &&
+          artifact.sweepId === sweep.id &&
+          artifact.subType === 'end'
+      )
+      if (!segment.surfaceId || !endCap) {
+        throw new Error('Wall or end-cap face not found')
+      }
+      // Primitive edge 0 is the start-cap edge; keep the face query on the other cap.
       const selection: Selections = {
-        graphSelections: [selectionFromSweepEdge(sweepEdge, artifactGraph)],
+        graphSelections: [
+          {
+            entityRef: {
+              type: 'edge',
+              side_faces: [segment.surfaceId, endCap.id],
+            },
+            codeRef: segment.codeRef,
+          },
+        ],
         otherSelections: [
           {
             entityId: 'irrelevant-for-this-test',
@@ -1525,36 +1613,34 @@ chamfer001 = chamfer(extrude001, tags = edge001, length = 1)`
       expect(kclManagerInThisFile.errors).toEqual([])
     })
 
-    it('should add one chamfer with two face references from a sweep edge and a segment', async () => {
+    it('should add one chamfer with two distinct face-based edge references', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         extrudedTriangle,
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const sweepEdge = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweepEdge'
-      )
       const segment = [...artifactGraph.values()].find(
         (artifact) => artifact.type === 'segment'
       )
-      if (
-        !sweepEdge ||
-        sweepEdge.type !== 'sweepEdge' ||
-        !segment ||
-        segment.type !== 'segment'
-      ) {
-        throw new Error('Chamfer sweep edge or segment not found')
+      if (!segment) throw new Error('Chamfer segment not found')
+      const path = artifactGraph.get(segment.pathId)
+      if (path?.type !== 'path') throw new Error('Segment path not found')
+      const endCap = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'cap' &&
+          artifact.sweepId === path.sweepId &&
+          artifact.subType === 'end'
+      )
+      if (!segment.surfaceId || !endCap) {
+        throw new Error('Wall or end-cap face not found')
       }
-      const commonFaces = getCommonFacesForEdge(segment, artifactGraph)
-      if (err(commonFaces)) throw commonFaces
-      expect(commonFaces).toHaveLength(2)
       const selection: Selections = {
         graphSelections: [
-          selectionFromSweepEdge(sweepEdge, artifactGraph),
+          selectionFromSegmentEdge(segment, artifactGraph),
           {
             entityRef: {
               type: 'edge',
-              side_faces: commonFaces.map((face) => face.id),
+              side_faces: [segment.surfaceId, endCap.id],
             },
             codeRef: segment.codeRef,
           },
@@ -1599,7 +1685,12 @@ chamfer001 = chamfer(extrude001, tags = edge001, length = 1)`
       }
       expect(edges.elements).toHaveLength(2)
       expect(edges.elements[0]).not.toEqual(edges.elements[1])
-      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+      await getAstAndArtifactGraph(
+        newCode,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      expect(kclManagerInThisFile.errors).toEqual([])
     })
 
     it('should add a basic chamfer call with edge selection (selectionV2)', async () => {
@@ -1876,14 +1967,31 @@ ${extrudedTriangle}`
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const sweepEdge = [...artifactGraph.values()].find(
-        (a) => a.type === 'sweepEdge'
+      const segment = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'segment'
       )
-      if (!sweepEdge || sweepEdge.type !== 'sweepEdge') {
-        throw new Error('sweepEdge artifact not found')
+      if (!segment) throw new Error('Segment artifact not found')
+      const path = artifactGraph.get(segment.pathId)
+      if (path?.type !== 'path') throw new Error('Segment path not found')
+      const endCap = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'cap' &&
+          artifact.sweepId === path.sweepId &&
+          artifact.subType === 'end'
+      )
+      if (!segment.surfaceId || !endCap) {
+        throw new Error('Wall or end-cap face not found')
       }
       const selection: Selections = {
-        graphSelections: [selectionFromSweepEdge(sweepEdge, artifactGraph)],
+        graphSelections: [
+          {
+            entityRef: {
+              type: 'edge',
+              side_faces: [segment.surfaceId, endCap.id],
+            },
+            codeRef: segment.codeRef,
+          },
+        ],
         otherSelections: [],
       }
       const length = (await stringToKclExpression(
@@ -2096,96 +2204,6 @@ ${extrudedTriangle}`
   })
 
   describe('Testing retrieveEdgeSelectionsFromOpArgs', () => {
-    it.each([
-      { command: 'fillet', parameter: 'radius' },
-      { command: 'chamfer', parameter: 'length' },
-    ] as const)(
-      'recovers legacy sweep-edge selections and preserves tags when editing $command',
-      async ({ command, parameter }) => {
-        const code = `@settings(kclVersion = 2.0)
-sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [0, 0])
-  |> xLine(length = 5, tag = $seg01)
-  |> line(endAbsolute = [0, 5])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude001 = extrude(profile001, length = 5)
-${command}001 = ${command}(extrude001, tags = [getOppositeEdge(seg01)], ${parameter} = 1)`
-        const { ast, artifactGraph, operations } = await getAstAndArtifactGraph(
-          code,
-          instanceInThisFile,
-          kclManagerInThisFile
-        )
-        expect(kclManagerInThisFile.errors).toEqual([])
-        const operation = getAllOperations(operations).find(
-          (op) => op.type === 'StdLibCall' && op.name === command
-        )
-        if (!operation || operation.type !== 'StdLibCall') {
-          throw new Error('Edge treatment operation not found')
-        }
-        const tagsArg = operation.labeledArgs?.tags
-        if (!tagsArg || tagsArg.value.type !== 'Array') {
-          throw new Error('Legacy tags argument not found')
-        }
-        const edgeValue = tagsArg.value.value[0]
-        if (edgeValue?.type !== 'Uuid') {
-          throw new Error('Legacy edge did not evaluate to a UUID')
-        }
-        const edge = artifactGraph.get(edgeValue.value)
-        if (!edge || edge.type !== 'sweepEdge') {
-          throw new Error('Legacy UUID did not identify a sweep edge')
-        }
-        const segment = artifactGraph.get(edge.segId)
-        if (!segment || segment.type !== 'segment') {
-          throw new Error('Legacy edge source segment not found')
-        }
-
-        const selection = retrieveEdgeSelectionsFromOpArgs(
-          operation.unlabeledArg,
-          tagsArg,
-          artifactGraph,
-          code
-        )
-        expect(selection.graphSelections).toEqual([
-          {
-            entityRef: { type: 'edge', side_faces: edge.commonSurfaceIds },
-            codeRef: segment.codeRef,
-          },
-        ])
-        expect(selection.otherSelections).toEqual([])
-
-        const value = (await stringToKclExpression(
-          '2',
-          rustContextInThisFile
-        )) as KclCommandValue
-        const editArgs = {
-          ast,
-          artifactGraph,
-          selection,
-          nodeToEdit: createPathToNodeForLastVariable(ast, false),
-          wasmInstance: instanceInThisFile,
-        }
-        const result =
-          command === 'fillet'
-            ? addFillet({ ...editArgs, radius: value })
-            : addChamfer({ ...editArgs, length: value })
-        if (err(result)) throw result
-        const newCode = recast(result.modifiedAst, instanceInThisFile)
-        if (err(newCode)) throw newCode
-        const expectedCode = recast(
-          assertParse(
-            code.replace(`${parameter} = 1`, `${parameter} = 2`),
-            instanceInThisFile
-          ),
-          instanceInThisFile
-        )
-        if (err(expectedCode)) throw expectedCode
-        expect(newCode).toBe(expectedCode)
-        await kclManagerInThisFile.executeAst({ ast: result.modifiedAst })
-        expect(kclManagerInThisFile.errors).toEqual([])
-      }
-    )
-
     it('preserves edge disambiguators when recovering a single edge reference', async () => {
       const { artifactGraph } = await getAstAndArtifactGraph(
         extrudedTriangle,
@@ -2753,10 +2771,10 @@ revolve001 = revolve(
             codeRef: edgeTreatmentCodeRef,
             artifact: {
               type: 'edgeCut',
+              consumedEdgeId: '',
+              edgeIds: [],
               id: 'mock-edge-cut-id',
               subType: edgeTreatmentType,
-              consumedEdgeId: 'mock-consumed-edge-id',
-              edgeIds: [],
               codeRef: {
                 range: edgeTreatmentCodeRef.range,
                 pathToNode: edgeTreatmentCodeRef.pathToNode,
@@ -2819,10 +2837,10 @@ revolve001 = revolve(`
             codeRef: edgeTreatmentCodeRef,
             artifact: {
               type: 'edgeCut',
+              consumedEdgeId: '',
+              edgeIds: [],
               id: 'mock-edge-cut-id',
               subType: edgeTreatmentType,
-              consumedEdgeId: 'mock-consumed-edge-id',
-              edgeIds: [],
               codeRef: {
                 range: edgeTreatmentCodeRef.range,
                 pathToNode: edgeTreatmentCodeRef.pathToNode,

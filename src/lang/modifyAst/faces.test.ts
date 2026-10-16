@@ -34,8 +34,6 @@ describe('retrieveFaceSelectionsFromOpArgs', () => {
       type: 'segment',
       id: 'segment-1',
       pathId: path.id,
-      edgeIds: [],
-      commonSurfaceIds: ['wall-1'],
       codeRef,
     }
     const sweep: Artifact = {
@@ -44,7 +42,6 @@ describe('retrieveFaceSelectionsFromOpArgs', () => {
       subType: 'extrusion',
       pathId: path.id,
       surfaceIds: ['wall-1'],
-      edgeIds: [],
       codeRef,
       trajectoryId: null,
       method: 'merge',
@@ -56,7 +53,6 @@ describe('retrieveFaceSelectionsFromOpArgs', () => {
       segId: segment.id,
       sweepId: sweep.id,
       pathIds: [],
-      edgeCutEdgeIds: [],
       faceCodeRef: codeRef,
       cmdId: 'wall-command-1',
     }
@@ -66,7 +62,6 @@ describe('retrieveFaceSelectionsFromOpArgs', () => {
       subType: 'extrusion',
       pathId: 'hole-tool-path',
       surfaceIds: [],
-      edgeIds: [],
       codeRef,
       trajectoryId: null,
       method: 'new',

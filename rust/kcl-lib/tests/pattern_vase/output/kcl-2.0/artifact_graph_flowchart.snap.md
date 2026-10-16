@@ -17,26 +17,16 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   8["Cap End"]
     %% face_code_ref=Missing NodePath
-  9["SweepEdge Opposite"]
-  10["SweepEdge Adjacent"]
-  11["Pattern Transform<br>[859, 915, 0]<br>Copies: 99<br>Faces: 297<br>Edges: 297"]
+  9["Pattern Transform<br>[859, 915, 0]<br>Copies: 99<br>Faces: 297<br>Edges: 297"]
     %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
   1 --- 2
   2 --- 3
   2 --- 4
   2 ---- 5
-  2 --- 11
+  2 --- 9
   3 --- 6
-  3 x--> 7
-  3 --- 9
-  3 --- 10
   5 --- 6
   5 --- 7
   5 --- 8
-  5 --- 9
-  5 --- 10
-  5 x--> 11
-  6 --- 9
-  6 --- 10
-  9 <--x 8
+  5 x--> 9
 ```

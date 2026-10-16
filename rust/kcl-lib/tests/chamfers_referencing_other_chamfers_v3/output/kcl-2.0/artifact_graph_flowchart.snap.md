@@ -45,37 +45,21 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   22["Cap End"]
     %% face_code_ref=Missing NodePath
-  23["SweepEdge Opposite"]
-  24["SweepEdge Adjacent"]
-  25["SweepEdge Opposite"]
-  26["SweepEdge Adjacent"]
-  27["SweepEdge Opposite"]
-  28["SweepEdge Adjacent"]
-  29["SweepEdge Opposite"]
-  30["SweepEdge Adjacent"]
-  31["SweepEdge Opposite"]
-  32["SweepEdge Adjacent"]
-  33["SweepEdge Opposite"]
-  34["SweepEdge Adjacent"]
-  35["SweepEdge Opposite"]
-  36["SweepEdge Adjacent"]
-  37["SweepEdge Opposite"]
-  38["SweepEdge Adjacent"]
-  39["EdgeCut Chamfer<br>[1570, 1768, 0]"]
+  23["EdgeCut Chamfer<br>[1570, 1768, 0]"]
     %% [ProgramBodyItem { index: 16 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-  40["EdgeCut Chamfer<br>[1570, 1768, 0]"]
+  24["EdgeCut Chamfer<br>[1570, 1768, 0]"]
     %% [ProgramBodyItem { index: 16 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-  41["EdgeCut Chamfer<br>[1570, 1768, 0]"]
+  25["EdgeCut Chamfer<br>[1570, 1768, 0]"]
     %% [ProgramBodyItem { index: 16 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-  42["EdgeCut Chamfer<br>[1570, 1768, 0]"]
+  26["EdgeCut Chamfer<br>[1570, 1768, 0]"]
     %% [ProgramBodyItem { index: 16 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-  43["EdgeCut Chamfer<br>[1774, 1920, 0]"]
+  27["EdgeCut Chamfer<br>[1774, 1920, 0]"]
     %% [ProgramBodyItem { index: 16 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
-  44["EdgeCut Chamfer<br>[1774, 1920, 0]"]
+  28["EdgeCut Chamfer<br>[1774, 1920, 0]"]
     %% [ProgramBodyItem { index: 16 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
-  45["EdgeCut Chamfer<br>[1926, 2076, 0]"]
+  29["EdgeCut Chamfer<br>[1926, 2076, 0]"]
     %% [ProgramBodyItem { index: 16 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
-  46["EdgeCut Chamfer<br>[1926, 2076, 0]"]
+  30["EdgeCut Chamfer<br>[1926, 2076, 0]"]
     %% [ProgramBodyItem { index: 16 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
   1 --- 2
   2 --- 3
@@ -89,39 +73,15 @@ flowchart LR
   2 --- 11
   2 ---- 12
   3 --- 20
-  3 x--> 21
-  3 --- 37
-  3 --- 38
-  3 --- 39
+  3 x--> 23
   4 --- 19
-  4 x--> 21
-  4 --- 35
-  4 --- 36
   5 --- 18
-  5 x--> 21
-  5 --- 33
-  5 --- 34
   6 --- 17
-  6 x--> 21
-  6 --- 31
-  6 --- 32
   7 --- 16
-  7 x--> 21
-  7 --- 29
-  7 --- 30
-  7 --- 40
+  7 x--> 24
   8 --- 15
-  8 x--> 21
-  8 --- 27
-  8 --- 28
   9 --- 14
-  9 x--> 21
-  9 --- 25
-  9 --- 26
   10 --- 13
-  10 x--> 21
-  10 --- 23
-  10 --- 24
   12 --- 13
   12 --- 14
   12 --- 15
@@ -132,58 +92,4 @@ flowchart LR
   12 --- 20
   12 --- 21
   12 --- 22
-  12 --- 23
-  12 --- 24
-  12 --- 25
-  12 --- 26
-  12 --- 27
-  12 --- 28
-  12 --- 29
-  12 --- 30
-  12 --- 31
-  12 --- 32
-  12 --- 33
-  12 --- 34
-  12 --- 35
-  12 --- 36
-  12 --- 37
-  12 --- 38
-  13 --- 23
-  13 --- 24
-  26 <--x 13
-  14 --- 25
-  14 --- 26
-  28 <--x 14
-  15 --- 27
-  15 --- 28
-  30 <--x 15
-  16 --- 29
-  16 --- 30
-  32 <--x 16
-  17 --- 31
-  17 --- 32
-  34 <--x 17
-  18 --- 33
-  18 --- 34
-  36 <--x 18
-  19 --- 35
-  19 --- 36
-  38 <--x 19
-  24 <--x 20
-  20 --- 37
-  20 --- 38
-  23 <--x 22
-  25 <--x 22
-  27 <--x 22
-  29 <--x 22
-  31 <--x 22
-  33 <--x 22
-  35 <--x 22
-  37 <--x 22
-  26 <--x 46
-  28 <--x 44
-  29 <--x 42
-  34 <--x 45
-  36 <--x 43
-  37 <--x 41
 ```

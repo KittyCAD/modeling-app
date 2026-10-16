@@ -38,30 +38,22 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   17["Cap End"]
     %% face_code_ref=Missing NodePath
-  18["SweepEdge Opposite"]
-  19["SweepEdge Adjacent"]
-  20["SweepEdge Opposite"]
-  21["SweepEdge Adjacent"]
-  22["SweepEdge Opposite"]
-  23["SweepEdge Adjacent"]
-  24["SweepEdge Opposite"]
-  25["SweepEdge Adjacent"]
-  26["Sweep Extrusion<br>[764, 822, 0]<br>Consumed: false"]
+  18["Sweep Extrusion<br>[764, 822, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  27["SketchBlock<br>[194, 544, 0]"]
+  19["SketchBlock<br>[194, 544, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  28["SketchBlockConstraint Horizontal<br>[301, 337, 0]"]
+  20["SketchBlockConstraint Horizontal<br>[301, 337, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 1 }, ExpressionStatementExpr]
-  29["SketchBlockConstraint Vertical<br>[425, 459, 0]"]
+  21["SketchBlockConstraint Vertical<br>[425, 459, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 3 }, ExpressionStatementExpr]
   1 --- 2
   1 <--x 6
-  1 <--x 27
+  1 <--x 19
   2 --- 3
   2 --- 4
   2 --- 5
   2 <--x 6
-  27 --- 2
+  19 --- 2
   3 <--x 7
   3 <--x 8
   4 <--x 9
@@ -71,51 +63,14 @@ flowchart LR
   6 --- 9
   6 --- 10
   6 ---- 11
-  7 --- 13
-  7 x--> 16
-  7 --- 20
-  7 --- 21
-  8 --- 12
-  8 x--> 16
-  8 --- 18
-  8 --- 19
+  7 --- 12
+  8 --- 13
   9 --- 14
-  9 x--> 16
-  9 --- 22
-  9 --- 23
   10 --- 15
-  10 x--> 16
-  10 --- 24
-  10 --- 25
   11 --- 12
   11 --- 13
   11 --- 14
   11 --- 15
   11 --- 16
   11 --- 17
-  11 --- 18
-  11 --- 19
-  11 --- 20
-  11 --- 21
-  11 --- 22
-  11 --- 23
-  11 --- 24
-  11 --- 25
-  12 --- 18
-  12 --- 19
-  21 <--x 12
-  13 --- 20
-  13 --- 21
-  23 <--x 13
-  14 --- 22
-  14 --- 23
-  25 <--x 14
-  19 <--x 15
-  15 --- 24
-  15 --- 25
-  18 <--x 17
-  20 <--x 17
-  22 <--x 17
-  24 <--x 17
-  20 <--x 26
 ```

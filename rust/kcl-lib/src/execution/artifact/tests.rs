@@ -431,12 +431,10 @@ fn entity_clone_remaps_sweep_ids() {
     let source_id = ArtifactId::new(Uuid::new_v4());
     let source_path_id = ArtifactId::new(Uuid::new_v4());
     let source_surface_id = ArtifactId::new(Uuid::new_v4());
-    let source_edge_id = ArtifactId::new(Uuid::new_v4());
     let source_trajectory_id = ArtifactId::new(Uuid::new_v4());
     let cmd_id = Uuid::new_v4();
     let cloned_path_id = ArtifactId::new(Uuid::new_v4());
     let cloned_surface_id = ArtifactId::new(Uuid::new_v4());
-    let cloned_edge_id = ArtifactId::new(Uuid::new_v4());
     let cloned_trajectory_id = ArtifactId::new(Uuid::new_v4());
     let mut artifacts = IndexMap::new();
     artifacts.insert(
@@ -446,7 +444,6 @@ fn entity_clone_remaps_sweep_ids() {
             sub_type: SweepSubType::Revolve,
             path_id: Some(source_path_id),
             surface_ids: vec![source_surface_id],
-            edge_ids: vec![source_edge_id],
             code_ref: CodeRef::placeholder(SourceRange::synthetic()),
             source_sweep_id: None,
             trajectory_id: Some(source_trajectory_id),
@@ -458,7 +455,6 @@ fn entity_clone_remaps_sweep_ids() {
     let mut clone_id_map = AHashMap::default();
     clone_id_map.insert(source_path_id, cloned_path_id);
     clone_id_map.insert(source_surface_id, cloned_surface_id);
-    clone_id_map.insert(source_edge_id, cloned_edge_id);
     clone_id_map.insert(source_trajectory_id, cloned_trajectory_id);
     let mut entity_clone_id_maps = AHashMap::default();
     entity_clone_id_maps.insert(cmd_id, clone_id_map);
@@ -500,7 +496,6 @@ fn entity_clone_remaps_sweep_ids() {
     assert_eq!(clone_sweep.path_id, Some(cloned_path_id));
     assert_eq!(clone_sweep.method, ArtifactSweepMethod::New);
     assert_eq!(clone_sweep.surface_ids, vec![cloned_surface_id]);
-    assert_eq!(clone_sweep.edge_ids, vec![cloned_edge_id]);
     assert_eq!(clone_sweep.trajectory_id, Some(cloned_trajectory_id));
     assert!(!clone_sweep.consumed);
 }
@@ -788,10 +783,8 @@ fn entity_clone_clones_mapped_child_artifacts() {
             source_segment_id: None,
             original_seg_id: None,
             surface_id: Some(source_wall_id),
-            edge_ids: Vec::new(),
             edge_cut_id: None,
             code_ref: CodeRef::placeholder(SourceRange::synthetic()),
-            common_surface_ids: Vec::new(),
         }),
     );
     artifacts.insert(
@@ -801,7 +794,6 @@ fn entity_clone_clones_mapped_child_artifacts() {
             sub_type: SweepSubType::Extrusion,
             path_id: Some(source_path_id),
             surface_ids: vec![source_wall_id],
-            edge_ids: Vec::new(),
             code_ref: CodeRef::placeholder(SourceRange::synthetic()),
             source_sweep_id: None,
             trajectory_id: None,
@@ -815,7 +807,6 @@ fn entity_clone_clones_mapped_child_artifacts() {
         Artifact::Wall(Wall {
             id: source_wall_id,
             seg_id: source_seg_id,
-            edge_cut_edge_ids: Vec::new(),
             sweep_id: source_sweep_id,
             path_ids: vec![source_path_id],
             face_code_ref: CodeRef::placeholder(SourceRange::synthetic()),
@@ -938,7 +929,6 @@ fn entity_clone_separates_solid_artifact_from_root_path() {
             sub_type: SweepSubType::Extrusion,
             path_id: Some(source_path_id),
             surface_ids: vec![source_wall_id],
-            edge_ids: Vec::new(),
             code_ref: CodeRef::placeholder(SourceRange::synthetic()),
             source_sweep_id: None,
             trajectory_id: None,
@@ -955,10 +945,8 @@ fn entity_clone_separates_solid_artifact_from_root_path() {
             source_segment_id: None,
             original_seg_id: Some(source_sketch_seg_id),
             surface_id: Some(source_wall_id),
-            edge_ids: Vec::new(),
             edge_cut_id: None,
             code_ref: CodeRef::placeholder(SourceRange::synthetic()),
-            common_surface_ids: Vec::new(),
         }),
     );
     artifacts.insert(
@@ -966,7 +954,6 @@ fn entity_clone_separates_solid_artifact_from_root_path() {
         Artifact::Wall(Wall {
             id: source_wall_id,
             seg_id: source_seg_id,
-            edge_cut_edge_ids: Vec::new(),
             sweep_id: source_sweep_id,
             path_ids: vec![source_path_id],
             face_code_ref: CodeRef::placeholder(SourceRange::synthetic()),
@@ -1190,7 +1177,6 @@ fn surface_blend_creates_blend_sweep_artifact() {
             sub_type: SweepSubType::Extrusion,
             path_id: Some(path_one_id),
             surface_ids: Vec::new(),
-            edge_ids: Vec::new(),
             code_ref: source_code_ref.clone(),
             source_sweep_id: None,
             trajectory_id: None,
@@ -1206,7 +1192,6 @@ fn surface_blend_creates_blend_sweep_artifact() {
             sub_type: SweepSubType::Extrusion,
             path_id: Some(path_two_id),
             surface_ids: Vec::new(),
-            edge_ids: Vec::new(),
             code_ref: source_code_ref,
             source_sweep_id: None,
             trajectory_id: None,
@@ -1386,7 +1371,6 @@ fn pattern_artifact_links_to_source_geometry() {
     let copy_id = Uuid::new_v4();
     let wall_id = ArtifactId::new(Uuid::new_v4());
     let cap_id = ArtifactId::new(Uuid::new_v4());
-    let edge_id = ArtifactId::new(Uuid::new_v4());
     let copy_wall_id = Uuid::new_v4();
     let copy_cap_id = Uuid::new_v4();
     let copy_edge_id = Uuid::new_v4();
@@ -1428,7 +1412,6 @@ fn pattern_artifact_links_to_source_geometry() {
             sub_type: SweepSubType::Extrusion,
             path_id: Some(path_id),
             surface_ids: vec![wall_id, cap_id],
-            edge_ids: vec![edge_id],
             code_ref: code_ref.clone(),
             source_sweep_id: None,
             trajectory_id: None,
@@ -1442,7 +1425,6 @@ fn pattern_artifact_links_to_source_geometry() {
         Artifact::Wall(Wall {
             id: wall_id,
             seg_id: ArtifactId::new(Uuid::new_v4()),
-            edge_cut_edge_ids: vec![edge_id],
             sweep_id,
             path_ids: Vec::new(),
             face_code_ref: code_ref.clone(),
@@ -1454,26 +1436,12 @@ fn pattern_artifact_links_to_source_geometry() {
         Artifact::Cap(Cap {
             id: cap_id,
             sub_type: CapSubType::End,
-            edge_cut_edge_ids: Vec::new(),
             sweep_id,
             path_ids: Vec::new(),
             face_code_ref: code_ref.clone(),
             cmd_id: Uuid::new_v4(),
         }),
     );
-    artifacts.insert(
-        edge_id,
-        Artifact::SweepEdge(SweepEdge {
-            id: edge_id,
-            sub_type: SweepEdgeSubType::Opposite,
-            seg_id: ArtifactId::new(Uuid::new_v4()),
-            cmd_id: Uuid::new_v4(),
-            index: 0,
-            sweep_id,
-            common_surface_ids: vec![wall_id, cap_id],
-        }),
-    );
-
     let updated = pattern_artifact_updates(
         &artifacts,
         pattern_id,
@@ -1509,7 +1477,7 @@ fn pattern_artifact_links_to_source_geometry() {
     assert!(
         !updated
             .iter()
-            .any(|artifact| matches!(artifact, Artifact::Wall(_) | Artifact::Cap(_) | Artifact::SweepEdge(_)))
+            .any(|artifact| matches!(artifact, Artifact::Wall(_) | Artifact::Cap(_)))
     );
 }
 
@@ -1567,7 +1535,6 @@ fn entity_clone_resolves_pattern_copy_lazily() {
     let source_sweep_id = ArtifactId::new(Uuid::new_v4());
     let source_wall_id = ArtifactId::new(Uuid::new_v4());
     let source_cap_id = ArtifactId::new(Uuid::new_v4());
-    let source_edge_id = ArtifactId::new(Uuid::new_v4());
     let pattern_id = ArtifactId::new(Uuid::new_v4());
     let copy_id = Uuid::new_v4();
     let copy_face_id = Uuid::new_v4();
@@ -1577,7 +1544,6 @@ fn entity_clone_resolves_pattern_copy_lazily() {
     let cloned_sweep_id = ArtifactId::new(Uuid::new_v4());
     let cloned_face_id = ArtifactId::new(Uuid::new_v4());
     let cloned_cap_id = ArtifactId::new(Uuid::new_v4());
-    let cloned_edge_id = ArtifactId::new(Uuid::new_v4());
     let code_ref = CodeRef::placeholder(SourceRange::synthetic());
     let mut artifacts = IndexMap::new();
     artifacts.insert(
@@ -1607,7 +1573,6 @@ fn entity_clone_resolves_pattern_copy_lazily() {
             sub_type: SweepSubType::Extrusion,
             path_id: Some(source_path_id),
             surface_ids: vec![source_wall_id, source_cap_id],
-            edge_ids: vec![source_edge_id],
             code_ref: code_ref.clone(),
             source_sweep_id: None,
             trajectory_id: None,
@@ -1621,7 +1586,6 @@ fn entity_clone_resolves_pattern_copy_lazily() {
         Artifact::Wall(Wall {
             id: source_wall_id,
             seg_id: ArtifactId::new(Uuid::new_v4()),
-            edge_cut_edge_ids: Vec::new(),
             sweep_id: source_sweep_id,
             path_ids: Vec::new(),
             face_code_ref: code_ref.clone(),
@@ -1629,23 +1593,10 @@ fn entity_clone_resolves_pattern_copy_lazily() {
         }),
     );
     artifacts.insert(
-        source_edge_id,
-        Artifact::SweepEdge(SweepEdge {
-            id: source_edge_id,
-            sub_type: SweepEdgeSubType::Opposite,
-            seg_id: ArtifactId::new(Uuid::new_v4()),
-            cmd_id: Uuid::new_v4(),
-            index: 0,
-            sweep_id: source_sweep_id,
-            common_surface_ids: vec![source_wall_id, source_cap_id],
-        }),
-    );
-    artifacts.insert(
         source_cap_id,
         Artifact::Cap(Cap {
             id: source_cap_id,
             sub_type: CapSubType::End,
-            edge_cut_edge_ids: Vec::new(),
             sweep_id: source_sweep_id,
             path_ids: Vec::new(),
             face_code_ref: code_ref.clone(),
@@ -1686,10 +1637,8 @@ fn entity_clone_resolves_pattern_copy_lazily() {
     let mut clone_id_map = AHashMap::default();
     clone_id_map.insert(ArtifactId::new(copy_face_id), cloned_face_id);
     clone_id_map.insert(ArtifactId::new(copy_cap_id), cloned_cap_id);
-    clone_id_map.insert(ArtifactId::new(copy_edge_id), cloned_edge_id);
     clone_id_map.insert(source_wall_id, cloned_face_id);
     clone_id_map.insert(source_cap_id, cloned_cap_id);
-    clone_id_map.insert(source_edge_id, cloned_edge_id);
     let entity_clone_id_maps = AHashMap::from_iter([(clone_id, clone_id_map)]);
     let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
     let programs = crate::execution::ProgramLookup::new(ast, Default::default());
@@ -1710,7 +1659,6 @@ fn entity_clone_resolves_pattern_copy_lazily() {
         panic!("Expected clone() to create a Sweep from the pattern copy");
     };
     assert_eq!(cloned_sweep.surface_ids, vec![cloned_face_id, cloned_cap_id]);
-    assert_eq!(cloned_sweep.edge_ids, vec![cloned_edge_id]);
     assert_eq!(cloned_sweep.source_sweep_id, Some(source_sweep_id));
     assert_eq!(cloned_sweep.path_id, Some(ArtifactId::new(clone_id)));
     assert!(!cloned_sweep.consumed);
@@ -1736,14 +1684,6 @@ fn entity_clone_resolves_pattern_copy_lazily() {
             Artifact::Cap(cap)
                 if cap.id == cloned_cap_id
                     && cap.sweep_id == cloned_sweep_id
-        )
-    }));
-    assert!(updated.iter().any(|artifact| {
-        matches!(
-            artifact,
-            Artifact::SweepEdge(edge)
-                if edge.id == cloned_edge_id
-                    && edge.sweep_id == cloned_sweep_id
         )
     }));
 }
@@ -1784,7 +1724,6 @@ fn entity_clone_of_2d_pattern_copy_does_not_create_body() {
             sub_type: SweepSubType::Extrusion,
             path_id: Some(source_path_id),
             surface_ids: Vec::new(),
-            edge_ids: Vec::new(),
             code_ref: code_ref.clone(),
             source_sweep_id: None,
             trajectory_id: None,
@@ -1850,10 +1789,8 @@ fn primitive_edge_does_not_replace_existing_segment_artifact() {
             source_segment_id: None,
             original_seg_id: None,
             surface_id: None,
-            edge_ids: Vec::new(),
             edge_cut_id: None,
             code_ref: CodeRef::placeholder(SourceRange::synthetic()),
-            common_surface_ids: Vec::new(),
         }),
     );
 
@@ -1881,7 +1818,6 @@ fn primitive_face_does_not_replace_existing_cap_artifact() {
         Artifact::Cap(Cap {
             id: shared_id,
             sub_type: CapSubType::End,
-            edge_cut_edge_ids: Vec::new(),
             sweep_id,
             path_ids: Vec::new(),
             face_code_ref: CodeRef::placeholder(SourceRange::synthetic()),
@@ -2006,7 +1942,6 @@ fn edge_specifier_cut_creates_one_edge_cut_per_source_selector() {
             id,
             sub_type: EdgeCutSubType::Fillet,
             source_selector_index: Some(0),
-            consumed_edge_id: None,
             ..
         }) if *id == ArtifactId::new(cmd_id)
     ));
@@ -2016,7 +1951,6 @@ fn edge_specifier_cut_creates_one_edge_cut_per_source_selector() {
             id,
             sub_type: EdgeCutSubType::Fillet,
             source_selector_index: Some(1),
-            consumed_edge_id: None,
             ..
         }) if *id == ArtifactId::new(extra_face_id)
     ));
@@ -2037,7 +1971,6 @@ fn edge_specifier_surface_extrude_child_query_registers_generated_topology() {
             sub_type: SweepSubType::Extrusion,
             path_id: None,
             surface_ids: Vec::new(),
-            edge_ids: Vec::new(),
             code_ref: code_ref.clone(),
             source_sweep_id: None,
             trajectory_id: None,
@@ -2090,11 +2023,9 @@ fn edge_specifier_surface_extrude_child_query_registers_generated_topology() {
                 id,
                 path_id: None,
                 surface_ids,
-                edge_ids,
                 ..
             }) if *id == body_id
                 && surface_ids == &vec![ArtifactId::new(face_id)]
-                && edge_ids == &vec![ArtifactId::new(edge_id)]
         )
     }));
     assert!(updated.iter().any(|artifact| {
@@ -2155,7 +2086,6 @@ fn mirror_3d_artifacts_include_mirrored_body_with_face_and_edge_ids() {
             sub_type: SweepSubType::Extrusion,
             path_id: Some(path_id),
             surface_ids: Vec::new(),
-            edge_ids: Vec::new(),
             code_ref,
             source_sweep_id: None,
             trajectory_id: None,
@@ -2214,11 +2144,9 @@ fn mirror_3d_artifacts_include_mirrored_body_with_face_and_edge_ids() {
             Artifact::Sweep(Sweep {
                 id,
                 surface_ids,
-                edge_ids,
                 ..
             }) if *id == ArtifactId::new(mirrored_sweep_id)
                 && surface_ids == &vec![ArtifactId::new(face_one_id), ArtifactId::new(face_two_id)]
-                && edge_ids == &vec![ArtifactId::new(edge_id)]
         )
     }));
 }
