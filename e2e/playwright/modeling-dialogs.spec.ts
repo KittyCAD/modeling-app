@@ -154,6 +154,42 @@ obstruction = extrude(region002, length = 20mm)`
     await page.keyboard.press('Escape')
   })
 
+  test('Exports after switching to a format with different storage options', async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    cmdBar,
+    modelingDialog,
+  }) => {
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode(
+        '',
+        `${profileCode}\nbody001 = extrude(region001, length = 10mm)`
+      )
+    )
+    await cmdBar.openCmdBar()
+    await cmdBar.chooseCommand('Export')
+    const format = modelingDialog.options(/^type\b/i)
+    const storage = modelingDialog.options(/^storage\b/i)
+    await storage.selectOption({ label: 'embedded' })
+    await expect(modelingDialog.options(/^up\b/i)).toBeHidden()
+    await expect(modelingDialog.options(/^scale\b/i)).toBeHidden()
+    await format.selectOption({ label: 'STL' })
+    await expect(storage.locator('option:checked')).toHaveText('ascii')
+    await expect(modelingDialog.options(/^up\b/i)).toBeVisible()
+    await expect(modelingDialog.options(/^scale\b/i)).toBeVisible()
+    const [download] = await Promise.all([
+      page.waitForEvent('download'),
+      modelingDialog.submitButton.click(),
+    ])
+    expect(download.suggestedFilename()).toMatch(/\.stl$/i)
+    expect(await download.failure()).toBeNull()
+    await expect(modelingDialog.locator).not.toBeAttached()
+  })
+
   test('Keeps Boolean target and tool selections when switching collectors', async ({
     homePage,
     scene,

@@ -42,6 +42,38 @@ export function getDialogFields(context: CommandBarContext): DialogField[] {
   )
 }
 
+/** Use the same valid option values for rendering and submission. */
+export function resolveOptionArguments(
+  context: CommandBarContext,
+  draft: Record<string, unknown>
+): Record<string, unknown> {
+  const values = { ...context.argumentsToSubmit, ...draft }
+  for (const [name, arg] of Object.entries(
+    context.selectedCommand?.args ?? {}
+  )) {
+    if (arg.inputType !== 'options') continue
+    const current = { ...context, argumentsToSubmit: values }
+    const { isHidden, isRequired } = evaluateCommandArgumentFlags(arg, current)
+    const value = values[name]
+    if (isHidden || (!isRequired && !hasValue(value))) continue
+    // Object-valued choices can contain authored AST nodes or device targets.
+    if (value !== null && typeof value === 'object') continue
+    const machineContext = arg.machineActor?.getSnapshot().context
+    const options = (
+      typeof arg.options === 'function'
+        ? arg.options(current, machineContext)
+        : arg.options
+    ).filter((option) => !option.disabled)
+    if (options.some((option) => option.value === value)) continue
+    values[name] = (
+      options.find((option) => option.value === arg.defaultValue) ??
+      options.find((option) => option.isCurrent) ??
+      options[0]
+    )?.value
+  }
+  return values
+}
+
 export async function initializeArguments(
   context: CommandBarContext
 ): Promise<Record<string, unknown>> {
@@ -85,7 +117,7 @@ export async function resolveArguments(
   ast: Node<Program>,
   artifactGraph?: ArtifactGraph
 ): Promise<Record<string, unknown> | Error> {
-  const resolved = { ...context.argumentsToSubmit, ...values }
+  const resolved = resolveOptionArguments(context, values)
   // Creation dialogs retain inactive drafts. Keep those out of the payload,
   // while preserving hidden edit arguments and static command metadata.
   if (!resolved.nodeToEdit) {

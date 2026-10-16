@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { resolveArguments } from '@src/components/ModelingDialog/arguments'
 import { assertParse } from '@src/lang/wasm'
-import type { Command } from '@src/lib/commandTypes'
+import type { Command, CommandArgument } from '@src/lib/commandTypes'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { GLOBAL_COMMAND_SCOPES } from '@src/registry/contracts/commands'
 import {
@@ -152,5 +152,63 @@ describe('resolveArguments', () => {
       valueAst: { type: 'Literal' },
     })
     expect(result.optional).toBeUndefined()
+  })
+
+  it('repairs dependent options without replacing valid or cleared values', async () => {
+    const objectValue = { id: 'original' }
+    const choice: CommandArgument<unknown> = {
+      inputType: 'options',
+      required: true,
+      options: ({ argumentsToSubmit }) => [
+        {
+          name: 'Unavailable',
+          value: 'unavailable',
+          disabled: true,
+          isCurrent: true,
+        },
+        { name: 'Default', value: argumentsToSubmit.mode, isCurrent: true },
+        { name: 'Shared', value: 'shared' },
+      ],
+    }
+    const args = {
+      mode: {
+        inputType: 'options',
+        required: true,
+        options: [
+          { name: 'First', value: 'first' },
+          { name: 'Second', value: 'second' },
+        ],
+      },
+      choice,
+      validChoice: choice,
+      optional: { ...choice, required: false, prepopulate: true },
+      objectChoice: {
+        inputType: 'options',
+        required: true,
+        options: [
+          { name: 'Current', value: { id: 'current' }, isCurrent: true },
+        ],
+      },
+    } satisfies NonNullable<Command['args']>
+
+    expect(
+      await resolve(
+        args,
+        { mode: 'second', optional: undefined },
+        {
+          mode: 'first',
+          choice: 'first',
+          validChoice: 'shared',
+          optional: 'shared',
+          objectChoice: objectValue,
+        }
+      )
+    ).toEqual({
+      mode: 'second',
+      choice: 'second',
+      validChoice: 'shared',
+      optional: undefined,
+      objectChoice: objectValue,
+    })
   })
 })
