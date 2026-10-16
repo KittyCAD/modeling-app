@@ -62,7 +62,7 @@ describe('editor-owned scene lifetime', () => {
     }
   })
 
-  it('publishes a fresh scene when the legacy editor reopens and seeds it from the live camera', async () => {
+  it('replaces the actor and scene together when the legacy editor reopens', async () => {
     const { app, kclManager } = createKclManagerTestHarness()
     const previous = kclManager.sceneInfra
     const previousEntities = kclManager.sceneEntitiesManager
@@ -73,7 +73,9 @@ describe('editor-owned scene lifetime', () => {
     previous.camControls.camera.position.set(5, 6, 7)
     previous.camControls.target.set(1, 2, 3)
     try {
+      const previousActor = await kclManager.modelingActorPromise
       kclManager.close()
+      expect(previousActor.getSnapshot().status).toBe('stopped')
       await KclManager.fromFile(
         new File('next.kcl', kclManager.systemDeps.textFileIO),
         kclManager.systemDeps,
@@ -81,6 +83,9 @@ describe('editor-owned scene lifetime', () => {
         '',
         { shouldSyncRustOnOpen: false }
       )
+      const currentActor = await kclManager.modelingActorPromise
+      expect(currentActor === previousActor).toBe(false)
+      expect(currentActor.getSnapshot().status).toBe('active')
       const current = kclManager.sceneInfra
       expect(current === previous).toBe(false)
       expect(kclManager.sceneEntitiesManager === previousEntities).toBe(false)
@@ -91,6 +96,7 @@ describe('editor-owned scene lifetime', () => {
       const dispose = vi.spyOn(current, 'dispose')
       kclManager.close()
       expect(dispose).toHaveBeenCalledTimes(1)
+      expect(currentActor.getSnapshot().status).toBe('stopped')
     } finally {
       stop()
       app.dispose()
