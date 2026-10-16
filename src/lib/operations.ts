@@ -1587,8 +1587,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({
       ? operation.labeledArgs.edgeRef
       : undefined
   const axisIsEdgeRefPayload =
-    axisArg?.value?.type === 'Object' &&
-    (axisArg.value.value?.sideFaces ?? axisArg.value.value?.side_faces)
+    axisArg?.value?.type === 'Object' && axisArg.value.value.sideFaces
   const edgeRefPayload = axisIsEdgeRefPayload ? axisArg : edgeRefArg
   if (edgeRefPayload) {
     const { retrieveEdgeSelectionFromOpValue } = await import(
@@ -1749,8 +1748,7 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
       ? operation.labeledArgs.edgeRef
       : undefined
   const axisIsEdgeRefPayload =
-    axisArg?.value?.type === 'Object' &&
-    (axisArg.value.value?.sideFaces ?? axisArg.value.value?.side_faces)
+    axisArg?.value?.type === 'Object' && axisArg.value.value.sideFaces
   const edgeRefPayload = axisIsEdgeRefPayload ? axisArg : edgeRefArg
   if (edgeRefPayload) {
     const { retrieveEdgeSelectionFromOpValue } = await import(

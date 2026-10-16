@@ -3565,8 +3565,7 @@ function findCodeRefForEdgeReference(
 
 type EdgeSpecifierOpValue = Extract<OpKclValue, { type: 'Object' }> & {
   value: {
-    sideFaces?: Extract<OpKclValue, { type: 'Array' }>
-    side_faces?: Extract<OpKclValue, { type: 'Array' }>
+    sideFaces: Extract<OpKclValue, { type: 'Array' }>
   }
 }
 
@@ -3575,8 +3574,7 @@ function isEdgeSpecifierOpValue(
   value: OpKclValue
 ): value is EdgeSpecifierOpValue {
   if (value.type !== 'Object' || !value.value) return false
-  const faces = value.value.sideFaces ?? value.value.side_faces
-  return faces?.type === 'Array'
+  return value.value.sideFaces?.type === 'Array'
 }
 
 /** Recover selections from the array-valued `edges` operation argument. */
@@ -3609,10 +3607,8 @@ export function retrieveEdgeSelectionFromOpValue(
     return new Error('Expected an edge specifier object with a sideFaces array')
   }
   const edgeRef = value.value
-  const facesProp = edgeRef.sideFaces ?? edgeRef.side_faces
-  const faceValues = facesProp?.value ?? []
   const faceIds: string[] = []
-  for (const v of faceValues) {
+  for (const v of edgeRef.sideFaces.value) {
     const id = faceRefToArtifactId(v)
     if (id) faceIds.push(id)
   }
@@ -3623,7 +3619,7 @@ export function retrieveEdgeSelectionFromOpValue(
   if (!codeRef) {
     return new Error('Could not find a code reference for the selected edge')
   }
-  const endFacesProp = edgeRef.endFaces ?? edgeRef.end_faces
+  const endFacesProp = edgeRef.endFaces
   const endFaceIds =
     endFacesProp?.type === 'Array'
       ? endFacesProp.value
