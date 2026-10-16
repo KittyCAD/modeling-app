@@ -50,7 +50,7 @@ import {
   DEFAULT_EXPERIMENTAL_FEATURES,
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
 } from '@src/lib/constants'
-import { getOperationKey } from '@src/lib/featureTreeOperationTree'
+import { getOperationKey } from '@src/lib/featureTree/featureTreeOperationTree'
 import { DEFAULT_KCL_VERSION } from '@src/lib/kclVersion'
 import { markdownMessageElement } from '@src/lib/markdown'
 import { markOnce } from '@src/lib/performance'
