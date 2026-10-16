@@ -95,7 +95,10 @@ import type {
 } from '@src/lang/wasm'
 import { recast } from '@src/lang/wasm'
 import type { ArtifactEntry, ArtifactIndex } from '@src/lib/artifactIndex'
-import type { CommandSelectionType } from '@src/lib/commandTypes'
+import type {
+  CommandArgument,
+  CommandSelectionType,
+} from '@src/lib/commandTypes'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES,
@@ -2597,13 +2600,8 @@ export function getSelectionCountByType(
   }
 
   function incrementArtifactSelectionType(artifact: Artifact): boolean {
-    if (
-      artifact.type === 'helix' ||
-      artifact.type === 'plane' ||
-      artifact.type === 'sketchBlock' ||
-      artifact.type === 'gdtAnnotation'
-    ) {
-      incrementOrInitializeSelectionType(artifact.type)
+    if (artifact.type === 'helix') {
+      incrementOrInitializeSelectionType('helix')
       return true
     }
     if (artifact.type === 'path' && artifact.subType === 'region') {
@@ -2614,12 +2612,8 @@ export function getSelectionCountByType(
       incrementOrInitializeSelectionType('path')
       return true
     }
-    if (artifact.type === 'sweep' || artifact.type === 'pattern') {
+    if (artifact.type === 'sweep') {
       incrementOrInitializeSelectionType('sweep')
-      return true
-    }
-    if (artifact.type === 'compositeSolid') {
-      incrementOrInitializeSelectionType('compositeSolid')
       return true
     }
     if (artifact.type === 'solid2d') {
@@ -2635,7 +2629,7 @@ export function getSelectionCountByType(
     } else if (isEngineRegionSelection(sel)) {
       incrementOrInitializeSelectionType('engineRegion')
     } else if ('name' in sel) {
-      incrementOrInitializeSelectionType('defaultPlane')
+      incrementOrInitializeSelectionType('plane')
     } else if (sel.type === 'enginePrimitive' && sel.primitiveType === 'face') {
       incrementOrInitializeSelectionType('enginePrimitiveFace')
     } else if (sel.type === 'enginePrimitive' && sel.primitiveType === 'edge') {
@@ -2680,11 +2674,15 @@ export function getSelectionCountByType(
           incrementOrInitializeSelectionType('path')
         }
       }
+    } else if (inlineArtifact?.type === 'helix') {
+      incrementOrInitializeSelectionType('helix')
     } else if (
-      inlineArtifact &&
-      incrementArtifactSelectionType(inlineArtifact)
+      inlineArtifact?.type === 'path' &&
+      inlineArtifact.subType === 'region'
     ) {
-      // Prefer a resolved artifact over the source range's enclosing pipe.
+      incrementOrInitializeSelectionType('pathRegion')
+    } else if (inlineArtifact?.type === 'path') {
+      incrementOrInitializeSelectionType('path')
     } else if (
       v2Selection.codeRef &&
       ast &&
@@ -2740,41 +2738,33 @@ export function getSelectionTypeDisplayText(
     .join(', ')
 }
 
-/** Validate each selection; source-only references are resolved by the codemod. */
 export function canSubmitSelectionArg(
-  ast: Node<Program>,
-  selection: Selections | undefined,
-  argument: {
-    selectionTypes: CommandSelectionType[]
-    multiple: boolean
-    allowCodeReferences?: boolean
+  selectionsByType: 'none' | Map<ResolvedSelectionType, number>,
+  argument: CommandArgument<unknown> & {
+    inputType: 'selection'
   },
-  artifactGraph?: ArtifactGraph
-): boolean {
-  if (!selection) return false
-  const count =
-    selection.graphSelections.length + selection.otherSelections.length
-  if (!count || (!argument.multiple && count !== 1)) return false
-
-  const graphSelections = selection.graphSelections.filter((item) => {
-    if (!argument.allowCodeReferences || item.entityRef) return true
-    const resolved = resolveToCodeRef(item, artifactGraph)
-    const isSourceOnly =
-      resolved &&
-      !resolved.artifact &&
-      resolved.codeRef.range[0] !== resolved.codeRef.range[1]
-    return !isSourceOnly
-  })
-  const selectionsByType = getSelectionCountByType(
-    ast,
-    { ...selection, graphSelections },
-    artifactGraph
-  )
-  return (
-    selectionsByType === 'none' ||
-    [...selectionsByType.keys()].every((type) =>
-      argument.selectionTypes.some((allowed) => allowed === type)
+  selection?: Selections
+) {
+  // Preserve the former mixed input's acceptance of non-empty code selections.
+  if (
+    argument.allowCodeReferences &&
+    selection?.graphSelections.some(
+      ({ codeRef }) => codeRef && codeRef.range[0] !== codeRef.range[1]
     )
+  )
+    return true
+
+  return (
+    selectionsByType !== 'none' &&
+    [...selectionsByType.entries()].every(([type, count]) => {
+      const isAllowedType = argument.selectionTypes.includes(
+        type as Artifact['type']
+      )
+      return (
+        isAllowedType &&
+        (!argument.multiple ? count < 2 && count > 0 : count > 0)
+      )
+    })
   )
 }
 
@@ -3211,7 +3201,7 @@ export function updateSelections(
 }
 
 const semanticEntityNames: {
-  [key: string]: CommandSelectionType[]
+  [key: string]: Array<CommandSelectionType | 'defaultPlane'>
 } = {
   face: ['wall', 'cap', 'primitiveFace', 'enginePrimitiveFace'],
   profile: ['solid2d'],
@@ -3224,11 +3214,11 @@ const semanticEntityNames: {
     'enginePrimitiveEdge',
   ],
   point: [],
-  plane: ['plane', 'defaultPlane'],
+  plane: ['defaultPlane'],
 }
 
 function getSemanticEntityForSelectionType(
-  selectionType: CommandSelectionType
+  selectionType: CommandSelectionType | 'defaultPlane'
 ): string | undefined {
   for (const [entity, entityTypes] of Object.entries(semanticEntityNames)) {
     if (entityTypes.includes(selectionType)) {

@@ -17,7 +17,6 @@ import {
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type {
   CommandArgumentConfig,
-  CommandSelectionType,
   KclCommandValue,
   StateMachineCommandSetConfig,
 } from '@src/lib/commandTypes'
@@ -119,13 +118,6 @@ const objectSelection: {
   selectionFilter: ['object'],
   allowCodeReferences: true,
 }
-
-const sketchOrBodySelectionTypes: CommandSelectionType[] = [
-  ...objectSelection.selectionTypes,
-  'solid2d',
-  'pathRegion',
-  'sketchBlock',
-]
 
 // For all surface modeling commands
 const kclBodyTypeOptions = KCL_PRELUDE_BODY_TYPE_VALUES.map((value) => ({
@@ -1139,7 +1131,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             inputType: 'selection',
             selectionTypes: [
               'plane',
-              'defaultPlane',
               'planeOfFace',
               'cap',
               'wall',
@@ -1525,7 +1516,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             ...objectSelection,
-            selectionTypes: [...objectSelection.selectionTypes, 'plane'],
             multiple: true,
             hidden: isEditingNodeSelection,
           },
@@ -1548,11 +1538,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       overrides: {
         objects: {
           ...objectSelection,
-          selectionTypes: [
-            ...sketchOrBodySelectionTypes,
-            'helix',
-            'gdtAnnotation',
-          ],
           multiple: true,
         },
       },
@@ -1571,7 +1556,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             ...objectSelection,
-            selectionTypes: [...sketchOrBodySelectionTypes, 'helix'],
+            selectionTypes: [...objectSelection.selectionTypes, 'helix'],
             multiple: true,
             hidden: isEditingNodeSelection,
           },
@@ -1604,7 +1589,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       overrides: {
         objects: {
           ...objectSelection,
-          selectionTypes: [...sketchOrBodySelectionTypes, 'helix'],
+          selectionTypes: [...objectSelection.selectionTypes, 'helix'],
           multiple: true,
           hidden: isEditingNodeSelection,
         },
@@ -1645,7 +1630,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       overrides: {
         objects: {
           ...objectSelection,
-          selectionTypes: [...sketchOrBodySelectionTypes, 'helix'],
+          selectionTypes: [...objectSelection.selectionTypes, 'helix'],
           multiple: true,
           hidden: isEditingNodeSelection,
         },
@@ -1676,7 +1661,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       overrides: {
         objects: {
           ...objectSelection,
-          selectionTypes: sketchOrBodySelectionTypes,
           multiple: false, // only one object can be cloned at this time
           hidden: isEditingNodeSelection,
         },
@@ -1734,7 +1718,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             inputType: 'selection',
             selectionTypes: [
               'plane',
-              'defaultPlane',
               'cap',
               'wall',
               'edgeCut',

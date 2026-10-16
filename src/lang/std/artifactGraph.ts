@@ -27,7 +27,7 @@ import type {
   SweepArtifact,
   WallArtifact,
 } from '@src/lang/wasm'
-import type { Selection } from '@src/machines/modelingSharedTypes'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 /** Shape needed to recover a sweep edge's source segment. */
 type SweepEdgeLike = { segId: string; sweepId?: string }
 /**
@@ -1092,11 +1092,8 @@ export function getArtifactFromRange(
         if (preferredType && artifact.type === preferredType) {
           preferredMatch = artifact
         }
-        // Prefer the operation over helper geometry sharing its source range.
-        if (
-          artifact.type === 'sketchBlock' ||
-          artifact.type === 'gdtAnnotation'
-        ) {
+        // Favor explicit preferredType first, then sketchBlock, then helix/path, then first match.
+        if (artifact.type === 'sketchBlock') {
           favoredCandidate = artifact
         } else if (
           (artifact.type === 'helix' || artifact.type === 'path') &&
@@ -1245,6 +1242,87 @@ export function getSketchBlockForArtifact(
   }
 
   return undefined
+}
+
+/** Coerce face and edge selections to the body inputs expected by body commands. */
+export function coerceSelectionsToBody(
+  selections: Selections,
+  artifactGraph: ArtifactGraph
+): Selections | Error {
+  const bodySelections: Selection[] = []
+  const seenBodyIds = new Set<string>()
+
+  for (const selection of selections.graphSelections) {
+    if (!selection.artifact) {
+      if (
+        selection.codeRef &&
+        selection.codeRef.range[1] - selection.codeRef.range[0] !== 0
+      ) {
+        bodySelections.push(selection)
+      }
+      continue
+    }
+
+    if (
+      selection.artifact.type === 'sweep' ||
+      selection.artifact.type === 'compositeSolid' ||
+      selection.artifact.type === 'pattern' ||
+      selection.artifact.type === 'path'
+    ) {
+      const bodyId = selection.engineEntityId ?? selection.artifact.id
+      if (!seenBodyIds.has(bodyId)) {
+        seenBodyIds.add(bodyId)
+        bodySelections.push(selection)
+      }
+      continue
+    }
+
+    if (!selection.codeRef) {
+      return new Error(
+        `Unable to find source range for selected artifact: ${selection.artifact.type}`
+      )
+    }
+    const maybeSweep = getSweepArtifactFromSelection(
+      { artifact: selection.artifact, codeRef: selection.codeRef },
+      artifactGraph
+    )
+    if (err(maybeSweep)) {
+      return new Error(
+        `Unable to find parent body for selected artifact: ${selection.artifact.type}`
+      )
+    }
+
+    const maybePath = maybeSweep.pathId
+      ? getArtifactOfTypes(
+          { key: maybeSweep.pathId, types: ['path'] },
+          artifactGraph
+        )
+      : new Error('Sweep has no path')
+    if (!err(maybePath)) {
+      if (!seenBodyIds.has(maybePath.id)) {
+        seenBodyIds.add(maybePath.id)
+        bodySelections.push({
+          artifact: maybePath,
+          codeRef: maybePath.codeRef,
+        })
+      }
+      continue
+    }
+
+    const sweep = getArtifactOfTypes(
+      { key: maybeSweep.id, types: ['sweep'] },
+      artifactGraph
+    )
+    if (!err(sweep) && !seenBodyIds.has(sweep.id)) {
+      seenBodyIds.add(sweep.id)
+      bodySelections.push({ artifact: sweep, codeRef: maybeSweep.codeRef })
+    }
+  }
+
+  return {
+    graphSelections: bodySelections,
+    otherSelections: selections.otherSelections,
+  }
 }
 
 /**

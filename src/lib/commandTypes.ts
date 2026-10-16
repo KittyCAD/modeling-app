@@ -73,7 +73,6 @@ type CommandArgumentStatusAndRequired<C> =
     }
 export type CommandSelectionType =
   | Artifact['type']
-  | 'defaultPlane'
   | 'pathRegion'
   | 'primitiveFace'
   | 'primitiveEdge'
@@ -236,7 +235,7 @@ export type CommandArgumentConfig<
   | {
       inputType: 'selection'
       selectionTypes: CommandSelectionType[]
-      /** Allow source-only selections for codemod resolution. */
+      /** Accept non-empty code selections for codemod resolution. */
       allowCodeReferences?: boolean
       clearSelectionFirst?: boolean
       selectionFilter?: EntityType[]

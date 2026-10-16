@@ -3,7 +3,7 @@ import {
   coerceSelectionsForBodyOnlySelectionTypes,
   coerceSelectionsToBody,
 } from '@src/lang/std/selectionCoercion'
-import type { ArtifactGraph, CodeRef } from '@src/lang/wasm'
+import type { ArtifactGraph } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { describe, expect, it } from 'vitest'
 
@@ -291,50 +291,19 @@ describe('coerceSelectionsToBody', () => {
     })
   })
 
-  const objectCodeRef: CodeRef = {
-    range: [200, 300, 0],
-    pathToNode: [],
-    nodePath: { steps: [] },
-  }
-  it.each<Artifact>([
-    {
-      type: 'path',
-      subType: 'region',
-      id: 'region-1',
-      codeRef: objectCodeRef,
-      planeId: 'plane-1',
-      segIds: [],
-      trajectorySweepId: null,
-      consumed: false,
-    },
-    {
-      type: 'helix',
-      id: 'helix-1',
-      codeRef: objectCodeRef,
-      axisId: 'axis-1',
-      trajectorySweepId: null,
-      consumed: false,
-    },
-    {
-      type: 'sketchBlock',
-      id: 'sketch-1',
-      sketchId: 1,
-      codeRef: objectCodeRef,
-    },
-    {
-      type: 'plane',
-      id: 'plane-1',
-      codeRef: objectCodeRef,
-      pathIds: [],
-    },
-    {
-      type: 'gdtAnnotation',
-      id: 'annotation-1',
-      codeRef: objectCodeRef,
-      consumed: false,
-    },
-  ])('preserves $type while coercing a face', (object) => {
+  it('should preserve a helix while coercing another selection to a body', () => {
     const artifactGraph: ArtifactGraph = new Map()
+    artifactGraph.set('path-1', {
+      type: 'path',
+      subType: 'sketch',
+      id: 'path-1',
+      codeRef: { range: [0, 100, 0], pathToNode: [], nodePath: { steps: [] } },
+      planeId: 'plane-1',
+      segIds: ['segment-1'],
+      sweepId: 'sweep-1',
+      trajectorySweepId: null,
+      consumed: true,
+    })
     artifactGraph.set('sweep-1', {
       type: 'sweep',
       id: 'sweep-1',
@@ -351,29 +320,43 @@ describe('coerceSelectionsToBody', () => {
       trajectoryId: null,
       consumed: false,
     })
-    artifactGraph.set(object.id, object)
+    artifactGraph.set('segment-1', {
+      type: 'segment',
+      id: 'segment-1',
+      pathId: 'path-1',
+      edgeIds: [],
+      commonSurfaceIds: [],
+      codeRef: { range: [10, 20, 0], pathToNode: [], nodePath: { steps: [] } },
+    })
+    artifactGraph.set('helix-1', {
+      type: 'helix',
+      id: 'helix-1',
+      codeRef: {
+        range: [200, 300, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+      axisId: 'axis-1',
+      trajectorySweepId: null,
+      consumed: false,
+    })
 
     const result = coerceSelectionsForBodyOnlySelectionTypes(
       {
-        graphSelections: [{ codeRef: objectCodeRef }],
-        otherSelections: [
-          {
-            type: 'enginePrimitive',
-            entityId: 'face-1',
-            parentEntityId: 'sweep-1',
-            primitiveIndex: 0,
-            primitiveType: 'face',
-          },
+        graphSelections: [
+          { codeRef: { range: [10, 20, 0], pathToNode: [] } },
+          { codeRef: { range: [200, 300, 0], pathToNode: [] } },
         ],
+        otherSelections: [],
       },
-      ['sweep', object.type],
+      ['path', 'sweep', 'compositeSolid', 'helix'],
       artifactGraph
     )
 
     expect(result?.graphSelections).toHaveLength(2)
     expect(result?.graphSelections).toContainEqual(
       expect.objectContaining({
-        codeRef: objectCodeRef,
+        codeRef: { range: [200, 300, 0], pathToNode: [] },
       })
     )
     expect(result?.graphSelections).toContainEqual(

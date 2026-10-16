@@ -5,7 +5,11 @@ import type { CommandArgument } from '@src/lib/commandTypes'
 import { isKclCommandValue } from '@src/lib/commandUtils'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type RustContext from '@src/lib/rustContext'
-import { canSubmitSelectionArg, isSelections } from '@src/lib/selections'
+import {
+  canSubmitSelectionArg,
+  getSelectionCountByType,
+  isSelections,
+} from '@src/lib/selections'
 import { isErr } from '@src/lib/trap'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
 
@@ -112,7 +116,11 @@ export async function resolveArguments(
       if (
         (isRequired && !selection) ||
         (selection &&
-          !canSubmitSelectionArg(ast, selection, arg, artifactGraph))
+          !canSubmitSelectionArg(
+            getSelectionCountByType(ast, selection, artifactGraph),
+            arg,
+            selection
+          ))
       ) {
         return new Error(`Select ${arg.displayName || name}.`)
       }

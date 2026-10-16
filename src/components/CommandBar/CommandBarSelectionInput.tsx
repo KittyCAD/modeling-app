@@ -10,6 +10,7 @@ import { useApp } from '@src/lib/boot'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import {
   canSubmitSelectionArg,
+  getSelectionCountByType,
   getSelectionTypeDisplayText,
   getSemanticSelectionType,
 } from '@src/lib/selections'
@@ -54,14 +55,17 @@ function CommandBarSelectionInput({
     selection &&
       selection.graphSelections.length + selection.otherSelections.length
   )
-  const canSubmitSelection = !hasSelection
-    ? !isArgRequired
-    : canSubmitSelectionArg(
+  const canSubmitSelection =
+    (arg.allowCodeReferences && !isArgRequired) ||
+    canSubmitSelectionArg(
+      getSelectionCountByType(
         kclManager.astSignal.value,
         selection,
-        arg,
         kclManager.artifactGraph
-      )
+      ),
+      arg,
+      selection
+    )
 
   useSelectionLifecycle({
     arg,

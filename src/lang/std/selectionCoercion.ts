@@ -83,8 +83,7 @@ export function coerceSelectionsToBody(
       artifact.type === 'helix' ||
       artifact.type === 'plane' ||
       artifact.type === 'sketchBlock' ||
-      artifact.type === 'solid2d' ||
-      artifact.type === 'gdtAnnotation'
+      artifact.type === 'solid2d'
     ) {
       appendBody({ ...selection, ...resolved, artifact })
       continue
@@ -147,17 +146,7 @@ export function coerceSelectionsForBodyOnlySelectionTypes(
     !selections ||
     !selectionTypes?.length ||
     !selectionTypes.every((type) =>
-      [
-        'sweep',
-        'compositeSolid',
-        'path',
-        'pathRegion',
-        'sketchBlock',
-        'solid2d',
-        'helix',
-        'plane',
-        'gdtAnnotation',
-      ].includes(type)
+      ['sweep', 'compositeSolid', 'path', 'helix'].includes(type)
     )
   )
     return selections
