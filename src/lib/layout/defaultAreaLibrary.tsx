@@ -1,7 +1,7 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import { DEFAULT_SKETCH_SOLVE_STREAM_DIMMING } from '@src/clientSideScene/ClientSideSceneComp'
 import { ConnectionStream } from '@src/components/ConnectionStream'
-import { BodiesPane } from '@src/components/layout/areas/BodiesPane'
+import { BodiesPane } from '@src/lib/featureTree/BodiesPane'
 import { DebugPane } from '@src/components/layout/areas/DebugPane'
 import { FeatureTreePane } from '@src/components/layout/areas/FeatureTreePane'
 import { EditorPane } from '@src/components/layout/areas/EditorPane'
