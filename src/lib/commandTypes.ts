@@ -302,6 +302,11 @@ export type CommandArgumentConfig<
     }
   | {
       inputType: 'text'
+      validation?: (props: {
+        data: any
+        context: CommandBarContext
+        machineContext?: C
+      }) => Promise<boolean | string>
       defaultValue?:
         | OutputType
         | ((
@@ -509,6 +514,11 @@ export type CommandArgument<
     }
   | {
       inputType: 'text'
+      validation?: (props: {
+        data: any
+        context: CommandBarContext
+        machineContext?: ContextFrom<T>
+      }) => Promise<boolean | string>
       defaultValue?:
         | OutputType
         | ((

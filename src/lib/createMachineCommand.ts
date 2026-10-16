@@ -295,6 +295,15 @@ export function buildCommandArgument<
     } satisfies CommandArgument<O, T> & {
       inputType: 'string' | 'color' | 'tagDeclarator'
     }
+  } else if (arg.inputType === 'text') {
+    return {
+      inputType: arg.inputType,
+      defaultValue: arg.defaultValueFromContext
+        ? arg.defaultValueFromContext(context)
+        : arg.defaultValue,
+      validation: arg.validation,
+      ...baseCommandArgument,
+    } satisfies CommandArgument<O, T> & { inputType: 'text' }
   } else {
     return {
       inputType: arg.inputType,
