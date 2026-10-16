@@ -2629,27 +2629,38 @@ export function getSelectionCountByType(
   }
 
   function incrementArtifactSelectionType(artifact: Artifact): boolean {
-    if (artifact.type === 'helix') {
-      incrementOrInitializeSelectionType('helix')
-      return true
+    switch (artifact.type) {
+      case 'path':
+        incrementOrInitializeSelectionType(
+          artifact.subType === 'region' ? 'pathRegion' : 'path'
+        )
+        return true
+      case 'helix':
+      case 'sweep':
+      case 'solid2d':
+      case 'sketchBlock':
+      case 'compositeSolid':
+      case 'gdtAnnotation':
+      case 'plane':
+      case 'importedGeometry':
+        incrementOrInitializeSelectionType(artifact.type)
+        return true
+      case 'segment':
+      case 'primitiveFace':
+      case 'primitiveEdge':
+      case 'planeOfFace':
+      case 'startSketchOnFace':
+      case 'startSketchOnPlane':
+      case 'sketchBlockConstraint':
+      case 'wall':
+      case 'cap':
+      case 'sweepEdge':
+      case 'edgeCut':
+      case 'edgeCutEdge':
+      case 'namedView':
+      case 'pattern':
+        return false
     }
-    if (artifact.type === 'path' && artifact.subType === 'region') {
-      incrementOrInitializeSelectionType('pathRegion')
-      return true
-    }
-    if (artifact.type === 'path') {
-      incrementOrInitializeSelectionType('path')
-      return true
-    }
-    if (artifact.type === 'sweep') {
-      incrementOrInitializeSelectionType('sweep')
-      return true
-    }
-    if (artifact.type === 'solid2d') {
-      incrementOrInitializeSelectionType('solid2d')
-      return true
-    }
-    return false
   }
 
   otherSelections.forEach((sel) => {
@@ -2703,15 +2714,11 @@ export function getSelectionCountByType(
           incrementOrInitializeSelectionType('path')
         }
       }
-    } else if (inlineArtifact?.type === 'helix') {
-      incrementOrInitializeSelectionType('helix')
     } else if (
-      inlineArtifact?.type === 'path' &&
-      inlineArtifact.subType === 'region'
+      inlineArtifact &&
+      incrementArtifactSelectionType(inlineArtifact)
     ) {
-      incrementOrInitializeSelectionType('pathRegion')
-    } else if (inlineArtifact?.type === 'path') {
-      incrementOrInitializeSelectionType('path')
+      return
     } else if (
       v2Selection.codeRef &&
       ast &&
