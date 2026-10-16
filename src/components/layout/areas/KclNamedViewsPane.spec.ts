@@ -2,7 +2,7 @@ import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 import type { NamedViewCameraSnapshot } from '@src/lang/modifyAst/namedViews'
 import { AreaType, LayoutType } from '@src/lib/layout'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { createElement } from 'react'
+import { type ButtonHTMLAttributes, createElement } from 'react'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 
 const renderMocks = vi.hoisted(() => ({
@@ -12,7 +12,7 @@ const renderMocks = vi.hoisted(() => ({
   captureNamedViewCamera:
     vi.fn<() => Promise<NamedViewCameraSnapshot | Error>>(),
   updateNamedViewCamera: vi.fn(() => ({})),
-  updateModelingState: vi.fn(async () => undefined),
+  executeAstMock: vi.fn(async () => ({ errors: [] })),
   prepareNamedViewEditCommand: vi.fn(async () => ({
     type: 'Find and select command',
   })),
@@ -27,6 +27,9 @@ const renderMocks = vi.hoisted(() => ({
     },
     isExecutingSignal: { value: false },
     systemDeps: { project: { value: { path: '/project' } } },
+    updateAst: vi.fn(async (ast: unknown) => ({ newAst: ast })),
+    updateEditorWithAstAndWriteToFile: vi.fn(async () => undefined),
+    executeAst: vi.fn(async () => undefined),
   },
 }))
 
@@ -58,8 +61,9 @@ vi.mock('@src/lang/modifyAst/namedViews', () => ({
   updateNamedViewCamera: renderMocks.updateNamedViewCamera,
 }))
 
-vi.mock('@src/lang/modelingWorkflows', () => ({
-  updateModelingState: renderMocks.updateModelingState,
+vi.mock('@src/lang/executeAstMock', async (importOriginal) => ({
+  ...(await importOriginal()),
+  executeAstMock: renderMocks.executeAstMock,
 }))
 
 vi.mock('@src/lib/kclNamedViewActivation', async (importOriginal) => ({
@@ -68,7 +72,12 @@ vi.mock('@src/lib/kclNamedViewActivation', async (importOriginal) => ({
 }))
 
 vi.mock('@src/components/ActionButton', () => ({
-  ActionButton: () => null,
+  ActionButton: (props: ButtonHTMLAttributes<HTMLButtonElement>) =>
+    createElement('button', {
+      'aria-label': props['aria-label'],
+      disabled: props.disabled,
+      onClick: props.onClick,
+    }),
 }))
 
 vi.mock('@src/components/ContextMenu', () => ({
@@ -326,8 +335,8 @@ describe('KclNamedViewsPane', () => {
     }
   )
 
-  it.each(['unchanged', 'source', 'file'])(
-    'only applies a captured camera to the same source (%s)',
+  it.each(['unchanged', 'source', 'file', 'validation', 'ast update'])(
+    'only writes a captured camera to the same source (%s)',
     async (change) => {
       const namedView = view({ name: 'Front', modulePath: { type: 'Main' } })
       renderMocks.kclManager.execStateSignal.value = {
@@ -339,7 +348,20 @@ describe('KclNamedViewsPane', () => {
       renderMocks.kclManager.code = ''
       renderMocks.kclManager.path = '/project/main.kcl'
       renderMocks.updateNamedViewCamera.mockClear()
-      renderMocks.updateModelingState.mockClear()
+      renderMocks.kclManager.updateEditorWithAstAndWriteToFile.mockClear()
+      renderMocks.kclManager.executeAst.mockClear()
+      if (change === 'validation') {
+        renderMocks.executeAstMock.mockImplementationOnce(async () => {
+          renderMocks.kclManager.path = '/project/other.kcl'
+          return { errors: [] }
+        })
+      }
+      if (change === 'ast update') {
+        renderMocks.kclManager.updateAst.mockImplementationOnce(async (ast) => {
+          renderMocks.kclManager.path = '/project/other.kcl'
+          return { newAst: ast }
+        })
+      }
       let finishCapture: (camera: NamedViewCameraSnapshot) => void = () => {}
       renderMocks.captureNamedViewCamera.mockReturnValueOnce(
         new Promise((resolve) => {
@@ -364,9 +386,12 @@ describe('KclNamedViewsPane', () => {
       })
       await waitFor(() => expect(button).not.toBeDisabled())
       expect(renderMocks.updateNamedViewCamera).toHaveBeenCalledTimes(
-        change === 'unchanged' ? 1 : 0
+        change === 'source' || change === 'file' ? 0 : 1
       )
-      expect(renderMocks.updateModelingState).toHaveBeenCalledTimes(
+      expect(
+        renderMocks.kclManager.updateEditorWithAstAndWriteToFile
+      ).toHaveBeenCalledTimes(change === 'unchanged' ? 1 : 0)
+      expect(renderMocks.kclManager.executeAst).toHaveBeenCalledTimes(
         change === 'unchanged' ? 1 : 0
       )
     }

@@ -116,16 +116,15 @@ describe('captureNamedViewCamera', () => {
     camera.updateMatrixWorld()
 
     const getCameraView = vi.fn().mockResolvedValue({
+      ...FITTED_ISOMETRIC_VIEW,
       pivot_position: { x: 1, y: 2, z: 3 },
       eye_offset: 25,
     })
     const result = await captureNamedViewCamera({
-      camControls: {
-        camera,
-        isPerspective: false,
-        getCameraView,
-      },
-    } as unknown as SceneInfra)
+      camera,
+      isPerspective: false,
+      getCameraView,
+    })
     if (result instanceof Error) throw result
 
     expect(result.direction[0]).toBeCloseTo(0)
@@ -139,6 +138,28 @@ describe('captureNamedViewCamera', () => {
     expect(result.distance).toBe(25)
     expect(result.projection).toBe('Orthographic')
   })
+
+  it.each(['orbit', 'zoom'])(
+    'rejects a camera that changes during capture (%s)',
+    async (change) => {
+      const camera = new PerspectiveCamera()
+      let finish: (view: CameraViewState) => void = () => {}
+      const controls = {
+        camera,
+        isPerspective: false,
+        getCameraView: () =>
+          new Promise<CameraViewState>((resolve) => {
+            finish = resolve
+          }),
+      }
+      const capture = captureNamedViewCamera(controls)
+      if (change === 'orbit') camera.rotation.x = 1
+      else camera.zoom = 2
+      finish(FITTED_ISOMETRIC_VIEW)
+
+      expect(await capture).toBeInstanceOf(Error)
+    }
+  )
 })
 
 describe('applyNamedViewCamera', () => {
