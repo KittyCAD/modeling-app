@@ -2,16 +2,22 @@ import { Registry } from '@kittycad/registry'
 import { updateEnvironment } from '@src/env'
 import { runtimeService } from '@src/registry/contracts/runtime'
 import runtimeRegistryItem from '@src/registry/extensions/runtime'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 describe('runtime extension', () => {
   let registry: Registry | undefined
+
+  beforeEach(() => {
+    vi.stubEnv('VITE_ZOO_BASE_DOMAIN', 'example.test')
+    vi.stubEnv('VITE_ZOO_API_BASE_URL', undefined)
+  })
 
   afterEach(() => {
     registry?.[Symbol.dispose]()
     registry = undefined
     updateEnvironment(null)
     vi.unstubAllGlobals()
+    vi.unstubAllEnvs()
   })
 
   it('provides runtime target and environment metadata', () => {

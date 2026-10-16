@@ -1,7 +1,6 @@
 import {
   type ReadonlySignal as ReadonlyPreactSignal,
   computed,
-  signal,
 } from '@preact/signals-core'
 import { CombineMutationError, ServiceResolutionError } from './errors'
 import type { Registry } from './registry'
@@ -13,6 +12,9 @@ import type {
   RegistryItem,
   RegistryItemDefinition,
   RegistryItemFactory,
+  RegistryItemFactoryDefinition,
+  RegistryDependencies,
+  RegistryDependencySignals,
   RegistryItemKey,
   RegistryDisposer,
   Service,
@@ -20,7 +22,7 @@ import type {
   ValueSpec,
   ValueSpecContribution,
 } from './types'
-import { appendValueSpec } from './valueSpec'
+import { appendValueSpec, firstWinsValueSpec } from './valueSpec'
 
 export const precedenceRank: Record<Precedence, number> = {
   highest: 0,
@@ -119,7 +121,7 @@ export interface SlotToggleController {
  */
 export function sanitizeServiceImplementation<T extends object>(
   container: Registry,
-  service: Service<T>,
+  service: Service<unknown>,
   implementation: T
 ): T {
   const out: Record<PropertyKey, unknown> = {}
@@ -180,17 +182,47 @@ export function sanitizeServiceImplementation<T extends object>(
 /** Helpers for authoring registry items. */
 export function defineRegistryItemFactory(
   factory: RegistryItemFactory,
-  itemKey?: RegistryItemKey,
-  dependencies: readonly RegistryItem[] = []
+  itemKey?: RegistryItemKey
+): RegistryItemFactory
+export function defineRegistryItemFactory<D extends RegistryDependencies>(
+  definition: RegistryItemFactoryDefinition<D>
+): RegistryItemFactory
+export function defineRegistryItemFactory<D extends RegistryDependencies>(
+  definition: RegistryItemFactory | RegistryItemFactoryDefinition<D>,
+  itemKey?: RegistryItemKey
 ): RegistryItemFactory {
+  const dependencies = Object.freeze(
+    Object.fromEntries(
+      Object.entries(definition.dependencies ?? {}).map(
+        ([name, dependency]) => [name, Object.freeze({ ...dependency })]
+      )
+    )
+  )
+  const factory: RegistryItemFactory =
+    typeof definition === 'function'
+      ? definition
+      : (ctx) => {
+          const inputs = Object.fromEntries(
+            Object.entries(dependencies).map(([name, { token }]) => [
+              name,
+              'multiple' in token
+                ? computed(() => ctx.services.get(token))
+                : ctx.valueSpecs.signal(token),
+            ])
+          ) as RegistryDependencySignals<D>
+          return definition.create(Object.freeze(inputs))
+        }
   Object.defineProperty(factory, 'itemKey', {
-    value: itemKey ?? factory,
+    value:
+      typeof definition === 'function'
+        ? (itemKey ?? factory)
+        : (definition.id ?? factory),
     enumerable: false,
     configurable: false,
     writable: false,
   })
   Object.defineProperty(factory, 'dependencies', {
-    value: Object.freeze([...dependencies]),
+    value: dependencies,
     enumerable: false,
     configurable: false,
     writable: false,
@@ -319,7 +351,7 @@ function createToggleableRegistryItem({
 }
 
 type SlotToggleControllerProps = {
-  container: Pick<Registry, 'reconfigureAsync'>
+  container: Pick<Registry, 'reconfigure' | 'signal'>
   slot: Slot
   activeItems: readonly RegistryItem[]
   inactiveItems?: readonly RegistryItem[]
@@ -339,17 +371,27 @@ export function createSlotToggleController({
   inactiveItems = [],
   initialActive = false,
 }: SlotToggleControllerProps): SlotToggleController {
-  const active = signal(initialActive)
+  // Activation belongs to the committed slot contents. A rejected replacement
+  // restores this contribution too; cleanup failure leaves it committed. Until
+  // the first toggle, the default reflects the slot's initial configuration.
+  const activation = firstWinsValueSpec<boolean>(
+    'slot-toggle.active',
+    initialActive
+  )
+  const active = container.signal(activation)
+  const setActive = (next: boolean): Promise<void> =>
+    container.reconfigure(slot, [
+      { provides: [provide(activation, next)] },
+      ...(next ? activeItems : inactiveItems),
+    ])
 
   return {
     active,
     enable() {
-      active.value = true
-      return container.reconfigureAsync(slot, activeItems)
+      return setActive(true)
     },
     disable() {
-      active.value = false
-      return container.reconfigureAsync(slot, inactiveItems)
+      return setActive(false)
     },
     toggle() {
       if (active.value) {

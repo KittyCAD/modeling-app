@@ -101,7 +101,7 @@ describe('commands extension', () => {
       command,
     ])
 
-    registry.reconfigure(commandsSlot, [])
+    void registry.reconfigure(commandsSlot, [])
 
     expect(commandSystem.actor.getSnapshot().context.commands).toEqual([])
 
@@ -159,7 +159,7 @@ describe('commands extension', () => {
 
     expect(onSubmit).not.toHaveBeenCalled()
 
-    registry.reconfigure(commandsSlot, [commandItem])
+    void registry.reconfigure(commandsSlot, [commandItem])
 
     expect(onSubmit).toHaveBeenCalledOnce()
 

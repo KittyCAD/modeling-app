@@ -75,6 +75,21 @@ Read the diagram from top to bottom:
 - A plugin wraps normal registry item content in extra structure: metadata for discovery, a slot for runtime enable/disable, and a toggle controller service.
 - So a plugin is not separate from the registry system. It is a higher-level, developer-facing packaging pattern built out of normal registry primitives.
 
+### Slot changes and plugin toggles
+
+`reconfigure(slot, items)` returns a promise and builds and commits a replacement
+before returning. If construction or dependency checks fail, it restores the
+previous slot contents before reactive observers run and rejects the promise.
+Existing runtime instances remain mounted; only instances created by the failed
+attempt are cleaned up. Awaiting the promise also waits for cleanup of runtimes
+removed by a successful replacement.
+
+Plugin toggles update their `active` signal together with a successful graph
+commit. Disabling a plugin required by an active factory rejects and leaves both
+the graph and toggle unchanged, including access to the plugin controller.
+Cleanup failure after commit rejects the completion promise but leaves the new
+graph and activation state in place: already disposed resources cannot be restored.
+
 ## Decoupling Pattern
 
 When one registry item defines `ValueSpec`s or `Service`s that another registry
@@ -128,14 +143,25 @@ Factory callbacks return a plain item definition containing contributions, child
 items, and optional `dispose` cleanup. No item wrapper or additional helper is
 needed; keep model state in the callback and expose it through services.
 
-Dependencies are an optional third argument to the ordinary callback helper:
+Use the object form to declare named dependencies. Each entry requires a
+`registryItem` to install and a `token` identifying the service or value spec to
+consume. The token determines the callback input's type; no input helper or
+explicit type annotation is needed.
 
 ```ts
-export const settingsTomlSerialization = defineRegistryItemFactory(
-  ({ services, valueSpecs }) => {
-    const files = services.signal(fileOperationsService)
-    const settings = valueSpecs.signal(settingsValueSpecExperimental)
-
+export const settingsTomlSerialization = defineRegistryItemFactory({
+  id: 'settings-toml',
+  dependencies: {
+    files: {
+      registryItem: fileOperationsExtension,
+      token: fileOperationsService,
+    },
+    settings: {
+      registryItem: coreSettingsRegistryItem,
+      token: settingsValueSpecExperimental,
+    },
+  },
+  create({ files, settings }) {
     return {
       providesServices: [
         provideService(settingsTomlService, {
@@ -144,17 +170,28 @@ export const settingsTomlSerialization = defineRegistryItemFactory(
       ],
     }
   },
-  'settings-toml',
-  [fileOperationsExtension, coreSettingsRegistryItem]
-)
+})
 ```
 
-Dependencies are **registry items**, which identify providers to include; service
-and value-spec tokens alone do not identify an implementation. The registry first
-expands the known graph, placing dependencies before their consumers and choosing
-the first occurrence of each stable ID or object identity. This planning step does
-not run callbacks. Dependency cycles raise `RegistryDependencyError` before known
-factories run.
+`create` receives only the named dependencies as readonly signals. Service inputs
+are required (`ReadonlySignal<T>`); missing services throw instead of returning
+`undefined`. Value-spec inputs contain the combined output from **all** active
+contributors, not just the named item. Use the ordinary callback form
+`defineRegistryItemFactory(ctx => ({ ... }), id)` for optional service observation
+or registry reconfiguration. Its `services.signal(token)` and
+`services.optional(token)` still permit missing providers.
+
+The registry first expands the known graph, placing dependencies before their
+consumers and choosing the first occurrence of each stable ID or object identity.
+This planning step does not run callbacks. Dependency cycles raise
+`RegistryDependencyError` before known factories run.
+
+Before running a consumer, the registry checks that each winning dependency
+subtree contributes its declared token. Contributions in `uses`, slots, and
+transitive dependencies count. An unrelated provider cannot mask an incorrect
+item/token pair, and a value spec's default does not satisfy the check. Errors
+identify the consumer, dependency name, and missing token. Cached consumers are
+checked again when the graph changes.
 
 The registry then executes the graph through its ordinary lazy runtime cache. Every
 factory follows the same callback and disposal rules, with or without dependencies.
