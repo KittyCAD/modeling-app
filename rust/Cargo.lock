@@ -1439,7 +1439,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb"
 dependencies = [
  "libc",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -2562,7 +2562,7 @@ checksum = "3640c1c38b8e4e43584d8df18be5fc6b0aa314ce6ebf51b53313d4306cca8e46"
 dependencies = [
  "hermit-abi",
  "libc",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -2694,11 +2694,32 @@ dependencies = [
 [[package]]
 name = "kcl-api"
 version = "0.2.192"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f686362cc0bfa733c00a3ba587a922a1e4e2e86c70c88fc862b4be293ecd592e"
+dependencies = [
+ "euler",
+ "indexmap 2.14.2",
+ "kcl-error 0.2.192",
+ "kittycad-measurements",
+ "kittycad-point 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "kittycad-unit-conversion-derive",
+ "parse-display",
+ "parse-display-derive",
+ "schemars 0.8.22",
+ "serde",
+ "serde_json",
+ "ts-rs",
+ "uuid",
+]
+
+[[package]]
+name = "kcl-api"
+version = "0.2.193-beta1"
 dependencies = [
  "arbitrary",
  "euler",
  "indexmap 2.14.2",
- "kcl-error",
+ "kcl-error 0.2.193-beta1",
  "kittycad-measurements",
  "kittycad-point 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "kittycad-unit-conversion-derive",
@@ -2716,7 +2737,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-bumper"
-version = "0.1.192"
+version = "0.1.193"
 dependencies = [
  "anyhow",
  "clap",
@@ -2726,7 +2747,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-derive-docs"
-version = "0.2.192"
+version = "0.2.193-beta1"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2735,7 +2756,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-directory-test-macro"
-version = "0.1.192"
+version = "0.1.193"
 dependencies = [
  "convert_case",
  "proc-macro2",
@@ -2745,7 +2766,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-engine-codec"
-version = "0.2.192"
+version = "0.2.193-beta1"
 dependencies = [
  "kittycad-modeling-cmds",
  "rmp-serde",
@@ -2755,6 +2776,20 @@ dependencies = [
 [[package]]
 name = "kcl-error"
 version = "0.2.192"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cb3b814c9588b41bee841bf292fa63cd2367384e3ccf056199b464e19be217f5"
+dependencies = [
+ "miette",
+ "schemars 0.8.22",
+ "serde",
+ "serde_json",
+ "thiserror 2.0.21",
+ "ts-rs",
+]
+
+[[package]]
+name = "kcl-error"
+version = "0.2.193-beta1"
 dependencies = [
  "miette",
  "pyo3",
@@ -2767,7 +2802,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server"
-version = "0.2.192"
+version = "0.2.193-beta1"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2798,7 +2833,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-language-server-release"
-version = "0.1.192"
+version = "0.1.193"
 dependencies = [
  "anyhow",
  "clap",
@@ -2818,7 +2853,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-lib"
-version = "0.2.192"
+version = "0.2.193-beta1"
 dependencies = [
  "ahash",
  "anyhow",
@@ -2851,11 +2886,11 @@ dependencies = [
  "insta",
  "itertools 0.15.0",
  "js-sys",
- "kcl-api",
+ "kcl-api 0.2.193-beta1",
  "kcl-derive-docs",
  "kcl-directory-test-macro",
  "kcl-engine-codec",
- "kcl-error",
+ "kcl-error 0.2.193-beta1",
  "kcl-syntax",
  "kittycad",
  "kittycad-modeling-cmds",
@@ -2902,10 +2937,10 @@ dependencies = [
 
 [[package]]
 name = "kcl-python-bindings"
-version = "0.3.192"
+version = "0.3.193"
 dependencies = [
  "anyhow",
- "kcl-api",
+ "kcl-api 0.2.193-beta1",
  "kcl-lib",
  "kittycad-modeling-cmds",
  "miette",
@@ -2919,7 +2954,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-syntax"
-version = "0.2.192"
+version = "0.2.193-beta1"
 dependencies = [
  "logos",
  "proptest",
@@ -2928,7 +2963,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-test-server"
-version = "0.2.192"
+version = "0.2.193-beta1"
 dependencies = [
  "anyhow",
  "hyper 0.14.32",
@@ -2941,7 +2976,7 @@ dependencies = [
 
 [[package]]
 name = "kcl-wasm-lib"
-version = "0.1.192"
+version = "0.1.193"
 dependencies = [
  "anyhow",
  "console_error_panic_hook",
@@ -2951,7 +2986,7 @@ dependencies = [
  "getrandom 0.3.4",
  "gloo-utils",
  "js-sys",
- "kcl-api",
+ "kcl-api 0.2.193-beta1",
  "kcl-language-server",
  "kcl-lib",
  "kittycad",
@@ -3032,7 +3067,7 @@ dependencies = [
  "euler",
  "http 1.5.0",
  "indexmap 2.14.2",
- "kcl-api",
+ "kcl-api 0.2.192",
  "kittycad-measurements",
  "kittycad-modeling-cmds-macros",
  "kittycad-point 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -4346,7 +4381,7 @@ dependencies = [
  "once_cell",
  "socket2 0.6.3",
  "tracing",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -4747,7 +4782,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys 0.12.1",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -4804,7 +4839,7 @@ dependencies = [
  "security-framework",
  "security-framework-sys",
  "webpki-root-certs",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -5600,7 +5635,7 @@ dependencies = [
  "getrandom 0.4.3",
  "once_cell",
  "rustix 1.1.4",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -6567,7 +6602,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
