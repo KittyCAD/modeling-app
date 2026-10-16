@@ -1426,18 +1426,12 @@ function orderedSelectionKey(selection: Selection | EnginePrimitiveSelection) {
   if ('type' in selection) return `entity:${selection.entityId}`
   const entityId = selection.engineEntityId ?? selection.artifact?.id
   if (entityId) return `entity:${entityId}`
-  const reference = normalizeEntityReference(selection.entityRef)
-  if (reference) {
-    if (reference.type === 'edge' || reference.type === 'vertex') {
-      reference.side_faces.sort()
-    }
-    if (reference.type === 'edge') reference.end_faces?.sort()
-    return `reference:${JSON.stringify(reference)}`
-  }
-  return `range:${JSON.stringify(selection.codeRef?.range)}`
+  return selection.entityRef
+    ? `reference:${entityReferenceKey(selection.entityRef)}`
+    : `range:${JSON.stringify(selection.codeRef?.range)}`
 }
 
-/** Unranked programmatic selections retain graph-then-primitive order. */
+/** Merge mapped and fallback selections in their original click order. */
 export function getOrderedGraphAndPrimitiveSelections(selections: Selections) {
   return [
     ...selections.graphSelections,
@@ -1449,22 +1443,20 @@ export function getOrderedGraphAndPrimitiveSelections(selections: Selections) {
   )
 }
 
-/** Keep ordering on the selected items themselves as the two collections change. */
+/** Keep click order when selections are rebuilt, removed, or appended. */
 export function reconcileSelectionOrder(
   previous: Selections,
   next: Selections
 ): Selections {
   const previousItems = getOrderedGraphAndPrimitiveSelections(previous)
   const nextItems = getOrderedGraphAndPrimitiveSelections(next)
-  const hasMixedSelections =
-    next.graphSelections.length > 0 &&
-    next.otherSelections.some(isEnginePrimitiveSelection)
+  const hasRecordedOrder = [...previousItems, ...nextItems].some(
+    (selection) => selection.selectionOrder !== undefined
+  )
   if (
-    !hasMixedSelections &&
-    !previousItems.some(
-      (selection) => selection.selectionOrder !== undefined
-    ) &&
-    !nextItems.some((selection) => selection.selectionOrder !== undefined)
+    !hasRecordedOrder &&
+    (next.graphSelections.length === 0 ||
+      !next.otherSelections.some(isEnginePrimitiveSelection))
   ) {
     return next
   }
@@ -1481,26 +1473,21 @@ export function reconcileSelectionOrder(
       ...previousOrder.values(),
       ...nextItems.map((selection) => selection.selectionOrder ?? -1)
     ) + 1
-  const order = new Map(
-    nextItems.map((selection): [string, number] => {
-      const key = orderedSelectionKey(selection)
-      return [
-        key,
-        selection.selectionOrder ?? previousOrder.get(key) ?? nextIndex++,
-      ]
-    })
-  )
+  const orderFor = (selection: Selection | EnginePrimitiveSelection) =>
+    selection.selectionOrder ??
+    previousOrder.get(orderedSelectionKey(selection)) ??
+    nextIndex++
   return {
     ...next,
     graphSelections: next.graphSelections.map((selection) => ({
       ...selection,
-      selectionOrder: order.get(orderedSelectionKey(selection)),
+      selectionOrder: orderFor(selection),
     })),
     otherSelections: next.otherSelections.map((selection) =>
       isEnginePrimitiveSelection(selection)
         ? {
             ...selection,
-            selectionOrder: order.get(orderedSelectionKey(selection)),
+            selectionOrder: orderFor(selection),
           }
         : selection
     ),

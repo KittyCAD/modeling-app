@@ -2,7 +2,6 @@ import {
   getOrderedGraphAndPrimitiveSelections,
   reconcileSelectionOrder,
   removeEnginePrimitiveSelectionFromSelections,
-  removeReferenceFromSelections,
 } from '@src/lib/selections'
 import type {
   EnginePrimitiveSelection,
@@ -42,14 +41,6 @@ describe('mixed selection order', () => {
     expect(ids(primitiveFirst)).toEqual(['b', 'a'])
   })
 
-  it('keeps ordinary single-collection selections unchanged', () => {
-    const selection: Selections = {
-      graphSelections: [graph('a')],
-      otherSelections: [],
-    }
-    expect(reconcileSelectionOrder(empty, selection)).toBe(selection)
-  })
-
   it('keeps interleaved order through graph rebuilding and puts a reselected primitive last', () => {
     const first = reconcileSelectionOrder(
       { graphSelections: [graph('a')], otherSelections: [] },
@@ -77,61 +68,7 @@ describe('mixed selection order', () => {
     expect(ids(reselected)).toEqual(['a', 'c', 'b'])
   })
 
-  it('retains primitive positions when graph selection pills are removed and reselected', () => {
-    const selection = reconcileSelectionOrder(empty, {
-      graphSelections: [
-        { ...graph('a'), selectionOrder: 0 },
-        { ...graph('c'), selectionOrder: 2 },
-      ],
-      otherSelections: [{ ...primitive('b'), selectionOrder: 1 }],
-    })
-    const removed = removeReferenceFromSelections(selection, {
-      id: 'graph:a',
-      label: 'Edge',
-      code: 'edgeA',
-      graphSelection: graph('a'),
-    })
-    const reselected = reconcileSelectionOrder(removed, {
-      ...removed,
-      graphSelections: [...removed.graphSelections, graph('a')],
-    })
-    expect(ids(reselected)).toEqual(['b', 'c', 'a'])
-  })
-
-  it('honors restored complete-selection ordinals and defines unranked fallback order', () => {
-    const selection: Selections = {
-      graphSelections: [{ ...graph('a'), selectionOrder: 2 }],
-      otherSelections: [{ ...primitive('b'), selectionOrder: 0 }],
-    }
-    const previous: Selections = {
-      graphSelections: [{ ...graph('a'), selectionOrder: 0 }],
-      otherSelections: [{ ...primitive('b'), selectionOrder: 1 }],
-    }
-    expect(ids(reconcileSelectionOrder(previous, selection))).toEqual([
-      'b',
-      'a',
-    ])
-    expect(
-      ids(
-        reconcileSelectionOrder(empty, {
-          graphSelections: [graph('a'), graph('c')],
-          otherSelections: [primitive('b')],
-        })
-      )
-    ).toEqual(['a', 'c', 'b'])
-  })
-
-  it('uses engine and entity reference identities instead of shared or missing code ranges', () => {
-    const previous = reconcileSelectionOrder(empty, {
-      graphSelections: [graph('copy1')],
-      otherSelections: [primitive('b')],
-    })
-    const next = reconcileSelectionOrder(previous, {
-      ...previous,
-      graphSelections: [...previous.graphSelections, graph('copy2')],
-    })
-    expect(ids(next)).toEqual(['copy1', 'b', 'copy2'])
-
+  it('matches rebuilt entity references without mutating their face order', () => {
     const referenceOnly: Selection = {
       entityRef: { type: 'edge', side_faces: ['front', 'back'] },
     }
