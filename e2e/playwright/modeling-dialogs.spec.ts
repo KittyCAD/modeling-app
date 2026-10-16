@@ -71,7 +71,7 @@ obstruction = extrude(region002, length = 20mm)`
     await editor.expectEditor.toContain('extrude(region001, length = 12mm)')
   })
 
-  test('Uses dialogs for supported commands and the palette for mixed selections', async ({
+  test('Uses dialogs for supported commands and the palette for unsupported inputs', async ({
     page,
     homePage,
     scene,
@@ -141,9 +141,52 @@ obstruction = extrude(region002, length = 20mm)`
     await scene.settled()
 
     await toolbar.translateButton.click()
+    await expect(dialog).toBeVisible()
+    await page.keyboard.press('Escape')
+    await expect(dialog).not.toBeAttached()
+
+    await page
+      .getByRole('button', { name: 'caret down gdt: open menu' })
+      .click()
+    await page.getByTestId('dropdown-gdt-note').click()
     await expect(page.getByTestId('command-bar')).toBeVisible()
     await expect(dialog).not.toBeAttached()
     await page.keyboard.press('Escape')
+  })
+
+  test('Keeps Boolean target and tool selections when switching collectors', async ({
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    modelingDialog,
+  }) => {
+    const bodiesCode = `${profileCode}
+body001 = extrude(region001, length = 10mm)
+body002 = clone(body001)
+  |> translate(x = 2mm)`
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', bodiesCode)
+    )
+    await editor.selectText('extrude(')
+    await toolbar.selectBoolean('subtract')
+    const solids = modelingDialog.selection('Solids')
+    const tools = modelingDialog.selection('Tools')
+    await expect(solids).toContainText(/1 sweep/i)
+    await tools.click()
+    await expect(tools).toHaveText('Select in the scene')
+    await editor.selectText('clone(')
+    await expect(tools).toContainText(/1 sweep/i)
+    await solids.click()
+    await expect(solids).toContainText(/1 sweep/i)
+    await tools.click()
+    await expect(tools).toContainText(/1 sweep/i)
+    await modelingDialog.submitButton.click()
+    await expect(modelingDialog.locator).not.toBeAttached()
+    await editor.expectEditor.toContain('subtract(body001, tools = body002)')
+    await scene.settled()
   })
 
   test('Creates and edits Extrude without losing collapsed fields or selection drafts', async ({
@@ -162,18 +205,45 @@ obstruction = extrude(region002, length = 20mm)`
     )
     await editor.selectText('region(')
     await toolbar.extrudeButton.click()
+    await expect(toolbar.extrudeButton).toHaveAttribute('aria-pressed', 'true')
+    await expect(toolbar.revolveButton).toHaveAttribute('aria-pressed', 'false')
 
     const { locator: dialog, submitButton: submit } = modelingDialog
     const length = modelingDialog.input(/^length$/i)
     const profiles = modelingDialog.selection('Profiles')
+    const profileReferences = dialog.getByRole('group', {
+      name: 'Profiles selections',
+    })
+    const profileReference = profileReferences.getByText('region001', {
+      exact: true,
+    })
+    const removeProfile = profileReferences.getByRole('button', {
+      name: 'Remove Region from selection',
+    })
     const tagStart = modelingDialog.input(/^tag start$/i)
+    await expect(
+      dialog.getByText('Only parallel faces are supported for now.', {
+        exact: true,
+      })
+    ).toBeVisible()
     await expect(length).toHaveText('5')
     await expect(tagStart).toBeHidden()
     await expect(modelingDialog.options(/^symmetric$/i)).toBeVisible()
     await expect(profiles).toContainText(/1 region/i)
     await expect(profiles).toBeFocused()
     await page.keyboard.press('Tab')
+    await expect(removeProfile).toBeFocused()
+    await page.keyboard.press('Tab')
+    const lengthHelp = dialog.getByRole('button', {
+      name: 'Help for Length',
+      exact: true,
+    })
+    await expect(lengthHelp).toBeFocused()
+    await page.keyboard.press('Tab')
     await expect(length).toBeFocused()
+    await page.keyboard.press('Shift+Tab')
+    await expect(lengthHelp).toBeFocused()
+    await page.keyboard.press('Shift+Tab')
     await page.keyboard.press('Shift+Tab')
     await expect(profiles).not.toHaveCSS('box-shadow', 'none')
 
@@ -187,16 +257,23 @@ obstruction = extrude(region002, length = 20mm)`
     await expect(docs).not.toBeVisible()
     await expect(dialog).toBeVisible()
 
-    await page.getByRole('button', { name: 'Clear Profiles selection' }).click()
-    await expect(profiles).toHaveText('Select in the scene')
-    await expect(profiles).toBeFocused()
-    await expect(submit).toBeDisabled()
-    await editor.selectText('region(')
-    await expect(profiles).toContainText(/1 region/i)
-
     await modelingDialog.selection('To').click()
     await expect(profiles).toContainText(/1 region/i)
+    await expect(profileReference).toBeHidden()
+    await profileReferences.getByText('Region', { exact: true }).hover()
+    await expect(profileReference).toBeVisible()
+    await profiles.hover()
+    await expect(profileReference).toBeHidden()
     await profiles.click()
+    await removeProfile.click()
+    await expect(profiles).toHaveText('Select in the scene')
+    await expect(submit).toBeDisabled()
+    await expect(profiles).toBeFocused()
+    await expect(page.getByTestId('selection-status')).toContainText(
+      'No selection'
+    )
+    await editor.selectText('line(')
+    await editor.selectText('region(')
     await expect(profiles).toContainText(/1 region/i)
 
     await length.fill('missingLength')
@@ -248,10 +325,12 @@ obstruction = extrude(region002, length = 20mm)`
     await editor.expectEditor.toContain('length = 12mm')
     await editor.expectEditor.toContain('tagStart = $startFace')
     await scene.settled()
+    await expect(toolbar.extrudeButton).toHaveAttribute('aria-pressed', 'false')
 
     await toolbar.openFeatureTreePane()
     const operation = await toolbar.getFeatureTreeOperation('Extrude', 0)
     await operation.dblclick()
+    await expect(toolbar.extrudeButton).toHaveAttribute('aria-pressed', 'true')
     await expect(length).toHaveText('12mm')
     await expect(length).toBeFocused()
     await expect(tagStart).toBeHidden()
@@ -260,6 +339,7 @@ obstruction = extrude(region002, length = 20mm)`
     await length.fill('99mm')
     await modelingDialog.cancelButton.click()
     await expect(dialog).not.toBeAttached()
+    await expect(toolbar.extrudeButton).toHaveAttribute('aria-pressed', 'false')
     await operation.dblclick()
     await expect(length).toHaveText('12mm')
     await expect(tagStart).toBeHidden()

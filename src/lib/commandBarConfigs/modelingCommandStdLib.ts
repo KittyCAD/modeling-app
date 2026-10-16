@@ -188,23 +188,22 @@ export function stdLibCommandArgs<CommandArgs extends object>(
 ): CommandArgConfigs<CommandArgs> {
   const omitted = new Set(options.omitted ?? [])
   const includeDeprecated = new Set(options.includeDeprecated ?? [])
-  const args: Record<string, Record<string, unknown>> = Object.fromEntries(
-    STD_LIB_COMMANDS[stdLibName].args
-      .filter(
-        (arg) => !isDeprecatedStdLibArg(arg) || includeDeprecated.has(arg.name)
-      )
-      .filter((arg) => !omitted.has(arg.name))
-      .map((arg) => {
-        const commandArgName = options.argAliases?.[arg.name] ?? arg.name
-        return [
-          commandArgName,
-          {
-            ...stdLibArgBaseConfig(arg, commandArgName),
-            ...(options.overrides?.[commandArgName] ?? {}),
-          },
-        ]
-      })
-  )
+  const args: Record<string, Record<string, unknown>> = {}
+  for (const arg of STD_LIB_COMMANDS[stdLibName].args
+    .filter(
+      (arg) => !isDeprecatedStdLibArg(arg) || includeDeprecated.has(arg.name)
+    )
+    .filter((arg) => !omitted.has(arg.name))) {
+    const commandArgName = options.argAliases?.[arg.name] ?? arg.name
+    args[commandArgName] = {
+      ...stdLibArgBaseConfig(arg, commandArgName),
+      // Merged fields don't represent a single stdlib argument.
+      documentation: Object.hasOwn(args, commandArgName)
+        ? undefined
+        : arg.docs?.trim() || undefined,
+      ...(options.overrides?.[commandArgName] ?? {}),
+    }
+  }
 
   for (const [argName, override] of Object.entries(options.overrides ?? {})) {
     args[argName] ??= override

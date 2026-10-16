@@ -20,6 +20,7 @@ import {
   shouldDisableModelingForUnrenderedChanges,
 } from '@src/lib/automaticRendering'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { commandKey, isModelingDialogCommand } from '@src/lib/commandUtils'
 import { EngineConnectionStateType } from '@src/lib/engineConnection/utils'
 import { type HotkeySequence, hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -85,6 +86,14 @@ const Toolbar_ = memo(
       app.commands.actor,
       (state) => state.context.commands
     )
+    const activeDialogCommandKey = useSelector(app.commands.actor, (state) => {
+      const command = state.context.selectedCommand
+      return !state.matches('Closed') &&
+        command &&
+        isModelingDialogCommand(command)
+        ? commandKey(command)
+        : undefined
+    })
     const keymap = app.registry.get(keymapService)
     const keymapTree = keymap.keymap.value
     const { kclManager } = useSingletons()
@@ -267,7 +276,10 @@ const Toolbar_ = memo(
         )
 
         // Calculate the isActive state for this specific item
-        const itemIsActive = maybeIconConfig.isActive?.(props.state) || false
+        const itemIsActive =
+          maybeIconConfig.isActive?.(props.state) ||
+          (activeDialogCommandKey !== undefined &&
+            maybeIconConfig.command === activeDialogCommandKey)
 
         // Create item-specific callback props with the correct isActive value
         const itemCallbackProps = {
@@ -347,6 +359,7 @@ const Toolbar_ = memo(
       sketchSolveSelectedIdsKey,
       keymapTree,
       registeredCommands,
+      activeDialogCommandKey,
     ])
 
     // To remember the last selected item in a standard ActionButtonDropdown
