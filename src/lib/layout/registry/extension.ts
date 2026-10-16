@@ -23,7 +23,11 @@ import {
   layoutUserFeatureTransformationsValueSpec,
 } from '@src/lib/layout/registry/contract'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
-import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
+import {
+  userFeaturesContextHas,
+  userFeaturesSnapshotSettled,
+  UserFeaturesState,
+} from '@src/machines/userFeaturesMachine'
 import { runtimeService } from '@src/registry/contracts/runtime'
 import { settingsService } from '@src/registry/contracts/settings'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
@@ -189,7 +193,18 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
         coreLayoutService.applyContributions(contributions)
       }
     })
+    let hasResolvedSceneBrowserFlag = false
     const stopSceneBrowserLayoutEffect = effect(() => {
+      const snapshot = userFeatures.state.value
+      if (
+        !userFeaturesSnapshotSettled(snapshot) &&
+        !(
+          hasResolvedSceneBrowserFlag &&
+          snapshot.matches(UserFeaturesState.Idle)
+        )
+      )
+        return
+      hasResolvedSceneBrowserFlag = true
       const enabled = userFeatures.has(SCENE_BROWSER_FEATURE, false)
       const currentLayout = layoutSignal.value
       const nextLayout = resolveSceneBrowserLayout(currentLayout, enabled)
