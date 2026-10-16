@@ -24,6 +24,7 @@ import {
   findLastRangeStartingBefore,
   getEventForQueryEntityTypeWithPoint,
   getCodeRefsFromEntityReference,
+  getSelectionCountByType,
   getSelectionReferences,
   getSelectionTypeDisplayText,
   getStableOffsetPlaneData,
@@ -3471,6 +3472,38 @@ describe('mixed entity-reference selection highlighting', () => {
     expect(selectAdd.cmd.type).toBe('select_add')
     if (selectAdd.cmd.type !== 'select_add') return
     expect(selectAdd.cmd.entities).toEqual([codeOnlyArtifact.id])
+  })
+})
+
+describe('getSelectionCountByType', () => {
+  test('classifies whole sketches from artifacts and code references consistently', async () => {
+    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse(
+      `@settings(kclVersion = 3.0)
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+}`,
+      instance
+    )
+    const { artifactGraph } = await enginelessExecutor(ast, rustContext)
+    const sketch = [...artifactGraph.values()].find(
+      (artifact) => artifact.type === 'sketchBlock'
+    )
+    if (!sketch) throw new Error('Expected a sketch block artifact')
+
+    const selections: Selection[] = [
+      { artifact: sketch },
+      { codeRef: sketch.codeRef },
+    ]
+    for (const selection of selections) {
+      expect(
+        getSelectionCountByType(
+          ast,
+          { graphSelections: [selection], otherSelections: [] },
+          artifactGraph
+        )
+      ).toEqual(new Map([['sketchBlock', 1]]))
+    }
   })
 })
 
