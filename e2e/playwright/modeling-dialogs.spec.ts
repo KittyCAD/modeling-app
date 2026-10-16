@@ -221,6 +221,11 @@ body002 = clone(body001)
       name: 'Remove Region from selection',
     })
     const tagStart = modelingDialog.input(/^tag start$/i)
+    await expect(
+      dialog.getByText('Only parallel faces are supported for now.', {
+        exact: true,
+      })
+    ).toBeVisible()
     await expect(length).toHaveText('5')
     await expect(tagStart).toBeHidden()
     await expect(modelingDialog.options(/^symmetric$/i)).toBeVisible()
@@ -229,7 +234,15 @@ body002 = clone(body001)
     await page.keyboard.press('Tab')
     await expect(removeProfile).toBeFocused()
     await page.keyboard.press('Tab')
+    const lengthHelp = dialog.getByRole('button', {
+      name: 'Help for Length',
+      exact: true,
+    })
+    await expect(lengthHelp).toBeFocused()
+    await page.keyboard.press('Tab')
     await expect(length).toBeFocused()
+    await page.keyboard.press('Shift+Tab')
+    await expect(lengthHelp).toBeFocused()
     await page.keyboard.press('Shift+Tab')
     await page.keyboard.press('Shift+Tab')
     await expect(profiles).not.toHaveCSS('box-shadow', 'none')

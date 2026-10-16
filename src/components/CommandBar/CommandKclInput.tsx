@@ -72,6 +72,7 @@ export function CommandKclInput({
   name,
   arg,
   label,
+  labelAction,
   description,
   placeholder: placeholderText,
   isRequired = true,
@@ -92,6 +93,7 @@ export function CommandKclInput({
   name: string
   arg: CommandKclArgument
   label: ReactNode
+  labelAction?: ReactNode
   description?: ReactNode
   placeholder?: string
   isRequired?: boolean
@@ -474,23 +476,35 @@ export function CommandKclInput({
     onValidationChangeRef.current(nextValidationState)
   }, [canSubmitKclValue, isEmpty, isExecuting, validationMessage])
 
+  const FieldContainer = labelAction ? 'div' : 'label'
+  const fieldLabel = (
+    <span
+      id={labelId}
+      data-testid="cmd-bar-arg-name"
+      className="capitalize text-chalkboard-80 dark:text-chalkboard-20"
+    >
+      {label}
+      {!inline && isRequired && <span aria-hidden="true"> *</span>}
+    </span>
+  )
+
   return (
     <div className={inline ? '' : 'flex flex-col gap-1'}>
-      <label
+      <FieldContainer
         className={
           inline
             ? 'flex gap-4 items-center mx-4 my-4 border-solid border-b border-chalkboard-50'
             : 'flex flex-col gap-1'
         }
       >
-        <span
-          id={labelId}
-          data-testid="cmd-bar-arg-name"
-          className="capitalize text-chalkboard-80 dark:text-chalkboard-20"
-        >
-          {label}
-          {!inline && isRequired && <span aria-hidden="true"> *</span>}
-        </span>
+        {labelAction ? (
+          <div className="flex items-center justify-between gap-1">
+            {fieldLabel}
+            {labelAction}
+          </div>
+        ) : (
+          fieldLabel
+        )}
         <div
           id={inputId}
           data-testid="cmd-bar-arg-value"
@@ -528,7 +542,7 @@ export function CommandKclInput({
             </span>
           </span>
         )}
-      </label>
+      </FieldContainer>
       {description}
       {arg.createVariable !== 'disallow' && (
         <div
