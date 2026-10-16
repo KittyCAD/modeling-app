@@ -102,12 +102,12 @@ export const useDefaultAreaLibrary = () => {
     () =>
       Object.freeze({
         featureTree: {
-          hide: () => false,
+          hide: () => sceneBrowserEnabled,
           shortcut: sceneBrowserEnabled ? undefined : 'Shift + T',
           Component: FeatureTreePane,
         },
         bodies: {
-          hide: () => false,
+          hide: () => sceneBrowserEnabled,
           Component: BodiesPane,
         },
         namedViews: {
