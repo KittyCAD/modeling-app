@@ -71,7 +71,8 @@ jobs:
 
       # Keep workspace tests inside the existing required npm-test-unit check.
       # They have their own TAB suites so UI failures and history stay separate.
-      - name: UI component tests
+
+      - name: npm run test --workspace=@kittycad/ui-components
         if: ${{ !cancelled() && github.event_name != 'schedule' }}
         run: |-
           rm -f test-results/junit.xml
@@ -84,7 +85,7 @@ jobs:
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
           CI_SUITE: ui-components
 
-      - name: UI component browser tests
+      - name: npm run test:browser --workspace=@kittycad/ui-components
         if: ${{ !cancelled() && github.event_name != 'schedule' }}
         run: |-
           # The standalone browser suite is introduced by the Lit components PR.
@@ -97,12 +98,11 @@ jobs:
           npm run test:browser --workspace=@kittycad/ui-components -- --reporter=list,junit || true # let TAB determine failure
           .github/ci-cd-scripts/upload-results.sh
         env:
-          PLAYWRIGHT_JUNIT_OUTPUT_FILE: ../../test-results/junit.xml
           TAB_API_URL: ${{ vars.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
           CI_PR_NUMBER: ${{ github.event.pull_request.number }}
-          CI_SUITE: ui-components:browser
+          CI_SUITE: ui-components
 
   npm-test-integration:
     runs-on: namespace-profile-ubuntu-2-cores
