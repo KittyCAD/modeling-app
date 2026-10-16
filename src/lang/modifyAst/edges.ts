@@ -758,7 +758,9 @@ export function createEdgeRefObjectExpression(
     if (
       effectiveTagsBaseExpr != null &&
       expr.type === 'Name' &&
-      faceArtifact.type !== 'cap'
+      faceArtifact.type !== 'cap' &&
+      // Edge-treatment tags are declared by the operation, outside the sketch.
+      faceArtifact.type !== 'edgeCut'
     ) {
       return createMemberExpression(
         createMemberExpression(structuredClone(effectiveTagsBaseExpr), 'tags'),

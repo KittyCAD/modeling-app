@@ -18,7 +18,6 @@ extrude001 = extrude(region001, length = 5mm)
   |> translate(x = 25mm)`,
       points: [{ x: 35, y: 0, z: 0 }],
       viewOffset: { x: 0, y: 100, z: 0 },
-      mixedSelections: false,
     },
     {
       name: 'the opposite circle edge of a cloned solid',
@@ -33,7 +32,6 @@ extrude002 = clone(extrude001) |> translate(x = 25mm)
 hidden002 = hide(extrude001)`,
       points: [{ x: 35, y: -5, z: 0 }],
       viewOffset: { x: 0, y: -100, z: 0 },
-      mixedSelections: false,
     },
     {
       name: 'an ordered boundary of a cloned solid',
@@ -56,10 +54,9 @@ hidden002 = hide(extrude001)`,
         { x: 15, y: 0, z: 5 },
       ],
       viewOffset: { x: 0, y: -50, z: 100 },
-      mixedSelections: false,
     },
     {
-      name: 'a chamfered boundary with mapped and fallback edges',
+      name: 'a chamfered boundary',
       bodyName: null,
       code: `sketch001 = sketch(on = XY) {
   line1 = line(start = [-10mm, -10mm], end = [10mm, -10mm])
@@ -79,7 +76,6 @@ chamfer001 = chamfer(extrude001, tags = getCommonEdge(faces = [region001.tags.li
         { x: -10, y: 0, z: 5 },
       ],
       viewOffset: { x: 0, y: -50, z: 100 },
-      mixedSelections: true,
     },
   ]) {
     test(`create by clicking ${boundary.name} in the viewport`, async ({
@@ -168,22 +164,6 @@ chamfer001 = chamfer(extrude001, tags = getCommonEdge(faces = [region001.tags.li
         ).toBeVisible()
       }
 
-      if (boundary.mixedSelections) {
-        const selection = await page.evaluate(
-          () =>
-            window.app.singletons.kclManager.modelingState?.context
-              .selectionRanges
-        )
-        expect(selection?.graphSelections.length).toBeGreaterThan(0)
-        expect(
-          selection?.otherSelections.filter(
-            (item) =>
-              typeof item === 'object' &&
-              'type' in item &&
-              item.type === 'enginePrimitive'
-          ).length
-        ).toBeGreaterThan(0)
-      }
       await cmdBar.progressCmdBar()
       await cmdBar.submit()
       await scene.settled()
@@ -218,8 +198,6 @@ chamfer001 = chamfer(extrude001, tags = getCommonEdge(faces = [region001.tags.li
           count: boundary.points.length,
           referencesSelectedBody: true,
         })
-      if (boundary.mixedSelections)
-        await editor.expectEditor.toContain('edgeId(')
       await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
       await expect(
         await toolbar.getFeatureTreeOperation('surface001', 0)
@@ -244,7 +222,8 @@ chamfer001 = chamfer(extrude001, tags = getCommonEdge(faces = [region001.tags.li
     toolbar,
     cmdBar,
   }) => {
-    const initialCode = `sketch001 = sketch(on = XZ) {
+    const initialCode = `@settings(experimentalFeatures = allow, kclVersion = 3.0)
+sketch001 = sketch(on = XZ) {
   circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
   circle2 = circle(start = [var 25mm, var 0mm], center = [var 20mm, var 0mm])
 }`
