@@ -1,0 +1,5 @@
+@settings(kclVersion = "3.0", defaultLengthUnit = mm)
+
+import "panel.kcl" as panel
+
+importedPlane = panel
