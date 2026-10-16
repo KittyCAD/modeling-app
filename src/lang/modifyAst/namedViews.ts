@@ -33,15 +33,6 @@ function viewEnum(type: string, value: string) {
   ])
 }
 
-function insertKclVariableIfNeeded(
-  value: KclCommandValue | undefined,
-  ast: Node<Program>
-) {
-  if (value && 'variableName' in value && value.variableName) {
-    insertVariableAndOffsetPathToNode(value, ast)
-  }
-}
-
 export function addNamedView({
   ast,
   artifactGraph,
@@ -95,8 +86,12 @@ export function addNamedView({
     undefined,
     [createIdentifier('view')]
   )
-  insertKclVariableIfNeeded(target, modifiedAst)
-  insertKclVariableIfNeeded(distance, modifiedAst)
+  if (target && 'variableName' in target && target.variableName) {
+    insertVariableAndOffsetPathToNode(target, modifiedAst)
+  }
+  if (distance && 'variableName' in distance && distance.variableName) {
+    insertVariableAndOffsetPathToNode(distance, modifiedAst)
+  }
 
   const call = createCallExpressionStdLibKw(
     namedCall.name,
