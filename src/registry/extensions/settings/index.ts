@@ -1,3 +1,4 @@
+import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
@@ -56,6 +57,9 @@ export const settingsExtension = defineRegistryItemFactory((ctx) => {
       input: {
         ...createSettings(extensionSettings),
         commandBarActor: commands.actor,
+        hasFeature: (feature) =>
+          ctx.services.optional(userFeaturesService)?.has(feature, false) ??
+          false,
         defaultProjectLibraries,
         projectLibrarySettingDefaultPolicies,
         extensionSettings,

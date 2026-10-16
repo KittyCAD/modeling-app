@@ -38,6 +38,7 @@ describe('settingsMachine', () => {
       fileOperations: testFileOperations,
       wasmInstancePromise,
       deferredEvents: [],
+      hasFeature: () => false,
     }
 
     expect(getOnlySettingsFromContext(context)).toEqual(settings)

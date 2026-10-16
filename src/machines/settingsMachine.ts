@@ -1,3 +1,5 @@
+import { effect, signal } from '@preact/signals-core'
+import type { UserFeature } from '@src/machines/userFeaturesMachine'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import {
   createSettingsCommand,
@@ -46,6 +48,7 @@ import {
 } from 'xstate'
 
 export type SettingsActorDepsType = {
+  hasFeature?: (feature: UserFeature) => boolean
   currentProject?: Project
   commandBarActor: ActorRefFrom<typeof commandBarMachine>
   defaultProjectLibraries: readonly ProjectLibrarySetting[]
@@ -116,6 +119,7 @@ export const settingsMachine = setup({
         extensionSettings,
         wasmInstancePromise,
         commandBarActor: _c,
+        hasFeature: _hasFeature,
         fileOperations,
         ...settings
       } = input.context
@@ -234,55 +238,40 @@ export const settingsMachine = setup({
       {
         settings: SettingsType
         actor: AnyActorRef
+        hasFeature?: (feature: UserFeature) => boolean
         commandBarActor: ActorRefFrom<typeof commandBarMachine>
       }
     >(({ input, receive }) => {
-      // If the user wants to hide the settings commands
-      //from the command bar don't add them.
-      if (input.settings.commandBar.includeSettings.current === false) {
-        return
-      }
+      const currentSettings = signal(input.settings)
+      let commandBarActor = input.commandBarActor
       let commands: Command[] = []
-
-      const updateCommands = (newSettings: SettingsType) =>
-        settingsWithCommandConfigs(newSettings)
-          .map((type) =>
-            createSettingsCommand({
-              type,
-              actor: input.actor,
-            })
-          )
-          .filter((c) => c !== null)
-
-      const addCommands = (actor: ActorRefFrom<typeof commandBarMachine>) =>
-        actor.send({
-          type: 'Add commands',
-          data: { commands: commands },
-        })
-
-      const removeCommands = (actor: ActorRefFrom<typeof commandBarMachine>) =>
-        actor.send({
-          type: 'Remove commands',
-          data: { commands: commands },
-        })
-
-      receive(({ type, settings: newSettings, commandBarActor }) => {
-        if (type !== 'update') {
-          return
-        }
-        removeCommands(commandBarActor)
+      // Rebuild gated commands when the user's feature flags load or change.
+      const stop = effect(() => {
+        commandBarActor.send({ type: 'Remove commands', data: { commands } })
+        const settings = currentSettings.value
         commands =
-          newSettings.commandBar.includeSettings.current === false
+          settings.commandBar.includeSettings.current === false
             ? []
-            : updateCommands(newSettings)
-        addCommands(commandBarActor)
+            : settingsWithCommandConfigs(settings, input.hasFeature)
+                .map((type) =>
+                  createSettingsCommand({
+                    type,
+                    actor: input.actor,
+                    hasFeature: input.hasFeature,
+                  })
+                )
+                .filter((command) => command !== null)
+        commandBarActor.send({ type: 'Add commands', data: { commands } })
       })
-
-      // Initial command registration
-      // Note: Async hideOnPlatform values are already resolved in loadAndValidateSettings,
-      // so we can just register commands synchronously here
-      commands = updateCommands(input.settings)
-      addCommands(input.commandBarActor)
+      receive(({ type, settings, commandBarActor: actor }) => {
+        if (type !== 'update') return
+        commandBarActor = actor
+        currentSettings.value = settings
+      })
+      return () => {
+        stop()
+        commandBarActor.send({ type: 'Remove commands', data: { commands } })
+      }
     }),
   },
   actions: {
@@ -435,6 +424,7 @@ export const settingsMachine = setup({
         settings: getOnlySettingsFromContext(context),
         actor: self,
         commandBarActor: context.commandBarActor,
+        hasFeature: context.hasFeature,
       }),
     },
   ],
@@ -759,6 +749,7 @@ export function getOnlySettingsFromContext(
   const {
     currentProject: _c,
     commandBarActor: _cba,
+    hasFeature: _hasFeature,
     defaultProjectLibraries: _defaultProjectLibraries,
     projectLibrarySettingDefaultPolicies: _projectLibrarySettingDefaultPolicies,
     extensionSettings: _extensionSettings,

@@ -19,7 +19,7 @@ export const featureTreeSettings = {
       createSetting: () =>
         new Setting<FeatureTreeDisplay>({
           defaultValue: 'hud',
-          title: 'Feature tree style',
+          title: 'Scene browser style',
           description:
             'Choose HUD for minimal branch guides and a faintly frosted Scene browser, or Solid for standard rows and a stronger frosted surface.',
           hideOnLevel: 'project',
