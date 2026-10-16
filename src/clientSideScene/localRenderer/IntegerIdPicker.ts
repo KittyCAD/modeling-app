@@ -30,6 +30,8 @@ import {
 const SELECTION_LINE_WIDTH_AT_REFERENCE_PX = 24
 const SELECTION_LINE_WIDTH_REFERENCE_VIEWPORT_PX = 2048
 
+type LineTargets = { source: LineSegments2; targets: EdgeSelectionTarget[] }
+
 export type IntegerIdPickResult = {
   target: Mesh | null
   // The targets changed while the ID was being read back.
@@ -75,7 +77,8 @@ export class IntegerIdPicker {
   setTargets(
     targets: Mesh[],
     occluder: Object3D | null,
-    edges?: { source: LineSegments2; targets: EdgeSelectionTarget[] }
+    edges?: LineTargets,
+    sketchLines?: LineTargets
   ) {
     this.clearModel()
     const createMaterial = (id: number) => {
@@ -110,56 +113,62 @@ export class IntegerIdPicker {
       addMesh(target, createMaterial(id))
     }
     if (edges) {
-      const segmentCount =
-        edges.source.geometry.getAttribute('instanceStart')?.count ?? 0
-      const selectionIds = new Uint32Array(segmentCount)
-      for (const edge of edges.targets) {
-        const id = this.targetById.push(edge.object) - 1
-        for (const { firstSegment, segmentCount: count } of edge.ranges) {
-          selectionIds.fill(id, firstSegment, firstSegment + count)
-        }
-      }
-      if (segmentCount > 0) {
-        const geometry = new LineSegmentsGeometry()
-        for (const name of ['instanceStart', 'instanceEnd']) {
-          const sourceAttribute = edges.source.geometry.getAttribute(name)
-          if (sourceAttribute) geometry.setAttribute(name, sourceAttribute)
-        }
-        geometry.instanceCount = segmentCount
-        geometry.boundingBox = edges.source.geometry.boundingBox
-        geometry.boundingSphere = edges.source.geometry.boundingSphere
-        geometry.setAttribute(
-          'selectionId',
-          new InstancedBufferAttribute(selectionIds, 1)
-        )
-        const material = new Line2NodeMaterial({
-          linewidth: SELECTION_LINE_WIDTH_AT_REFERENCE_PX,
-        })
-        material.worldUnits = false
-        material.alphaToCoverage = false
-        material.depthTest = true
-        material.depthWrite = true
-        material.transparent = false
-        material.blending = NoBlending
-        material.toneMapped = false
-        material.polygonOffset = true
-        material.polygonOffsetFactor = -1
-        material.polygonOffsetUnits = -1
-        const selectionId = varying(
-          attribute('selectionId', 'uint') as unknown as Node<'uint'>
-        ) as unknown as Node<'uint'>
-        material.outputNode = this.idOutput(selectionId)
-        const object = new LineSegments2(geometry, material)
-        object.frustumCulled = false
-        object.renderOrder = 2
-        object.visible = this.edgesVisible
-        this.edgeObject = object
-        this.sourceByProxy.set(object, edges.source)
-        this.geometries.push(geometry)
-        this.materials.add(material)
-        this.scene.add(object)
+      this.edgeObject = this.addLines(edges)
+      if (this.edgeObject) this.edgeObject.visible = this.edgesVisible
+    }
+    if (sketchLines) this.addLines(sketchLines)
+  }
+
+  // One batch of lines, each segment drawn with its target ID.
+  private addLines({ source, targets }: LineTargets) {
+    const segmentCount =
+      source.geometry.getAttribute('instanceStart')?.count ?? 0
+    const selectionIds = new Uint32Array(segmentCount)
+    for (const edge of targets) {
+      const id = this.targetById.push(edge.object) - 1
+      for (const { firstSegment, segmentCount: count } of edge.ranges) {
+        selectionIds.fill(id, firstSegment, firstSegment + count)
       }
     }
+    if (segmentCount === 0) return null
+
+    const geometry = new LineSegmentsGeometry()
+    for (const name of ['instanceStart', 'instanceEnd']) {
+      const sourceAttribute = source.geometry.getAttribute(name)
+      if (sourceAttribute) geometry.setAttribute(name, sourceAttribute)
+    }
+    geometry.instanceCount = segmentCount
+    geometry.boundingBox = source.geometry.boundingBox
+    geometry.boundingSphere = source.geometry.boundingSphere
+    geometry.setAttribute(
+      'selectionId',
+      new InstancedBufferAttribute(selectionIds, 1)
+    )
+    const material = new Line2NodeMaterial({
+      linewidth: SELECTION_LINE_WIDTH_AT_REFERENCE_PX,
+    })
+    material.worldUnits = false
+    material.alphaToCoverage = false
+    material.depthTest = true
+    material.depthWrite = true
+    material.transparent = false
+    material.blending = NoBlending
+    material.toneMapped = false
+    material.polygonOffset = true
+    material.polygonOffsetFactor = -1
+    material.polygonOffsetUnits = -1
+    const selectionId = varying(
+      attribute('selectionId', 'uint') as unknown as Node<'uint'>
+    ) as unknown as Node<'uint'>
+    material.outputNode = this.idOutput(selectionId)
+    const object = new LineSegments2(geometry, material)
+    object.frustumCulled = false
+    object.renderOrder = 2
+    this.sourceByProxy.set(object, source)
+    this.geometries.push(geometry)
+    this.materials.add(material)
+    this.scene.add(object)
+    return object
   }
 
   setEdgesVisible(visible: boolean) {

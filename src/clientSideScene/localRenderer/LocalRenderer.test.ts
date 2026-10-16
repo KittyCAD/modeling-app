@@ -356,6 +356,7 @@ describe('local GLB loading', () => {
       expect(f.picker.setTargets).toHaveBeenLastCalledWith(
         f.defaultTargets,
         null,
+        undefined,
         undefined
       )
       expect(f.highlights.setTargets).toHaveBeenLastCalledWith(f.defaultTargets)

@@ -6,10 +6,32 @@ export type KITTYCAD_GLTF = GLTF & {
     gltfExtensions?: {
       KITTYCAD_boundary_representation?: KITTYCAD_GLTF_BREP
     }
+    // Sketches and their regions. Only engines that export them send these.
+    KITTYCAD?: {
+      sketches?: KITTYCAD_GLTF_SKETCH_SEGMENT[]
+      regions?: KITTYCAD_GLTF_SKETCH_REGION[]
+    }
   }
 }
 
-type KITTYCAD_GLTF_BREP = {
+// One sketch segment. Its curve is the B-rep edge at `edge`.
+export type KITTYCAD_GLTF_SKETCH_SEGMENT = {
+  edge: number
+  segmentId?: string
+}
+
+// A closed region of a sketch, bounded by B-rep loops. The plane is in glTF
+// coordinates: meters, Y up.
+export type KITTYCAD_GLTF_SKETCH_REGION = {
+  planeOrigin: KIITYCAD_GLTF_VERTEX
+  planeXAxis: KIITYCAD_GLTF_VERTEX
+  planeYAxis: KIITYCAD_GLTF_VERTEX
+  outerLoop: number
+  holeLoops?: number[]
+  regionId?: string
+}
+
+export type KITTYCAD_GLTF_BREP = {
   solids: KITTYCAD_GLTF_SOLID[]
   shells: KITTYCAD_GLTF_SHELL[]
   faces: KITTYCAD_GLTF_FACE[]

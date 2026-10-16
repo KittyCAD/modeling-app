@@ -3,16 +3,61 @@ import { Color, Group, type Object3D } from 'three'
 import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeometry.js'
 import { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
 import { Line2NodeMaterial } from 'three/webgpu'
-import type { KITTYCAD_GLTF } from '@src/clientSideScene/localRenderer/KITTYCAD_GLTF'
+import type {
+  KITTYCAD_GLTF,
+  KITTYCAD_GLTF_BREP,
+} from '@src/clientSideScene/localRenderer/KITTYCAD_GLTF'
 import { sampleEdge } from '@src/clientSideScene/localRenderer/sampleEdge'
+import { type ResolvedTheme, Themes } from '@src/lib/theme'
 import { isErr } from '@src/lib/trap'
 
 // The engine draws edges in this colour in both themes: see edgeColor in theme.ts.
 const EDGE_COLOR = new Color(0x1c1c1c)
 
+// Sketch lines contrast with the background.
+export function getSketchLineColor(theme: ResolvedTheme) {
+  return new Color(theme === Themes.Light ? 0x1c1c1c : 0xf2f3f5)
+}
+
 export type EdgeSelectionTarget = {
   object: LineSegments2
   ranges: Array<{ firstSegment: number; segmentCount: number }>
+}
+
+// A B-rep edge to draw, and the ID it is picked and highlighted by.
+export type DrawnEdge = { index: number; uuid?: string }
+
+// Sketch segments and region boundaries are B-rep edges too, but they are not
+// edges of a body.
+function getSketchEdgeIndices(
+  gltf: KITTYCAD_GLTF,
+  brep: KITTYCAD_GLTF_BREP
+): Set<number> {
+  const { sketches = [], regions = [] } = gltf.userData.KITTYCAD ?? {}
+  const indices = new Set(sketches.map(({ edge }) => edge))
+  for (const region of regions) {
+    for (const loop of [region.outerLoop, ...(region.holeLoops ?? [])]) {
+      for (const entry of brep.loops[loop]?.edges ?? []) {
+        if (entry) indices.add(entry[0])
+      }
+    }
+  }
+  return indices
+}
+
+export function getBodyEdges(gltf: KITTYCAD_GLTF): DrawnEdge[] {
+  const brep = gltf.userData.gltfExtensions?.KITTYCAD_boundary_representation
+  if (!brep) return []
+  const sketchEdges = getSketchEdgeIndices(gltf, brep)
+  return brep.edges.flatMap((edge, index) =>
+    sketchEdges.has(index) ? [] : [{ index, uuid: edge.extras?.KITTYCAD?.uuid }]
+  )
+}
+
+export function getSketchSegmentEdges(gltf: KITTYCAD_GLTF): DrawnEdge[] {
+  return (gltf.userData.KITTYCAD?.sketches ?? []).map(
+    ({ edge, segmentId }) => ({ index: edge, uuid: segmentId })
+  )
 }
 
 export class EdgeRenderer {
@@ -24,12 +69,13 @@ export class EdgeRenderer {
   private readonly selectionMaterial = new Line2NodeMaterial()
   private selectionTargets: EdgeSelectionTarget[] = []
 
-  constructor(visible = true) {
+  constructor(
+    visible = true,
+    color = EDGE_COLOR,
+    linewidth = LOCAL_WEBGPU_EDGE_LINE_WIDTH_PX
+  ) {
     this.geometry.setPositions([])
-    this.material = new Line2NodeMaterial({
-      color: EDGE_COLOR,
-      linewidth: LOCAL_WEBGPU_EDGE_LINE_WIDTH_PX,
-    })
+    this.material = new Line2NodeMaterial({ color, linewidth })
     this.material.worldUnits = false
     this.material.transparent = false
     this.material.opacity = 1
@@ -50,7 +96,7 @@ export class EdgeRenderer {
   }
 
   // TODO defer building if edges are not visible
-  public buildEdges(gltf: KITTYCAD_GLTF) {
+  public buildEdges(gltf: KITTYCAD_GLTF, edges: DrawnEdge[]) {
     const brep = gltf.userData.gltfExtensions?.KITTYCAD_boundary_representation
     if (!brep) {
       // assignFaceUuids has already warned. Leave no edges from an earlier model.
@@ -62,8 +108,9 @@ export class EdgeRenderer {
     const positionsByUuid = new Map<string, number[]>()
     const rangesByUuid = new Map<string, EdgeSelectionTarget['ranges']>()
     this.clearSelectionTargets()
-    for (const [index, edge] of brep.edges.entries()) {
-      const curve = brep.curves3D[edge.curve[0]]
+    for (const { index, uuid } of edges) {
+      const edge = brep.edges[index]
+      const curve = edge && brep.curves3D[edge.curve[0]]
       if (curve) {
         const points = sampleEdge(edge, curve, brep.vertices)
         if (isErr(points)) {
@@ -79,7 +126,6 @@ export class EdgeRenderer {
           edgePositions.push(a.x, a.y, a.z, b.x, b.y, b.z)
         }
         positions.push(...edgePositions)
-        const uuid = edge.extras?.KITTYCAD?.uuid
         if (uuid && edgePositions.length > 0) {
           const uuidPositions = positionsByUuid.get(uuid) ?? []
           uuidPositions.push(...edgePositions)
@@ -92,7 +138,7 @@ export class EdgeRenderer {
           rangesByUuid.set(uuid, ranges)
         }
       } else {
-        console.error(`Missing edge ${edge.curve[0]}`)
+        console.error(`Missing curve for edge ${index}`)
       }
     }
     this.geometry.setPositions(positions)
@@ -130,6 +176,10 @@ export class EdgeRenderer {
 
   setVisible(visible: boolean) {
     this.group.visible = visible
+  }
+
+  setColor(color: Color) {
+    this.material.color.copy(color)
   }
 
   dispose() {

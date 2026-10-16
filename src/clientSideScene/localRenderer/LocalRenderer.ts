@@ -4,12 +4,19 @@ import {
   LOCAL_WEBGPU_GTAO_SAMPLES,
   LOCAL_WEBGPU_GTAO_USE_DENOISE,
   LOCAL_WEBGPU_GTAO_USE_NORMAL_MRT,
+  LOCAL_WEBGPU_SKETCH_LINE_WIDTH_PX,
 } from '@src/clientSideScene/localRenderer/config'
 import {
   getEntityPoint,
   projectEntityPoint,
 } from '@src/clientSideScene/localRenderer/projectEntityPoint'
-import { EdgeRenderer } from '@src/clientSideScene/localRenderer/EdgeRenderer'
+import {
+  EdgeRenderer,
+  getBodyEdges,
+  getSketchLineColor,
+  getSketchSegmentEdges,
+} from '@src/clientSideScene/localRenderer/EdgeRenderer'
+import { createRegionMeshes } from '@src/clientSideScene/localRenderer/sketchRegions'
 import { PlaneRenderer } from '@src/clientSideScene/localRenderer/PlaneRenderer'
 import { EnvMapLoader } from '@src/clientSideScene/localRenderer/EnvMapLoader'
 import { IntegerIdPicker } from '@src/clientSideScene/localRenderer/IntegerIdPicker'
@@ -98,6 +105,7 @@ export class LocalRenderer {
   private scene: Scene | null = null
   private envMapLoader: EnvMapLoader | null = null
   private edgeRenderer: EdgeRenderer | null = null
+  private sketchLineRenderer: EdgeRenderer | null = null
   private planeRenderer: PlaneRenderer | null = null
   private integerIdPicker: IntegerIdPicker | null = null
   private selectionHighlightRenderer: SelectionHighlightRenderer | null = null
@@ -237,7 +245,9 @@ export class LocalRenderer {
       }
     })
     const edgeTargets = this.edgeRenderer?.getSelectionTargets() ?? []
-    for (const { object } of edgeTargets) {
+    const sketchLineTargets =
+      this.sketchLineRenderer?.getSelectionTargets() ?? []
+    for (const { object } of [...edgeTargets, ...sketchLineTargets]) {
       this.targetByEntityId.set(object.userData.edgeUuid, object)
     }
 
@@ -246,11 +256,15 @@ export class LocalRenderer {
       this.currentModel,
       this.edgeRenderer
         ? { source: this.edgeRenderer.lines, targets: edgeTargets }
+        : undefined,
+      this.sketchLineRenderer
+        ? { source: this.sketchLineRenderer.lines, targets: sketchLineTargets }
         : undefined
     )
     this.selectionHighlightRenderer?.setTargets([
       ...targets,
       ...edgeTargets.map(({ object }) => object),
+      ...sketchLineTargets.map(({ object }) => object),
     ])
     this.clearHover()
     this.updateSelection()
@@ -437,6 +451,7 @@ export class LocalRenderer {
     this.theme = theme
     this.selectionHighlightRenderer?.setBackgroundColor(this.backgroundColor)
     this.planeRenderer?.setTheme(theme)
+    this.sketchLineRenderer?.setColor(getSketchLineColor(theme))
     this.invalidateBaseRender()
   }
 
@@ -483,6 +498,8 @@ export class LocalRenderer {
     this.planeRenderer = null
     this.edgeRenderer?.dispose()
     this.edgeRenderer = null
+    this.sketchLineRenderer?.dispose()
+    this.sketchLineRenderer = null
     this.integerIdPicker?.dispose()
     this.integerIdPicker = null
     this.selectionHighlightRenderer?.dispose()
@@ -846,6 +863,7 @@ export class LocalRenderer {
     if (this.currentModel) {
       this.scene?.remove(this.currentModel)
       this.edgeRenderer?.removeFromParent()
+      this.sketchLineRenderer?.removeFromParent()
       disposeObject3D(this.currentModel)
       this.currentModel = null
     }
@@ -926,6 +944,11 @@ export class LocalRenderer {
     }
 
     this.edgeRenderer = new EdgeRenderer(this.highlightEdges)
+    this.sketchLineRenderer = new EdgeRenderer(
+      true,
+      getSketchLineColor(this.theme),
+      LOCAL_WEBGPU_SKETCH_LINE_WIDTH_PX
+    )
     // Keep reference planes separate from the GLB and its fit-to-model bounds.
     this.planeRenderer = new PlaneRenderer(this.theme)
     this.planeRenderer.addTo(scene)
@@ -1088,8 +1111,11 @@ export class LocalRenderer {
       this.currentModel = gltf.scene
       this.scene?.add(gltf.scene)
 
-      this.edgeRenderer?.buildEdges(gltf)
+      this.edgeRenderer?.buildEdges(gltf, getBodyEdges(gltf))
       this.edgeRenderer?.addTo(gltf.scene)
+      this.sketchLineRenderer?.buildEdges(gltf, getSketchSegmentEdges(gltf))
+      this.sketchLineRenderer?.addTo(gltf.scene)
+      for (const mesh of createRegionMeshes(gltf)) gltf.scene.add(mesh)
 
       this.rebuildSelectionTargets()
       const bounds = new Box3().setFromObject(gltf.scene)
