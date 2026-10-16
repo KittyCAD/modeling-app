@@ -27,6 +27,7 @@ import { engineConnectionService } from '@src/registry/contracts/engineConnectio
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { projectSession } from '@src/registry/contracts/projectSession'
+import { projectPublicationEnabledValueSpec } from '@src/registry/contracts/publishing'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { defaultRegistryItemIds } from '@src/registry/defaultComposition'
@@ -254,7 +255,8 @@ describe('project system', () => {
   it('uses the supplied composition without installing omitted plugins', async () => {
     const app = createAppForTest({
       registryItemIds: defaultRegistryItemIds.filter(
-        (id) => id !== 'zoo:commandBar' && id !== 'zoo:slicer'
+        (id) =>
+          id !== 'zoo:commandBar' && id !== 'zoo:slicer' && id !== 'zoo:publish'
       ),
     })
     try {
@@ -262,14 +264,21 @@ describe('project system', () => {
       const plugins = app.registry.get(pluginsValueSpec)
       expect(
         plugins.some(
-          (plugin) => plugin.id === 'command-bar' || plugin.id === 'slicer'
+          (plugin) =>
+            plugin.id === 'command-bar' ||
+            plugin.id === 'slicer' ||
+            plugin.id === 'publish'
         )
       ).toBe(false)
       expect(
         app.registry
           .get(appHeaderItemsValueSpec)
-          .some((item) => item.id === 'command-bar.open')
+          .some(
+            (item) =>
+              item.id === 'command-bar.open' || item.id === 'publish.open'
+          )
       ).toBe(false)
+      expect(app.registry.get(projectPublicationEnabledValueSpec)).toBe(false)
       app.syncPluginSettingsFromCurrent()
       expect(app.registry.get(pluginsValueSpec)).toEqual(plugins)
     } finally {
