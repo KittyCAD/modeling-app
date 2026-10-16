@@ -1,5 +1,4 @@
 import { use, useEffect, useState } from 'react'
-import { useSignals } from '@preact/signals-react/runtime'
 import type { KclManager } from '@src/lang/KclManager'
 import {
   type SelectionReference,
@@ -24,9 +23,7 @@ export function useSelectionReferences({
   wasmPromise: Promise<ModuleType>
   selectionRanges: Selections
 }) {
-  useSignals()
   const wasmInstance = use(wasmPromise)
-  const sceneGeneration = kclManager.engineSceneGenerationSignal.value
   const [state, setState] = useState<SelectionReferenceState>({
     status: 'idle',
     references: [],
@@ -72,7 +69,7 @@ export function useSelectionReferences({
     return () => {
       cancelled = true
     }
-  }, [selectionRanges, kclManager, wasmInstance, sceneGeneration])
+  }, [selectionRanges, kclManager, wasmInstance])
 
   return state
 }

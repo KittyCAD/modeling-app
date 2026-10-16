@@ -12,7 +12,6 @@ const mocks = vi.hoisted(() => ({
   kclManager: {
     artifactGraph: new Map(),
     engineCommandManager: {},
-    engineSceneGenerationSignal: { value: 0 },
     wasmInstancePromise: Promise.resolve({}),
   } as unknown as KclManager,
 }))
