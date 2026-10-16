@@ -422,6 +422,10 @@ export class SceneInfra {
     this.cameraDirty = callback !== null
   }
 
+  get isAnimating() {
+    return this.animationFrameId !== -1
+  }
+
   animate = () => {
     this.animationFrameId = requestAnimationFrame(this.animate)
     TWEEN.update() // This will update all tweens during the animation loop

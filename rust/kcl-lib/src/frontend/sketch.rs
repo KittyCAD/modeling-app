@@ -23,7 +23,6 @@ use crate::ExecutorContext;
 use crate::KclErrorWithOutputs;
 use crate::frontend::api::FileId;
 use crate::frontend::api::ProjectId;
-use crate::frontend::api::SceneGraph;
 use crate::frontend::api::SceneGraphDelta;
 use crate::frontend::api::SourceDelta;
 use crate::frontend::api::Version;
@@ -73,7 +72,7 @@ pub trait SketchApi {
         ctx: &ExecutorContext,
         version: Version,
         sketch: ObjectId,
-    ) -> ExecResult<SceneGraph>;
+    ) -> ExecResult<SceneGraphDelta>;
 
     async fn delete_sketch(
         &mut self,

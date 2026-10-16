@@ -323,7 +323,8 @@ export const ModelingMachineProvider = ({
       if (inSketchMode && targetId) {
         letEngineAnimateAndSyncCamAfter(
           kclManager.engineCommandManager,
-          targetId
+          targetId,
+          kclManager.sceneInfra
         )
           .then(() => {})
           .catch((e) => {

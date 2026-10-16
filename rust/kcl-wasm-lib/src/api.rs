@@ -164,6 +164,13 @@ impl Context {
             .map_err(|e| format!("Could not serialize expression result. {TRUE_BUG} Details: {e}").into())
     }
 
+    /// Read the current scene without running another engine execution.
+    #[wasm_bindgen]
+    pub async fn get_scene_graph(&self) -> Result<JsValue, JsValue> {
+        let guard = self.frontend.read().await;
+        Ok(js_value_from_serde(&guard.scene_graph_for_ui()))
+    }
+
     /// Set the current program AST and execute it. Temporary hack for
     /// development purposes only.
     #[wasm_bindgen]

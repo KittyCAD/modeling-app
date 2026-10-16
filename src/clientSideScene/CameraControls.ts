@@ -1780,8 +1780,7 @@ function _getInteractionType(
 }
 
 /**
- * Tells the engine to fire it's animation waits for it to finish and then requests camera settings
- * to ensure the client-side camera is synchronized with the engine's camera state.
+ * Synchronize the sketch camera and await its client-side animation.
  *
  * @param engineCommandManager Our websocket singleton
  * @param entityId - The ID of face or sketchPlane.
@@ -1789,32 +1788,58 @@ function _getInteractionType(
 
 export async function letEngineAnimateAndSyncCamAfter(
   engineCommandManager: ConnectionManager,
-  entityId: string
+  entityId: string,
+  sceneInfra: {
+    camControls: CameraControls
+    isAnimating: boolean
+    animate: () => void
+    stop: () => void
+  }
 ) {
+  const { camControls } = sceneInfra
+  const initialQuaternion = camControls.camera.quaternion.clone()
+  const initialPosition = camControls.camera.position.clone()
+  const initialTarget = camControls.target.clone()
   await engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd_id: uuidv4(),
     cmd: {
       type: 'enable_sketch_mode',
       adjust_camera: true,
-      animated: !isReducedMotion(),
+      animated: false,
       ortho: true,
       entity_id: entityId,
     },
   })
-  // wait 600ms (animation takes 500, + 100 for safety)
-  await new Promise((resolve) =>
-    setTimeout(resolve, isReducedMotion() ? 100 : 600)
-  )
   await engineCommandManager.sendSceneCommand({
-    // CameraControls subscribes to default_camera_get_settings response events
-    // firing this at connection ensure the camera's are synced initially
     type: 'modeling_cmd_req',
     cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_get_settings',
-    },
+    cmd: { type: 'default_camera_get_settings' },
   })
+
+  // Read the final engine transform, then await the client animation itself.
+  // An already aligned camera needs neither an animation nor a safety timer.
+  const targetQuaternion = camControls.camera.quaternion.clone()
+  const targetPosition = camControls.target.clone()
+  camControls.syncDirection = 'clientToEngine'
+  if (
+    isReducedMotion() ||
+    (initialQuaternion.angleTo(targetQuaternion) < 1e-6 &&
+      initialTarget.distanceToSquared(targetPosition) < 1e-12)
+  ) {
+    return
+  }
+
+  camControls.camera.position.copy(initialPosition)
+  camControls.camera.quaternion.copy(initialQuaternion)
+  camControls.target.copy(initialTarget)
+  const startedAnimationLoop = !sceneInfra.isAnimating
+  if (startedAnimationLoop) sceneInfra.animate()
+  try {
+    await camControls.tweenCameraToQuaternion(targetQuaternion, targetPosition)
+  } finally {
+    if (startedAnimationLoop) sceneInfra.stop()
+  }
 }
 
 function _lookAt(position: Vector3, target: Vector3, up: Vector3): Quaternion {
