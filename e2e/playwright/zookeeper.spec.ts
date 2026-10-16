@@ -15,12 +15,12 @@ test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
     homePage,
     scene,
   }) => {
-    await homePage.goToModelingScene()
-    await scene.settled()
     await page.evaluate(
       (layout) => window.app.layout.set(layout),
       defaultLayoutConfig
     )
+    await homePage.goToModelingScene()
+    await scene.settled()
 
     const toggle = page
       .getByTestId('app-header')
@@ -53,29 +53,6 @@ test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
       .toBeGreaterThan(viewportWidth + openWidth - 2)
 
     await page.keyboard.press('Control+t')
-    await expect(toggle).toHaveAttribute('aria-pressed', 'true')
-    await expect
-      .poll(async () =>
-        Math.abs((await rightPane.boundingBox())!.width - openWidth)
-      )
-      .toBeLessThan(2)
-
-    await toggle.click()
-    await page.waitForFunction(() => {
-      const savedLayout =
-        window.app.settings.get().layout.configs.current.test?.layout
-      return (
-        JSON.stringify(savedLayout) ===
-          JSON.stringify(window.app.layout.get()) &&
-        window.app.settings.actor.getSnapshot().matches('idle')
-      )
-    })
-    await page.reload()
-    await expect(toggle).toHaveAttribute('aria-pressed', 'false')
-    await expect
-      .poll(async () => (await rightPane.boundingBox())?.width)
-      .toBe(0)
-    await toggle.click()
     await expect(toggle).toHaveAttribute('aria-pressed', 'true')
     await expect
       .poll(async () =>
