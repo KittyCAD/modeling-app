@@ -207,6 +207,14 @@ export class ZDSProject {
       newEditor.path = path
     }
 
+    // The singleton can move between files within this retained project.
+    // Drop its old path entry so one editor never aliases multiple buffers.
+    if (providedEditor) {
+      for (const [key, editor] of this.editors) {
+        if (editor === providedEditor && key.peek() !== path)
+          this.editors.delete(key)
+      }
+    }
     if (!foundEditor) {
       this.set(signal(path), newEditor)
     }
@@ -323,9 +331,15 @@ export class ZDSProject {
     if (fileOrDir.children) {
       for (let entry of fileOrDir.children) {
         if (entry.name.endsWith('.kcl')) {
-          const id = this.nextFileId++
           const path = entry.path
-          files.push(new File(path, id))
+          const existing =
+            this.files.find((file) => file.path === path) ??
+            this.findEditor(path)?.[1]
+          files.push(
+            existing?.path === path
+              ? existing
+              : new File(path, existing?.id ?? this.nextFileId++)
+          )
         } else {
           this.collectProjectFiles(entry, files)
         }
@@ -333,6 +347,16 @@ export class ZDSProject {
     }
 
     return files
+  }
+
+  /** Refresh membership without replacing the project's editors or undo history. */
+  refreshFiles(project: Project) {
+    if (this.closed || project.path !== this.path) return
+    this.files = this.collectProjectFiles(project)
+    this.projectIORefSignal.value = {
+      ...this.projectIORefSignal.peek(),
+      ...project,
+    }
   }
 
   /** Get all the KCL files in this project as a flat array. */
