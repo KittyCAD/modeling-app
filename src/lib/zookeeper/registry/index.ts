@@ -1,9 +1,15 @@
-import { defineRegistryItemFactory, provide } from '@kittycad/registry'
+import {
+  defineRegistryItem,
+  defineRegistryItemFactory,
+  provide,
+} from '@kittycad/registry'
 import { computed } from '@preact/signals-core'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { getOpenPanes } from '@src/lib/layout/utils'
+import { ZookeeperHeaderButton } from '@src/lib/zookeeper/components/ZookeeperHeaderButton'
 import { zookeeperRuntimeRegistryItem } from '@src/lib/zookeeper/registry/runtime'
 import { layoutService } from '@src/registry/contracts/layout'
+import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import {
   nullableStatusBarItem,
   statusBarLocalItemsValueSpec,
@@ -54,7 +60,19 @@ const zookeeper = createZdsPlugin({
   id: 'zookeeper',
   title: 'Zookeeper',
   description: 'AI-assisted modeling conversation and project editing tools.',
-  items: [zookeeperRuntimeRegistryItem, zookeeperCreditsStatusBarItem],
+  items: [
+    zookeeperRuntimeRegistryItem,
+    zookeeperCreditsStatusBarItem,
+    defineRegistryItem({
+      provides: [
+        provide(appHeaderItemsValueSpec, {
+          id: 'zookeeper.toggle',
+          order: 110,
+          Component: ZookeeperHeaderButton,
+        }),
+      ],
+    }),
+  ],
   defaultSetting: 'core',
 })
 

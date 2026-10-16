@@ -377,6 +377,15 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
       item: layout.children[itemIndex],
     }))
     .filter(({ item }) => item !== undefined && !shouldHide(item))
+  const toolbarPanes = layout.children.filter(
+    (pane) =>
+      !shouldHide(pane) &&
+      !(
+        pane.type === LayoutType.Simple &&
+        areaLibrary[pane.areaType]?.hidePaneButton
+      )
+  )
+  const hasToolbar = toolbarPanes.length > 0 || !!layout.actions?.length
 
   const onToggleItem = (checked: boolean, targetNodeId: string) => {
     togglePane({
@@ -403,12 +412,12 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
     >
       <ul
         ref={paneBarRef}
-        className={`flex border-solid b-4 ${sideToTailwindTabDirection(layout.side)}`}
+        className={`${hasToolbar ? 'flex' : 'hidden'} border-solid b-4 ${sideToTailwindTabDirection(layout.side)}`}
         style={{ [barBorderWidthProp]: '1px' }}
         data-pane-toolbar
       >
         {layout.children.map((pane, i) =>
-          shouldHide(pane) ? null : (
+          !toolbarPanes.includes(pane) ? null : (
             <PaneButton
               key={`pane-${pane.id}`}
               pane={pane}
@@ -419,7 +428,7 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
             />
           )
         )}
-        {layout.children.length && layout.actions?.length ? (
+        {toolbarPanes.length && layout.actions?.length ? (
           <hr
             className={`bg-3 border-none ${sideToSplitDirection(layout.side) === 'vertical' ? 'w-[1px] h-full' : 'h-[1px] w-full'}`}
           />

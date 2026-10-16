@@ -21,6 +21,7 @@ import {
   layoutService,
 } from '@src/registry/contracts/layout'
 import { statusBarLocalItemsValueSpec } from '@src/registry/contracts/statusBar'
+import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import { describe, expect, it, vi } from 'vitest'
 
 vi.mock(
@@ -93,7 +94,11 @@ describe('zookeeper plugin', () => {
     ]
     expect(zookeeperArea).toMatchObject({
       shortcut: 'Ctrl + T',
+      hidePaneButton: true,
     })
+    expect(
+      registry.get(appHeaderItemsValueSpec).map((item) => item.id)
+    ).toContain('zookeeper.toggle')
     zookeeperPromptRunningSignal.value = true
     expect(
       registry.get(layoutAreaLibraryValueSpec)[AreaType.Zookeeper]?.icon
@@ -147,6 +152,7 @@ describe('zookeeper plugin', () => {
     expect(registry.get(layoutAreaLibraryValueSpec)[AreaType.Zookeeper]).toBe(
       undefined
     )
+    expect(registry.get(appHeaderItemsValueSpec)).toEqual([])
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
     ).not.toContain('zookeeper-credits')
