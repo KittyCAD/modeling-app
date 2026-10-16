@@ -19,7 +19,7 @@ const renderMocks = vi.hoisted(() => ({
       value: { artifactGraph: new Map(), filenames: {} },
     },
     isExecutingSignal: { value: false },
-    systemDeps: { projectPath: { value: '/project' } },
+    systemDeps: { project: { value: { path: '/project' } } },
   },
 }))
 
