@@ -186,6 +186,9 @@ function TextFileEditor({
           EditorState.lineSeparator.of(
             activeTextFile.text.match(/\r\n|\r|\n/)?.[0] ?? '\n'
           ),
+          EditorView.clipboardInputFilter.of((text, state) =>
+            text.replace(/\r\n?|\n/g, state.lineBreak)
+          ),
           textThemeCompartment.of(
             textEditorThemeExtensions(resolvedTheme, isMarkdown)
           ),

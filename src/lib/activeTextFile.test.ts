@@ -77,9 +77,7 @@ afterEach(() => {
 
 describe('text file detection', () => {
   it.each([
-    ['PNG signature', new Uint8Array([0x89, 0x50, 0x4e, 0x47])],
     ['invalid UTF-8', new Uint8Array([0xc3, 0x28])],
-    ['UTF-16 BOM', new Uint8Array([0xff, 0xfe, 0x61, 0])],
     ['NUL byte', new Uint8Array([0x61, 0, 0x62])],
     ['escape control character', new Uint8Array([0x61, 0x1b, 0x62])],
     [

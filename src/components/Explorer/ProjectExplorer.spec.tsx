@@ -103,7 +103,8 @@ describe('ProjectExplorer', () => {
   it('routes text clicks and Enter through the pane, with explicit opt-in for CAD files', async () => {
     const textFiles = [createFile('config.json', ''), createFile('LICENSE', '')]
     const cadFile = createFile('part.STEP', '')
-    project.children = [...textFiles, cadFile, oneFile]
+    const folder = createFolder('folder.step')
+    project.children = [...textFiles, cadFile, oneFile, folder]
     vi.spyOn(app, 'project', 'get').mockReturnValue(
       await ZDSProject.open(signal(project), app)
     )
@@ -154,10 +155,28 @@ describe('ProjectExplorer', () => {
 
     fireEvent.click(screen.getByRole('treeitem', { name: cadFile.name }))
     expect(openText).not.toHaveBeenCalled()
-    fireEvent.contextMenu(screen.getByRole('treeitem', { name: cadFile.name }))
-    fireEvent.click(await screen.findByRole('button', { name: 'Open as Text' }))
-    expect(openText).toHaveBeenCalledWith(app.fileOperations, cadFile.path)
-    openText.mockClear()
+    for (const entry of [textFiles[0], cadFile]) {
+      fireEvent.contextMenu(screen.getByRole('treeitem', { name: entry.name }))
+      fireEvent.click(
+        await screen.findByRole('button', { name: 'Open as Text' })
+      )
+      expect(openText).toHaveBeenCalledWith(app.fileOperations, entry.path)
+      openText.mockClear()
+    }
+
+    for (const entry of [oneFile, folder]) {
+      fireEvent.contextMenu(screen.getByRole('treeitem', { name: entry.name }))
+      await screen.findByRole('button', { name: 'Rename' })
+      expect(
+        screen.queryByRole('button', { name: 'Open as Text' })
+      ).not.toBeInTheDocument()
+      fireEvent.keyDown(window, { key: 'Escape' })
+      await waitFor(() =>
+        expect(
+          screen.queryByRole('button', { name: 'Rename' })
+        ).not.toBeInTheDocument()
+      )
+    }
 
     fireEvent.click(screen.getByRole('treeitem', { name: oneFile.name }))
     await waitFor(() =>
@@ -169,42 +188,6 @@ describe('ProjectExplorer', () => {
     expect(clearText).toHaveBeenCalled()
     expect(flushKcl).toHaveBeenCalled()
   })
-  it.each([
-    { entry: createFile('config.json'), canOpen: true },
-    { entry: oneFile, canOpen: false },
-    { entry: createFolder('folder.step'), canOpen: false },
-  ])(
-    'offers Open as Text for $entry.name: $canOpen',
-    async ({ entry, canOpen }) => {
-      const onOpenAsText = vi.fn()
-      project.children = [entry]
-      render(
-        <ProjectExplorer
-          wasmInstance={wasmInstance}
-          project={project}
-          file={oneFile}
-          createFilePressed={-1}
-          createFolderPressed={-1}
-          refreshExplorerPressed={-1}
-          collapsePressed={-1}
-          onRowClicked={() => {}}
-          onRowEnter={() => {}}
-          onOpenAsText={onOpenAsText}
-          readOnly={false}
-          canNavigate={true}
-        />
-      )
-
-      fireEvent.contextMenu(screen.getByRole('treeitem', { name: entry.name }))
-      await screen.findByRole('button', { name: 'Rename' })
-      const action = screen.queryByRole('button', { name: 'Open as Text' })
-      expect(Boolean(action)).toBe(canOpen)
-      if (action) {
-        fireEvent.click(action)
-        expect(onOpenAsText).toHaveBeenCalledWith(entry.path)
-      }
-    }
-  )
   it('should render no rows', () => {
     render(
       <ProjectExplorer

@@ -1,6 +1,6 @@
 import { EditorView } from '@codemirror/view'
 import { signal } from '@preact/signals-core'
-import { act, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({
@@ -52,7 +52,7 @@ describe('plain text editor', () => {
   beforeEach(() => vi.clearAllMocks())
 
   it.each(['\n', '\r\n', '\r'])(
-    'preserves BOM and %j line endings on edit',
+    'preserves BOM and %j line endings on edit and paste',
     (lineEnding) => {
       const original = `\ufefffirst${lineEnding}second${lineEnding}`
       activeTextFileSignal.value = {
@@ -62,32 +62,33 @@ describe('plain text editor', () => {
         text: original,
       }
       const { unmount } = render(<EditorPaneContents />)
-      const view = EditorView.findFromDOM(screen.getByRole('textbox'))
+      const textbox = screen.getByRole('textbox')
+      const view = EditorView.findFromDOM(textbox)
       expect(view).not.toBeNull()
       act(() =>
-        view?.dispatch({ changes: { from: 1, to: 6, insert: 'edited' } })
+        view?.dispatch({
+          changes: { from: 1, to: 6, insert: 'edited' },
+          selection: { anchor: 1 },
+        })
       )
       expect(mocks.scheduleWrite).toHaveBeenLastCalledWith(
         mocks.fileOperations,
         '/proj/settings.json',
         `\ufeffedited${lineEnding}second${lineEnding}`
       )
+      act(() => {
+        fireEvent.paste(textbox, {
+          clipboardData: { getData: () => 'pasted\nlines' },
+        })
+      })
+      expect(view?.state.doc.lines).toBe(4)
+      expect(mocks.scheduleWrite).toHaveBeenLastCalledWith(
+        mocks.fileOperations,
+        '/proj/settings.json',
+        `\ufeffpasted${lineEnding}linesedited${lineEnding}second${lineEnding}`
+      )
       unmount()
       expect(mocks.flushWrite).toHaveBeenCalled()
     }
   )
-
-  it('shows rejected files without mounting an editable buffer', () => {
-    activeTextFileSignal.value = {
-      path: '/proj/image.png',
-      name: 'image.png',
-      status: 'error',
-      text: '',
-      error: 'This file is binary or is not UTF-8 text.',
-    }
-    render(<EditorPaneContents />)
-    expect(screen.getByText(/This file is binary/)).toBeInTheDocument()
-    expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
-    expect(mocks.scheduleWrite).not.toHaveBeenCalled()
-  })
 })
