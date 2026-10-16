@@ -3,10 +3,7 @@ import { assertParse, recast } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
-import {
-  namedViewCameraSummary,
-  prepareNamedViewEditCommand,
-} from '@src/lib/kclNamedViewEdit'
+import { prepareNamedViewEditCommand } from '@src/lib/kclNamedViewEdit'
 import type RustContext from '@src/lib/rustContext'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
@@ -210,9 +207,11 @@ view001 = view::named(
     expect(updatedCode).toContain('except = exceptions')
     await enginelessExecutor(result.modifiedAst, rustContext)
   })
-})
-describe('small named-view edits', () => {
-  async function subject(code: string) {
+
+  it('keeps a shared directed camera when editing a view', async () => {
+    const code = `${settings}
+camera001 = view::directed([0, -1, 0], distance = 80mm)
+view001 = view::named("Inspection view", camera = camera001, baseline = view::Visibility::Show)`
     const ast = assertParse(code, instance)
     const execState = await enginelessExecutor(ast, rustContext)
     const artifact = [...execState.artifactGraph.values()].find(
@@ -221,33 +220,35 @@ describe('small named-view edits', () => {
     if (!artifact || artifact.type !== 'namedView') {
       throw new Error('Expected a named view artifact')
     }
-    return { ast, artifact }
-  }
 
-  it.each([
-    {
-      camera:
-        'view::oriented(view::Orientation::Front, distance = 200mm, projection = view::Projection::Perspective)',
-      summary: 'Front 200mm Perspective',
-    },
-    {
-      camera: 'view::oriented(view::Orientation::Top)',
-      summary: 'Top',
-    },
-    {
-      camera:
-        'view::directed([0, -1, 0], up = [0, 0, 1], target = [1mm, 2mm, 3mm], distance = 80mm)',
-      summary: 'Direction [0, -1, 0] Up [0, 0, 1] Target [1mm, 2mm, 3mm] 80mm',
-    },
-  ])(
-    'summarizes only camera arguments present in source: $summary',
-    async ({ camera, summary }) => {
-      const code = `@settings(kclVersion = 3.0)
-view001 = view::named("Inspection view", camera = ${camera}, baseline = view::Visibility::Show)`
-      const { ast, artifact } = await subject(code)
-      expect(
-        namedViewCameraSummary({ artifact, ast, code, wasmInstance: instance })
-      ).toBe(summary)
+    const event = await prepareNamedViewEditCommand({
+      artifact,
+      artifactGraph: execState.artifactGraph,
+      ast,
+      code,
+      rustContext,
+    })
+    if (err(event)) throw event
+    if (event.type !== 'Find and select command') {
+      throw new Error(`Expected an edit command, got ${event.type}`)
     }
-  )
+    expect(event.data.argDefaultValues).toMatchObject({
+      orientation: undefined,
+      projection: undefined,
+    })
+
+    const result = addNamedView({
+      ast,
+      artifactGraph: execState.artifactGraph,
+      ...event.data.argDefaultValues,
+      name: 'Renamed view',
+      baseline: 'Hide',
+      wasmInstance: instance,
+    })
+    if (err(result)) throw result
+    expect(recast(result.modifiedAst, instance)).toContain(
+      'view::named("Renamed view", camera = camera001, baseline = view::Visibility::Hide)'
+    )
+    await enginelessExecutor(result.modifiedAst, rustContext)
+  })
 })

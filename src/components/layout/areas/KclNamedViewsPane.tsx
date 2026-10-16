@@ -22,19 +22,14 @@ import {
   activeViewSignal,
   isSameView,
   isSketchSessionOpen,
-  lockedNamedViewKeysSignal,
   moduleKeyOf,
-  namedViewSessionKey,
 } from '@src/lib/kclNamedViewActivation'
-import {
-  namedViewCameraSummary,
-  prepareNamedViewEditCommand,
-} from '@src/lib/kclNamedViewEdit'
+import { prepareNamedViewEditCommand } from '@src/lib/kclNamedViewEdit'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { isErr, reportRejection } from '@src/lib/trap'
 import { getKclDefaultViewName } from '@src/lib/wasm_lib_wrapper'
 import type { RefObject } from 'react'
-import { use, useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 
 export type ViewRow = {
@@ -42,56 +37,9 @@ export type ViewRow = {
   key: string
   /** What the user reads. */
   label: string
-  /** Compact camera summary shown beside the name. */
-  detail?: string
   /** What `activeViewSignal` holds when this row is active. */
   identity: ActiveView | null
   target: ActivationTarget
-}
-
-export type ViewSelection = {
-  selected: Set<string>
-  anchorIndex: number
-}
-
-export function nextViewSelection({
-  selected,
-  rowKey,
-  rowIndex,
-  anchorIndex,
-  rowKeys,
-  shiftKey,
-  toggleKey,
-}: {
-  selected: ReadonlySet<string>
-  rowKey: string
-  rowIndex: number
-  anchorIndex: number | null
-  rowKeys: string[]
-  shiftKey: boolean
-  toggleKey: boolean
-}): ViewSelection {
-  if (shiftKey) {
-    const start = Math.min(anchorIndex ?? rowIndex, rowIndex)
-    const end = Math.max(anchorIndex ?? rowIndex, rowIndex)
-    const range = rowKeys.slice(start, end + 1)
-    return {
-      selected: toggleKey ? new Set([...selected, ...range]) : new Set(range),
-      anchorIndex: anchorIndex ?? rowIndex,
-    }
-  }
-
-  if (toggleKey) {
-    const next = new Set(selected)
-    if (next.has(rowKey)) {
-      next.delete(rowKey)
-    } else {
-      next.add(rowKey)
-    }
-    return { selected: next, anchorIndex: rowIndex }
-  }
-
-  return { selected: new Set([rowKey]), anchorIndex: rowIndex }
 }
 
 export function canManageNamedView(view: KclNamedView): boolean {
@@ -113,10 +61,7 @@ function moduleName(path: ModulePath | undefined): string | undefined {
  * A display name two modules both declare is prefixed with the declaring
  * module, as `bracket::Front`. Unique names are left bare.
  */
-export function viewRows(
-  views: KclNamedView[],
-  detailForView: (view: KclNamedView) => string | undefined = () => undefined
-): ViewRow[] {
+export function viewRows(views: KclNamedView[]): ViewRow[] {
   const nameCounts = new Map<string, number>()
   for (const view of views) {
     const name = view.artifact.name
@@ -131,7 +76,6 @@ export function viewRows(
     return {
       key: view.artifact.id,
       label: collides && module ? `${module}::${name}` : name,
-      detail: detailForView(view),
       identity: { name, moduleKey: moduleKeyOf(view.modulePath) },
       target: { kind: 'declared', view },
     }
@@ -156,9 +100,7 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
     false
   )
   const { kclManager } = useSingletons()
-  const wasmInstance = use(kclManager.wasmInstancePromise)
-  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set())
-  const [selectionAnchor, setSelectionAnchor] = useState<number | null>(null)
+  const [selectedKey, setSelectedKey] = useState<string>()
   const [isChangingSource, setIsChangingSource] = useState(false)
   const execState = kclManager.execStateSignal.value
   const cannotReachEngine = useReliesOnEngine(
@@ -171,30 +113,9 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
     artifactGraph: execState.artifactGraph,
     filenames: execState.filenames,
   })
-  const rows = viewRows(views, (view) =>
-    canManageNamedView(view)
-      ? namedViewCameraSummary({
-          artifact: view.artifact,
-          ast: kclManager.ast,
-          code: kclManager.code,
-          wasmInstance,
-        })
-      : undefined
-  )
-  const rowKeys = rows.map((row) => row.key)
-  const rowKeySignature = rowKeys.join('\0')
+  const rows = viewRows(views)
   const active = activeViewSignal.value
-  const lockedKeys = lockedNamedViewKeysSignal.value
-  const projectPath = kclManager.systemDeps.projectPath.value
   const actionsDisabled = cannotReachEngine || inSketchMode || isChangingSource
-
-  useEffect(() => {
-    const liveKeys = new Set(rowKeySignature.split('\0'))
-    setSelectedKeys((current) => {
-      const next = new Set([...current].filter((key) => liveKeys.has(key)))
-      return next.size === current.size ? current : next
-    })
-  }, [rowKeySignature])
 
   const editView = (view: KclNamedView) => {
     const ast = kclManager.ast
@@ -236,55 +157,33 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
       })
   }
 
-  const removeViews = async (views: KclNamedView[]) => {
-    if (views.length === 0) return
-
+  const removeView = async (view: KclNamedView) => {
+    const artifact = kclManager.execState.artifactGraph.get(view.artifact.id)
+    if (artifact?.type !== 'namedView') {
+      toast.error(`Could not find “${view.artifact.name}”.`)
+      return
+    }
     setIsChangingSource(true)
     try {
-      for (const requestedView of views) {
-        const currentView = listNamedViews({
-          artifactGraph: kclManager.execState.artifactGraph,
-          filenames: kclManager.execState.filenames,
-        }).find(
-          (candidate) =>
-            candidate.moduleId === requestedView.moduleId &&
-            candidate.artifact.name === requestedView.artifact.name
-        )
-        const artifact = currentView
-          ? kclManager.execState.artifactGraph.get(currentView.artifact.id)
-          : undefined
-        if (artifact?.type !== 'namedView') {
-          toast.error(`Could not find “${requestedView.artifact.name}”.`)
-          return
-        }
-
-        await sendDeleteCommand({
-          artifact,
-          targetSourceRange: artifact.codeRef.range,
-          systemDeps: {
-            kclManager,
-            rustContext: kclManager.rustContext,
-            sceneEntitiesManager: kclManager.sceneEntitiesManager,
-          },
-        })
-      }
+      await sendDeleteCommand({
+        artifact,
+        targetSourceRange: artifact.codeRef.range,
+        systemDeps: {
+          kclManager,
+          rustContext: kclManager.rustContext,
+          sceneEntitiesManager: kclManager.sceneEntitiesManager,
+        },
+      })
     } catch (reason) {
       toast.error(
         reason instanceof Error
           ? reason.message
-          : 'Could not remove the selected named views.'
+          : `Could not remove “${view.artifact.name}”.`
       )
     } finally {
       setIsChangingSource(false)
     }
   }
-
-  const selectedViews = views.filter(
-    (view) =>
-      selectedKeys.has(view.artifact.id) &&
-      canManageNamedView(view) &&
-      !lockedKeys.has(namedViewSessionKey(projectPath, view))
-  )
 
   return (
     <LayoutPanel
@@ -298,27 +197,18 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
         title={props.layout.label}
         Menu={
           canManageViews ? (
-            <div className="flex items-center gap-1">
-              <PaneIconButton
-                icon="plus"
-                label="Create named view"
-                testId="named-view-create"
-                disabled={actionsDisabled}
-                onClick={() => {
-                  app.commands.actor.send({
-                    type: 'Find and select command',
-                    data: { name: 'Named View', groupId: 'modeling' },
-                  })
-                }}
-              />
-              <PaneIconButton
-                icon="trash"
-                label="Remove selected named views"
-                testId="named-view-remove-selected"
-                disabled={actionsDisabled || selectedViews.length === 0}
-                onClick={() => void removeViews(selectedViews)}
-              />
-            </div>
+            <PaneIconButton
+              icon="plus"
+              label="Create named view"
+              testId="named-view-create"
+              disabled={actionsDisabled}
+              onClick={() => {
+                app.commands.actor.send({
+                  type: 'Find and select command',
+                  data: { name: 'Named View', groupId: 'modeling' },
+                })
+              }}
+            />
           ) : undefined
         }
         onClose={props.onClose}
@@ -333,25 +223,7 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                 ? row.target.view
                 : undefined
             const isActive = isSameView(row.identity, active)
-            const isSelected = selectedKeys.has(row.key)
-            const lockKey = manageableView
-              ? namedViewSessionKey(projectPath, manageableView)
-              : undefined
-            const isLocked = lockKey ? lockedKeys.has(lockKey) : false
-            const rowActionsDisabled = actionsDisabled || isLocked
-            const selectRow = (shiftKey: boolean, toggleKey: boolean) => {
-              const selection = nextViewSelection({
-                selected: selectedKeys,
-                rowKey: row.key,
-                rowIndex: index,
-                anchorIndex: selectionAnchor,
-                rowKeys,
-                shiftKey,
-                toggleKey,
-              })
-              setSelectedKeys(selection.selected)
-              setSelectionAnchor(selection.anchorIndex)
-            }
+            const isSelected = selectedKey === row.key
 
             return (
               <li
@@ -392,11 +264,9 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                   type="button"
                   className="reset flex min-w-0 flex-1 items-center gap-2 self-stretch text-left !text-xs"
                   aria-pressed={isSelected}
-                  onClick={(event) => {
-                    selectRow(event.shiftKey, event.metaKey || event.ctrlKey)
-                  }}
+                  onClick={() => setSelectedKey(row.key)}
                   onDoubleClick={(event) => {
-                    if (!manageableView || rowActionsDisabled) return
+                    if (!manageableView || actionsDisabled) return
                     event.preventDefault()
                     editView(manageableView)
                   }}
@@ -407,36 +277,13 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                   >
                     {row.label}
                   </span>
-                  {row.detail ? (
-                    <span className="min-w-0 truncate text-xs text-chalkboard-60 dark:text-chalkboard-50">
-                      <span aria-hidden className="mr-2">
-                        |
-                      </span>
-                      {row.detail}
-                    </span>
-                  ) : null}
                 </button>
                 {manageableView ? (
-                  <div className="flex shrink-0 items-center gap-0.5">
-                    <PaneIconButton
-                      icon={isLocked ? 'lockClosed' : 'lockOpen'}
-                      label={isLocked ? 'Unlock named view' : 'Lock named view'}
-                      testId="named-view-lock"
-                      disabled={actionsDisabled}
-                      onClick={() => {
-                        if (!lockKey) return
-                        const next = new Set(lockedKeys)
-                        if (next.has(lockKey)) next.delete(lockKey)
-                        else next.add(lockKey)
-                        lockedNamedViewKeysSignal.value = next
-                      }}
-                    />
-                    <NamedViewRowMenu
-                      disabled={rowActionsDisabled}
-                      onEdit={() => editView(manageableView)}
-                      onRemove={() => void removeViews([manageableView])}
-                    />
-                  </div>
+                  <NamedViewRowMenu
+                    disabled={actionsDisabled}
+                    onEdit={() => editView(manageableView)}
+                    onRemove={() => void removeView(manageableView)}
+                  />
                 ) : row.target.kind === 'declared' &&
                   !canManageNamedView(row.target.view) ? (
                   <CustomIcon
@@ -485,7 +332,7 @@ function PaneIconButton({
   onClick,
 }: {
   buttonRef?: RefObject<HTMLButtonElement | null>
-  icon: 'plus' | 'trash' | 'lockClosed' | 'lockOpen' | 'three-dots'
+  icon: 'plus' | 'three-dots'
   label: string
   testId: string
   disabled: boolean
