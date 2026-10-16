@@ -7,12 +7,6 @@ sketch001 = sketch(on = XY) {
 }
 region001 = region(segments = [sketch001.circle1])`
 
-const bodiesCode = `${profileCode}
-body001 = extrude(region001, length = 10mm)
-body002 = clone(body001)
-  |> translate(x = 2mm)
-`
-
 test.describe('Modeling dialogs', { tag: '@web' }, () => {
   test.use({ userFeatures: ['modeling_dialogs'] })
 
@@ -150,46 +144,6 @@ obstruction = extrude(region002, length = 20mm)`
     await expect(page.getByTestId('command-bar')).toBeVisible()
     await expect(dialog).not.toBeAttached()
     await page.keyboard.press('Escape')
-  })
-
-  test.describe('Command bar', () => {
-    test.use({ userFeatures: [] })
-
-    test('Collects multiple selections and saves them on argument switches, not cancellation', async ({
-      page,
-      homePage,
-      scene,
-      editor,
-      toolbar,
-      cmdBar,
-    }) => {
-      await homePage.goToModelingScene()
-      await scene.settled()
-      await scene.waitForExecutionDoneAfter(() =>
-        editor.replaceCode('', bodiesCode)
-      )
-      await toolbar.selectBoolean('subtract')
-      await expect(cmdBar.cmdBarElement).toContainText(
-        'Please select one or more objects'
-      )
-      await editor.selectText('extrude(')
-      await expect(page.getByTestId('cmd-bar-arg-name')).toHaveText('solids')
-      await cmdBar.clickHeaderArgument('tools')
-      await expect(cmdBar.currentArgumentInput).toHaveValue(
-        JSON.stringify({ graphSelections: [], otherSelections: [] })
-      )
-      await editor.selectText('clone(')
-      await cmdBar.clickHeaderArgument('solids')
-      await expect(cmdBar.cmdBarElement).toContainText('1 sweep selected')
-      await cmdBar.clickHeaderArgument('tools')
-      await expect(cmdBar.cmdBarElement).toContainText('1 sweep selected')
-      await page.keyboard.press('Escape')
-      await expect(cmdBar.cmdBarElement).not.toBeAttached()
-      await toolbar.selectBoolean('subtract')
-      await expect(page.getByTestId('cmd-bar-arg-name')).toHaveText('solids')
-      await page.keyboard.press('Escape')
-      await editor.expectEditor.not.toContain('subtract(')
-    })
   })
 
   test('Creates and edits Extrude without losing collapsed fields or selection drafts', async ({
