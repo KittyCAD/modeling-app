@@ -923,7 +923,7 @@ extrude001 = extrude(region001, length = 5mm)`)
       )
       expect(createSurface().names).toEqual([
         'getCommonEdge',
-        'Name',
+        'edgeId',
         'getCommonEdge',
       ])
       await clickEdge(0)
@@ -941,7 +941,7 @@ extrude001 = extrude(region001, length = 5mm)`)
         edges[1].engineEntityId,
       ])
       const { newCode, names } = createSurface()
-      expect(names).toEqual(['getCommonEdge', 'getCommonEdge', 'Name'])
+      expect(names).toEqual(['getCommonEdge', 'getCommonEdge', 'edgeId'])
       await getAstAndArtifactGraph(
         newCode,
         instanceInThisFile,
@@ -1137,7 +1137,7 @@ part = subtract(extrude001, tools = extrude002)`
     ).toBeUndefined()
   })
 
-  it('creates an edgeId variable for an unresolved engine primitive edge', async () => {
+  it('inlines an edgeId for an unresolved engine primitive edge', async () => {
     const { ast, artifactGraph } = await setup(`${circle}
 extrude001 = extrude(sketch001.circle1, length = 5mm, bodyType = SURFACE)`)
     const surface = [...artifactGraph.values()].find(
@@ -1163,8 +1163,7 @@ extrude001 = extrude(sketch001.circle1, length = 5mm, bodyType = SURFACE)`)
     })
     if (err(result)) throw result
     expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
-      `edge001 = edgeId(extrude001, index = 0)
-surface001 = planarSurface([edge001])`
+      'surface001 = planarSurface([edgeId(extrude001, index = 0)])'
     )
     expect(
       await mockExecAstAndReportErrors(

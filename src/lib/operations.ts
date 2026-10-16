@@ -3187,7 +3187,6 @@ const prepareToEditSplit: PrepareToEditCallback = async ({
 
 const prepareToEditPlanarSurface: PrepareToEditCallback = async ({
   operation,
-  artifactGraph,
   code,
   rustContext,
 }) => {
@@ -3195,9 +3194,6 @@ const prepareToEditPlanarSurface: PrepareToEditCallback = async ({
     return { reason: 'Wrong operation type' }
   }
 
-  // Curve selections are hidden in edit mode, and the codemod preserves the
-  // original expression, including its edge order and any inline selectors.
-  const curves = retrieveUnlabeledSelectionsForEdit(operation, artifactGraph)
   const tolerance = await extractOptionalKclArgument(
     code,
     operation,
@@ -3209,7 +3205,7 @@ const prepareToEditPlanarSurface: PrepareToEditCallback = async ({
   }
 
   const argDefaultValues: ModelingCommandSchema['Planar Surface'] = {
-    curves,
+    curves: { graphSelections: [], otherSelections: [] },
     tolerance,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }

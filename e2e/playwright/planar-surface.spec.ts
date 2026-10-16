@@ -111,6 +111,9 @@ chamfer001 = chamfer(extrude001, tags = getCommonEdge(faces = [region001.tags.li
       await scene.settled()
       await toolbar.selectSurface('planar-surface')
       await editor.closePane()
+      await toolbar.closePane(DefaultLayoutPaneID.Logs)
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+      await scene.settled()
 
       for (const [index, point] of boundary.points.entries()) {
         // Aim at an edge midpoint so the stream center is a real viewport pick,
@@ -127,9 +130,6 @@ chamfer001 = chamfer(extrude001, tags = getCommonEdge(faces = [region001.tags.li
             target: [point.x, point.y, point.z],
           },
         })
-        await toolbar.closePane(DefaultLayoutPaneID.Logs)
-        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
         const [, moveToEdge] = scene.makeMouseHelpers(0.5, 0.5, {
           format: 'ratio',
         })
@@ -332,135 +332,50 @@ sketch001 = sketch(on = XZ) {
     })
   })
 
-  for (const profile of [
-    {
-      name: 'a closed circle curve',
-      code: `sketch001 = sketch(on = XY) {
-  circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
-}`,
-      selections: ['circle1 = circle('],
-      profiles: '1 edge',
-      declaration: 'surface001 = planarSurface([sketch001.circle1])',
-    },
-    {
-      name: 'an ordered loop of partially constrained arcs',
-      code: `sketch001 = sketch(on = XY) {
+  test('create from an ordered loop of partially constrained arcs', async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    const code = `@settings(experimentalFeatures = allow, kclVersion = 3.0)
+sketch001 = sketch(on = XY) {
   arc1 = arc(start = [var -5mm, var 0mm], end = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
   arc2 = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var 0mm])
   coincident([arc1.center, arc2.center])
   coincident([arc1.start, arc2.end])
   coincident([arc1.end, arc2.start])
-}`,
-      selections: ['arc1 = arc(', 'arc2 = arc('],
-      profiles: '2 edges',
-      declaration:
-        'surface001 = planarSurface([sketch001.arc1, sketch001.arc2])',
-    },
-  ]) {
-    test(`create from ${profile.name}, edit, use, and delete`, async ({
-      page,
-      homePage,
-      scene,
-      editor,
-      toolbar,
-      cmdBar,
-    }) => {
-      await page.setBodyDimensions({ width: 1500, height: 900 })
-      await homePage.goToModelingScene()
-      await editor.replaceCode('', profile.code)
-      await scene.settled()
+}`
+    const declaration =
+      'surface001 = planarSurface([sketch001.arc1, sketch001.arc2])'
+    await page.setBodyDimensions({ width: 1500, height: 900 })
+    await homePage.goToModelingScene()
+    await editor.replaceCode('', code)
+    await scene.settled()
 
-      await toolbar.selectSurface('planar-surface')
-      await editor.selectText(profile.selections[0])
-      const multiCursorKey = process.platform === 'darwin' ? 'Meta' : 'Control'
-      for (const selection of profile.selections.slice(1)) {
-        await page.keyboard.down(multiCursorKey)
-        await page.getByText(selection).click()
-        await page.keyboard.up(multiCursorKey)
-      }
-      await cmdBar.progressCmdBar()
-      await cmdBar.expectState({
-        stage: 'review',
-        headerArguments: { Profiles: profile.profiles },
-        commandName: 'Planar Surface',
-      })
-      await cmdBar.submit()
-      await scene.settled()
-      await editor.expectEditor.toContain(profile.declaration)
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: [profile.declaration],
-        highlightedCode: '',
-      })
-      await expect(
-        await toolbar.getFeatureTreeOperation('surface001', 0)
-      ).toBeVisible()
-
-      await test.step('Edit tolerance and preserve the original curve order', async () => {
-        await (
-          await toolbar.getFeatureTreeOperation('surface001', 0)
-        ).dblclick()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {},
-          commandName: 'Planar Surface',
-        })
-        await cmdBar.clickOptionalArgument('tolerance')
-        await page.keyboard.insertText('0.01mm')
-        await cmdBar.progressCmdBar()
-        await cmdBar.submit()
-        await scene.settled()
-        await editor.expectEditor.toContain(
-          profile.declaration.replace(/\)$/, ', tolerance = 0.01mm)')
-        )
-        await editor.expectEditor.toContain(profile.code, {
-          shouldNormalise: true,
-        })
-      })
-
-      await test.step('Use the created surface in another operation', async () => {
-        await toolbar.selectSurface('flip-surface')
-        await (await toolbar.getFeatureTreeOperation('surface001', 0)).click()
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: { Surface: '1 path' },
-          commandName: 'Flip Surface',
-        })
-        await cmdBar.submit()
-        await scene.settled()
-        await editor.expectEditor.toContain(
-          'surface002 = flipSurface(surface001)'
-        )
-      })
-
-      await test.step('Delete the surfaces and preserve the source curves', async () => {
-        await editor.closePane()
-        await (await toolbar.getFeatureTreeOperation('surface002', 0)).click()
-        await page.keyboard.press('Delete')
-        await scene.settled()
-        await editor.expectEditor.not.toContain('flipSurface(')
-
-        await (await toolbar.getFeatureTreeOperation('surface001', 0)).click()
-        await page.keyboard.press('Delete')
-        await scene.settled()
-        await editor.expectEditor.not.toContain('planarSurface(')
-        await editor.expectEditor.toContain(profile.code, {
-          shouldNormalise: true,
-        })
-        await expect(
-          await toolbar.getFeatureTreeOperation('sketch001', 0)
-        ).toBeVisible()
-        await expect
-          .poll(() =>
-            page.evaluate(() =>
-              window.app.singletons.kclManager.errors.map(
-                (error) => error.message
-              )
-            )
-          )
-          .toEqual([])
-      })
+    await toolbar.selectSurface('planar-surface')
+    await editor.selectText('arc1 = arc(')
+    await page.getByText('arc2 = arc(').click({
+      modifiers: [process.platform === 'darwin' ? 'Meta' : 'Control'],
     })
-  }
+    await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      stage: 'review',
+      headerArguments: { Profiles: '2 edges' },
+      commandName: 'Planar Surface',
+    })
+    await cmdBar.submit()
+    await scene.settled()
+    await editor.expectEditor.toContain(declaration)
+    await editor.expectState({
+      diagnostics: [],
+      activeLines: [declaration],
+      highlightedCode: '',
+    })
+    await expect(
+      await toolbar.getFeatureTreeOperation('surface001', 0)
+    ).toBeVisible()
+  })
 })

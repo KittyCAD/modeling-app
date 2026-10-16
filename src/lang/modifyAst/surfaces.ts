@@ -18,7 +18,6 @@ import { addHideCallsForRegionSketches } from '@src/lang/modifyAst/sweeps'
 import {
   createEdgeRefObjectExpression,
   entityReferenceToEdgeRefPayload,
-  insertPrimitiveEdgeVariablesAndOffsetPathToNode,
 } from '@src/lang/modifyAst/edges'
 import {
   modifyAstWithTagsForSelection,
@@ -424,60 +423,49 @@ export function addPlanarSurface({
     }
 
     for (const primitiveEdge of primitiveEdges) {
-      const bodySelection =
-        primitiveEdge.parentEntityId &&
-        getBodySelectionFromPrimitiveParentEntityId(
-          primitiveEdge.parentEntityId,
+      let bodySelection = primitiveEdge.parentEntityId
+        ? getBodySelectionFromPrimitiveParentEntityId(
+            primitiveEdge.parentEntityId,
+            artifactGraph
+          )
+        : null
+      if (!bodySelection?.artifact || !bodySelection.codeRef)
+        return new Error('Could not resolve the selected edge body in code.')
+      if (bodySelection.artifact.type === 'sweep') {
+        const canonicalBody = getMergedSweepBodyArtifact(
+          bodySelection.artifact,
           artifactGraph
         )
-      if (bodySelection) {
-        const body = getVariableExprsFromSelection(
-          { graphSelections: [bodySelection], otherSelections: [] },
-          artifactGraph,
-          modifiedAst,
-          wasmInstance,
-          undefined,
-          {
-            lastChildLookup: true,
-            artifactTypeFilter: ['compositeSolid', 'sweep'],
-          }
-        )
-        if (isErr(body)) return body
-        if (
-          body.exprs.length === 1 &&
-          body.exprs[0].type === 'PipeSubstitution' &&
-          body.pathIfPipe
-        ) {
-          const pipeResult = recordCurvePipe(body.pathIfPipe)
-          if (isErr(pipeResult)) return pipeResult
-          // Keep the reference inside the anonymous body's pipe, where % is
-          // available, instead of declaring an edgeId variable outside it.
-          exprs.push(
-            createCallExpressionStdLibKw('edgeId', body.exprs[0], [
-              createLabeledArg(
-                'index',
-                createLiteral(primitiveEdge.primitiveIndex, wasmInstance)
-              ),
-            ])
-          )
-          continue
+        if (isErr(canonicalBody)) return canonicalBody
+        bodySelection = {
+          artifact: canonicalBody,
+          codeRef: canonicalBody.codeRef,
         }
       }
-      const primitiveResult = insertPrimitiveEdgeVariablesAndOffsetPathToNode({
-        primitiveEdgeSelections: [primitiveEdge],
-        bodies: new Map(),
-        modifiedAst,
+      const body = getVariableExprsFromSelection(
+        { graphSelections: [bodySelection], otherSelections: [] },
         artifactGraph,
+        modifiedAst,
         wasmInstance,
-      })
-      if (isErr(primitiveResult)) return primitiveResult
-      for (const { tagsExpr } of primitiveResult.bodies.values()) {
-        exprs.push(
-          ...(tagsExpr.type === 'ArrayExpression'
-            ? tagsExpr.elements
-            : [tagsExpr])
-        )
-      }
+        undefined,
+        {
+          lastChildLookup: bodySelection.artifact?.type !== 'sweep',
+          artifactTypeFilter: ['compositeSolid', 'sweep'],
+        }
+      )
+      if (isErr(body)) return body
+      if (body.exprs.length !== 1)
+        return new Error('Could not resolve the selected edge body in code.')
+      const pipeResult = recordCurvePipe(body.pathIfPipe)
+      if (isErr(pipeResult)) return pipeResult
+      exprs.push(
+        createCallExpressionStdLibKw('edgeId', body.exprs[0], [
+          createLabeledArg(
+            'index',
+            createLiteral(primitiveEdge.primitiveIndex, wasmInstance)
+          ),
+        ])
+      )
     }
 
     if (engineRegions.length > 0) {
