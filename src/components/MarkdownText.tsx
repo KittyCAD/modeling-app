@@ -1,9 +1,4 @@
-import {
-  MARKED_OPTIONS,
-  SafeRenderer,
-  attachSafeLinkHandler,
-} from '@src/lib/markdown'
-import { Marked } from '@ts-stack/markdown'
+import { attachSafeLinkHandler, renderSafeMarkdown } from '@src/lib/markdown'
 import { useEffect, useRef } from 'react'
 
 export type MarkdownTextProps = {
@@ -24,10 +19,7 @@ export function MarkdownText({ text, className }: MarkdownTextProps) {
       ref={markdownRef}
       className={`parsed-markdown inline-block ${className ?? ''}`}
       dangerouslySetInnerHTML={{
-        __html: Marked.parse(text, {
-          renderer: new SafeRenderer(MARKED_OPTIONS),
-          ...MARKED_OPTIONS,
-        }),
+        __html: renderSafeMarkdown(text),
       }}
     ></span>
   )

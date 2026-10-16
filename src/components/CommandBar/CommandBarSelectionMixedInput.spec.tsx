@@ -4,6 +4,7 @@ import { KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
 import { AppContext } from '@src/lib/boot'
 import type { CommandArgument } from '@src/lib/commandTypes'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import { act, render, waitFor } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -73,13 +74,16 @@ describe('CommandBarSelectionMixedInput', () => {
       const app = App.fromDefaults()
       await app.wasmPromise
       const executingEditor = new KclManager('some-file', '', {
+        machineManager: app.machineManager,
+        project: signal(undefined),
+        fileOperations: app.fileOperations,
+        textFileIO: app.registry.get(projectSession).textFileIO,
         commandBar: app.commands.actor,
         settings: app.settings.actor,
         wasmInstancePromise: app.wasmPromise,
         engineCommandManager: app.engineCommandManager,
         rustContext: app.rustContext,
         userFeatures: app.userFeatures,
-        projectPath: signal('some-project'),
       })
       const mockModelingSend = vi.spyOn(
         executingEditor.engineCommandManager,
@@ -109,13 +113,16 @@ describe('CommandBarSelectionMixedInput', () => {
       const app = App.fromDefaults()
       await app.wasmPromise
       const executingEditor = new KclManager('some-file', '', {
+        machineManager: app.machineManager,
+        project: signal(undefined),
+        fileOperations: app.fileOperations,
+        textFileIO: app.registry.get(projectSession).textFileIO,
         commandBar: app.commands.actor,
         settings: app.settings.actor,
         wasmInstancePromise: app.wasmPromise,
         engineCommandManager: app.engineCommandManager,
         rustContext: app.rustContext,
         userFeatures: app.userFeatures,
-        projectPath: signal('some-project'),
       })
       const mockModelingSend = vi.spyOn(
         executingEditor.engineCommandManager,
@@ -142,13 +149,16 @@ describe('CommandBarSelectionMixedInput', () => {
       const app = App.fromDefaults()
       await app.wasmPromise
       const executingEditor = new KclManager('some-file', '', {
+        machineManager: app.machineManager,
+        project: signal(undefined),
+        fileOperations: app.fileOperations,
+        textFileIO: app.registry.get(projectSession).textFileIO,
         commandBar: app.commands.actor,
         settings: app.settings.actor,
         wasmInstancePromise: app.wasmPromise,
         engineCommandManager: app.engineCommandManager,
         rustContext: app.rustContext,
         userFeatures: app.userFeatures,
-        projectPath: signal('some-project'),
       })
       const mockModelingSend = vi.spyOn(
         executingEditor.engineCommandManager,
@@ -175,13 +185,16 @@ describe('CommandBarSelectionMixedInput', () => {
       const app = App.fromDefaults()
       await app.wasmPromise
       const executingEditor = new KclManager('some-file', '', {
+        machineManager: app.machineManager,
+        project: signal(undefined),
+        fileOperations: app.fileOperations,
+        textFileIO: app.registry.get(projectSession).textFileIO,
         commandBar: app.commands.actor,
         settings: app.settings.actor,
         wasmInstancePromise: app.wasmPromise,
         engineCommandManager: app.engineCommandManager,
         rustContext: app.rustContext,
         userFeatures: app.userFeatures,
-        projectPath: signal('some-project'),
       })
       const mockModelingSend = vi.spyOn(
         executingEditor.engineCommandManager,
@@ -223,13 +236,16 @@ describe('CommandBarSelectionMixedInput', () => {
       const app = App.fromDefaults()
       await app.wasmPromise
       const executingEditor = new KclManager('some-file', '', {
+        machineManager: app.machineManager,
+        project: signal(undefined),
+        fileOperations: app.fileOperations,
+        textFileIO: app.registry.get(projectSession).textFileIO,
         commandBar: app.commands.actor,
         settings: app.settings.actor,
         wasmInstancePromise: app.wasmPromise,
         engineCommandManager: app.engineCommandManager,
         rustContext: app.rustContext,
         userFeatures: app.userFeatures,
-        projectPath: signal('some-project'),
       })
       const mockModelingSend = vi.spyOn(
         executingEditor.engineCommandManager,

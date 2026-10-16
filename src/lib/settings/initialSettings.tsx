@@ -671,6 +671,7 @@ function createCoreSettings() {
     meta: {
       id: new Setting<string>({
         hideOnLevel: 'user',
+        hideOnPlatform: 'both',
         defaultValue: uuidNIL,
         description: 'The unique project identifier.',
         // Never allow the user to change the id, only view it.

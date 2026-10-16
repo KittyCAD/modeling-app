@@ -18,12 +18,12 @@ description: Physical properties zds_extrude_fillet_top_edge.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 28.04731658083426
+    "value": 28.047316555965264
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.008388102632044444
+    "value": 0.008388102556583973
   }
 }

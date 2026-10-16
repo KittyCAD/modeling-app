@@ -10,7 +10,7 @@ import {
   getConstraintToolbarToggleEvent,
   getDefaultRecentToolbarItemIds,
   getSketchSolveToolIconMap,
-  isLegacySketchEditRequest,
+  getToolbarItemDescription,
   isSketchSolveConstraintToolActive,
   isSketchToolbarTransitioning,
   modelingMachineStateToToolbarModeName,
@@ -20,7 +20,9 @@ import {
   type ToolbarDropdown,
   type ToolbarItem,
 } from '@src/lib/toolbar'
+import type { Command } from '@src/lib/commandTypes'
 import type { modelingMachine } from '@src/machines/modelingMachine'
+import { TOOLBAR_COMMAND_IDS } from '@src/registry/extensions/commands/toolbarCommandIds'
 import { defaultKeymap } from '@src/registry/extensions/keymap/defaultKeymap'
 
 const stubModelingState = (
@@ -93,6 +95,31 @@ function getToolbarItems(
 }
 
 describe('toolbar state helpers', () => {
+  test('uses registered command descriptions with toolbar text as a fallback', () => {
+    const item = {
+      command: 'test:Available',
+      description: 'Toolbar fallback',
+    }
+    const command: Command = {
+      groupId: 'test',
+      name: 'Available',
+      description: 'Command description',
+      needsReview: false,
+      onSubmit: vi.fn(),
+      scopes: ['base'],
+    }
+
+    expect(getToolbarItemDescription(item, [command])).toBe(command.description)
+    expect(
+      getToolbarItemDescription({ command: item.command }, [command])
+    ).toBe(command.description)
+    expect(getToolbarItemDescription({ command: item.command }, [])).toBe('')
+    expect(getToolbarItemDescription(item, [])).toBe(item.description)
+    expect(
+      getToolbarItemDescription(item, [{ ...command, description: '' }])
+    ).toBe('')
+  })
+
   test('keeps the sketch solve toolbar visible while animating into sketch solve', () => {
     expect(
       modelingMachineStateToToolbarModeName(
@@ -371,106 +398,6 @@ describe('toolbar state helpers', () => {
     })
   })
 
-  test('does not enter legacy sketch edit without the feature flag', () => {
-    const modelingSend = vi.fn()
-    const sketchItem = findModelingToolbarItem('sketch')
-    const modelingState = {
-      context: {
-        kclManager: { artifactGraph: new Map() },
-        selectionRanges: {
-          graphSelections: [],
-          otherSelections: [],
-        },
-      },
-    } as unknown as StateFrom<typeof modelingMachine>
-    const props = {
-      modelingSend,
-      modelingState,
-      sketchPathId: 'path-001',
-      editorHasFocus: true,
-      isActive: false,
-      keepSelection: false,
-    }
-
-    expect(isLegacySketchEditRequest(props)).toBe(true)
-    expect(sketchItem.disabled?.(modelingState, {} as never, props)).toBe(true)
-    sketchItem.onClick(props)
-    expect(modelingSend).not.toHaveBeenCalled()
-  })
-
-  test('enters legacy sketch edit when the feature flag is present', () => {
-    const modelingSend = vi.fn()
-    const sketchItem = findModelingToolbarItem('sketch', {
-      hasLegacySketchMode: true,
-    })
-    const modelingState = {
-      context: {
-        kclManager: { artifactGraph: new Map() },
-        selectionRanges: {
-          graphSelections: [],
-          otherSelections: [],
-        },
-      },
-    } as unknown as StateFrom<typeof modelingMachine>
-    const props = {
-      modelingSend,
-      modelingState,
-      sketchPathId: 'path-001',
-      editorHasFocus: true,
-      isActive: false,
-      keepSelection: false,
-    }
-
-    expect(sketchItem.disabled?.(modelingState, {} as never, props)).toBe(false)
-    sketchItem.onClick(props)
-    expect(modelingSend).toHaveBeenCalledWith({ type: 'Enter sketch' })
-  })
-
-  test('still edits sketch blocks without the legacy sketch mode flag', () => {
-    const modelingSend = vi.fn()
-    const sketchItem = findModelingToolbarItem('sketch')
-    const sketchBlock = {
-      type: 'sketchBlock' as const,
-      id: 'sketch-block-1',
-      codeRef: {
-        range: [0, 0, 0] as [number, number, number],
-        pathToNode: [['body', 'Program']] as [string, string][],
-        nodePath: { steps: [] },
-      },
-      planeId: 'plane-1',
-      sketchId: 1,
-    }
-    const modelingState = {
-      context: {
-        kclManager: {
-          artifactGraph: new Map([[sketchBlock.id, sketchBlock]]),
-        },
-        selectionRanges: {
-          graphSelections: [
-            {
-              artifact: sketchBlock,
-              codeRef: sketchBlock.codeRef,
-            },
-          ],
-          otherSelections: [],
-        },
-      },
-    } as unknown as StateFrom<typeof modelingMachine>
-    const props = {
-      modelingSend,
-      modelingState,
-      sketchPathId: false as const,
-      editorHasFocus: false,
-      isActive: false,
-      keepSelection: false,
-    }
-
-    expect(isLegacySketchEditRequest(props)).toBe(false)
-    expect(sketchItem.disabled?.(modelingState, {} as never, props)).toBe(false)
-    sketchItem.onClick(props)
-    expect(modelingSend).toHaveBeenCalledWith({ type: 'Enter sketch' })
-  })
-
   test('keeps the sketch-solve constraints dropdown on its default visible items before use', () => {
     const constraintsDropdown = findConstraintsDropdown()
 
@@ -563,31 +490,13 @@ describe('toolbar state helpers', () => {
     ).toEqual(['vertical', 'coincident', 'Tangent'])
   })
 
-  test('has a default keymap binding for every command-backed toolbar item', () => {
-    const toolbarConfig = buildToolbarConfig(
-      {
-        send: () => {},
-      },
-      { showExperimentalFeatures: true }
-    )
+  test('has a default keymap binding for every dedicated toolbar command', () => {
     const defaultKeymapCommands = new Set(
       defaultKeymap.bindings.map((binding) => binding.command)
     )
 
-    const toolbarCommands = Object.values(toolbarConfig).flatMap((mode) =>
-      mode.items.flatMap((item) => {
-        if (item === 'break') {
-          return []
-        }
-
-        if ('array' in item) {
-          return item.array.flatMap((dropdownItem) =>
-            dropdownItem.command ? [dropdownItem.command] : []
-          )
-        }
-
-        return item.command ? [item.command] : []
-      })
+    const toolbarCommands = Object.values(TOOLBAR_COMMAND_IDS).flatMap((mode) =>
+      Object.values(mode)
     )
 
     expect(

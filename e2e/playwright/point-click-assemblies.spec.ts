@@ -242,6 +242,7 @@ test.describe(
             format: 'ratio',
           })
           await clickBracketInScene()
+          await expect(toolbar.selectionStatus).toContainText(/1 (path|face)/)
           return
         } else if (selectionType === 'feature-tree') {
           const op = await toolbar.getFeatureTreeOperation('bracket', 0)

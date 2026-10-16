@@ -18,22 +18,16 @@ import { useTryConnect } from '@src/hooks/network/useTryConnect'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
-import {
-  artifactToEntityRef,
-  findOperationForArtifact,
-} from '@src/lang/queryAst'
+import { findOperationForArtifact } from '@src/lang/queryAst'
 import {
   getArtifactOfTypes,
-  getCodeRefsByArtifactId,
   getSketchBlockForArtifact,
 } from '@src/lang/std/artifactGraph'
 import { getAllOperations } from '@src/lang/wasm'
-import type { EntityReference } from '@src/machines/modelingSharedTypes'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { btnName } from '@src/lib/cameraControls'
 import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import {
-  LEGACY_SKETCH_MODE_FEATURE_FLAG,
   LEGACY_SKETCH_MODE_REMOVED_MESSAGE,
   NUMBER_OF_ENGINE_RETRIES,
 } from '@src/lib/constants'
@@ -75,18 +69,7 @@ interface ConnectionStreamProps {
 }
 
 export const ConnectionStream = (props: ConnectionStreamProps) => {
-  const {
-    settings,
-    project,
-    wasmPromise,
-    commands,
-    userFeatures,
-    fileOperations,
-  } = useApp()
-  const hasLegacySketchMode = userFeatures.useHas(
-    LEGACY_SKETCH_MODE_FEATURE_FLAG,
-    false
-  )
+  const { settings, project, wasmPromise, commands, fileOperations } = useApp()
   const wasmInstance = use(wasmPromise)
   const { kclManager } = useSingletons()
   const engineCommandManager = kclManager.engineCommandManager
@@ -299,41 +282,10 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
             }
             // Anything left here belongs to a KCL 1.0 sketch, since sketch
             // blocks and undeclared regions were handled above.
-            if (!hasLegacySketchMode) {
-              toast.error(LEGACY_SKETCH_MODE_REMOVED_MESSAGE, {
-                duration: 5_000,
-              })
-              return
-            }
-            const artifact = artifactResult
-            // Build entityRef so the machine can resolve the selection (Enter sketch uses selection)
-            const pathIdForSegment =
-              artifact.type === 'segment'
-                ? (artifact as { pathId: string }).pathId
-                : undefined
-            let entityRef: EntityReference | undefined = artifactToEntityRef(
-              artifact.type,
-              entityId,
-              pathIdForSegment
-            )
-            if (!entityRef) {
-              if (artifact.type === 'path') {
-                entityRef = { type: 'solid2d', solid2d_id: String(artifact.id) }
-              }
-            }
-            if (!entityRef) return
-            const codeRef = getCodeRefsByArtifactId(
-              entityId,
-              kclManager.artifactGraph
-            )?.[0]
-            sceneInfra.modelingSend({
-              type: 'Set selection',
-              data: {
-                selectionType: 'singleCodeCursor',
-                selection: { entityRef, codeRef },
-              },
+            toast.error(LEGACY_SKETCH_MODE_REMOVED_MESSAGE, {
+              duration: 5_000,
             })
-            sceneInfra.modelingSend({ type: 'Enter sketch' })
+            return
           })
           .catch((e) => {
             reportRejection(e)
@@ -343,7 +295,6 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       [
         commands.actor,
         engineCommandManager,
-        hasLegacySketchMode,
         isNetworkOkay,
         modelingMachineState.value,
         sceneInfra.camControls.wasDragging,

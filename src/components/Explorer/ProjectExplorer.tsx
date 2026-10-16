@@ -19,7 +19,6 @@ import {
 } from '@src/components/Explorer/utils'
 import { fsArchiveFile, fsMoveFile } from '@src/editor/plugins/fs'
 import { kclErrorsByFilename } from '@src/lang/errors'
-import { importFileExtensions } from '@src/lang/wasmUtils'
 import { useApp, useSingletons } from '@src/lib/boot'
 import type { Command } from '@src/lib/commandTypes'
 import { FILE_EXT } from '@src/lib/constants'
@@ -31,12 +30,10 @@ import {
   desktopSafePathSplit,
   fileNameHasExtension,
   getParentAbsolutePath,
-  isExtensionARelevantExtension,
   joinOSPaths,
   parentPathRelativeToApplicationDirectory,
   parentPathRelativeToProject,
   toArchivePath,
-  toProjectRelativePath,
 } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { reportRejection } from '@src/lib/trap'
@@ -53,6 +50,7 @@ import {
 } from '@src/registry/contracts/keymap'
 import {
   type ProjectExplorerRowContextMenuItem,
+  type ProjectExplorerRowContextMenuItemContext,
   projectExplorerRowContextMenuItemsValueSpec,
 } from '@src/registry/contracts/projectExplorer'
 import { PROJECT_EXPLORER_COMMAND_IDS } from '@src/registry/extensions/keymap/defaultKeymap'
@@ -212,33 +210,6 @@ export const ProjectExplorer = ({
   const rowContextMenuItems = useMemo<ProjectExplorerRowContextMenuItem[]>(
     () => [
       {
-        id: 'import-in-current-file',
-        label: 'Import in current file',
-        dataTestId: 'context-menu-import-in-current-file',
-        isVisible: ({ row }) =>
-          !readOnly &&
-          !!file &&
-          !row.isFolder &&
-          !row.isFake &&
-          row.path !== file.path &&
-          isExtensionARelevantExtension(row.path, [
-            'kcl',
-            ...importFileExtensions(wasmInstance),
-          ]),
-        onSelect: ({ row }) => {
-          commands.send({
-            type: 'Find and select command',
-            data: {
-              name: 'Import',
-              groupId: 'code',
-              argDefaultValues: {
-                path: toProjectRelativePath(project.path, row.path),
-              },
-            },
-          })
-        },
-      },
-      {
         id: 'open-as-text',
         label: 'Open as Text',
         dataTestId: 'context-menu-open-as-text',
@@ -252,16 +223,11 @@ export const ProjectExplorer = ({
       },
       ...extensionRowContextMenuItems,
     ],
-    [
-      commands,
-      extensionRowContextMenuItems,
-      file,
-      onOpenAsText,
-      project.path,
-      readOnly,
-      wasmInstance,
-    ]
+    [extensionRowContextMenuItems, onOpenAsText, readOnly]
   )
+  const rowContextMenuContext = useMemo<
+    Omit<ProjectExplorerRowContextMenuItemContext, 'row'>
+  >(() => ({ project, file, readOnly }), [project, file, readOnly])
   const { kclManager } = useSingletons()
   const isSystemIOIdle = useSelector(systemIOActor, (state) =>
     state.matches(SystemIOMachineStates.idle)
@@ -1675,6 +1641,7 @@ export const ProjectExplorer = ({
             isExternalDragOver={isExternalDragOver}
             highlightedEntry={highlightedEntry}
             rowContextMenuItems={rowContextMenuItems}
+            rowContextMenuContext={rowContextMenuContext}
             onDeleteEnd={() => {
               setIsDeleting(false)
             }}

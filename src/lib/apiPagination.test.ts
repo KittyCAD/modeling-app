@@ -56,6 +56,44 @@ describe('API list compatibility', () => {
     }
   )
 
+  test.each([
+    { name: 'empty initial', firstPage: null, items: [] },
+    { name: 'nonempty initial', firstPage: null, items: [announcement] },
+    {
+      name: 'empty later',
+      firstPage: { items: [announcement], next_page: 'next' },
+      items: [],
+    },
+    {
+      name: 'nonempty later',
+      firstPage: { items: [], next_page: 'next' },
+      items: [announcement],
+    },
+  ])(
+    'accepts an omitted cursor on an $name terminal page',
+    async ({ firstPage, items }) => {
+      const transport = vi.fn<typeof fetch>()
+      if (firstPage) {
+        transport.mockResolvedValueOnce(Response.json(firstPage))
+      }
+      transport.mockResolvedValueOnce(Response.json({ items }))
+      const client = new Client({
+        baseUrl: 'https://api.example.test',
+        fetch: transport,
+      })
+
+      await expect(
+        listClientItems<Announcement>(client, '/announcements')
+      ).resolves.toEqual([...(firstPage?.items ?? []), ...items])
+      expect(transport).toHaveBeenCalledTimes(firstPage ? 2 : 1)
+      if (firstPage) {
+        expect(transport.mock.calls[1][0]).toBe(
+          'https://api.example.test/announcements?page_token=next'
+        )
+      }
+    }
+  )
+
   test('rejects the announcements envelope at a different endpoint with the same prefix', async () => {
     const client = new Client({
       baseUrl: 'https://api.example.test',
@@ -73,7 +111,7 @@ describe('API list compatibility', () => {
     { items: [], next_page: 'same' },
     { items: [], next_page: '' },
     { items: [], next_page: 5 },
-    { items: [] },
+    { next_page: null },
     {},
     [],
   ])(

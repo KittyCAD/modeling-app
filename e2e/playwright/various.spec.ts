@@ -5,10 +5,6 @@ import {
   getUtils,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { LEGACY_SKETCH_MODE_FEATURE_FLAG } from '@src/lib/constants'
-
-// Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
-test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
 
 test('Units menu', { tag: '@desktop' }, async ({ page, homePage }) => {
   await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -169,99 +165,6 @@ test(
     // Verify the URL and that you can see a list of shortcuts
     await expect.poll(() => page.url()).toContain('?tab=keybindings')
     await expectKeybindingsSettingsVisible(page)
-  }
-)
-
-test(
-  'First escape in tool pops you out of tool, second exits sketch mode',
-  { tag: '@desktop' },
-  async ({ page, context, homePage, toolbar }) => {
-    // Wait for the app to be ready for use
-    const u = await getUtils(page)
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, 'sketch001 = startSketchOn(XZ)')
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-
-    await homePage.goToModelingScene()
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
-
-    // Test these hotkeys perform actions when
-    // focus is on the canvas
-    await page.mouse.move(600, 250)
-    await page.mouse.click(600, 250)
-
-    const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
-    await op.dblclick()
-    await toolbar.waitUntilSketchingReady()
-    await toolbar.closeFeatureTreePane()
-    await expect(toolbar.lineBtn).toBeVisible()
-    if ((await toolbar.lineBtn.getAttribute('aria-pressed')) !== 'true') {
-      await page.keyboard.press('l')
-    }
-    await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
-
-    // Draw a line
-    await page.mouse.move(700, 200, { steps: 5 })
-    await page.mouse.click(700, 200)
-
-    const secondMousePosition = { x: 800, y: 250 }
-
-    await page.mouse.move(secondMousePosition.x, secondMousePosition.y, {
-      steps: 5,
-    })
-    await page.mouse.click(secondMousePosition.x, secondMousePosition.y)
-    // Unequip line tool
-    await page.keyboard.press('Escape')
-    // Make sure we didn't pop out of sketch mode.
-    await expect(
-      page.getByRole('button', { name: 'Exit Sketch' })
-    ).toBeVisible()
-    await expect(toolbar.lineBtn).not.toHaveAttribute('aria-pressed', 'true')
-    // Equip arc tool
-    await toolbar.selectTangentialArc()
-
-    // click in the same position again to continue the profile
-    await page.mouse.move(secondMousePosition.x, secondMousePosition.y, {
-      steps: 5,
-    })
-    await page.mouse.click(secondMousePosition.x, secondMousePosition.y)
-
-    await page.mouse.move(1000, 100, { steps: 5 })
-    await page.mouse.click(1000, 100)
-    await page.keyboard.press('Escape')
-    await expect(toolbar.tangentialArcBtn).toHaveAttribute(
-      'aria-pressed',
-      'false'
-    )
-    await expect
-      .poll(async () => {
-        await page.keyboard.press('l')
-        return toolbar.lineBtn.getAttribute('aria-pressed')
-      })
-      .toBe('true')
-
-    // Do not close the sketch.
-    // On close it will exit sketch mode.
-
-    // Unequip line tool
-    await page.keyboard.press('Escape')
-    await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'false')
-    await expect(toolbar.tangentialArcBtn).toHaveAttribute(
-      'aria-pressed',
-      'false'
-    )
-    // Make sure we didn't pop out of sketch mode.
-    await expect(
-      page.getByRole('button', { name: 'Exit Sketch' })
-    ).toBeVisible()
-    // Exit sketch
-    await page.keyboard.press('Shift+Escape')
-    await expect(
-      page.getByRole('button', { name: 'Exit Sketch' })
-    ).not.toBeVisible()
   }
 )
 

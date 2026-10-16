@@ -1,21 +1,14 @@
 import {
-  PLAYWRIGHT_TEST_SCOPE_KEY,
   createProject,
   executorInputPath,
   getUtils,
+  PLAYWRIGHT_TEST_SCOPE_KEY,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import {
-  FILE_EXT,
-  LEGACY_SKETCH_MODE_FEATURE_FLAG,
-  PROJECT_SETTINGS_FILE_NAME,
-} from '@src/lib/constants'
+import { FILE_EXT, PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import type { PromisifiedZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import * as nodeFsP from 'fs/promises'
-
-// Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
-test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
 
 const exists = async (
   fs: PromisifiedZooDesignStudioFS,
@@ -49,69 +42,6 @@ test.describe('desktop fixture isolation', { tag: ['@desktop'] }, () => {
     await expect
       .poll(() => page.evaluate(() => localStorage.getItem('persistCode')))
       .toBeNull()
-  })
-})
-
-test.describe('integrations tests', { tag: ['@desktop'] }, () => {
-  test('Creating a new file or switching file while in sketchMode should exit sketchMode', async ({
-    page,
-    folderSetupFn,
-    homePage,
-    scene,
-    toolbar,
-    cmdBar,
-    fs,
-  }) => {
-    await folderSetupFn(async (dir) => {
-      const bracketDir = await fs.join(dir, 'test-sample')
-      await fs.mkdir(bracketDir, { recursive: true })
-      const testData = await nodeFsP.readFile(
-        executorInputPath('e2e-can-sketch-on-chamfer.kcl')
-      )
-      await fs.writeFile(await fs.join(bracketDir, 'main.kcl'), testData)
-    })
-
-    await test.step('setup test', async () => {
-      await homePage.expectState({
-        projectCards: [
-          {
-            title: 'test-sample',
-            fileCount: 1,
-          },
-        ],
-        sortBy: 'last-modified-desc',
-      })
-      await homePage.openProject('test-sample')
-      await scene.connectionEstablished()
-      await scene.settled()
-    })
-
-    await toolbar.editSketch()
-
-    const fileName = 'Untitled.kcl'
-    await test.step('check sketch mode is exited when creating new file', async () => {
-      await toolbar.openPane(DefaultLayoutPaneID.Files)
-      await toolbar.expectFileTreeState(['main.kcl'])
-
-      await toolbar.createFile({ fileName, waitForToastToDisappear: true })
-
-      // check we're out of sketch mode
-      await expect(toolbar.exitSketchBtn).not.toBeVisible()
-      await expect(toolbar.startSketchBtn).toBeVisible()
-    })
-    await test.step('setup for next assertion', async () => {
-      await toolbar.openFile('main.kcl')
-      await page.waitForTimeout(2000)
-      await toolbar.editSketch()
-      await toolbar.expectFileTreeState(['main.kcl', fileName])
-    })
-    await test.step('check sketch mode is exited when opening a different file', async () => {
-      await toolbar.openFile(fileName)
-
-      // check we're out of sketch mode
-      await expect(toolbar.exitSketchBtn).not.toBeVisible()
-      await expect(toolbar.startSketchBtn).toBeVisible()
-    })
   })
 })
 

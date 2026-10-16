@@ -5,12 +5,12 @@ import {
   addPlaceHoldersForNewFileAndFolder,
 } from '@src/components/Explorer/utils'
 import { ProjectExplorerPane } from '@src/components/layout/areas/ProjectExplorerPane'
-import { ZDSProject } from '@src/lang/KclManager'
 import * as activeTextFile from '@src/lib/activeTextFile'
 import { app } from '@src/lib/boot'
 import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import { LayoutType } from '@src/lib/layout/types'
 import type { FileEntry, Project } from '@src/lib/project'
+import { ZDSProject } from '@src/lib/projectSession'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import {
@@ -52,7 +52,7 @@ beforeAll(async () => {
 const projectName = 'project-001'
 const applicationDirectory = 'applicationDirectory'
 
-// Only the supported extensions are needed to render the import menu item.
+// Only the supported extensions are needed to route CAD file clicks.
 const wasmInstance = {
   import_file_extensions: () => ['step', 'sldprt', 'prt'],
 } as ModuleType
@@ -105,7 +105,7 @@ describe('ProjectExplorer', () => {
     const cadFile = createFile('part.STEP', '')
     project.children = [...textFiles, cadFile, oneFile]
     vi.spyOn(app, 'project', 'get').mockReturnValue(
-      new ZDSProject(signal(project), app)
+      await ZDSProject.open(signal(project), app)
     )
     vi.spyOn(
       app.singletons.kclManager,
@@ -203,44 +203,6 @@ describe('ProjectExplorer', () => {
         fireEvent.click(action)
         expect(onOpenAsText).toHaveBeenCalledWith(entry.path)
       }
-    }
-  )
-  it.each([
-    { entry: createFile('cube.step'), canImport: true },
-    { entry: createFile('cube.STEP'), canImport: true },
-    { entry: createFile('cube.prt.1'), canImport: true },
-    { entry: createFile('part.kcl'), canImport: true },
-    { entry: oneFile, canImport: false },
-    { entry: createFile('notes.txt'), canImport: false },
-    { entry: createFile('notes.md'), canImport: false },
-    { entry: createFolder('folder.prt'), canImport: false },
-  ])(
-    'shows the import action for $entry.name: $canImport',
-    async ({ entry, canImport }) => {
-      project.children = [entry]
-      render(
-        <ProjectExplorer
-          wasmInstance={wasmInstance}
-          project={project}
-          file={oneFile}
-          createFilePressed={-1}
-          createFolderPressed={-1}
-          refreshExplorerPressed={-1}
-          collapsePressed={-1}
-          onRowClicked={() => {}}
-          onRowEnter={() => {}}
-          readOnly={false}
-          canNavigate={true}
-        />
-      )
-
-      fireEvent.contextMenu(screen.getByRole('treeitem', { name: entry.name }))
-      await screen.findByRole('button', { name: 'Rename' })
-      expect(
-        Boolean(
-          screen.queryByRole('button', { name: 'Import in current file' })
-        )
-      ).toBe(canImport)
     }
   )
   it('should render no rows', () => {

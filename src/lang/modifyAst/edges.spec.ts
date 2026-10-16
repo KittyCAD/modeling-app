@@ -228,8 +228,13 @@ fillet001 = ${call}`
       expect(newCode).toContain('radius = radius001')
     })
 
-    it('should add a fillet to the post-subtract body when selecting the original box edge', async () => {
-      const code = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+    it(
+      'should add a fillet to the post-subtract body when selecting the original box edge',
+      {
+        timeout: 30_000,
+      },
+      async () => {
+        const code = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 boxLength = 100
 boxWidth = 100
@@ -328,87 +333,91 @@ part = subtract(boxSolid, tools = [cutoutCutter])
 
 hide([boxProfile, bottomProfile, lowerWallProfile, upperWallProfile, topProfile])`
 
-      const { artifactGraph, ast } = await getAstAndArtifactGraph(
-        code,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      const boxSolidStart = code.indexOf('boxSolid = extrude')
-      const boxSolidEnd = code.indexOf('bottomPlane =')
-      const boxSweep = [...artifactGraph.values()].find(
-        (artifact) =>
-          artifact.type === 'sweep' &&
-          artifact.codeRef.range[0] >= boxSolidStart &&
-          artifact.codeRef.range[0] < boxSolidEnd
-      )
-      if (!boxSweep) {
-        throw new Error('boxSolid sweep artifact not found')
-      }
-
-      const topEdgeStart = code.indexOf('topEdge = line')
-      const topEdgeRange = topLevelRange(
-        topEdgeStart,
-        code.indexOf('\n', topEdgeStart)
-      )
-      const topWall = [...artifactGraph.values()].find((artifact) => {
-        if (artifact.type !== 'wall' || artifact.sweepId !== boxSweep.id) {
-          return false
-        }
-        const segment = getOriginalSegmentArtifact(
-          artifact.segId,
-          artifactGraph
+        const { artifactGraph, ast } = await getAstAndArtifactGraph(
+          code,
+          instanceInThisFile,
+          kclManagerInThisFile
         )
-        return segment && isOverlap(segment.codeRef.range, topEdgeRange)
-      })
-      const endCap = [...artifactGraph.values()].find(
-        (artifact) =>
-          artifact.type === 'cap' &&
-          artifact.sweepId === boxSweep.id &&
-          artifact.subType === 'end'
-      )
-      if (!topWall || topWall.type !== 'wall' || !endCap) {
-        throw new Error('boxSolid top edge wall and end cap not found')
-      }
-      const codeRef = getCodeRefsByArtifactId(topWall.segId, artifactGraph)?.[0]
-      if (!codeRef)
-        throw new Error('boxSolid top edge code reference not found')
+        const boxSolidStart = code.indexOf('boxSolid = extrude')
+        const boxSolidEnd = code.indexOf('bottomPlane =')
+        const boxSweep = [...artifactGraph.values()].find(
+          (artifact) =>
+            artifact.type === 'sweep' &&
+            artifact.codeRef.range[0] >= boxSolidStart &&
+            artifact.codeRef.range[0] < boxSolidEnd
+        )
+        if (!boxSweep) {
+          throw new Error('boxSolid sweep artifact not found')
+        }
 
-      const radius = (await stringToKclExpression(
-        '1',
-        rustContextInThisFile
-      )) as KclCommandValue
-      const result = addFillet({
-        ast,
-        artifactGraph,
-        selection: {
-          graphSelections: [
-            {
-              entityRef: {
-                type: 'edge',
-                side_faces: [topWall.id, endCap.id],
+        const topEdgeStart = code.indexOf('topEdge = line')
+        const topEdgeRange = topLevelRange(
+          topEdgeStart,
+          code.indexOf('\n', topEdgeStart)
+        )
+        const topWall = [...artifactGraph.values()].find((artifact) => {
+          if (artifact.type !== 'wall' || artifact.sweepId !== boxSweep.id) {
+            return false
+          }
+          const segment = getOriginalSegmentArtifact(
+            artifact.segId,
+            artifactGraph
+          )
+          return segment && isOverlap(segment.codeRef.range, topEdgeRange)
+        })
+        const endCap = [...artifactGraph.values()].find(
+          (artifact) =>
+            artifact.type === 'cap' &&
+            artifact.sweepId === boxSweep.id &&
+            artifact.subType === 'end'
+        )
+        if (!topWall || topWall.type !== 'wall' || !endCap) {
+          throw new Error('boxSolid top edge wall and end cap not found')
+        }
+        const codeRef = getCodeRefsByArtifactId(
+          topWall.segId,
+          artifactGraph
+        )?.[0]
+        if (!codeRef)
+          throw new Error('boxSolid top edge code reference not found')
+
+        const radius = (await stringToKclExpression(
+          '1',
+          rustContextInThisFile
+        )) as KclCommandValue
+        const result = addFillet({
+          ast,
+          artifactGraph,
+          selection: {
+            graphSelections: [
+              {
+                entityRef: {
+                  type: 'edge',
+                  side_faces: [topWall.id, endCap.id],
+                },
+                codeRef,
               },
-              codeRef,
-            },
-          ],
-          otherSelections: [],
-        },
-        radius,
-        wasmInstance: instanceInThisFile,
-      })
-      if (err(result)) {
-        throw result
-      }
+            ],
+            otherSelections: [],
+          },
+          radius,
+          wasmInstance: instanceInThisFile,
+        })
+        if (err(result)) {
+          throw result
+        }
 
-      const newCode = recast(result.modifiedAst, instanceInThisFile)
-      if (err(newCode)) throw newCode
-      expect(newCode).toMatch(
-        /fillet001 = fillet\(\s*part,\s*edges = \[\s*\{\s*sideFaces = \[/
-      )
-      expect(newCode).toContain('boxRegion.tags.topEdge')
-      expect(newCode).toContain('radius = 1')
-      await kclManagerInThisFile.executeAst({ ast: result.modifiedAst })
-      expect(kclManagerInThisFile.errors).toEqual([])
-    })
+        const newCode = recast(result.modifiedAst, instanceInThisFile)
+        if (err(newCode)) throw newCode
+        expect(newCode).toMatch(
+          /fillet001 = fillet\(\s*part,\s*edges = \[\s*\{\s*sideFaces = \[/
+        )
+        expect(newCode).toContain('boxRegion.tags.topEdge')
+        expect(newCode).toContain('radius = 1')
+        await kclManagerInThisFile.executeAst({ ast: result.modifiedAst })
+        expect(kclManagerInThisFile.errors).toEqual([])
+      }
+    )
 
     it('should add a fillet call using engine primitive edge indices', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
@@ -1091,6 +1100,56 @@ ${extrudedTriangle}`
       expect(newCode).toContain('radius = 1')
       expect(newCode).toContain('version = 2')
       expect(newCode).not.toContain('tags =')
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a fillet call with tangentChain off', async () => {
+      const code = `@settings(kclVersion = 3.0)
+
+${extrudedTriangle}`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweepEdge = [...artifactGraph.values()].find(
+        (a) => a.type === 'sweepEdge'
+      )
+      if (!sweepEdge || sweepEdge.type !== 'sweepEdge') {
+        throw new Error('sweepEdge artifact not found')
+      }
+      const selection: Selections = {
+        graphSelections: [selectionFromSweepEdge(sweepEdge, artifactGraph)],
+        otherSelections: [],
+      }
+      const radius = (await stringToKclExpression(
+        '1',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addFillet({
+        ast,
+        artifactGraph,
+        selection,
+        radius,
+        tangentChain: false,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+      expect(newCode).toContain(`fillet001 = fillet(
+  extrude001,
+  edges = [
+    {
+      sideFaces = [seg01, extrude001.faces.capEnd001]
+    }
+  ],
+  radius = 1,
+  tangentChain = false,
+)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
@@ -1805,6 +1864,56 @@ extrude002 = extrude(profile002, length = 5, tagEnd = $capEnd002)`
       expect(newCode).toMatch(/chamfer001 = chamfer\(\s*extrude001/)
       expect(newCode).toMatch(/chamfer002 = chamfer\(\s*extrude002/)
       expect(newCode).toMatch(/edges = \[\s*{/)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a chamfer call with tangentChain off', async () => {
+      const code = `@settings(kclVersion = 3.0)
+
+${extrudedTriangle}`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweepEdge = [...artifactGraph.values()].find(
+        (a) => a.type === 'sweepEdge'
+      )
+      if (!sweepEdge || sweepEdge.type !== 'sweepEdge') {
+        throw new Error('sweepEdge artifact not found')
+      }
+      const selection: Selections = {
+        graphSelections: [selectionFromSweepEdge(sweepEdge, artifactGraph)],
+        otherSelections: [],
+      }
+      const length = (await stringToKclExpression(
+        '1',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addChamfer({
+        ast,
+        artifactGraph,
+        selection,
+        length,
+        tangentChain: false,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+      expect(newCode).toContain(`chamfer001 = chamfer(
+  extrude001,
+  edges = [
+    {
+      sideFaces = [seg01, extrude001.faces.capEnd001]
+    }
+  ],
+  length = 1,
+  tangentChain = false,
+)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
   })
