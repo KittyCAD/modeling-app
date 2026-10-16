@@ -58,12 +58,15 @@ import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import {
   getBodySelectionFromPrimitiveParentEntityId,
   getEngineTopologyFallbackNormalized,
-  isEnginePrimitiveSelection,
   isEngineRegionSelection,
 } from '@src/lib/selections'
 import { err, isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
+import type {
+  EnginePrimitiveSelection,
+  Selection,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
 
 /**
  * Adds a flipSurface call to the AST.
@@ -233,7 +236,6 @@ export function addPlanarSurface({
   wasmInstance: ModuleType
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   let modifiedAst = structuredClone(ast)
-  let curvesExpr: Expr | null = null
   let pathIfPipe: PathToNode | undefined
   const recordCurvePipe = (curvePath?: PathToNode): Error | undefined => {
     if (!curvePath) return
@@ -250,20 +252,15 @@ export function addPlanarSurface({
   }
 
   const engineRegions = curves.otherSelections.filter(isEngineRegionSelection)
+  const primitiveEdges = getPrimitiveEdgeSelections(curves)
   const selectionCount =
     curves.graphSelections.length + curves.otherSelections.length
   if (selectionCount === 0) {
     return new Error('Select a closed region or a closed loop of edges.')
   }
   if (
-    curves.otherSelections.some(
-      (selection) =>
-        !isEngineRegionSelection(selection) &&
-        !(
-          isEnginePrimitiveSelection(selection) &&
-          selection.primitiveType === 'edge'
-        )
-    )
+    engineRegions.length + primitiveEdges.length !==
+    curves.otherSelections.length
   ) {
     return new Error('Planar Surface requires a region or edges.')
   }
@@ -271,9 +268,14 @@ export function addPlanarSurface({
   const exprs: Expr[] = []
   let sketchCount = engineRegions.length
   let solvedSegmentCount = 0
-  const primitiveEdges = getPrimitiveEdgeSelections(curves)
-  for (const originalSelection of curves.graphSelections) {
-    if (originalSelection.entityRef?.type === 'edge') {
+  for (const originalSelection of [
+    ...curves.graphSelections,
+    ...primitiveEdges,
+  ]) {
+    if (
+      'type' in originalSelection ||
+      originalSelection.entityRef?.type === 'edge'
+    ) {
       const edgeResult = getPlanarBodyEdgeExpression({
         selection: originalSelection,
         modifiedAst,
@@ -399,52 +401,6 @@ export function addPlanarSurface({
     return new Error('Select edges from a sketch or from a surface.')
   }
 
-  for (const primitiveEdge of primitiveEdges) {
-    let bodySelection = primitiveEdge.parentEntityId
-      ? getBodySelectionFromPrimitiveParentEntityId(
-          primitiveEdge.parentEntityId,
-          artifactGraph
-        )
-      : null
-    if (!bodySelection?.artifact || !bodySelection.codeRef)
-      return new Error('Could not resolve the selected edge body in code.')
-    if (bodySelection.artifact.type === 'sweep') {
-      const canonicalBody = getMergedSweepBodyArtifact(
-        bodySelection.artifact,
-        artifactGraph
-      )
-      if (isErr(canonicalBody)) return canonicalBody
-      bodySelection = {
-        artifact: canonicalBody,
-        codeRef: canonicalBody.codeRef,
-      }
-    }
-    const body = getVariableExprsFromSelection(
-      { graphSelections: [bodySelection], otherSelections: [] },
-      artifactGraph,
-      modifiedAst,
-      wasmInstance,
-      undefined,
-      {
-        lastChildLookup: bodySelection.artifact?.type !== 'sweep',
-        artifactTypeFilter: ['compositeSolid', 'sweep'],
-      }
-    )
-    if (isErr(body)) return body
-    if (body.exprs.length !== 1)
-      return new Error('Could not resolve the selected edge body in code.')
-    const pipeResult = recordCurvePipe(body.pathIfPipe)
-    if (isErr(pipeResult)) return pipeResult
-    exprs.push(
-      createCallExpressionStdLibKw('edgeId', body.exprs[0], [
-        createLabeledArg(
-          'index',
-          createLiteral(primitiveEdge.primitiveIndex, wasmInstance)
-        ),
-      ])
-    )
-  }
-
   if (engineRegions.length > 0) {
     const hideResult = addHideCallsForRegionSketches({
       engineRegions,
@@ -469,12 +425,10 @@ export function addPlanarSurface({
   }
   // The stdlib takes one Sketch directly, but requires arrays for curves,
   // including a single closed curve such as a circle.
-  if (sketchCount > 0) {
-    curvesExpr = exprs[0]
-  } else {
-    curvesExpr = createArrayExpression(exprs)
-  }
-  if (curvesExpr?.type === 'PipeSubstitution') curvesExpr = null
+  const curvesExpr =
+    sketchCount > 0
+      ? createVariableExpressionsArray(exprs)
+      : createArrayExpression(exprs)
 
   const call = createCallExpressionStdLibKw(
     modelingStdLibCommandName('Planar Surface'),
@@ -509,23 +463,32 @@ function getPlanarBodyEdgeExpression({
   artifactGraph,
   wasmInstance,
 }: {
-  selection: Selection
+  selection: Selection | EnginePrimitiveSelection
   modifiedAst: Node<Program>
   artifactGraph: ArtifactGraph
   wasmInstance: ModuleType
 }):
   | Error
   | { modifiedAst: Node<Program>; expr: Expr; pathIfPipe?: PathToNode } {
-  const reference = selection.entityRef
-  if (reference?.type !== 'edge') return new Error('Select an edge.')
-  const topology = getEngineTopologyFallbackNormalized(selection)
+  const isPrimitive = 'type' in selection
+  const reference = isPrimitive ? null : selection.entityRef
+  if (!isPrimitive && reference?.type !== 'edge')
+    return new Error('Select an edge.')
+  const topology = isPrimitive
+    ? selection.parentEntityId
+      ? {
+          parentId: selection.parentEntityId,
+          primitiveIndex: selection.primitiveIndex,
+        }
+      : null
+    : getEngineTopologyFallbackNormalized(selection)
   let bodySelection = topology
     ? getBodySelectionFromPrimitiveParentEntityId(
         topology.parentId,
         artifactGraph
       )
     : null
-  if (!bodySelection) {
+  if (!bodySelection && reference?.type === 'edge') {
     for (const faceId of reference.side_faces) {
       const artifact = artifactGraph.get(faceId)
       if (!artifact) continue
@@ -538,19 +501,18 @@ function getPlanarBodyEdgeExpression({
         artifactGraph
       )
       if (isErr(sweep)) continue
-      const body = getMergedSweepBodyArtifact(sweep, artifactGraph, false)
-      if (isErr(body)) return body
-      bodySelection = { artifact: body, codeRef: body.codeRef }
+      bodySelection = { artifact: sweep, codeRef: sweep.codeRef }
       break
     }
   }
-  if (!bodySelection)
+  if (!bodySelection?.artifact || !bodySelection.codeRef)
     return new Error('Could not resolve the selected edge body in code.')
   if (bodySelection.artifact?.type === 'sweep') {
+    // Raw primitive selections follow merged bodies; graph selections keep their sweep.
     const canonicalBody = getMergedSweepBodyArtifact(
       bodySelection.artifact,
       artifactGraph,
-      false
+      isPrimitive
     )
     if (isErr(canonicalBody)) return canonicalBody
     bodySelection = { artifact: canonicalBody, codeRef: canonicalBody.codeRef }
@@ -561,7 +523,10 @@ function getPlanarBodyEdgeExpression({
     modifiedAst,
     wasmInstance,
     undefined,
-    { lastChildLookup: false, artifactTypeFilter: ['compositeSolid', 'sweep'] }
+    {
+      lastChildLookup: isPrimitive && bodySelection.artifact?.type !== 'sweep',
+      artifactTypeFilter: ['compositeSolid', 'sweep'],
+    }
   )
   if (isErr(body)) return body
   if (body.exprs.length !== 1)
@@ -569,6 +534,7 @@ function getPlanarBodyEdgeExpression({
   const bodyExpr = body.exprs[0]
 
   const hasSemanticEdge =
+    reference?.type === 'edge' &&
     bodySelection.artifact?.type !== 'compositeSolid' &&
     reference.side_faces.length === 2 &&
     reference.side_faces.every((id) => artifactGraph.has(id)) &&
@@ -586,12 +552,14 @@ function getPlanarBodyEdgeExpression({
         pathIfPipe: body.pathIfPipe,
       }
     : null
-  if (topologyResult && !hasSemanticEdge) return topologyResult
   // getCommonEdge identifies one edge from two semantic face tags. An index
   // within an EdgeReference is not the body's topology index; never substitute it.
-  if (!hasSemanticEdge) {
-    return new Error(
-      'Could not resolve the selected boundary edge. Select it in the viewport again.'
+  if (isPrimitive || !hasSemanticEdge) {
+    return (
+      topologyResult ??
+      new Error(
+        'Could not resolve the selected boundary edge. Select it in the viewport again.'
+      )
     )
   }
   const tagged = createEdgeRefObjectExpression(
