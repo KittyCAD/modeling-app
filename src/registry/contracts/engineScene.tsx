@@ -1,20 +1,16 @@
 import { Slot, defineContract, defineValueSpec } from '@kittycad/registry'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { ComponentType, Dispatch, SetStateAction } from 'react'
-import { useLayoutEffect, useRef } from 'react'
 import { twMerge } from 'tailwind-merge'
 import type { EventFrom, StateFrom } from 'xstate'
+import styles from './engineScene.module.css'
 
 export const engineSceneViewExtensionZones = [
-  'top-left',
   'top',
-  'top-right',
   'left',
   'center',
   'right',
-  'bottom-left',
   'bottom',
-  'bottom-right',
   'overlay',
 ] as const
 
@@ -129,18 +125,13 @@ export function resolveEngineSceneViewExtensions(
   )
 }
 
+// Edge zones size themselves; side rails fill the grid row between them.
 const zoneClassNames: Record<EngineSceneViewExtensionZone, string> = {
-  'top-left': 'absolute top-2 left-2 flex items-start justify-start gap-2',
-  top: 'absolute top-0 left-0 right-0 flex items-start justify-center gap-2',
-  'top-right': 'absolute top-2 right-2 flex items-start justify-end gap-2',
-  left: 'absolute left-0 top-[calc(var(--scene-top-inset)+0.5rem)] bottom-[calc(var(--scene-bottom-inset)+0.5rem)] flex flex-col items-start justify-start gap-2',
+  top: `${styles.top} flex items-start justify-center gap-2`,
+  left: `${styles.left} my-2 flex flex-col items-start justify-start gap-2`,
   center: 'absolute inset-2 flex flex-col items-center justify-center gap-2',
-  right:
-    'absolute right-0 top-[calc(var(--scene-top-inset)+0.5rem)] bottom-[calc(var(--scene-bottom-inset)+0.5rem)] flex flex-col items-end justify-center gap-2',
-  'bottom-left': 'absolute bottom-2 left-2 flex items-end justify-start gap-2',
-  bottom:
-    'absolute bottom-0 left-0 right-0 flex items-end justify-center gap-2',
-  'bottom-right': 'absolute bottom-2 right-2 flex items-end justify-end gap-3',
+  right: `${styles.right} my-2 flex flex-col items-end justify-center gap-2`,
+  bottom: `${styles.bottom} m-2 flex items-end gap-2`,
   overlay: 'absolute inset-0',
 }
 
@@ -152,52 +143,14 @@ export function EngineSceneViewExtensionOverlay({
   extensions,
   ...context
 }: EngineSceneViewExtensionOverlayProps) {
-  const overlayRef = useRef<HTMLDivElement>(null)
   const registeredExtensions = resolveEngineSceneViewExtensions(
     extensions,
     context
   )
-  const registeredZones = registeredExtensions
-    .map(({ id, zone }) => `${zone}:${id}`)
-    .join('|')
-  // Side rails share the vertical space left by the actual top/bottom controls.
-  useLayoutEffect(() => {
-    const overlay = overlayRef.current
-    if (!overlay) return
-    const edges = [
-      ...overlay.querySelectorAll<HTMLElement>(
-        '[data-engine-scene-view-extension-zone]'
-      ),
-    ].filter((element) =>
-      /^(top|bottom)(-|$)/.test(
-        element.dataset.engineSceneViewExtensionZone ?? ''
-      )
-    )
-    const measure = () => {
-      const bounds = overlay.getBoundingClientRect()
-      let top = 0,
-        bottom = 0
-      for (const edge of edges) {
-        const rect = edge.getBoundingClientRect()
-        if (edge.dataset.engineSceneViewExtensionZone?.startsWith('top'))
-          top = Math.max(top, rect.bottom - bounds.top)
-        else bottom = Math.max(bottom, bounds.bottom - rect.top)
-      }
-      overlay.style.setProperty('--scene-top-inset', `${top}px`)
-      overlay.style.setProperty('--scene-bottom-inset', `${bottom}px`)
-    }
-    measure()
-    if (typeof ResizeObserver === 'undefined') return
-    const observer = new ResizeObserver(measure)
-    observer.observe(overlay)
-    edges.forEach((edge) => observer.observe(edge))
-    return () => observer.disconnect()
-  }, [registeredZones])
 
   return (
     <div
-      ref={overlayRef}
-      className="absolute inset-0 z-10 pointer-events-none"
+      className={`${styles.zones} absolute inset-0 z-10 pointer-events-none`}
       aria-hidden={registeredExtensions.length === 0}
     >
       {engineSceneViewExtensionZones.map((zone) => {
