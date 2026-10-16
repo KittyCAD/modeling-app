@@ -1,6 +1,7 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { evaluateCommandArgumentFlags } from '@src/components/CommandBar/utils'
 import type { ArtifactGraph, Program } from '@src/lang/wasm'
+import { coerceSelectionsForBodyOnlySelectionTypes } from '@src/lang/std/selectionCoercion'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import { isKclCommandValue } from '@src/lib/commandUtils'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
@@ -111,8 +112,14 @@ export async function resolveArguments(
     if (arg.inputType === 'selection') {
       if (context.argumentsToSubmit.nodeToEdit)
         value = context.argumentsToSubmit[name]
-      const selection =
-        isSelections(value) && hasValue(value) ? value : undefined
+      let selection = isSelections(value) && hasValue(value) ? value : undefined
+      if (selection && artifactGraph && !context.argumentsToSubmit.nodeToEdit) {
+        selection = coerceSelectionsForBodyOnlySelectionTypes(
+          selection,
+          arg.selectionTypes,
+          artifactGraph
+        )
+      }
       if (
         (isRequired && !selection) ||
         (selection &&
