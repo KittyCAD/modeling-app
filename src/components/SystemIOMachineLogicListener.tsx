@@ -9,13 +9,11 @@ import fsZds from '@src/lib/fs-zds'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import {
   PATHS,
-  getProjectDirectoryFromKCLFilePath,
   joinOSPaths,
   joinRouterPaths,
   safeEncodeForRouterPaths,
   webSafePathSplit,
 } from '@src/lib/paths'
-import { lspService } from '@src/lang/lsp/registry/contract'
 import { getDefaultDirectoryProjectLibraryPath } from '@src/lib/projectLibraries'
 import {
   useHasListedProjects,
@@ -35,7 +33,7 @@ import { useEffect } from 'react'
 import { useLocation, useNavigate, useNavigation } from 'react-router-dom'
 
 export function SystemIOMachineLogicListener() {
-  const { settings, systemIOActor, registry } = useApp()
+  const { settings, systemIOActor } = useApp()
   const { kclManager } = useSingletons()
   // We gotta stop with this pattern. It doesn't scale. "Eager hook creation"
   const requestedProjectName = useRequestedProjectName()
@@ -47,7 +45,6 @@ export function SystemIOMachineLogicListener() {
   const navigate = useNavigate()
   const navigation = useNavigation()
   const settingsValues = settings.useSettings()
-  const lsp = registry.get(lspService)
   const defaultDirectoryLibraryPath =
     getDefaultDirectoryProjectLibraryPath(
       settingsValues.app.libraries.current
@@ -57,11 +54,9 @@ export function SystemIOMachineLogicListener() {
   function safestNavigateToFile({
     requestedPath,
     requestedFilePathWithExtension,
-    requestedProjectDirectory,
   }: {
     requestedPath: string
     requestedFilePathWithExtension: string | null
-    requestedProjectDirectory: string | null
   }) {
     if (
       !shouldNavigateToRequestedPath({
@@ -73,27 +68,15 @@ export function SystemIOMachineLogicListener() {
       return
     }
 
-    let filePathWithExtension = null
-    let projectDirectory = null
-    // assumes /file/<encodedURIComponent>
-    // e.g '/file/%2Fhome%2Fkevin-nadro%2FDocuments%2Fzoo-modeling-app-projects%2Fbracket-1%2Fbracket.kcl'
-    const [iAmABlankString, file, encodedURI] = webSafePathSplit(pathname)
+    let filePathWithExtension: string | null = null
+    const [prefix, route, encodedURI] = webSafePathSplit(pathname)
     if (
-      iAmABlankString === '' &&
-      file === makeUrlPathRelative(PATHS.FILE) &&
+      prefix === '' &&
+      route === makeUrlPathRelative(PATHS.FILE) &&
       encodedURI
     ) {
       filePathWithExtension = decodeURIComponent(encodedURI)
-      projectDirectory = getProjectDirectoryFromKCLFilePath(
-        filePathWithExtension,
-        defaultDirectoryLibraryPath
-      )
     }
-
-    // Close current file in current project if it exists
-    lsp.onFileClose(filePathWithExtension, projectDirectory)
-    // Open the requested file in the requested project
-    lsp.onFileOpen(requestedFilePathWithExtension, requestedProjectDirectory)
 
     kclManager.engineCommandManager.rejectAllModelingCommands(
       EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
@@ -190,7 +173,6 @@ export function SystemIOMachineLogicListener() {
       safestNavigateToFile({
         requestedPath,
         requestedFilePathWithExtension: null,
-        requestedProjectDirectory: projectPathWithoutSpecificKCLFile,
       })
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     }, [requestedProjectName, lastOperation])
@@ -213,10 +195,6 @@ export function SystemIOMachineLogicListener() {
         requestedFileName.project,
         requestedFileName.file
       )
-      const projectPathWithoutSpecificKCLFile = joinOSPaths(
-        projectDirectoryPath,
-        requestedFileName.project
-      )
       const requestedPath = joinRouterPaths(
         PATHS.FILE,
         safeEncodeForRouterPaths(filePath),
@@ -225,7 +203,6 @@ export function SystemIOMachineLogicListener() {
       safestNavigateToFile({
         requestedPath,
         requestedFilePathWithExtension: filePath,
-        requestedProjectDirectory: projectPathWithoutSpecificKCLFile,
       })
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     }, [requestedFileName])

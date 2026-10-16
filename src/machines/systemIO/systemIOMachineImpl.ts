@@ -134,6 +134,8 @@ export async function renameFileForSystemIO(input: RenameFileForSystemIOInput) {
   }
 
   await operations.rename(oldPath, newPath)
+  if (input.app.project === project)
+    project?.notifyFileRenamed(oldPath, newPath)
 
   if (
     input.app.project?.executingPathSignal.value &&
@@ -1059,7 +1061,10 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           requestedProjectName?: string | undefined
         }
       }) => {
+        const project = input.context.app.project
         await fileOperations(input.context).remove(input.requestedPath)
+        if (input.context.app.project === project)
+          project?.notifyFileDeleted(input.requestedPath)
         const response = {
           message: 'File deleted successfully',
           requestedPath: input.requestedPath,
@@ -1077,6 +1082,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           requestedAbsolutePath: string
         }
       }) => {
+        const project = input.context.app.project
         const fileNameWithExtension = getStringAfterLastSeparator(
           input.requestedAbsolutePath
         )
@@ -1116,6 +1122,8 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           }
           return Promise.reject(error)
         }
+        if (input.context.app.project === project)
+          project?.notifyFileCreated(input.requestedAbsolutePath)
         return {
           message: `File ${fileNameWithExtension} written successfully`,
           requestedAbsolutePath: input.requestedAbsolutePath,

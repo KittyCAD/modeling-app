@@ -2,7 +2,14 @@ import { type Signal, signal, computed } from '@preact/signals-core'
 import type { ApiFile } from '@rust/kcl-lib/bindings/FrontendApi'
 import { ProjectEditorHistory } from '@src/lib/projectSession/editorHistory'
 import { KclManager } from '@src/lang/KclManager'
-import { getStringAfterLastSeparator } from '@src/lib/paths'
+import {
+  lspService,
+  type ProjectLanguageService,
+} from '@src/lang/lsp/registry/contract'
+import {
+  getStringAfterLastSeparator,
+  getRelativePathIfContained,
+} from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { FileEntry, Project } from '@src/lib/project'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
@@ -30,6 +37,7 @@ export interface ProjectSystemDeps {
   rustContext: RustContext
   userFeatures: UserFeaturesSettleService
   keymap?: KeymapService
+  languageService?: ProjectLanguageService
 }
 
 /**
@@ -37,6 +45,8 @@ export interface ProjectSystemDeps {
  * that connects to the geometry engine.
  */
 export class ZDSProject {
+  readonly languageService: ProjectLanguageService
+  private readonly languageFiles = new Set<string>()
   private closed = false
   private nextFileId = 0
   private readonly editorHistory = new ProjectEditorHistory()
@@ -68,7 +78,12 @@ export class ZDSProject {
     public projectIORefSignal: Signal<Project>,
     private app: App
   ) {
+    this.languageService = app.registry.get(lspService).createProjectSession({
+      name: this.name,
+      path: this.path,
+    })
     this.files = this.collectProjectFiles(projectIORefSignal.value)
+    for (const file of this.files) this.languageFiles.add(file.path)
     window.electron?.watchFileOn(
       projectIORefSignal.value.path,
       this.fileWatcherId,
@@ -82,6 +97,7 @@ export class ZDSProject {
     this.closed = true
     this.closeAllEditors()
     this.editorHistory.dispose()
+    this.languageService.dispose()
     window.electron?.watchFileOff(
       this.projectIORefSignal.value.path,
       this.fileWatcherId
@@ -153,6 +169,7 @@ export class ZDSProject {
 
     const systemDeps: ProjectSystemDeps = {
       editorHistory: this.editorHistory,
+      languageService: this.languageService,
       wasmInstancePromise: this.app.wasmPromise,
       commandBar: this.app.commands.actor,
       settings: this.app.settings.actor,
@@ -275,8 +292,44 @@ export class ZDSProject {
     for (const path of this.editors.keys()) this.closeEditor(path.peek())
   }
 
+  /** Confirmed mutations and disk watchers share one workspace membership baseline. */
+  notifyFileCreated(path: string) {
+    if (
+      this.closed ||
+      !path.endsWith('.kcl') ||
+      this.languageFiles.has(path) ||
+      getRelativePathIfContained(this.path, path) === undefined
+    )
+      return
+    this.languageFiles.add(path)
+    this.languageService.onFileCreate(path)
+  }
+
+  notifyFileDeleted(path: string) {
+    if (this.closed || !this.languageFiles.delete(path)) return
+    this.languageService.onFileDelete(path)
+  }
+
+  notifyFileRenamed(oldPath: string, newPath: string) {
+    if (this.closed || !this.languageFiles.has(oldPath)) return
+    this.languageFiles.delete(oldPath)
+    if (
+      !newPath.endsWith('.kcl') ||
+      getRelativePathIfContained(this.path, newPath) === undefined
+    ) {
+      this.languageService.onFileDelete(oldPath)
+      return
+    }
+    this.languageFiles.add(newPath)
+    this.languageService.onFileRename(oldPath, newPath)
+  }
+
   /** Handle updates from the disk representation of the project */
   private onUpdateFromDisk = (eventType: string, path: string) => {
+    if (path.endsWith('.kcl')) {
+      if (eventType === 'add') this.notifyFileCreated(path)
+      if (eventType === 'unlink') this.notifyFileDeleted(path)
+    }
     const foundEditorKey = Array.from(this.editors.keys()).find(
       (pathSignal) => pathSignal.value === path
     )
@@ -357,6 +410,11 @@ export class ZDSProject {
       ...this.projectIORefSignal.peek(),
       ...project,
     }
+    const paths = new Set(this.files.map((file) => file.path))
+    for (const path of this.languageFiles) {
+      if (!paths.has(path)) this.notifyFileDeleted(path)
+    }
+    for (const path of paths) this.notifyFileCreated(path)
   }
 
   /** Get all the KCL files in this project as a flat array. */
@@ -387,6 +445,7 @@ export class ZDSProject {
 
       if (replayFile.nextContent === null) {
         if (!foundFile) continue
+        this.notifyFileDeleted(replayFile.absolutePath)
         this.files = this.files.filter((_, index) => index !== foundIndex)
         await editor.rustContext
           .sendRemoveFile(foundFile.id)
@@ -403,6 +462,7 @@ export class ZDSProject {
 
       const newFile = new File(replayFile.absolutePath, this.nextFileId++)
       this.files.push(newFile)
+      this.notifyFileCreated(newFile.path)
       await editor.rustContext
         .sendAddFile({
           id: newFile.id,

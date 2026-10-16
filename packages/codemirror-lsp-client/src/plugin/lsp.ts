@@ -99,6 +99,8 @@ export interface LanguageServerOptions {
 }
 
 export class LanguageServerPlugin implements PluginValue {
+  private destroyed = false
+  private openedDocumentUri: string | undefined
   public client: LanguageServerClient
   private documentVersion: number
   private foldingRanges: LSP.FoldingRange[] | null = null
@@ -147,9 +149,7 @@ export class LanguageServerPlugin implements PluginValue {
     this.onGoToDefinition = options.onGoToDefinition
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.initialize({
-      documentText: this.getDocText(),
-    })
+    this.initialize()
   }
 
   private getDocPath(view = this.view) {
@@ -175,20 +175,29 @@ export class LanguageServerPlugin implements PluginValue {
   }
 
   destroy() {
+    this.destroyed = true
+    if (this.sendScheduled != null) window.clearTimeout(this.sendScheduled)
+    if (this.openedDocumentUri) {
+      this.client.textDocumentDidClose({
+        textDocument: { uri: this.openedDocumentUri },
+      })
+    }
     this.client.detachPlugin(this)
   }
 
-  async initialize({ documentText }: { documentText: string }) {
+  async initialize() {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     if (this.client.initializePromise) {
       await this.client.initializePromise
     }
 
+    if (this.destroyed) return
+    this.openedDocumentUri = this.getDocUri()
     this.client.textDocumentDidOpen({
       textDocument: {
-        uri: this.getDocUri(),
+        uri: this.openedDocumentUri,
         languageId: this.getLanguageId(),
-        text: documentText,
+        text: this.getDocText(),
         version: this.documentVersion,
       },
     })
@@ -241,6 +250,7 @@ export class LanguageServerPlugin implements PluginValue {
   }
 
   sendDoc() {
+    if (this.destroyed) return
     if (this.sendScheduled != null) {
       window.clearTimeout(this.sendScheduled)
       this.sendScheduled = null
@@ -288,7 +298,7 @@ export class LanguageServerPlugin implements PluginValue {
 
   async updateFoldingRanges() {
     const foldingRanges = await this.getFoldingRanges()
-    if (foldingRanges === null) return
+    if (this.destroyed || foldingRanges === null) return
     // Update the folding ranges.
     this.foldingRanges = foldingRanges
   }
@@ -1150,7 +1160,7 @@ export class LanguageServerPlugin implements PluginValue {
     const result = await this.client.textDocumentSemanticTokensFull({
       textDocument: { uri: this.getDocUri() },
     })
-    if (!result) return null
+    if (this.destroyed || !result) return null
 
     const { data } = result
     this.previousSemanticTokens = this.parseSemanticTokens(this.view, data)
@@ -1168,6 +1178,7 @@ export class LanguageServerPlugin implements PluginValue {
   }
 
   async processNotification(notification: LSP.NotificationMessage) {
+    if (this.destroyed) return
     try {
       switch (notification.method) {
         case 'textDocument/publishDiagnostics':
