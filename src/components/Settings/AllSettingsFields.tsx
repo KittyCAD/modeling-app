@@ -1,5 +1,5 @@
 import { ActionButton } from '@src/components/ActionButton'
-import type { Feature } from '@kittycad/lib'
+import type { UserFeature } from '@src/machines/userFeaturesMachine'
 import { SettingsFieldInput } from '@src/components/Settings/SettingsFieldInput'
 import { SettingsSection } from '@src/components/Settings/SettingsSection'
 import { useApp } from '@src/lib/boot'
@@ -54,7 +54,7 @@ export const AllSettingsFields = forwardRef(
     const context = settings.useSettings()
     const userFeaturesContext = userFeatures.useContext()
     const isOnboardingStartPending = useOnboardingStartPending()
-    const hasFeature = (feature: Feature) =>
+    const hasFeature = (feature: UserFeature) =>
       userFeaturesContextHas(userFeaturesContext, feature, false)
     const projectPath = useMemo(() => {
       const filteredPathname = location.pathname
@@ -110,7 +110,14 @@ export const AllSettingsFields = forwardRef(
                       setting[setting.getParentLevel(searchParamTab)]
                     return (
                       <SettingsSection
-                        title={formatSettingsLabel(settingName)}
+                        title={
+                          setting.title ?? formatSettingsLabel(settingName)
+                        }
+                        headingClassName={
+                          setting.title
+                            ? 'text-lg font-normal tracking-wide'
+                            : undefined
+                        }
                         id={settingName}
                         className={
                           location.hash === `#${settingName}`

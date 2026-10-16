@@ -1,5 +1,5 @@
 import { Combobox } from '@headlessui/react'
-import type { Feature } from '@kittycad/lib'
+import type { UserFeature } from '@src/machines/userFeaturesMachine'
 import { useSignalEffect } from '@preact/signals-react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { getKeybindingRows } from '@src/components/Settings/keybindingRows'
@@ -37,6 +37,7 @@ interface SettingsSearchBarProps {
 }
 
 export type SettingsSearchItem = {
+  preserveCase?: boolean
   name: string
   displayName: string
   description: string
@@ -76,7 +77,7 @@ export function SettingsSearchBar({
   const settingsValues = settings.useSettings()
   const userFeaturesContext = userFeatures.useContext()
   const hasFeature = useCallback(
-    (feature: Feature) =>
+    (feature: UserFeature) =>
       userFeaturesContextHas(userFeaturesContext, feature, false),
     [userFeaturesContext]
   )
@@ -96,7 +97,8 @@ export function SettingsSearchBar({
                 category: formatSettingsLabel(category),
                 name: settingName,
                 description: s.description ?? '',
-                displayName: formatSettingsLabel(settingName),
+                displayName: s.title ?? formatSettingsLabel(settingName),
+                preserveCase: !!s.title,
                 level: l,
               }))
           })
@@ -164,7 +166,12 @@ export function SettingsSearchBar({
               className="flex flex-col items-start gap-2 px-4 py-2 ui-active:bg-primary/10 dark:ui-active:bg-chalkboard-90"
             >
               <p className="flex-grow text-base capitalize m-0 leading-none">
-                {option.level} · {option.category} · {option.displayName}
+                {option.level} · {option.category} ·{' '}
+                <span
+                  className={option.preserveCase ? 'normal-case' : undefined}
+                >
+                  {option.displayName}
+                </span>
               </p>
               {option.description && (
                 <p className="text-xs leading-tight text-chalkboard-70 dark:text-chalkboard-50">

@@ -20,6 +20,7 @@ export class Setting<T = unknown> {
   public commandConfig: SettingProps<T>['commandConfig']
   public Component: SettingProps<T>['Component']
   public description?: string
+  public title?: string
   private validate: (v: T) => boolean
   public readonly isEnabled: (c: SettingsType) => boolean
   private _default: Signal<T>
@@ -43,6 +44,7 @@ export class Setting<T = unknown> {
     this.validate = props.validate
     this.isEnabled = props.isEnabled || (() => true)
     this.description = props.description
+    this.title = props.title
     this.hideOnLevel = props.hideOnLevel
     this.hideOnPlatform = props.hideOnPlatform
     this.hideWithoutFeature = props.hideWithoutFeature

@@ -1,3 +1,7 @@
+import { getFeatureTreeAppearance } from '@src/lib/featureTree/settings'
+import { settingsValueSpec } from '@src/registry/contracts/settings'
+import { hiddenOnPlatform } from '@src/lib/settings/settingsUtils'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
 import {
   Registry,
   defineRegistryItem,
@@ -160,6 +164,37 @@ describe('feature tree registry contribution', () => {
     await action.onSubmit({} as never)
     expect(actions).not.toHaveBeenCalled()
     expect(isCommandAvailable(toggle(), scopes)).toBe(false)
+    registry[Symbol.dispose]()
+  })
+  it('contributes the persisted style preference using the existing setting feature gate', () => {
+    const registry = new Registry()
+    registry.configure([featureTreeExtension])
+    const definition =
+      registry.get(settingsValueSpec).modeling.featureTreeDisplay
+    const display = definition.createSetting()
+    expect(display.default).toBe('hud')
+    expect(display.title).toBe('Feature tree style')
+    expect(display.hideWithoutFeature).toBe(SCENE_BROWSER_FEATURE)
+    expect(hiddenOnPlatform(display, true, () => false)).toBe(true)
+    expect(hiddenOnPlatform(display, true, () => true)).toBe(false)
+    expect(display.commandConfig).toMatchObject({
+      inputType: 'options',
+      options: [
+        { name: 'HUD', value: 'hud' },
+        { name: 'Solid', value: 'standard' },
+      ],
+    })
+    expect(definition.userToml?.fromToml('standard')).toBe('standard')
+    expect(definition.userToml?.fromToml('unknown')).toBeUndefined()
+    expect(definition.userToml?.fromToml(false)).toBeUndefined()
+    const settings = {
+      modeling: { featureTreeDisplay: display },
+    } as unknown as SettingsType
+    expect(getFeatureTreeAppearance(settings)).toBe('hud')
+    display.user = 'standard'
+    expect(getFeatureTreeAppearance(settings)).toBe('default')
+    display.user = undefined
+    expect(getFeatureTreeAppearance(settings)).toBe('hud')
     registry[Symbol.dispose]()
   })
   it('owns widget keys but leaves editing and modified global shortcuts alone', () => {

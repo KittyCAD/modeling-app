@@ -1,3 +1,5 @@
+import { featureTreeSettings } from '@src/lib/featureTree/settings'
+import { settingsValueSpec } from '@src/registry/contracts/settings'
 import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 import type { Command, CommandScopes } from '@src/lib/commandTypes'
 import {
@@ -139,6 +141,7 @@ export const featureTreeExtension = defineRegistryItemFactory((ctx) => {
   return {
     id: 'feature-tree',
     provides: [
+      provide(settingsValueSpec, featureTreeSettings),
       provideKeymapItem({
         id: 'scene-browser.toggle.tree-focus',
         title: 'Toggle scene browser',
