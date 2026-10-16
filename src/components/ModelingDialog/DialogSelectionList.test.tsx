@@ -29,7 +29,6 @@ vi.mock('@src/components/Tooltip', () => ({
 
 vi.mock('@src/lib/selections', () => ({
   getSelectionReferences: mocks.getSelectionReferences,
-  getSelectionTypeDisplayText: () => '1 edge',
   isDefaultPlaneSelection: () => false,
   isEnginePrimitiveSelection: (selection: { type?: string }) =>
     selection.type === 'enginePrimitive',
@@ -73,7 +72,7 @@ describe('DialogSelectionList', () => {
 
     expect(screen.getByRole('alert')).toHaveTextContent(error.message)
     fireEvent.click(
-      screen.getByRole('button', { name: 'Remove Edge from selection' })
+      screen.getByRole('button', { name: 'Remove Selection from selection' })
     )
     expect(onChange).toHaveBeenCalledWith({
       graphSelections: [],

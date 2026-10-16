@@ -4,19 +4,21 @@ import { useSelectionReferences } from '@src/hooks/useSelectionReferences'
 import type { KclManager } from '@src/lang/KclManager'
 import { entityReferenceKey } from '@src/lang/queryAst'
 import {
-  getSelectionTypeDisplayText,
   isEnginePrimitiveSelection,
   selectionMatchesReference,
 } from '@src/lib/selections'
-import type { Selections } from '@src/machines/modelingSharedTypes'
-import { capitaliseFC } from '@src/lib/utils'
+import type {
+  NonCodeSelection,
+  Selection,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 type SelectionRow = {
   key: string
   group: keyof Selections
   index: number
-  selection: Selections
+  selection: Selection | NonCodeSelection
 }
 
 export function DialogSelectionList({
@@ -49,7 +51,7 @@ export function DialogSelectionList({
         key: `graph:${key}:${selection.patternIndex ?? ''}`,
         group: 'graphSelections',
         index,
-        selection: { graphSelections: [selection], otherSelections: [] },
+        selection,
       }
     }),
     ...selectionRanges.otherSelections.map((selection, index): SelectionRow => {
@@ -63,7 +65,7 @@ export function DialogSelectionList({
         key: `other:${key}`,
         group: 'otherSelections',
         index,
-        selection: { graphSelections: [], otherSelections: [selection] },
+        selection,
       }
     }),
   ]
@@ -79,19 +81,10 @@ export function DialogSelectionList({
         </div>
       )}
       {rows.map((row) => {
-        const selectedItem = row.selection[row.group][0]
         const reference = state.references.find((reference) =>
-          selectionMatchesReference(selectedItem, reference)
+          selectionMatchesReference(row.selection, reference)
         )
-        const label =
-          reference?.label ??
-          capitaliseFC(
-            getSelectionTypeDisplayText(
-              kclManager.ast,
-              row.selection,
-              kclManager.artifactGraph
-            )?.replace(/^1 /, '') ?? 'Selection'
-          )
+        const label = reference?.label ?? 'Selection'
         return (
           <div
             key={row.key}
