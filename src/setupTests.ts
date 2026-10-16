@@ -62,8 +62,11 @@ vi.mock('three', async () => {
 
       setClearColor() {}
       setSize() {}
+      setPixelRatio() {}
       render() {}
       dispose() {}
+      forceContextLoss() {}
+      clear() {}
       // Engine Connection needs this in the modelingMachine.test.ts files
       getDrawingBufferSize() {
         return new Vector2()

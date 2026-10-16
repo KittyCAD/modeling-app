@@ -61,6 +61,7 @@ export const ModelingMachineProvider = ({
     [modelingActor]
   )
   const theProject = kclManager.modelingProjectRef
+  const { sceneInfra } = kclManager
   const settingsValues = settings.useSettings()
   const {
     app: { allowOrbitInSketchMode },
@@ -214,13 +215,11 @@ export const ModelingMachineProvider = ({
         }
         previousCameraOrbit.current = cameraOrbit.current
         // Gotcha: This will absolutely brick E2E tests if called incorrectly.
-        kclManager.sceneInfra.camControls
-          .resetCameraPosition()
-          .catch(reportRejection)
+        sceneInfra.camControls.resetCameraPosition().catch(reportRejection)
       })
       .catch(reportRejection)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [cameraOrbit.current])
+  }, [cameraOrbit.current, sceneInfra])
 
   useEffect(() => {
     const onConnectionStateChanged = ({ detail }: CustomEvent) => {
@@ -265,11 +264,10 @@ export const ModelingMachineProvider = ({
     // While you are in sketch mode you should be able to control the enable rotate
     // Once you exit it goes back to normal
     if (inSketchMode) {
-      kclManager.sceneInfra.camControls.enableRotate =
-        allowOrbitInSketchMode.current
+      sceneInfra.camControls.enableRotate = allowOrbitInSketchMode.current
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [allowOrbitInSketchMode.current])
+  }, [allowOrbitInSketchMode.current, sceneInfra])
 
   useModelingMachineCommands({
     machineId: 'modeling',

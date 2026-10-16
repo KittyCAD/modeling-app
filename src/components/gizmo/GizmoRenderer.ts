@@ -1,3 +1,4 @@
+import { disposeGroupChildren } from '@src/clientSideScene/sceneHelpers'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { DprDetector } from '@src/lib/DprDetector'
 import { btnName } from '@src/lib/cameraControls'
@@ -25,16 +26,31 @@ import {
 } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
-// Resolve assets via Vite so they work in browser and Electron (dev and packaged)
-// Using ?url ensures bundler emits the asset and gives us a valid runtime URL.
-import gizmoModelUrl from '/clientSideSceneAssets/gizmo_cube/gizmo_cube.glb?url'
-import labelsDarkUrl from '/clientSideSceneAssets/gizmo_cube/labels_dark.png?url'
-import labelsDarkHoverUrl from '/clientSideSceneAssets/gizmo_cube/labels_dark_hover.png?url'
-import labelsLightUrl from '/clientSideSceneAssets/gizmo_cube/labels_light.png?url'
-import labelsLightHoverUrl from '/clientSideSceneAssets/gizmo_cube/labels_light_hover.png?url'
+// Resolve assets through Vite for browser and packaged Electron builds.
+const gizmoModelUrl = new URL(
+  '../../../public/clientSideSceneAssets/gizmo_cube/gizmo_cube.glb',
+  import.meta.url
+).href
+const labelsDarkUrl = new URL(
+  '../../../public/clientSideSceneAssets/gizmo_cube/labels_dark.png',
+  import.meta.url
+).href
+const labelsDarkHoverUrl = new URL(
+  '../../../public/clientSideSceneAssets/gizmo_cube/labels_dark_hover.png',
+  import.meta.url
+).href
+const labelsLightUrl = new URL(
+  '../../../public/clientSideSceneAssets/gizmo_cube/labels_light.png',
+  import.meta.url
+).href
+const labelsLightHoverUrl = new URL(
+  '../../../public/clientSideSceneAssets/gizmo_cube/labels_light_hover.png',
+  import.meta.url
+).href
 
 export default class GizmoRenderer {
-  private readonly canvas: HTMLCanvasElement
+  readonly canvas = document.createElement('canvas')
+  private disposed = false
   private readonly renderer: WebGLRenderer
   private readonly scene: Scene
   private readonly dprDetector: DprDetector
@@ -72,14 +88,12 @@ export default class GizmoRenderer {
   }
 
   constructor(
-    canvas: HTMLCanvasElement,
     isPerspective: boolean,
     theme: 'light' | 'dark',
     sceneInfra: SceneInfra
   ) {
-    this.canvas = canvas
     this.renderer = new WebGLRenderer({
-      canvas,
+      canvas: this.canvas,
       antialias: true,
       alpha: true,
       preserveDrawingBuffer: true,
@@ -111,6 +125,7 @@ export default class GizmoRenderer {
     this.camera = createCamera(isPerspective)
     this.setPerspective(isPerspective)
     this.theme = this.setTheme(theme)
+    this.onCameraChange()
 
     this.loadModel()
   }
@@ -174,6 +189,10 @@ export default class GizmoRenderer {
       gizmoModelUrl,
       (gltf) => {
         const root = gltf.scene
+        if (this.disposed) {
+          disposeGroupChildren(root)
+          return
+        }
         root.position.set(0, 0, 0)
         root.scale.set(1.05, 1.05, 1.05)
         this.scene.add(root)
@@ -295,6 +314,7 @@ export default class GizmoRenderer {
   }
 
   private invalidate() {
+    if (this.disposed) return
     this.needsToRender = true
     if (!(this.raf > -1)) {
       this.raf = requestAnimationFrame(this.onFrame)
@@ -318,6 +338,16 @@ export default class GizmoRenderer {
   }
 
   public dispose() {
+    if (this.disposed) return
+    this.disposed = true
+    this.canvas.remove()
+    disposeGroupChildren(this.scene)
+    for (const theme of Object.values(this.materials)) {
+      for (const material of Object.values(theme)) material.dispose()
+    }
+    for (const texture of this._textures.values()) texture.dispose()
+    this._textures.clear()
+
     this.canvas.removeEventListener('mousemove', this.onMouseMove)
     this.canvas.removeEventListener('mouseleave', this.onMouseLeaveCanvas)
     this.canvas.removeEventListener('mousedown', this.onMouseDown)
@@ -492,6 +522,7 @@ export default class GizmoRenderer {
       // baseMap is defined but not loaded yet
       this.loadTexture(baseMapUrl)
         .then((texture) => {
+          if (this.disposed) return
           material.map = texture
           material.color.setHex(0xffffff)
           material.needsUpdate = true
@@ -519,6 +550,12 @@ export default class GizmoRenderer {
         loader.load(
           url,
           (texture) => {
+            if (this.disposed) {
+              texture.dispose()
+              resolve(texture)
+              return
+            }
+            this._textures.set(url, texture)
             texture.flipY = false
             texture.colorSpace = SRGBColorSpace
             texture.anisotropy = this.renderer.capabilities.getMaxAnisotropy()

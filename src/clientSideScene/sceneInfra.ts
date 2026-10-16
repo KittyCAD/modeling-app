@@ -1,3 +1,5 @@
+import GizmoRenderer from '@src/components/gizmo/GizmoRenderer'
+import AxisGizmoRenderer from '@src/components/gizmo/AxisGizmoRenderer'
 import * as TWEEN from '@tweenjs/tween.js'
 import { Object3D } from 'three'
 import type { Group, Intersection } from 'three'
@@ -15,6 +17,7 @@ import {
 } from 'three'
 import { CSS2DRenderer } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
+import { disposeGroupChildren } from '@src/clientSideScene/sceneHelpers'
 import { CameraControls } from '@src/clientSideScene/CameraControls'
 import { orthoScale, perspScale } from '@src/clientSideScene/helpers'
 import {
@@ -93,7 +96,7 @@ export interface OnAreaSelectCallbackArgs {
   intersects: Intersection[]
 }
 
-// This singleton class is responsible for all of the under the hood setup for the client side scene.
+// This editor-owned class is responsible for all of the under the hood setup for the client side scene.
 // That is the cameras and switching between them, raycasters for click mouse events and their abstractions (onClick etc), setting up controls.
 // Anything that added the the scene for the user to interact with is probably in SceneEntities.ts
 
@@ -334,6 +337,20 @@ export class SceneInfra {
   private isRenderingPaused = false
   private lastFrameTime = 0
   private animationFrameId = -1
+  private disposed = false
+  private cubeGizmo: GizmoRenderer | undefined
+  private axisGizmo: AxisGizmoRenderer | undefined
+
+  /** Gizmos share the scene lifetime; React only attaches their canvases. */
+  getCubeGizmo(theme: 'light' | 'dark') {
+    if (this.disposed) return
+    return (this.cubeGizmo ??= new GizmoRenderer(false, theme, this))
+  }
+
+  getAxisGizmo() {
+    if (this.disposed) return
+    return (this.axisGizmo ??= new AxisGizmoRenderer(this))
+  }
 
   constructor(
     engineCommandManager: ConnectionManager,
@@ -399,6 +416,7 @@ export class SceneInfra {
   // See:
   // https://webglfundamentals.org/webgl/lessons/webgl-resizing-the-canvas.html
   onCanvasResized = () => {
+    if (this.disposed) return
     const cssSize = [
       this.renderer.domElement.clientWidth,
       this.renderer.domElement.clientHeight,
@@ -423,6 +441,7 @@ export class SceneInfra {
   }
 
   animate = () => {
+    if (this.disposed) return
     this.animationFrameId = requestAnimationFrame(this.animate)
     TWEEN.update() // This will update all tweens during the animation loop
     if (!this.isFovAnimationInProgress) {
@@ -466,13 +485,22 @@ export class SceneInfra {
     }
   }
 
-  // Note this was never getting called, SceneInfra is created once and never disposed.
-  // dispose = () => {
-  //   // Dispose of scene resources, renderer, and controls
-  //   this.renderer.forceContextLoss()
-  //   this.renderer.dispose()
-  //   // Dispose of any other resources like geometries, materials, textures
-  // }
+  /** Release the client scene with its file editor. */
+  dispose() {
+    if (this.disposed) return
+    this.disposed = true
+    this.stop()
+    this.cubeGizmo?.dispose()
+    this.axisGizmo?.dispose()
+    this.renderer.domElement.remove()
+    this.labelRenderer.domElement.remove()
+    this.camControls.dispose()
+    this.camControls.cameraChange.remove(this.onCameraChange)
+    this.setOnBeforeRender(null)
+    disposeGroupChildren(this.scene)
+    this.renderer.dispose()
+    this.renderer.forceContextLoss()
+  }
 
   getClientSceneScaleFactor(target?: Mesh | Group | null) {
     const orthoFactor = orthoScale(this.camControls.camera)

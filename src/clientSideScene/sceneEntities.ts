@@ -209,7 +209,7 @@ function setAxisVisualVisibility(axis: Object3D | undefined, visible: boolean) {
   axis.material.visible = visible
 }
 
-// This singleton Class is responsible for all of the things the user sees and interacts with.
+// This editor-owned class is responsible for all of the things the user sees and interacts with.
 // That mostly mean sketch elements.
 // Cameras, controls, raycasters, etc are handled by sceneInfra
 export class SceneEntities {
@@ -225,6 +225,17 @@ export class SceneEntities {
   draftPointGroups: Group[] = []
   currentSketchQuaternion: Quaternion | null = null
   getSettings: () => SettingsType
+
+  private disposed = false
+  private readonly disposeCameraSubscription: () => void
+  private readonly disposeUnitSubscription: () => void
+
+  dispose() {
+    if (this.disposed) return
+    this.disposed = true
+    this.disposeCameraSubscription()
+    this.disposeUnitSubscription()
+  }
 
   constructor(
     engineCommandManager: ConnectionManager,
@@ -246,10 +257,11 @@ export class SceneEntities {
     this.sketchSolveGroup = SceneEntities.createSketchSolveGroup(
       this.sceneInfra
     )
-    this.sceneInfra.camControls.cameraChange.add(() => {
-      this.onCamChange().catch(reportRejection)
-    })
-    this.sceneInfra.baseUnitChange.add(() => {
+    this.disposeCameraSubscription =
+      this.sceneInfra.camControls.cameraChange.add(() => {
+        this.onCamChange().catch(reportRejection)
+      })
+    this.disposeUnitSubscription = this.sceneInfra.baseUnitChange.add(() => {
       this.onCamChange().catch(reportRejection)
     })
   }
@@ -283,7 +295,9 @@ export class SceneEntities {
   }
 
   onCamChange = async () => {
+    if (this.disposed) return
     const wasmInstance = await this.kclManager.wasmInstancePromise
+    if (this.disposed) return
     const orthoFactor = orthoScale(this.sceneInfra.camControls.camera)
     const callbacks: (() => SegmentOverlayPayload | null)[] = []
     Object.values(this.activeSegments).forEach((segment, _index) => {
