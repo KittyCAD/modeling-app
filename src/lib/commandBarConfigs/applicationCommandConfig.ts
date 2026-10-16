@@ -623,7 +623,7 @@ export function createApplicationCommands({
         )
       }
 
-      return window.electron.appCheckForUpdates()
+      return window.electron.appCheckForUpdates().catch(reportRejection)
     },
   }
 

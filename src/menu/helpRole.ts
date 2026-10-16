@@ -1,11 +1,11 @@
 import type { BrowserWindow } from 'electron'
 import { shell } from 'electron'
 
+import { checkForUpdates } from '@src/lib/desktopUpdater'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { sendMenuAction } from '@src/menu/channels'
 import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
-import { autoUpdater as appUpdater } from 'electron-updater'
 
 export const helpRole = (
   mainWindow: BrowserWindow
@@ -93,7 +93,7 @@ export const helpRole = (
         id: 'Help.Check for updates',
         label: 'Check for Updates',
         click: () => {
-          appUpdater.checkForUpdates().catch(reportRejection)
+          checkForUpdates().catch(reportRejection)
         },
       },
       { type: 'separator' },
