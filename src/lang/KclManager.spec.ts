@@ -1481,7 +1481,7 @@ describe('KclManager diagnostics', () => {
       .spyOn(kclManager.textFileIO, 'read')
       .mockResolvedValue('opened code')
     const watchSpy = vi
-      .spyOn(File.ioImplementations, 'watch')
+      .spyOn(kclManager.textFileIO, 'watch')
       .mockImplementation(() => {})
 
     const opened = await KclManager.fromFile(

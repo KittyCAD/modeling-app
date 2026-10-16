@@ -122,7 +122,10 @@ export async function buildTheWorldAndConnectToEngine({
   )
   const kclManager = new KclManager('some-file', '', {
     fileOperations: testFileOperations,
-    textFileIO: createTextFileIO(testFileOperations),
+    textFileIO: createTextFileIO(testFileOperations, {
+      watch: () => {},
+      unwatch: () => {},
+    }),
     wasmInstancePromise: instancePromise,
     settings: settingsActor,
     commandBar: commandBarActor,
@@ -238,7 +241,10 @@ export async function buildTheWorldAndNoEngineConnection(
   )
   const kclManager = new KclManager('some-file', '', {
     fileOperations: testFileOperations,
-    textFileIO: createTextFileIO(testFileOperations),
+    textFileIO: createTextFileIO(testFileOperations, {
+      watch: () => {},
+      unwatch: () => {},
+    }),
     wasmInstancePromise: instancePromise,
     settings: settingsActor,
     commandBar: commandBarActor,

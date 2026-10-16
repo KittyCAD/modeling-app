@@ -42,7 +42,7 @@ export class File extends EventTarget {
     if (this.watching || this.path.length < 1) {
       return
     }
-    File.ioImplementations.watch(this.path, this.fileWatcherKey, (e, p) => {
+    this.textFileIO.watch(this.path, this.fileWatcherKey, (e, p) => {
       this.onWatchEvent.map((f) => f(e, p))
     })
     this.watching = true
@@ -52,7 +52,7 @@ export class File extends EventTarget {
     if (!this.watching) {
       return
     }
-    File.ioImplementations.unwatch(this.path, this.fileWatcherKey)
+    this.textFileIO.unwatch(this.path, this.fileWatcherKey)
     this.watching = false
   }
 
@@ -72,11 +72,5 @@ export class File extends EventTarget {
       path: this.pathSignal.value,
       text,
     }))
-  }
-
-  /** Platform watch hooks; text reads and writes are injected per file. */
-  static ioImplementations = {
-    watch: window.electron?.watchFileOn || (() => {}),
-    unwatch: window.electron?.watchFileOff || (() => {}),
   }
 }

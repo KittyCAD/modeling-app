@@ -19,11 +19,17 @@ export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
   const project = signal<ZDSProject | undefined>(undefined)
   const currentProjectLibraryId = signal<string | undefined>(undefined)
   let textFileIO: TextFileIO | undefined
+  const electron = window.electron
 
   const serviceImpl: ProjectSessionService = {
     get textFileIO() {
       return (textFileIO ??= createTextFileIO(
-        ctx.services.get(fileOperationsService)
+        ctx.services.get(fileOperationsService),
+        {
+          watch: (path, key, onEvent) =>
+            electron?.watchFileOn(path, key, onEvent),
+          unwatch: (path, key) => electron?.watchFileOff(path, key),
+        }
       ))
     },
     project,
