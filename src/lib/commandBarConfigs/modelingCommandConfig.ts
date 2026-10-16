@@ -124,6 +124,7 @@ const sketchOrBodySelectionTypes: CommandSelectionType[] = [
   ...objectSelection.selectionTypes,
   'solid2d',
   'pathRegion',
+  'sketchBlock',
 ]
 
 // For all surface modeling commands
@@ -1547,11 +1548,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       overrides: {
         objects: {
           ...objectSelection,
-          selectionTypes: [
-            ...sketchOrBodySelectionTypes,
-            'helix',
-            'sketchBlock',
-          ],
+          selectionTypes: [...sketchOrBodySelectionTypes, 'helix'],
           multiple: true,
         },
       },

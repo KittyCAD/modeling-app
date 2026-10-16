@@ -481,7 +481,7 @@ describe('Transform arguments', () => {
     }
   })
 
-  it('accepts helices only for supported transforms', () => {
+  it('accepts sketches and helices only for supported transforms', () => {
     for (const commandName of [
       'Translate',
       'Rotate',
@@ -498,6 +498,7 @@ describe('Transform arguments', () => {
         throw new Error(`${commandName}.objects should be a selection argument`)
       }
       const selectionTypes = objectsArg.selectionTypes
+      expect(selectionTypes).toContain('sketchBlock')
       if (
         commandName === 'Translate' ||
         commandName === 'Scale' ||

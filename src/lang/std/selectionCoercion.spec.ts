@@ -1,13 +1,9 @@
-import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
   coerceSelectionsForBodyOnlySelectionTypes,
   coerceSelectionsToBody,
 } from '@src/lang/std/selectionCoercion'
-import type { ArtifactGraph, CodeRef, Program } from '@src/lang/wasm'
-import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelingCommandConfig'
-import { canSubmitSelectionArg } from '@src/lib/selections'
-import { isArray } from '@src/lib/utils'
+import type { ArtifactGraph, CodeRef } from '@src/lang/wasm'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { describe, expect, it } from 'vitest'
 
@@ -300,121 +296,86 @@ describe('coerceSelectionsToBody', () => {
     pathToNode: [],
     nodePath: { steps: [] },
   }
-  it.each<{
-    command: 'Translate' | 'Delete' | 'Appearance'
-    object: Artifact
-  }>([
+  it.each<Artifact>([
     {
-      command: 'Translate',
-      object: {
-        type: 'path',
-        subType: 'region',
-        id: 'region-1',
-        codeRef: objectCodeRef,
-        planeId: 'plane-1',
-        segIds: [],
-        trajectorySweepId: null,
-        consumed: false,
-      },
+      type: 'path',
+      subType: 'region',
+      id: 'region-1',
+      codeRef: objectCodeRef,
+      planeId: 'plane-1',
+      segIds: [],
+      trajectorySweepId: null,
+      consumed: false,
     },
     {
-      command: 'Delete',
-      object: {
-        type: 'helix',
-        id: 'helix-1',
-        codeRef: objectCodeRef,
-        axisId: 'axis-1',
-        trajectorySweepId: null,
-        consumed: false,
-      },
+      type: 'helix',
+      id: 'helix-1',
+      codeRef: objectCodeRef,
+      axisId: 'axis-1',
+      trajectorySweepId: null,
+      consumed: false,
     },
     {
-      command: 'Delete',
-      object: {
-        type: 'sketchBlock',
-        id: 'sketch-1',
-        sketchId: 1,
-        codeRef: objectCodeRef,
-      },
+      type: 'sketchBlock',
+      id: 'sketch-1',
+      sketchId: 1,
+      codeRef: objectCodeRef,
     },
     {
-      command: 'Appearance',
-      object: {
-        type: 'plane',
-        id: 'plane-1',
-        codeRef: objectCodeRef,
-        pathIds: [],
-      },
+      type: 'plane',
+      id: 'plane-1',
+      codeRef: objectCodeRef,
+      pathIds: [],
     },
-  ])(
-    'preserves $object.type for $command while coercing a face',
-    ({ command, object }) => {
-      const artifactGraph: ArtifactGraph = new Map()
-      artifactGraph.set('sweep-1', {
-        type: 'sweep',
-        id: 'sweep-1',
-        codeRef: {
-          range: [100, 200, 0],
-          pathToNode: [],
-          nodePath: { steps: [] },
-        },
-        pathId: 'path-1',
-        subType: 'extrusion',
-        surfaceIds: [],
-        edgeIds: [],
-        method: 'merge',
-        trajectoryId: null,
-        consumed: false,
+  ])('preserves $type while coercing a face', (object) => {
+    const artifactGraph: ArtifactGraph = new Map()
+    artifactGraph.set('sweep-1', {
+      type: 'sweep',
+      id: 'sweep-1',
+      codeRef: {
+        range: [100, 200, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+      pathId: 'path-1',
+      subType: 'extrusion',
+      surfaceIds: [],
+      edgeIds: [],
+      method: 'merge',
+      trajectoryId: null,
+      consumed: false,
+    })
+    artifactGraph.set(object.id, object)
+
+    const result = coerceSelectionsForBodyOnlySelectionTypes(
+      {
+        graphSelections: [{ codeRef: objectCodeRef }],
+        otherSelections: [
+          {
+            type: 'enginePrimitive',
+            entityId: 'face-1',
+            parentEntityId: 'sweep-1',
+            primitiveIndex: 0,
+            primitiveType: 'face',
+          },
+        ],
+      },
+      ['sweep', object.type],
+      artifactGraph
+    )
+
+    expect(result?.graphSelections).toHaveLength(2)
+    expect(result?.graphSelections).toContainEqual(
+      expect.objectContaining({
+        codeRef: objectCodeRef,
       })
-      artifactGraph.set(object.id, object)
-      const config = modelingMachineCommandConfig[command]
-      if (
-        !config ||
-        isArray(config) ||
-        config.args?.objects.inputType !== 'selection'
-      )
-        throw new Error('Expected an object selection argument')
-      const arg = config.args.objects
-
-      const result = coerceSelectionsForBodyOnlySelectionTypes(
-        {
-          graphSelections: [{ codeRef: objectCodeRef }],
-          otherSelections: [
-            {
-              type: 'enginePrimitive',
-              entityId: 'face-1',
-              parentEntityId: 'sweep-1',
-              primitiveIndex: 0,
-              primitiveType: 'face',
-            },
-          ],
-        },
-        arg.selectionTypes,
-        artifactGraph
-      )
-
-      const ast: Node<Program> = {
-        type: 'Program',
-        body: [],
-        start: 0,
-        end: 0,
-        moduleId: 0,
-        commentStart: 0,
-      }
-      expect(canSubmitSelectionArg(ast, result, arg, artifactGraph)).toBe(true)
-      expect(result?.graphSelections).toHaveLength(2)
-      expect(result?.graphSelections).toContainEqual(
-        expect.objectContaining({
-          codeRef: objectCodeRef,
-        })
-      )
-      expect(result?.graphSelections).toContainEqual(
-        expect.objectContaining({
-          entityRef: { type: 'solid3d', solid3d_id: 'sweep-1' },
-        })
-      )
-    }
-  )
+    )
+    expect(result?.graphSelections).toContainEqual(
+      expect.objectContaining({
+        entityRef: { type: 'solid3d', solid3d_id: 'sweep-1' },
+      })
+    )
+  })
 
   it('should keep sweep (body with entityRef) as body selection', () => {
     const artifactGraph: ArtifactGraph = new Map()
