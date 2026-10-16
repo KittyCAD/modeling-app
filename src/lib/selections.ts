@@ -2601,7 +2601,6 @@ export function getSelectionCountByType(
       artifact.type === 'helix' ||
       artifact.type === 'plane' ||
       artifact.type === 'sketchBlock' ||
-      artifact.type === 'importedGeometry' ||
       artifact.type === 'gdtAnnotation'
     ) {
       incrementOrInitializeSelectionType(artifact.type)

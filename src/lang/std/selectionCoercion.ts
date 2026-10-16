@@ -84,7 +84,6 @@ export function coerceSelectionsToBody(
       artifact.type === 'plane' ||
       artifact.type === 'sketchBlock' ||
       artifact.type === 'solid2d' ||
-      artifact.type === 'importedGeometry' ||
       artifact.type === 'gdtAnnotation'
     ) {
       appendBody({ ...selection, ...resolved, artifact })
@@ -157,7 +156,6 @@ export function coerceSelectionsForBodyOnlySelectionTypes(
         'solid2d',
         'helix',
         'plane',
-        'importedGeometry',
         'gdtAnnotation',
       ].includes(type)
     )

@@ -328,12 +328,6 @@ describe('coerceSelectionsToBody', () => {
       pathIds: [],
     },
     {
-      type: 'importedGeometry',
-      id: 'import-1',
-      codeRef: objectCodeRef,
-      consumed: false,
-    },
-    {
       type: 'gdtAnnotation',
       id: 'annotation-1',
       codeRef: objectCodeRef,

@@ -120,13 +120,8 @@ const objectSelection: {
   allowCodeReferences: true,
 }
 
-const bodyOrImportedGeometrySelectionTypes: CommandSelectionType[] = [
-  ...objectSelection.selectionTypes,
-  'importedGeometry',
-]
-
 const sketchOrBodySelectionTypes: CommandSelectionType[] = [
-  ...bodyOrImportedGeometrySelectionTypes,
+  ...objectSelection.selectionTypes,
   'solid2d',
   'pathRegion',
   'sketchBlock',
@@ -1530,7 +1525,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             ...objectSelection,
-            selectionTypes: [...bodyOrImportedGeometrySelectionTypes, 'plane'],
+            selectionTypes: [...objectSelection.selectionTypes, 'plane'],
             multiple: true,
             hidden: isEditingNodeSelection,
           },
@@ -1768,7 +1763,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       overrides: {
         solids: {
           ...objectSelection,
-          selectionTypes: bodyOrImportedGeometrySelectionTypes,
           multiple: true,
           hidden: isEditingNodeSelection,
         },
@@ -1807,7 +1801,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           solids: {
             ...objectSelection,
-            selectionTypes: bodyOrImportedGeometrySelectionTypes,
             multiple: true,
             hidden: isEditingNodeSelection,
           },
