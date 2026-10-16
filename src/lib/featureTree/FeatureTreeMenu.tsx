@@ -3,6 +3,7 @@ import { Menu } from '@headlessui/react'
 import { useApp } from '@src/lib/boot'
 
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
+import styles from '@src/components/layout/areas/KclEditorMenu.module.css'
 
 export const FeatureTreeMenu = () => {
   const { commands } = useApp()
