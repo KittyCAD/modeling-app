@@ -345,3 +345,35 @@ Before you submit a contribution PR to this repo, please ensure that:
   - `npm run tsc`
   - `npm run test`
   - Here they are all together: `npm run fmt && npm run tsc && npm run test`
+
+## Running a custom app composition
+
+Desktop builds accept `--app-config <path>` to select bundled extensions from a
+TOML app manifest. Start with the compact example, which omits the command-bar
+button, publishing, and slicer export:
+
+```sh
+npm run tron:start -- -- --app-config examples/app-configs/compact.toml
+```
+
+The first `--` forwards arguments through npm; the second forwards them through
+Electron Forge. For a built app, pass `--app-config /absolute/path/to/app.toml`
+to its executable directly. Relative paths resolve against the launch directory.
+
+Quit the entire app before launching with a different configuration. The manifest
+is read once per process; reloads and additional windows keep the same selection.
+Omitting the argument uses the normal default composition. An unreadable or invalid
+manifest shows a startup error and exits rather than opening the default app.
+
+The manifest supports either `base = "zoo:default"` with `[extensions]` `add` and
+`exclude` arrays, or a standalone `[extensions]` `include` array. See
+`src/registry/fixtures/app-manifests/explicit.toml` for the explicit form.
+Entries marked `requiredForStartup` in `src/registry/catalogMetadata.ts` cannot be
+removed yet because the current app shell requires their services. Excluded
+plugins are unavailable even if user settings previously enabled them. Included
+plugins retain their normal settings-driven activation; inclusion alone does not
+enable a plugin. Changing extension selection does not isolate user settings or
+project storage between app variants.
+
+Configuration selects bundled code only. There is no remote extension loading,
+build-time selection, or configuration-file support on web in this phase.

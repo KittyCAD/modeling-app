@@ -94,10 +94,12 @@ import {
   type ZdsPluginActivationSetting,
   zdsPluginActivationSettingsValueSpec,
 } from '@src/registry/createZdsPlugin'
+import type { BundledRegistryItemId } from '@src/registry/catalogMetadata'
+import { defaultRegistryItemIds } from '@src/registry/defaultComposition'
 import {
   appRegistryOverridesSlot,
   appRegistryServicesSlot,
-  coreRegistryItems,
+  getRegistryItems,
 } from '@src/registry/registry'
 import type { SnapshotFrom, Subscription } from 'xstate'
 import { createActor } from 'xstate'
@@ -105,6 +107,7 @@ import { createActor } from 'xstate'
 const appCommandsSlot = new Slot()
 
 type AppRegistryOptions = {
+  registryItemIds?: readonly BundledRegistryItemId[]
   registryOverrides?: readonly RegistryItem[]
 }
 
@@ -287,6 +290,7 @@ export class App implements AppSubsystems {
    */
   static getDefaultSystems({
     registryOverrides = [],
+    registryItemIds = defaultRegistryItemIds,
   }: AppRegistryOptions = {}) {
     const appRegistry = new Registry()
     appRegistry.configure([
@@ -294,7 +298,7 @@ export class App implements AppSubsystems {
       appCommandsSlot.of(),
       appRegistryServicesSlot.of(),
       engineSceneRuntimeExtensionsSlot.of(),
-      ...coreRegistryItems,
+      ...getRegistryItems(registryItemIds),
     ])
     const wasmPromise =
       appRegistry.get(wasmPromiseValueSpec) ??
@@ -328,8 +332,8 @@ export class App implements AppSubsystems {
   }
 
   /** Instantiate an App with all the default subsystems */
-  static fromDefaults(): App {
-    const defaults = App.getDefaultSystems()
+  static fromDefaults(options: AppRegistryOptions = {}): App {
+    const defaults = App.getDefaultSystems(options)
     return new App(defaults)
   }
 
@@ -341,8 +345,11 @@ export class App implements AppSubsystems {
     provided: Partial<ReturnType<typeof App.getDefaultSystems>> &
       AppRegistryOptions = {}
   ) {
-    const { registryOverrides, ...subsystems } = provided
-    const defaults = App.getDefaultSystems({ registryOverrides })
+    const { registryOverrides, registryItemIds, ...subsystems } = provided
+    const defaults = App.getDefaultSystems({
+      registryOverrides,
+      registryItemIds,
+    })
     const combined = Object.assign(defaults, subsystems)
     return new App(combined)
   }

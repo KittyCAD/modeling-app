@@ -1,4 +1,4 @@
-# Data-only example. Startup loading is introduced separately.
+# Pass with --app-config to omit publishing from the default app.
 schema-version = 1
 base = "zoo:default"
 

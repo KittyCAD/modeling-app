@@ -29,6 +29,7 @@ import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
+import { defaultRegistryItemIds } from '@src/registry/defaultComposition'
 import { createTestWasmRegistryItem } from '@src/unitTestUtils'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 
@@ -250,6 +251,32 @@ function hasDefaultDirectoryLibrarySetting(app: App) {
 }
 
 describe('project system', () => {
+  it('uses the supplied composition without installing omitted plugins', async () => {
+    const app = createAppForTest({
+      registryItemIds: defaultRegistryItemIds.filter(
+        (id) => id !== 'zoo:commandBar' && id !== 'zoo:slicer'
+      ),
+    })
+    try {
+      await waitForSettingsIdle(app)
+      const plugins = app.registry.get(pluginsValueSpec)
+      expect(
+        plugins.some(
+          (plugin) => plugin.id === 'command-bar' || plugin.id === 'slicer'
+        )
+      ).toBe(false)
+      expect(
+        app.registry
+          .get(appHeaderItemsValueSpec)
+          .some((item) => item.id === 'command-bar.open')
+      ).toBe(false)
+      app.syncPluginSettingsFromCurrent()
+      expect(app.registry.get(pluginsValueSpec)).toEqual(plugins)
+    } finally {
+      app.dispose()
+    }
+  })
+
   it('always closes a the last project before opening a new one', async () => {
     const app = createAppForTest()
     vi.fn(window.electron?.watchFileOn).mockImplementation(() => {})

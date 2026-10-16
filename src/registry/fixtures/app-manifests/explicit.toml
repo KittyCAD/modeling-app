@@ -1,5 +1,5 @@
 # Explicit form of the current default composition; order is significant.
-# This file is a format example, not yet a supported startup argument.
+# Pass with --app-config to make the default selection explicit.
 schema-version = 1
 
 [extensions]

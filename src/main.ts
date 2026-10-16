@@ -56,11 +56,13 @@ import {
 import { getAllowedExternalURL } from '@src/lib/externalUrls'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
 import { prepareMacUpdateInstall } from '@src/lib/macUpdateInstall'
-import { reportRejection } from '@src/lib/trap'
+import { isErr, reportRejection } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { WindowMenuManager, isAppMenuPage } from '@src/menu/windowMenus'
-import { bundledElectronPluginRegistrations } from '@src/registry/electronPlugins'
+import { selectElectronPlugins } from '@src/registry/electronPlugins'
+import { loadAppStartupComposition } from '@src/registry/loadAppComposition'
+import { APP_STARTUP_COMPOSITION_CHANNEL } from '@src/registry/startupComposition'
 import {
   PLUGIN_IPC_SYNC_ACTIVE_PLUGINS_CHANNEL,
   type PluginIpcChannel,
@@ -71,7 +73,10 @@ import { configureSystemCertificates } from '@src/systemCertificates'
 const activeElectronPluginIds = new Set<string>()
 
 function isPluginEnabled(pluginId: string) {
-  return activeElectronPluginIds.has(pluginId)
+  return (
+    selectedElectronPlugins.some((plugin) => plugin.pluginId === pluginId) &&
+    activeElectronPluginIds.has(pluginId)
+  )
 }
 
 function handlePluginInvoke(
@@ -92,8 +97,8 @@ function handlePluginInvoke(
 }
 
 function registerElectronPluginModules() {
-  for (const register of bundledElectronPluginRegistrations) {
-    register({
+  for (const plugin of selectedElectronPlugins) {
+    plugin.register({
       ipcMain,
       isPluginEnabled,
       handlePluginInvoke,
@@ -126,6 +131,15 @@ type MachineApiSignal = 'on' | 'off'
 
 // Check the command line arguments for a project path
 const args = parseCLIArgs(process.argv)
+const startupComposition = loadAppStartupComposition(args, process.cwd())
+const selectedElectronPlugins = isErr(startupComposition)
+  ? []
+  : selectElectronPlugins(startupComposition.registryItemIds)
+
+ipcMain.handle(APP_STARTUP_COMPOSITION_CHANNEL, () => {
+  if (isErr(startupComposition)) return Promise.reject(startupComposition)
+  return startupComposition
+})
 let startupMacOpenFiles: string[] = []
 let startupOpenUrls: string[] = []
 type DeviceFlowHandle = {
@@ -641,6 +655,15 @@ app.on('ready', (event, data) => {
   // Avoid potentially 2 ready fires
   if (mainWindow) return
 
+  if (isErr(startupComposition)) {
+    dialog.showErrorBox(
+      'Unable to start app configuration',
+      startupComposition.message
+    )
+    app.exit(1)
+    return
+  }
+
   registerFileProtocolCsp()
 
   // Create the mainWindow
@@ -1062,6 +1085,13 @@ const resolveProjectPathForWindow = async (
 function registerStartupListeners() {
   // Linux and Windows from electronjs dot org/docs/latest/tutorial/launch-app-from-url-in-another-app
   app.on('second-instance', (event, commandLine, workingDirectory) => {
+    if (parseCLIArgs(commandLine)['app-config'] !== undefined) {
+      dialog.showErrorBox(
+        'App configuration already selected',
+        'Quit all running app windows before starting with --app-config. Every window in a running app shares its startup configuration.'
+      )
+      return
+    }
     // Deep Link: second instance for Windows and Linux
     // Likely convenient to keep for debugging
     console.log(

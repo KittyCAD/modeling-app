@@ -40,7 +40,12 @@ if (typeof window !== 'undefined' && isPlaywright()) {
  * from its class definition. This app instance should not be referenced by any tests, but rather
  * created anew.
  */
-export const app = App.fromDefaults()
+const startupComposition = window.electron
+  ? await window.electron.getStartupComposition()
+  : undefined
+export const app = App.fromDefaults({
+  registryItemIds: startupComposition?.registryItemIds,
+})
 export const AppContext = React.createContext(app)
 window.app = app
 

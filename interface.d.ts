@@ -1,3 +1,4 @@
+import type { AppStartupComposition } from '@src/registry/startupComposition'
 import type { MachinesListing } from 'components/MachineManagerProvider'
 import 'electron'
 import type { Stats } from 'fs'
@@ -25,6 +26,7 @@ export type DeviceFlowAuthorization = {
 }
 
 export interface IElectronAPI {
+  getStartupComposition: () => Promise<AppStartupComposition>
   drainElectronLifecycleReports: () => Promise<ElectronLifecycleReport[]>
   onElectronLifecycleReportAvailable: (callback: () => void) => () => void
   resizeWindow: (width: number, height: number) => Promise<void>
