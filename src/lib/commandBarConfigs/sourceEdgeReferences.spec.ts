@@ -44,21 +44,21 @@ afterAll(() => {
   })
 })
 
-// Legacy sketch compatibility: code selection must preserve the original physical edge.
+// Neither extrusion direction makes a source segment an unambiguous solid edge.
 it.each(
   [
-    { command: 'Fillet' as const, length: 12, cap: 'capStart001' },
-    { command: 'Fillet' as const, length: -12, cap: 'capEnd001' },
-    { command: 'Chamfer' as const, length: 12, cap: 'capStart001' },
-    { command: 'Chamfer' as const, length: -12, cap: 'capEnd001' },
-    { command: 'GDT Straightness' as const, length: 12, cap: 'capStart001' },
-    { command: 'GDT Straightness' as const, length: -12, cap: 'capEnd001' },
+    { command: 'Fillet' as const, length: 12 },
+    { command: 'Fillet' as const, length: -12 },
+    { command: 'Chamfer' as const, length: 12 },
+    { command: 'Chamfer' as const, length: -12 },
+    { command: 'GDT Straightness' as const, length: 12 },
+    { command: 'GDT Straightness' as const, length: -12 },
   ].flatMap((example) =>
     ['legacy', 'sketch block'].map((sketch) => ({ ...example, sketch }))
   )
 )(
-  'preserves the source edge for $command with extrusion length $length ($sketch)',
-  async ({ command, length, cap, sketch }) => {
+  'rejects code-selected segments for $command with extrusion length $length ($sketch)',
+  async ({ command, length, sketch }) => {
     const code =
       sketch === 'legacy'
         ? `@settings(kclVersion = 1.0)
@@ -111,6 +111,7 @@ extrude001 = extrude(region001, length = ${length})`
       kclManager: world.kclManager,
       wasmInstance: world.instance,
     }
+    const send = vi.spyOn(world.engineCommandManager, 'sendSceneCommand')
     const result =
       command === 'Fillet'
         ? await modelingCommandCodemods.Fillet.run({
@@ -126,42 +127,14 @@ extrude001 = extrude(region001, length = ${length})`
               ...context,
               args: { objects: selection, tolerance: size, framePlane: 'XZ' },
             })
-    if (isErr(result)) throw result
-    const output = recast(result.modifiedAst, world.instance)
-    if (isErr(output)) throw output
-    expect(output).toContain(
-      command === 'GDT Straightness' ? cap : `extrude001.faces.${cap}`
+    expect(send).not.toHaveBeenCalled()
+    send.mockRestore()
+    expect(result).toEqual(
+      new Error('Sketch segments cannot be used as solid-edge selections.')
     )
-    expect(output).toContain('sideFaces')
-    expect(output).not.toContain(
-      cap === 'capEnd001' ? 'capStart001' : 'capEnd001'
+    expect(recast(ast, world.instance)).toEqual(
+      recast(world.kclManager.ast, world.instance)
     )
-    if (command === 'Fillet' && length < 0 && sketch === 'legacy') {
-      const manager = world.engineCommandManager
-      const send = manager.sendSceneCommand.bind(manager)
-      const spy = vi
-        .spyOn(manager, 'sendSceneCommand')
-        .mockImplementation(async (...args) => {
-          const response = await send(...args)
-          world.kclManager.ast = structuredClone(world.kclManager.ast)
-          return response
-        })
-      try {
-        const staleResult = await modelingCommandCodemods.Fillet.run({
-          ...context,
-          args: { selection, radius: size },
-        })
-        expect(staleResult).toEqual(
-          new Error(
-            'The model changed while resolving the selected edge. Please select it again.'
-          )
-        )
-      } finally {
-        spy.mockRestore()
-      }
-    }
-    await getAstAndArtifactGraph(output, world.instance, world.kclManager)
-    expect(world.kclManager.errors).toEqual([])
   },
   30_000
 )

@@ -8,6 +8,7 @@ import type {
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { findUniqueName } from '@src/lang/create'
 import { createModelingCodemodReviewValidation } from '@src/lang/modifyAst/modelingCodemod'
+import { validateSolidEdgeSelections } from '@src/lang/modifyAst/validateSolidEdgeSelections'
 import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
 import type { Artifact, PathToNode } from '@src/lang/wasm'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
@@ -194,6 +195,17 @@ export function extrudeSelectionRequiresMethod({
     )
   )
 }
+
+const validateSolidEdgeSelectionArg = async ({
+  data,
+  machineContext,
+}: {
+  data: unknown
+  machineContext?: ModelingMachineContext
+}): Promise<boolean> =>
+  isSelections(data) &&
+  !!machineContext &&
+  !validateSolidEdgeSelections(data, machineContext.kclManager.artifactGraph)
 
 // Edit flows pass this as hidden command-bar metadata, not as a KCL stdlib arg.
 type CommandBarEditFlowArgs = {
@@ -1342,6 +1354,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       overrides: {
         selection: {
           inputType: 'selection',
+          validation: validateSolidEdgeSelectionArg,
           selectionTypes: [
             'segment',
             'sweepEdge',
@@ -1376,6 +1389,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           selection: {
             inputType: 'selection',
+            validation: validateSolidEdgeSelectionArg,
             selectionTypes: [
               'segment',
               'sweepEdge',
@@ -1841,6 +1855,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
+            validation: validateSolidEdgeSelectionArg,
             selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,
@@ -1864,6 +1879,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
+            validation: validateSolidEdgeSelectionArg,
             selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,
@@ -1887,6 +1903,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
+            validation: validateSolidEdgeSelectionArg,
             selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,
@@ -1937,6 +1954,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
+            validation: validateSolidEdgeSelectionArg,
             selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,
@@ -1965,6 +1983,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
+            validation: validateSolidEdgeSelectionArg,
             selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,
@@ -1989,6 +2008,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
+            validation: validateSolidEdgeSelectionArg,
             selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,
@@ -2012,6 +2032,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       overrides: {
         objects: {
           inputType: 'selection',
+          validation: validateSolidEdgeSelectionArg,
           selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
           multiple: true,
           required: true,
@@ -2035,6 +2056,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
+            validation: validateSolidEdgeSelectionArg,
             selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,
@@ -2059,6 +2081,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
+            validation: validateSolidEdgeSelectionArg,
             selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,
@@ -2086,6 +2109,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
+            validation: validateSolidEdgeSelectionArg,
             selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,
@@ -2113,6 +2137,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
+            validation: validateSolidEdgeSelectionArg,
             selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,
@@ -2140,6 +2165,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
+            validation: validateSolidEdgeSelectionArg,
             selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,
@@ -2165,6 +2191,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
+            validation: validateSolidEdgeSelectionArg,
             selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
             multiple: true,
             required: true,

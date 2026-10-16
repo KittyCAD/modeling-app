@@ -1,9 +1,5 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-import { resolveSourceEdgeSelections } from '@src/lang/modifyAst/resolveSourceEdgeSelections'
-import { isModelingResponse } from '@src/lib/kcSdkGuards'
-import { normalizeEntityReference } from '@src/lib/selections'
-import { isErr } from '@src/lib/trap'
-import { isArray, uuidv4 } from '@src/lib/utils'
+import { validateSolidEdgeSelections } from '@src/lang/modifyAst/validateSolidEdgeSelections'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 
 import {
@@ -208,60 +204,24 @@ const withArtifactGraph = <
       ),
   })
 
-// A code-selected sketch edge can border either cap after extrusion. Query its
-// topology before the synchronous codemod instead of assuming the start cap.
-const withSourceEdgeReferences = <
+// A sketch segment does not identify which solid edge the user intends.
+const withSolidEdgeSelections = <
   Args extends { selection?: Selections; objects?: Selections },
 >(
   codemod: ModelingCodemod<Args>,
   selectionKey: 'selection' | 'objects' = 'selection'
 ): ModelingCodemod<Args> => ({
   ...codemod,
-  run: async (context) => {
-    const { kclManager } = context
+  run: (context) => {
     const selections = context.args[selectionKey]
-    if (!selections) return codemod.run(context)
-    const artifactGraph = kclManager.artifactGraph
-    const ast = kclManager.ast
-    const sceneGeneration = kclManager.engineSceneGenerationSignal.value
-    const selection = await resolveSourceEdgeSelections(
-      selections,
-      artifactGraph,
-      async (entityId) => {
-        const response = await kclManager.engineCommandManager.sendSceneCommand(
-          {
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: { type: 'query_entity_type', entity_id: entityId },
-          }
-        )
-        const result = isArray(response) ? response[0] : response
-        if (isModelingResponse(result)) {
-          const modelingResponse = result.resp.data.modeling_response
-          if (modelingResponse.type === 'query_entity_type') {
-            const reference = normalizeEntityReference(
-              modelingResponse.data.reference
-            )
-            if (reference) return reference
-          }
-        }
-        return new Error('Could not resolve the selected edge topology.')
-      }
-    )
-    if (isErr(selection)) return selection
-    if (
-      kclManager.artifactGraph !== artifactGraph ||
-      kclManager.ast !== ast ||
-      kclManager.engineSceneGenerationSignal.value !== sceneGeneration
-    ) {
-      return new Error(
-        'The model changed while resolving the selected edge. Please select it again.'
+    if (selections) {
+      const error = validateSolidEdgeSelections(
+        selections,
+        context.kclManager.artifactGraph
       )
+      if (error) return error
     }
-    return codemod.run({
-      ...context,
-      args: { ...context.args, [selectionKey]: selection },
-    })
+    return codemod.run(context)
   },
 })
 
@@ -338,8 +298,8 @@ export const modelingCommandCodemods = {
   'Herringbone Gear': withAst('Herringbone Gear', addHerringboneGear),
   'Spur Gear': withAst('Spur Gear', addSpurGear),
   'Ring Gear': withAst('Ring Gear', addRingGear),
-  Fillet: withSourceEdgeReferences(withArtifactGraph('Fillet', addFillet)),
-  Chamfer: withSourceEdgeReferences(withArtifactGraph('Chamfer', addChamfer)),
+  Fillet: withSolidEdgeSelections(withArtifactGraph('Fillet', addFillet)),
+  Chamfer: withSolidEdgeSelections(withArtifactGraph('Chamfer', addChamfer)),
   Appearance: withArtifactGraph('Appearance', addAppearance),
   Delete: withArtifactGraph('Delete', addDelete, {
     focusPath: false,
@@ -358,55 +318,55 @@ export const modelingCommandCodemods = {
     addPatternLinear3D
   ),
   'GDT Flatness': withGdtDefaults('GDT Flatness', addFlatnessGdt),
-  'GDT Straightness': withSourceEdgeReferences(
+  'GDT Straightness': withSolidEdgeSelections(
     withGdtDefaults('GDT Straightness', addStraightnessGdt),
     'objects'
   ),
-  'GDT Circularity': withSourceEdgeReferences(
+  'GDT Circularity': withSolidEdgeSelections(
     withGdtDefaults('GDT Circularity', addCircularityGdt),
     'objects'
   ),
-  'GDT Cylindricity': withSourceEdgeReferences(
+  'GDT Cylindricity': withSolidEdgeSelections(
     withGdtDefaults('GDT Cylindricity', addCylindricityGdt),
     'objects'
   ),
-  'GDT Position': withSourceEdgeReferences(
+  'GDT Position': withSolidEdgeSelections(
     withGdtDefaults('GDT Position', addPositionGdt),
     'objects'
   ),
-  'GDT Profile': withSourceEdgeReferences(
+  'GDT Profile': withSolidEdgeSelections(
     withGdtDefaults('GDT Profile', addProfileGdt),
     'objects'
   ),
-  'GDT Distance': withSourceEdgeReferences(
+  'GDT Distance': withSolidEdgeSelections(
     withGdtDefaults('GDT Distance', addDistanceGdt),
     'objects'
   ),
-  'GDT Perpendicularity': withSourceEdgeReferences(
+  'GDT Perpendicularity': withSolidEdgeSelections(
     withGdtDefaults('GDT Perpendicularity', addPerpendicularityGdt),
     'objects'
   ),
-  'GDT Angularity': withSourceEdgeReferences(
+  'GDT Angularity': withSolidEdgeSelections(
     withGdtDefaults('GDT Angularity', addAngularityGdt),
     'objects'
   ),
-  'GDT Concentricity': withSourceEdgeReferences(
+  'GDT Concentricity': withSolidEdgeSelections(
     withGdtDefaults('GDT Concentricity', addConcentricityGdt),
     'objects'
   ),
-  'GDT Symmetry': withSourceEdgeReferences(
+  'GDT Symmetry': withSolidEdgeSelections(
     withGdtDefaults('GDT Symmetry', addSymmetryGdt),
     'objects'
   ),
-  'GDT Runout': withSourceEdgeReferences(
+  'GDT Runout': withSolidEdgeSelections(
     withGdtDefaults('GDT Runout', addRunoutGdt),
     'objects'
   ),
-  'GDT Parallelism': withSourceEdgeReferences(
+  'GDT Parallelism': withSolidEdgeSelections(
     withGdtDefaults('GDT Parallelism', addParallelismGdt),
     'objects'
   ),
-  'GDT Annotation': withSourceEdgeReferences(
+  'GDT Annotation': withSolidEdgeSelections(
     withGdtDefaults('GDT Annotation', addAnnotationGdt),
     'objects'
   ),
