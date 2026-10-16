@@ -20,11 +20,17 @@ import {
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const state = vi.hoisted(() => {
-  const state: { registry: Registry | null } = { registry: null }
+  const state: { registry: Registry | null; enabled: boolean } = {
+    registry: null,
+    enabled: true,
+  }
   return state
 })
 vi.mock('@src/lib/boot', () => ({
-  useApp: () => ({ registry: state.registry! }),
+  useApp: () => ({
+    registry: state.registry!,
+    userFeatures: { useHas: () => state.enabled },
+  }),
 }))
 vi.mock('@src/components/Tooltip', () => ({
   default: ({ children }: { children: ReactNode }) => (
@@ -37,12 +43,13 @@ import {
   FeatureTreeDivider,
   FeatureTreeRow,
 } from '@src/lib/featureTree/FeatureTreeView'
-import { SceneBrowser } from '@src/lib/sceneBrowser/SceneBrowser'
 import {
-  sceneBrowserAppearance,
+  SceneBrowser,
+  SceneBrowserView,
+} from '@src/lib/sceneBrowser/SceneBrowser'
+import {
   sceneBrowserSections,
   sceneBrowserService,
-  type SceneBrowserAppearance,
   TOGGLE_BROWSER_COMMAND,
 } from '@src/lib/sceneBrowser/registry/contract'
 import { sceneBrowserExtension } from '@src/lib/sceneBrowser/registry/extension'
@@ -57,27 +64,39 @@ import {
   type KeymapTree,
 } from '@src/registry/contracts/keymap'
 import type { Signal } from '@preact/signals-core'
+import {
+  userFeaturesService,
+  type UserFeaturesRegistryService,
+} from '@src/registry/contracts/userFeatures'
+import { SCENE_BROWSER_FEATURE } from '@src/lib/sceneBrowser/featureFlag'
+import type { UserFeaturesContext } from '@src/machines/userFeaturesMachine'
 
 afterEach(() => {
   cleanup()
   vi.restoreAllMocks()
   state.registry?.[Symbol.dispose]()
   state.registry = null
+  state.enabled = true
 })
 describe('docked Browser tree', () => {
   function setup(keymap?: Signal<KeymapTree>) {
     const registry = new Registry()
     state.registry = registry
-    const appearance = signal<SceneBrowserAppearance>('hud')
     registry.configure([
       sceneBrowserExtension,
       defineRegistryItem({
         id: 'test-content',
-        providesServices: keymap
-          ? [provideService(keymapService, { keymap } as KeymapService)]
-          : [],
+        providesServices: [
+          provideService(userFeaturesService, {
+            context: signal({
+              featureIds: new Set([SCENE_BROWSER_FEATURE]),
+            } as UserFeaturesContext),
+          } as unknown as UserFeaturesRegistryService),
+          ...(keymap
+            ? [provideService(keymapService, { keymap } as KeymapService)]
+            : []),
+        ],
         provides: [
-          provide(sceneBrowserAppearance, appearance),
           provide(sceneBrowserSections, {
             id: 'history',
             title: 'Feature tree',
@@ -104,8 +123,24 @@ describe('docked Browser tree', () => {
       view.container.querySelector<ZooFeatureTree>('zoo-feature-tree')!
     const row = (id: string) =>
       view.container.querySelector<ZooFeatureTreeRow>(`[node-id="${id}"]`)!
-    return { registry, appearance, view, tree, row }
+    return { registry, view, tree, row }
   }
+  it('renders only for users with the flag and cleans up the tree when disabled', () => {
+    const { view: initial, registry } = setup()
+    initial.unmount()
+    state.enabled = false
+    const view = render(<SceneBrowserView />)
+    expect(view.queryByRole('complementary')).toBeNull()
+    state.enabled = true
+    view.rerender(<SceneBrowserView />)
+    expect(
+      view.getByRole('complementary', { name: 'Scene browser' })
+    ).toBeTruthy()
+    state.enabled = false
+    view.rerender(<SceneBrowserView />)
+    expect(view.queryByRole('complementary')).toBeNull()
+    expect(registry.get(sceneBrowserService).tree.value).toBeNull()
+  })
   it('shows the Scene browser name and keeps its tooltip shortcut in sync with remapping', () => {
     const keymap = signal(createKeymapTree([]))
     const { registry, view } = setup(keymap)

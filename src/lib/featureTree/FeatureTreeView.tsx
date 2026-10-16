@@ -6,7 +6,6 @@ import {
 import type { ContextMenuProps } from '@src/components/ContextMenu'
 import { ContextMenu } from '@src/components/ContextMenu'
 import { CustomIcon } from '@src/components/CustomIcon'
-import { SceneBrowserAppearanceContext } from '@src/lib/sceneBrowser/appearance'
 import type { ReactNode } from 'react'
 import {
   createContext,
@@ -31,12 +30,13 @@ export function FeatureTree({
   children,
   onMount,
   label = 'Feature tree',
+  appearance = 'hud',
 }: {
   children: ReactNode
   onMount?: (element: ZooFeatureTree | null) => void
   label?: string
+  appearance?: ZooFeatureTree['appearance']
 }) {
-  const appearance = useContext(SceneBrowserAppearanceContext)
   const ref = useRef<ZooFeatureTree>(null)
   const selected = useRef(new Map<string, boolean>())
   const initialized = useRef(new Map<string, boolean>())
