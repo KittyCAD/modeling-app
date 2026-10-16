@@ -1,6 +1,7 @@
 import { isCommandVisibleInSearch } from '@src/components/CommandBar/commandSearchVisibility'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import type { CommandArgumentOption } from '@src/lib/commandTypes'
+import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
@@ -11,8 +12,12 @@ import type {
   HomeProjectEntry,
 } from '@src/registry/contracts/homeProjects'
 import { render, screen } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeAll, describe, expect, it, vi } from 'vitest'
 import type { ActorRefFrom, ContextFrom } from 'xstate'
+
+beforeAll(async () => {
+  await moduleFsViaModuleImport({ type: StorageName.NodeFS, options: {} })
+})
 
 function createProject({
   name,
@@ -124,6 +129,63 @@ function projectOptions(
 }
 
 describe('project command config', () => {
+  it('rejects a filename outside the existing project before dispatching a file write', async () => {
+    const systemIOActor = createSystemIOActor()
+    const command = createProjectCommands({ systemIOActor }).find(
+      (item) => item.name === 'Import file from URL'
+    )
+    const result = await command?.onSubmit({
+      method: 'existingProject',
+      projectName: 'original',
+      name: '../other/main.kcl',
+      code: '@settings(kclVersion = 3.0)\nvalue = 12\n',
+    })
+    expect(result).toBeInstanceOf(Error)
+    expect(systemIOActor.send).not.toHaveBeenCalled()
+  })
+
+  it('imports shared code into the selected new library project despite a stale existing destination', async () => {
+    const systemIOActor = createSystemIOActor()
+    const firstLibrary = createLibrary('local', 'Local Projects')
+    const selectedLibrary = createLibrary('cloud', 'Personal Cloud', 'cloud')
+    const firstRun = vi.fn()
+    const selectedRun = vi.fn(async () =>
+      createProject({ name: 'shared-part' })
+    )
+    const command = createProjectCommands({
+      systemIOActor,
+      getCreateProjectLibraryTargets: () => [
+        { library: firstLibrary, createProject: { run: firstRun } },
+        { library: selectedLibrary, createProject: { run: selectedRun } },
+      ],
+    }).find((item) => item.name === 'Import file from URL')
+    const code = '@settings(kclVersion = 3.0)\nvalue = 12\n'
+    await command?.onSubmit({
+      method: 'newProject',
+      projectName: 'old-project',
+      newProjectName: 'Shared Part',
+      libraryId: selectedLibrary.id,
+      name: 'part',
+      code,
+    })
+    expect(selectedRun).toHaveBeenCalledWith({
+      library: selectedLibrary,
+      requestedProjectName: 'shared-part',
+      requestedProjectTitle: 'Shared Part',
+      initialProject: {
+        entrypointFilePath: 'part.kcl',
+        files: [
+          {
+            requestedFileName: 'part.kcl',
+            requestedData: new TextEncoder().encode(code),
+          },
+        ],
+      },
+    })
+    expect(firstRun).not.toHaveBeenCalled()
+    expect(systemIOActor.send).not.toHaveBeenCalled()
+  })
+
   it('keeps URL import registered but hidden from search', () => {
     const commands = createProjectCommands({
       systemIOActor: createSystemIOActor(),
