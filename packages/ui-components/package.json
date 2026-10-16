@@ -33,6 +33,7 @@
     "storybook": "storybook dev -p 6006 --config-dir .storybook",
     "build-storybook": "storybook build --config-dir .storybook",
     "storybook:web-components": "storybook dev -p 6007 --config-dir .storybook-web-components",
+    "typecheck:web-components": "tsc -p .storybook-web-components/tsconfig.json --noEmit",
     "build-storybook:web-components": "storybook build --config-dir .storybook-web-components --output-dir storybook-web-components-static",
     "test": "vitest run",
     "test:unit": "vitest run --project unit",

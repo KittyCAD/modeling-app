@@ -43,6 +43,7 @@
   "include": ["src", "e2e", "packages", "*.ts", "rust", "types"],
   "exclude": [
     "**/*.stories.tsx",
+    "**/*.stories.ts",
     "node_modules",
     "./*.grammar",
     "vite.config.ts",
