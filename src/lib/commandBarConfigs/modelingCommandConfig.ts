@@ -735,6 +735,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           hidden: isEditingNodeSelection,
         },
         relativeTo: {
+          dialog: { advanced: true },
           inputType: 'options',
           options: [
             { name: 'Sketch Plane', value: 'SKETCH_PLANE' },
@@ -755,12 +756,17 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           options: kclBodyTypeOptions,
         },
         version: {
+          dialog: { advanced: true },
           inputType: 'kcl',
           description:
             'Sweep algorithm version. 0 lets the engine choose; 1 is original; 2 is newer.',
           defaultValue: '2',
           required: false,
         },
+        sectional: { dialog: { advanced: true } },
+        tolerance: { dialog: { advanced: true } },
+        tagStart: { dialog: { advanced: true } },
+        tagEnd: { dialog: { advanced: true } },
       },
     }),
   },
@@ -784,6 +790,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           required: profileSelectionRequiresBodyType,
           options: kclBodyTypeOptions,
         },
+        vDegree: { dialog: { advanced: true } },
+        bezApproximateRational: { dialog: { advanced: true } },
+        baseCurveIndex: { dialog: { advanced: true } },
+        tolerance: { dialog: { advanced: true } },
+        tagStart: { dialog: { advanced: true } },
+        tagEnd: { dialog: { advanced: true } },
       },
     }),
   },
@@ -851,6 +863,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             defaultValue: KCL_DEFAULT_DEGREE,
             required: true,
           },
+          tolerance: { dialog: { advanced: true } },
+          tagStart: { dialog: { advanced: true } },
+          tagEnd: { dialog: { advanced: true } },
           bodyType: {
             inputType: 'options',
             required: profileSelectionRequiresBodyType,

@@ -9,6 +9,7 @@ import {
 } from '@src/components/CommandBar/CommandKclInput'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { MarkdownText } from '@src/components/MarkdownText'
+import Tooltip from '@src/components/Tooltip'
 import type { KclManager } from '@src/lang/KclManager'
 import type { AppCommandSystem, AppSettingsSystem } from '@src/lib/app'
 import { getSelectionTypeDisplayText, isSelections } from '@src/lib/selections'
@@ -27,6 +28,7 @@ import {
   type DialogField,
 } from '@src/components/ModelingDialog/arguments'
 import { useDialogSelection } from '@src/components/ModelingDialog/useDialogSelection'
+import { CommandHelp } from '@src/components/ModelingDialog/CommandHelp'
 
 export default function ModelingDialog({
   containerRef,
@@ -55,6 +57,7 @@ export default function ModelingDialog({
   const [initializing, setInitializing] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const mounted = useRef(true)
+  const activeSelectionRef = useRef<HTMLButtonElement>(null)
   const initialContext = useRef(state.context)
   const fields = getDialogFields({
     ...state.context,
@@ -200,11 +203,29 @@ export default function ModelingDialog({
     if (arg.inputType === 'selection')
       return (
         <div key={name} className="flex flex-col gap-1">
-          <span className="capitalize">
-            {label}
-            {required && ' *'}
-          </span>
+          <div className="flex items-center justify-between gap-2">
+            <span className="capitalize">
+              {label}
+              {required && ' *'}
+            </span>
+            {selection.activeName === name &&
+              !state.context.argumentsToSubmit.nodeToEdit && (
+                <button
+                  type="button"
+                  aria-label={`Clear ${label} selection`}
+                  disabled={!hasValue(value)}
+                  onClick={() => {
+                    selection.clear()
+                    activeSelectionRef.current?.focus()
+                  }}
+                  className="m-0 border-0 bg-transparent p-0 text-xs text-chalkboard-70 enabled:hover:underline disabled:opacity-50 dark:text-chalkboard-40"
+                >
+                  Clear
+                </button>
+              )}
+          </div>
           <button
+            ref={selection.activeName === name ? activeSelectionRef : undefined}
             type="button"
             autoFocus={name === firstFieldName}
             aria-label={`Select ${label}`}
@@ -317,14 +338,25 @@ export default function ModelingDialog({
             )}
             {command.displayName || command.name}
           </span>
-          <button
-            type="button"
-            onMouseDown={(event) => event.stopPropagation()}
-            onClick={() => commands.send({ type: 'Close' })}
-            className="m-0 border-0 bg-transparent p-0 text-xs"
-          >
-            Cancel
-          </button>
+          <div className="flex items-center gap-2">
+            <CommandHelp command={command} />
+            <button
+              type="button"
+              aria-label="Cancel"
+              onMouseDown={(event) => event.stopPropagation()}
+              onClick={() => commands.send({ type: 'Close' })}
+              className="group m-0 rounded-sm p-0 border-none bg-transparent hover:bg-transparent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-appForeground"
+            >
+              <CustomIcon
+                name="close"
+                className="w-5 h-5 rounded-sm bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110"
+              />
+              <Tooltip position="bottom-right">
+                Cancel{' '}
+                <kbd className="hotkey ml-4 dark:!bg-chalkboard-80">esc</kbd>
+              </Tooltip>
+            </button>
+          </div>
         </header>
       }
     >

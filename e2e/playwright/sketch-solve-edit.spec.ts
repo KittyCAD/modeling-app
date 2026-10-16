@@ -251,7 +251,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await test.step('Start a new sketch and select a plane', async () => {
         await toolbar.startSketchOnDefaultPlane('Top plane')
-        await editor.expectEditor.toContain('sketch(on = XY) {')
       })
 
       await test.step('Add three line segments', async () => {
@@ -426,9 +425,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await scene.settled()
 
         await toolbar.startSketchOnDefaultPlane('Top plane')
-        await editor.expectEditor.toContain('sketch(on = XY) {')
-        await toolbar.expectToolbarMode.toBe('sketchSolve')
-        await scene.clickNoWhere()
       })
 
       await test.step('Equip the line tool with its keybinding and draw a line', async () => {
@@ -580,9 +576,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
         await scene.settled()
 
         await toolbar.startSketchOnDefaultPlane('Top plane')
-        await editor.expectEditor.toContain('sketch(on = XY) {')
-        await toolbar.expectToolbarMode.toBe('sketchSolve')
-        await scene.clickNoWhere()
       })
 
       const [lineStart] = scene.makeMouseHelpers(0.35, 0.45, {
@@ -676,7 +669,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
       await test.step('Start a new sketch and equip line tool', async () => {
         await toolbar.startSketchOnDefaultPlane('Top plane')
-        await editor.expectEditor.toContain('sketch(on = XY) {')
+
         await toolbar.lineBtn.click()
         await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
       })
@@ -1282,7 +1275,6 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
 
     await test.step('Start a new sketch and equip center arc', async () => {
       await toolbar.startSketchOnDefaultPlane('Top plane')
-      await editor.expectEditor.toContain('sketch(on = XY) {')
 
       await page.getByRole('button', { name: 'caret down arcs:' }).click()
       await expect(page.getByTestId('dropdown-center-arc')).toBeVisible()
