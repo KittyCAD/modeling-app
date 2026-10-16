@@ -596,7 +596,6 @@ function createCoreSettings() {
             context.projects.defaultProjectName.current,
         },
         hideOnLevel: 'project',
-        hideOnPlatform: 'web',
       }),
       /**
        * TODO: This setting is not yet implemented.
