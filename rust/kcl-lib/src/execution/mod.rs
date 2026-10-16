@@ -1241,6 +1241,35 @@ impl ExecutorContext {
 
     pub async fn enable_engine_graphics_settings(&self, exec_state: &mut ExecState) -> Result<()> {
         let source_range = Default::default();
+        if self.settings.video_res_width.is_some() || self.settings.video_res_height.is_some() {
+            // Older CPU engines replace the connection's requested dimensions
+            // with defaults. Restore them before camera setup and snapshots.
+            let defaults = kcmc::session::EngineParams::default();
+            self.engine
+                .send_modeling_cmd(
+                    &self.engine_batch,
+                    exec_state.next_uuid(),
+                    source_range,
+                    &ModelingCmd::ReconfigureStream(
+                        kcmc::ReconfigureStream::builder()
+                            .width(
+                                self.settings
+                                    .video_res_width
+                                    .filter(|value| *value != 0)
+                                    .unwrap_or(defaults.video_res_width),
+                            )
+                            .height(
+                                self.settings
+                                    .video_res_height
+                                    .filter(|value| *value != 0)
+                                    .unwrap_or(defaults.video_res_height),
+                            )
+                            .fps(defaults.fps)
+                            .build(),
+                    ),
+                )
+                .await?;
+        }
         let grid_scale_unit = if self.settings.fixed_size_grid {
             GridScaleBehavior::Fixed(Some(exec_state.length_unit()))
         } else {
@@ -2919,7 +2948,7 @@ mod tests {
 
     #[cfg(not(target_arch = "wasm32"))]
     #[tokio::test]
-    async fn scene_reset_sends_entrypoint_kcl_version() {
+    async fn session_restores_kcl_version_and_cpu_snapshot_dimensions() {
         use std::collections::HashMap;
 
         use kcmc::websocket::WebSocketRequest;
@@ -2984,6 +3013,8 @@ mod tests {
                 Arc::new(engine),
                 ExecutorSettings {
                     geometry_only: true,
+                    video_res_width: Some(320),
+                    video_res_height: Some(240),
                     ..Default::default()
                 },
             );
@@ -3019,6 +3050,47 @@ mod tests {
                 version_commands,
                 vec![serde_json::json!({"type": "set_kcl_version", "kcl_version": expected})],
                 "{source}"
+            );
+            requests.write().await.clear();
+            for _ in 0..2 {
+                ctx.enable_engine_graphics(&mut exec_state).await.unwrap();
+                ctx.enable_engine_graphics_settings(&mut exec_state).await.unwrap();
+                ctx.disable_engine_graphics(&mut exec_state).await.unwrap();
+            }
+            let graphics_commands: Vec<_> = requests
+                .read()
+                .await
+                .iter()
+                .filter_map(|request| match request {
+                    WebSocketRequest::ModelingCmdReq(request)
+                        if matches!(
+                            request.cmd,
+                            ModelingCmd::ToggleGraphics(_) | ModelingCmd::ReconfigureStream(_)
+                        ) =>
+                    {
+                        Some(serde_json::to_value(&request.cmd).unwrap())
+                    }
+                    _ => None,
+                })
+                .collect();
+            let expected_cycle = [
+                serde_json::json!({"type": "toggle_graphics", "graphics_enabled": true}),
+                serde_json::json!({
+                    "type": "reconfigure_stream",
+                    "width": 320,
+                    "height": 240,
+                    "fps": kcmc::session::EngineParams::default().fps,
+                    "bitrate": null,
+                }),
+                serde_json::json!({"type": "toggle_graphics", "graphics_enabled": false}),
+            ];
+            assert_eq!(
+                graphics_commands,
+                expected_cycle
+                    .iter()
+                    .chain(&expected_cycle)
+                    .cloned()
+                    .collect::<Vec<_>>()
             );
             ctx.close().await;
         }
