@@ -1,4 +1,6 @@
 import type { KclManager } from '@src/lang/KclManager'
+import { coerceSelectionsForBodyOnlySelectionTypes } from '@src/lang/std/selectionCoercion'
+import { canSubmitSelectionArg } from '@src/lib/selections'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type {
   Command,
@@ -319,6 +321,30 @@ export const commandBarMachine = setup({
         return context.currentArgument
       },
     }),
+    'Capture current selection': assign({
+      argumentsToSubmit: ({ context }) => {
+        const arg = context.currentArgument
+        const editor = context.kclManager
+        if (arg?.inputType !== 'selection' || !editor)
+          return context.argumentsToSubmit
+        const selection = coerceSelectionsForBodyOnlySelectionTypes(
+          arg.machineActor?.getSnapshot().context.selectionRanges,
+          arg.selectionTypes,
+          editor.artifactGraph
+        )
+        return {
+          ...context.argumentsToSubmit,
+          [arg.name]: canSubmitSelectionArg(
+            editor.ast,
+            selection,
+            arg,
+            editor.artifactGraph
+          )
+            ? selection
+            : undefined,
+        }
+      },
+    }),
     'Clear argument data': assign({
       selectedCommand: undefined,
       currentArgument: undefined,
@@ -508,8 +534,7 @@ export const commandBarMachine = setup({
             context.selectedCommand &&
             (argConfig?.inputType === 'selection' ||
               argConfig?.inputType === 'string' ||
-              argConfig?.inputType === 'options' ||
-              argConfig?.inputType === 'selectionMixed') &&
+              argConfig?.inputType === 'options') &&
             argConfig?.validation
           ) {
             argConfig
@@ -787,7 +812,7 @@ export const commandBarMachine = setup({
         'Change current argument': {
           target: 'Gathering arguments',
           internal: true,
-          actions: ['Set current argument'],
+          actions: ['Capture current selection', 'Set current argument'],
         },
 
         'Deselect command': {

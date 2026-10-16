@@ -1,10 +1,12 @@
-import { artifactToEntityRef, resolveToCodeRef } from '@src/lang/queryAst'
+import {
+  artifactToEntityRef,
+  getEntityRefId,
+  resolveToCodeRef,
+} from '@src/lang/queryAst'
 import {
   getArtifactFromRange,
-  getArtifactOfTypes,
   getSweepArtifactFromSelection,
 } from '@src/lang/std/artifactGraph'
-import type { Artifact, CodeRef } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph } from '@src/lang/wasm'
 import type { CommandSelectionType } from '@src/lib/commandTypes'
 import {
@@ -12,218 +14,127 @@ import {
   getEngineTopologyFallbackNormalized,
   isEnginePrimitiveSelection,
 } from '@src/lib/selections'
-import { err } from '@src/lib/trap'
+import { isErr } from '@src/lib/trap'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
-/**
- * Coerce selections that may contain faces or edges to their parent body (sweep/compositeSolid).
- * This is useful for commands that only work with bodies, but users may have faces or edges selected.
- *
- * @param selections - The selections to coerce
- * @param artifactGraph - The artifact graph to use for lookups
- * @returns A new Selections object with only body artifacts, or an Error if coercion fails
- */
+/** Coerce faces and edges to bodies without losing source-only or unresolved selections. */
 export function coerceSelectionsToBody(
   selections: Selections,
   artifactGraph: ArtifactGraph
 ): Selections | Error {
-  const bodySelections: Array<{ artifact: Artifact; codeRef: CodeRef }> = []
-  const passthroughSelections: Selection[] = []
-  const codeRefOnlyV2: Array<Selection> = []
-  const remainingOtherSelections: Selections['otherSelections'] = []
+  const graphSelections: Selection[] = []
+  const otherSelections: Selections['otherSelections'] = []
   const seenBodyIds = new Set<string>()
 
-  for (const selV2 of selections.graphSelections) {
-    const topologyFallback = getEngineTopologyFallbackNormalized(selV2)
-    if (topologyFallback) {
-      const bodySelection = getBodySelectionFromPrimitiveParentEntityId(
-        topologyFallback.parentId,
-        artifactGraph
-      )
-      if (
-        bodySelection?.artifact &&
-        bodySelection.codeRef &&
-        !seenBodyIds.has(bodySelection.artifact.id)
-      ) {
-        seenBodyIds.add(bodySelection.artifact.id)
-        bodySelections.push({
-          artifact: bodySelection.artifact,
-          codeRef: bodySelection.codeRef,
-        })
-        continue
-      }
+  function appendBody(selection: Selection) {
+    const artifact = resolveToCodeRef(selection, artifactGraph)?.artifact
+    let bodyId =
+      artifact?.id ??
+      (selection.entityRef && getEntityRefId(selection.entityRef)) ??
+      selection.engineEntityId
+    if (artifact?.type === 'pattern') {
+      const index =
+        selection.patternIndex ??
+        (selection.engineEntityId
+          ? artifact.copyIds.indexOf(selection.engineEntityId) + 1
+          : undefined)
+      if (index !== undefined) bodyId = `${artifact.id}[${index}]`
     }
+    if (bodyId && seenBodyIds.has(bodyId)) return
+    if (bodyId) seenBodyIds.add(bodyId)
+    graphSelections.push(selection)
+  }
 
-    const resolvedSelection = resolveToCodeRef(selV2, artifactGraph)
-    const selection = resolvedSelection
-      ? !resolvedSelection.artifact && resolvedSelection.codeRef.range
-        ? {
-            ...resolvedSelection,
-            artifact:
-              getArtifactFromRange(
-                resolvedSelection.codeRef.range,
-                artifactGraph
-              ) ?? undefined,
-          }
-        : resolvedSelection
-      : selV2.codeRef
-        ? {
-            codeRef: selV2.codeRef,
-            artifact:
-              getArtifactFromRange(selV2.codeRef.range, artifactGraph) ??
-              undefined,
-          }
-        : null
+  function bodyFromParent(parentId: string) {
+    const body = getBodySelectionFromPrimitiveParentEntityId(
+      parentId,
+      artifactGraph,
+      {
+        bodyArtifactTypes: ['sweep', 'compositeSolid', 'pattern'],
+        lookUpPatternCopies: true,
+      }
+    )
+    if (!body?.artifact) return null
+    return {
+      ...body,
+      entityRef: artifactToEntityRef(body.artifact.type, body.artifact.id),
+    }
+  }
 
-    if (!selection) {
+  for (const selection of selections.graphSelections) {
+    const topology = getEngineTopologyFallbackNormalized(selection)
+    const parent = topology && bodyFromParent(topology.parentId)
+    if (parent) {
+      appendBody(parent)
       continue
     }
 
-    if (!selection.artifact) {
-      if (selection.codeRef.range[1] - selection.codeRef.range[0] !== 0) {
-        codeRefOnlyV2.push({ codeRef: selection.codeRef })
-      }
+    const resolved = resolveToCodeRef(selection, artifactGraph)
+    const artifact =
+      resolved &&
+      (resolved.artifact ??
+        getArtifactFromRange(resolved.codeRef.range, artifactGraph))
+    if (!resolved || !artifact) {
+      graphSelections.push(selection)
       continue
     }
-
-    if (selection.artifact.type === 'path') {
-      const maybeSweepId = selection.artifact.sweepId
-      if (maybeSweepId) {
-        const sweepWithType = getArtifactOfTypes(
-          { key: maybeSweepId, types: ['sweep'] },
-          artifactGraph
-        )
-        if (!err(sweepWithType) && !seenBodyIds.has(sweepWithType.id)) {
-          seenBodyIds.add(sweepWithType.id)
-          bodySelections.push({
-            artifact: sweepWithType,
-            codeRef: sweepWithType.codeRef,
-          })
-          continue
-        }
-      }
-
-      if (
-        selection.artifact.codeRef.range[1] -
-          selection.artifact.codeRef.range[0] !==
-        0
-      ) {
-        codeRefOnlyV2.push({ codeRef: selection.artifact.codeRef })
-      }
-      continue
-    }
-
-    if (selection.artifact.type === 'helix') {
-      passthroughSelections.push(selV2)
-      continue
-    }
-
     if (
-      selection.artifact.type === 'sweep' ||
-      selection.artifact.type === 'compositeSolid'
+      artifact.type === 'pattern' ||
+      artifact.type === 'helix' ||
+      artifact.type === 'plane' ||
+      artifact.type === 'sketchBlock' ||
+      artifact.type === 'solid2d'
     ) {
-      const entityRef = artifactToEntityRef(
-        selection.artifact.type,
-        selection.artifact.id
-      )
-      if (entityRef && !seenBodyIds.has(selection.artifact.id)) {
-        seenBodyIds.add(selection.artifact.id)
-        bodySelections.push({
-          artifact: selection.artifact,
-          codeRef: selection.codeRef,
-        })
-      }
-    } else {
-      const maybeSweep = getSweepArtifactFromSelection(selection, artifactGraph)
-      if (err(maybeSweep)) {
-        return new Error(
-          `Unable to find parent body for selected artifact: ${selection.artifact.type}`
-        )
-      }
-      // Prefer the sweep (3D solid) over the path (2D profile) when it has entityRef.
-      const sweepWithType = getArtifactOfTypes(
-        { key: maybeSweep.id, types: ['sweep'] },
-        artifactGraph
-      )
-      if (!err(sweepWithType) && !seenBodyIds.has(sweepWithType.id)) {
-        seenBodyIds.add(sweepWithType.id)
-        bodySelections.push({
-          artifact: sweepWithType,
-          codeRef: maybeSweep.codeRef,
-        })
-        continue
-      }
-
-      const maybePath = maybeSweep.pathId
-        ? getArtifactOfTypes(
-            { key: maybeSweep.pathId, types: ['path'] },
-            artifactGraph
-          )
-        : new Error('sweep has no pathId')
-      if (!err(maybePath) && !seenBodyIds.has(maybePath.id)) {
-        const pathEntityRef = artifactToEntityRef('path', maybePath.id)
-        if (pathEntityRef) {
-          seenBodyIds.add(maybePath.id)
-          bodySelections.push({
-            artifact: maybePath,
-            codeRef: maybePath.codeRef,
-          })
-        } else if (
-          maybePath.codeRef.range[1] - maybePath.codeRef.range[0] !==
-          0
-        ) {
-          codeRefOnlyV2.push({ codeRef: maybePath.codeRef })
-        }
-      }
+      appendBody({ ...selection, ...resolved, artifact })
+      continue
     }
+    if (artifact.type === 'sweep' || artifact.type === 'compositeSolid') {
+      appendBody({
+        // A promoted face/edge ID is not the identity of the resulting body.
+        ...(!selection.entityRef || selection.entityRef.type === 'solid3d'
+          ? selection
+          : {}),
+        entityRef: artifactToEntityRef(artifact.type, artifact.id),
+        artifact,
+        codeRef: resolved.codeRef,
+      })
+      continue
+    }
+    if (artifact.type === 'path') {
+      const sweep = artifact.sweepId
+        ? artifactGraph.get(artifact.sweepId)
+        : undefined
+      if (sweep?.type === 'sweep') {
+        appendBody({
+          entityRef: artifactToEntityRef(sweep.type, sweep.id),
+          codeRef: sweep.codeRef,
+        })
+      } else {
+        appendBody({ ...selection, ...resolved, artifact })
+      }
+      continue
+    }
+
+    const sweep = getSweepArtifactFromSelection(
+      { ...resolved, artifact },
+      artifactGraph
+    )
+    if (isErr(sweep)) return sweep
+    appendBody({
+      entityRef: artifactToEntityRef(sweep.type, sweep.id),
+      codeRef: sweep.codeRef,
+    })
   }
 
   for (const selection of selections.otherSelections) {
-    if (
-      isEnginePrimitiveSelection(selection) &&
-      selection.parentEntityId != null
-    ) {
-      const bodySelection = getBodySelectionFromPrimitiveParentEntityId(
-        selection.parentEntityId,
-        artifactGraph
-      )
-      if (
-        bodySelection?.artifact &&
-        bodySelection.codeRef &&
-        !seenBodyIds.has(bodySelection.artifact.id)
-      ) {
-        seenBodyIds.add(bodySelection.artifact.id)
-        bodySelections.push({
-          artifact: bodySelection.artifact,
-          codeRef: bodySelection.codeRef,
-        })
-        continue
-      }
-    }
-
-    remainingOtherSelections.push(selection)
+    const parent =
+      isEnginePrimitiveSelection(selection) && selection.parentEntityId
+        ? bodyFromParent(selection.parentEntityId)
+        : null
+    if (parent) appendBody(parent)
+    else otherSelections.push(selection)
   }
-
-  const graphSelections: Selection[] = [
-    ...bodySelections
-      .map((s) => ({
-        entityRef: artifactToEntityRef(s.artifact.type, s.artifact.id),
-        codeRef: s.codeRef,
-      }))
-      .filter(
-        (
-          v2
-        ): v2 is typeof v2 & { entityRef: NonNullable<typeof v2.entityRef> } =>
-          v2.entityRef != null
-      ),
-    ...passthroughSelections,
-    ...codeRefOnlyV2,
-  ]
-
-  return {
-    graphSelections,
-    otherSelections: remainingOtherSelections,
-  }
+  return { graphSelections, otherSelections }
 }
 
 export function coerceSelectionsForBodyOnlySelectionTypes(
@@ -233,31 +144,22 @@ export function coerceSelectionsForBodyOnlySelectionTypes(
 ): Selections | undefined {
   if (
     !selections ||
-    (selections.graphSelections.length === 0 &&
-      selections.otherSelections.length === 0)
-  ) {
-    return selections
-  }
-
-  const onlyAcceptsBodyLikeObjects = selectionTypes?.every(
-    (type) =>
-      type === 'sweep' ||
-      type === 'compositeSolid' ||
-      type === 'path' ||
-      type === 'helix'
+    !selectionTypes?.length ||
+    !selectionTypes.every((type) =>
+      [
+        'sweep',
+        'compositeSolid',
+        'path',
+        'pathRegion',
+        'sketchBlock',
+        'solid2d',
+        'helix',
+        'plane',
+      ].includes(type)
+    )
   )
-  if (!onlyAcceptsBodyLikeObjects) {
     return selections
-  }
 
-  const coercedSelections = coerceSelectionsToBody(selections, artifactGraph)
-  if (err(coercedSelections)) {
-    return selections
-  }
-
-  if ((coercedSelections.graphSelections?.length ?? 0) === 0) {
-    return selections
-  }
-
-  return coercedSelections
+  const coerced = coerceSelectionsToBody(selections, artifactGraph)
+  return isErr(coerced) ? selections : coerced
 }

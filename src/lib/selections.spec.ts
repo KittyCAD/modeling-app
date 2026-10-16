@@ -8,11 +8,13 @@ import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { createEdgeRefObjectExpression } from '@src/lang/modifyAst/edges'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { KclManager } from '@src/lang/KclManager'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type {
   ArtifactGraph,
   Artifact,
   ExecState,
   SourceRange,
+  Program,
 } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
@@ -3952,34 +3954,87 @@ bodies = patternLinear3d(body001, instances = 3, distance = 10, axis = X)`
 })
 
 describe('canSubmitSelectionArg', () => {
-  const bodyArgument = {
-    inputType: 'selection' as const,
-    selectionTypes: ['sweep'],
-    multiple: false,
-  } as Parameters<typeof canSubmitSelectionArg>[1]
-
-  test('accepts a selection containing only an allowed type', () => {
-    expect(canSubmitSelectionArg(new Map([['sweep', 1]]), bodyArgument)).toBe(
-      true
-    )
-  })
-
-  test('rejects a selection containing an allowed and a disallowed type', () => {
+  const ast: Node<Program> = {
+    type: 'Program',
+    body: [],
+    start: 0,
+    end: 0,
+    moduleId: 0,
+    commentStart: 0,
+  }
+  const body: Selection = { entityRef: { type: 'solid3d', solid3d_id: 'body' } }
+  const face: Selection = { entityRef: { type: 'face', face_id: 'face' } }
+  test.each([
+    { name: 'body', selections: [body], valid: true },
+    { name: 'body and face', selections: [body, face], valid: false },
+    { name: 'face', selections: [face], valid: false },
+  ])('validates $name against allowed types', ({ selections, valid }) => {
     expect(
       canSubmitSelectionArg(
-        new Map([
-          ['sweep', 1],
-          ['wall', 1],
-        ]),
-        bodyArgument
+        ast,
+        {
+          graphSelections: selections,
+          otherSelections: [],
+        },
+        { selectionTypes: ['path'], multiple: true }
+      )
+    ).toBe(valid)
+  })
+
+  test('allows source references without bypassing type or cardinality checks', () => {
+    const source: Selection = {
+      codeRef: { range: [30, 39, 0], pathToNode: [] },
+    }
+    const selection: Selections = {
+      graphSelections: [source],
+      otherSelections: [],
+    }
+    const arg = {
+      selectionTypes: ['sweep'],
+      multiple: true,
+      allowCodeReferences: true,
+    } satisfies Parameters<typeof canSubmitSelectionArg>[2]
+
+    expect(canSubmitSelectionArg(ast, selection, arg)).toBe(true)
+    expect(
+      canSubmitSelectionArg(ast, selection, {
+        ...arg,
+        allowCodeReferences: false,
+      })
+    ).toBe(false)
+    expect(
+      canSubmitSelectionArg(
+        ast,
+        { ...selection, otherSelections: ['x-axis'] },
+        arg
+      )
+    ).toBe(false)
+    expect(
+      canSubmitSelectionArg(
+        ast,
+        { ...selection, graphSelections: [source, source] },
+        { ...arg, multiple: false }
       )
     ).toBe(false)
   })
 
-  test('rejects a selection containing only a disallowed type', () => {
-    expect(canSubmitSelectionArg(new Map([['wall', 1]]), bodyArgument)).toBe(
-      false
-    )
+  test('distinguishes default planes from named planes', () => {
+    const selection: Selections = {
+      graphSelections: [],
+      otherSelections: [{ name: 'XY', id: 'default-xy' }],
+    }
+    expect(
+      canSubmitSelectionArg(ast, selection, {
+        selectionTypes: ['plane'],
+        multiple: false,
+      })
+    ).toBe(false)
+    expect(
+      canSubmitSelectionArg(ast, selection, {
+        selectionTypes: ['defaultPlane'],
+        multiple: false,
+      })
+    ).toBe(true)
   })
 })
 

@@ -24,7 +24,10 @@ export function useSelectionLifecycle({
 
   useEffect(() => {
     if (!arg || arg.inputType !== 'selection') return
-    if (arg.selectionTypes.includes('plane') && latest.current.showPlanes)
+    if (
+      arg.selectionTypes.includes('defaultPlane') &&
+      latest.current.showPlanes
+    )
       void kclManager.showPlanes().catch(reportRejection)
 
     let cancelled = false

@@ -5,7 +5,6 @@ import CommandBarHeaderFooter from '@src/components/CommandBar/CommandBarHeaderF
 import CommandBarKclInput from '@src/components/CommandBar/CommandBarKclInput'
 import CommandBarPathInput from '@src/components/CommandBar/CommandBarPathInput'
 import CommandBarSelectionInput from '@src/components/CommandBar/CommandBarSelectionInput'
-import CommandBarSelectionMixedInput from '@src/components/CommandBar/CommandBarSelectionMixedInput'
 import CommandBarTextareaInput from '@src/components/CommandBar/CommandBarTextareaInput'
 import CommandBarVector2DInput from '@src/components/CommandBar/CommandBarVector2DInput'
 import CommandBarVector3DInput from '@src/components/CommandBar/CommandBarVector3DInput'
@@ -108,18 +107,7 @@ function ArgumentInput({
     case 'selection':
       return executingEditor ? (
         <CommandBarSelectionInput
-          arg={arg}
-          stepBack={stepBack}
-          onSubmit={onSubmit}
-          executingEditor={executingEditor}
-        />
-      ) : (
-        <NoExecutingEditorWarning />
-      )
-
-    case 'selectionMixed':
-      return executingEditor ? (
-        <CommandBarSelectionMixedInput
+          key={arg.name}
           arg={arg}
           stepBack={stepBack}
           onSubmit={onSubmit}

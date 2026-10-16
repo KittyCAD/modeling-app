@@ -28,10 +28,6 @@ import {
   KCL_DEFAULT_SCALE_FACTOR,
   KCL_DEFAULT_TRANSLATE_X,
 } from '@src/lib/constants'
-import {
-  canSubmitSelectionArg,
-  type ResolvedSelectionType,
-} from '@src/lib/selections'
 import { isArray } from '@src/lib/utils'
 import type {
   ModelingMachineContext,
@@ -400,17 +396,8 @@ describe('Helix cylinder selection', () => {
       throw new Error('Helix should expose a cylinder selection argument')
     }
 
-    expect(
-      canSubmitSelectionArg(
-        new Map<ResolvedSelectionType, number>([['pathRegion', 1]]),
-        {
-          inputType: 'selection',
-          selectionTypes: cylinderArg.selectionTypes,
-          multiple: cylinderArg.multiple,
-          required: true,
-        }
-      )
-    ).toBe(true)
+    expect(cylinderArg.selectionTypes).toContain('pathRegion')
+    expect(cylinderArg.allowCodeReferences).not.toBe(true)
   })
 })
 

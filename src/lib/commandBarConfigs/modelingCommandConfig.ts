@@ -17,6 +17,7 @@ import {
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type {
   CommandArgumentConfig,
+  CommandSelectionType,
   KclCommandValue,
   StateMachineCommandSetConfig,
 } from '@src/lib/commandTypes'
@@ -107,13 +108,23 @@ const FRAME_PLANE_OPTIONS = Object.freeze([
 ] as const)
 
 // For all transforms and boolean commands
-const objectsTypesAndFilters: {
+const objectSelection: {
+  inputType: 'selection'
   selectionTypes: Artifact['type'][]
   selectionFilter: EntityType[]
+  allowCodeReferences: boolean
 } = {
+  inputType: 'selection',
   selectionTypes: ['path', 'sweep', 'compositeSolid'],
   selectionFilter: ['object'],
+  allowCodeReferences: true,
 }
+
+const sketchOrBodySelectionTypes: CommandSelectionType[] = [
+  ...objectSelection.selectionTypes,
+  'solid2d',
+  'pathRegion',
+]
 
 // For all surface modeling commands
 const kclBodyTypeOptions = KCL_PRELUDE_BODY_TYPE_VALUES.map((value) => ({
@@ -1030,14 +1041,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           solids: {
-            ...objectsTypesAndFilters,
-            inputType: 'selectionMixed',
+            ...objectSelection,
             multiple: true,
             hidden: isEditingNodeSelection,
           },
           tools: {
-            ...objectsTypesAndFilters,
-            inputType: 'selectionMixed',
+            ...objectSelection,
             clearSelectionFirst: true,
             multiple: true,
             hidden: isEditingNodeSelection,
@@ -1058,8 +1067,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           solids: {
-            ...objectsTypesAndFilters,
-            inputType: 'selectionMixed',
+            ...objectSelection,
             multiple: true,
             skip: false,
             hidden: isEditingNodeSelection,
@@ -1080,8 +1088,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           solids: {
-            ...objectsTypesAndFilters,
-            inputType: 'selectionMixed',
+            ...objectSelection,
             multiple: true,
             skip: false,
             hidden: isEditingNodeSelection,
@@ -1102,14 +1109,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           targets: {
-            ...objectsTypesAndFilters,
-            inputType: 'selectionMixed',
+            ...objectSelection,
             multiple: true,
             hidden: isEditingNodeSelection,
           },
           tools: {
-            ...objectsTypesAndFilters,
-            inputType: 'selectionMixed',
+            ...objectSelection,
             clearSelectionFirst: true,
             multiple: true,
             hidden: isEditingNodeSelection,
@@ -1133,6 +1138,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             inputType: 'selection',
             selectionTypes: [
               'plane',
+              'defaultPlane',
               'planeOfFace',
               'cap',
               'wall',
@@ -1192,11 +1198,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             !['Edge'].includes(context.argumentsToSubmit.mode as string),
         },
         cylinder: {
-          ...objectsTypesAndFilters,
-          selectionTypes: [
-            ...objectsTypesAndFilters.selectionTypes,
-            'pathRegion',
-          ],
+          selectionTypes: ['path', 'sweep', 'compositeSolid', 'pathRegion'],
+          selectionFilter: ['object'],
           inputType: 'selection',
           multiple: false,
           required: (context) =>
@@ -1520,10 +1523,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           objects: {
-            // selectionMixed allows for feature tree selection of module imports
-            inputType: 'selectionMixed',
-            selectionTypes: ['path', 'sweep', 'compositeSolid'],
-            selectionFilter: ['object'],
+            ...objectSelection,
+            selectionTypes: [...objectSelection.selectionTypes, 'plane'],
             multiple: true,
             hidden: isEditingNodeSelection,
           },
@@ -1545,8 +1546,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Delete']>('Delete', {
       overrides: {
         objects: {
-          ...objectsTypesAndFilters,
-          inputType: 'selectionMixed',
+          ...objectSelection,
+          selectionTypes: [
+            ...sketchOrBodySelectionTypes,
+            'helix',
+            'sketchBlock',
+          ],
           multiple: true,
         },
       },
@@ -1564,9 +1569,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           objects: {
-            ...objectsTypesAndFilters,
-            selectionTypes: [...objectsTypesAndFilters.selectionTypes, 'helix'],
-            inputType: 'selectionMixed',
+            ...objectSelection,
+            selectionTypes: [...sketchOrBodySelectionTypes, 'helix'],
             multiple: true,
             hidden: isEditingNodeSelection,
           },
@@ -1598,9 +1602,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Rotate']>('Rotate', {
       overrides: {
         objects: {
-          ...objectsTypesAndFilters,
-          selectionTypes: [...objectsTypesAndFilters.selectionTypes, 'helix'],
-          inputType: 'selectionMixed',
+          ...objectSelection,
+          selectionTypes: [...sketchOrBodySelectionTypes, 'helix'],
           multiple: true,
           hidden: isEditingNodeSelection,
         },
@@ -1640,9 +1643,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Scale']>('Scale', {
       overrides: {
         objects: {
-          ...objectsTypesAndFilters,
-          selectionTypes: [...objectsTypesAndFilters.selectionTypes, 'helix'],
-          inputType: 'selectionMixed',
+          ...objectSelection,
+          selectionTypes: [...sketchOrBodySelectionTypes, 'helix'],
           multiple: true,
           hidden: isEditingNodeSelection,
         },
@@ -1672,8 +1674,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     args: modelingStdLibCommandArgs<ModelingCommandSchema['Clone']>('Clone', {
       overrides: {
         objects: {
-          ...objectsTypesAndFilters,
-          inputType: 'selectionMixed',
+          ...objectSelection,
+          selectionTypes: sketchOrBodySelectionTypes,
           multiple: false, // only one object can be cloned at this time
           hidden: isEditingNodeSelection,
         },
@@ -1724,14 +1726,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           bodies: {
-            ...objectsTypesAndFilters,
-            inputType: 'selectionMixed',
+            ...objectSelection,
             multiple: true,
           },
           across: {
             inputType: 'selection',
             selectionTypes: [
               'plane',
+              'defaultPlane',
               'cap',
               'wall',
               'edgeCut',
@@ -1759,8 +1761,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     >('Pattern Circular 3D', {
       overrides: {
         solids: {
-          ...objectsTypesAndFilters,
-          inputType: 'selectionMixed',
+          ...objectSelection,
           multiple: true,
           hidden: isEditingNodeSelection,
         },
@@ -1798,8 +1799,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           solids: {
-            ...objectsTypesAndFilters,
-            inputType: 'selectionMixed',
+            ...objectSelection,
             multiple: true,
             hidden: isEditingNodeSelection,
           },
@@ -2228,8 +2228,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           surface: {
-            ...objectsTypesAndFilters,
-            inputType: 'selectionMixed',
+            ...objectSelection,
             multiple: true,
           },
         },
@@ -2248,8 +2247,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       {
         overrides: {
           selection: {
-            ...objectsTypesAndFilters,
-            inputType: 'selectionMixed',
+            ...objectSelection,
             multiple: true,
           },
         },

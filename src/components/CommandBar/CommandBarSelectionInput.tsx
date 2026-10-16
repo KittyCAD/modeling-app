@@ -4,14 +4,15 @@ import type { StateFrom } from 'xstate'
 
 import { useSelectionLifecycle } from '@src/hooks/useSelectionLifecycle'
 import type { KclManager } from '@src/lang/KclManager'
+import { coerceSelectionsForBodyOnlySelectionTypes } from '@src/lang/std/selectionCoercion'
 import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import {
   canSubmitSelectionArg,
-  getSelectionCountByType,
   getSelectionTypeDisplayText,
   getSemanticSelectionType,
+  isSelections,
 } from '@src/lib/selections'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -36,22 +37,32 @@ function CommandBarSelectionInput({
   const inputRef = useRef<HTMLInputElement>(null)
   const commandBarState = commands.useState()
   const [hasSubmitted, setHasSubmitted] = useState(false)
-  const selection = useSelector(arg.machineActor, selectionSelector)
-  const selectionsByType = useMemo(() => {
-    return getSelectionCountByType(
-      kclManager.astSignal.value,
-      selection,
-      kclManager.artifactGraph
-    )
-  }, [selection, kclManager.astSignal.value, kclManager.artifactGraph])
+  const rawSelection = useSelector(arg.machineActor, selectionSelector)
+  const selection = useMemo(
+    () =>
+      coerceSelectionsForBodyOnlySelectionTypes(
+        rawSelection,
+        arg.selectionTypes,
+        kclManager.artifactGraph
+      ),
+    [rawSelection, arg.selectionTypes, kclManager.artifactGraph]
+  )
   const isArgRequired =
     arg.required instanceof Function
       ? arg.required(commandBarState.context)
       : arg.required
-  const canSubmitSelection = useMemo<boolean>(
-    () => canSubmitSelectionArg(selectionsByType, arg),
-    [selectionsByType, arg]
+  const hasSelection = Boolean(
+    selection &&
+      selection.graphSelections.length + selection.otherSelections.length
   )
+  const canSubmitSelection = !hasSelection
+    ? !isArgRequired
+    : canSubmitSelectionArg(
+        kclManager.astSignal.value,
+        selection,
+        arg,
+        kclManager.artifactGraph
+      )
 
   useSelectionLifecycle({
     arg,
@@ -65,11 +76,34 @@ function CommandBarSelectionInput({
     inputRef.current?.focus()
   }, [selection, inputRef])
 
-  // Fast-forward through this arg if it's marked as skippable
-  // and we have a valid selection already
+  // Restore a captured argument, or clear once when entering a fresh collector.
+  useEffect(() => {
+    const saved =
+      commands.actor.getSnapshot().context.argumentsToSubmit[arg.name]
+    if (isSelections(saved) || arg.clearSelectionFirst) {
+      engineCommandManager.modelingSend({
+        type: 'Set selection',
+        data: {
+          selectionType: 'completeSelection',
+          selection: isSelections(saved)
+            ? saved
+            : { graphSelections: [], otherSelections: [] },
+        },
+      })
+    }
+    // The input is keyed by argument name; do not clear again on selection updates.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Fast-forward only when the command opts into skipping a valid selection.
   useEffect(() => {
     const argValue = commandBarState.context.argumentsToSubmit[arg.name]
-    if (canSubmitSelection && arg.skip && argValue === undefined) {
+    if (
+      canSubmitSelection &&
+      arg.skip &&
+      argValue === undefined &&
+      !arg.clearSelectionFirst
+    ) {
       handleSubmit()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
@@ -101,38 +135,6 @@ function CommandBarSelectionInput({
     onSubmit(resolvedSelection)
   }
 
-  // Clear selection if needed
-  useEffect(() => {
-    if (arg.clearSelectionFirst) {
-      engineCommandManager.modelingSend({
-        type: 'Set selection',
-        data: {
-          selectionType: 'singleCodeCursor',
-          selection: {},
-        },
-      })
-    }
-  }, [arg, engineCommandManager])
-
-  // Watch for outside teardowns of this component
-  // (such as clicking another argument in the command palette header)
-  // and quickly save the current selection if we can
-  useEffect(() => {
-    return () => {
-      const resolvedSelection: Selections | undefined = isArgRequired
-        ? selection
-        : selection || {
-            graphSelections: [],
-            otherSelections: [],
-          }
-
-      if (!arg.clearSelectionFirst && canSubmitSelection && resolvedSelection) {
-        onSubmit(resolvedSelection)
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [])
-
   return (
     <form {...noAutofillFormProps} id="arg-form" onSubmit={handleSubmit}>
       <label
@@ -141,7 +143,7 @@ function CommandBarSelectionInput({
           (!hasSubmitted || canSubmitSelection || 'text-destroy-50')
         }
       >
-        {canSubmitSelection
+        {canSubmitSelection && hasSelection
           ? getSelectionTypeDisplayText(
               kclManager.astSignal.value,
               selection,
@@ -149,7 +151,7 @@ function CommandBarSelectionInput({
             ) + ' selected'
           : `Please select ${
               arg.multiple ? 'one or more ' : 'one '
-            }${getSemanticSelectionType(arg.selectionTypes).join(' or ')}`}
+            }${getSemanticSelectionType(arg.selectionTypes).join(' or ') || (arg.multiple ? 'objects' : 'object')}`}
         <span data-testid="cmd-bar-arg-name" className="sr-only">
           {arg.name}
         </span>
