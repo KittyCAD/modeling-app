@@ -1,3 +1,4 @@
+import type { UserFeature } from '@src/machines/userFeaturesMachine'
 import type { ActorRefFrom, AnyStateMachine } from 'xstate'
 
 import type {
@@ -24,11 +25,16 @@ import { GLOBAL_COMMAND_SCOPES } from '@src/registry/contracts/commands'
 import type { Setting } from '@src/lib/settings/Setting'
 
 // An array of the paths to all of the settings that have commandConfigs
-export const settingsWithCommandConfigs = (s: SettingsType) =>
+export const settingsWithCommandConfigs = (
+  s: SettingsType,
+  hasFeature?: (feature: UserFeature) => boolean
+) =>
   Object.entries(s).flatMap(([categoryName, categorySettings]) =>
     Object.entries(categorySettings)
       .filter(([_, setting]) => setting.commandConfig !== undefined)
-      .filter(([_, setting]) => !hiddenOnPlatform(setting, isDesktop()))
+      .filter(
+        ([_, setting]) => !hiddenOnPlatform(setting, isDesktop(), hasFeature)
+      )
       .map(([settingName]) => `${categoryName}.${settingName}`)
   ) as SettingsPaths[]
 
@@ -59,11 +65,16 @@ const levelArgConfig = <T extends AnyStateMachine = AnyStateMachine>(
 interface CreateSettingsArgs {
   type: SettingsPaths
   actor: ActorRefFrom<typeof settingsMachine>
+  hasFeature?: (feature: UserFeature) => boolean
 }
 
 // Takes a Setting with a commandConfig and creates a Command
 // that can be used in the CommandBar component.
-export function createSettingsCommand({ type, actor }: CreateSettingsArgs) {
+export function createSettingsCommand({
+  type,
+  actor,
+  hasFeature,
+}: CreateSettingsArgs) {
   type S = PathValue<SettingsType, typeof type>
 
   const context = actor.getSnapshot().context
@@ -74,7 +85,8 @@ export function createSettingsCommand({ type, actor }: CreateSettingsArgs) {
     setting.hideOnLevel === 'user' && !isProjectAvailable
   const shouldHideOnThisPlatform = hiddenOnPlatform(
     setting as Setting<unknown>,
-    isDesktop()
+    isDesktop(),
+    hasFeature
   )
 
   if (
@@ -120,7 +132,11 @@ export function createSettingsCommand({ type, actor }: CreateSettingsArgs) {
     name: type,
     displayName: `Settings · ${type
       .split('.')
-      .map((segment) => formatSettingsLabel(segment))
+      .map((segment, index, segments) =>
+        index === segments.length - 1 && setting.title
+          ? setting.title
+          : formatSettingsLabel(segment)
+      )
       .join(' · ')}`,
     description: setting.description,
     groupId: 'settings',

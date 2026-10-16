@@ -173,7 +173,7 @@ describe('feature tree registry contribution', () => {
       registry.get(settingsValueSpec).modeling.featureTreeDisplay
     const display = definition.createSetting()
     expect(display.default).toBe('hud')
-    expect(display.title).toBe('Feature tree style')
+    expect(display.title).toBe('Scene browser style')
     expect(display.hideWithoutFeature).toBe(SCENE_BROWSER_FEATURE)
     expect(hiddenOnPlatform(display, true, () => false)).toBe(true)
     expect(hiddenOnPlatform(display, true, () => true)).toBe(false)
