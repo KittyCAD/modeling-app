@@ -1143,6 +1143,7 @@ export function initializeInitialSceneGraph({
     const kclSource: SourceDelta = {
       text: context.kclManager.code,
     }
+    context.kclManager.syncSketchSolveOutcome(kclSource.text, sceneGraphDelta)
 
     return {
       sketchExecOutcome: {

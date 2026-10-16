@@ -16,6 +16,7 @@ import type { CallExpressionKw, Expr } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import { createTextFileIO } from '@src/lib/projectSession/textFileIO'
 import { MachineManager } from '@src/lib/MachineManager'
 import RustContext from '@src/lib/rustContext'
 import { createSettings } from '@src/lib/settings/initialSettings'
@@ -120,6 +121,11 @@ export async function buildTheWorldAndConnectToEngine({
     pool === 'cpu'
   )
   const kclManager = new KclManager('some-file', '', {
+    fileOperations: testFileOperations,
+    textFileIO: createTextFileIO(testFileOperations, {
+      watch: () => {},
+      unwatch: () => {},
+    }),
     wasmInstancePromise: instancePromise,
     settings: settingsActor,
     commandBar: commandBarActor,
@@ -234,6 +240,11 @@ export async function buildTheWorldAndNoEngineConnection(
     settingsActor
   )
   const kclManager = new KclManager('some-file', '', {
+    fileOperations: testFileOperations,
+    textFileIO: createTextFileIO(testFileOperations, {
+      watch: () => {},
+      unwatch: () => {},
+    }),
     wasmInstancePromise: instancePromise,
     settings: settingsActor,
     commandBar: commandBarActor,
