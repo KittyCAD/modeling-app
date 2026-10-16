@@ -3838,6 +3838,7 @@ mod csg_subtract_multi_target_result_reuse {
     use anyhow::Context;
     use anyhow::bail;
     use anyhow::ensure;
+    use indexmap::IndexMap;
     use kcl_api::artifact::Artifact;
     use kittycad_modeling_cmds::ModelingCmd;
     use kittycad_modeling_cmds::each_cmd as mcmd;
@@ -3850,7 +3851,14 @@ mod csg_subtract_multi_target_result_reuse {
 
     use crate::ExecutorContext;
     use crate::KclValueView;
+    use crate::ModuleId;
     use crate::Program;
+    use crate::execution::KclValue;
+    use crate::execution::SKETCH_OBJECT_META;
+    use crate::execution::SKETCH_OBJECT_META_SKETCH;
+    use crate::named_views::ArtifactId;
+    use crate::named_views::NamedViewResolver;
+    use crate::named_views::ViewTarget;
     use crate::test_server::TestGraphicsParams;
     use crate::util::RetryConfig;
     use crate::util::execute_with_retries;
@@ -3944,7 +3952,22 @@ mod csg_subtract_multi_target_result_reuse {
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_multi_target_subtract_outputs_remain_unconsumed_in_artifact_graph() {
         let code = format!(
-            "@settings(kclVersion = \"3.0\", defaultLengthUnit = mm)\n{}",
+            r#"@settings(kclVersion = "3.0", defaultLengthUnit = mm)
+{}
+hide(result[0])
+showExcept = view::named(
+  "Show except first output",
+  camera = view::oriented(view::Orientation::Front),
+  baseline = view::Visibility::Show,
+  except = [result[0]],
+)
+hideExcept = view::named(
+  "Hide except first output",
+  camera = view::oriented(view::Orientation::Front),
+  baseline = view::Visibility::Hide,
+  except = [result[0]],
+)
+"#,
             include_str!("../tests/csg_subtract_multi_target_result_reuse/input.kcl")
         );
         let program = Program::parse_no_errs(&code).expect("the existing subtraction fixture must parse as KCL 3.0");
@@ -3993,12 +4016,66 @@ mod csg_subtract_multi_target_result_reuse {
 
         // Verify both engine outputs before checking graph metadata, so an incorrect
         // consumed flag cannot prevent the second output from being queried.
-        for (index, (engine_id, artifact_id, volume)) in outputs.into_iter().enumerate() {
-            let artifact = outcome.artifact_graph.get(&artifact_id);
+        for (index, (engine_id, artifact_id, volume)) in outputs.iter().enumerate() {
+            let artifact = outcome.artifact_graph.get(artifact_id);
             assert!(
                 matches!(artifact, Some(Artifact::CompositeSolid(body)) if !body.consumed),
                 "result[{index}] is a live engine solid {engine_id} with volume {volume} mm^3; \
                  its artifact {artifact_id:?} must be CompositeSolid with consumed = false, received {artifact:?}"
+            );
+        }
+
+        assert!(
+            ["leftBody", "rightBody"].iter().any(|name| {
+                let Some(KclValueView::Solid { value: target }) = outcome.variables.get(*name) else {
+                    panic!("the fixture must define target {name}");
+                };
+                outputs
+                    .iter()
+                    .any(|(_, artifact_id, _)| *artifact_id == ArtifactId::new(target.id))
+            }),
+            "the subtraction must reuse a target's engine UUID as an output artifact ID"
+        );
+        let sketch_ids = ["leftSketch", "rightSketch", "toolSketch"].map(|name| {
+            outcome.test_program_memory[name]
+                .as_object()
+                .and_then(|object| object.get(SKETCH_OBJECT_META))
+                .and_then(KclValue::as_object)
+                .and_then(|metadata| metadata.get(SKETCH_OBJECT_META_SKETCH))
+                .and_then(KclValue::as_sketch)
+                .unwrap_or_else(|| panic!("the fixture must define sketch block {name}"))
+                .id
+        });
+        let resolver = NamedViewResolver::new(&outcome.artifact_graph, &outcome.operations.map, &outcome.filenames)
+            .expect("the subtraction fixture must provide valid resolver inputs");
+        for (target, baseline_hidden) in [
+            (ViewTarget::Default, false),
+            (
+                ViewTarget::Named {
+                    name: "Show except first output".to_owned(),
+                    module_id: ModuleId::default(),
+                },
+                false,
+            ),
+            (
+                ViewTarget::Named {
+                    name: "Hide except first output".to_owned(),
+                    module_id: ModuleId::default(),
+                },
+                true,
+            ),
+        ] {
+            let mut expected: IndexMap<_, _> = outputs
+                .iter()
+                .enumerate()
+                .map(|(index, (engine_id, _, _))| (*engine_id, baseline_hidden ^ (index == 0)))
+                .collect();
+            expected.extend(sketch_ids.map(|id| (id, baseline_hidden)));
+            let resolved = resolver.resolve(&target).expect("the subtraction view must resolve");
+            assert_eq!(
+                resolved.visibility(),
+                &expected,
+                "{target:?} must address both subtraction outputs without including consumed inputs"
             );
         }
     }
@@ -10634,6 +10711,7 @@ mod loft_mirror_boolean_source_tags {
 mod csg_split_tool_consumption {
     use anyhow::bail;
     use anyhow::ensure;
+    use indexmap::IndexMap;
     use kcl_api::ArtifactId;
     use kcl_api::artifact::Artifact;
     use kcl_api::artifact::CompositeSolidSubType;
@@ -10649,7 +10727,13 @@ mod csg_split_tool_consumption {
     use crate::ExecutorContext;
     use crate::KclError;
     use crate::KclValueView;
+    use crate::ModuleId;
     use crate::Program;
+    use crate::execution::KclValue;
+    use crate::execution::SKETCH_OBJECT_META;
+    use crate::execution::SKETCH_OBJECT_META_SKETCH;
+    use crate::named_views::NamedViewResolver;
+    use crate::named_views::ViewTarget;
     use crate::test_server::TestGraphicsParams;
     use crate::util::RetryConfig;
     use crate::util::execute_with_retries;
@@ -10763,8 +10847,30 @@ compositeCutter = union([cutter, cutterCopy])
 
     async fn assert_split_consumption(case: SplitCase) {
         let call = case.call;
+        let first_output = if case.output_count == 1 { "result" } else { "result[0]" };
+        let exceptions = if case.keep_tools {
+            format!("{first_output}, {}", case.tool_name)
+        } else {
+            first_output.to_owned()
+        };
         let code = format!(
-            "{}\n{}\nresult = {call}\n",
+            r#"{}
+{}
+result = {call}
+hide([{exceptions}])
+showExcept = view::named(
+  "Show except selected bodies",
+  camera = view::oriented(view::Orientation::Front),
+  baseline = view::Visibility::Show,
+  except = [{exceptions}],
+)
+hideExcept = view::named(
+  "Hide except selected bodies",
+  camera = view::oriented(view::Orientation::Front),
+  baseline = view::Visibility::Hide,
+  except = [{exceptions}],
+)
+"#,
             include_str!("../tests/csg_split_tool_consumption/input.kcl"),
             case.setup,
         );
@@ -10870,6 +10976,52 @@ compositeCutter = union([cutter, cutterCopy])
             .iter()
             .filter_map(|(_, _, artifact_id, _, is_output, _)| is_output.then_some(*artifact_id))
             .collect::<Vec<_>>();
+
+        let sketch_ids = ["targetSketch", "cutterSketch"].map(|name| {
+            outcome.test_program_memory[name]
+                .as_object()
+                .and_then(|object| object.get(SKETCH_OBJECT_META))
+                .and_then(KclValue::as_object)
+                .and_then(|metadata| metadata.get(SKETCH_OBJECT_META_SKETCH))
+                .and_then(KclValue::as_sketch)
+                .unwrap_or_else(|| panic!("the fixture must define sketch block {name}"))
+                .id
+        });
+        let resolver = NamedViewResolver::new(&outcome.artifact_graph, &outcome.operations.map, &outcome.filenames)
+            .expect("the split fixture must provide valid resolver inputs");
+        for (target, baseline_hidden) in [
+            (ViewTarget::Default, false),
+            (
+                ViewTarget::Named {
+                    name: "Show except selected bodies".to_owned(),
+                    module_id: ModuleId::default(),
+                },
+                false,
+            ),
+            (
+                ViewTarget::Named {
+                    name: "Hide except selected bodies".to_owned(),
+                    module_id: ModuleId::default(),
+                },
+                true,
+            ),
+        ] {
+            let mut expected: IndexMap<_, _> = observations
+                .iter()
+                .filter(|(_, _, _, consumed, _, _)| !consumed)
+                .map(|(_, engine_id, artifact_id, _, is_output, _)| {
+                    let excepted = !is_output || *artifact_id == output_ids[0];
+                    (*engine_id, baseline_hidden ^ excepted)
+                })
+                .collect();
+            expected.extend(sketch_ids.map(|id| (id, baseline_hidden)));
+            let resolved = resolver.resolve(&target).expect("the split view must resolve");
+            assert_eq!(
+                resolved.visibility(),
+                &expected,
+                "{call}: {target:?} must address live outputs and retained tools without including consumed inputs"
+            );
+        }
         for (name, engine_id, artifact_id, expected_consumed, is_output, engine_state) in observations {
             let artifact = outcome.artifact_graph.get(&artifact_id);
             let (consumed, replacement_id) = match artifact {
