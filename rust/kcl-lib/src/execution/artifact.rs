@@ -40,6 +40,8 @@ use crate::parsing::ast::types::Program;
 use crate::std::sketch::build_reverse_region_mapping;
 
 #[cfg(test)]
+mod engine_tests;
+#[cfg(test)]
 pub(crate) mod mermaid_tests;
 #[cfg(test)]
 mod tests;

@@ -25,3 +25,5 @@ rightSketch = sketch(on = XY) {
 }
 
 right = extrude(region(point = [10, 5], sketch = rightSketch), length = 10)
+
+result = left & right

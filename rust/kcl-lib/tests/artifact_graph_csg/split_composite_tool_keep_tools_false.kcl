@@ -31,3 +31,21 @@ cutterSketch = sketch(on = offsetPlane(XY, offset = -1)) {
 }
 
 cutter = extrude(region(point = [0, 0], sketch = cutterSketch), length = 12)
+
+cutterCopy = clone(cutter) |> translate(x = 0.5)
+compositeCutter = union([cutter, cutterCopy])
+result = split(target, tools = [compositeCutter], keepTools = false)
+
+hide([result[0]])
+showExcept = view::named(
+  "Show except selected bodies",
+  camera = view::oriented(view::Orientation::Front),
+  baseline = view::Visibility::Show,
+  except = [result[0]],
+)
+hideExcept = view::named(
+  "Hide except selected bodies",
+  camera = view::oriented(view::Orientation::Front),
+  baseline = view::Visibility::Hide,
+  except = [result[0]],
+)
