@@ -7,7 +7,78 @@
 @no_std
 @settings(defaultLengthUnit = mm, experimentalFeatures = allow)
 
-import Axis2d, Axis3d, BoundedEdge, Edge, Face, Helix, Plane, Point2d, Point3d, Segment, Sketch, Solid, TaggedEdge, TaggedFace from "std::types"
+import Axis2d, Axis3d, BoundedEdge, Edge, Face, Helix, Path3d, Plane, Point2d, Point3d, Segment, Sketch, Solid, TaggedEdge, TaggedFace from "std::types"
+
+/// Start a continuous 3D path in world coordinates, without a sketch plane or constraints.
+/// Extend it with `line3d`, `arc3d`, and `tangentialArc3d`, then use it as the path of `sweep`.
+/// ```kcl,norun
+/// @settings(kclVersion = 3.0, experimentalFeatures = allow)
+/// route = startPath3d(at = [0mm, 0mm, 0mm])
+///   |> line3d(end = [0mm, 0mm, 20mm])
+/// ```
+@(impl = std_rust, experimental = true, feature_tree = true)
+export fn startPath3d(at: Point3d): Path3d {}
+
+/// Append a straight segment to a 3D path. Supply exactly one of `end` (an offset
+/// from the current position) or `endAbsolute` (a world coordinate).
+/// ```kcl,norun
+/// @settings(kclVersion = 3.0, experimentalFeatures = allow)
+/// route = startPath3d(at = [0mm, 0mm, 0mm])
+///   |> line3d(end = [0mm, 0mm, 20mm])
+///   |> line3d(endAbsolute = [10mm, 5mm, 30mm])
+/// ```
+@(impl = std_rust, experimental = true, feature_tree = false)
+export fn line3d(@path: Path3d, end?: Point3d, endAbsolute?: Point3d): Path3d {}
+
+/// Append a circular arc from the current position, through `interiorAbsolute`,
+/// to `endAbsolute`. The three distinct, non-collinear world points determine
+/// the arc's plane and traversal, including arcs greater than 180 degrees.
+/// ```kcl,norun
+/// @settings(kclVersion = 3.0, experimentalFeatures = allow)
+/// route = startPath3d(at = [0mm, 0mm, 0mm])
+///   |> line3d(end = [0mm, 0mm, 20mm])
+///   |> arc3d(interiorAbsolute = [5mm, 0mm, 25mm], endAbsolute = [10mm, 0mm, 20mm])
+///   |> line3d(end = [0mm, 10mm, -20mm])
+/// ```
+@(impl = std_rust, experimental = true, feature_tree = false)
+export fn arc3d(@path: Path3d, interiorAbsolute: Point3d, endAbsolute: Point3d): Path3d {}
+
+
+/// Append a circular 3D arc tangent to the preceding line or arc. Supply exactly
+/// one of `end` (an offset) or `endAbsolute` (a world coordinate). The incoming
+/// tangent and endpoint determine the arc's plane and radius automatically.
+/// The endpoint must be off the incoming tangent line. Tangency is enforced at
+/// the arc's start; a following segment must supply its own matching direction.
+/// ```kcl,norun
+/// @settings(kclVersion = 3.0, experimentalFeatures = allow)
+/// route = startPath3d(at = [0mm, 0mm, 0mm])
+///   |> line3d(end = [0mm, 0mm, 20mm])
+///   |> tangentialArc3d(end = [10mm, 0mm, 10mm])
+///   |> line3d(end = [20mm, 0mm, 0mm])
+///   |> tangentialArc3d(endAbsolute = [40mm, 10mm, 30mm])
+/// ```
+@(impl = std_rust, experimental = true, feature_tree = false)
+export fn tangentialArc3d(@path: Path3d, end?: Point3d, endAbsolute?: Point3d): Path3d {}
+
+/// Round all interior line-line corners of an open 3D route.
+/// Each corner replaces the ends of its two straight legs with a circular arc
+/// of the given radius. Editing the line endpoints recomputes both tangent joins.
+/// Existing arcs retain their points, radius, and traversal; joins involving
+/// arcs must already be tangent. Straight continuations are retained. Reversals,
+/// closed routes, sharp arc joins, and radii that consume a leg or overlap
+/// neighboring fillets are rejected. The input route is consumed and hidden;
+/// use the returned rounded path.
+/// ```kcl,norun
+/// @settings(kclVersion = 3.0, experimentalFeatures = allow)
+/// route = startPath3d(at = [0mm, 0mm, 0mm])
+///   |> line3d(endAbsolute = [0mm, 0mm, 40mm])
+///   |> tangentialArc3d(end = [20mm, 0mm, 20mm])
+///   |> line3d(endAbsolute = [60mm, 0mm, 60mm])
+///   |> line3d(endAbsolute = [60mm, 40mm, 60mm])
+///   |> pathFillet(radius = 6mm)
+/// ```
+@(impl = std_rust, experimental = true, feature_tree = false)
+export fn pathFillet(@path: Path3d, radius: number(Length)): Path3d {}
 
 /// Start a new 2-dimensional sketch on a specific plane or face.
 ///
@@ -1839,7 +1910,7 @@ export fn sweep(
   /// The sketch or set of sketches that should be swept in space.
   @sketches: [Sketch | Face | TaggedFace | Segment; 1+],
   /// The path to sweep the sketch along.
-  path: Sketch | Helix | [Segment; 1+],
+  path: Sketch | Helix | Path3d | [Segment; 1+],
   /// In KCL 2, if true, the sweep is broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components. Sectional sweeps are not supported in KCL 3, so this argument has no effect and produces a warning.
   sectional?: bool,
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.

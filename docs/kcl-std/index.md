@@ -96,6 +96,7 @@ layout: manual
   * [`angledLine`](/docs/kcl-std/functions/std-sketch-angledLine)
   * [`angledLineThatIntersects`](/docs/kcl-std/functions/std-sketch-angledLineThatIntersects)
   * [`arc`](/docs/kcl-std/functions/std-sketch-arc)
+  * [`arc3d`](/docs/kcl-std/functions/std-sketch-arc3d) Experimental
   * [`bezierCurve`](/docs/kcl-std/functions/std-sketch-bezierCurve)
   * [`circle`](/docs/kcl-std/functions/std-sketch-circle)
   * [`circleThreePoint`](/docs/kcl-std/functions/std-sketch-circleThreePoint)
@@ -117,9 +118,11 @@ layout: manual
   * [`lastSegX`](/docs/kcl-std/functions/std-sketch-lastSegX)
   * [`lastSegY`](/docs/kcl-std/functions/std-sketch-lastSegY)
   * [`line`](/docs/kcl-std/functions/std-sketch-line)
+  * [`line3d`](/docs/kcl-std/functions/std-sketch-line3d) Experimental
   * [`loft`](/docs/kcl-std/functions/std-sketch-loft)
   * [`parabolic`](/docs/kcl-std/functions/std-sketch-parabolic) Experimental
   * [`parabolicPoint`](/docs/kcl-std/functions/std-sketch-parabolicPoint)
+  * [`pathFillet`](/docs/kcl-std/functions/std-sketch-pathFillet) Experimental
   * [`patternCircular2d`](/docs/kcl-std/functions/std-sketch-patternCircular2d)
   * [`patternLinear2d`](/docs/kcl-std/functions/std-sketch-patternLinear2d)
   * [`patternTransform2d`](/docs/kcl-std/functions/std-sketch-patternTransform2d)
@@ -139,12 +142,14 @@ layout: manual
   * [`segStart`](/docs/kcl-std/functions/std-sketch-segStart)
   * [`segStartX`](/docs/kcl-std/functions/std-sketch-segStartX)
   * [`segStartY`](/docs/kcl-std/functions/std-sketch-segStartY)
+  * [`startPath3d`](/docs/kcl-std/functions/std-sketch-startPath3d) Experimental
   * [`startProfile`](/docs/kcl-std/functions/std-sketch-startProfile)
   * [`startSketchOn`](/docs/kcl-std/functions/std-sketch-startSketchOn)
   * [`subtract2d`](/docs/kcl-std/functions/std-sketch-subtract2d)
   * [`sweep`](/docs/kcl-std/functions/std-sketch-sweep)
   * [`tangentToEnd`](/docs/kcl-std/functions/std-sketch-tangentToEnd)
   * [`tangentialArc`](/docs/kcl-std/functions/std-sketch-tangentialArc)
+  * [`tangentialArc3d`](/docs/kcl-std/functions/std-sketch-tangentialArc3d) Experimental
   * [`xLine`](/docs/kcl-std/functions/std-sketch-xLine)
   * [`yLine`](/docs/kcl-std/functions/std-sketch-yLine)
 * [**std::solid**](/docs/kcl-std/modules/std-solid)
@@ -283,6 +288,7 @@ See also the [types overview](/docs/kcl-lang/types)
   * [`Face`](/docs/kcl-std/types/std-types-Face)
   * [`GdtAnnotation`](/docs/kcl-std/types/std-types-GdtAnnotation)
   * [`Helix`](/docs/kcl-std/types/std-types-Helix)
+  * [`Path3d`](/docs/kcl-std/types/std-types-Path3d)
   * [`Plane`](/docs/kcl-std/types/std-types-Plane)
   * [`Point2d`](/docs/kcl-std/types/std-types-Point2d)
   * [`Point3d`](/docs/kcl-std/types/std-types-Point3d)

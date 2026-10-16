@@ -455,6 +455,57 @@ export default {
       }
     ]
   },
+  "arc3d": {
+    "name": "arc3d",
+    "preferredName": "arc3d",
+    "qualName": "std::sketch::arc3d",
+    "moduleName": "sketch",
+    "returnType": "Path3d",
+    "addedIn": null,
+    "summary": "Append a circular arc from the current position, through `interiorAbsolute`, to `endAbsolute`. The three distinct, non-collinear world points determine the arc's plane and traversal, including arcs greater than 180 degrees.",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": true,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "path",
+        "ty": "Path3d",
+        "docs": null,
+        "required": true,
+        "special": true,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "interiorAbsolute",
+        "ty": "Point3d",
+        "docs": null,
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "endAbsolute",
+        "ty": "Point3d",
+        "docs": null,
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      }
+    ]
+  },
   "asin": {
     "name": "asin",
     "preferredName": "asin",
@@ -6419,6 +6470,57 @@ export default {
       }
     ]
   },
+  "line3d": {
+    "name": "line3d",
+    "preferredName": "line3d",
+    "qualName": "std::sketch::line3d",
+    "moduleName": "sketch",
+    "returnType": "Path3d",
+    "addedIn": null,
+    "summary": "Append a straight segment to a 3D path. Supply exactly one of `end` (an offset from the current position) or `endAbsolute` (a world coordinate).",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": true,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "path",
+        "ty": "Path3d",
+        "docs": null,
+        "required": true,
+        "special": true,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "end",
+        "ty": "Point3d",
+        "docs": null,
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "endAbsolute",
+        "ty": "Point3d",
+        "docs": null,
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      }
+    ]
+  },
   "ln": {
     "name": "ln",
     "preferredName": "ln",
@@ -7051,6 +7153,45 @@ export default {
         "ty": "number(Length)",
         "docs": "The y value. Calculates x and returns (x, y). Incompatible with `x`.",
         "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      }
+    ]
+  },
+  "pathFillet": {
+    "name": "pathFillet",
+    "preferredName": "pathFillet",
+    "qualName": "std::sketch::pathFillet",
+    "moduleName": "sketch",
+    "returnType": "Path3d",
+    "addedIn": null,
+    "summary": "Round all interior line-line corners of an open 3D route. Each corner replaces the ends of its two straight legs with a circular arc of the given radius. Editing the line endpoints recomputes both tangent joins. Existing arcs retain their points, radius, and traversal; joins involving arcs must already be tangent. Straight continuations are retained. Reversals, closed routes, sharp arc joins, and radii that consume a leg or overlap neighboring fillets are rejected. The input route is consumed and hidden; use the returned rounded path.",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": true,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "path",
+        "ty": "Path3d",
+        "docs": null,
+        "required": true,
+        "special": true,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "radius",
+        "ty": "number(Length)",
+        "docs": null,
+        "required": true,
         "special": false,
         "experimental": false,
         "addedIn": null,
@@ -9745,6 +9886,33 @@ export default {
       }
     ]
   },
+  "startPath3d": {
+    "name": "startPath3d",
+    "preferredName": "startPath3d",
+    "qualName": "std::sketch::startPath3d",
+    "moduleName": "sketch",
+    "returnType": "Path3d",
+    "addedIn": null,
+    "summary": "Start a continuous 3D path in world coordinates, without a sketch plane or constraints. Extend it with `line3d`, `arc3d`, and `tangentialArc3d`, then use it as the path of `sweep`.",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": true,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "at",
+        "ty": "Point3d",
+        "docs": null,
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      }
+    ]
+  },
   "startProfile": {
     "name": "startProfile",
     "preferredName": "startProfile",
@@ -10213,7 +10381,7 @@ export default {
       },
       {
         "name": "path",
-        "ty": "Sketch | Helix | [Segment; 1+]",
+        "ty": "Sketch | Helix | Path3d | [Segment; 1+]",
         "docs": "The path to sweep the sketch along.",
         "required": true,
         "special": false,
@@ -10476,6 +10644,57 @@ export default {
         "name": "tag",
         "ty": "TagDecl",
         "docs": "Create a new tag which refers to this arc.",
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      }
+    ]
+  },
+  "tangentialArc3d": {
+    "name": "tangentialArc3d",
+    "preferredName": "tangentialArc3d",
+    "qualName": "std::sketch::tangentialArc3d",
+    "moduleName": "sketch",
+    "returnType": "Path3d",
+    "addedIn": null,
+    "summary": "Append a circular 3D arc tangent to the preceding line or arc. Supply exactly one of `end` (an offset) or `endAbsolute` (a world coordinate). The incoming tangent and endpoint determine the arc's plane and radius automatically. The endpoint must be off the incoming tangent line. Tangency is enforced at the arc's start; a following segment must supply its own matching direction.",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": true,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "path",
+        "ty": "Path3d",
+        "docs": null,
+        "required": true,
+        "special": true,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "end",
+        "ty": "Point3d",
+        "docs": null,
+        "required": false,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "endAbsolute",
+        "ty": "Point3d",
+        "docs": null,
         "required": false,
         "special": false,
         "experimental": false,
