@@ -18,12 +18,12 @@ description: Physical properties subtract_regression05.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 50112.63668207988
+    "value": 50112.63639818808
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 148.27745175356617
+    "value": 148.2774383058822
   }
 }

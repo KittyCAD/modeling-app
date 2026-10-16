@@ -1,8 +1,4 @@
-import {
-  defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
-  provide,
-} from '@kittycad/registry'
+import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 import { useSignals } from '@preact/signals-react/runtime'
 import { useAppState } from '@src/AppState'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
@@ -136,41 +132,39 @@ const exportToSlicerSidebarItem = defineRegistryItemFactory((ctx) => {
   })
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'slicer.left-toolbar.item',
-      provides: [
-        provideCommand(exportToSlicerCommand),
-        provide(layoutActionLibraryValueSpec, {
-          [EXPORT_TO_SLICER_ACTION_TYPE]: {
-            useHidden: () => !isDesktop(),
-            useDisabled: useExportToSlicerDisabled,
-            execute: () => {
-              getCommandSystem().send({
-                type: 'Find and select command',
-                data: {
-                  name: EXPORT_TO_SLICER_COMMAND_NAME,
-                  groupId: EXPORT_TO_SLICER_COMMAND_GROUP_ID,
-                },
-              })
-            },
+    id: 'slicer.left-toolbar.item',
+    provides: [
+      provideCommand(exportToSlicerCommand),
+      provide(layoutActionLibraryValueSpec, {
+        [EXPORT_TO_SLICER_ACTION_TYPE]: {
+          useHidden: () => !isDesktop(),
+          useDisabled: useExportToSlicerDisabled,
+          execute: () => {
+            getCommandSystem().send({
+              type: 'Find and select command',
+              data: {
+                name: EXPORT_TO_SLICER_COMMAND_NAME,
+                groupId: EXPORT_TO_SLICER_COMMAND_GROUP_ID,
+              },
+            })
           },
-        }),
-        provide(layoutContributionsValueSpec, {
-          id: 'slicer.left-toolbar.action',
-          kind: 'action',
-          action: {
-            id: 'export-to-slicer',
-            label: EXPORT_TO_SLICER_COMMAND_NAME,
-            icon: 'printer3d',
-            actionType: EXPORT_TO_SLICER_ACTION_TYPE,
-          },
-          placement: {
-            targetPaneId: DefaultLayoutToolbarID.Left,
-            position: 'end',
-          },
-        }),
-      ],
-    }),
+        },
+      }),
+      provide(layoutContributionsValueSpec, {
+        id: 'slicer.left-toolbar.action',
+        kind: 'action',
+        action: {
+          id: 'export-to-slicer',
+          label: EXPORT_TO_SLICER_COMMAND_NAME,
+          icon: 'printer3d',
+          actionType: EXPORT_TO_SLICER_ACTION_TYPE,
+        },
+        placement: {
+          targetPaneId: DefaultLayoutToolbarID.Left,
+          position: 'end',
+        },
+      }),
+    ],
   }
 }, 'slicer.left-toolbar.item')
 

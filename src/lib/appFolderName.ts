@@ -22,13 +22,17 @@ export const getAppFolderName = ({
   isStagingOrDebug,
   appIdBase = 'dev.zoo.modeling-app',
 }: AppFolderNameOptions) => {
+  if (platform === 'linux') {
+    return isStagingOrDebug && !isStaging ? `${packageName}-local` : packageName
+  }
+
   const appId = isStaging
     ? `${appIdBase}${STAGING_BUILD_SUFFIX}`
     : isStagingOrDebug
       ? `${appIdBase}-local`
       : appIdBase
 
-  return platform === 'linux' ? packageName : appId
+  return appId
 }
 
 export const getAppFolderNameFromBuild = ({

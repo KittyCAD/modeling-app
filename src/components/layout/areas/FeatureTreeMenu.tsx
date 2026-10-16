@@ -2,9 +2,7 @@ import { Menu } from '@headlessui/react'
 
 import { useApp } from '@src/lib/boot'
 
-import Tooltip from '@src/components/Tooltip'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
-import { isDesktop } from '@src/lib/isDesktop'
 import styles from './KclEditorMenu.module.css'
 
 export const FeatureTreeMenu = () => {
@@ -40,15 +38,9 @@ export const FeatureTreeMenu = () => {
               },
             })
           }
-          disabled={!isDesktop()}
           className={styles.button}
         >
           <span>Import from a file</span>
-          {!isDesktop() && (
-            <Tooltip position="right">
-              Available only in the desktop app
-            </Tooltip>
-          )}
         </button>
       </Menu.Item>
     </HeaderMenu>

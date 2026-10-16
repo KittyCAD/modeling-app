@@ -12,8 +12,9 @@ use std::sync::Arc;
 use std::sync::Mutex;
 
 use anyhow::Result;
-use kcl_api::KclVersion;
+use kcl_api::NumericSuffix;
 pub use kcl_api::ast::ItemVisibility;
+use kittycad_modeling_cmds::KclVersion;
 use parse_display::Display;
 use parse_display::FromStr;
 pub use path::NodePath;
@@ -50,7 +51,6 @@ pub use crate::parsing::ast::types::condition::ElseIf;
 pub use crate::parsing::ast::types::condition::IfExpression;
 pub use crate::parsing::ast::types::literal_value::LiteralValue;
 pub use crate::parsing::ast::types::none::KclNone;
-use crate::parsing::token::NumericSuffix;
 
 mod condition;
 mod literal_value;
@@ -506,7 +506,9 @@ fn kcl_version_expr(kcl_version: KclVersion) -> Result<Expr, KclError> {
             },
             "2.0".to_owned(),
         ),
-        crate::KclVersion::V3Preview => (
+        crate::KclVersion::V3Preview | crate::KclVersion::V4Preview => (
+            // These have their own handling because they're string literals,
+            // not numeric literals.
             LiteralValue::String(kcl_version.as_str().to_owned()),
             format!("\"{}\"", kcl_version.as_str()),
         ),
@@ -864,7 +866,7 @@ impl Node<Program> {
         let new_color = csscolorparser::Color::new(color.red, color.green, color.blue, color.alpha);
         Ok(Some(ColorPresentation {
             // The label will be what they replace the color with.
-            label: new_color.to_css_hex(),
+            label: new_color.to_css_hex().to_string(),
             text_edit: None,
             additional_text_edits: None,
         }))

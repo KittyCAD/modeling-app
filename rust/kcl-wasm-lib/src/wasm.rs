@@ -1,7 +1,7 @@
 //! Wasm bindings for `kcl`.
 
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_api::KclVersion;
+use kcl_api::NumericSuffix;
 use kcl_lib::KclRuntimeFlags;
 use kcl_lib::Program;
 use kcl_lib::SourceRange;
@@ -10,7 +10,7 @@ use kcl_lib::exec::UnitAngle;
 use kcl_lib::exec::UnitLength;
 use kcl_lib::exec::UnitType;
 use kcl_lib::exec::WarningLevel;
-use kcl_lib::pretty::NumericSuffix;
+use kittycad_modeling_cmds::KclVersion;
 use kittycad_modeling_cmds::units::UnitLength as KcmcUnitLength;
 use wasm_bindgen::prelude::*;
 
@@ -415,6 +415,12 @@ pub fn get_kcl_version() -> String {
     console_error_panic_hook::set_once();
 
     kcl_lib::version().to_string()
+}
+
+/// Returns the reserved name of the default KCL view.
+#[wasm_bindgen]
+pub fn kcl_default_view_name() -> String {
+    kcl_lib::named_views::default_view_name().to_string()
 }
 
 /// Get the allowed import file extensions.

@@ -13,6 +13,7 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 import noCodemirrorPrintableKeymapKeystrokes from './src/eslint/rules/no-codemirror-printable-keymap-keystrokes.mjs'
 import noDirectFsZdsIo from './src/eslint/rules/no-direct-fszds-io.mjs'
 import noInternalFileSystemImports from './src/eslint/rules/no-internal-file-system-imports.mjs'
+import noReactRouterHooks from './src/eslint/rules/no-react-router-hooks.mjs'
 import interactionExpectations from './src/eslint/rules/interaction-expectations.mjs'
 
 const compat = new FlatCompat({
@@ -57,6 +58,7 @@ export default defineConfig([
             noCodemirrorPrintableKeymapKeystrokes,
           'no-direct-fszds-io': noDirectFsZdsIo,
           'no-internal-file-system-imports': noInternalFileSystemImports,
+          'no-react-router-hooks': noReactRouterHooks,
         },
       },
     },
@@ -199,6 +201,7 @@ export default defineConfig([
       'suggest-no-throw/suggest-no-throw': 'error',
       'zds/no-codemirror-printable-keymap-keystrokes': 'error',
       'zds/interaction-expectations': 'error',
+      'zds/no-react-router-hooks': 'error',
     },
   },
   {

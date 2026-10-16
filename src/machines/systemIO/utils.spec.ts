@@ -515,7 +515,7 @@ describe('System IO Utils', () => {
     expect(preparedPayload?.requestedFileNameWithExtension).toBe('main.kcl')
   })
 
-  it('carries only explicit Zookeeper delete signals into edit requests', () => {
+  it('carries only deleted entries from the Zookeeper edit patch into edit requests', () => {
     const preparedPayload = prepareZookeeperNewFileRequest({
       projectNameCurrentlyOpened: 'some-project',
       fileFocusedOnInEditor: {
@@ -523,7 +523,6 @@ describe('System IO Utils', () => {
         path: '/some-project/main.kcl',
         children: null,
       },
-      filesToDelete: [{ requestedFileName: 'old.kcl' }],
       toolOutput: {
         status_code: 200,
         type: 'edit_kcl_code',
@@ -531,11 +530,29 @@ describe('System IO Utils', () => {
         outputs: {
           'main.kcl': 'cube = 1',
         },
+        zookeeper_edit_patch: {
+          run_id: 'run-delete',
+          changed_files: [
+            {
+              path: 'old.kcl',
+              status: 'deleted',
+              previous_contents: 'old = 1',
+            },
+            {
+              path: 'notes.txt',
+              status: 'deleted',
+              previous_contents: 'old notes',
+            },
+            { path: 'main.kcl', status: 'modified', diff: '' },
+            { path: 'new.kcl', status: 'created', contents: 'new = 1' },
+          ],
+        },
       },
     })
 
     expect(preparedPayload?.filesToDelete).toEqual([
       { requestedFileName: 'old.kcl' },
+      { requestedFileName: 'notes.txt' },
     ])
   })
 
@@ -610,7 +627,6 @@ describe('System IO Utils', () => {
         path: '/some-project/main.kcl',
         children: null,
       },
-      filesToDelete: [{ requestedFileName: './main.kcl' }],
       toolOutput: asMlToolResult(toolOutput),
     })
 

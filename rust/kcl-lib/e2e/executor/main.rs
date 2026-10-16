@@ -588,7 +588,7 @@ sketch000 = startSketchOn(XY)
     |> line(end = [0, innerDiameter / 2])
 "#;
 
-    let ctx = kcl_lib::ExecutorContext::new_geometry_only_with_version(kcl_api::KclVersion::V2)
+    let ctx = kcl_lib::ExecutorContext::new_geometry_only_with_version(kittycad_modeling_cmds::KclVersion::V2)
         .await
         .unwrap();
     let mut exec_state = kcl_lib::ExecState::new(&ctx);
@@ -612,7 +612,7 @@ async fn kcl_test_ensure_nothing_left_in_batch_multi_file() {
     // Change the current working directory to the test directory.
     std::env::set_current_dir(path.parent().unwrap()).unwrap();
 
-    let ctx = kcl_lib::ExecutorContext::new_geometry_only_with_version(kcl_api::KclVersion::V2)
+    let ctx = kcl_lib::ExecutorContext::new_geometry_only_with_version(kittycad_modeling_cmds::KclVersion::V2)
         .await
         .unwrap();
     let mut exec_state = kcl_lib::ExecState::new(&ctx);

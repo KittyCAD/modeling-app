@@ -27,6 +27,7 @@ interface CreateMachineCommandProps<
   send: Function
   actor: Actor<T>
   commandBarConfig?: StateMachineCommandSetConfig<T, S>
+  getDefaultDescription?: (type: EventFrom<T>['type']) => string | undefined
   defaultScopes: Command['scopes']
   onCancel?: () => void
   forceDisable?: boolean
@@ -45,6 +46,7 @@ export function createMachineCommand<
   send,
   actor,
   commandBarConfig,
+  getDefaultDescription,
   defaultScopes,
   onCancel,
   forceDisable = false,
@@ -75,6 +77,7 @@ export function createMachineCommand<
           send,
           actor,
           commandBarConfig: recursiveCommandBarConfig,
+          getDefaultDescription,
           defaultScopes,
           onCancel,
           forceDisable,
@@ -104,7 +107,7 @@ export function createMachineCommand<
     name: type,
     groupId,
     icon,
-    description: commandConfig.description,
+    description: commandConfig.description ?? getDefaultDescription?.(type),
     scopes: commandConfig.scopes ?? defaultScopes,
     needsReview: commandConfig.needsReview || false,
     machineActor: actor,
@@ -116,6 +119,7 @@ export function createMachineCommand<
       }
     },
     disabled: forceDisable,
+    forceCommandBar: commandConfig.forceCommandBar,
   }
 
   if (commandConfig.args) {
@@ -209,6 +213,7 @@ export function buildCommandArgument<
     skip: arg.skip,
     machineActor,
     valueSummary: arg.valueSummary,
+    dialog: arg.dialog,
   } satisfies Omit<CommandArgument<O, T>, 'inputType'>
 
   if (arg.inputType === 'options') {

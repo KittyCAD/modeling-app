@@ -3,6 +3,7 @@ import {
   renderHook,
   waitFor as waitForAssertion,
 } from '@testing-library/react'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: typed mocks for legacy onboarding navigation.
 import type * as ReactRouterDom from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type * as XState from 'xstate'

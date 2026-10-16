@@ -18,12 +18,12 @@ description: Physical properties weldment_gdt_distance.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 131.59628710823768
+    "value": 131.59628708514504
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.05425189782629301
+    "value": 0.05425189804833761
   }
 }

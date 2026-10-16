@@ -18,12 +18,12 @@ description: Physical properties extrude_custom_plane.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 6.94060754824477
+    "value": 6.94060182127032
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.0006875004894083917
+    "value": 0.0006874999898080306
   }
 }

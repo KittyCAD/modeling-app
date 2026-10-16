@@ -24,6 +24,7 @@ interface UseStateMachineCommandsArgs<
   send: (event: EventFrom<T>) => void
   actor: Actor<T>
   commandBarConfig?: StateMachineCommandSetConfig<T, S>
+  getDefaultDescription?: (type: EventFrom<T>['type']) => string | undefined
   scopes: Command['scopes']
   isExecuting: boolean
   onCancel?: () => void
@@ -45,6 +46,7 @@ export default function useStateMachineCommands<
   send,
   actor,
   commandBarConfig,
+  getDefaultDescription,
   scopes,
   onCancel,
   isExecuting,
@@ -57,6 +59,7 @@ export default function useStateMachineCommands<
     EXPERIMENTAL_POINT_AND_CLICK_FLAG,
     false
   )
+  const modelingDialogsEnabled = userFeatures.useHas('modeling_dialogs', false)
   const settingsValues = settings.useSettings()
   const { overallState } = useNetworkContext()
   const { isStreamReady } = useAppState()
@@ -86,12 +89,24 @@ export default function useStateMachineCommands<
           send,
           actor,
           commandBarConfig,
+          getDefaultDescription,
           defaultScopes: scopes,
           onCancel,
           forceDisable: shouldDisableEngineCommands,
           showExperimentalCommands,
         })
       })
+      .map((command) =>
+        command
+          ? {
+              ...command,
+              useModelingDialog:
+                modelingDialogsEnabled &&
+                command.groupId === 'modeling' &&
+                !command.forceCommandBar,
+            }
+          : command
+      )
       .filter((c) => c !== null) as Command[] // TS isn't smart enough to know this filter removes nulls
 
     commands.send({
@@ -110,7 +125,9 @@ export default function useStateMachineCommands<
     shouldDisableEngineCommands,
     showExperimentalCommands,
     commandBarConfig,
+    getDefaultDescription,
     kclProgramVersion,
+    modelingDialogsEnabled,
     scopes,
   ])
 }
