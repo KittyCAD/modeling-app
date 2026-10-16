@@ -803,6 +803,8 @@ export class App implements AppSubsystems {
   buildSingletons() {
     File.ioImplementations.read = async (path) =>
       new TextDecoder().decode(await this.fileOperations.readFile(path))
+    File.ioImplementations.modifiedAt = async (path) =>
+      (await this.fileOperations.stat(path)).modifiedAt
     File.ioImplementations.write = (path, content) =>
       this.fileOperations.writeFile(path, content)
 

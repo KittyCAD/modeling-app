@@ -58,12 +58,6 @@ export function RouteProvider({ children }: { children: ReactNode }) {
         return
       }
 
-      // Earlier method, this doesn't hurt but it's not needed anymore..
-      if (kclManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher) {
-        kclManager.writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
-        return
-      }
-
       // ZOOKEEPER BEHAVIOR EXCEPTION
       // If the changes are caused by Zookeeper, ignore. The files are bulk
       // created, but because they are created one-by-one on disk, the system
@@ -135,8 +129,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
       // Only reload if there are changes. Ignore everything else.
       if (eventType !== 'change') return
 
-      // Note: currently settings are watched, reloaded even if it was initiated by us (e.g. by a user changing some settings),
-      // writeCausedByAppCheckedInFileTreeFileSystemWatcher is not used here.
+      // Reload settings even when this app initiated the change.
       settingsActor.send({
         type: 'reload.settings',
       })

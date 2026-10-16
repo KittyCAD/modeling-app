@@ -33,6 +33,19 @@ export class File extends EventTarget {
     return File.ioImplementations.read(this.pathSignal.value)
   }
 
+  /** Read bytes and their disk timestamp from the same stable file revision. */
+  async readWithTimestamp(): Promise<{ code: string; modifiedAt: number }> {
+    const path = this.path
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      const modifiedAt = await File.ioImplementations.modifiedAt(path)
+      const code = await File.ioImplementations.read(path)
+      if (modifiedAt === (await File.ioImplementations.modifiedAt(path))) {
+        return { code, modifiedAt }
+      }
+    }
+    return Promise.reject(new Error('File kept changing while reading'))
+  }
+
   write(newContent: string) {
     return File.ioImplementations.write(this.pathSignal.value, newContent)
   }
@@ -75,6 +88,8 @@ export class File extends EventTarget {
   /** Allows environments to swap their implementation of these IO-interfacing functions */
   static ioImplementations = {
     read: (_path: string): Promise<string> =>
+      Promise.reject(new Error('File IO has not been configured')),
+    modifiedAt: (_path: string): Promise<number> =>
       Promise.reject(new Error('File IO has not been configured')),
     write: (_path: string, _content: string): Promise<void> =>
       Promise.reject(new Error('File IO has not been configured')),

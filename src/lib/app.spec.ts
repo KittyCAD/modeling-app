@@ -1119,6 +1119,7 @@ describe('project system', () => {
     const app = createAppForTest()
 
     // Override the application wiring for this focused project-session test.
+    File.ioImplementations.modifiedAt = () => Promise.resolve(0)
     File.ioImplementations.read = () => Promise.resolve('')
     File.ioImplementations.write = () => Promise.resolve()
 
