@@ -535,7 +535,7 @@ export function CommandKclInput({
           className={
             inline
               ? 'flex items-baseline gap-4 mx-4'
-              : 'flex flex-wrap items-baseline gap-2 text-xs'
+              : 'flex flex-wrap items-center gap-2 text-xs'
           }
         >
           <input

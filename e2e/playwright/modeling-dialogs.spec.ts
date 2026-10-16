@@ -211,6 +211,15 @@ body002 = clone(body001)
     const { locator: dialog, submitButton: submit } = modelingDialog
     const length = modelingDialog.input(/^length$/i)
     const profiles = modelingDialog.selection('Profiles')
+    const profileReferences = dialog.getByRole('group', {
+      name: 'Profiles selections',
+    })
+    const profileReference = profileReferences.getByText('region001', {
+      exact: true,
+    })
+    const removeProfile = profileReferences.getByRole('button', {
+      name: 'Remove Region from selection',
+    })
     const tagStart = modelingDialog.input(/^tag start$/i)
     await expect(length).toHaveText('5')
     await expect(tagStart).toBeHidden()
@@ -218,7 +227,10 @@ body002 = clone(body001)
     await expect(profiles).toContainText(/1 region/i)
     await expect(profiles).toBeFocused()
     await page.keyboard.press('Tab')
+    await expect(removeProfile).toBeFocused()
+    await page.keyboard.press('Tab')
     await expect(length).toBeFocused()
+    await page.keyboard.press('Shift+Tab')
     await page.keyboard.press('Shift+Tab')
     await expect(profiles).not.toHaveCSS('box-shadow', 'none')
 
@@ -232,16 +244,23 @@ body002 = clone(body001)
     await expect(docs).not.toBeVisible()
     await expect(dialog).toBeVisible()
 
-    await page.getByRole('button', { name: 'Clear Profiles selection' }).click()
-    await expect(profiles).toHaveText('Select in the scene')
-    await expect(profiles).toBeFocused()
-    await expect(submit).toBeDisabled()
-    await editor.selectText('region(')
-    await expect(profiles).toContainText(/1 region/i)
-
     await modelingDialog.selection('To').click()
     await expect(profiles).toContainText(/1 region/i)
+    await expect(profileReference).toBeHidden()
+    await profileReferences.getByText('Region', { exact: true }).hover()
+    await expect(profileReference).toBeVisible()
+    await profiles.hover()
+    await expect(profileReference).toBeHidden()
     await profiles.click()
+    await removeProfile.click()
+    await expect(profiles).toHaveText('Select in the scene')
+    await expect(submit).toBeDisabled()
+    await expect(profiles).toBeFocused()
+    await expect(page.getByTestId('selection-status')).toContainText(
+      'No selection'
+    )
+    await editor.selectText('line(')
+    await editor.selectText('region(')
     await expect(profiles).toContainText(/1 region/i)
 
     await length.fill('missingLength')
