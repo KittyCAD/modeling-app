@@ -486,7 +486,7 @@ describe('KclManager settings ownership', () => {
       settings.textEditor.textWrapping.user = false
       settings.textEditor.blinkingCursor.user = false
       await KclManager.fromFile(
-        new File('reopened.kcl'),
+        new File('reopened.kcl', kclManager.textFileIO),
         kclManager.systemDeps,
         kclManager,
         '',
@@ -1269,7 +1269,7 @@ describe('KclManager diagnostics', () => {
     kclManager.path = '/tmp/kcl-manager-write-test.kcl'
     ;(kclManager as any).markFileCodeAsSynced('start')
     kclManager.engineCommandManager.started = true
-    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('start')
+    vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('start')
 
     kclManager.updateCodeEditor('first', {
       shouldExecute: false,
@@ -1302,7 +1302,7 @@ describe('KclManager diagnostics', () => {
     kclManager.path = '/tmp/kcl-manager-flush-test.kcl'
     ;(kclManager as any).markFileCodeAsSynced('start')
     kclManager.engineCommandManager.started = true
-    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('start')
+    vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('start')
 
     kclManager.updateCodeEditor('sketch only', {
       shouldExecute: false,
@@ -1337,11 +1337,11 @@ describe('KclManager diagnostics', () => {
     const sourceCode = 'source contents'
     const destinationCode = 'destination contents'
     const { kclManager } = createKclManagerTestHarness(sourceCode)
-    const writeSpy = vi.spyOn(File.ioImplementations, 'write')
+    const writeSpy = vi.spyOn(kclManager.textFileIO, 'write')
 
     kclManager.path = sourcePath
     ;(kclManager as any).markFileCodeAsSynced(sourceCode)
-    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue(destinationCode)
+    vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue(destinationCode)
 
     const pendingWrite = kclManager.writeToFile('pending source edit')
     kclManager.path = destinationPath
@@ -1367,17 +1367,15 @@ describe('KclManager diagnostics', () => {
 
     kclManager.path = sourcePath
     ;(kclManager as any).markFileCodeAsSynced(sourceCode)
-    vi.spyOn(File.ioImplementations, 'read').mockImplementation(
-      async (path) => {
-        const contents = files.get(path)
-        if (contents === undefined) {
-          throw new Error(`Unexpected path: ${path}`)
-        }
-        return contents
+    vi.spyOn(kclManager.textFileIO, 'read').mockImplementation(async (path) => {
+      const contents = files.get(path)
+      if (contents === undefined) {
+        throw new Error(`Unexpected path: ${path}`)
       }
-    )
+      return contents
+    })
     const writeSpy = vi
-      .spyOn(File.ioImplementations, 'write')
+      .spyOn(kclManager.textFileIO, 'write')
       .mockImplementation(async (path, contents) => {
         files.set(path, contents)
       })
@@ -1389,7 +1387,7 @@ describe('KclManager diagnostics', () => {
     })
 
     await KclManager.fromFile(
-      new File(destinationPath),
+      new File(destinationPath, kclManager.textFileIO),
       (kclManager as any).systemDeps,
       kclManager,
       destinationCode
@@ -1409,7 +1407,7 @@ describe('KclManager diagnostics', () => {
     ;(kclManager as any).systemDeps.projectPath.value = '/tmp/project'
     ;(kclManager as any).markFileCodeAsSynced('from disk')
 
-    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('external edit')
+    vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('external edit')
 
     const watchHandler = kclManager.onWatchEvent.at(-1)
     expect(watchHandler).toBeDefined()
@@ -1429,7 +1427,7 @@ describe('KclManager diagnostics', () => {
     ;(kclManager as any).systemDeps.projectPath.value = '/tmp/project'
     ;(kclManager as any).markFileCodeAsSynced('from disk')
 
-    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('zookeeper edit')
+    vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('zookeeper edit')
 
     const watchHandler = kclManager.onWatchEvent.at(-1)
     expect(watchHandler).toBeDefined()
@@ -1454,7 +1452,7 @@ describe('KclManager diagnostics', () => {
     testInternals.systemDeps.projectPath.value = '/tmp/project'
     testInternals.markFileCodeAsSynced('from disk')
 
-    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue(
+    vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue(
       'newer zookeeper edit'
     )
 
@@ -1481,7 +1479,7 @@ describe('KclManager diagnostics', () => {
     testInternals.systemDeps.projectPath.value = '/tmp/project'
     testInternals.markFileCodeAsSynced('from disk')
 
-    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('external edit')
+    vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('external edit')
 
     const watchHandler = kclManager.onWatchEvent.at(-1)
     expect(watchHandler).toBeDefined()
@@ -1509,7 +1507,7 @@ describe('KclManager diagnostics', () => {
     testInternals.systemDeps.projectPath.value = '/tmp/project'
     testInternals.markFileCodeAsSynced('from disk')
 
-    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue(
+    vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue(
       'newer zookeeper edit'
     )
 
@@ -1528,14 +1526,14 @@ describe('KclManager diagnostics', () => {
     const { kclManager } = createKclManagerTestHarness('')
     const path = '/tmp/kcl-manager-watch-open-test.kcl'
     const readSpy = vi
-      .spyOn(File.ioImplementations, 'read')
+      .spyOn(kclManager.textFileIO, 'read')
       .mockResolvedValue('opened code')
     const watchSpy = vi
-      .spyOn(File.ioImplementations, 'watch')
+      .spyOn(kclManager.textFileIO, 'watch')
       .mockImplementation(() => {})
 
     const opened = await KclManager.fromFile(
-      new File(path, 101),
+      new File(path, kclManager.textFileIO, 101),
       (kclManager as any).systemDeps,
       kclManager
     )
@@ -1563,7 +1561,7 @@ describe('KclManager diagnostics', () => {
     kclManager.path = '/tmp/project/main.kcl'
     ;(kclManager as any).markFileCodeAsSynced('x = 1')
     kclManager.engineCommandManager.started = true
-    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('x = 1')
+    vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('x = 1')
 
     kclManager.editorView.dispatch({
       changes: {
@@ -1604,13 +1602,15 @@ describe('KclManager diagnostics', () => {
     kclManager.path = mainPath
     kclManager.id = 1
 
-    vi.spyOn(File.ioImplementations, 'read').mockImplementation(
-      async (path) => {
-        return path === depsPath ? depsCode : mainCode
-      }
-    )
+    vi.spyOn(kclManager.textFileIO, 'read').mockImplementation(async (path) => {
+      return path === depsPath ? depsCode : mainCode
+    })
 
-    await KclManager.fromFile(new File(depsPath, 2), systemDeps, kclManager)
+    await KclManager.fromFile(
+      new File(depsPath, kclManager.textFileIO, 2),
+      systemDeps,
+      kclManager
+    )
 
     const sendUpdateFileSpy = vi
       .spyOn(kclManager.rustContext, 'sendUpdateFile')
@@ -1622,7 +1622,11 @@ describe('KclManager diagnostics', () => {
       connected: true,
     } as typeof kclManager.engineCommandManager.connection
 
-    await KclManager.fromFile(new File(mainPath, 1), systemDeps, kclManager)
+    await KclManager.fromFile(
+      new File(mainPath, kclManager.textFileIO, 1),
+      systemDeps,
+      kclManager
+    )
 
     expect(sendUpdateFileSpy).toHaveBeenCalledWith(1, mainCode)
 
@@ -1640,7 +1644,7 @@ describe('KclManager diagnostics', () => {
     ;(kclManager as any).systemDeps.projectPath.value = '/tmp/project'
     ;(kclManager as any).markFileCodeAsSynced('local base')
 
-    vi.spyOn(File.ioImplementations, 'read').mockReturnValue(
+    vi.spyOn(kclManager.textFileIO, 'read').mockReturnValue(
       deferredRead.promise
     )
 
@@ -1881,7 +1885,7 @@ describe('KclManager diagnostics', () => {
     ;(kclManager as any).markFileCodeAsSynced('disk base')
     kclManager.engineCommandManager.started = true
 
-    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('external newer')
+    vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('external newer')
 
     kclManager.updateCodeEditor('local newer', {
       shouldExecute: false,
@@ -1903,7 +1907,7 @@ describe('KclManager diagnostics', () => {
 
     kclManager.path = path
     ;(kclManager as any).markFileCodeAsSynced('disk base')
-    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('external newer')
+    vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('external newer')
 
     kclManager.updateCodeEditor('local newer', {
       shouldExecute: false,
@@ -1919,8 +1923,8 @@ describe('KclManager diagnostics', () => {
   it('does not recreate a missing empty file when there is nothing to flush', async () => {
     const path = '/tmp/renamed-empty-file.kcl'
     const { kclManager } = createKclManagerTestHarness('')
-    const readSpy = vi.spyOn(File.ioImplementations, 'read')
-    const writeSpy = vi.spyOn(File.ioImplementations, 'write')
+    const readSpy = vi.spyOn(kclManager.textFileIO, 'read')
+    const writeSpy = vi.spyOn(kclManager.textFileIO, 'write')
 
     kclManager.path = path
     ;(kclManager as any).markFileCodeAsSynced('')
@@ -1938,7 +1942,7 @@ describe('KclManager diagnostics', () => {
 
     kclManager.path = path
     ;(kclManager as any).markFileCodeAsSynced('disk base')
-    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('disk base')
+    vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('disk base')
     vi.spyOn(kclManager, 'write').mockRejectedValue(error)
 
     await expect(
@@ -1979,7 +1983,7 @@ describe('KclManager diagnostics', () => {
 
     kclManager.path = path
     ;(kclManager as any).markFileCodeAsSynced('disk base')
-    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('disk base')
+    vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('disk base')
     vi.spyOn(kclManager, 'write').mockRejectedValue(error)
 
     await expect(
@@ -2017,10 +2021,10 @@ describe('KclManager diagnostics', () => {
     expect(persistedSnapshot).not.toBeNull()
     expect(persistedSnapshot!).toContain('recovered newer')
 
-    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('disk base')
+    vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('disk base')
 
     const reopened = await KclManager.fromFile(
-      new File(path, 99),
+      new File(path, kclManager.textFileIO, 99),
       (kclManager as any).systemDeps
     )
 

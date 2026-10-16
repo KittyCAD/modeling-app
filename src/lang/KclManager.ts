@@ -176,7 +176,6 @@ import type {
 } from '@src/machines/modelingMachine'
 import { waitForUserFeaturesSettled } from '@src/machines/userFeaturesMachine'
 import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
-import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import {
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
@@ -347,9 +346,6 @@ export interface PendingFeatureTreeSourceSelection {
 
 export class KclManager extends File {
   // SYSTEM DEPENDENCIES
-
-  /** Application storage facade used by workflows owned by this manager. */
-  fileOperations?: FileOperationsRegistryService
 
   private _wasmInstance: ModuleType | null = null
   /** in the case of WASM crash, we should ensure the new refreshed WASM module is held here. */
@@ -628,7 +624,7 @@ export class KclManager extends File {
     // Your current file is changed, read it from disk and write it into the code manager and execute the AST,
     // unless the change was initiated by us (the currently running instance).
     const requestedDocumentVersion = this._documentVersion
-    File.ioImplementations
+    this.textFileIO
       .read(path)
       .then((code) => {
         if (requestedDocumentVersion !== this._documentVersion) {
@@ -1848,7 +1844,7 @@ export class KclManager extends File {
     systemDeps: ProjectSystemDeps,
     fileId = 0
   ) {
-    super(path, fileId)
+    super(path, systemDeps.textFileIO, fileId)
     // Register our additional, KclManager-specific watch event handler
     this.onWatchEvent.push(this.#onWatchEvent)
     this.systemDeps = systemDeps
@@ -2285,11 +2281,8 @@ export class KclManager extends File {
 
       // Update project thumbnail after successful execution
       if (!isInterrupted && errors.length === 0 && projectFsManager.dir) {
-        if (!this.fileOperations) {
-          return
-        }
         createThumbnailPNGOnDesktop({
-          fileOperations: this.fileOperations,
+          fileOperations: this.systemDeps.fileOperations,
           projectDirectoryWithoutEndingSlash: projectFsManager.dir,
         })
       }
@@ -3822,7 +3815,7 @@ export class KclManager extends File {
     let currentDiskCode: string | null = null
     try {
       currentDiskCode = normalizeLineEndings(
-        await File.ioImplementations.read(requestedPath)
+        await this.textFileIO.read(requestedPath)
       )
     } catch (err: unknown) {
       if (isPathNotFoundError(err)) {

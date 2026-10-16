@@ -1007,7 +1007,8 @@ describe('project system', () => {
     const mainPath = fsZds.join(projectPath, 'main.kcl')
     const alternatePath = fsZds.join(projectPath, 'alternate.kcl')
     const app = createAppForTest()
-    const originalRead = File.ioImplementations.read
+    const textFileIO = app.registry.get(projectSession).textFileIO
+    const originalRead = textFileIO.read
     let resolveAlternateRead: (code: string) => void = () => {}
     const alternateRead = new Promise<string>((resolve) => {
       resolveAlternateRead = resolve
@@ -1042,8 +1043,9 @@ describe('project system', () => {
         shouldClearHistory: true,
         shouldAddToHistory: false,
       })
-      File.ioImplementations.read = (path) =>
+      vi.spyOn(textFileIO, 'read').mockImplementation((path) =>
         path === alternatePath ? alternateRead : originalRead(path)
+      )
 
       const firstController = new AbortController()
       const assertFirstLoadCurrent = app.beginFileRouteLoad(
@@ -1066,7 +1068,6 @@ describe('project system', () => {
       expect(kclManager.code).toBe('main = true\n')
       expect(openedProject.executingPath).toBe(mainPath)
     } finally {
-      File.ioImplementations.read = originalRead
       app.dispose()
       await fsZds.rm(projectPath, { recursive: true, force: true })
     }
@@ -1076,8 +1077,14 @@ describe('project system', () => {
     const app = createAppForTest()
 
     // Override the application wiring for this focused project-session test.
-    File.ioImplementations.read = () => Promise.resolve('')
-    File.ioImplementations.write = () => Promise.resolve()
+    vi.spyOn(
+      app.registry.get(projectSession).textFileIO,
+      'read'
+    ).mockResolvedValue('')
+    vi.spyOn(
+      app.registry.get(projectSession).textFileIO,
+      'write'
+    ).mockResolvedValue(undefined)
 
     try {
       const project = await app.openProject(mockProject)
