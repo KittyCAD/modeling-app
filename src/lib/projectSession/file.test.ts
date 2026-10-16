@@ -1,6 +1,6 @@
 import { File } from '@src/lib/projectSession/file'
 import { createTextFileIO } from '@src/lib/projectSession/textFileIO'
-import { expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 function createIO() {
   const watch = vi.fn(
@@ -13,6 +13,16 @@ function createIO() {
   const unwatch = vi.fn((_path: string, _key: string) => {})
   const io = createTextFileIO(
     {
+      stat: vi.fn(async () => ({
+        kind: 'file' as const,
+        device: 0,
+        inode: 0,
+        size: 0,
+        accessedAt: 0,
+        modifiedAt: 0,
+        changedAt: 0,
+        createdAt: 0,
+      })),
       readFile: vi.fn(async () => new Uint8Array()),
       writeFile: vi.fn(async () => {}),
     },
@@ -92,4 +102,40 @@ it('does not watch an empty path or restart watching when the path is cleared', 
   expect(unwatch).toHaveBeenCalledOnce()
   expect(watch).toHaveBeenCalledOnce()
   expect(file.watching).toBe(false)
+})
+
+describe('reading a file with its timestamp', () => {
+  it('retries a read when its disk timestamp changes while reading', async () => {
+    const { io } = createIO()
+    const timestamp = vi
+      .spyOn(io, 'modifiedAt')
+      .mockResolvedValueOnce(1000)
+      .mockResolvedValueOnce(2000)
+      .mockResolvedValue(2000)
+    const read = vi
+      .spyOn(io, 'read')
+      .mockResolvedValueOnce('old bytes')
+      .mockResolvedValueOnce('new bytes')
+
+    await expect(
+      new File('/tmp/model.kcl', io).readWithTimestamp()
+    ).resolves.toEqual({
+      code: 'new bytes',
+      modifiedAt: 2000,
+    })
+    expect(read).toHaveBeenCalledTimes(2)
+    expect(timestamp).toHaveBeenCalledTimes(4)
+  })
+
+  it('fails instead of returning bytes with the wrong timestamp after repeated changes', async () => {
+    const { io } = createIO()
+    let modifiedAt = 0
+    vi.spyOn(io, 'modifiedAt').mockImplementation(async () => ++modifiedAt)
+    const read = vi.spyOn(io, 'read').mockResolvedValue('bytes')
+
+    await expect(
+      new File('/tmp/model.kcl', io).readWithTimestamp()
+    ).rejects.toThrow('File kept changing while reading')
+    expect(read).toHaveBeenCalledTimes(3)
+  })
 })

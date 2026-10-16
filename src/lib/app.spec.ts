@@ -2,7 +2,6 @@ import type { Feature } from '@kittycad/lib'
 import { pluginsValueSpec } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
-import { File } from '@src/lib/projectSession'
 import { App } from '@src/lib/app'
 import { IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
@@ -308,6 +307,14 @@ describe('project system', () => {
 
   it('does not replay scene settings when selecting the executing editor again', async () => {
     const app = createAppForTest()
+    vi.spyOn(
+      app.registry.get(projectSession).textFileIO,
+      'modifiedAt'
+    ).mockResolvedValue(0)
+    vi.spyOn(
+      app.registry.get(projectSession).textFileIO,
+      'read'
+    ).mockResolvedValue('')
     try {
       await waitForSettingsIdle(app)
       const project = await app.openProject(mockProject)
@@ -366,6 +373,14 @@ describe('project system', () => {
 
   it('assigns scene settings to the executing project editor rather than the singleton', async () => {
     const app = createAppForTest()
+    vi.spyOn(
+      app.registry.get(projectSession).textFileIO,
+      'modifiedAt'
+    ).mockResolvedValue(0)
+    vi.spyOn(
+      app.registry.get(projectSession).textFileIO,
+      'read'
+    ).mockResolvedValue('')
     try {
       await waitForSettingsIdle(app)
       const project = await app.openProject(mockProject)
@@ -425,6 +440,10 @@ describe('project system', () => {
 
   it('resolves editor metadata from the open project signal without consulting SystemIO', async () => {
     const app = createAppForTest()
+    vi.spyOn(
+      app.registry.get(projectSession).textFileIO,
+      'modifiedAt'
+    ).mockResolvedValue(0)
     const read = vi
       .spyOn(app.registry.get(projectSession).textFileIO, 'read')
       .mockResolvedValue('')
@@ -465,6 +484,10 @@ describe('project system', () => {
 
   it('rebinds the legacy editor to the next owning project signal', async () => {
     const app = createAppForTest()
+    vi.spyOn(
+      app.registry.get(projectSession).textFileIO,
+      'modifiedAt'
+    ).mockResolvedValue(0)
     const read = vi
       .spyOn(app.registry.get(projectSession).textFileIO, 'read')
       .mockResolvedValue('')
@@ -1164,6 +1187,10 @@ describe('project system', () => {
     const app = createAppForTest()
 
     // Override the application wiring for this focused project-session test.
+    vi.spyOn(
+      app.registry.get(projectSession).textFileIO,
+      'modifiedAt'
+    ).mockResolvedValue(0)
     vi.spyOn(
       app.registry.get(projectSession).textFileIO,
       'read'
