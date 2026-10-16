@@ -722,7 +722,7 @@ surface001 = planarSurface(region001)`
     ).toBeUndefined()
   })
 
-  it('keeps the selected order of sketch segments in a closed loop', async () => {
+  it('keeps sketch curve selections without validating closure', async () => {
     const { ast, artifactGraph } = await setup(triangle)
     const segments = [...artifactGraph.values()].filter(
       (artifact) => artifact.type === 'segment'
@@ -732,25 +732,15 @@ surface001 = planarSurface(region001)`
       ast,
       artifactGraph,
       curves: createSelectionFromArtifacts(
-        [segments[1], segments[2], segments[0]],
+        [segments[1], segments[0]],
         artifactGraph
       ),
       wasmInstance: instanceInThisFile,
     })
     if (err(result)) throw result
     expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
-      `surface001 = planarSurface([
-  sketch001.line2,
-  sketch001.line3,
-  sketch001.line1
-])`
+      'surface001 = planarSurface([sketch001.line2, sketch001.line1])'
     )
-    expect(
-      await mockExecAstAndReportErrors(
-        result.modifiedAst,
-        rustContextInThisFile
-      )
-    ).toBeUndefined()
   })
 
   it.each(['path', 'solid2d'] as const)(
@@ -937,9 +927,9 @@ part = subtract(extrude001, tools = extrude002)`
     ).toBeUndefined()
   })
 
-  it('inlines an edgeId for an unresolved engine primitive edge', async () => {
-    const { ast, artifactGraph } = await setup(`${circle}
-extrude001 = extrude(sketch001.circle1, length = 5mm, bodyType = SURFACE)`)
+  it('inlines a body edge selection without validating closure', async () => {
+    const { ast, artifactGraph } = await setup(`${triangle}
+extrude001 = extrude(sketch001.line1, length = 5mm, bodyType = SURFACE)`)
     const surface = [...artifactGraph.values()].find(
       (artifact) => artifact.type === 'sweep'
     )
@@ -965,12 +955,6 @@ extrude001 = extrude(sketch001.circle1, length = 5mm, bodyType = SURFACE)`)
     expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
       'surface001 = planarSurface([edgeId(extrude001, index = 0)])'
     )
-    expect(
-      await mockExecAstAndReportErrors(
-        result.modifiedAst,
-        rustContextInThisFile
-      )
-    ).toBeUndefined()
   })
 
   it.each([

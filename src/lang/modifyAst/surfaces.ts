@@ -256,7 +256,7 @@ export function addPlanarSurface({
   const selectionCount =
     curves.graphSelections.length + curves.otherSelections.length
   if (selectionCount === 0) {
-    return new Error('Select a closed region or a closed loop of edges.')
+    return new Error('Select one sketch region, sketch curves, or body edges.')
   }
   if (
     engineRegions.length + primitiveEdges.length !==
@@ -266,8 +266,8 @@ export function addPlanarSurface({
   }
 
   const exprs: Expr[] = []
-  let sketchCount = engineRegions.length
-  let solvedSegmentCount = 0
+  let isRegion = engineRegions.length > 0
+  // Resolve references here; KCL and the engine validate the boundary geometry.
   for (const originalSelection of [
     ...curves.graphSelections,
     ...primitiveEdges,
@@ -373,12 +373,9 @@ export function addPlanarSurface({
       if (isErr(pipeResult)) return pipeResult
       exprs.push(result.expr)
     } else {
-      if (isSolvedSegment) solvedSegmentCount++
-      if (
+      isRegion ||=
         artifact.type === 'path' ||
         (artifact.type === 'segment' && !isSolvedSegment)
-      )
-        sketchCount++
       const result = getVariableExprsFromSelection(
         { graphSelections: [selection], otherSelections: [] },
         artifactGraph,
@@ -394,11 +391,8 @@ export function addPlanarSurface({
     }
   }
 
-  if (sketchCount > 0 && (sketchCount !== 1 || selectionCount !== 1)) {
-    return new Error('Select one region, or edges forming one closed loop.')
-  }
-  if (solvedSegmentCount > 0 && solvedSegmentCount !== selectionCount) {
-    return new Error('Select edges from a sketch or from a surface.')
+  if (isRegion && selectionCount !== 1) {
+    return new Error('Select one sketch region, or a list of curves or edges.')
   }
 
   if (engineRegions.length > 0) {
@@ -420,15 +414,11 @@ export function addPlanarSurface({
     exprs.push(...regionResult)
   }
 
-  if (exprs.length !== selectionCount) {
-    return new Error('Could not resolve all selected curves in code.')
-  }
   // The stdlib takes one Sketch directly, but requires arrays for curves,
   // including a single closed curve such as a circle.
-  const curvesExpr =
-    sketchCount > 0
-      ? createVariableExpressionsArray(exprs)
-      : createArrayExpression(exprs)
+  const curvesExpr = isRegion
+    ? createVariableExpressionsArray(exprs)
+    : createArrayExpression(exprs)
 
   const call = createCallExpressionStdLibKw(
     modelingStdLibCommandName('Planar Surface'),
