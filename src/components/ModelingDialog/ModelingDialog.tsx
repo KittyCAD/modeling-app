@@ -25,6 +25,7 @@ import {
   hasValue,
   initializeArguments,
   resolveArguments,
+  resolveOptionArguments,
   type DialogField,
 } from '@src/components/ModelingDialog/arguments'
 import { useDialogSelection } from '@src/components/ModelingDialog/useDialogSelection'
@@ -61,7 +62,7 @@ export default function ModelingDialog({
   const initialContext = useRef(state.context)
   const fields = getDialogFields({
     ...state.context,
-    argumentsToSubmit: { ...state.context.argumentsToSubmit, ...values },
+    argumentsToSubmit: resolveOptionArguments(state.context, values),
   })
   const save = (name: string, value: unknown) =>
     setValues((previous) => ({ ...previous, [name]: value }))
@@ -77,10 +78,7 @@ export default function ModelingDialog({
   })
   const context = {
     ...state.context,
-    argumentsToSubmit: {
-      ...state.context.argumentsToSubmit,
-      ...selection.draft,
-    },
+    argumentsToSubmit: resolveOptionArguments(state.context, selection.draft),
   }
   const visible = getDialogFields(context)
   const firstFieldName = visible.find(

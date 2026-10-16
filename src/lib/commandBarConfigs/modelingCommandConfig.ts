@@ -423,7 +423,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   ],
   Export: {
-    forceCommandBar: true,
     description: 'Export the current model.',
     icon: 'floppyDiskArrow',
     needsReview: true,
