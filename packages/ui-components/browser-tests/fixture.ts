@@ -1,4 +1,4 @@
-import { registerFeatureTree } from '../src/web-components/feature-tree'
+import { registerFeatureTree } from '../src/web-components'
 
 registerFeatureTree()
 const options = new URLSearchParams(location.search)

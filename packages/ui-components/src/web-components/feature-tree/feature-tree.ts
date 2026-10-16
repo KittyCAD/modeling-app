@@ -1,10 +1,13 @@
 import { LitElement, css, html } from 'lit'
-import { registerFeatureTreeRow, ZooFeatureTreeRow } from './feature-tree-row'
+import {
+  registerFeatureTreeRow,
+  ZooFeatureTreeRow,
+} from '../feature-tree-row/feature-tree-row'
 import type {
   FeatureTreeAppearance,
   FeatureTreeRowEventDetail,
   FeatureTreeRowExpandDetail,
-} from './feature-tree-row'
+} from '../feature-tree-row/feature-tree-row'
 
 export interface FeatureTreeSelectionDetail extends FeatureTreeRowEventDetail {
   selectedIds: readonly string[]

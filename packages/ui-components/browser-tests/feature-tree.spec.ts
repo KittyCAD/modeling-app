@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test'
-import type { ZooFeatureTree } from '../src/web-components/feature-tree'
+import type { ZooFeatureTree } from '../src/web-components'
 
 const row = (page: import('@playwright/test').Page, id: string) =>
   page.locator(`zoo-feature-tree-row[node-id="${id}"]`)
