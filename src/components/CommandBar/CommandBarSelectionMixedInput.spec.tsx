@@ -74,6 +74,8 @@ describe('CommandBarSelectionMixedInput', () => {
       const app = App.fromDefaults()
       await app.wasmPromise
       const executingEditor = new KclManager('some-file', '', {
+        machineManager: app.machineManager,
+        getProject: () => undefined,
         fileOperations: app.fileOperations,
         textFileIO: app.registry.get(projectSession).textFileIO,
         commandBar: app.commands.actor,
@@ -112,6 +114,8 @@ describe('CommandBarSelectionMixedInput', () => {
       const app = App.fromDefaults()
       await app.wasmPromise
       const executingEditor = new KclManager('some-file', '', {
+        machineManager: app.machineManager,
+        getProject: () => undefined,
         fileOperations: app.fileOperations,
         textFileIO: app.registry.get(projectSession).textFileIO,
         commandBar: app.commands.actor,
@@ -147,6 +151,8 @@ describe('CommandBarSelectionMixedInput', () => {
       const app = App.fromDefaults()
       await app.wasmPromise
       const executingEditor = new KclManager('some-file', '', {
+        machineManager: app.machineManager,
+        getProject: () => undefined,
         fileOperations: app.fileOperations,
         textFileIO: app.registry.get(projectSession).textFileIO,
         commandBar: app.commands.actor,
@@ -182,6 +188,8 @@ describe('CommandBarSelectionMixedInput', () => {
       const app = App.fromDefaults()
       await app.wasmPromise
       const executingEditor = new KclManager('some-file', '', {
+        machineManager: app.machineManager,
+        getProject: () => undefined,
         fileOperations: app.fileOperations,
         textFileIO: app.registry.get(projectSession).textFileIO,
         commandBar: app.commands.actor,
@@ -232,6 +240,8 @@ describe('CommandBarSelectionMixedInput', () => {
       const app = App.fromDefaults()
       await app.wasmPromise
       const executingEditor = new KclManager('some-file', '', {
+        machineManager: app.machineManager,
+        getProject: () => undefined,
         fileOperations: app.fileOperations,
         textFileIO: app.registry.get(projectSession).textFileIO,
         commandBar: app.commands.actor,

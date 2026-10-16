@@ -784,6 +784,16 @@ export class App implements AppSubsystems {
     // TODO: Remove this and make the app handle no executing editor,
     // so we don't need to stub with empty strings
     const kclManager = new KclManager('', '', {
+      machineManager: this.machineManager,
+      getProject: () => {
+        const project = this.project?.projectIORefSignal.value
+        return (
+          this.systemIOActor
+            .getSnapshot()
+            .context.folders?.find((folder) => folder.path === project?.path) ??
+          project
+        )
+      },
       fileOperations: this.fileOperations,
       textFileIO: this.projectSession.textFileIO,
       settings: this.settings.actor,

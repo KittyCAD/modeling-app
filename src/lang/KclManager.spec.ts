@@ -134,9 +134,9 @@ function liveOperationTestApi(kclManager: KclManager): LiveOperationTestApi {
 }
 
 function enableSketchSolveEditorExecution(kclManager: KclManager) {
-  kclManager.modelingState = {
+  vi.spyOn(kclManager, 'modelingState', 'get').mockReturnValue({
     matches: (value: unknown) => value === 'sketchSolveMode',
-  } as unknown as NonNullable<KclManager['modelingState']>
+  } as unknown as NonNullable<KclManager['modelingState']>)
   kclManager.engineCommandManager.connection = {
     connected: true,
   } as unknown as typeof kclManager.engineCommandManager.connection
@@ -413,9 +413,9 @@ describe('KclManager settings ownership', () => {
         )
         const controls = kclManager.sceneInfra.camControls
         const projection = vi.spyOn(controls, 'engineCameraProjection', 'set')
-        kclManager.modelingState = {
+        vi.spyOn(kclManager, 'modelingState', 'get').mockReturnValue({
           matches: (state: unknown) => state === mode,
-        } as unknown as NonNullable<KclManager['modelingState']>
+        } as unknown as NonNullable<KclManager['modelingState']>)
         kclManager.setSceneSettingsActive(true)
         app.settings.get().modeling.cameraProjection.user =
           controls.engineCameraProjection === 'perspective'
@@ -1156,7 +1156,10 @@ describe('KclManager diagnostics', () => {
     const checkpointId = 55
     const modelingSendSpy = vi.fn()
     enableSketchSolveEditorExecution(kclManager)
-    kclManager.modelingSend = modelingSendSpy
+    vi.spyOn(kclManager, 'sendModelingEvent').mockImplementation((event) => {
+      modelingSendSpy(event)
+      return true
+    })
 
     vi.spyOn(kclManager, 'executeCode').mockResolvedValue(undefined)
     vi.spyOn(kclManager.rustContext, 'hackSetProgram').mockResolvedValue({
@@ -1194,7 +1197,10 @@ describe('KclManager diagnostics', () => {
     const deferredExecution = createDeferred<undefined>()
     const modelingSendSpy = vi.fn()
     enableSketchSolveEditorExecution(kclManager)
-    kclManager.modelingSend = modelingSendSpy
+    vi.spyOn(kclManager, 'sendModelingEvent').mockImplementation((event) => {
+      modelingSendSpy(event)
+      return true
+    })
 
     vi.spyOn(kclManager, 'executeCode').mockReturnValue(
       deferredExecution.promise
@@ -1230,7 +1236,10 @@ describe('KclManager diagnostics', () => {
       >()
     const modelingSendSpy = vi.fn()
     enableSketchSolveEditorExecution(kclManager)
-    kclManager.modelingSend = modelingSendSpy
+    vi.spyOn(kclManager, 'sendModelingEvent').mockImplementation((event) => {
+      modelingSendSpy(event)
+      return true
+    })
 
     vi.spyOn(kclManager, 'executeCode').mockResolvedValue(undefined)
     const hackSetProgramSpy = vi
@@ -1706,10 +1715,13 @@ describe('KclManager diagnostics', () => {
       }
     })
 
-    kclManager.modelingState = {
+    vi.spyOn(kclManager, 'modelingState', 'get').mockReturnValue({
       matches: (value: unknown) => value === 'sketchSolveMode',
-    } as any
-    kclManager.modelingSend = modelingSendSpy
+    } as any)
+    vi.spyOn(kclManager, 'sendModelingEvent').mockImplementation((event) => {
+      modelingSendSpy(event)
+      return true
+    })
 
     vi.spyOn(kclManager.rustContext, 'restoreSketchCheckpoint').mockReturnValue(
       deferredRestore.promise
@@ -1747,10 +1759,13 @@ describe('KclManager diagnostics', () => {
     const { kclManager } = createKclManagerTestHarness(baselineCode)
     const modelingSendSpy = vi.fn()
 
-    kclManager.modelingState = {
+    vi.spyOn(kclManager, 'modelingState', 'get').mockReturnValue({
       matches: (value: unknown) => value === 'sketchSolveMode',
-    } as any
-    kclManager.modelingSend = modelingSendSpy
+    } as any)
+    vi.spyOn(kclManager, 'sendModelingEvent').mockImplementation((event) => {
+      modelingSendSpy(event)
+      return true
+    })
     ;(kclManager as any).lastCommittedCode = baselineCode
     ;(kclManager as any).lastCommittedAdditionalSpec = {
       sketchCheckpointId: preDragCheckpointId,

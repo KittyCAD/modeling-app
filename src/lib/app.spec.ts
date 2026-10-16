@@ -32,6 +32,13 @@ import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { createTestWasmRegistryItem } from '@src/unitTestUtils'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 
+// Modeling imports UI factories, but these headless tests must never bootstrap
+// the global browser App or replace their configured filesystem.
+vi.mock('@src/lib/boot', () => ({
+  useApp: vi.fn(),
+  useSingletons: vi.fn(),
+}))
+
 const mockProject: Project = {
   name: 'test',
   default_file: 'main.kcl',
