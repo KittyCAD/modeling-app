@@ -5,7 +5,7 @@ export {
   type FeatureTreeRowExpandDetail,
   type FeatureTreeContextMenuDetail,
   type FeatureTreeAppearance,
-} from './feature-tree-row'
+} from './feature-tree-row/feature-tree-row'
 export {
   ZooFeatureTree,
   registerFeatureTree,
@@ -13,4 +13,4 @@ export {
   type FeatureTreeAction,
   type FeatureTreeShortcut,
   type FeatureTreeShortcuts,
-} from './feature-tree'
+} from './feature-tree/feature-tree'

@@ -1,7 +1,7 @@
 import fc from 'fast-check'
 import { describe, expect, it } from 'vitest'
 import { registerFeatureTree, type ZooFeatureTree } from './feature-tree'
-import type { ZooFeatureTreeRow } from './feature-tree-row'
+import type { ZooFeatureTreeRow } from '../feature-tree-row/feature-tree-row'
 
 registerFeatureTree()
 

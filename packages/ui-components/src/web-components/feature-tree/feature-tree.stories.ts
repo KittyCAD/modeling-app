@@ -8,7 +8,7 @@ import {
 import type {
   FeatureTreeContextMenuDetail,
   FeatureTreeRowExpandDetail,
-} from './feature-tree-row'
+} from '../feature-tree-row/feature-tree-row'
 
 registerFeatureTree()
 

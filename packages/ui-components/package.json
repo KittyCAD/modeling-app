@@ -38,7 +38,7 @@
     "test": "vitest run",
     "test:unit": "vitest run --project unit",
     "test:component": "vitest run --project component",
-    "test:properties": "vitest run --project component src/web-components/feature-tree.properties.test.ts",
+    "test:properties": "vitest run --project component src/web-components/feature-tree/feature-tree.properties.test.ts",
     "test:browser": "playwright test --config playwright.config.ts"
   },
   "peerDependencies": {

@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { registerFeatureTree, type ZooFeatureTree } from './feature-tree'
-import type { ZooFeatureTreeRow } from './feature-tree-row'
+import type { ZooFeatureTreeRow } from '../feature-tree-row/feature-tree-row'
 
 registerFeatureTree()
 afterEach(() => document.body.replaceChildren())
