@@ -2,8 +2,8 @@ import { join } from 'node:path'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 
+import { parseAppSettings } from '@src/lang/testHelpers/parseAppSettings'
 import {
-  parseAppSettings,
   parseProjectSettings,
   serializeConfiguration,
   serializeProjectConfiguration,

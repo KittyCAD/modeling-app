@@ -958,9 +958,8 @@ export interface AppSettings {
 /**
  * Finds the TOML settings files for user-level (and project-level if projectPath is provided)
  * settings, deserialize them and validate them, serialize and write the validated TOML back to the locations,
- * and return the settings object and the raw "configuration" object returned from WASM.
- *
- * Relies on WASM for TOML de/serialization.
+ * and return the settings object and the raw "configuration" object that is still used by some utils
+ * from the old WASM-based TOML parsing system.
  */
 export async function loadAndValidateSettings(
   fileOperations: FileOperationsRegistryService,
@@ -985,14 +984,8 @@ export async function loadAndValidateSettings(
     extensionSettings = {},
     projectPath,
   } = options
-  // Make sure we have wasm initialized.
-  const wasmInstance = await initPromise
-
   // Load the app settings from the file system or localStorage.
-  const appSettingsPayload = await readAppSettingsFile(
-    fileOperations,
-    wasmInstance
-  )
+  const appSettingsPayload = await readAppSettingsFile(fileOperations)
 
   if (err(appSettingsPayload)) {
     return Promise.reject(appSettingsPayload)
@@ -1028,8 +1021,10 @@ export async function loadAndValidateSettings(
 
   settingsNext = setSettingsAtLevel(settingsNext, 'user', appSettings)
 
-  // Load the project settings if they exist
+  // Project settings still use the Rust parser. App-only settings do not wait
+  // for Wasm initialization.
   if (projectPath) {
+    const wasmInstance = await initPromise
     let projectSettings = await readProjectSettingsFile(
       fileOperations,
       projectPath,
