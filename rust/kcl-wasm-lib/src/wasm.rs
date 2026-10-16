@@ -417,6 +417,12 @@ pub fn get_kcl_version() -> String {
     kcl_lib::version().to_string()
 }
 
+/// Returns the reserved name of the default KCL view.
+#[wasm_bindgen]
+pub fn kcl_default_view_name() -> String {
+    kcl_lib::named_views::default_view_name().to_string()
+}
+
 /// Get the allowed import file extensions.
 #[wasm_bindgen]
 pub fn import_file_extensions() -> Result<Vec<String>, String> {

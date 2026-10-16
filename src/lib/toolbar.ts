@@ -9,12 +9,9 @@ import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelin
 import {
   modelingStdLibCommandName,
   modelingStdLibCommandStatus,
+  stdLibDocsLink,
   type ModelingStdLibCommandName,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
-import {
-  STD_LIB_COMMANDS,
-  type StdLibCommandName,
-} from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
 import type { Command } from '@src/lib/commandTypes'
 import { commandKey } from '@src/lib/commandUtils'
 import {
@@ -546,16 +543,6 @@ export function isLegacySketchEditRequest({
       modelingState.context.kclManager.artifactGraph
     )
   )
-}
-
-function stdLibDocsLink(stdLibName: StdLibCommandName, label = 'KCL docs') {
-  const { qualName } = STD_LIB_COMMANDS[stdLibName]
-  return {
-    label,
-    url: withSiteBaseURL(
-      `/docs/kcl-std/functions/${qualName.replaceAll('::', '-')}`
-    ),
-  }
 }
 
 export function buildToolbarConfig(
