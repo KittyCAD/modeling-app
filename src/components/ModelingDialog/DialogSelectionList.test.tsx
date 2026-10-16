@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import type { ReactNode } from 'react'
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
+import type { KclManager } from '@src/lang/KclManager'
 import type { SelectionReference } from '@src/lib/selections'
 import type {
   EnginePrimitiveSelection,
@@ -19,7 +20,7 @@ const mocks = vi.hoisted(() => ({
     engineCommandManager: {},
     engineSceneGenerationSignal: { value: 0 },
     wasmInstancePromise: Promise.resolve({}),
-  },
+  } as unknown as KclManager,
 }))
 
 vi.mock('@src/components/CustomIcon', () => ({
@@ -32,10 +33,6 @@ vi.mock('@src/components/Tooltip', () => ({
   ),
 }))
 
-vi.mock('@src/lib/boot', () => ({
-  useSingletons: () => ({ kclManager: mocks.kclManager }),
-}))
-
 vi.mock('@src/lib/selections', () => ({
   getSelectionReferences: mocks.getSelectionReferences,
   getSelectionTypeDisplayText: () => '1 edge',
@@ -46,25 +43,6 @@ vi.mock('@src/lib/selections', () => ({
 }))
 
 import { DialogSelectionList } from '@src/components/ModelingDialog/DialogSelectionList'
-import { useSingletons } from '@src/lib/boot'
-
-function DialogSelections({
-  selectionRanges,
-  onChange,
-}: {
-  selectionRanges: Selections
-  onChange?: (selections: Selections) => void
-}) {
-  const { kclManager } = useSingletons()
-  return (
-    <DialogSelectionList
-      kclManager={kclManager}
-      wasmPromise={kclManager.wasmInstancePromise}
-      selectionRanges={selectionRanges}
-      onChange={onChange}
-    />
-  )
-}
 
 const first: EnginePrimitiveSelection = {
   type: 'enginePrimitive',
@@ -88,7 +66,9 @@ describe('DialogSelectionList', () => {
     await act(async () => {
       render(
         <Suspense>
-          <DialogSelections
+          <DialogSelectionList
+            kclManager={mocks.kclManager}
+            wasmPromise={mocks.kclManager.wasmInstancePromise}
             selectionRanges={{ graphSelections: [], otherSelections: [first] }}
             onChange={onChange}
           />
@@ -134,7 +114,9 @@ describe('DialogSelectionList', () => {
     await act(async () => {
       render(
         <Suspense>
-          <DialogSelections
+          <DialogSelectionList
+            kclManager={mocks.kclManager}
+            wasmPromise={mocks.kclManager.wasmInstancePromise}
             selectionRanges={{
               graphSelections: [],
               otherSelections: [first, second],
