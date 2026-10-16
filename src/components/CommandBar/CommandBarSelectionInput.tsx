@@ -12,7 +12,6 @@ import {
   canSubmitSelectionArg,
   getSelectionTypeDisplayText,
   getSemanticSelectionType,
-  isSelections,
 } from '@src/lib/selections'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -76,34 +75,11 @@ function CommandBarSelectionInput({
     inputRef.current?.focus()
   }, [selection, inputRef])
 
-  // Restore a captured argument, or clear once when entering a fresh collector.
-  useEffect(() => {
-    const saved =
-      commands.actor.getSnapshot().context.argumentsToSubmit[arg.name]
-    if (isSelections(saved) || arg.clearSelectionFirst) {
-      engineCommandManager.modelingSend({
-        type: 'Set selection',
-        data: {
-          selectionType: 'completeSelection',
-          selection: isSelections(saved)
-            ? saved
-            : { graphSelections: [], otherSelections: [] },
-        },
-      })
-    }
-    // The input is keyed by argument name; do not clear again on selection updates.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  // Fast-forward only when the command opts into skipping a valid selection.
+  // Fast-forward through this arg if it's marked as skippable
+  // and we have a valid selection already
   useEffect(() => {
     const argValue = commandBarState.context.argumentsToSubmit[arg.name]
-    if (
-      canSubmitSelection &&
-      arg.skip &&
-      argValue === undefined &&
-      !arg.clearSelectionFirst
-    ) {
+    if (canSubmitSelection && arg.skip && argValue === undefined) {
       handleSubmit()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
@@ -134,6 +110,38 @@ function CommandBarSelectionInput({
 
     onSubmit(resolvedSelection)
   }
+
+  // Clear selection if needed
+  useEffect(() => {
+    if (arg.clearSelectionFirst) {
+      engineCommandManager.modelingSend({
+        type: 'Set selection',
+        data: {
+          selectionType: 'singleCodeCursor',
+          selection: {},
+        },
+      })
+    }
+  }, [arg, engineCommandManager])
+
+  // Watch for outside teardowns of this component
+  // (such as clicking another argument in the command palette header)
+  // and quickly save the current selection if we can
+  useEffect(() => {
+    return () => {
+      const resolvedSelection: Selections | undefined = isArgRequired
+        ? selection
+        : selection || {
+            graphSelections: [],
+            otherSelections: [],
+          }
+
+      if (!arg.clearSelectionFirst && canSubmitSelection && resolvedSelection) {
+        onSubmit(resolvedSelection)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  }, [])
 
   return (
     <form {...noAutofillFormProps} id="arg-form" onSubmit={handleSubmit}>

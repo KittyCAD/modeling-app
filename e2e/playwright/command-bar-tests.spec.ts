@@ -5,54 +5,6 @@ import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import * as fsp from 'fs/promises'
 import path, { join } from 'path'
 
-test.describe('Command bar selection arguments', { tag: '@web' }, () => {
-  test.use({ userFeatures: [] })
-
-  test('Collects multiple selections and saves them on argument switches, not cancellation', async ({
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    const code = `@settings(kclVersion = 3.0)
-sketch001 = sketch(on = XY) {
-  circle1 = circle(start = [var 2mm, var 10mm], center = [var 0mm, var 10mm])
-  line1 = line(start = [var -10mm, var 0mm], end = [var -10mm, var 20mm])
-}
-region001 = region(segments = [sketch001.circle1])
-body001 = extrude(region001, length = 10mm)
-body002 = clone(body001)
-  |> translate(x = 2mm)
-`
-    await homePage.goToModelingScene()
-    await scene.settled()
-    await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
-    await toolbar.selectBoolean('subtract')
-    await expect(cmdBar.cmdBarElement).toContainText(
-      'Please select one or more objects'
-    )
-    await editor.selectText('extrude(')
-    await expect(page.getByTestId('cmd-bar-arg-name')).toHaveText('solids')
-    await cmdBar.clickHeaderArgument('tools')
-    await expect(cmdBar.currentArgumentInput).toHaveValue(
-      JSON.stringify({ graphSelections: [], otherSelections: [] })
-    )
-    await editor.selectText('clone(')
-    await cmdBar.clickHeaderArgument('solids')
-    await expect(cmdBar.cmdBarElement).toContainText('1 sweep selected')
-    await cmdBar.clickHeaderArgument('tools')
-    await expect(cmdBar.cmdBarElement).toContainText('1 sweep selected')
-    await page.keyboard.press('Escape')
-    await expect(cmdBar.cmdBarElement).not.toBeAttached()
-    await toolbar.selectBoolean('subtract')
-    await expect(page.getByTestId('cmd-bar-arg-name')).toHaveText('solids')
-    await page.keyboard.press('Escape')
-    await editor.expectEditor.not.toContain('subtract(')
-  })
-})
-
 test.describe('Command bar tests', { tag: '@desktop' }, () => {
   test('Extrude from command bar selects extrude line after', async ({
     page,

@@ -107,7 +107,6 @@ function ArgumentInput({
     case 'selection':
       return executingEditor ? (
         <CommandBarSelectionInput
-          key={arg.name}
           arg={arg}
           stepBack={stepBack}
           onSubmit={onSubmit}

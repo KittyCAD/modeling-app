@@ -1,6 +1,4 @@
 import type { KclManager } from '@src/lang/KclManager'
-import { coerceSelectionsForBodyOnlySelectionTypes } from '@src/lang/std/selectionCoercion'
-import { canSubmitSelectionArg } from '@src/lib/selections'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type {
   Command,
@@ -319,30 +317,6 @@ export const commandBarMachine = setup({
           return Object.values(event.data)[0]
         }
         return context.currentArgument
-      },
-    }),
-    'Capture current selection': assign({
-      argumentsToSubmit: ({ context }) => {
-        const arg = context.currentArgument
-        const editor = context.kclManager
-        if (arg?.inputType !== 'selection' || !editor)
-          return context.argumentsToSubmit
-        const selection = coerceSelectionsForBodyOnlySelectionTypes(
-          arg.machineActor?.getSnapshot().context.selectionRanges,
-          arg.selectionTypes,
-          editor.artifactGraph
-        )
-        return {
-          ...context.argumentsToSubmit,
-          [arg.name]: canSubmitSelectionArg(
-            editor.ast,
-            selection,
-            arg,
-            editor.artifactGraph
-          )
-            ? selection
-            : undefined,
-        }
       },
     }),
     'Clear argument data': assign({
@@ -812,7 +786,7 @@ export const commandBarMachine = setup({
         'Change current argument': {
           target: 'Gathering arguments',
           internal: true,
-          actions: ['Capture current selection', 'Set current argument'],
+          actions: ['Set current argument'],
         },
 
         'Deselect command': {
