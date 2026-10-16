@@ -75,7 +75,7 @@ describe('editor-owned scene lifetime', () => {
     try {
       kclManager.close()
       await KclManager.fromFile(
-        new File('next.kcl'),
+        new File('next.kcl', kclManager.systemDeps.textFileIO),
         kclManager.systemDeps,
         kclManager,
         '',
