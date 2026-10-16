@@ -100,7 +100,6 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
     false
   )
   const { kclManager } = useSingletons()
-  const [selectedKey, setSelectedKey] = useState<string>()
   const [isChangingSource, setIsChangingSource] = useState(false)
   const execState = kclManager.execStateSignal.value
   const cannotReachEngine = useReliesOnEngine(
@@ -223,19 +222,13 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                 ? row.target.view
                 : undefined
             const isActive = isSameView(row.identity, active)
-            const isSelected = selectedKey === row.key
 
             return (
               <li
                 key={row.key}
-                className={`group flex h-7 min-w-0 select-none items-center gap-1 px-1 text-sm ${
-                  isSelected
-                    ? 'bg-chalkboard-20 dark:bg-chalkboard-80'
-                    : 'hover:bg-chalkboard-10 dark:hover:bg-chalkboard-90'
-                }`}
+                className="group flex h-7 min-w-0 select-none items-center gap-1 px-1 text-sm hover:bg-chalkboard-10 focus-within:bg-chalkboard-20 dark:hover:bg-chalkboard-90 dark:focus-within:bg-chalkboard-80"
                 data-testid="named-view-row"
                 data-active={isActive}
-                data-selected={isSelected}
               >
                 <span
                   data-testid="named-view-number"
@@ -258,13 +251,15 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                     }).catch(reportRejection)
                   }}
                 >
-                  <ViewStateIcon active={isActive} />
+                  <CustomIcon
+                    name={isActive ? 'eyeOpen' : 'namedView'}
+                    className="h-5 w-5"
+                    aria-hidden
+                  />
                 </button>
                 <button
                   type="button"
                   className="reset flex min-w-0 flex-1 items-center gap-2 self-stretch text-left !text-xs"
-                  aria-pressed={isSelected}
-                  onClick={() => setSelectedKey(row.key)}
                   onDoubleClick={(event) => {
                     if (!manageableView || actionsDisabled) return
                     event.preventDefault()
@@ -298,28 +293,6 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
         </ul>
       </section>
     </LayoutPanel>
-  )
-}
-
-function ViewStateIcon({ active }: { active: boolean }) {
-  return (
-    <svg viewBox="0 0 20 20" className="h-5 w-5" fill="none" aria-hidden>
-      <path
-        d="M3 7V3h4M13 3h4v4M17 13v4h-4M7 17H3v-4"
-        stroke="currentColor"
-        strokeWidth="1.2"
-      />
-      {active ? (
-        <>
-          <path
-            d="M5.2 10s1.8-3 4.8-3 4.8 3 4.8 3-1.8 3-4.8 3-4.8-3-4.8-3Z"
-            stroke="currentColor"
-            strokeWidth="1.1"
-          />
-          <circle cx="10" cy="10" r="1.5" fill="currentColor" />
-        </>
-      ) : null}
-    </svg>
   )
 }
 

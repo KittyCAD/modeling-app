@@ -249,7 +249,6 @@ describe('KclNamedViewsPane', () => {
 
       const label = await screen.findByRole('button', { name: /^Front/ })
       fireEvent.click(label)
-      expect(label).toHaveAttribute('aria-pressed', 'true')
       expect(renderMocks.activateNamedView).not.toHaveBeenCalled()
 
       fireEvent.click(screen.getByRole('button', { name: 'Apply Front' }))
