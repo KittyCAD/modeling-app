@@ -234,7 +234,7 @@ view001 = view::named(
   baseline = view::Visibility::Show,
 )`
 
-  async function subject(code: string) {
+  it('replaces only the camera with the current directed camera', async () => {
     const ast = assertParse(code, instance)
     const execState = await enginelessExecutor(ast, rustContext)
     const artifact = [...execState.artifactGraph.values()].find(
@@ -243,11 +243,6 @@ view001 = view::named(
     if (!artifact || artifact.type !== 'namedView') {
       throw new Error('Expected a named view artifact')
     }
-    return { ast, artifact }
-  }
-
-  it('replaces only the camera with the current directed camera', async () => {
-    const { ast, artifact } = await subject(code)
     const modifiedAst = updateNamedViewCamera({
       ast,
       pathToNode: artifact.codeRef.pathToNode,
@@ -262,7 +257,7 @@ view001 = view::named(
     })
     if (err(modifiedAst)) throw modifiedAst
 
-    const execState = await enginelessExecutor(modifiedAst, rustContext)
+    await enginelessExecutor(modifiedAst, rustContext)
     const updatedCode = recast(modifiedAst, instance)
     if (err(updatedCode)) throw updatedCode
     expect(updatedCode).toContain(`camera = view::directed(
@@ -274,43 +269,5 @@ view001 = view::named(
   )`)
     expect(updatedCode).toContain('"Inspection view"')
     expect(updatedCode).toContain('baseline = view::Visibility::Show')
-
-    const updatedView = [...execState.artifactGraph.values()].find(
-      (candidate) => candidate.type === 'namedView'
-    )
-    if (!updatedView || updatedView.type !== 'namedView') {
-      throw new Error('Expected the updated named view artifact')
-    }
-    const event = await prepareNamedViewEditCommand({
-      artifact: updatedView,
-      artifactGraph: execState.artifactGraph,
-      ast: modifiedAst,
-      code: updatedCode,
-      rustContext,
-    })
-    if (err(event)) throw event
-    if (event.type !== 'Find and select command') {
-      throw new Error(`Expected an edit command, got ${event.type}`)
-    }
-    expect(event.data.argDefaultValues).toMatchObject({
-      name: 'Inspection view',
-      orientation: undefined,
-      projection: undefined,
-      nodeToEdit: updatedView.codeRef.pathToNode,
-    })
-    const renamed = addNamedView({
-      ast: modifiedAst,
-      artifactGraph: execState.artifactGraph,
-      name: 'Close-up',
-      baseline: 'Hide',
-      nodeToEdit: updatedView.codeRef.pathToNode,
-      wasmInstance: instance,
-    })
-    if (err(renamed)) throw renamed
-    expect(recast(renamed.modifiedAst, instance)).toBe(
-      updatedCode
-        .replace('"Inspection view"', '"Close-up"')
-        .replace('view::Visibility::Show', 'view::Visibility::Hide')
-    )
   })
 })

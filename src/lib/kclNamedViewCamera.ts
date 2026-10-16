@@ -34,18 +34,31 @@ const FIT_PADDING = 0.1
 
 /** Read the client camera in the form `view::directed` stores in KCL. */
 export async function captureNamedViewCamera(
-  sceneInfra: SceneInfra
+  controls: Pick<
+    SceneInfra['camControls'],
+    'camera' | 'isPerspective' | 'getCameraView'
+  >
 ): Promise<NamedViewCameraSnapshot | Error> {
-  const { camera, isPerspective } = sceneInfra.camControls
-  const engineView = await sceneInfra.camControls.getCameraView()
-  if (err(engineView)) {
-    return engineView
-  }
-
+  const { camera, isPerspective } = controls
   camera.updateMatrixWorld()
-
+  const position = camera.position.clone()
+  const rotation = camera.quaternion.clone()
+  const zoom = camera.zoom
   const direction = camera.getWorldDirection(new Vector3()).normalize()
   const up = new Vector3(0, 1, 0).applyQuaternion(camera.quaternion).normalize()
+
+  const engineView = await controls.getCameraView()
+  if (err(engineView)) return engineView
+  if (
+    camera !== controls.camera ||
+    isPerspective !== controls.isPerspective ||
+    !position.equals(camera.position) ||
+    !rotation.equals(camera.quaternion) ||
+    zoom !== camera.zoom
+  ) {
+    return new Error('The camera changed while capturing the view. Try again.')
+  }
+
   const target = engineView.pivot_position
   const distance = engineView.eye_offset
 
