@@ -388,6 +388,13 @@ export class App implements AppSubsystems {
     )
     assertCurrent()
 
+    // File loaders revisit this method within the same project. Keep the
+    // session (and its undo history) while refreshing filesystem membership.
+    if (this.project?.path === ownedProject.path) {
+      this.project.refreshFiles(ownedProject)
+      return this.project
+    }
+
     const projectIORefSignal = signal(ownedProject)
 
     const nextProject = await ZDSProject.open(projectIORefSignal, this)
