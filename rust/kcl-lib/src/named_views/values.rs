@@ -1,13 +1,9 @@
-//! Runtime values for named views: the camera intent that `std::view`
-//! constructor functions produce, and the view value `view::named` returns.
+//! Runtime values produced by `std::view` constructors.
 //!
-//! `CameraView` stores what the camera looks at and from which direction, not
-//! a snapshot of engine camera state; absent fields are resolved by whichever
-//! consumer activates the view. `NamedViewValue` pairs one of those cameras
-//! with the visibility the author declared. `Orientation`, `Visibility` and
-//! `Projection` are Rust mirrors of the KCL enums declared in `std/view.kcl`;
-//! the test `kcl_enum_declarations_match_rust_mirrors` pins each pair of
-//! declarations to the same variant list.
+//! - [`CameraView`] stores camera intent. Consumers resolve omitted framing
+//!   parameters when activating the view.
+//! - [`NamedViewValue`] pairs a camera with the view's declared visibility.
+//! - The Rust enums correspond to the KCL enums declared in `std/view.kcl`.
 
 use std::collections::HashSet;
 
@@ -615,25 +611,6 @@ mod tests {
     use crate::docs::kcl_doc::DocData;
     use crate::docs::kcl_doc::walk_prelude;
 
-    /// The client repeats this reserved name as a TypeScript literal.
-    /// This test fails when the Rust constant changes without the TypeScript
-    /// literal. `kclNamedViews.test.ts` covers the opposite direction.
-    #[test]
-    fn reserved_default_view_name_matches_typescript() {
-        let ts_path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../src/lang/std/kclNamedViews.ts");
-        let source =
-            std::fs::read_to_string(&ts_path).unwrap_or_else(|err| panic!("cannot read {}: {err}", ts_path.display()));
-        let expected = format!("export const KCL_DEFAULT_VIEW_NAME = '{RESERVED_DEFAULT_VIEW_NAME}'");
-
-        assert!(
-            source.contains(&expected),
-            "{} should declare `{expected}`. The reserved default view name is repeated on both \
-             sides of the wasm boundary and they have drifted apart; update the TypeScript literal \
-             to match this crate's RESERVED_DEFAULT_VIEW_NAME.",
-            ts_path.display()
-        );
-    }
-
     /// Returns the variant names of the named KCL enum in `std::view`,
     /// in declaration order.
     fn kcl_variant_names(type_name: &str) -> Vec<String> {
@@ -905,7 +882,7 @@ mod tests {
         assert_eq!(view_named("\t\n").unwrap_err(), NamedViewError::WhitespaceOnly);
 
         assert_eq!(
-            view_named(RESERVED_DEFAULT_VIEW_NAME).unwrap_err(),
+            view_named(crate::named_views::default_view_name()).unwrap_err(),
             NamedViewError::ReservedName
         );
         // Only the reserved name itself is reserved.

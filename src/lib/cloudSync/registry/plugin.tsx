@@ -1,7 +1,6 @@
 import { Popover } from '@headlessui/react'
 import {
   defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
   provide,
   provideService,
 } from '@kittycad/registry'
@@ -832,58 +831,52 @@ export { CloudConflictDialogHost }
 
 const cloudSyncProjectBreadcrumbBadge = defineRegistryItemFactory(() => {
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'cloud-sync.project-breadcrumb-badge',
-      provides: [
-        provide(
-          projectExplorerProjectBreadcrumbBadgesValueSpec,
-          {
-            id: 'cloud-sync.project-breadcrumb-badge',
-            order: 10,
-            Component: CloudSyncProjectBreadcrumbBadge,
-          },
-          { key: 'cloud-sync.project-breadcrumb-badge' }
-        ),
-      ],
-    }),
+    id: 'cloud-sync.project-breadcrumb-badge',
+    provides: [
+      provide(
+        projectExplorerProjectBreadcrumbBadgesValueSpec,
+        {
+          id: 'cloud-sync.project-breadcrumb-badge',
+          order: 10,
+          Component: CloudSyncProjectBreadcrumbBadge,
+        },
+        { key: 'cloud-sync.project-breadcrumb-badge' }
+      ),
+    ],
   }
 }, 'cloud-sync.project-breadcrumb-badge')
 
 const cloudSyncDialogAppHeaderItem = defineRegistryItemFactory(() => {
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'cloud-sync.dialog-app-header-item',
-      provides: [
-        provide(
-          appHeaderItemsValueSpec,
-          {
-            id: 'cloud-sync.dialog-app-header-item',
-            order: 1000,
-            Component: CloudSyncDialogAppHeaderItem,
-          },
-          { key: 'cloud-sync.dialog-app-header-item' }
-        ),
-      ],
-    }),
+    id: 'cloud-sync.dialog-app-header-item',
+    provides: [
+      provide(
+        appHeaderItemsValueSpec,
+        {
+          id: 'cloud-sync.dialog-app-header-item',
+          order: 1000,
+          Component: CloudSyncDialogAppHeaderItem,
+        },
+        { key: 'cloud-sync.dialog-app-header-item' }
+      ),
+    ],
   }
 }, 'cloud-sync.dialog-app-header-item')
 
 const cloudSyncProjectMenuItem = defineRegistryItemFactory(() => {
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'cloud-sync.project-menu-item',
-      provides: [
-        provide(
-          projectExplorerProjectMenuItemsValueSpec,
-          {
-            id: 'cloud-sync.project-menu-item',
-            order: 9,
-            Component: CloudSyncProjectMenuItem,
-          },
-          { key: 'cloud-sync.project-menu-item' }
-        ),
-      ],
-    }),
+    id: 'cloud-sync.project-menu-item',
+    provides: [
+      provide(
+        projectExplorerProjectMenuItemsValueSpec,
+        {
+          id: 'cloud-sync.project-menu-item',
+          order: 9,
+          Component: CloudSyncProjectMenuItem,
+        },
+        { key: 'cloud-sync.project-menu-item' }
+      ),
+    ],
   }
 }, 'cloud-sync.project-menu-item')
 
@@ -1320,19 +1313,17 @@ const cloudSyncCloudProjectRelationships = defineRegistryItemFactory((ctx) => {
   })
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'cloud-sync.cloud-project-relationships',
-      providesServices: [
-        provideService(cloudProjectRelationshipsService, {
-          relationships: cloudProjectRelationships,
-          watchRemoteThumbnail,
-        }),
-      ],
-      dispose: () => {
-        disposed = true
-        disposeEffect?.()
-      },
-    }),
+    id: 'cloud-sync.cloud-project-relationships',
+    providesServices: [
+      provideService(cloudProjectRelationshipsService, {
+        relationships: cloudProjectRelationships,
+        watchRemoteThumbnail,
+      }),
+    ],
+    dispose: () => {
+      disposed = true
+      disposeEffect?.()
+    },
   }
 }, 'cloud-sync.cloud-project-relationships')
 
@@ -1620,20 +1611,18 @@ export const cloudSyncProjectLibraryType = defineRegistryItemFactory((ctx) => {
   }
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'cloud-sync.project-library-type',
-      provides: [
-        provide(projectLibrarySettingDefaultPoliciesValueSpec, {
-          id: 'cloud-sync.personal-cloud-library-default-policy',
-          priority: 10,
-          getDefaultLibraries: ({ isDesktop }) =>
-            !isDesktop ? [getDefaultCloudProjectLibrarySetting()] : undefined,
-        }),
-        provide(projectLibraryTypesValueSpec, cloudLibraryType, {
-          key: 'cloud-sync.project-library-type',
-        }),
-      ],
-    }),
+    id: 'cloud-sync.project-library-type',
+    provides: [
+      provide(projectLibrarySettingDefaultPoliciesValueSpec, {
+        id: 'cloud-sync.personal-cloud-library-default-policy',
+        priority: 10,
+        getDefaultLibraries: ({ isDesktop }) =>
+          !isDesktop ? [getDefaultCloudProjectLibrarySetting()] : undefined,
+      }),
+      provide(projectLibraryTypesValueSpec, cloudLibraryType, {
+        key: 'cloud-sync.project-library-type',
+      }),
+    ],
   }
 }, 'cloud-sync.project-library-type')
 

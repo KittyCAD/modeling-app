@@ -77,7 +77,7 @@ describe('services', () => {
 
     const badFactory = defineRegistryItemFactory(({ services }) => {
       services.get(service)
-      return { item: defineRegistryItem({}) }
+      return {}
     }, 'bad-factory')
 
     const container = new Registry()
@@ -96,7 +96,7 @@ describe('services', () => {
 
     const badFactory = defineRegistryItemFactory(({ container }) => {
       container.reconfigure(slot, [])
-      return { item: defineRegistryItem({}) }
+      return {}
     }, 'bad-reconfigure-factory')
 
     const container = new Registry()
@@ -182,16 +182,14 @@ describe('services', () => {
       const isOpen = signal(false)
 
       return {
-        item: defineRegistryItem({
-          providesServices: [
-            provideService(stableService, {
-              isOpen,
-              open() {
-                isOpen.value = true
-              },
-            }),
-          ],
-        }),
+        providesServices: [
+          provideService(stableService, {
+            isOpen,
+            open() {
+              isOpen.value = true
+            },
+          }),
+        ],
       }
     }, 'stable-runtime')
 
@@ -207,9 +205,7 @@ describe('services', () => {
       })
 
       return {
-        item: defineRegistryItem({
-          providesServices: [provideService(toggleService, controller)],
-        }),
+        providesServices: [provideService(toggleService, controller)],
       }
     }, 'toggle-registry-item')
 
