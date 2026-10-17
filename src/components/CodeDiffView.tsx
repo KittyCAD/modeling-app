@@ -265,21 +265,9 @@ export function CodeDiffView({
 
   return (
     <>
-      <div
-        className={`mb-2 shrink-0 gap-3 text-xs font-medium text-chalkboard-70 dark:text-chalkboard-30 ${layout === 'split' ? 'grid grid-cols-2' : 'flex justify-between'}`}
-      >
-        <span id={beforeLabelId}>
-          {layout === 'unified' && (
-            <span className="mr-1 text-red-600 dark:text-red-400">-</span>
-          )}
-          {beforeLabel}
-        </span>
-        <span id={afterLabelId}>
-          {layout === 'unified' && (
-            <span className="mr-1 text-green-700 dark:text-green-400">+</span>
-          )}
-          {afterLabel}
-        </span>
+      <div className="mb-2 grid shrink-0 grid-cols-2 gap-3 text-xs font-medium text-chalkboard-70 dark:text-chalkboard-30">
+        <span id={beforeLabelId}>{beforeLabel}</span>
+        <span id={afterLabelId}>{afterLabel}</span>
       </div>
       <div
         ref={containerRef}

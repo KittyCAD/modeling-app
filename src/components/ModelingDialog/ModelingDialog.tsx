@@ -12,6 +12,7 @@ import { MarkdownText } from '@src/components/MarkdownText'
 import { DialogSelectionList } from '@src/components/ModelingDialog/DialogSelectionList'
 import Tooltip from '@src/components/Tooltip'
 import type { KclManager } from '@src/lang/KclManager'
+import type { CodeChangesPreviewController } from '@src/lib/codeChangesPreview'
 import type {
   AppCommandSystem,
   AppLayoutSystem,
@@ -43,6 +44,7 @@ export default function ModelingDialog({
   commands,
   settings,
   layout,
+  codeChangesPreview,
   wasmPromise,
   commandScopes,
   selectionRanges,
@@ -53,6 +55,7 @@ export default function ModelingDialog({
   commands: AppCommandSystem
   settings: AppSettingsSystem
   layout: AppLayoutSystem
+  codeChangesPreview?: CodeChangesPreviewController
   wasmPromise: Promise<ModuleType>
   commandScopes?: CommandScopeService
   selectionRanges: Selections
@@ -129,12 +132,11 @@ export default function ModelingDialog({
   })
   const codePreview = useCodePreview({
     context: state.context,
-    values,
-    activeName: selection.activeName,
-    selectionRanges: selection.selectionRanges,
+    values: selection.draft,
     incomplete: initializing || invalid,
     kclManager,
     layout,
+    preview: codeChangesPreview,
   })
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {

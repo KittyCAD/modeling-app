@@ -4,7 +4,7 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { KclManager } from '@src/lang/KclManager'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
 import {
-  createModelingCodemodCommand,
+  createModelingCodemodReviewValidation,
   defineModelingCodemod,
 } from '@src/lang/modifyAst/modelingCodemod'
 import type { Program } from '@src/lang/wasm'
@@ -17,7 +17,7 @@ vi.mock('@src/lang/modelingWorkflows', () => ({
   updateModelingState: vi.fn(),
 }))
 
-describe('createModelingCodemodCommand', () => {
+describe('createModelingCodemodReviewValidation', () => {
   it('snapshots the code and AST together after WASM resolves', async () => {
     const initialCode = 'part = extrude(sketch, length = 10)'
     let currentCode = initialCode
@@ -52,12 +52,11 @@ describe('createModelingCodemodCommand', () => {
         pathToNode: [],
       }
     })
-    const { reviewValidation: validate, codePreview } =
-      createModelingCodemodCommand(
-        defineModelingCodemod({
-          run,
-        })
-      )
+    const validate = createModelingCodemodReviewValidation(
+      defineModelingCodemod({
+        run,
+      })
+    )
 
     let resolveWasmInstance: (wasmInstance: ModuleType) => void = () => {}
     const wasmInstancePromise = new Promise<ModuleType>((resolve) => {
@@ -97,23 +96,5 @@ describe('createModelingCodemodCommand', () => {
     expect(wasmInstance.recast_wasm).toHaveBeenCalledWith(
       JSON.stringify(modifiedAst)
     )
-
-    vi.mocked(mockExecAstAndReportErrors).mockClear()
-    const preview = await codePreview(
-      { argumentsToSubmit: {}, wasmInstancePromise },
-      {
-        getSnapshot: () => ({
-          context: {
-            engineCommandManager: {} as ConnectionManager,
-            kclManager,
-            rustContext: {} as RustContext,
-          },
-        }),
-      }
-    )
-    expect(preview).toEqual(result?.reviewDetails)
-    expect(mockExecAstAndReportErrors).not.toHaveBeenCalled()
-    expect(kclManager.code).toBe(currentCodeAfterWasm)
-    expect(kclManager.ast).toBe(currentAstAfterWasm)
   })
 })

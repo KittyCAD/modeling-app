@@ -311,9 +311,7 @@ body002 = clone(body001)
     await expect(submit).toBeDisabled()
     await length.fill('12mm')
     await expect(submit).toBeEnabled()
-    const codeBeforePreview = await page.evaluate(
-      () => window.app.singletons.kclManager.code
-    )
+    const codeBeforePreview = await editor.getCurrentCode()
     const codeChanges = dialog.getByRole('button', {
       name: 'Code changes',
       exact: true,
@@ -326,9 +324,6 @@ body002 = clone(body001)
     await expect(preview.getByTestId('code-changes-diff')).toContainText(
       'length = 12mm'
     )
-    expect(
-      await page.evaluate(() => window.app.singletons.kclManager.code)
-    ).toBe(codeBeforePreview)
     await length.fill('16mm')
     await expect(preview.getByTestId('code-changes-diff')).toContainText(
       'length = 16mm'
@@ -341,7 +336,7 @@ body002 = clone(body001)
     )
     await preview.getByRole('button', { name: 'Close code changes' }).click()
     await expect(codeChanges).toHaveAttribute('aria-pressed', 'false')
-    await expect(page.locator('#code-mirror-override')).toContainText('region(')
+    await editor.expectEditor.toBe(codeBeforePreview)
     const initialPosition = await dialog.boundingBox()
     if (!initialPosition) throw new Error('Modeling dialog is not visible')
     await page.mouse.move(initialPosition.x + 20, initialPosition.y + 15)

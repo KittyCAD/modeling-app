@@ -1,6 +1,8 @@
 import { lazy, Suspense, useRef } from 'react'
+import { useSignals } from '@preact/signals-react/runtime'
 import { useDialogReset } from '@src/components/ModelingDialog/useDialogReset'
 import { useApp } from '@src/lib/boot'
+import { projectSession } from '@src/registry/contracts/projectSession'
 import { isModelingDialogCommand } from '@src/lib/commandUtils'
 import { commandScopeService } from '@src/registry/contracts/commands'
 import type { EngineSceneViewExtensionProps } from '@src/registry/contracts/engineScene'
@@ -13,6 +15,7 @@ export function ModelingDialogViewExtension({
   modelingState,
   modelingSend,
 }: EngineSceneViewExtensionProps) {
+  useSignals()
   const containerRef = useRef<HTMLDivElement>(null)
   const { commands, settings, layout, wasmPromise, registry } = useApp()
   const state = commands.useState()
@@ -35,6 +38,9 @@ export function ModelingDialogViewExtension({
           commands={commands}
           settings={settings}
           layout={layout}
+          codeChangesPreview={
+            registry.get(projectSession).project.value?.codeChangesPreview
+          }
           wasmPromise={wasmPromise}
           commandScopes={registry.optional(commandScopeService)}
           selectionRanges={modelingState.context.selectionRanges}

@@ -1,26 +1,68 @@
-import { signal } from '@preact/signals-core'
-import type { CodeDiffLanguage } from '@src/components/CodeDiffView'
-
-export type CodeChangeFile = {
-  path: string
-  beforeText: string
-  afterText: string
-  language: CodeDiffLanguage
-}
+import { effect, signal, type ReadonlySignal } from '@preact/signals-core'
 
 /** Display-only snapshots. Applying changes and undo remain with the caller. */
 export type CodeChangesPreview = {
   owner: object
   title: string
-  files: readonly CodeChangeFile[]
-  status: 'loading' | 'ready' | 'error'
-  error?: string
+} & (
+  | { status: 'loading' }
+  | { status: 'error'; error: string }
+  | { status: 'ready'; beforeText: string; afterText: string }
+)
+
+type PreviewEditor = { readonly path: string }
+export type CodeChangesPreviewPublisher = (preview: CodeChangesPreview) => void
+
+export interface CodeChangesPreviewController {
+  readonly current: ReadonlySignal<CodeChangesPreview | null>
+  open(
+    editor: PreviewEditor,
+    preview: CodeChangesPreview
+  ): CodeChangesPreviewPublisher | undefined
+  clear(owner?: object): void
+  dispose(): void
 }
 
-export const codeChangesPreviewSignal = signal<CodeChangesPreview | null>(null)
+/** A project owns this controller; a preview belongs to its active editor. */
+export function createCodeChangesPreview(
+  getEditor: () => PreviewEditor | null | undefined
+): CodeChangesPreviewController {
+  const current = signal<CodeChangesPreview | null>(null)
+  let generation = 0
+  let disposed = false
+  const stop = effect(() => {
+    // Track both editor identity and path: the legacy editor can be reused.
+    void getEditor()?.path
+    generation++
+    current.value = null
+  })
 
-export function clearCodeChangesPreview(owner: object) {
-  if (codeChangesPreviewSignal.peek()?.owner === owner) {
-    codeChangesPreviewSignal.value = null
+  return {
+    current,
+    open(editor, preview) {
+      if (disposed || getEditor() !== editor) return
+      const sourceGeneration = ++generation
+      current.value = preview
+      return (next) => {
+        if (
+          !disposed &&
+          generation === sourceGeneration &&
+          current.peek()?.owner === preview.owner
+        ) {
+          current.value = next
+        }
+      }
+    },
+    clear(owner) {
+      if (owner && current.peek()?.owner !== owner) return
+      generation++
+      current.value = null
+    },
+    dispose() {
+      disposed = true
+      stop()
+      generation++
+      current.value = null
+    },
   }
 }

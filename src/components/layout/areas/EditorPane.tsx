@@ -30,10 +30,6 @@ import {
   scheduleActiveTextFileWrite,
 } from '@src/lib/activeTextFile'
 import { useApp, useSingletons } from '@src/lib/boot'
-import {
-  clearCodeChangesPreview,
-  codeChangesPreviewSignal,
-} from '@src/lib/codeChangesPreview'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { getResolvedTheme } from '@src/lib/theme'
@@ -82,9 +78,11 @@ export const EditorPane = (props: AreaTypeComponentProps) => {
 
 export const EditorPaneContents = () => {
   useSignals()
+  const { projectSignal } = useApp()
   const { kclManager } = useSingletons()
   const activeTextFile = activeTextFileSignal.value
-  const preview = codeChangesPreviewSignal.value
+  const codeChangesPreview = projectSignal.value?.codeChangesPreview
+  const preview = codeChangesPreview?.current.value
   const editorParent = useRef<HTMLDivElement>(null)
 
   // When this pane unmounts (e.g. the Code pane is closed), stop showing the
@@ -92,10 +90,10 @@ export const EditorPaneContents = () => {
   useEffect(() => {
     return () => {
       clearActiveTextFile()
-      const preview = codeChangesPreviewSignal.peek()
-      if (preview) clearCodeChangesPreview(preview.owner)
     }
   }, [])
+
+  useEffect(() => () => codeChangesPreview?.clear(), [codeChangesPreview])
 
   useEffect(() => {
     if (activeTextFile) {
@@ -119,7 +117,10 @@ export const EditorPaneContents = () => {
       </div>
       {preview && (
         <div className="absolute inset-0">
-          <CodeChangesPreview preview={preview} />
+          <CodeChangesPreview
+            preview={preview}
+            onClose={() => codeChangesPreview?.clear(preview.owner)}
+          />
         </div>
       )}
     </div>
@@ -295,9 +296,13 @@ function copyKclCodeToClipboard(kclManager: Singletons['kclManager']) {
 
 export const KclEditorMenu = () => {
   useSignals()
+  const { projectSignal } = useApp()
   // The KCL-specific menu items (format, convert to variable, KCL docs, add KCL
   // file) don't apply when a plain text/markdown file is open in the pane.
-  if (activeTextFileSignal.value || codeChangesPreviewSignal.value) {
+  if (
+    activeTextFileSignal.value ||
+    projectSignal.value?.codeChangesPreview.current.value
+  ) {
     return null
   }
   return <KclEditorKclMenu />

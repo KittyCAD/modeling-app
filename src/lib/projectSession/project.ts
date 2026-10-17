@@ -22,6 +22,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { App } from '@src/lib/app'
 import type { MachineManager } from '@src/lib/MachineManager'
 import { File } from '@src/lib/projectSession/file'
+import { createCodeChangesPreview } from '@src/lib/codeChangesPreview'
 import type { TextFileIO } from '@src/lib/projectSession/textFileIO'
 import { projectSession } from '@src/registry/contracts/projectSession'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
@@ -71,6 +72,9 @@ export class ZDSProject {
     path: this.#executingPath.value?.value ?? '',
     children: [],
   }))
+  readonly codeChangesPreview = createCodeChangesPreview(
+    () => this.findEditor(this.executingPath ?? '')?.[1]
+  )
 
   private fileWatcherId = uuidv4()
 
@@ -89,6 +93,7 @@ export class ZDSProject {
 
   /** Clean up resources and watchers for Project */
   public close() {
+    this.codeChangesPreview.dispose()
     this.closeAllEditors()
     window.electron?.watchFileOff(
       this.projectIORefSignal.value.path,
@@ -278,6 +283,7 @@ export class ZDSProject {
     }
     if (this.executingEditor.peek() === foundPathSignal[1]) {
       this.executingPath = null
+      this.codeChangesPreview.clear()
     }
     foundPathSignal[1].close()
     this.editors.delete(foundPathSignal[0])
@@ -285,6 +291,7 @@ export class ZDSProject {
 
   closeAllEditors() {
     this.executingPath = null
+    this.codeChangesPreview.clear()
     for (const editor of this.editors.values()) {
       editor.close()
     }

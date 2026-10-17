@@ -1,13 +1,16 @@
 import { useEffect, useRef } from 'react'
-import {
-  hasValue,
-  resolveArguments,
-} from '@src/components/ModelingDialog/arguments'
+import { resolveArguments } from '@src/components/ModelingDialog/arguments'
 import type { KclManager } from '@src/lang/KclManager'
-import type { AppLayoutSystem } from '@src/lib/app'
 import {
-  clearCodeChangesPreview,
-  codeChangesPreviewSignal,
+  runModelingCodemod,
+  type ModelingCodemod,
+} from '@src/lang/modifyAst/modelingCodemod'
+import { recast } from '@src/lang/wasm'
+import type { AppLayoutSystem } from '@src/lib/app'
+import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
+import type {
+  CodeChangesPreviewController,
+  CodeChangesPreviewPublisher,
 } from '@src/lib/codeChangesPreview'
 import {
   DefaultLayoutPaneID,
@@ -16,79 +19,79 @@ import {
 } from '@src/lib/layout'
 import { isErr } from '@src/lib/trap'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
-import type { Selections } from '@src/machines/modelingSharedTypes'
 
 export function useCodePreview({
   context,
   values,
-  activeName,
-  selectionRanges,
   incomplete,
   kclManager,
   layout,
+  preview,
 }: {
   context: CommandBarContext
   values: Record<string, unknown>
-  activeName: string | undefined
-  selectionRanges: Selections
   incomplete: boolean
   kclManager: KclManager
   layout: AppLayoutSystem
+  preview: CodeChangesPreviewController | undefined
 }) {
   const owner = useRef({}).current
+  const publisher = useRef<CodeChangesPreviewPublisher | undefined>(undefined)
   const sourcePath = kclManager.path
   const initialPath = useRef(sourcePath).current
   const sourceCode = kclManager.codeSignal.value
   const sourceAst = kclManager.astSignal.value
   const sourceNeedsExecution = kclManager.hasEditsSinceLastExecutionSignal.value
   const command = context.selectedCommand
-  const open = codeChangesPreviewSignal.value?.owner === owner
+  // Arguments are resolved below against the selected command's schema.
+  const codemod =
+    command && Object.hasOwn(modelingCommandCodemods, command.name)
+      ? (modelingCommandCodemods[
+          command.name as keyof typeof modelingCommandCodemods
+        ] as ModelingCodemod<Record<string, unknown>>)
+      : undefined
+  const open = preview?.current.value?.owner === owner
 
-  useEffect(() => () => clearCodeChangesPreview(owner), [owner])
+  useEffect(() => () => preview?.clear(owner), [preview, owner])
 
   useEffect(() => {
-    if (!open || !command?.codePreview) return
+    const publish = publisher.current
+    if (!open || !command || !codemod || !preview || !publish) return
     if (sourcePath !== initialPath) {
-      clearCodeChangesPreview(owner)
+      preview.clear(owner)
       return
     }
     const pending = {
       owner,
       title: `${command.displayName || command.name} - Code changes`,
-      files: [],
     }
-    codeChangesPreviewSignal.value = {
-      ...pending,
-      status: incomplete || sourceNeedsExecution ? 'error' : 'loading',
-      error: sourceNeedsExecution
-        ? 'Execute the current code to preview changes.'
-        : incomplete
-          ? 'Complete the arguments to preview changes.'
-          : undefined,
-    }
-    if (incomplete || sourceNeedsExecution) return
+    const error = sourceNeedsExecution
+      ? 'Execute the current code to preview changes.'
+      : incomplete
+        ? 'Complete the arguments to preview changes.'
+        : undefined
+    publish(
+      error
+        ? { ...pending, status: 'error', error }
+        : { ...pending, status: 'loading' }
+    )
+    if (error) return
 
     let cancelled = false
     const isCurrent = () =>
       !cancelled &&
-      codeChangesPreviewSignal.peek()?.owner === owner &&
+      preview.current.peek()?.owner === owner &&
       kclManager.path === sourcePath &&
       kclManager.code === sourceCode
 
     // Coalesce typing; discard results when arguments, source, or owner change.
     const timeout = setTimeout(() => {
       void (async () => {
-        const draft = activeName
-          ? {
-              ...values,
-              [activeName]: hasValue(selectionRanges)
-                ? selectionRanges
-                : undefined,
-            }
-          : values
+        const wasmInstance = await kclManager.wasmInstancePromise
+        if (!isCurrent()) return
         const resolved = await resolveArguments(
           context,
-          draft,
+          values,
           kclManager.rustContext,
           sourceAst,
           kclManager.artifactGraph
@@ -96,35 +99,37 @@ export function useCodePreview({
         if (!isCurrent()) return
         const result = isErr(resolved)
           ? resolved
-          : await command.codePreview?.(
-              { ...context, argumentsToSubmit: resolved },
-              command.machineActor
-            )
-        if (!isCurrent() || !result) return
-        codeChangesPreviewSignal.value = isErr(result)
-          ? { ...pending, status: 'error', error: result.message }
-          : {
-              ...pending,
-              status: 'ready',
-              files: [
-                {
-                  path: sourcePath,
-                  beforeText: result.currentCode,
-                  afterText: result.proposedCode,
-                  language: 'kcl',
-                },
-              ],
-            }
+          : await runModelingCodemod({
+              codemod,
+              commandArgs: resolved,
+              kclManager,
+              wasmInstance,
+              sourceSnapshot: { ast: sourceAst, code: sourceCode },
+            })
+        if (!isCurrent()) return
+        const code = isErr(result)
+          ? result
+          : recast(result.modifiedAst, wasmInstance)
+        publish(
+          isErr(code)
+            ? { ...pending, status: 'error', error: code.message }
+            : {
+                ...pending,
+                status: 'ready',
+                beforeText: sourceCode,
+                afterText: code,
+              }
+        )
       })().catch((error: unknown) => {
         if (isCurrent()) {
-          codeChangesPreviewSignal.value = {
+          publish({
             ...pending,
             status: 'error',
             error:
               error instanceof Error
                 ? error.message
                 : 'Unable to preview changes.',
-          }
+          })
         }
       })
     }, 300)
@@ -135,10 +140,9 @@ export function useCodePreview({
   }, [
     open,
     command,
+    codemod,
     context,
     values,
-    activeName,
-    selectionRanges,
     incomplete,
     sourcePath,
     initialPath,
@@ -146,20 +150,22 @@ export function useCodePreview({
     sourceAst,
     sourceNeedsExecution,
     kclManager,
+    preview,
     owner,
   ])
 
   function toggle() {
+    if (!preview) return
     if (open) {
-      clearCodeChangesPreview(owner)
+      preview.clear(owner)
       return
     }
-    codeChangesPreviewSignal.value = {
+    publisher.current = preview.open(kclManager, {
       owner,
       title: 'Code changes',
       status: 'loading',
-      files: [],
-    }
+    })
+    if (!publisher.current) return
     const rootLayout = layout.get()
     if (!getOpenPanes({ rootLayout }).includes(DefaultLayoutPaneID.Code)) {
       layout.set(
@@ -172,5 +178,5 @@ export function useCodePreview({
     }
   }
 
-  return { open, toggle, available: Boolean(command?.codePreview) }
+  return { open, toggle, available: Boolean(preview && codemod) }
 }
