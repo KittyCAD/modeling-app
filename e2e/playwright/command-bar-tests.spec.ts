@@ -417,6 +417,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
         commandName: 'Import file from URL',
         headerArguments: {
           Method: 'New project',
+          ProjectTitle: 'untitled',
           Name: 'main.kcl',
           Code: '1 line',
         },
