@@ -1,8 +1,8 @@
+import { fsArchiveFile } from '@src/editor/plugins/fs'
 import type { Feature } from '@kittycad/lib'
 import { pluginsValueSpec } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import type { KclManager } from '@src/lang/KclManager'
-import { File } from '@src/lib/projectSession'
 import { App } from '@src/lib/app'
 import { IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
@@ -301,6 +301,181 @@ describe('project system', () => {
       expect(app.currentProjectLibraryIdSignal).toBe(
         registryProjectSession.currentProjectLibraryId
       )
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('preserves interleaved text and file-operation redo across same-project loader opens', async () => {
+    const app = createAppForTest()
+    const mainPath = '/some-dir/test/main.kcl'
+    const sidePath = '/some-dir/test/side.kcl'
+    const metadata = {
+      ...mockProject,
+      children: [
+        ...mockProject.children!,
+        { name: 'side.kcl', path: sidePath, children: null },
+      ],
+    }
+    const disk = new Map([
+      [mainPath, 'value = 0\n'],
+      [sidePath, 'side = true\n'],
+    ])
+    vi.spyOn(
+      app.registry.get(projectSession).textFileIO,
+      'read'
+    ).mockImplementation(async (path) => disk.get(path) ?? '')
+    vi.spyOn(
+      app.registry.get(projectSession).textFileIO,
+      'write'
+    ).mockImplementation(async (path, code) => {
+      disk.set(path, code)
+    })
+    const editOptions = {
+      shouldExecute: false,
+      shouldSyncRust: false,
+      shouldWriteToDisk: false,
+    }
+    try {
+      const project = await app.openProject(metadata)
+      const editor = await project.openEditor(
+        mainPath,
+        app.singletons.kclManager
+      )
+      const history = editor.globalHistoryView
+      const mainId = editor.id
+      const send = vi
+        .spyOn(app.systemIOActor, 'send')
+        .mockImplementation(() => {})
+      editor.updateCodeEditor('value = 1\n', editOptions)
+      editor.addGlobalHistoryEvent(
+        fsArchiveFile({
+          src: sidePath,
+          target: '/some-dir/test/.archive/side.kcl',
+          requestedProjectName: metadata.name,
+        })
+      )
+      editor.updateCodeEditor('value = 2\n', editOptions)
+      editor.undo()
+      expect(editor.code).toBe('value = 1\n')
+      editor.undo()
+      expect(send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: SystemIOMachineEvents.moveRecursiveAndNavigate,
+        })
+      )
+      editor.undo()
+      expect(editor.code).toBe('value = 0\n')
+      expect(editor.redoDepth.value).toBeGreaterThan(0)
+      disk.set(mainPath, editor.code)
+      const refreshed = await app.openProject(metadata)
+      expect(refreshed).toBe(project)
+      await refreshed.openEditor(sidePath, editor)
+      expect(refreshed.editors.size).toBe(1)
+      expect(refreshed.findEditor(mainPath)).toBeUndefined()
+      const returning = await app.openProject(metadata)
+      await returning.openEditor(mainPath, editor)
+      expect(returning.editors.size).toBe(1)
+      expect(returning.findEditor(sidePath)).toBeUndefined()
+      expect(editor.globalHistoryView).toBe(history)
+      expect(editor.id).toBe(mainId)
+      expect(editor.redoDepth.value).toBeGreaterThan(0)
+      send.mockClear()
+      editor.redo()
+      expect(editor.code).toBe('value = 1\n')
+      editor.redo()
+      expect(send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: SystemIOMachineEvents.moveRecursiveAndNavigate,
+          data: expect.objectContaining({
+            src: sidePath,
+            target: '/some-dir/test/.archive/side.kcl',
+          }),
+        })
+      )
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('refreshes same-project membership without replacing editors, stable IDs, or history', async () => {
+    const app = createAppForTest()
+    try {
+      const project = await app.openProject(mockProject)
+      const editor = await project.openEditor(
+        '/some-dir/test/main.kcl',
+        app.singletons.kclManager,
+        ''
+      )
+      const history = editor.globalHistoryView
+      const firstId = editor.id
+      const added = {
+        name: 'added.kcl',
+        path: '/some-dir/test/added.kcl',
+        children: null,
+      }
+      const metadata = {
+        ...mockProject,
+        children: [...mockProject.children!, added],
+      }
+      const same = await app.openProject(metadata)
+      expect(same).toBe(project)
+      expect(same.executingEditor.peek()).toBe(editor)
+      expect(same.files.find((file) => file.path === editor.path)).toBe(editor)
+      const addedId = same.files.find((file) => file.path === added.path)?.id
+      expect(addedId).toBeDefined()
+      await app.openProject(metadata)
+      expect(same.files.find((file) => file.path === added.path)?.id).toBe(
+        addedId
+      )
+      await app.openProject(mockProject)
+      expect(same.files.map((file) => file.path)).toEqual([editor.path])
+      expect(editor.id).toBe(firstId)
+      expect(editor.globalHistoryView).toBe(history)
+      expect(same.projectIORefSignal.peek().children).toEqual(
+        mockProject.children
+      )
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('keeps project undo history when an editor is closed and recreated', async () => {
+    const app = createAppForTest()
+    const path = '/some-dir/test/main.kcl'
+    let diskCode = 'value = 1\n'
+    vi.spyOn(
+      app.registry.get(projectSession).textFileIO,
+      'read'
+    ).mockImplementation(async () => diskCode)
+    try {
+      const project = await app.openProject(mockProject)
+      const first = await project.openEditor(path)
+      const history = first.globalHistoryView
+      first.updateCodeEditor('value = 2\n', {
+        shouldExecute: false,
+        shouldSyncRust: false,
+        shouldWriteToDisk: false,
+      })
+      diskCode = first.code
+      project.closeEditor(path)
+      const second = await project.openEditor(path)
+      expect(second).not.toBe(first)
+      expect(second.globalHistoryView).toBe(history)
+      expect(second.code).toBe('value = 2\n')
+      second.undo()
+      expect(second.code).toBe('value = 1\n')
+      expect(first.code).toBe('value = 2\n')
+      second.redo()
+      expect(second.code).toBe('value = 2\n')
+      const other = await app.openProject({
+        ...mockProject,
+        name: 'other',
+        path: '/some-dir/other',
+      })
+      const third = await other.openEditor('/some-dir/other/main.kcl')
+      expect(third.globalHistoryView).not.toBe(history)
+      expect(third.undoDepth.value).toBe(0)
     } finally {
       app.dispose()
     }
