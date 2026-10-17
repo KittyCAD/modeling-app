@@ -4,7 +4,6 @@ import type { FileExplorerEntry } from '@src/components/Explorer/utils'
 import { getProjectExplorerProjectWithPlaceholders } from '@src/components/layout/areas/ProjectExplorerPane.utils'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { importFileExtensions } from '@src/lang/wasmUtils'
 import {
   clearActiveTextFile,
   openActiveTextFile,
@@ -17,10 +16,7 @@ import {
   getOpenPanes,
   togglePaneLayoutNode,
 } from '@src/lib/layout'
-import {
-  isExtensionARelevantExtension,
-  parentPathRelativeToProject,
-} from '@src/lib/paths'
+import { parentPathRelativeToProject } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { reportRejection } from '@src/lib/trap'
 import {
@@ -99,32 +95,18 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     })
   }, [commands])
 
-  const isImportableFile = useCallback(
-    (path: string) =>
-      isExtensionARelevantExtension(path, importFileExtensions(wasmInstance)),
-    [wasmInstance]
-  )
-
-  const openTextFile = useCallback(
-    (path: string) => {
-      openCodeEditorPaneIfClosed()
-      openActiveTextFile(fileOperations, path).catch(reportRejection)
-    },
-    [fileOperations, openCodeEditorPaneIfClosed]
-  )
-
   const onRowDoubleClicked = useCallback(
     (entry: FileExplorerEntry) => {
       if (
         !projectRef.current?.value.name ||
         entry.children != null ||
-        isImportableFile(entry.path)
+        !entry.path.endsWith(FILE_EXT)
       ) {
         return
       }
       openCodeEditorPaneIfClosed()
     },
-    [isImportableFile, openCodeEditorPaneIfClosed]
+    [openCodeEditorPaneIfClosed]
   )
 
   const onRowClicked = useCallback(
@@ -179,22 +161,19 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
           // immediately navigate
           navigateAfterFlush()
         }
-      } else if (
-        projectRef.current?.value.name &&
-        entry.children == null &&
-        !isImportableFile(entry.path)
-      ) {
+      } else if (projectRef.current?.value.name && entry.children == null) {
         // Inspect file contents before allowing edits, regardless of extension.
-        openTextFile(entry.path)
+        openCodeEditorPaneIfClosed()
+        openActiveTextFile(fileOperations, entry.path).catch(reportRejection)
       }
     },
     [
-      isImportableFile,
+      fileOperations,
       kclManager,
       modelingActor,
       modelingMachineState,
       modelingSend,
-      openTextFile,
+      openCodeEditorPaneIfClosed,
       projectDirectoryPath,
       systemIOActor,
     ]
@@ -245,7 +224,6 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
             onRowClicked={onRowClicked}
             onRowDoubleClicked={onRowDoubleClicked}
             onRowEnter={onRowClicked}
-            onOpenAsText={openTextFile}
             canNavigate={true}
             readOnly={false}
             overrideApplicationProjectDirectory={projectDirectoryPath}

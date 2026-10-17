@@ -52,10 +52,8 @@ beforeAll(async () => {
 const projectName = 'project-001'
 const applicationDirectory = 'applicationDirectory'
 
-// Only the supported extensions are needed to route CAD file clicks.
-const wasmInstance = {
-  import_file_extensions: () => ['step', 'sldprt', 'prt'],
-} as ModuleType
+// These tests do not exercise external file drops, which need Wasm.
+const wasmInstance = {} as ModuleType
 const createFile = (name: string, parent?: string): FileEntry => {
   return {
     name: name,
@@ -100,11 +98,12 @@ describe('ProjectExplorer', () => {
     cleanup()
     vi.restoreAllMocks()
   })
-  it('routes text clicks and Enter through the pane, with explicit opt-in for CAD files', async () => {
-    const textFiles = [createFile('config.json', ''), createFile('LICENSE', '')]
-    const cadFile = createFile('part.STEP', '')
+  it('opens non-KCL files on click and Enter while keeping KCL on the modeling path', async () => {
+    const textFiles = ['config.json', 'LICENSE', 'part.STEP'].map((name) =>
+      createFile(name, '')
+    )
     const folder = createFolder('folder.step')
-    project.children = [...textFiles, cadFile, oneFile, folder]
+    project.children = [...textFiles, oneFile, folder]
     vi.spyOn(app, 'project', 'get').mockReturnValue(
       await ZDSProject.open(signal(project), app)
     )
@@ -153,30 +152,8 @@ describe('ProjectExplorer', () => {
       openText.mockClear()
     }
 
-    fireEvent.click(screen.getByRole('treeitem', { name: cadFile.name }))
+    fireEvent.click(screen.getByRole('treeitem', { name: folder.name }))
     expect(openText).not.toHaveBeenCalled()
-    for (const entry of [textFiles[0], cadFile]) {
-      fireEvent.contextMenu(screen.getByRole('treeitem', { name: entry.name }))
-      fireEvent.click(
-        await screen.findByRole('button', { name: 'Open as Text' })
-      )
-      expect(openText).toHaveBeenCalledWith(app.fileOperations, entry.path)
-      openText.mockClear()
-    }
-
-    for (const entry of [oneFile, folder]) {
-      fireEvent.contextMenu(screen.getByRole('treeitem', { name: entry.name }))
-      await screen.findByRole('button', { name: 'Rename' })
-      expect(
-        screen.queryByRole('button', { name: 'Open as Text' })
-      ).not.toBeInTheDocument()
-      fireEvent.keyDown(window, { key: 'Escape' })
-      await waitFor(() =>
-        expect(
-          screen.queryByRole('button', { name: 'Rename' })
-        ).not.toBeInTheDocument()
-      )
-    }
 
     fireEvent.click(screen.getByRole('treeitem', { name: oneFile.name }))
     await waitFor(() =>
