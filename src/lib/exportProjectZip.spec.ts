@@ -1,13 +1,22 @@
-import { createProjectZipArchive } from '@src/lib/exportProjectZip'
+import { browserSaveFile } from '@src/lib/browserSaveFile'
+import {
+  createProjectZipArchive,
+  exportProjectZip,
+} from '@src/lib/exportProjectZip'
 import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { buildTheWorldNode } from '@src/unitTestUtils'
 import JSZip from 'jszip'
-import { afterEach, beforeAll, describe, expect, it } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
+
+vi.mock('@src/lib/browserSaveFile', () => ({
+  browserSaveFile: vi.fn(async () => undefined),
+}))
 
 const createdProjectPaths: string[] = []
+const originalElectron = window.electron
 let wasmInstance: ModuleType
 
 beforeAll(async () => {
@@ -17,6 +26,18 @@ beforeAll(async () => {
   })
   const { instance } = await buildTheWorldNode()
   wasmInstance = await instance
+})
+
+afterEach(async () => {
+  await Promise.all(
+    createdProjectPaths.map((projectPath) =>
+      fsZds.rm(projectPath, { recursive: true, force: true })
+    )
+  )
+  createdProjectPaths.length = 0
+  window.electron = originalElectron
+  vi.restoreAllMocks()
+  vi.clearAllMocks()
 })
 
 function makeProject(
@@ -37,15 +58,6 @@ function makeProject(
 }
 
 describe('createProjectZipArchive', () => {
-  afterEach(async () => {
-    await Promise.all(
-      createdProjectPaths.map((projectPath) =>
-        fsZds.rm(projectPath, { recursive: true, force: true })
-      )
-    )
-    createdProjectPaths.length = 0
-  })
-
   it('zips every project file and uses the current editor contents for the active file', async () => {
     const projectPath = `/tmp/export-project-zip-${crypto.randomUUID()}`
     createdProjectPaths.push(projectPath)
@@ -129,5 +141,51 @@ describe('createProjectZipArchive', () => {
     await expect(
       zip.file('Human Project/main.kcl')?.async('string')
     ).resolves.toBe('disk = true')
+  })
+})
+
+describe('exportProjectZip', () => {
+  it('uses the native save dialog and writes the ZIP on desktop', async () => {
+    const projectPath = `/tmp/export-project-zip-${crypto.randomUUID()}`
+    createdProjectPaths.push(projectPath)
+    await fsZds.mkdir(projectPath, { recursive: true })
+    await fsZds.writeFile(
+      fsZds.join(projectPath, 'main.kcl'),
+      new TextEncoder().encode(
+        '@settings(defaultLengthUnit = mm, kclVersion = 3.0)\nvalue = 1\n'
+      )
+    )
+    await fsZds.writeFile(
+      fsZds.join(projectPath, 'project.toml'),
+      new TextEncoder().encode('default_file = "main.kcl"')
+    )
+    const project = makeProject(projectPath)
+    const binaryContents = new Uint8Array([0, 1, 127, 128, 255])
+    await fsZds.writeFile(fsZds.join(project.path, 'model.bin'), binaryContents)
+    const destination = fsZds.join(project.path, 'saved-project.zip')
+    const save = vi.fn(async () => ({
+      canceled: false,
+      filePath: destination,
+    }))
+    window.electron = {
+      process: { env: { NODE_ENV: 'development' } },
+      save,
+    } as unknown as Window['electron']
+
+    await exportProjectZip({
+      fileOperations: testFileOperations,
+      project,
+      wasmInstance,
+    })
+
+    expect(save).toHaveBeenCalledWith({
+      defaultPath: 'web-project.zip',
+      filters: [{ name: 'model', extensions: ['zip'] }],
+    })
+    expect(browserSaveFile).not.toHaveBeenCalled()
+    const zip = await JSZip.loadAsync(await fsZds.readFile(destination))
+    await expect(
+      zip.file('web-project/model.bin')?.async('uint8array')
+    ).resolves.toEqual(binaryContents)
   })
 })
