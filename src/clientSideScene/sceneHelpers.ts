@@ -1,5 +1,5 @@
 import { hasProperty, isArray, isRecord } from '@src/lib/utils'
-import { BufferGeometry, type Group, Material, type Object3D } from 'three'
+import { BufferGeometry, Material, type Object3D } from 'three'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
 /**
@@ -7,7 +7,7 @@ import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
  * Frees geometries, materials, and textures to prevent memory leaks.
  * @param rootGroup The THREE.Group whose children will be disposed and removed.
  */
-export function disposeGroupChildren(rootGroup: Group): void {
+export function disposeGroupChildren(rootGroup: Object3D): void {
   // Recursively traverse and dispose of child objects
   for (let i = rootGroup.children.length - 1; i >= 0; i--) {
     const child = rootGroup.children[i]

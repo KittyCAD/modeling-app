@@ -1,3 +1,4 @@
+import { useSignals } from '@preact/signals-react/runtime'
 import { useAppState } from '@src/AppState'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
 import Loading from '@src/components/Loading'
@@ -73,6 +74,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const wasmInstance = use(wasmPromise)
   const { kclManager } = useSingletons()
   const engineCommandManager = kclManager.engineCommandManager
+  useSignals()
   const sceneInfra = kclManager.sceneInfra
   const [showManualConnect, setShowManualConnect] = useState(false)
   const isIdle = useRef(false)

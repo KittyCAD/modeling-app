@@ -1,3 +1,4 @@
+import { useSignals } from '@preact/signals-react/runtime'
 import { Popover } from '@headlessui/react'
 import {
   type CSSProperties,
@@ -62,7 +63,7 @@ function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   } = useSingletons()
 
   useEffect(() => {
-    sceneInfra.camControls.setIsCamMovingCallback(
+    return sceneInfra.camControls.setIsCamMovingCallback(
       (isMoving: boolean, isTweenValue: boolean) => {
         setIsCamMoving(isMoving)
         setIsTween(isTweenValue)
@@ -91,6 +92,7 @@ export const ClientSideScene = ({
   enableTouchControls: boolean
   sketchSolveStreamDimming?: number
 }) => {
+  useSignals()
   const {
     kclManager: { sceneEntitiesManager, sceneInfra, engineCommandManager },
   } = useSingletons()
@@ -162,11 +164,13 @@ export const ClientSideScene = ({
       sceneEntitiesManager.tearDownSketch({ removeAxis: true })
       cleanupSketchSolveGroup(sceneInfra)
 
+      canvas.remove()
+      sceneInfra.labelRenderer.domElement.remove()
       observer.disconnect()
       media.removeEventListener('change', handleChange)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [])
+  }, [sceneInfra, sceneEntitiesManager, engineCommandManager, send])
 
   let cursor = 'default'
   if (state.matches('Sketch')) {
@@ -806,7 +810,9 @@ export const CamDebugSettings = () => {
   const [fov, setFov] = useState(12)
 
   useEffect(() => {
-    sceneInfra.camControls.setReactCameraPropertiesCallback(setCamSettings)
+    return sceneInfra.camControls.setReactCameraPropertiesCallback(
+      setCamSettings
+    )
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [sceneInfra])
   useEffect(() => {

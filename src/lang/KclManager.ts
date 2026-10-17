@@ -132,6 +132,7 @@ import {
   signal,
   untracked,
   type ReadonlySignal,
+  type Signal,
 } from '@preact/signals-core'
 import type {
   ApiFile,
@@ -548,8 +549,19 @@ export class KclManager extends File {
   }
 
   // Derived state
-  sceneEntitiesManager: SceneEntities
-  sceneInfra: SceneInfra
+  /** One scene and its entities belong to an editor lifetime, including gizmos. */
+  private readonly scene: Signal<{
+    infra: SceneInfra
+    entities: SceneEntities
+  }>
+
+  get sceneInfra() {
+    return this.scene.value.infra
+  }
+
+  get sceneEntitiesManager() {
+    return this.scene.value.entities
+  }
   rustContext: RustContext
   engineCommandManager: ConnectionManager
 
@@ -1878,12 +1890,6 @@ export class KclManager extends File {
       return editor
     }
 
-    // The legacy singleton can be reopened after its previous project disposed it.
-    // Actor ownership still ends at close; reopening creates a fresh actor on demand.
-    if (providedEditor.closed) {
-      providedEditor._modelingActorPromise = undefined
-      providedEditor.closed = false
-    }
     // TODO: remove all this once the app can handle an undefined currently-executing editor
     await providedEditor.flushWriteToFile({ suppressConflictToast: true })
     providedEditor.flushRecoverySnapshot()
@@ -1894,6 +1900,15 @@ export class KclManager extends File {
     providedEditor.path = file.path
     providedEditor.id = file.id
     providedEditor.codeSignal.value = initialCode
+    // Reopening the legacy singleton starts one new actor and scene lifetime.
+    if (providedEditor.closed) {
+      providedEditor._modelingActorPromise = undefined
+      providedEditor.closed = false
+      const previousScene = providedEditor.sceneInfra
+      const replacement = providedEditor.createScene()
+      replacement.infra.camControls.copyViewFrom(previousScene.camControls)
+      providedEditor.scene.value = replacement
+    }
     const savedEditorState = providedEditor.editorStatesByPath.get(file.path)
     const canRestoreEditorState =
       savedEditorState !== undefined &&
@@ -1943,23 +1958,9 @@ export class KclManager extends File {
         return systemDeps.project.value
       },
     }
-    const getSettings = () =>
-      getSettingsFromActorContext(this.systemDeps.settings)
     this.engineCommandManager = this.systemDeps.engineCommandManager
     this.rustContext = this.systemDeps.rustContext
-    this.sceneInfra = new SceneInfra(
-      this.engineCommandManager,
-      systemDeps.wasmInstancePromise,
-      getSettings
-    )
-    this.sceneEntitiesManager = new SceneEntities(
-      this.engineCommandManager,
-      this.sceneInfra,
-      this,
-      this.rustContext,
-      this.systemDeps.commandBar,
-      getSettings
-    )
+    this.scene = signal(this.createScene())
 
     this._globalHistoryView = new HistoryView([
       fsHistoryExtension(),
@@ -1999,6 +2000,25 @@ export class KclManager extends File {
       })
   }
 
+  private createScene() {
+    const getSettings = () =>
+      getSettingsFromActorContext(this.systemDeps.settings)
+    const infra = new SceneInfra(
+      this.engineCommandManager,
+      this.systemDeps.wasmInstancePromise,
+      getSettings
+    )
+    const entities = new SceneEntities(
+      this.engineCommandManager,
+      infra,
+      this,
+      this.rustContext,
+      this.systemDeps.commandBar,
+      getSettings
+    )
+    return { infra, entities }
+  }
+
   /** Clean up listeners, watchers, etc */
   public close() {
     if (this.closed) return
@@ -2010,6 +2030,8 @@ export class KclManager extends File {
     // The outgoing route can still render while its replacement is loading.
     // Keep its stopped actor readable until reopening installs the next one.
     this._modelingState.value = null
+    this.sceneEntitiesManager.dispose()
+    this.sceneInfra.dispose()
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
     this.sceneSettingsActive.value = false

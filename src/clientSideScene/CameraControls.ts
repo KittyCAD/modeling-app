@@ -215,6 +215,16 @@ export class CameraControls {
     }
   }
 
+  /** Seed a replacement editor from the live view without moving the engine camera. */
+  copyViewFrom(source: CameraControls) {
+    this.camera = source.camera.clone()
+    this.cameraDown = this.camera.clone()
+    this.target.copy(source.target)
+    this.lastPerspectiveFov = source.lastPerspectiveFov
+    this.perspectiveFovBeforeOrtho = source.perspectiveFovBeforeOrtho
+    this.onWindowResize()
+  }
+
   private handleStart = () => {
     this._isCamMovingCallback(true, false)
   }
@@ -254,11 +264,13 @@ export class CameraControls {
   }
 
   throttledEngCmd = throttle((cmd: EngineCommand) => {
+    if (this.disposed) return
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.engineCommandManager.sendSceneCommand(cmd)
   }, 1000 / 30)
 
   throttledUpdateEngineCamera = throttle((threeValues: ThreeCamValues) => {
+    if (this.disposed) return
     const cmd: EngineCommand = {
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
@@ -314,6 +326,25 @@ export class CameraControls {
     this.handleEnd()
   }
 
+  private disposed = false
+  private readonly engineSubscriptions: Array<() => void> = []
+  private subscriptionTimer: ReturnType<typeof setTimeout>
+  private clearTouchIntervals = () => {}
+
+  /** Release callbacks when the owning file editor closes. */
+  dispose() {
+    if (this.disposed) return
+    this.disposed = true
+    clearTimeout(this.subscriptionTimer)
+    for (const unsubscribe of this.engineSubscriptions.splice(0)) unsubscribe()
+    this.clearTouchIntervals()
+    this.touchControlManager?.destroy()
+    this.domElement.removeEventListener('pointerdown', this.onMouseDown)
+    this.domElement.removeEventListener('pointermove', this.onMouseMove)
+    this.domElement.removeEventListener('pointerup', this.onMouseUp)
+    this.domElement.removeEventListener('wheel', this.onMouseWheel)
+  }
+
   constructor(
     domElement: HTMLCanvasElement,
     engineCommandManager: ConnectionManager,
@@ -355,6 +386,7 @@ export class CameraControls {
     >[0]
 
     const cb = ({ data, type }: CallBackParam) => {
+      if (this.disposed) return
       const camSettings = data.settings
       this.camera.position.set(
         camSettings.pos.x,
@@ -408,27 +440,37 @@ export class CameraControls {
       this.onCameraChange()
     }
 
-    setTimeout(() => {
-      this.engineCommandManager.subscribeTo({
-        event: 'camera_drag_end',
-        callback: cb,
-      })
-      this.engineCommandManager.subscribeToUnreliable({
-        event: 'default_camera_zoom',
-        callback: cb,
-      })
-      this.engineCommandManager.subscribeTo({
-        event: 'default_camera_get_settings',
-        callback: cb,
-      })
-      this.engineCommandManager.subscribeTo({
-        event: 'zoom_to_fit',
-        callback: cb,
-      })
-      this.engineCommandManager.subscribeToUnreliable({
-        event: 'camera_drag_move',
-        callback: cb,
-      })
+    this.subscriptionTimer = setTimeout(() => {
+      this.engineSubscriptions.push(
+        this.engineCommandManager.subscribeTo({
+          event: 'camera_drag_end',
+          callback: cb,
+        })
+      )
+      this.engineSubscriptions.push(
+        this.engineCommandManager.subscribeToUnreliable({
+          event: 'default_camera_zoom',
+          callback: cb,
+        })
+      )
+      this.engineSubscriptions.push(
+        this.engineCommandManager.subscribeTo({
+          event: 'default_camera_get_settings',
+          callback: cb,
+        })
+      )
+      this.engineSubscriptions.push(
+        this.engineCommandManager.subscribeTo({
+          event: 'zoom_to_fit',
+          callback: cb,
+        })
+      )
+      this.engineSubscriptions.push(
+        this.engineCommandManager.subscribeToUnreliable({
+          event: 'camera_drag_move',
+          callback: cb,
+        })
+      )
     })
   }
 
@@ -436,6 +478,9 @@ export class CameraControls {
     () => {}
   setIsCamMovingCallback(cb: (isMoving: boolean, isTween: boolean) => void) {
     this._isCamMovingCallback = cb
+    return () => {
+      if (this._isCamMovingCallback === cb) this._isCamMovingCallback = () => {}
+    }
   }
 
   public readonly cameraChange = new LegacySignal()
@@ -1475,13 +1520,18 @@ export class CameraControls {
     cb: (a: ReactCameraProperties) => void
   ) => {
     this.reactCameraPropertiesCallback = cb
+    return () => {
+      if (this.reactCameraPropertiesCallback === cb)
+        this.reactCameraPropertiesCallback = () => {}
+    }
   }
 
   deferReactUpdate = throttle((a: ReactCameraProperties) => {
-    this.reactCameraPropertiesCallback(a)
+    if (!this.disposed) this.reactCameraPropertiesCallback(a)
   }, 200)
 
   onCameraChange = (forceUpdate = false) => {
+    if (this.disposed) return
     const distance = this.target.distanceTo(this.camera.position)
     if (this.camera.far / 2.1 < distance || this.camera.far / 1.9 > distance) {
       this.camera.far = distance * 2
@@ -1558,6 +1608,7 @@ export class CameraControls {
       }
     }
 
+    this.clearTouchIntervals = clearIntervals
     const hammertime = new Hammer(domElement, {
       recognizers: [
         [Hammer.Pan, { pointers: 1, direction: Hammer.DIRECTION_ALL }],
