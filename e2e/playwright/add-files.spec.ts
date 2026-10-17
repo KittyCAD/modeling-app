@@ -22,8 +22,12 @@ test.describe('Local Drive picker', () => {
       const content = 'Imported local file'
       await cmdBar.openCmdBar()
       await cmdBar.chooseCommand('Add file to project')
-      const chooserPromise = page.waitForEvent('filechooser')
       await cmdBar.selectOption({ name: 'Local Drive', exact: true }).click()
+      await expect(page.getByTestId('cmd-bar-arg-name')).toHaveText('method')
+      const chooserPromise = page.waitForEvent('filechooser')
+      await cmdBar
+        .selectOption({ name: 'Existing project', exact: true })
+        .click()
       const chooser = await chooserPromise
       await chooser.setFiles({
         name: fileName,
