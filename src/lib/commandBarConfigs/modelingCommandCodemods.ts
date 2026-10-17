@@ -1,3 +1,5 @@
+import { resolveDistanceSelections } from '@src/lib/gdtDistanceSelections'
+import { isErr } from '@src/lib/trap'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import {
@@ -246,6 +248,8 @@ const withGdtDefaults = <
         sourceCode: kclManager.code,
         outputUnit: kclManager.fileSettings.defaultLengthUnit,
         wasmInstance,
+        distance: commandName === 'GDT Distance',
+        artifactGraph: kclManager.artifactGraph,
       })
 
       return add(
@@ -300,7 +304,42 @@ export const modelingCommandCodemods = {
   'GDT Cylindricity': withGdtDefaults('GDT Cylindricity', addCylindricityGdt),
   'GDT Position': withGdtDefaults('GDT Position', addPositionGdt),
   'GDT Profile': withGdtDefaults('GDT Profile', addProfileGdt),
-  'GDT Distance': withGdtDefaults('GDT Distance', addDistanceGdt),
+  'GDT Distance': defineModelingCodemod<CommandArgsByName['GDT Distance']>({
+    ...withStdLibExperimentalFeatures('GDT Distance'),
+    run: async ({ args, ast, kclManager, wasmInstance }) => {
+      const resolved = args.nodeToEdit
+        ? {
+            selections: args.objects ?? {
+              graphSelections: [],
+              otherSelections: [],
+            },
+            faces: new Map(),
+          }
+        : await resolveDistanceSelections(
+            args.objects ?? { graphSelections: [], otherSelections: [] },
+            kclManager.artifactGraph,
+            kclManager.engineCommandManager
+          )
+      if (isErr(resolved)) return resolved
+      const data = await withDefaultGdtFrameDefaults({
+        data: { ...args, objects: resolved.selections },
+        ast,
+        artifactGraph: kclManager.artifactGraph,
+        engineCommandManager: kclManager.engineCommandManager,
+        sourceCode: kclManager.code,
+        outputUnit: kclManager.fileSettings.defaultLengthUnit,
+        wasmInstance,
+        distance: true,
+      })
+      return addDistanceGdt({
+        ...data,
+        ast,
+        artifactGraph: kclManager.artifactGraph,
+        wasmInstance,
+        edgeFaceSelections: resolved.faces,
+      })
+    },
+  }),
   'GDT Perpendicularity': withGdtDefaults(
     'GDT Perpendicularity',
     addPerpendicularityGdt
