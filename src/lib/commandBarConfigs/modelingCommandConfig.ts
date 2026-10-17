@@ -2187,6 +2187,38 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
     ),
   },
+  'Planar Surface': {
+    description: 'Fill a closed planar region or curve loop with a surface.',
+    icon: 'planarSurface',
+    status: 'experimental',
+    needsReview: true,
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['Planar Surface']
+    ),
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Planar Surface']>(
+      'Planar Surface',
+      {
+        overrides: {
+          curves: {
+            inputType: 'selection',
+            displayName: 'Profiles',
+            description:
+              'Select one closed region, or select coplanar curves in the order they connect.',
+            selectionTypes: [
+              'solid2d',
+              'segment',
+              'sweepEdge',
+              'primitiveEdge',
+              'enginePrimitiveEdge',
+              'pathRegion',
+              'engineRegion',
+            ],
+            multiple: true,
+          },
+        },
+      }
+    ),
+  },
   'Flip Surface': {
     icon: 'flipSurface',
     needsReview: true,
