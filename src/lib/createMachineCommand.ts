@@ -205,6 +205,7 @@ export function buildCommandArgument<
   const baseCommandArgument = {
     displayName: arg.displayName,
     description: arg.description,
+    documentation: arg.documentation,
     status: arg.status,
     statusMessage: arg.statusMessage,
     required,
@@ -233,22 +234,11 @@ export function buildCommandArgument<
       ...baseCommandArgument,
       multiple: arg.multiple,
       selectionTypes: arg.selectionTypes,
+      allowCodeReferences: arg.allowCodeReferences,
       validation: arg.validation,
       clearSelectionFirst: arg.clearSelectionFirst,
       selectionFilter: arg.selectionFilter,
     } satisfies CommandArgument<O, T> & { inputType: 'selection' }
-  } else if (arg.inputType === 'selectionMixed') {
-    return {
-      inputType: arg.inputType,
-      ...baseCommandArgument,
-      multiple: arg.multiple,
-      selectionTypes: arg.selectionTypes,
-      validation: arg.validation,
-      clearSelectionFirst: arg.clearSelectionFirst,
-      allowNoSelection: arg.allowNoSelection,
-      selectionSource: arg.selectionSource,
-      selectionFilter: arg.selectionFilter,
-    } satisfies CommandArgument<O, T> & { inputType: 'selectionMixed' }
   } else if (arg.inputType === 'kcl') {
     return {
       inputType: arg.inputType,

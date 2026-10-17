@@ -1,4 +1,5 @@
 use indexmap::IndexMap;
+use kcl_error::ModuleId;
 use kcl_error::SourceRange;
 use parse_display::Display;
 use parse_display::FromStr;
@@ -603,6 +604,10 @@ pub struct NamedViewArtifact {
     /// The display name the author gave the view. Required, and unique among
     /// the views declared by the same module.
     pub name: String,
+    /// Defining module id -- the module that calls `view::named`.
+    // TODO: Expose this field when TypeScript adopts the Rust named-view resolver.
+    #[ts(skip)]
+    pub declaring_module_id: ModuleId,
     pub camera: ArtifactCameraView,
     /// Whether objects start visible or hidden, which decides which of the two
     /// lists below can act.

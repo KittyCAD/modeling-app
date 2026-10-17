@@ -135,6 +135,7 @@ pub(crate) fn named_view_artifact(view: &NamedViewValue, code_ref: CodeRef) -> N
     NamedViewArtifact {
         id: view.artifact_id(),
         name: view.name().to_owned(),
+        declaring_module_id: code_ref.range.module_id(),
         camera: artifact_camera_view(view.camera()),
         baseline: artifact_visibility(view.baseline()),
         show_ids,
