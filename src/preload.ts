@@ -1,3 +1,7 @@
+import {
+  APP_STARTUP_COMPOSITION_CHANNEL,
+  type AppStartupComposition,
+} from '@src/registry/startupComposition'
 import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'path'
@@ -343,6 +347,8 @@ const menuOn = (callback: (payload: WebContentSendPayload) => void) => {
 }
 
 contextBridge.exposeInMainWorld('electron', {
+  getStartupComposition: (): Promise<AppStartupComposition> =>
+    ipcRenderer.invoke(APP_STARTUP_COMPOSITION_CHANNEL),
   drainElectronLifecycleReports,
   onElectronLifecycleReportAvailable,
   startDeviceFlow,

@@ -1,0 +1,7 @@
+# Use ZOO_APP_CONFIG with Vite, or --app-config with a Desktop executable.
+# A modified ZDS composition: omit the command-bar button, publishing, and slicer export.
+schema-version = 1
+base = "zoo:default"
+
+[extensions]
+exclude = ["zoo:commandBar", "zoo:publish", "zoo:slicer"]

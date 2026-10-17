@@ -69,6 +69,7 @@ import {
   projectLibraryTypesValueSpec,
 } from '@src/registry/contracts/projectLibraries'
 import { projectSession } from '@src/registry/contracts/projectSession'
+import { projectPublicationEnabledValueSpec } from '@src/registry/contracts/publishing'
 import {
   filterStatusBarItemsForScopes,
   statusBarGlobalItemsValueSpec,
@@ -320,7 +321,14 @@ const Home = () => {
 
   const projects = useFolders()
   const homeProjectEntries = registry.signal(homeProjectEntriesValueSpec).value
-  const projectStatuses = useProjectStatuses(homeProjectEntries, apiToken)
+  const publicationEnabled = registry.signal(
+    projectPublicationEnabledValueSpec
+  ).value
+  const projectStatuses = useProjectStatuses(
+    publicationEnabled,
+    homeProjectEntries,
+    apiToken
+  )
   const homeSidebarItems = registry.signal(homeSidebarItemsValueSpec).value
   const settingsValues = settings.useSettings()
   const projectLibraryTypes = registry.signal(

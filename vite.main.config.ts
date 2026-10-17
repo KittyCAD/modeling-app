@@ -1,3 +1,4 @@
+import { getAppCompositionDefine } from './vite.appManifest'
 // @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
 import viteJsPluginReact from '@vitejs/plugin-react'
@@ -17,10 +18,13 @@ import {
 } from './vite.base.config'
 
 // https://vitejs.dev/config
-export default defineConfig((env) => {
+export default defineConfig(async (env) => {
   const forgeEnv = env as ConfigEnv<'build'>
   const { forgeConfigSelf } = forgeEnv
-  const define = getBuildDefine(forgeEnv)
+  const define = {
+    ...getBuildDefine(forgeEnv),
+    ...(await getAppCompositionDefine(forgeEnv.mode, forgeEnv.root)),
+  }
   const config = {
     server: {
       open: true,

@@ -345,3 +345,67 @@ Before you submit a contribution PR to this repo, please ensure that:
   - `npm run tsc`
   - `npm run test`
   - Here they are all together: `npm run fmt && npm run tsc && npm run test`
+
+## Running a custom app composition
+
+Set `ZOO_APP_CONFIG` to a TOML file before starting Vite or building the app. Vite
+reads and validates it before serving app modules and embeds the resolved extension
+IDs. Start with the compact example, which omits command-bar controls, publishing,
+and slicer export:
+
+```sh
+# Web development
+ZOO_APP_CONFIG=examples/app-configs/compact.toml npm start
+
+# Desktop development
+ZOO_APP_CONFIG=examples/app-configs/compact.toml npm run tron:start
+
+# Web build
+ZOO_APP_CONFIG=examples/app-configs/compact.toml npx vite build
+```
+
+You can also put `ZOO_APP_CONFIG=examples/app-configs/compact.toml` in
+`.env.development.local` (or the corresponding Vite mode's env file). An explicit
+shell environment variable takes precedence. Relative paths resolve against the
+Vite project root. The variable deliberately has no `VITE_` prefix: the browser
+receives the resolved IDs, not the path or TOML contents.
+
+Restart Vite after editing the manifest. For deployed output, rebuild to change
+the embedded composition; the browser does not fetch a configuration file. An
+invalid or unreadable manifest stops Vite startup or the build. Existing commands
+without a configured path continue using the normal default composition.
+
+### Desktop runtime overrides
+
+A Desktop executable can override its embedded selection with `--app-config <path>`:
+
+```sh
+npm run tron:start -- -- --app-config examples/app-configs/compact.toml
+```
+
+The first `--` forwards arguments through npm; the second forwards them through
+Electron Forge. For a built app, pass `--app-config /absolute/path/to/app.toml`
+to its executable directly. CLI paths resolve against the launch directory.
+
+Quit the entire app before launching with a different runtime configuration. The
+file is read once per process; reloads and additional windows keep the selection.
+Omitting the CLI argument uses the embedded composition, falling back to the
+normal default when no build-time manifest was configured. An unreadable or
+invalid CLI manifest shows a startup error and exits.
+
+### Manifest selection
+
+The manifest supports either `base = "zoo:default"` with `[extensions]` `add` and
+`exclude` arrays, or a standalone `[extensions]` `include` array. See
+`src/registry/fixtures/app-manifests/explicit.toml` for the explicit form.
+Entries marked `requiredForStartup` in `src/registry/catalogMetadata.ts` cannot be
+removed yet because the current app shell requires their services. Instrumented
+builds also require the performance recording extension. Excluded plugins are
+unavailable even if user settings previously enabled them. Included plugins
+retain their normal settings-driven activation; inclusion alone does not enable
+a plugin. App variants still share their normal user settings and project storage.
+
+Configuration selects registration from the bundled catalog. All bundled
+entrypoints are still imported eagerly; this does not prune extension code from
+builds or load remote extensions. No CI or release changes are needed unless you
+want those workflows to produce named app variants.
