@@ -15,6 +15,10 @@ import {
   modelingStdLibCommandArgs,
   modelingStdLibCommandStatus,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
+import {
+  STD_LIB_ENUMS,
+  stdLibEnumOptions,
+} from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
 import type {
   CommandArgumentConfig,
   KclCommandValue,
@@ -640,35 +644,32 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           orientation: {
             inputType: 'options',
-            required: true,
             defaultValue: 'Isometric',
-            options: [
-              { name: 'Isometric', value: 'Isometric', isCurrent: true },
-              { name: 'Front', value: 'Front' },
-              { name: 'Back', value: 'Back' },
-              { name: 'Left', value: 'Left' },
-              { name: 'Right', value: 'Right' },
-              { name: 'Top', value: 'Top' },
-              { name: 'Bottom', value: 'Bottom' },
-            ],
+            options: stdLibEnumOptions(
+              STD_LIB_ENUMS['view::Orientation'],
+              'Isometric'
+            ),
           },
           projection: {
             inputType: 'options',
             required: true,
             defaultValue: 'Orthographic',
-            options: [
-              { name: 'Orthographic', value: 'Orthographic', isCurrent: true },
-              { name: 'Perspective', value: 'Perspective' },
-            ],
+            options: stdLibEnumOptions(
+              STD_LIB_ENUMS['view::Projection'],
+              'Orthographic'
+            ),
           },
           baseline: {
             inputType: 'options',
-            required: true,
             defaultValue: 'Show',
-            options: [
-              { name: 'Show all', value: 'Show', isCurrent: true },
-              { name: 'Hide all', value: 'Hide' },
-            ],
+            options: stdLibEnumOptions(
+              STD_LIB_ENUMS['view::Visibility'],
+              'Show',
+              {
+                Show: 'Show all',
+                Hide: 'Hide all',
+              }
+            ),
           },
           except: {
             inputType: 'selection',
@@ -685,16 +686,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
               'importedGeometry',
             ],
             multiple: true,
-            required: false,
           },
           target: {
-            inputType: 'vector3d',
-            required: false,
             dialog: { advanced: true },
           },
           distance: {
-            inputType: 'kcl',
-            required: false,
             dialog: { advanced: true },
           },
         },

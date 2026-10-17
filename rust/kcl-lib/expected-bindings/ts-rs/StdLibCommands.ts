@@ -11456,3 +11456,23 @@ export default {
     ]
   }
 } as const
+
+export const STD_LIB_ENUMS = {
+  "view::Orientation": [
+    "Front",
+    "Back",
+    "Left",
+    "Right",
+    "Top",
+    "Bottom",
+    "Isometric"
+  ],
+  "view::Projection": [
+    "Orthographic",
+    "Perspective"
+  ],
+  "view::Visibility": [
+    "Show",
+    "Hide"
+  ]
+} as const
