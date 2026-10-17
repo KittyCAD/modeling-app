@@ -280,13 +280,8 @@ describe('Layout utils', () => {
     it('validates the defaultLayoutConfig', () => {
       const parsedDefaultLayout = parseLayoutInner(defaultLayoutConfig)
 
-      // Verify a few nested properties to know that we didn't error out while validating it
-      expect(parsedDefaultLayout).toHaveProperty('type', 'split')
-      expect(parsedDefaultLayout).toHaveProperty(
-        'children.0.children.0.children.0.type',
-        'simple'
-      )
-      expect(parsedDefaultLayout).toHaveProperty('children.2.type', 'panes')
+      // Parsing must retain the migrated hierarchy and pane contents.
+      expect(parsedDefaultLayout).toMatchObject(defaultLayoutConfig)
     })
 
     it('validates the testLayoutConfig', () => {
