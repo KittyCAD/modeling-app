@@ -64,6 +64,7 @@ function createTestLayoutServiceRegistryItem(layoutSignal: Signal<Layout>) {
     },
     reset: () => undefined,
     applyContributions: () => [],
+    togglePane: () => zookeeperPaneLayout(),
   }
 
   return defineRegistryItem({

@@ -80,7 +80,6 @@ import {
   DefaultLayoutPaneID,
   getOpenPanes,
   type Layout,
-  togglePaneLayoutNode,
 } from '@src/lib/layout'
 import { PATHS } from '@src/lib/paths'
 import type RustContext from '@src/lib/rustContext'
@@ -178,16 +177,6 @@ export function FeatureTreePane(props: AreaTypeComponentProps) {
 
 function isCodePaneOpen(layout: Layout) {
   return getOpenPanes({ rootLayout: layout }).includes(DefaultLayoutPaneID.Code)
-}
-function openCodePane(layout: Layout, setLayout: (l: Layout) => void) {
-  const rootLayout = structuredClone(layout)
-  setLayout(
-    togglePaneLayoutNode({
-      rootLayout,
-      targetNodeId: DefaultLayoutPaneID.Code,
-      shouldExpand: true,
-    })
-  )
 }
 
 export const FeatureTreePaneContents = memo(() => {
@@ -297,7 +286,7 @@ export const FeatureTreePaneContents = memo(() => {
   function goToError() {
     const l = layout.signal.value
     if (!isCodePaneOpen(l)) {
-      openCodePane(l, layout.set)
+      layout.togglePane(DefaultLayoutPaneID.Code)
     }
     kclManager.scrollToFirstErrorDiagnosticIfExists()
   }
@@ -1081,9 +1070,8 @@ const OperationItem = ({
           : (providedSourceRange?.[2] ?? item.sourceRange[2])
       const targetModulePath = kclManager.execState.filenames[targetModuleId]
 
-      const l = layout.signal.value
-      if (!isCodePaneOpen(l)) {
-        openCodePane(l, layout.set)
+      if (!isCodePaneOpen(layout.get())) {
+        layout.togglePane(DefaultLayoutPaneID.Code)
       }
 
       if (targetModulePath?.type === 'Local' && app.project) {

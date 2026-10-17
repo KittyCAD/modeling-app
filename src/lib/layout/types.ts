@@ -172,6 +172,7 @@ export type LayoutService = {
   applyContributions: (
     contributions: readonly LayoutContribution[]
   ) => LayoutContributionResult[]
+  togglePane: (paneId: string) => Layout
 }
 
 type LayoutVersion = `v${number}`

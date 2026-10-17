@@ -686,34 +686,27 @@ export function shouldDisableFlex(
 }
 
 export interface ITogglePane extends IRootAndTargetID {
-  shouldExpand: boolean
+  shouldExpand?: boolean
 }
 
-/**
- * Mutates a layout by toggling a Pane layout child either opened or closed,
- * and making any adjustments to a parent Split layout needed if there is one.
- */
-export function togglePaneLayoutNode({
+function prepareTogglePaneLayoutNode({
   rootLayout,
   targetNodeId,
-  shouldExpand,
-}: ITogglePane): Layout {
+}: ITogglePane) {
   const paneChildLayout = findLayoutChildNode({ rootLayout, targetNodeId })
   const paneLayout = findLayoutParentNode({ rootLayout, targetNodeId })
   if (!paneLayout || paneLayout.type !== LayoutType.Panes || !paneChildLayout) {
-    console.error(
+    return Error(
       `targetNode pane child not found, pane toggling didn't occur. Target ID: ${targetNodeId}`
     )
-    return rootLayout
   }
   const indexInChildren = paneLayout.children.findIndex(
     (child) => child.id === targetNodeId
   )
   if (indexInChildren < 0) {
-    console.error(
+    return Error(
       `targetNode pane child is not a child of pane layout. Target ID: ${targetNodeId}`
     )
-    return rootLayout
   }
 
   const indexInActiveItems = paneLayout.activeIndices
@@ -721,10 +714,41 @@ export function togglePaneLayoutNode({
     .findIndex((activeItem) => activeItem.id === targetNodeId)
   const isInActiveItems = indexInActiveItems >= 0
 
+  return {
+    paneLayout,
+    paneChildLayout,
+    indexInChildren,
+    indexInActiveItems,
+    isInActiveItems,
+  }
+}
+
+/**
+ * Mutates a layout by toggling a Pane layout child either opened or closed,
+ * and making any adjustments to a parent Split layout needed if there is one.
+ */
+export function togglePaneLayoutNode(props: ITogglePane): Layout {
+  const prepOutcome = prepareTogglePaneLayoutNode(props)
+  if (isErr(prepOutcome)) {
+    // We treat toggle setup as a non-fatal error
+    console.warn(prepOutcome)
+    return props.rootLayout
+  }
+  const { shouldExpand, rootLayout } = props
+  const { paneLayout, isInActiveItems, indexInChildren, indexInActiveItems } =
+    prepOutcome
+
+  // If the caller didn't pass in a shouldExpand override, toggle
+  const open = shouldExpand === undefined ? !isInActiveItems : shouldExpand
+
+  if (open === isInActiveItems) {
+    return rootLayout
+  }
+
   // Needs to open and isn't already in the opened panes
-  if (shouldExpand && !isInActiveItems) {
+  if (open) {
     paneLayout.activeIndices.push(indexInChildren)
-    paneLayout.activeIndices.sort()
+    paneLayout.activeIndices.sort((a, b) => a - b)
 
     // Already has open siblings, needs to calculate its size among them
     if (paneLayout.sizes.length > 1) {
@@ -756,9 +780,8 @@ export function togglePaneLayoutNode({
       targetNodeId: paneLayout.id,
       newNode: paneLayout,
     })
-  }
-
-  if (!shouldExpand && isInActiveItems) {
+  } else {
+    // Close the pane
     paneLayout.activeIndices.splice(indexInActiveItems, 1)
 
     if (paneLayout.sizes.length > 1) {
@@ -777,11 +800,6 @@ export function togglePaneLayoutNode({
       newNode: paneLayout,
     })
   }
-
-  console.warn(
-    `Toggle pane seemed to be called unnecessarily: pane layout ${paneLayout.id}`
-  )
-  return rootLayout
 }
 
 export function getOpenPanes({ rootLayout }: { rootLayout: Layout }): string[] {
