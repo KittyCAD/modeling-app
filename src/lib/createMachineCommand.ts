@@ -120,7 +120,6 @@ export function createMachineCommand<
     },
     disabled: forceDisable,
     forceCommandBar: commandConfig.forceCommandBar,
-    forceDialog: commandConfig.forceDialog,
   }
 
   if (commandConfig.args) {

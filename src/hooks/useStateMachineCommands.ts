@@ -101,7 +101,7 @@ export default function useStateMachineCommands<
           ? {
               ...command,
               useModelingDialog:
-                (modelingDialogsEnabled || command.forceDialog === true) &&
+                modelingDialogsEnabled &&
                 command.groupId === 'modeling' &&
                 !command.forceCommandBar,
             }

@@ -632,7 +632,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   },
   'Named View': {
     icon: 'namedView',
-    forceDialog: true,
     status: 'experimental',
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
