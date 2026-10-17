@@ -5,25 +5,25 @@ description: Physical properties sheet-metal-bracket.kcl
 {
   "bounding_box": {
     "center": {
-      "x": -0.05397379451741813,
+      "x": -0.000009993459514134884,
       "y": 0.0,
-      "z": 32.84432320054621
+      "z": 32.92603458715228
     },
     "dimensions": {
-      "x": 256.031998531744,
-      "y": 139.70000000000002,
-      "z": 79.00653557566464
+      "x": 259.0800239843029,
+      "y": 139.7,
+      "z": 79.02248304741597
     },
     "unit": "mm"
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 82531.30896729033
+    "value": 83445.73919595177
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 119.2051386709377
+    "value": 125.75674876270152
   }
 }
