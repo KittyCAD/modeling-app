@@ -581,7 +581,12 @@ impl FrontendState {
                 new_graph: self.scene_graph_for_ui(),
                 new_objects: Vec::new(),
                 invalidates_ids: true,
-                exec_outcome: checkpoint.exec_outcome,
+                // Restoring leaves the engine as it is, so report its current
+                // generation rather than the one stored with the checkpoint.
+                exec_outcome: ExecOutcome {
+                    engine_scene_generation: cache.engine_scene_generation().await,
+                    ..checkpoint.exec_outcome
+                },
             },
         })
     }
@@ -2003,7 +2008,7 @@ impl FrontendState {
             Err(mut err) => {
                 // Don't return an error just because execution failed. Instead,
                 // update state as much as possible.
-                let outcome = self.exec_outcome_from_exec_error(err.clone())?;
+                let outcome = self.exec_outcome_from_exec_error(ctx, err.clone()).await?;
                 self.update_state_after_exec(outcome, true);
                 err.scene_graph = Some(self.scene_graph_for_ui());
                 Ok(SetProgramOutcome::ExecFailure { error: Box::new(err) })
@@ -2038,7 +2043,7 @@ impl FrontendState {
             }
             Err(mut err) => {
                 // Update state as much as possible, even when there's an error.
-                let outcome = self.exec_outcome_from_exec_error(err.clone())?;
+                let outcome = self.exec_outcome_from_exec_error(ctx, err.clone()).await?;
                 self.update_state_after_exec(outcome, true);
                 err.scene_graph = Some(self.scene_graph_for_ui());
                 Err(err)
@@ -2046,7 +2051,11 @@ impl FrontendState {
         }
     }
 
-    fn exec_outcome_from_exec_error(&self, err: KclErrorWithOutputs) -> Result<ExecOutcome, KclErrorWithOutputs> {
+    async fn exec_outcome_from_exec_error(
+        &self,
+        ctx: &ExecutorContext,
+        err: KclErrorWithOutputs,
+    ) -> Result<ExecOutcome, KclErrorWithOutputs> {
         if matches!(err.error, KclError::EngineHangup { .. }) {
             // It's not ideal to special-case this, but this error is very
             // common during development, and it causes confusing downstream
@@ -2077,7 +2086,7 @@ impl FrontendState {
             #[cfg(test)]
             test_program_memory: Default::default(),
             filenames,
-            from_cache: false,
+            engine_scene_generation: ctx.cache.engine_scene_generation().await,
             operations,
             artifact_graph,
             scene_objects,
@@ -9326,7 +9335,7 @@ cylinder = startSketchOn(XY)
             refactor_metadata: Default::default(),
             issues: Default::default(),
             filenames: Default::default(),
-            from_cache: false,
+            engine_scene_generation: 0,
             source_files: Default::default(),
             default_planes: Default::default(),
         };
@@ -9483,7 +9492,7 @@ sketch(on = XY) {
             refactor_metadata: Default::default(),
             issues: Default::default(),
             filenames: Default::default(),
-            from_cache: false,
+            engine_scene_generation: 0,
             source_files: Default::default(),
             default_planes: Default::default(),
         }

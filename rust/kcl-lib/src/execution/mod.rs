@@ -389,9 +389,10 @@ pub struct ExecOutcome {
     pub issues: Vec<CompilationIssue>,
     /// File Names in module Id array index order
     pub filenames: IndexMap<ModuleId, ModulePath>,
-    /// Whether this outcome was reused from the previous run because the
-    /// program had not changed, which leaves the engine's geometry untouched.
-    pub from_cache: bool,
+    /// The engine scene generation when this outcome was produced: the number of
+    /// runs so far that changed the engine scene. Runs answered from the cache
+    /// and mock runs leave it unchanged.
+    pub engine_scene_generation: usize,
     /// Source code of each module, for rendering issues against the module
     /// their source range points into. Not serialized to keep the WASM
     /// payload small; native callers (e.g. the Python bindings) read it
@@ -1709,18 +1710,19 @@ impl ExecutorContext {
 
     async fn run_with_caching_inner(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         let original_program = program.clone();
+        let prepared = self.prepare_cached_execution(program).await;
+        if !matches!(prepared, Ok(PreparedCachedExecution::Cached(_))) {
+            // Anything but a cache hit may have changed the engine scene, even
+            // if it went on to fail.
+            self.cache.bump_engine_scene_generation().await;
+        }
         let CachedExecution {
             program,
             mut exec_state,
             universe_info,
             preserve_mem,
-        } = *match self.prepare_cached_execution(program).await? {
-            PreparedCachedExecution::Cached(outcome) => {
-                return Ok(ExecOutcome {
-                    from_cache: true,
-                    ..*outcome
-                });
-            }
+        } = *match prepared? {
+            PreparedCachedExecution::Cached(outcome) => return Ok(*outcome),
             PreparedCachedExecution::Execute(execution) => execution,
         };
         let result = self

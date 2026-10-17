@@ -38,10 +38,10 @@ issues: Array<CompilationIssue>,
  */
 filenames: { [key in ModuleId]: ModulePath }, 
 /**
- * Whether this outcome was reused from the previous run because the
- * program had not changed, which leaves the engine's geometry untouched.
+ * Counts the runs that changed the engine scene, as of this outcome. Runs
+ * answered from the cache and mock runs leave it unchanged.
  */
-fromCache: boolean, 
+engineSceneGeneration: number, 
 /**
  * The default planes.
  */
