@@ -2380,7 +2380,12 @@ export fn lastSegY(
   @sketch: Sketch,
 ): number(Length) {}
 
-/// Compute the length of the provided line segment.
+/// Compute the length of the provided segment.
+///
+/// For a straight line, this is the distance between its two ends. For a
+/// circular arc, it is the length along the curve, not the straight-line
+/// distance between its ends. For a circle, it is the circumference.
+/// Ellipses, conics and Bezier curves are not supported.
 ///
 /// ```kcl,legacySketch
 /// exampleSketch = startSketchOn(XZ)
@@ -2401,7 +2406,7 @@ export fn lastSegY(
 /// ```
 @(impl = std_rust, feature_tree = false)
 export fn segLen(
-  /// The line segment being queried by its tag.
+  /// The segment being queried by its tag.
   @tag: TaggedEdge,
 ): number(Length) {}
 

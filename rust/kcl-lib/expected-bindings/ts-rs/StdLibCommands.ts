@@ -8561,7 +8561,7 @@ export default {
       {
         "name": "tag",
         "ty": "TaggedEdge",
-        "docs": "The line segment being queried by its tag.",
+        "docs": "The segment being queried by its tag.",
         "required": true,
         "special": true,
         "experimental": false,
