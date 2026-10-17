@@ -19,7 +19,6 @@ import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type RustContext from '@src/lib/rustContext'
 import { isErr } from '@src/lib/trap'
 import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
-import type { Selections } from '@src/machines/modelingSharedTypes'
 
 type NamedViewArtifact = Extract<Artifact, { type: 'namedView' }>
 
@@ -42,11 +41,7 @@ export async function prepareNamedViewEditCommand({
     await rustContext.wasmInstancePromise,
     'CallExpressionKw'
   )
-  if (isErr(callResult) || callResult.node.type !== 'CallExpressionKw') {
-    return new Error(
-      'Could not find this named view in the KCL source. Please edit the source directly.'
-    )
-  }
+  if (isErr(callResult)) return callResult
 
   const camera = callResult.node.arguments.find(
     (argument) => argument.label?.name === 'camera'
@@ -88,19 +83,11 @@ export async function prepareNamedViewEditCommand({
 
   const exceptIds =
     artifact.baseline === 'show' ? artifact.hideIds : artifact.showIds
-  let except: Selections | undefined
-  if (exceptIds.length > 0) {
-    const selections = retrieveSelectionsFromArtifactIds(
-      exceptIds,
-      artifactGraph
-    )
-    if (isErr(selections)) {
-      return new Error(
-        'Could not resolve this named view visibility selection. Please edit the KCL source.'
-      )
-    }
-    except = selections
-  }
+  const except =
+    exceptIds.length > 0
+      ? retrieveSelectionsFromArtifactIds(exceptIds, artifactGraph)
+      : undefined
+  if (isErr(except)) return except
 
   // Other camera expressions stay in source; only name and visibility are editable.
   const look = artifact.camera.look

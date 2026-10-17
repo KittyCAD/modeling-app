@@ -48,19 +48,6 @@ vi.mock('@src/lib/kclNamedViewActivation', async (importOriginal) => ({
   activateNamedView: renderMocks.activateNamedView,
 }))
 
-vi.mock('@src/components/ActionButton', () => ({
-  ActionButton: () => null,
-}))
-
-vi.mock('@src/components/ContextMenu', () => ({
-  ContextMenu: () => null,
-  ContextMenuItem: () => null,
-}))
-
-vi.mock('@src/components/CustomIcon', () => ({
-  CustomIcon: () => null,
-}))
-
 vi.mock('@src/components/layout/Panel', () => ({
   LayoutPanel: ({ children }: { children: unknown }) => children,
   LayoutPanelHeader: ({ Menu }: { Menu: unknown }) => Menu,

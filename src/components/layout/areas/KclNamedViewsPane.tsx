@@ -26,7 +26,7 @@ import {
 } from '@src/lib/kclNamedViewActivation'
 import { prepareNamedViewEditCommand } from '@src/lib/kclNamedViewEdit'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
-import { isErr, reportRejection } from '@src/lib/trap'
+import { reportRejection, trap } from '@src/lib/trap'
 import { getKclDefaultViewName } from '@src/lib/wasm_lib_wrapper'
 import type { RefObject } from 'react'
 import { useRef, useState } from 'react'
@@ -123,15 +123,8 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
   const actionsDisabled = cannotReachEngine || inSketchMode || isChangingSource
 
   const editView = (view: KclNamedView) => {
-    const ast = kclManager.ast
-    const code = kclManager.code
-    const path = kclManager.path
+    const { ast, code, path } = kclManager
     const projectPath = kclManager.systemDeps.project.value?.path
-    const sourceIsCurrent = () =>
-      ast === kclManager.ast &&
-      code === kclManager.code &&
-      path === kclManager.path &&
-      projectPath === kclManager.systemDeps.project.value?.path
     const artifact = execState.artifactGraph.get(view.artifact.id)
     if (artifact?.type !== 'namedView') {
       toast.error(`Could not find “${view.artifact.name}”.`)
@@ -145,21 +138,17 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
       rustContext: kclManager.rustContext,
     })
       .then((event) => {
-        if (!sourceIsCurrent()) return
-        if (isErr(event)) {
-          toast.error(event.message)
+        if (
+          ast !== kclManager.ast ||
+          code !== kclManager.code ||
+          path !== kclManager.path ||
+          projectPath !== kclManager.systemDeps.project.value?.path ||
+          trap(event)
+        )
           return
-        }
         app.commands.actor.send(event)
       })
-      .catch((reason) => {
-        if (!sourceIsCurrent()) return
-        toast.error(
-          reason instanceof Error
-            ? reason.message
-            : `Could not edit “${view.artifact.name}”.`
-        )
-      })
+      .catch((reason) => toast.error(String(reason)))
   }
 
   const removeView = async (view: KclNamedView) => {
