@@ -12,6 +12,7 @@ import type {
   Program,
 } from '@src/lang/wasm'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import { STD_LIB_ENUMS } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type RustContext from '@src/lib/rustContext'
@@ -102,21 +103,15 @@ export async function prepareNamedViewEditCommand({
     except = selections
   }
 
-  const orientations = {
-    front: 'Front',
-    back: 'Back',
-    left: 'Left',
-    right: 'Right',
-    top: 'Top',
-    bottom: 'Bottom',
-    isometric: 'Isometric',
-  } as const
   // Other camera expressions stay in source; only name and visibility are editable.
+  const look = artifact.camera.look
   const orientation =
     camera?.type === 'CallExpressionKw' &&
     camera.callee.name.name === 'oriented' &&
-    artifact.camera.look.type === 'oriented'
-      ? orientations[artifact.camera.look.orientation]
+    look.type === 'oriented'
+      ? STD_LIB_ENUMS['view::Orientation'].find(
+          (value) => value.toLowerCase() === look.orientation
+        )
       : undefined
   const argDefaultValues: ModelingCommandSchema['Named View'] = {
     name: artifact.name,
