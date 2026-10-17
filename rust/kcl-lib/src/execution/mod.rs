@@ -1702,10 +1702,14 @@ impl ExecutorContext {
             exec_fut.await
         };
 
-        if result.is_err() {
-            self.cache.bust_cache().await;
+        match result {
+            Ok(outcome) => Ok(outcome),
+            Err(mut err) => {
+                self.cache.bust_cache().await;
+                err.engine_scene_generation = Some(self.cache.engine_scene_generation().await);
+                Err(err)
+            }
         }
-        result
     }
 
     async fn run_with_caching_inner(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {

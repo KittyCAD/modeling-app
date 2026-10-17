@@ -582,7 +582,9 @@ export class KclManager extends File {
 
   private _execState = signal<ExecState>(emptyExecState())
   /**
-   * Counts the executions that rebuilt the engine scene.
+   * The engine scene generation from the last execution: the number of runs
+   * that changed the engine scene. Runs answered from the cache leave it
+   * unchanged.
    *
    * Sketch-solve syncs and mock executions replace `execState` without sending
    * an engine command.  A consumer that must act only on a rebuilt scene
@@ -2356,7 +2358,11 @@ export class KclManager extends File {
       this.ast = structuredClone(ast)
       // updateArtifactGraph relies on updated executeState/variables
       await this.updateArtifactGraph(execState.artifactGraph)
-      this._engineSceneGeneration.value += 1
+      // Failed runs report their generation too. It is null only when no run
+      // reached the engine, which leaves the scene as it was.
+      if (execState.engineSceneGeneration !== null) {
+        this._engineSceneGeneration.value = execState.engineSceneGeneration
+      }
       this.dispatchUpdateOperations(
         getOperationsForCurrentFile({
           operationsByModule: execState.operations,
