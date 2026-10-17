@@ -6,17 +6,15 @@ import {
   type RegistryItem,
   Slot,
 } from '@kittycad/registry'
-import { effect, type Signal, signal } from '@preact/signals-core'
+import { computed, effect, type Signal, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import { KclManager } from '@src/lang/KclManager'
-import { File, ZDSProject } from '@src/lib/projectSession'
+import { ZDSProject } from '@src/lib/projectSession'
 import { lspService } from '@src/lang/lsp/registry/contract'
 import { type BillingRegistryService, billingService } from '@src/lib/billing'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
-import type { Debugger } from '@src/lib/debugger'
 import { isPlaywright } from '@src/lib/isPlaywright'
-import { EngineDebugger } from '@src/lib/debugger'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
 import { layoutService } from '@src/lib/layout/registry/contract'
@@ -29,7 +27,6 @@ import type RustContext from '@src/lib/rustContext'
 import { rustContextService } from '@src/lib/rustContext/registry/contract'
 import { takeViewportScreenshot } from '@src/lib/screenshot'
 import { reportRejection } from '@src/lib/trap'
-import { uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { onActiveWasmInstance } from '@src/lib/wasmLifecycle'
 import {
@@ -132,19 +129,10 @@ function getZookeeperReplayFallbackFilePath(
   return candidates.find((path) => path && !deletedPaths.has(path))
 }
 
-// We set some of our singletons on the window for debugging and E2E tests
+// The boot layer exposes the app for debugging and E2E tests.
 declare global {
   interface Window {
     app: App
-    engineCommandManager: ConnectionManager
-    rustContext: RustContext
-    engineDebugger: Debugger
-    /** Dev helper: on each click, logs two `makeMouseHelpers` lines (see buildSingletons). */
-    enableMousePositionLogs?: () => void
-    enableFillet?: () => void
-    zoomToFit?: () => void
-    /** Dev flag read by fillet debugging paths */
-    _enableFillet?: boolean
   }
 }
 
@@ -783,24 +771,21 @@ export class App implements AppSubsystems {
    * Build the world!
    */
   buildSingletons() {
-    File.ioImplementations.read = async (path) =>
-      new TextDecoder().decode(await this.fileOperations.readFile(path))
-    File.ioImplementations.write = (path, content) =>
-      this.fileOperations.writeFile(path, content)
-
     // TODO: Remove this and make the app handle no executing editor,
     // so we don't need to stub with empty strings
     const kclManager = new KclManager('', '', {
+      machineManager: this.machineManager,
+      project: computed(() => this.project?.projectIORefSignal.value),
+      fileOperations: this.fileOperations,
+      textFileIO: this.projectSession.textFileIO,
       settings: this.settings.actor,
       wasmInstancePromise: this.wasmPromise,
       commandBar: this.commands.actor,
-      projectPath: signal(''),
       engineCommandManager: this.engineCommandManager,
       rustContext: this.rustContext,
       userFeatures: this.userFeatures,
       keymap: this.registry.get(keymapService),
     })
-    kclManager.fileOperations = this.fileOperations
 
     this.registry.reconfigure(appRegistryServicesSlot, [
       defineRegistryItem({
@@ -821,63 +806,6 @@ export class App implements AppSubsystems {
       }),
     ])
     this.registry.get(lspService).attachKclManager(kclManager)
-
-    if (typeof window !== 'undefined') {
-      window.engineCommandManager = kclManager.engineCommandManager
-      window.rustContext = kclManager.rustContext
-      window.engineDebugger = EngineDebugger
-
-      /**
-       * On each click, logs two lines for `SceneFixture.makeMouseHelpers` /
-       * `convertPagePositionToStream` (e2e/playwright/fixtures/sceneFixture.ts).
-       * Adds a document listener per call.
-       */
-      window.enableMousePositionLogs = () => {
-        const onClick = (e: MouseEvent) => {
-          const streamEl = document.querySelector('[data-testid="stream"]')
-          const vw = document.documentElement.clientWidth
-          const vh = document.documentElement.clientHeight
-          if (!streamEl || vw <= 0 || vh <= 0) {
-            return
-          }
-          const r = streamEl.getBoundingClientRect()
-          if (r.width <= 0 || r.height <= 0) {
-            return
-          }
-          const cx = e.clientX
-          const cy = e.clientY
-          const ratioX = (cx - r.left) / r.width
-          const ratioY = (cy - r.top) / r.height
-          const pixelX = ratioX * vw
-          const pixelY = ratioY * vh
-          console.log(
-            `[mouse→e2e] makeMouseHelpers(${ratioX.toFixed(4)}, ${ratioY.toFixed(4)}, { format: 'ratio' })`
-          )
-          console.log(
-            `[mouse→e2e] makeMouseHelpers(${Math.round(pixelX)}, ${Math.round(pixelY)}, { steps: 20, format: 'pixels' })`
-          )
-        }
-        document.addEventListener('click', onClick, true)
-      }
-
-      window.enableFillet = () => {
-        window._enableFillet = true
-      }
-      window.zoomToFit = () => {
-        void kclManager.engineCommandManager.sendSceneCommand({
-          type: 'modeling_cmd_req',
-          cmd_id: uuidv4(),
-          cmd: {
-            type: 'zoom_to_fit',
-            object_ids: [],
-            padding: 0.2,
-            animated: false,
-          },
-        })
-      }
-    }
-
-    this.commands.actor.send({ type: 'Set kclManager', data: kclManager })
 
     return {
       kclManager,

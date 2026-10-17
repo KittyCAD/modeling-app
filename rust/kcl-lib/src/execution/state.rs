@@ -799,6 +799,7 @@ impl ExecState {
         Ok(ExecOutcome {
             variables,
             filenames: self.global.filenames(),
+            from_cache: false,
             operations: self.global.operations_by_module(),
             artifact_graph: self.global.artifacts.graph,
             scene_objects: self.global.root_module_artifacts.scene_objects,
@@ -1131,7 +1132,7 @@ impl ExecState {
             .values()
             .chain(self.global.artifacts.artifacts.values())
             .filter_map(|artifact| match artifact {
-                Artifact::NamedView(view) => Some((view.code_ref.range.module_id(), view.name.as_str())),
+                Artifact::NamedView(view) => Some((view.declaring_module_id, view.name.as_str())),
                 _ => None,
             })
     }

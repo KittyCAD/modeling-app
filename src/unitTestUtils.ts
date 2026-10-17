@@ -1,3 +1,4 @@
+import type { Project } from '@src/lib/project'
 import { defineRegistryItem } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import env from '@src/env'
@@ -16,6 +17,7 @@ import type { CallExpressionKw, Expr } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { testFileOperations } from '@src/lib/fileSystem/testRuntime'
+import { createTextFileIO } from '@src/lib/projectSession/textFileIO'
 import { MachineManager } from '@src/lib/MachineManager'
 import RustContext from '@src/lib/rustContext'
 import { createSettings } from '@src/lib/settings/initialSettings'
@@ -30,6 +32,20 @@ import {
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import { join } from 'path'
 import { createActor } from 'xstate'
+
+/** Minimal project metadata for editors whose tests need an owning project. */
+export function createProjectForTest(path = 'some-project'): Project {
+  return {
+    name: 'test',
+    path,
+    children: [],
+    default_file: join(path, 'main.kcl'),
+    directory_count: 0,
+    kcl_file_count: 0,
+    metadata: null,
+    readWriteAccess: true,
+  }
+}
 
 /**
  * Throw x if it's an Error. Only use this in tests.
@@ -118,13 +134,19 @@ export async function buildTheWorldAndConnectToEngine({
     settingsActor
   )
   const kclManager = new KclManager('some-file', '', {
+    machineManager,
+    project: signal(createProjectForTest()),
+    fileOperations: testFileOperations,
+    textFileIO: createTextFileIO(testFileOperations, {
+      watch: () => {},
+      unwatch: () => {},
+    }),
     wasmInstancePromise: instancePromise,
     settings: settingsActor,
     commandBar: commandBarActor,
     engineCommandManager,
     rustContext,
     userFeatures: createSettledUserFeaturesForTest(),
-    projectPath: signal('some-project'),
   })
 
   await new Promise((resolve, reject) => {
@@ -233,13 +255,19 @@ export async function buildTheWorldAndNoEngineConnection(
     settingsActor
   )
   const kclManager = new KclManager('some-file', '', {
+    machineManager,
+    project: signal(createProjectForTest()),
+    fileOperations: testFileOperations,
+    textFileIO: createTextFileIO(testFileOperations, {
+      watch: () => {},
+      unwatch: () => {},
+    }),
     wasmInstancePromise: instancePromise,
     settings: settingsActor,
     commandBar: commandBarActor,
     engineCommandManager,
     rustContext,
     userFeatures,
-    projectPath: signal('some-project'),
   })
 
   settingsActor.start()

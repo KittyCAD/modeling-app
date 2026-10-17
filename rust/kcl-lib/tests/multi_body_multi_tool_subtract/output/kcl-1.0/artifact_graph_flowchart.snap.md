@@ -23,8 +23,6 @@ flowchart LR
     26[Solid2d]
   end
   subgraph path27 [Path]
-    27["Path<br>[885, 952, 0]<br>Consumed: true"]
-      %% [ProgramBodyItem { index: 16 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
     28["Segment<br>[885, 952, 0]"]
       %% [ProgramBodyItem { index: 16 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
     29[Solid2d]
@@ -45,8 +43,6 @@ flowchart LR
     45[Solid2d]
   end
   subgraph path61 [Path]
-    61["Path<br>[1648, 1703, 0]<br>Consumed: true"]
-      %% [ProgramBodyItem { index: 23 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
     62["Segment<br>[1709, 1778, 0]"]
       %% [ProgramBodyItem { index: 23 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     63["Segment<br>[1784, 1857, 0]"]
@@ -125,6 +121,8 @@ flowchart LR
   21["SweepEdge Adjacent"]
   22["SweepEdge Opposite"]
   23["SweepEdge Adjacent"]
+  27["CompositeSolid Subtract<br>[2977, 3043, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 35 }, ExpressionStatementExpr]
   30["Sweep Extrusion<br>[1001, 1050, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 17 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   31[Wall]
@@ -161,6 +159,8 @@ flowchart LR
   58["SweepEdge Adjacent"]
   59["SweepEdge Opposite"]
   60["SweepEdge Adjacent"]
+  61["CompositeSolid Subtract<br>[2977, 3043, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 35 }, ExpressionStatementExpr]
   68["Sweep Extrusion<br>[2040, 2089, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 24 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   69[Wall]
@@ -257,7 +257,8 @@ flowchart LR
   2 --- 7
   2 --- 8
   2 ---- 9
-  2 x--> 61
+  2 <--x 27
+  2 --- 61
   2 <--x 134
   3 --- 10
   3 x--> 15
@@ -306,7 +307,7 @@ flowchart LR
   20 <--x 14
   22 <--x 14
   14 --- 24
-  14 --- 27
+  14 x--> 27
   14 <--x 135
   15 --- 98
   15 --- 101
@@ -315,16 +316,20 @@ flowchart LR
   15 <--x 139
   24 --- 25
   24 --- 26
-  27 --- 24
+  27 x--> 24
   24 x---> 30
   25 --- 32
   25 x--> 33
   25 --- 37
   25 --- 38
-  27 --- 28
-  27 --- 29
-  27 ---- 30
-  27 x--> 61
+  27 <--x 28
+  27 <--x 29
+  27 <--x 30
+  61 --- 27
+  98 x--> 27
+  101 x--> 27
+  104 x--> 27
+  107 x--> 27
   27 <--x 134
   28 --- 31
   28 x--> 33
@@ -399,19 +404,19 @@ flowchart LR
   55 <--x 52
   57 <--x 52
   59 <--x 52
-  52 --- 61
+  52 x--> 61
   52 <--x 137
-  61 --- 62
-  61 --- 63
-  61 --- 64
-  61 --- 65
-  61 --- 66
-  61 --- 67
-  61 ---- 68
-  98 <--x 61
-  101 <--x 61
-  104 <--x 61
-  107 <--x 61
+  61 <--x 62
+  61 <--x 63
+  61 <--x 64
+  61 <--x 65
+  61 <--x 66
+  61 <--x 67
+  61 <--x 68
+  98 --- 61
+  101 --- 61
+  104 --- 61
+  107 --- 61
   61 <--x 134
   62 --- 69
   62 x--> 73
