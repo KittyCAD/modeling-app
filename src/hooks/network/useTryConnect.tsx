@@ -19,7 +19,7 @@ import {
 } from '@src/lib/settings/settingsUtils'
 import { isErr, reportRejection } from '@src/lib/trap'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import { useRef } from 'react'
+import { useCallback, useRef } from 'react'
 
 /**
  * Helper function, do not call this directly. Use tryConnecting instead.
@@ -34,6 +34,7 @@ const attemptToConnectToEngine = async ({
   engineCommandManager,
   kclVersion,
   rustContext,
+  geometryOnly = false,
   prepareForReconnect,
 }: {
   authToken: string
@@ -45,9 +46,12 @@ const attemptToConnectToEngine = async ({
   engineCommandManager: ConnectionManager
   kclVersion?: KclVersion
   rustContext: RustContext
+  geometryOnly?: boolean
   prepareForReconnect: (signal: AbortSignal) => Promise<undefined | Error>
 }) => {
-  const codecError = await preflightEngineVideoCodecSupport()
+  const codecError = !geometryOnly
+    ? await preflightEngineVideoCodecSupport()
+    : undefined
   if (codecError) {
     engineCommandManager.lastConnectionError = codecError
     void reportClientError({
@@ -97,9 +101,16 @@ const attemptToConnectToEngine = async ({
             setAppState({ isStreamReady: true })
           },
           rustContext,
+          geometryOnly,
           kclVersion,
           prepareForReconnect,
         })
+
+        if (geometryOnly) {
+          setIsSceneReady(true)
+          clearTimeout(cancelTimeout)
+          return resolve(true)
+        }
 
         if (!videoRef.current) {
           EngineDebugger.addLog({
@@ -184,7 +195,14 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
   if (engineCommandManager.connection !== connection) {
     return
   }
-  if (cameraState) {
+  if (engineCommandManager.geometryOnly) {
+    // The camera on screen is the client's, so a new engine session is given
+    // that view instead of having one restored.
+    await sceneInfra.camControls.syncCameraToEngine()
+    if (engineCommandManager.connection !== connection) {
+      return
+    }
+  } else if (cameraState) {
     // Restore both idle and requested reconnect cameras before rebuilding.
     await sceneInfra.camControls.setCameraView(cameraState)
     if (engineCommandManager.connection !== connection) {
@@ -200,6 +218,11 @@ const setupSceneAndExecuteCodeAfterOpenedEngineConnection = async ({
   await kclManager.executeCode()
   // This prevents an old rebuild from restoring its camera onto a replacement connection.
   if (engineCommandManager.connection !== connection) {
+    return
+  }
+
+  if (engineCommandManager.geometryOnly) {
+    sceneInfra.camControls.clearOldCameraState()
     return
   }
   // TODO: resolve the ~12 remaining dependent playwright tests on this functions isPlaywright() check
@@ -258,6 +281,7 @@ export async function tryConnecting({
   engineCommandManager,
   kclManager,
   rustContext,
+  geometryOnly = false,
 }: {
   abnormalCloseRetries: React.RefObject<number>
   isConnecting: React.RefObject<boolean>
@@ -274,6 +298,7 @@ export async function tryConnecting({
   engineCommandManager: ConnectionManager
   kclManager: KclManager
   rustContext: RustContext
+  geometryOnly?: boolean
 }) {
   const connection = new Promise<string>((resolve, reject) => {
     void (async () => {
@@ -302,6 +327,7 @@ export async function tryConnecting({
             // Invalid source can still connect; execution reports its diagnostics.
             kclVersion: isErr(kclVersion) ? undefined : kclVersion,
             rustContext,
+            geometryOnly,
             prepareForReconnect: (signal) =>
               sceneInfra.camControls.captureCameraForReconnect(signal),
           })
@@ -375,7 +401,11 @@ export async function tryConnecting({
   })
   return connection
 }
-export const useTryConnect = () => {
+export const useTryConnect = ({
+  geometryOnly = false,
+}: {
+  geometryOnly?: boolean
+} = {}) => {
   const { kclManager } = useSingletons()
   const isConnecting = useRef(false)
   const numberOfConnectionAttempts = useRef(0)
@@ -386,17 +416,28 @@ export const useTryConnect = () => {
     | 'kclManager'
     | 'rustContext'
     | 'abnormalCloseRetries'
+    | 'geometryOnly'
   >
 
-  return {
-    tryConnecting: (args: TryConnectingArgs) =>
+  // Reconnect callbacks can outlive a render. Read the requested mode when
+  // starting a new attempt, while existing sessions keep their own mode.
+  const modeRef = useRef(geometryOnly)
+  modeRef.current = geometryOnly
+  const connect = useCallback(
+    (args: TryConnectingArgs) =>
       tryConnecting({
         ...args,
+        geometryOnly: modeRef.current,
         engineCommandManager: kclManager.engineCommandManager,
         kclManager,
         rustContext: kclManager.rustContext,
         abnormalCloseRetries,
       }),
+    [kclManager]
+  )
+
+  return {
+    tryConnecting: connect,
     isConnecting,
     numberOfConnectionAttempts,
     abnormalCloseRetries,

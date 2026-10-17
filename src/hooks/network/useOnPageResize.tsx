@@ -16,11 +16,13 @@ export const useOnPageResize = ({
   videoRef,
   canvasRef,
   engineCommandManager,
+  enabled = true,
 }: {
   videoWrapperRef: React.RefObject<HTMLDivElement | null>
   videoRef: React.RefObject<HTMLVideoElement | null>
   canvasRef: React.RefObject<HTMLCanvasElement | null>
   engineCommandManager: ConnectionManager
+  enabled?: boolean
 }) => {
   const setSizeOneMoreTime = useRef<NodeJS.Timeout | null>(null)
   const last = useRef<number>(Date.now())
@@ -28,6 +30,9 @@ export const useOnPageResize = ({
   const timeoutStart = useRef<number | null>(null)
   const { isStreamAcceptingInput } = useAppState()
   useEffect(() => {
+    if (!enabled) {
+      return
+    }
     if (!videoWrapperRef.current) return
     if (!videoRef.current) return
     if (!canvasRef.current) return
@@ -90,6 +95,7 @@ export const useOnPageResize = ({
     videoWrapperRef,
     videoRef,
     canvasRef,
+    enabled,
     isStreamAcceptingInput,
     engineCommandManager,
   ])

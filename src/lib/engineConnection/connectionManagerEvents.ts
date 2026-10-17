@@ -63,7 +63,7 @@ export const createOnEngineConnectionOpened = ({
   connection: Connection
   setStreamIsReady: (isStreamReady: boolean) => void
 }) => {
-  const onEngineConnectionOpened = async () => {
+  const initializeRenderer = async () => {
     // Set the stream's camera projection type
     // We don't send a command to the engine if in perspective mode because
     // for now it's the engine's default.
@@ -136,6 +136,12 @@ export const createOnEngineConnectionOpened = ({
     })
 
     await setDefaultSystemProperties(settings.backfaceColor)
+  }
+
+  const onEngineConnectionOpened = async () => {
+    if (!connection.geometryOnly) {
+      await initializeRenderer()
+    }
 
     EngineDebugger.addLog({
       label: 'onEngineConnectionOpened',
@@ -191,7 +197,7 @@ export const createOnEngineConnectionStarted = ({
   connection,
   trackListener,
 }: {
-  peerConnection: RTCPeerConnection
+  peerConnection: RTCPeerConnection | undefined
   getUnreliableSubscriptions: () => {
     [event: string]: {
       [localUnsubscribeId: string]: (a: any) => void
@@ -212,6 +218,25 @@ export const createOnEngineConnectionStarted = ({
   // This is the second datachannel initialized on the peerConnection. One is already
   // attached when the createWebsocket() workflow is triggered before this code.
   const onEngineConnectionStarted = () => {
+    EngineDebugger.addLog({
+      label: 'onEngineConnectionStarted',
+      message: 'adding message on websocket',
+    })
+
+    const onMessage = (event: MessageEvent) => {
+      handleMessage(event)
+    }
+    trackListener('message', {
+      event: 'message',
+      callback: onMessage,
+      type: 'websocket',
+    })
+    websocket.addEventListener('message', onMessage)
+
+    if (!peerConnection) {
+      return
+    }
+
     // When the EngineConnection starts a connection, we want to register
     // callbacks into the WebSocket/PeerConnection.
     EngineDebugger.addLog({
@@ -259,21 +284,6 @@ export const createOnEngineConnectionStarted = ({
       type: 'peerConnection',
     })
     peerConnection.addEventListener('datachannel', onDataChannel)
-
-    EngineDebugger.addLog({
-      label: 'onEngineConnectionStarted',
-      message: 'adding message on websocket',
-    })
-
-    const onMessage = (event: MessageEvent) => {
-      handleMessage(event)
-    }
-    trackListener('message', {
-      event: 'message',
-      callback: onMessage,
-      type: 'websocket',
-    })
-    websocket.addEventListener('message', onMessage)
 
     const onVideoTrackMute = () => {
       console.warn('video track mute - potentially lost stream for a moment')
