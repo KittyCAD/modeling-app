@@ -276,11 +276,15 @@ export class ZDSProject {
       console.warn(`Attempted to close nonexistent editor with path "${path}"`)
       return
     }
+    if (this.executingEditor.peek() === foundPathSignal[1]) {
+      this.executingPath = null
+    }
     foundPathSignal[1].close()
     this.editors.delete(foundPathSignal[0])
   }
 
   closeAllEditors() {
+    this.executingPath = null
     for (const editor of this.editors.values()) {
       editor.close()
     }

@@ -1,5 +1,4 @@
 import { newKclFile } from '@src/lang/project'
-import type { App } from '@src/lib/app'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   FILE_EXT,
@@ -47,6 +46,7 @@ import type {
   RequestedKCLFileDelete,
   RequestedProjectFile,
   SystemIOContext,
+  SystemIOHost,
 } from '@src/machines/systemIO/utils'
 import {
   collectProjectFiles,
@@ -55,7 +55,6 @@ import {
   SystemIOMachineActors,
   SystemIOMachineEvents,
 } from '@src/machines/systemIO/utils'
-import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import { fromPromise } from 'xstate'
 
 export {
@@ -63,15 +62,14 @@ export {
   sortProjectDirectoryEntriesByModifiedDesc,
 } from '@src/lib/projectLibraries/directoryScanner'
 
-const fileOperations = (context: SystemIOContext) =>
-  context.app.registry.get(fileOperationsService)
+const fileOperations = (context: SystemIOContext) => context.app.fileOperations
 
 type RenameFileForSystemIOInput = {
   context: SystemIOContext
   fileNameWithExtension: string
   requestedFileNameWithExtension: string
   absolutePathToParentDirectory: string
-  app: App
+  app: SystemIOHost
 }
 
 export async function renameFileForSystemIO(input: RenameFileForSystemIOInput) {
@@ -80,7 +78,7 @@ export async function renameFileForSystemIO(input: RenameFileForSystemIOInput) {
     requestedFileNameWithExtension,
     absolutePathToParentDirectory,
   } = input
-  const operations = input.app.registry.get(fileOperationsService)
+  const operations = input.app.fileOperations
 
   const oldPath = fsZds.join(
     absolutePathToParentDirectory,
