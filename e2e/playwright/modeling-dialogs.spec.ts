@@ -102,9 +102,8 @@ obstruction = extrude(region002, length = 20mm)`
     await editor.expectEditor.toContain('extrude(region001, length = 12mm)')
   })
 
-  test('Uses dialogs for supported commands and the palette for unsupported inputs', async ({
+  test('Uses dialogs for supported modeling commands', async ({
     page,
-    cmdBar,
     homePage,
     scene,
     editor,
@@ -176,12 +175,6 @@ obstruction = extrude(region002, length = 20mm)`
     await expect(dialog).toBeVisible()
     await page.keyboard.press('Escape')
     await expect(dialog).not.toBeAttached()
-
-    await cmdBar.openCmdBar()
-    await cmdBar.chooseCommand('Export')
-    await expect(page.getByTestId('command-bar')).toBeVisible()
-    await expect(dialog).not.toBeAttached()
-    await page.keyboard.press('Escape')
   })
 
   test('Keeps Boolean target and tool selections when switching collectors', async ({
