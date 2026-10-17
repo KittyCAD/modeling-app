@@ -49,6 +49,7 @@ import {
   PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE,
 } from '@src/registry/contracts/keymap'
 import {
+  type ProjectExplorerRowContextMenuItem,
   type ProjectExplorerRowContextMenuItemContext,
   projectExplorerRowContextMenuItemsValueSpec,
 } from '@src/registry/contracts/projectExplorer'
@@ -180,6 +181,7 @@ export const ProjectExplorer = ({
   onRowClicked,
   onRowDoubleClicked,
   onRowEnter,
+  onOpenAsText,
   readOnly,
   canNavigate,
   overrideApplicationProjectDirectory,
@@ -194,6 +196,7 @@ export const ProjectExplorer = ({
   onRowClicked: (row: FileExplorerEntry, domIndex: number) => void
   onRowDoubleClicked?: (row: FileExplorerEntry, domIndex: number) => void
   onRowEnter: (row: FileExplorerEntry, domIndex: number) => void
+  onOpenAsText?: (path: string) => void
   readOnly: boolean
   canNavigate: boolean
   overrideApplicationProjectDirectory?: string
@@ -201,9 +204,27 @@ export const ProjectExplorer = ({
   useSignals()
   const { commands, fileOperations, registry, systemIOActor } = useApp()
   const keymap = registry.optional(keymapService)
-  const rowContextMenuItems = registry.signal(
+  const extensionRowContextMenuItems = registry.signal(
     projectExplorerRowContextMenuItemsValueSpec
   ).value
+  const rowContextMenuItems = useMemo<ProjectExplorerRowContextMenuItem[]>(
+    () => [
+      {
+        id: 'open-as-text',
+        label: 'Open as Text',
+        dataTestId: 'context-menu-open-as-text',
+        isVisible: ({ row }) =>
+          !readOnly &&
+          !!onOpenAsText &&
+          !row.isFolder &&
+          !row.isFake &&
+          !row.path.toLowerCase().endsWith(FILE_EXT),
+        onSelect: ({ row }) => onOpenAsText?.(row.path),
+      },
+      ...extensionRowContextMenuItems,
+    ],
+    [extensionRowContextMenuItems, onOpenAsText, readOnly]
+  )
   const rowContextMenuContext = useMemo<
     Omit<ProjectExplorerRowContextMenuItemContext, 'row'>
   >(() => ({ project, file, readOnly }), [project, file, readOnly])

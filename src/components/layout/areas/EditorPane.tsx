@@ -56,7 +56,7 @@ export const editorShortcutMeta = {
   },
 }
 
-export const KclEditorPane = (props: AreaTypeComponentProps) => {
+export const EditorPane = (props: AreaTypeComponentProps) => {
   return (
     <LayoutPanel
       title={props.layout.label}
@@ -70,12 +70,12 @@ export const KclEditorPane = (props: AreaTypeComponentProps) => {
         Menu={KclEditorMenu}
         onClose={props.onClose}
       />
-      <KclEditorPaneContents />
+      <EditorPaneContents />
     </LayoutPanel>
   )
 }
 
-export const KclEditorPaneContents = () => {
+export const EditorPaneContents = () => {
   useSignals()
   const { kclManager } = useSingletons()
   const activeTextFile = activeTextFileSignal.value
@@ -183,6 +183,12 @@ function TextFileEditor({
       state: EditorState.create({
         doc: activeTextFile.text,
         extensions: [
+          EditorState.lineSeparator.of(
+            activeTextFile.text.match(/\r\n|\r|\n/)?.[0] ?? '\n'
+          ),
+          EditorView.clipboardInputFilter.of((text, state) =>
+            text.replace(/\r\n?|\n/g, state.lineBreak)
+          ),
           textThemeCompartment.of(
             textEditorThemeExtensions(resolvedTheme, isMarkdown)
           ),
@@ -200,7 +206,7 @@ function TextFileEditor({
               scheduleActiveTextFileWrite(
                 fileOperations,
                 path,
-                update.state.doc.toString()
+                update.state.sliceDoc()
               )
             }
           }),
