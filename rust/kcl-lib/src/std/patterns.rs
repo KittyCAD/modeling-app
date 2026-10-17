@@ -54,6 +54,7 @@ use crate::std::axis_or_reference::Axis2dOrPoint2d;
 use crate::std::shapes::POINT_ZERO_ZERO;
 use crate::std::utils::point_3d_to_mm;
 use crate::std::utils::point_to_mm;
+use crate::std::utils::untype_point3d_in_one_unit;
 pub const POINT_ZERO_ZERO_ZERO: [TyF64; 3] = [
     TyF64::new(
         0.0,
@@ -827,6 +828,58 @@ patterned = patternLinear2d({input}, instances = 2, distance = 20mm, axis = X)
         )
     }
 
+    /// Runs `code` with a mock engine that still gets `patternCircular3d`'s
+    /// command (the plain mock copies the solids without sending it), and
+    /// returns the axis of that command.
+    async fn circular_pattern_axis(code: &str) -> [f64; 3] {
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let mock = ExecutorContext::new_mock(None).await;
+        let ctx = ExecutorContext::new_forwarded_mock(mock.engine.clone());
+        let mut exec_state = ExecState::new(&ctx);
+        ctx.run(&program, &mut exec_state).await.unwrap();
+        let axis = exec_state
+            .root_module_artifact_state()
+            .commands
+            .iter()
+            .find_map(|artifact_command| match &artifact_command.command {
+                ModelingCmd::EntityCircularPattern(pattern) => Some([pattern.axis.x, pattern.axis.y, pattern.axis.z]),
+                _ => None,
+            })
+            .expect("expected patternCircular3d() to send a circular pattern");
+        ctx.close().await;
+        axis
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn pattern_circular_3d_reads_a_mixed_unit_axis_in_one_unit() {
+        // The parts of `axis` can have different units, for example when they
+        // come from variables. They are read in the unit of the first part that
+        // isn't zero, so the mixed cases point halfway between X and Y like the
+        // all-mm control (the first case). Axes whose parts share a unit, like
+        // the built-in `Z`, keep their numbers.
+        for (settings, axis, expected) in [
+            ("defaultLengthUnit = mm", "[25.4mm, 25.4mm, 0mm]", [25.4, 25.4, 0.0]),
+            ("defaultLengthUnit = mm", "[1in, 25.4mm, 0mm]", [1.0, 1.0, 0.0]),
+            ("defaultLengthUnit = in", "[1in, 25.4mm, 0mm]", [1.0, 1.0, 0.0]),
+            ("defaultLengthUnit = in", "[1, 1, 0]", [1.0, 1.0, 0.0]),
+            ("defaultLengthUnit = in", "Z", [0.0, 0.0, 1.0]),
+        ] {
+            let code = format!(
+                r#"@settings(kclVersion = 2.0, {settings})
+profile = sketch(on = XY) {{ c = circle(center = [0mm, 0mm], start = [10mm, 0mm]) }}
+body = extrude(region(segments = [profile.c]), length = 2mm)
+p = patternCircular3d(body, instances = 2, axis = {axis}, arcDegrees = 90deg)"#
+            );
+            let actual = circular_pattern_axis(&code).await;
+            for (a, e) in actual.iter().zip(expected) {
+                assert!(
+                    (a - e).abs() < 1e-9,
+                    "expected {expected:?}, got {actual:?} for:\n{code}"
+                );
+            }
+        }
+    }
+
     async fn run_mock(code: &str) -> Result<crate::ExecOutcome, crate::KclErrorWithOutputs> {
         let program = crate::Program::parse_no_errs(code).unwrap();
         let ctx = ExecutorContext::new_mock(None).await;
@@ -1295,11 +1348,16 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
     // or the pattern?
     let use_original = args.get_kw_arg_opt("useOriginal", &RuntimeType::bool(), exec_state)?;
 
+    // Only the axis's direction matters, not its length. Its parts are still
+    // read in one unit first, so a mixed-unit axis such as `[1in, 25.4mm, 0mm]`
+    // points the way it was written. Parts that share a unit keep their numbers.
+    let (axis, _) = untype_point3d_in_one_unit(axis);
+
     match geometry {
         SolidOrImportedGeometry::SolidSet(solids) => Ok(inner_pattern_circular_3d(
             solids,
             instances,
-            [axis[0].n, axis[1].n, axis[2].n],
+            axis,
             center,
             arc_degrees.map(|x| x.n),
             rotate_duplicates,
@@ -1313,7 +1371,7 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
             inner_pattern_circular_3d(
                 vec![*geometry],
                 instances,
-                [axis[0].n, axis[1].n, axis[2].n],
+                axis,
                 center,
                 arc_degrees.map(|x| x.n),
                 rotate_duplicates,
