@@ -640,6 +640,17 @@ async fn inner_ellipse(
         ],
     };
 
+    // The engine wants the axis in mm, converted from the axis's own units.
+    let to_mm = |n: &TyF64| {
+        n.to_mm().ok_or_else(|| {
+            KclError::new_type(KclErrorDetails::new(
+                "The components of `majorAxis` must be lengths.".to_owned(),
+                vec![args.source_range],
+            ))
+        })
+    };
+    let axis = KPoint2d::from([to_mm(&major_axis[0])?, to_mm(&major_axis[1])?]).map(LengthUnit);
+
     let from = [
         center_u[0] + major_axis[0].unwrap_to_length_units(units),
         center_u[1] + major_axis[1].unwrap_to_length_units(units),
@@ -655,7 +666,6 @@ async fn inner_ellipse(
 
     let id = exec_state.next_uuid();
 
-    let axis = KPoint2d::from(untyped_point_to_mm([major_axis[0].n, major_axis[1].n], units)).map(LengthUnit);
     exec_state
         .batch_modeling_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
@@ -744,7 +754,9 @@ mod tests {
     use kittycad_modeling_cmds::shared::PathSegment;
 
     use crate::execution::KclValue;
+    use crate::execution::Path;
     use crate::execution::parse_execute;
+    use crate::std::utils::untyped_point_to_mm;
 
     /// Runs `code`, which draws one rectangle called `r`, and returns where the
     /// engine was told to start the profile, the relative line segments it was
@@ -830,6 +842,146 @@ mod tests {
                 assert_close(&[actual_start], &[start], code);
                 assert_close(&actual_segments, &segments, code);
                 assert_close(&actual_corners, &corners, code);
+            }
+        }
+    }
+
+    /// Runs `code`, which draws one ellipse called `e`, and returns where the
+    /// engine was told to start the profile, the major axis and minor radius
+    /// it was sent, and the major axis recorded in the sketch, all in mm.
+    async fn ellipse_in_mm(code: &str) -> ([f64; 2], [f64; 2], f64, [f64; 2]) {
+        let result = parse_execute(code).await.unwrap();
+        // Only the usual warning that the legacy sketch API is deprecated.
+        let issues: Vec<_> = result
+            .issues()
+            .iter()
+            .filter(|issue| !issue.message.starts_with("`startSketchOn` is deprecated"))
+            .collect();
+        assert!(issues.is_empty(), "unexpected issues {issues:?} for:\n{code}");
+
+        let mut start = None;
+        let mut engine_axis = None;
+        let mut engine_minor_radius = None;
+        for command in result.root_module_artifact_commands() {
+            match &command.command {
+                ModelingCmd::MovePathPen(move_pen) => start = Some([move_pen.to.x.0, move_pen.to.y.0]),
+                ModelingCmd::ExtendPath(extend) => match &extend.segment {
+                    PathSegment::Ellipse {
+                        major_axis,
+                        minor_radius,
+                        ..
+                    } => {
+                        engine_axis = Some([major_axis.x.0, major_axis.y.0]);
+                        engine_minor_radius = Some(minor_radius.0);
+                    }
+                    other => panic!("expected an ellipse, got {other:?}"),
+                },
+                _ => {}
+            }
+        }
+
+        let KclValue::Sketch { value: sketch } = result.variable("e") else {
+            panic!("expected `e` to be a sketch");
+        };
+        let Some(Path::Ellipse { base, major_axis, .. }) = sketch.paths.front() else {
+            panic!("expected `e` to contain an ellipse");
+        };
+        let sketch_axis = untyped_point_to_mm(*major_axis, base.units);
+
+        (
+            start.expect("expected the profile to start somewhere"),
+            engine_axis.expect("expected an ellipse segment"),
+            engine_minor_radius.expect("expected an ellipse segment"),
+            sketch_axis,
+        )
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn ellipse_converts_the_major_axis_to_mm_from_its_own_units() {
+        // Each group draws the same ellipse with different units, so the engine
+        // must get the same major axis and minor radius in mm, the sketch must
+        // record that same axis, and the profile must start at the end of it.
+        // The first item of each case is the file's default length unit.
+        let mm = "mm";
+        let inch = "in";
+        // Centered at the origin, major radius 1in along x, minor radius 10mm.
+        let centered = [
+            // Mixed units: the major axis is in inches, the center is in mm.
+            (mm, "ellipse(center = [0, 0], majorRadius = 1in, minorRadius = 10)"),
+            (mm, "ellipse(center = [0, 0], majorAxis = [1in, 0in], minorRadius = 10)"),
+            (mm, "ellipse(majorRadius = 1in, minorRadius = 10)"),
+            (
+                inch,
+                "ellipse(center = [0mm, 0mm], majorRadius = 1, minorRadius = 10mm)",
+            ),
+            // Mixed units the other way: the major axis is in mm, the center is in inches.
+            (mm, "ellipse(center = [0in, 0in], majorRadius = 25.4, minorRadius = 10)"),
+            (
+                inch,
+                "ellipse(center = [0, 0], majorRadius = 25.4mm, minorRadius = 10mm)",
+            ),
+            // Matching units.
+            (mm, "ellipse(center = [0, 0], majorRadius = 25.4, minorRadius = 10)"),
+            (mm, "ellipse(center = [0, 0], majorAxis = [25.4, 0], minorRadius = 10)"),
+            (inch, "ellipse(center = [0, 0], majorRadius = 1, minorRadius = 10mm)"),
+        ];
+        // Centered 1in along x, major radius 10mm along x, minor radius 5mm.
+        let offset = [
+            (mm, "ellipse(center = [1in, 0in], majorRadius = 10, minorRadius = 5)"),
+            (inch, "ellipse(center = [1, 0], majorRadius = 10mm, minorRadius = 5mm)"),
+            (
+                inch,
+                "ellipse(center = [1, 0], majorAxis = [10mm, 0mm], minorRadius = 5mm)",
+            ),
+            (mm, "ellipse(center = [25.4, 0], majorRadius = 10, minorRadius = 5)"),
+        ];
+        // Centered at the origin, major radius 1in along y, minor radius 10mm.
+        let vertical = [
+            (mm, "ellipse(center = [0, 0], majorAxis = [0in, 1in], minorRadius = 10)"),
+            (inch, "ellipse(center = [0, 0], majorAxis = [0, 1], minorRadius = 10mm)"),
+        ];
+        // Centered at the origin, major axis [1in, 10mm], minor radius 10mm.
+        let diagonal = [
+            // Mixed units inside the axis itself.
+            (
+                mm,
+                "ellipse(center = [0, 0], majorAxis = [1in, 10mm], minorRadius = 10)",
+            ),
+            (
+                inch,
+                "ellipse(center = [0, 0], majorAxis = [1in, 10mm], minorRadius = 10mm)",
+            ),
+            // Matching units.
+            (mm, "ellipse(center = [0, 0], majorAxis = [25.4, 10], minorRadius = 10)"),
+        ];
+        // An inch file with no units written anywhere. Without `center` the
+        // ellipse is centered at [0mm, 0mm], so this is still mixed units.
+        let omitted_center = [
+            (inch, "ellipse(majorRadius = 1, minorRadius = 0.5)"),
+            (inch, "ellipse(majorAxis = [1, 0], minorRadius = 0.5)"),
+            // Matching units: the same ellipse with the center written out.
+            (inch, "ellipse(center = [0, 0], majorRadius = 1, minorRadius = 0.5)"),
+        ];
+
+        for (codes, start, axis, minor_radius) in [
+            (&centered[..], [25.4, 0.0], [25.4, 0.0], 10.0),
+            (&offset[..], [35.4, 0.0], [10.0, 0.0], 5.0),
+            (&vertical[..], [0.0, 25.4], [0.0, 25.4], 10.0),
+            (&diagonal[..], [25.4, 10.0], [25.4, 10.0], 10.0),
+            (&omitted_center[..], [25.4, 0.0], [25.4, 0.0], 12.7),
+        ] {
+            for ((unit, call), version) in codes.iter().flat_map(|case| [(case, "2.0"), (case, "3.0")]) {
+                let code = format!(
+                    "@settings(kclVersion = {version}, defaultLengthUnit = {unit}, experimentalFeatures = allow)\ne = startSketchOn(XY) |> {call}"
+                );
+                let (actual_start, engine_axis, engine_minor_radius, sketch_axis) = ellipse_in_mm(&code).await;
+                assert_close(&[actual_start], &[start], &code);
+                assert_close(&[engine_axis], &[axis], &code);
+                assert_close(&[sketch_axis], &[axis], &code);
+                assert!(
+                    (engine_minor_radius - minor_radius).abs() < 1e-9,
+                    "expected minor radius {minor_radius}, got {engine_minor_radius} for:\n{code}"
+                );
             }
         }
     }
