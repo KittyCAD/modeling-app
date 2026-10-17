@@ -8,6 +8,8 @@ import {
   getSketchBlockForArtifact,
   getSweepArtifactFromSelection,
   getMergedSweepBodyArtifact,
+  getSegmentArtifactForEdgeCut,
+  getEdgeCutConsumedCodeRef,
   isFaceFromLegacySketch,
 } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, PathToNode } from '@src/lang/wasm'
@@ -831,5 +833,62 @@ describe('isFaceFromLegacySketch', () => {
     artifactGraph.set(wall.id, wall)
 
     expect(isFaceFromLegacySketch('wall-1', artifactGraph)).toBe(false)
+  })
+})
+
+describe('edge-independent artifact traversal', () => {
+  function fixture() {
+    const { artifactGraph, sourceSegment } = createSourceSegmentGraph()
+    addMappedRegion(artifactGraph, sourceSegment, 'cut', true)
+    const segment = artifactGraph.get('generated-segment-cut')
+    if (segment?.type !== 'segment') throw new Error('Expected region segment')
+    segment.edgeCutId = 'cut'
+    const cut: Extract<Artifact, { type: 'edgeCut' }> = {
+      type: 'edgeCut',
+      id: 'cut',
+      subType: 'fillet',
+      edgeIds: [],
+      surfaceId: 'wall-cut',
+      codeRef,
+    }
+    artifactGraph.set(cut.id, cut)
+    for (const artifact of artifactGraph.values()) {
+      for (const field of [
+        'edgeIds',
+        'commonSurfaceIds',
+        'edgeCutEdgeIds',
+        'consumedEdgeId',
+      ]) {
+        Reflect.deleteProperty(artifact, field)
+      }
+    }
+    return { artifactGraph, segment, cut }
+  }
+
+  it('stops at a face merge whose parent is the same body', () => {
+    const { artifactGraph } = fixture()
+    const path = artifactGraph.get('region-path-cut')
+    const sweep = artifactGraph.get('sweep-cut')
+    if (path?.type !== 'path' || sweep?.type !== 'sweep')
+      throw new Error('Expected sweep path')
+    path.planeId = 'cap-cut'
+    expect(getMergedSweepBodyArtifact(sweep, artifactGraph)).toBe(sweep)
+  })
+
+  it('recovers a consumed segment and code reference from its edgeCutId', () => {
+    const { artifactGraph, segment, cut } = fixture()
+    expect(getSegmentArtifactForEdgeCut(cut, artifactGraph)).toBe(segment)
+    expect(getEdgeCutConsumedCodeRef(cut, artifactGraph)).toBe(segment.codeRef)
+    expect(
+      getSweepArtifactFromSelection({ artifact: cut, codeRef }, artifactGraph)
+    ).toBe(artifactGraph.get('sweep-cut'))
+  })
+
+  it('finds the body through the treatment surface when no source segment remains', () => {
+    const { artifactGraph, segment, cut } = fixture()
+    artifactGraph.delete(segment.id)
+    expect(
+      getSweepArtifactFromSelection({ artifact: cut, codeRef }, artifactGraph)
+    ).toBe(artifactGraph.get('sweep-cut'))
   })
 })

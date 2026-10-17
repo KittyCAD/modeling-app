@@ -20,10 +20,9 @@ import {
   getArtifactFromRange,
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
-  getCommonFacesForEdge,
-  getEdgeCutConsumedEdgeId,
   getFaceCodeRef,
   getPatternArtifactForCopyId,
+  getSegmentArtifactForEdgeCut,
   getSegmentForEdgeCut,
   getSweepEdgeCodeRef,
   getSweepFromSuspectedSweepSurface,
@@ -2178,35 +2177,10 @@ export function findOperationArtifact(
         )
       }
     )
-    if (matchingEdgeCuts.length === 0) {
-      // no change from before
-    } else {
-      // When multiple edgeCuts match (e.g. two fillets with same codeRef range), prefer the one
-      // whose segment touches the start cap so editing the second fillet (start-cap edge) gets the right artifact.
-      const withStartCap = matchingEdgeCuts.find((edgeCut) => {
-        const edgeIds = (edgeCut as { edge_ids?: string[] }).edge_ids
-        const segId = edgeIds?.length
-          ? edgeIds[0]
-          : (edgeCut as { consumedEdgeId?: string }).consumedEdgeId
-        if (!segId) return false
-        const seg = getArtifactOfTypes(
-          { key: segId, types: ['segment'] },
-          artifactGraph
-        )
-        if (err(seg)) return false
-        const segWithFaces = seg as { commonSurfaceIds?: string[] }
-        if (!segWithFaces.commonSurfaceIds?.length) return false
-        const commonFaces = getCommonFacesForEdge(seg, artifactGraph)
-        if (err(commonFaces)) return false
-        return commonFaces.some(
-          (f) =>
-            f.type === 'cap' &&
-            (f as { subType?: string }).subType?.toLowerCase() === 'start'
-        )
-      })
-      if (withStartCap) return withStartCap
-      return matchingEdgeCuts[0]
-    }
+    // Every generated face of a treatment shares the operation's code ref.
+    // Editing uses the selectors on that call, rather than inferring an edge
+    // from an arbitrary face's former consumed-edge associations.
+    if (matchingEdgeCuts.length > 0) return matchingEdgeCuts[0]
   }
   if (operation.name !== 'startSketchOn') return undefined
   const byRangeExact = Array.from(artifactGraph.values()).find((a) => {
@@ -2787,15 +2761,14 @@ export function getEdgeCutMeta(
     ((artifact as { subType?: string }).subType === 'chamfer' ||
       (artifact as { subType?: string }).subType === 'fillet')
   ) {
-    const consumedEdgeId = getEdgeCutConsumedEdgeId(artifact)
-    if (consumedEdgeId == null || consumedEdgeId === '') return null
-    const rawConsumedArtifact = artifactGraph.get(consumedEdgeId)
-    let consumedArtifact: SegmentArtifact | null =
-      rawConsumedArtifact?.type === 'segment' ? rawConsumedArtifact : null
+    let consumedArtifact: SegmentArtifact | null = getSegmentArtifactForEdgeCut(
+      artifact,
+      artifactGraph
+    )
 
     if (!consumedArtifact) {
       const segmentViaWallOrCap = getSegmentForEdgeCut(
-        consumedEdgeId,
+        artifact.id,
         artifactGraph
       )
       if (!segmentViaWallOrCap) {
@@ -2822,7 +2795,18 @@ export function getEdgeCutMeta(
             : first?.type === 'CallExpressionKw' &&
                 first.unlabeled?.type === 'Name'
               ? first.unlabeled.name.name
-              : null
+              : first?.type === 'CallExpressionKw'
+                ? (() => {
+                    const facesArg = findKwArg('faces', first)
+                    const firstFace =
+                      facesArg?.type === 'ArrayExpression'
+                        ? facesArg.elements?.[0]
+                        : undefined
+                    return firstFace?.type === 'Name'
+                      ? firstFace.name.name
+                      : null
+                  })()
+                : null
         if (!tagName) return null
         return {
           type: 'edgeCut',
