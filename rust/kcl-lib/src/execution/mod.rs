@@ -389,6 +389,9 @@ pub struct ExecOutcome {
     pub issues: Vec<CompilationIssue>,
     /// File Names in module Id array index order
     pub filenames: IndexMap<ModuleId, ModulePath>,
+    /// Whether this outcome was reused from the previous run because the
+    /// program had not changed, which leaves the engine's geometry untouched.
+    pub from_cache: bool,
     /// Source code of each module, for rendering issues against the module
     /// their source range points into. Not serialized to keep the WASM
     /// payload small; native callers (e.g. the Python bindings) read it
@@ -1712,7 +1715,12 @@ impl ExecutorContext {
             universe_info,
             preserve_mem,
         } = *match self.prepare_cached_execution(program).await? {
-            PreparedCachedExecution::Cached(outcome) => return Ok(*outcome),
+            PreparedCachedExecution::Cached(outcome) => {
+                return Ok(ExecOutcome {
+                    from_cache: true,
+                    ..*outcome
+                });
+            }
             PreparedCachedExecution::Execute(execution) => execution,
         };
         let result = self

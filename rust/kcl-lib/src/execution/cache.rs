@@ -188,6 +188,7 @@ impl GlobalState {
         Ok(ExecOutcome {
             variables,
             filenames: self.exec_state.filenames(),
+            from_cache: false,
             operations: self.exec_state.operations_by_module(),
             artifact_graph: self.exec_state.artifacts.graph,
             scene_objects: self.exec_state.root_module_artifacts.scene_objects,
