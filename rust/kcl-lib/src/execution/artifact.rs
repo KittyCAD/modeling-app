@@ -709,6 +709,62 @@ fn build_entity_clone_id_maps(
         }
     }
 
+    // Mirror and pattern copies also expose corresponding child UUIDs. Keep
+    // these maps keyed by output body, since one command may create many.
+    let mut children = AHashMap::default();
+    for command in artifact_commands {
+        if let ModelingCmd::EntityGetAllChildUuids(query) = &command.command
+            && let Some(OkModelingCmdResponse::EntityGetAllChildUuids(response)) = responses.get(&command.cmd_id)
+        {
+            children.insert(query.entity_id, &response.entity_ids);
+        }
+    }
+    for command in artifact_commands {
+        let pairs: Vec<_> = match (&command.command, responses.get(&command.cmd_id)) {
+            (ModelingCmd::EntityMirrorAcross(cmd), Some(OkModelingCmdResponse::EntityMirrorAcross(response))) => cmd
+                .ids
+                .iter()
+                .copied()
+                .zip(response.entity_face_edge_ids.iter().map(|info| info.object_id))
+                .collect(),
+            (
+                ModelingCmd::EntityLinearPatternTransform(cmd),
+                Some(OkModelingCmdResponse::EntityLinearPatternTransform(response)),
+            ) => response
+                .entity_face_edge_ids
+                .iter()
+                .map(|info| (cmd.entity_id, info.object_id))
+                .collect(),
+            (ModelingCmd::EntityLinearPattern(cmd), Some(OkModelingCmdResponse::EntityLinearPattern(response))) => {
+                response
+                    .entity_face_edge_ids
+                    .iter()
+                    .map(|info| (cmd.entity_id, info.object_id))
+                    .collect()
+            }
+            (ModelingCmd::EntityCircularPattern(cmd), Some(OkModelingCmdResponse::EntityCircularPattern(response))) => {
+                response
+                    .entity_face_edge_ids
+                    .iter()
+                    .map(|info| (cmd.entity_id, info.object_id))
+                    .collect()
+            }
+            _ => Vec::new(),
+        };
+        for (source, copy) in pairs {
+            let (Some(source_children), Some(copy_children)) = (children.get(&source), children.get(&copy)) else {
+                continue;
+            };
+            let mut map = AHashMap::from_iter(
+                source_children
+                    .iter()
+                    .zip(copy_children.iter())
+                    .map(|(source, copy)| (ArtifactId::new(*source), ArtifactId::new(*copy))),
+            );
+            map.insert(ArtifactId::new(source), ArtifactId::new(copy));
+            clone_id_maps.insert(copy, map);
+        }
+    }
     clone_id_maps
 }
 
@@ -1086,6 +1142,7 @@ fn pattern_artifact_updates(
     source_id: ArtifactId,
     face_edge_infos: &[kcmc::output::FaceEdgeInfo],
     code_ref: CodeRef,
+    copy_id_maps: &AHashMap<Uuid, AHashMap<ArtifactId, ArtifactId>>,
 ) -> Vec<Artifact> {
     let copy_ids = face_edge_infos
         .iter()
@@ -1105,10 +1162,10 @@ fn pattern_artifact_updates(
         id: pattern_id,
         sub_type,
         source_id,
-        copy_ids,
+        copy_ids: copy_ids.clone(),
         copy_face_ids,
         copy_edge_ids,
-        code_ref,
+        code_ref: code_ref.clone(),
     })];
 
     for source_id in source_ids {
@@ -1132,6 +1189,14 @@ fn pattern_artifact_updates(
                 return_arr.push(Artifact::CompositeSolid(new_composite));
             }
             _ => {}
+        }
+    }
+
+    for copy_id in copy_ids {
+        if let Some(map) = copy_id_maps.get(&Uuid::from(copy_id)) {
+            return_arr.extend(mapped_body_copy_artifacts(
+                artifacts, source_id, copy_id, map, &code_ref,
+            ));
         }
     }
 
@@ -1295,6 +1360,56 @@ fn update_csg_input_artifacts(
     }
 }
 
+fn mapped_body_copy_artifacts(
+    artifacts: &IndexMap<ArtifactId, Artifact>,
+    source_id: ArtifactId,
+    copy_id: ArtifactId,
+    map: &AHashMap<ArtifactId, ArtifactId>,
+    code_ref: &CodeRef,
+) -> Vec<Artifact> {
+    let source = match artifacts.get(&source_id) {
+        Some(Artifact::Path(path)) => path.sweep_id.and_then(|id| artifacts.get(&id)),
+        source => source,
+    };
+    let Some(source) = source else {
+        return Vec::new();
+    };
+    if !matches!(source, Artifact::Sweep(_) | Artifact::CompositeSolid(_)) {
+        return Vec::new();
+    }
+    let source_root_id = source.id();
+    let mut map = map.clone();
+    // The engine body can share the source sketch's ID. Keep that sketch as
+    // provenance rather than inserting a Path over the copied body's Sweep.
+    if let Artifact::Sweep(sweep) = source
+        && let Some(path_id) = sweep.path_id
+        && path_id != source_root_id
+        && map.get(&path_id) == Some(&copy_id)
+    {
+        map.remove(&path_id);
+    }
+    map.insert(source_root_id, copy_id);
+    let mut output = vec![remap_artifact_for_clone(
+        source,
+        &map,
+        code_ref,
+        copy_id.into(),
+        source_root_id,
+    )];
+    for artifact in artifacts.values() {
+        if artifact.id() != source_root_id && map.get(&artifact.id()).is_some_and(|id| *id != artifact.id()) {
+            output.push(remap_artifact_for_clone(
+                artifact,
+                &map,
+                code_ref,
+                copy_id.into(),
+                source_root_id,
+            ));
+        }
+    }
+    output
+}
+
 fn mirror_3d_artifact_updates(
     artifacts: &IndexMap<ArtifactId, Artifact>,
     original_solid_ids: &[Uuid],
@@ -1302,6 +1417,7 @@ fn mirror_3d_artifact_updates(
     code_ref: CodeRef,
     range: SourceRange,
     cmd: &ModelingCmd,
+    copy_id_maps: &AHashMap<Uuid, AHashMap<ArtifactId, ArtifactId>>,
 ) -> Result<Vec<Artifact>, KclError> {
     if original_solid_ids.len() != face_edge_infos.len() {
         internal_error!(
@@ -1314,6 +1430,13 @@ fn mirror_3d_artifact_updates(
     for (face_edge_info, original_solid_id) in face_edge_infos.iter().zip(original_solid_ids) {
         let original_solid_id = ArtifactId::new(*original_solid_id);
         let mirrored_solid_id = ArtifactId::new(face_edge_info.object_id);
+        if let Some(map) = copy_id_maps.get(&face_edge_info.object_id) {
+            let mapped = mapped_body_copy_artifacts(artifacts, original_solid_id, mirrored_solid_id, map, &code_ref);
+            if !mapped.is_empty() {
+                return_arr.extend(mapped);
+                continue;
+            }
+        }
         let source_solid = match artifacts.get(&original_solid_id) {
             Some(Artifact::Path(path)) => path.sweep_id.and_then(|sweep_id| artifacts.get(&sweep_id)).or_else(|| {
                 path.composite_solid_id
@@ -1717,6 +1840,7 @@ fn artifacts_to_update(
                 ArtifactId::new(pattern_cmd.entity_id),
                 face_edge_infos,
                 code_ref,
+                entity_clone_id_maps,
             ));
         }
         ModelingCmd::EntityLinearPattern(pattern_cmd) => {
@@ -1731,6 +1855,7 @@ fn artifacts_to_update(
                 ArtifactId::new(pattern_cmd.entity_id),
                 face_edge_infos,
                 code_ref,
+                entity_clone_id_maps,
             ));
         }
         ModelingCmd::EntityCircularPattern(pattern_cmd) => {
@@ -1745,6 +1870,7 @@ fn artifacts_to_update(
                 ArtifactId::new(pattern_cmd.entity_id),
                 face_edge_infos,
                 code_ref,
+                entity_clone_id_maps,
             ));
         }
         ModelingCmd::EntityMirrorAcross(kcmc::EntityMirrorAcross {
@@ -1761,7 +1887,15 @@ fn artifacts_to_update(
                     "EntityMirrorAcross response variant not handled: id={id:?}, cmd={cmd:?}, response={response:?}"
                 ),
             };
-            return mirror_3d_artifact_updates(artifacts, original_solid_ids, face_edge_infos, code_ref, range, cmd);
+            return mirror_3d_artifact_updates(
+                artifacts,
+                original_solid_ids,
+                face_edge_infos,
+                code_ref,
+                range,
+                cmd,
+                entity_clone_id_maps,
+            );
         }
         ModelingCmd::EntityMirror(kcmc::EntityMirror {
             ids: original_path_ids, ..
@@ -1886,6 +2020,15 @@ fn artifacts_to_update(
             for artifact in artifacts.values() {
                 let artifact_id = artifact.id();
                 if artifact_id == source_artifact_id || !entity_id_map.contains_key(&artifact_id) {
+                    continue;
+                }
+                // Pattern copies now have a semantic body artifact. Clone the
+                // source topology above, rather than remapping that extra root
+                // onto the cloned sketch's engine ID and overwriting its Path.
+                if artifact_id == source_entity_id
+                    && source_entity_id != source_artifact_id
+                    && matches!(artifact, Artifact::Sweep(_) | Artifact::CompositeSolid(_))
+                {
                     continue;
                 }
                 cloned_artifacts.push(remap_artifact_for_clone(

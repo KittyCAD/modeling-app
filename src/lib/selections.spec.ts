@@ -42,6 +42,61 @@ import type {
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 
+test('keeps the selected pattern instance as a primitive edge parent', async () => {
+  const { instance } = await buildTheWorldAndNoEngineConnection()
+  const ast = assertParse('', instance)
+  const pattern: Extract<Artifact, { type: 'pattern' }> = {
+    type: 'pattern',
+    id: 'pattern',
+    subType: 'linear',
+    sourceId: 'source',
+    copyIds: ['copy-1', 'copy-2'],
+    copyFaceIds: [],
+    copyEdgeIds: ['edge-2'],
+    codeRef: { range: [0, 0, 0], pathToNode: [], nodePath: { steps: [] } },
+  }
+  const artifactGraph: ArtifactGraph = new Map([[pattern.id, pattern]])
+  const engineCommandManager = {
+    sendSceneCommand: vi.fn(async (event: any) => ({
+      success: true,
+      resp: {
+        type: 'modeling',
+        data: {
+          modeling_response:
+            event.cmd.type === 'entity_get_primitive_index'
+              ? {
+                  type: 'entity_get_primitive_index',
+                  data: { primitive_index: 3, entity_type: 'edge' },
+                }
+              : { type: 'entity_get_parent_id', data: { entity_id: 'copy-2' } },
+        },
+      },
+    })),
+  }
+  const result = await getEventForQueryEntityTypeWithPoint(
+    { entity_id: 'edge-2', reference: { type: 'edge', side_faces: [] } },
+    {
+      engineCommandManager: engineCommandManager as any,
+      kclManager: { ast, artifactGraph } as any,
+      rustContext: { defaultPlanes: null } as any,
+      wasmInstance: instance,
+    }
+  )
+  expect(result).toEqual({
+    type: 'Set selection',
+    data: {
+      selectionType: 'enginePrimitiveSelection',
+      selection: {
+        type: 'enginePrimitive',
+        entityId: 'edge-2',
+        parentEntityId: 'copy-2',
+        primitiveIndex: 3,
+        primitiveType: 'edge',
+      },
+    },
+  })
+})
+
 test('includes region, source segment, and sweep ranges for a wall face', () => {
   const sourceSegmentRange = [10, 20, 0] as SourceRange
   const regionRange = [30, 40, 0] as SourceRange

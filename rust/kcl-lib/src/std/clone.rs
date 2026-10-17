@@ -175,6 +175,8 @@ pub(super) async fn fix_tags_and_references(
 
             let (start_tag, end_tag) = get_named_cap_tags(solid);
             let solid_value = solid.value.clone();
+            let mapped_start_cap = solid.start_cap_id.and_then(|id| entity_id_map.get(&id).copied());
+            let mapped_end_cap = solid.end_cap_id.and_then(|id| entity_id_map.get(&id).copied());
             let solid_artifact_id = solid.artifact_id;
             let old_face_tag_names = solid.faces.keys().cloned().collect::<Vec<_>>();
             let face_creator = match &solid.creator {
@@ -205,7 +207,7 @@ pub(super) async fn fix_tags_and_references(
             sketch.artifact_id = new_geometry_id.into();
             sketch.clone = Some(source_topology_id);
 
-            fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, Some(solid_value)).await?;
+            fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, Some(solid_value.clone())).await?;
             let sketch_for_post = sketch.clone();
 
             // Do the after extrude things to update those ids, based on the new sketch
@@ -273,6 +275,30 @@ pub(super) async fn fix_tags_and_references(
                 });
             }
 
+            // Extrusion metadata on a copied body can still contain ancestor
+            // IDs. Preserve tagged surfaces verified by the live child map
+            // when that metadata cannot reconstruct them. Removed faces have
+            // no mapping and must not be restored.
+            for mut surface in solid_value {
+                let Some(tag) = surface.get_tag() else {
+                    continue;
+                };
+                if new_solid
+                    .value
+                    .iter()
+                    .any(|value| value.get_tag().is_some_and(|existing| existing.name == tag.name))
+                {
+                    continue;
+                }
+                let Some(face_id) = entity_id_map.get(&surface.face_id()).copied() else {
+                    continue;
+                };
+                surface.set_id(remap_id(surface.get_id(), &entity_id_map));
+                surface.set_face_id(face_id);
+                new_solid.value.push(surface);
+            }
+            new_solid.start_cap_id = new_solid.start_cap_id.or(mapped_start_cap);
+            new_solid.end_cap_id = new_solid.end_cap_id.or(mapped_end_cap);
             restore_sketch_tag_surfaces(&mut new_solid);
             *solid = new_solid;
 
@@ -281,6 +307,54 @@ pub(super) async fn fix_tags_and_references(
     }
 
     Ok(())
+}
+
+/// Pattern copies retain source topology for legacy operations. Resolve only
+/// body-scoped tag access against the copy, without rebinding bare tags.
+pub(crate) async fn resolve_scoped_pattern_tags(
+    mut solid: Box<Solid>,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Box<Solid>> {
+    if solid.id == solid.topology_id() || args.ctx.no_engine_commands().await {
+        return Ok(solid);
+    }
+    let Some(id_map) = try_get_body_copy_child_map(solid.id, solid.id, solid.topology_id(), exec_state, args).await?
+    else {
+        return Ok(solid);
+    };
+    remap_sketchless_solid(&mut solid, &id_map);
+    remap_edge_cuts(&mut solid, &id_map);
+    let mut geometry = solid.clone();
+    geometry.faces.clear();
+    if let Some(sketch) = geometry.sketch_mut() {
+        sketch.tags.clear();
+    }
+    geometry.become_new_body(solid.id, solid.artifact_id, NewBodyKind::IndependentCopy);
+
+    for tag in solid.faces.values_mut() {
+        remap_scoped_tag(tag, &id_map, &geometry);
+    }
+    if let Some(sketch) = solid.sketch_mut() {
+        for tag in sketch.tags.values_mut() {
+            remap_scoped_tag(tag, &id_map, &geometry);
+        }
+    }
+    Ok(solid)
+}
+
+fn remap_scoped_tag(tag: &mut TagIdentifier, id_map: &HashMap<uuid::Uuid, uuid::Uuid>, geometry: &Solid) {
+    for (_, info) in &mut tag.info {
+        info.id = remap_id(info.id, id_map);
+        if let Some(surface) = &mut info.surface {
+            surface.set_id(remap_id(surface.get_id(), id_map));
+            surface.set_face_id(remap_id(surface.face_id(), id_map));
+        }
+        if let Some(path) = &mut info.path {
+            path.set_id(remap_id(path.get_id(), id_map));
+        }
+        info.geometry = Geometry::Solid(geometry.clone());
+    }
 }
 
 fn remap_id(id: uuid::Uuid, entity_id_map: &HashMap<uuid::Uuid, uuid::Uuid>) -> uuid::Uuid {
@@ -391,7 +465,26 @@ fn restore_face_tags(solid: &mut Solid, face_tag_names: &[String], exec_state: &
     }
 }
 
-async fn get_old_new_child_map(
+/// Patterning retained features is valid even when their source is no longer
+/// a queryable live body. In that case no semantic copy metadata is available;
+/// keep the existing tags and allow primitive selection of the output.
+pub(super) async fn try_get_body_copy_child_map(
+    new_geometry_id: uuid::Uuid,
+    old_geometry_id: uuid::Uuid,
+    source_topology_id: uuid::Uuid,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Option<HashMap<uuid::Uuid, uuid::Uuid>>> {
+    match get_old_new_child_map(new_geometry_id, old_geometry_id, source_topology_id, exec_state, args).await {
+        Ok(map) => Ok(Some(map)),
+        Err(error) if matches!(error, KclError::Engine { .. }) && error.message() == "No such entity exists" => {
+            Ok(None)
+        }
+        Err(error) => Err(error),
+    }
+}
+
+pub(super) async fn get_old_new_child_map(
     new_geometry_id: uuid::Uuid,
     old_geometry_id: uuid::Uuid,
     source_topology_id: uuid::Uuid,
@@ -421,6 +514,20 @@ async fn get_old_new_child_map(
     entity_id_map.insert(old_geometry_id, new_geometry_id);
     entity_id_map.insert(source_topology_id, new_geometry_id);
     Ok(entity_id_map)
+}
+
+pub(super) async fn try_get_body_child_uuids(
+    geometry_id: uuid::Uuid,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Option<Vec<uuid::Uuid>>> {
+    match get_all_child_uuids(geometry_id, exec_state, args).await {
+        Ok(ids) => Ok(Some(ids)),
+        Err(error) if matches!(error, KclError::Engine { .. }) && error.message() == "No such entity exists" => {
+            Ok(None)
+        }
+        Err(error) => Err(error),
+    }
 }
 
 async fn get_all_child_uuids(
@@ -1282,7 +1389,10 @@ clonedCopy = clone(patternCopy)
         assert_eq!(cloned_copy.topology_id(), cloned_copy.id);
         assert_eq!(cloned_copy.artifact_id, cloned_copy.id.into());
         assert_ne!(pattern_copy.id, cloned_copy.id);
-        assert!(result.artifact_graph.get(&pattern_copy.artifact_id).is_none());
+        assert!(matches!(
+            result.artifact_graph.get(&pattern_copy.artifact_id),
+            Some(Artifact::CompositeSolid(_))
+        ));
         assert_cloned_composite_topology(&result.artifact_graph, cloned_copy);
 
         ctx.close().await;
@@ -1451,7 +1561,9 @@ clonedCopy = clone(patternCopy)
         let cloned_sketch = cloned_copy.sketch().expect("Expected cloned copy to have a sketch");
         assert_eq!(pattern_copy.original_id(), source.id);
         assert_eq!(cloned_copy.original_id(), cloned_copy.id);
-        assert!(result.artifact_graph.get(&pattern_copy.artifact_id).is_none());
+        assert!(
+            matches!(result.artifact_graph.get(&pattern_copy.artifact_id), Some(Artifact::Sweep(sweep)) if sweep.source_sweep_id == Some(source.artifact_id))
+        );
         assert_ne!(cloned_copy.artifact_id, cloned_copy.id.into());
 
         assert_eq!(pattern_sketch.tags.get("wall"), cloned_sketch.tags.get("wall"));
@@ -1480,6 +1592,63 @@ clonedCopy = clone(patternCopy)
                 .any(|artifact| matches!(artifact, Artifact::Cap(cap) if cap.sweep_id == cloned_copy.artifact_id))
         );
 
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_clone_pattern_mirror_preserves_cap_tags() {
+        let code = r#"@settings(kclVersion = 3.0)
+cubeSize = 20mm
+cubeProfile = sketch(on = XY) {
+  bottomEdge = line(start = [var 0mm, var 0mm], end = [var 20mm, var 0mm])
+  rightEdge = line(start = [var 20mm, var 0mm], end = [var 20mm, var 20mm])
+  topEdge = line(start = [var 20mm, var 20mm], end = [var 0mm, var 20mm])
+  leftEdge = line(start = [var 0mm, var 20mm], end = [var 0mm, var 0mm])
+  coincident([bottomEdge.start, ORIGIN])
+  coincident([bottomEdge.end, rightEdge.start])
+  coincident([rightEdge.end, topEdge.start])
+  coincident([topEdge.end, leftEdge.start])
+  coincident([leftEdge.end, bottomEdge.start])
+  horizontal(bottomEdge)
+  vertical(rightEdge)
+  horizontal(topEdge)
+  vertical(leftEdge)
+  distance([bottomEdge.start, bottomEdge.end]) == cubeSize
+  distance([rightEdge.start, rightEdge.end]) == cubeSize
+}
+cubeRegion = region(segments = [cubeProfile.bottomEdge, cubeProfile.rightEdge], intersectionIndex = -1, direction = CCW)
+originalCube = extrude(cubeRegion, length = cubeSize, tagEnd = $capEnd001)
+hide(cubeProfile)
+translatedCube = clone(originalCube) |> translate(x = 50mm, global = true)
+pattern001 = patternLinear3d(translatedCube, instances = 4, distance = 30mm, axis = Y)
+solid001 = mirror3d(pattern001[2], across = {
+  sideFaces = [pattern001[2].sketch.tags.bottomEdge, pattern001[2].faces.capEnd001]
+})
+gdt::annotation(edges = [{
+  sideFaces = [solid001[0].sketch.tags.bottomEdge, solid001[0].faces.capEnd001]
+}], annotation = "cloned, patterned and mirrored", fontSize = 4.6667mm)
+mirroredBody = solid001[0]
+mirroredEdge = getCommonEdge(faces = [mirroredBody.sketch.tags.bottomEdge, mirroredBody.faces.capEnd001])
+sourceEdge = getCommonEdge(faces = [pattern001[2].sketch.tags.bottomEdge, pattern001[2].faces.capEnd001])
+"#;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::test_server::new_context(true, None, true, program.language_version().unwrap())
+            .await
+            .unwrap();
+        let result = ctx.run_with_caching(program).await.map_err(|e| e.error).unwrap();
+        let KclValueView::Uuid { value: mirrored_edge } = result.variables.get("mirroredEdge").unwrap() else {
+            panic!("Expected mirrored edge UUID");
+        };
+        let KclValueView::Uuid { value: source_edge } = result.variables.get("sourceEdge").unwrap() else {
+            panic!("Expected source edge UUID");
+        };
+        assert_ne!(mirrored_edge, source_edge);
+        let mirrored_body = runtime_solid(&result, "mirroredBody");
+        let Some(Artifact::Sweep(sweep)) = result.artifact_graph.get(&mirrored_body.artifact_id) else {
+            panic!("Expected mirrored sweep artifact");
+        };
+        assert!(sweep.edge_ids.contains(&(*mirrored_edge).into()));
+        assert!(!sweep.edge_ids.contains(&(*source_edge).into()));
         ctx.close().await;
     }
 

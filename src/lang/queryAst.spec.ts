@@ -68,6 +68,65 @@ let kclManagerInThisFile: KclManager = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
 let rustContextInThisFile: RustContext = null!
 
+it('resolves each mirrored body and face to its own array index', async () => {
+  const code = 'a = 0\nb = 0\nmirrors = mirror3d([a, b], across = YZ)'
+  const ast = assertParse(code, instanceInThisFile)
+  const range: SourceRange = [code.indexOf('mirror3d'), code.length, 0]
+  const codeRef = { ...codeRefFromRange(range, ast), nodePath: { steps: [] } }
+  const first: Extract<Artifact, { type: 'sweep' }> = {
+    type: 'sweep',
+    id: 'first-mirror',
+    subType: 'extrusion',
+    pathId: 'first-path',
+    surfaceIds: [],
+    edgeIds: [],
+    trajectoryId: null,
+    method: 'new',
+    consumed: false,
+    codeRef,
+  }
+  const second = { ...first, id: 'second-mirror', pathId: 'second-path' }
+  const graph: ArtifactGraph = new Map([
+    [first.id, first],
+    [second.id, second],
+  ])
+  for (const [index, artifact] of [first, second].entries()) {
+    const cap: Extract<Artifact, { type: 'cap' }> = {
+      type: 'cap',
+      id: `${artifact.id}-cap`,
+      subType: 'end',
+      sweepId: artifact.id,
+      pathIds: [],
+      edgeCutEdgeIds: [],
+      faceCodeRef: codeRef,
+      cmdId: '',
+    }
+    graph.set(cap.id, cap)
+    for (const selected of [artifact, cap]) {
+      const result = getVariableExprsFromSelection(
+        {
+          graphSelections: [{ artifact: selected, codeRef }],
+          otherSelections: [],
+        },
+        graph,
+        ast,
+        instanceInThisFile
+      )
+      if (err(result)) throw result
+      expect(result.exprs).toHaveLength(1)
+      const expr = result.exprs[0]
+      expect(expr.type).toBe('MemberExpression')
+      if (expr.type !== 'MemberExpression')
+        throw new Error('Expected indexed mirror')
+      expect(expr.computed).toBe(true)
+      expect(expr.property).toMatchObject({
+        type: 'Literal',
+        value: { value: index },
+      })
+    }
+  }
+})
+
 /**
  * Every it test could build the world and connect to the engine but this is too resource intensive and will
  * spam engine connections.
