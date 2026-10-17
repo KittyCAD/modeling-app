@@ -388,9 +388,11 @@ body002 = clone(body001)
 })
 
 test.describe('Named View dialog', { tag: '@web' }, () => {
-  test.use({ userFeatures: [EXPERIMENTAL_POINT_AND_CLICK_FLAG] })
+  test.use({
+    userFeatures: [EXPERIMENTAL_POINT_AND_CLICK_FLAG, 'modeling_dialogs'],
+  })
 
-  test('Creates, edits visibility, and removes from the pane without modeling_dialogs', async ({
+  test('Creates, edits visibility, and removes from the pane', async ({
     page,
     homePage,
     scene,
