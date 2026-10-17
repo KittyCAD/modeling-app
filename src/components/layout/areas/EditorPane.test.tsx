@@ -37,13 +37,6 @@ vi.mock('@src/hooks/useToolbarGuards', () => ({
 vi.mock('@src/registry/extensions/commands/appCommands', () => ({
   APP_COMMAND_IDS: {},
 }))
-vi.mock('@src/components/layout/Panel', () => ({
-  LayoutPanel: vi.fn(),
-  LayoutPanelHeader: vi.fn(),
-}))
-vi.mock('@src/components/layout/Panel/HeaderMenu', () => ({
-  HeaderMenu: vi.fn(),
-}))
 
 import { EditorPaneContents } from '@src/components/layout/areas/EditorPane'
 import { activeTextFileSignal } from '@src/lib/activeTextFile'
