@@ -1,3 +1,4 @@
+import { test as baseTest } from '@e2e/playwright/base-test'
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import {
   closeOnboardingModalIfPresent,
@@ -7,7 +8,10 @@ import {
   expectKeybindingsSettingsVisible,
   getUtils,
   isOutOfViewInScrollContainer,
+  PLAYWRIGHT_STORAGE_SCOPE_KEY,
+  PLAYWRIGHT_TEST_SCOPE_KEY,
   runningOnWindows,
+  setup,
   tomlToPerProjectSettings,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
@@ -26,6 +30,93 @@ import { PNG } from 'pngjs'
 import { NIL as uuidNIL } from 'uuid'
 
 type ProjectCardContextMenuAction = 'rename' | 'delete'
+
+baseTest(
+  'home billing reminder stays dismissed until the next low-credit cycle',
+  { tag: ['@web'] },
+  async ({ page, context }, testInfo) => {
+    let remainingCreditValue = 1
+    let refreshAt = '2026-11-01T00:00:00Z'
+    await context.route('**/user', async (route) => {
+      await route.fulfill({
+        json: {
+          id: '00000000-0000-4000-8000-000000000001',
+          email: 'billing-reminder@example.com',
+          image: '',
+        },
+      })
+    })
+    await context.route('**/announcements*', async (route) => {
+      await route.fulfill({ json: { items: [] } })
+    })
+    await context.route('**/user/payment/balance?*', async (route) => {
+      await route.fulfill({
+        json: {
+          monthly_api_credits_remaining_monetary_value: remainingCreditValue,
+          stable_api_credits_remaining_monetary_value: 0,
+          monthly_api_credits_refresh_at: refreshAt,
+          amount_due_after_credits: 0,
+        },
+      })
+    })
+    await context.route('**/user/payment/subscriptions', async (route) => {
+      await route.fulfill({
+        json: {
+          modeling_app: {
+            name: 'free',
+            type: { type: 'user' },
+            pay_as_you_go_api_credit_price: 1 / 120,
+            monthly_pay_as_you_go_api_credits_monetary_value: 10,
+          },
+        },
+      })
+    })
+    await setup(context, page, testInfo)
+    await page.setViewportSize({ width: 1280, height: 900 })
+    await page.goto('/home')
+    await expect(page.getByTestId('home-sidebar')).toBeVisible()
+    // Preserve this test's storage across reloads, just as a normal app does.
+    await page.evaluate(
+      ({ scopeKey, storageScopeKey }) => {
+        sessionStorage.setItem(scopeKey, 'home-billing-reminder')
+        sessionStorage.setItem(storageScopeKey, 'home-billing-reminder')
+      },
+      {
+        scopeKey: PLAYWRIGHT_TEST_SCOPE_KEY,
+        storageScopeKey: PLAYWRIGHT_STORAGE_SCOPE_KEY,
+      }
+    )
+    const dismiss = page.getByRole('button', {
+      name: 'Dismiss billing reminder',
+    })
+    const reloadHome = async () => {
+      await page.reload()
+      await expect(page.getByTestId('home-sidebar')).toBeVisible()
+      await page.waitForFunction(
+        () =>
+          window.app.billing.actor.getSnapshot().context.lastFetch !== undefined
+      )
+    }
+
+    await reloadHome()
+    await expect(dismiss).toBeHidden()
+    remainingCreditValue = 0.5
+    await reloadHome()
+    await expect(dismiss).toBeVisible()
+    await page.screenshot({ path: testInfo.outputPath('billing-reminder.png') })
+    await dismiss.click()
+    await reloadHome()
+    await expect(dismiss).toBeHidden()
+
+    refreshAt = '2026-12-01T00:00:00Z'
+    remainingCreditValue = 10
+    await reloadHome()
+    await expect(dismiss).toBeHidden()
+    remainingCreditValue = 0.5
+    await reloadHome()
+    await expect(dismiss).toBeVisible()
+  }
+)
 
 async function clickProjectCardContextMenuItem(
   page: Page,
