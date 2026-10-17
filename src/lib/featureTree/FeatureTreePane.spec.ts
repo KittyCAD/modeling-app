@@ -1,4 +1,6 @@
 import type { Operation, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
+import { defaultSourceRange } from '@src/lang/sourceRange'
+import { defaultNodePath, type OperationsByModule } from '@src/lang/wasm'
 import {
   buildOperationTree,
   getFeatureTreeSketchSelectionContext,
@@ -6,8 +8,6 @@ import {
   namedViewTooltipText,
   supportsZ0006AutoFixBeforeFeatureTreeEdit,
 } from '@src/lib/featureTree/FeatureTreePane'
-import { defaultSourceRange } from '@src/lang/sourceRange'
-import { defaultNodePath, type OperationsByModule } from '@src/lang/wasm'
 import { describe, expect, it } from 'vitest'
 
 describe('FeatureTreePane', () => {
