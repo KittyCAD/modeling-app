@@ -298,7 +298,7 @@ pub struct Segment {
     pub common_surface_ids: Vec<ArtifactId>,
 }
 
-/// A sweep is a more generic term for extrude, revolve, loft, sweep, and blend.
+/// A sweep is a body created from curves, including extrude, revolve, loft, blend, and planar surfaces.
 #[derive(Debug, Clone, Serialize, Deserialize, JsonSchema, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Artifact.ts")]
 #[serde(rename_all = "camelCase")]
@@ -336,6 +336,7 @@ pub enum SweepSubType {
     RevolveAboutEdge,
     Loft,
     Blend,
+    PlanarSurface,
     Sweep,
 }
 

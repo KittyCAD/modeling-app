@@ -341,7 +341,7 @@ export type StartSketchOnFace = { id: ArtifactId, faceId: ArtifactId, codeRef: C
 export type StartSketchOnPlane = { id: ArtifactId, planeId: ArtifactId, codeRef: CodeRef, };
 
 /**
- * A sweep is a more generic term for extrude, revolve, loft, sweep, and blend.
+ * A sweep is a body created from curves, including extrude, revolve, loft, blend, and planar surfaces.
  */
 export type Sweep = { id: ArtifactId, subType: SweepSubType, pathId?: ArtifactId | null, surfaceIds: Array<ArtifactId>, edgeIds: Array<ArtifactId>, codeRef: CodeRef, 
 /**
@@ -368,7 +368,7 @@ export type SweepEdge = { id: ArtifactId, subType: SweepEdgeSubType, segId: Arti
 
 export type SweepEdgeSubType = "opposite" | "adjacent" | "previousAdjacent";
 
-export type SweepSubType = "extrusion" | "extrusionTwist" | "revolve" | "revolveAboutEdge" | "loft" | "blend" | "sweep";
+export type SweepSubType = "extrusion" | "extrusionTwist" | "revolve" | "revolveAboutEdge" | "loft" | "blend" | "planarSurface" | "sweep";
 
 export type Wall = { id: ArtifactId, segId: ArtifactId, edgeCutEdgeIds: Array<ArtifactId>, sweepId: ArtifactId, pathIds: Array<ArtifactId>, 
 /**
