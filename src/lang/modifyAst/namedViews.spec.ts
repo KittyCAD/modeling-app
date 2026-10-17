@@ -208,10 +208,12 @@ view001 = view::named(
     await enginelessExecutor(result.modifiedAst, rustContext)
   })
 
-  it('keeps a shared directed camera when editing a view', async () => {
+  it('keeps a custom camera helper when editing a view', async () => {
     const code = `${settings}
-camera001 = view::directed([0, -1, 0], distance = 80mm)
-view001 = view::named("Inspection view", camera = camera001, baseline = view::Visibility::Show)`
+fn oriented(@orientation: view::Orientation) {
+  return view::oriented(orientation, distance = 123mm)
+}
+view001 = view::named("Inspection view", camera = oriented(view::Orientation::Front), baseline = view::Visibility::Show)`
     const ast = assertParse(code, instance)
     const execState = await enginelessExecutor(ast, rustContext)
     const artifact = [...execState.artifactGraph.values()].find(
@@ -246,9 +248,14 @@ view001 = view::named("Inspection view", camera = camera001, baseline = view::Vi
       wasmInstance: instance,
     })
     if (err(result)) throw result
-    expect(recast(result.modifiedAst, instance)).toContain(
-      'view::named("Renamed view", camera = camera001, baseline = view::Visibility::Hide)'
+    const updatedCode = recast(result.modifiedAst, instance)
+    expect(updatedCode).toContain('camera = oriented(view::Orientation::Front)')
+    expect(updatedCode).toContain('"Renamed view"')
+    expect(updatedCode).toContain('view::Visibility::Hide')
+    const updated = await enginelessExecutor(result.modifiedAst, rustContext)
+    const updatedView = [...updated.artifactGraph.values()].find(
+      (candidate) => candidate.type === 'namedView'
     )
-    await enginelessExecutor(result.modifiedAst, rustContext)
+    expect(updatedView?.camera.distance).toBe(123)
   })
 })

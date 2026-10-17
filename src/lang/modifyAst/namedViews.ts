@@ -35,6 +35,18 @@ import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 
+export function isOrientedCameraCall(
+  camera: Expr | undefined
+): camera is Node<CallExpressionKw> {
+  return (
+    camera?.type === 'CallExpressionKw' &&
+    camera.callee.name.name === 'oriented' &&
+    ['view', 'std::view'].includes(
+      camera.callee.path.map(({ name }) => name).join('::')
+    )
+  )
+}
+
 function viewEnum(
   type: string,
   value: string,
@@ -226,14 +238,9 @@ function editNamedView(
     return new Error('Could not determine the named view camera.')
   }
 
-  // A shared or directed camera is left untouched; its fields aren't editable.
-  if (orientation && projection) {
-    const previousCamera = cameraArgument.arg
-    const orientedCamera =
-      previousCamera.type === 'CallExpressionKw' &&
-      previousCamera.callee.name.name === 'oriented'
-        ? previousCamera
-        : undefined
+  // Leave shared cameras, directed cameras, and custom helper calls untouched.
+  const orientedCamera = cameraArgument.arg
+  if (orientation && projection && isOrientedCameraCall(orientedCamera)) {
     cameraArgument.arg = createOrientedCamera(
       viewEnum(
         'Orientation',
@@ -241,13 +248,13 @@ function editNamedView(
         view.camera.look.type === 'oriented'
           ? view.camera.look.orientation
           : undefined,
-        orientedCamera?.unlabeled
+        orientedCamera.unlabeled
       ),
       viewEnum(
         'Projection',
         projection,
         view.camera.projection,
-        orientedCamera?.arguments.find(
+        orientedCamera.arguments.find(
           (argument) => argument.label?.name === 'projection'
         )?.arg
       ),

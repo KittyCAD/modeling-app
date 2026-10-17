@@ -43,7 +43,13 @@ export type ViewRow = {
 }
 
 export function canManageNamedView(view: KclNamedView): boolean {
-  return view.moduleId === ROOT_MODULE_ID
+  // One call inside a function can produce several views from the same source.
+  return (
+    view.moduleId === ROOT_MODULE_ID &&
+    !view.artifact.codeRef.pathToNode.some(
+      ([, type]) => type === 'FunctionExpression'
+    )
+  )
 }
 
 function moduleName(path: ModulePath | undefined): string | undefined {
@@ -284,7 +290,7 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                   <CustomIcon
                     name="lockClosed"
                     className="mx-1 h-4 w-4 shrink-0 text-chalkboard-50"
-                    aria-label="Imported named view is read only"
+                    aria-label="Named view is read only"
                   />
                 ) : null}
               </li>

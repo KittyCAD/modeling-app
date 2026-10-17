@@ -207,11 +207,18 @@ describe('viewRows', () => {
     expect(rows.map((row) => row.key)).toEqual(['kcl-default', 'view-1'])
   })
 
-  it('only lets the root module manage a declared view', () => {
+  it('only manages root-module views declared outside functions', () => {
     expect(canManageNamedView(view({ name: 'Root' }))).toBe(true)
     expect(canManageNamedView(view({ name: 'Import', moduleId: 1 }))).toBe(
       false
     )
+
+    const generated = view({ name: 'Generated' })
+    generated.artifact.codeRef = {
+      ...generated.artifact.codeRef,
+      pathToNode: [['body', 'FunctionExpression']],
+    }
+    expect(canManageNamedView(generated)).toBe(false)
   })
 })
 

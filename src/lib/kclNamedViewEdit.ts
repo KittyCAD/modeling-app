@@ -1,6 +1,7 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { toUtf16 } from '@src/lang/errors'
+import { isOrientedCameraCall } from '@src/lang/modifyAst/namedViews'
 import {
   getNodeFromPath,
   retrieveSelectionsFromArtifactIds,
@@ -50,16 +51,14 @@ export async function prepareNamedViewEditCommand({
   const camera = callResult.node.arguments.find(
     (argument) => argument.label?.name === 'camera'
   )?.arg
+  const orientedCamera = isOrientedCameraCall(camera) ? camera : undefined
   const extractCameraArgument = async (
     name: 'target' | 'distance'
   ): Promise<KclCommandValue | undefined | Error> => {
-    if (
-      camera?.type !== 'CallExpressionKw' ||
-      camera.callee.name.name !== 'oriented'
-    ) {
+    if (!orientedCamera) {
       return undefined
     }
-    const argument = camera.arguments.find(
+    const argument = orientedCamera.arguments.find(
       (candidate) => candidate.label?.name === name
     )?.arg
     if (!argument) {
@@ -106,9 +105,7 @@ export async function prepareNamedViewEditCommand({
   // Other camera expressions stay in source; only name and visibility are editable.
   const look = artifact.camera.look
   const orientation =
-    camera?.type === 'CallExpressionKw' &&
-    camera.callee.name.name === 'oriented' &&
-    look.type === 'oriented'
+    orientedCamera && look.type === 'oriented'
       ? STD_LIB_ENUMS['view::Orientation'].find(
           (value) => value.toLowerCase() === look.orientation
         )
