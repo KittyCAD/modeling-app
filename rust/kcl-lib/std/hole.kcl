@@ -575,10 +575,24 @@ export fn holesLinear(
   /// How far between each hole
   distance,
   /// Along which axis should the holes be cut?
+  /// Given as a 2D direction on the face, in the face's own X and Y axes.
   axis: Axis2d | Point2d,
 ) {
+  // An axis object counts as one item; a Point2d counts as two.
+  direction = if count(axis) == 2 { axis } else { axis.direction }
+  dx = (direction[0]: mm) / 1mm
+  dy = (direction[1]: mm) / 1mm
+
+  // Turn the 2D direction on the face into a 3D direction.
+  facePlane = planeOf(solid, face = face)
+  axis3d = [
+    (dx * facePlane.xAxis[0] + dy * facePlane.yAxis[0]): mm,
+    (dx * facePlane.xAxis[1] + dy * facePlane.yAxis[1]): mm,
+    (dx * facePlane.xAxis[2] + dy * facePlane.yAxis[2]): mm
+  ]
+
   drilled = holeGeometry(solid, face, holeBottom, holeBody, holeType, cutAt)
-  |> patternLinear3d(instances, distance, axis)
+  |> patternLinear3d(instances, distance, axis = axis3d)
 
   return subtract(solid, tools = drilled)
 }

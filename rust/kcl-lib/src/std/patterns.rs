@@ -899,6 +899,64 @@ patterned = startSketchOn(XY)
             outcome.issues
         );
     }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn holes_linear_patterns_the_hole_along_the_axis() {
+        // `hole::holesLinear` used to pass a 2D axis to `patternLinear3d`, so every call failed.
+        // The mock engine says every face is XY, so this checks the 2D inputs, not the face mapping.
+        for (axis, step) in [
+            ("X", [3.0, 0.0, 0.0]),
+            ("Y", [0.0, 3.0, 0.0]),
+            ("[1, 0]", [3.0, 0.0, 0.0]),
+            ("{ origin = [0, 0], direction = [0, 1] }", [0.0, 3.0, 0.0]),
+        ] {
+            for version in ["2.0", "3.0"] {
+                let code = format!(
+                    r#"@settings(kclVersion = {version}, defaultLengthUnit = mm)
+profile = sketch(on = XY) {{
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  edge3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  edge4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+}}
+block = extrude(region(segments = [profile.edge1, profile.edge2]), length = 6mm, tagEnd = $top)
+drilled = hole::holesLinear(
+  block,
+  face = top,
+  cutAt = [2mm, 2mm],
+  instances = 3,
+  distance = 3mm,
+  axis = {axis},
+  holeBottom = hole::flat(),
+  holeBody = hole::blind(depth = 3mm, diameter = 1mm),
+  holeType = hole::simple(),
+)"#
+                );
+                let result = crate::execution::parse_execute(&code).await.unwrap();
+                let translations = result
+                    .root_module_artifact_commands()
+                    .iter()
+                    .find_map(|artifact_command| match &artifact_command.command {
+                        ModelingCmd::EntityLinearPatternTransform(pattern) => Some(
+                            pattern
+                                .transforms
+                                .iter()
+                                .flatten()
+                                .map(|t| [t.translate.x.0, t.translate.y.0, t.translate.z.0])
+                                .collect::<Vec<_>>(),
+                        ),
+                        _ => None,
+                    })
+                    .expect("expected a linear pattern command");
+                let expected = vec![step, step.map(|n| 2.0 * n)];
+                assert_eq!(translations, expected, "for:\n{code}");
+            }
+        }
+    }
 }
 
 /// A linear pattern on a 2D sketch.
