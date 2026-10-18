@@ -1902,7 +1902,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             hidden: isEditingNodeSelection,
           },
           name: {
-            validation: ({ data }) => validateGdtText({ data: data.name }),
+            validation: ({ data }) =>
+              validateGdtText({
+                data: typeof data === 'string' ? data : data.name,
+              }),
             defaultValue: (_, modelingContext) =>
               modelingContext
                 ? getNextAvailableDatumName(modelingContext.kclManager.ast)
@@ -2161,7 +2164,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           annotation: {
             inputType: 'text',
             validation: ({ data }) =>
-              validateGdtText({ data: data.annotation }),
+              validateGdtText({
+                data: typeof data === 'string' ? data : data.annotation,
+              }),
             defaultValue: 'BREAK ALL SHARP EDGES',
           },
           ...gdtFrameDisplayArgOverrides,
@@ -2182,7 +2187,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           note: {
             inputType: 'text',
-            validation: ({ data }) => validateGdtText({ data: data.note }),
+            validation: ({ data }) =>
+              validateGdtText({
+                data: typeof data === 'string' ? data : data.note,
+              }),
             defaultValue: 'Note:',
           },
           framePosition: gdtFrameDisplayArgOverrides.framePosition,

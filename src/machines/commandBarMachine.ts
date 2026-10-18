@@ -542,8 +542,15 @@ export const commandBarMachine = setup({
           let argValue = typeof arg === 'function' ? arg(input) : arg
 
           try {
-            // Text may already be supplied when editing an existing command.
-            if (argConfig.inputType === 'text' && argConfig.validation) {
+            // Recheck supplied text when editing another argument. Missing
+            // values are handled below as input steps, without an error toast.
+            if (
+              !isModelingDialogCommand(input.selectedCommand) &&
+              (argConfig.inputType === 'text' ||
+                argConfig.inputType === 'string') &&
+              argConfig.validation &&
+              argValue !== undefined
+            ) {
               const result = await argConfig.validation({
                 data: { [argName]: argValue },
                 context: input,

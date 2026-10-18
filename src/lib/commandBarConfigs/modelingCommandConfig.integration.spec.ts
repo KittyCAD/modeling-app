@@ -122,6 +122,17 @@ describe('GDT text input validation', () => {
           context: {} as CommandBarContext,
         })
       ).toEqual(expect.any(String))
+      expect(
+        await arg.validation({
+          data: 'Use "datum A"',
+          context: {} as CommandBarContext,
+        })
+      ).toEqual(expect.any(String))
+      for (const data of ['Use datum A', { [argName]: 'Use datum A' }]) {
+        expect(
+          await arg.validation({ data, context: {} as CommandBarContext })
+        ).toBe(true)
+      }
     }
   )
 })
