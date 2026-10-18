@@ -89,12 +89,140 @@ async function insertPartIntoAssembly(
   await cmdBar.progressCmdBar()
 }
 
-// test file is for testing point an click code gen functionality that's assemblies related
-test.describe(
-  'Point-and-click assemblies tests',
-  { tag: ['@desktop', '@macos', '@windows'] },
-  () => {
-    test(`Import kcl parts into assembly as whole module import`, async ({
+test.describe('Project file imports', { tag: '@web' }, () => {
+  test(`Import kcl parts into assembly as whole module import`, async ({
+    folderSetupFn,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+    fs,
+  }) => {
+    await test.step('Setup parts and expect empty assembly scene', async () => {
+      const projectName = 'assembly'
+      await folderSetupFn(async (dir) => {
+        const projDir = await fs.join(dir, projectName)
+        const nestedProjDir = await fs.join(projDir, 'nested', 'twice')
+        await fs.mkdir(projDir, { recursive: true })
+        await fs.mkdir(nestedProjDir, { recursive: true })
+        await Promise.all([
+          fs.writeFile(
+            await fs.join(projDir, 'cylinder.kcl'),
+            new Uint8Array(
+              await fsp.readFile(executorInputPath('cylinder.kcl'))
+            )
+          ),
+          fs.writeFile(
+            await fs.join(nestedProjDir, 'main.kcl'),
+            new Uint8Array(
+              await fsp.readFile(executorInputPath('cylinder.kcl'))
+            )
+          ),
+          fs.writeFile(
+            await fs.join(projDir, 'bracket.kcl'),
+            new Uint8Array(
+              await fsp.readFile(
+                executorInputPath('e2e-can-sketch-on-chamfer.kcl')
+              )
+            )
+          ),
+          fs.writeFile(await fs.join(projDir, 'main.kcl'), new Uint8Array()),
+        ])
+      })
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.openProject(projectName)
+      await scene.settled()
+    })
+
+    await test.step('Import kcl as first part as module', async () => {
+      await insertPartIntoAssembly(
+        'cylinder.kcl',
+        'cylinder',
+        toolbar,
+        cmdBar,
+        page
+      )
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.toContain(
+        `
+          import "cylinder.kcl" as cylinder
+          `,
+        { shouldNormalise: true }
+      )
+      await scene.settled()
+    })
+
+    await test.step('Import a second part with the same name and expect error', async () => {
+      await toolbar.insertButton.click()
+      await cmdBar.selectOption({ name: 'bracket.kcl' }).click()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'localName',
+        currentArgValue: '',
+        headerArguments: { Path: 'bracket.kcl', LocalName: '' },
+        highlightedHeaderArg: 'localName',
+        commandName: 'Import',
+      })
+      await page.keyboard.insertText('cylinder')
+      await cmdBar.progressCmdBar()
+      await expect(
+        page.getByText('This variable name is already in use')
+      ).toBeVisible()
+    })
+
+    await test.step('Fix the name and expect the second part inserted', async () => {
+      await cmdBar.argumentInput.clear()
+      await page.keyboard.insertText('bracket')
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        headerArguments: { Path: 'bracket.kcl', LocalName: 'bracket' },
+        commandName: 'Import',
+      })
+      await cmdBar.progressCmdBar()
+      await editor.expectEditor.toContain(
+        `
+            import "cylinder.kcl" as cylinder
+            import "bracket.kcl" as bracket
+          `,
+        { shouldNormalise: true }
+      )
+      await scene.settled()
+    })
+
+    await test.step('Import a second time and expect error', async () => {
+      await toolbar.insertButton.click()
+      await cmdBar.selectOption({ name: 'bracket.kcl' }).click()
+      await expect(
+        page.getByText('This file is already imported')
+      ).toBeVisible()
+      await cmdBar.closeCmdBar()
+    })
+
+    await test.step('Import a nested kcl part', async () => {
+      await insertPartIntoAssembly(
+        'nested/twice/main.kcl',
+        'main',
+        toolbar,
+        cmdBar,
+        page
+      )
+      await toolbar.openPane(DefaultLayoutPaneID.Code)
+      await editor.expectEditor.toContain(
+        `
+          import "nested/twice/main.kcl" as main
+          `,
+        { shouldNormalise: true }
+      )
+    })
+  })
+
+  test(
+    `Import foreign parts into assembly and delete them`,
+    { tag: '@skipLocalEngine' },
+    async ({
       folderSetupFn,
       page,
       homePage,
@@ -102,125 +230,127 @@ test.describe(
       editor,
       toolbar,
       cmdBar,
-      tronApp,
+      fs,
     }) => {
-      if (!tronApp) throwTronAppMissing()
+      const complexPlmFileName = 'cube_Complex-PLM_Name_-001.sldprt'
+      const camelCasedSolidworksFileName = 'cubeComplexPLMName001'
 
       await test.step('Setup parts and expect empty assembly scene', async () => {
         const projectName = 'assembly'
         await folderSetupFn(async (dir) => {
-          const projDir = path.join(dir, projectName)
-          const nestedProjDir = path.join(dir, projectName, 'nested', 'twice')
-          await fsp.mkdir(projDir, { recursive: true })
-          await fsp.mkdir(nestedProjDir, { recursive: true })
+          const bracketDir = await fs.join(dir, projectName)
+          await fs.mkdir(bracketDir, { recursive: true })
           await Promise.all([
-            fsp.copyFile(
-              executorInputPath('cylinder.kcl'),
-              path.join(projDir, 'cylinder.kcl')
+            fs.mkdir(await fs.join(bracketDir, 'folder.prt')),
+            fs.writeFile(
+              await fs.join(bracketDir, 'cube.step'),
+              new Uint8Array(await fsp.readFile(testsInputPath('cube.step')))
             ),
-            fsp.copyFile(
-              executorInputPath('cylinder.kcl'),
-              path.join(nestedProjDir, 'main.kcl')
+            fs.writeFile(
+              await fs.join(bracketDir, complexPlmFileName),
+              new Uint8Array(await fsp.readFile(testsInputPath('cube.sldprt')))
             ),
-            fsp.copyFile(
-              executorInputPath('e2e-can-sketch-on-chamfer.kcl'),
-              path.join(projDir, 'bracket.kcl')
+            fs.writeFile(
+              await fs.join(bracketDir, 'main.kcl'),
+              new Uint8Array()
             ),
-            fsp.copyFile(
-              testsInputPath('cube.step'),
-              path.join(projDir, 'cube.step')
-            ),
-            fsp.writeFile(path.join(projDir, 'main.kcl'), ''),
           ])
         })
-        await page.setBodyDimensions({ width: 1000, height: 500 })
         await homePage.openProject(projectName)
         await scene.settled()
       })
 
-      await test.step('Import kcl as first part as module', async () => {
-        await insertPartIntoAssembly(
-          'cylinder.kcl',
-          'cylinder',
-          toolbar,
-          cmdBar,
-          page
-        )
+      await test.step('Import step part as module', async () => {
+        await insertPartIntoAssembly('cube.step', 'cube', toolbar, cmdBar, page)
         await toolbar.openPane(DefaultLayoutPaneID.Code)
         await editor.expectEditor.toContain(
           `
-          import "cylinder.kcl" as cylinder
-          `,
+          @(targetRepresentation = mesh)
+          import "cube.step" as cube
+        `,
           { shouldNormalise: true }
         )
+        await toolbar.closePane(DefaultLayoutPaneID.Code)
         await scene.settled()
+
+        await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
       })
 
-      await test.step('Import a second part with the same name and expect error', async () => {
-        await toolbar.insertButton.click()
-        await cmdBar.selectOption({ name: 'bracket.kcl' }).click()
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'localName',
-          currentArgValue: '',
-          headerArguments: { Path: 'bracket.kcl', LocalName: '' },
-          highlightedHeaderArg: 'localName',
-          commandName: 'Import',
+      await test.step('Import second foreign part from the context menu', async () => {
+        await toolbar.openPane(DefaultLayoutPaneID.Files)
+        await toolbar.expectFileTreeState([
+          'folder.prt',
+          complexPlmFileName,
+          'cube.step',
+          'main.kcl',
+        ])
+        const importPrompt = page.getByText('Import into my current file')
+        const importAction = page.getByRole('button', {
+          name: 'Import in current file',
+          exact: true,
         })
-        await page.keyboard.insertText('cylinder')
-        await cmdBar.progressCmdBar()
-        await expect(
-          page.getByText('This variable name is already in use')
-        ).toBeVisible()
-      })
+        const folder = page.getByRole('treeitem', {
+          name: 'folder.prt',
+          exact: true,
+        })
+        await folder.click()
+        await expect(folder).toHaveAttribute('aria-expanded', 'true')
+        await expect(importPrompt).not.toBeVisible()
+        await folder.click({ button: 'right' })
+        await expect(page.getByTestId('context-menu-rename')).toBeVisible()
+        await expect(importAction).not.toBeVisible()
+        await page.keyboard.press('Escape')
 
-      await test.step('Fix the name and expect the second part inserted', async () => {
-        await cmdBar.argumentInput.clear()
-        await page.keyboard.insertText('bracket')
+        await toolbar.openFile(complexPlmFileName)
+        await expect(importPrompt).not.toBeVisible()
+        await page
+          .getByRole('treeitem', { name: complexPlmFileName, exact: true })
+          .click({ button: 'right' })
+        await importAction.click()
+
+        // Check getPathFilenameInVariableCase output
+        const parsedValueFromFile =
+          await cmdBar.currentArgumentInput.inputValue()
+        expect(parsedValueFromFile).toEqual(camelCasedSolidworksFileName)
+
+        // Continue on with the flow
+        await page.keyboard.insertText('cubeSw')
         await cmdBar.progressCmdBar()
         await cmdBar.expectState({
           stage: 'review',
-          headerArguments: { Path: 'bracket.kcl', LocalName: 'bracket' },
+          headerArguments: { Path: complexPlmFileName, LocalName: 'cubeSw' },
           commandName: 'Import',
         })
         await cmdBar.progressCmdBar()
-        await editor.expectEditor.toContain(
-          `
-            import "cylinder.kcl" as cylinder
-            import "bracket.kcl" as bracket
-          `,
-          { shouldNormalise: true }
-        )
-        await scene.settled()
-      })
-
-      await test.step('Import a second time and expect error', async () => {
-        await toolbar.insertButton.click()
-        await cmdBar.selectOption({ name: 'bracket.kcl' }).click()
-        await expect(
-          page.getByText('This file is already imported')
-        ).toBeVisible()
-        await cmdBar.closeCmdBar()
-      })
-
-      await test.step('Import a nested kcl part', async () => {
-        await insertPartIntoAssembly(
-          'nested/twice/main.kcl',
-          'main',
-          toolbar,
-          cmdBar,
-          page
-        )
+        await toolbar.closePane(DefaultLayoutPaneID.Files)
         await toolbar.openPane(DefaultLayoutPaneID.Code)
         await editor.expectEditor.toContain(
           `
-          import "nested/twice/main.kcl" as main
-          `,
+          import "cube.step" as cube
+          import "${complexPlmFileName}" as cubeSw
+        `,
           { shouldNormalise: true }
         )
-      })
-    })
+        await scene.settled()
 
+        await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+      })
+
+      await test.step('Module feature tree items do not offer delete', async () => {
+        await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
+        await toolbar.openFeatureTreeOperationContextMenu('cube', 0)
+        await expect(page.getByText('View KCL source code')).toBeVisible()
+        await expect(page.getByTestId('context-menu-delete')).not.toBeVisible()
+      })
+    }
+  )
+})
+
+// test file is for testing point an click code gen functionality that's assemblies related
+test.describe(
+  'Point-and-click assemblies tests',
+  { tag: ['@desktop', '@macos', '@windows'] },
+  () => {
     async function testBracketInsertionThenTransformsThenDeletion(
       context: BrowserContext,
       page: Page,
@@ -674,139 +804,6 @@ test.describe(
         folderSetupFn
       )
     })
-
-    test(
-      `Import foreign parts into assembly and delete them`,
-      { tag: '@skipLocalEngine' },
-      async ({
-        folderSetupFn,
-        page,
-        homePage,
-        scene,
-        editor,
-        toolbar,
-        cmdBar,
-        tronApp,
-      }) => {
-        if (!tronApp) throwTronAppMissing()
-
-        const complexPlmFileName = 'cube_Complex-PLM_Name_-001.sldprt'
-        const camelCasedSolidworksFileName = 'cubeComplexPLMName001'
-
-        await test.step('Setup parts and expect empty assembly scene', async () => {
-          const projectName = 'assembly'
-          await folderSetupFn(async (dir) => {
-            const bracketDir = path.join(dir, projectName)
-            await fsp.mkdir(bracketDir, { recursive: true })
-            await Promise.all([
-              fsp.mkdir(path.join(bracketDir, 'folder.prt')),
-              fsp.copyFile(
-                testsInputPath('cube.step'),
-                path.join(bracketDir, 'cube.step')
-              ),
-              fsp.copyFile(
-                testsInputPath('cube.sldprt'),
-                path.join(bracketDir, complexPlmFileName)
-              ),
-              fsp.writeFile(path.join(bracketDir, 'main.kcl'), ''),
-            ])
-          })
-          await homePage.openProject(projectName)
-          await scene.settled()
-        })
-
-        await test.step('Import step part as module', async () => {
-          await insertPartIntoAssembly(
-            'cube.step',
-            'cube',
-            toolbar,
-            cmdBar,
-            page
-          )
-          await toolbar.openPane(DefaultLayoutPaneID.Code)
-          await editor.expectEditor.toContain(
-            `
-          @(targetRepresentation = mesh)
-          import "cube.step" as cube
-        `,
-            { shouldNormalise: true }
-          )
-          await toolbar.closePane(DefaultLayoutPaneID.Code)
-          await scene.settled()
-
-          await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
-        })
-
-        await test.step('Import second foreign part from the context menu', async () => {
-          await toolbar.openPane(DefaultLayoutPaneID.Files)
-          await toolbar.expectFileTreeState([
-            'folder.prt',
-            complexPlmFileName,
-            'cube.step',
-            'main.kcl',
-          ])
-          const importPrompt = page.getByText('Import into my current file')
-          const importAction = page.getByRole('button', {
-            name: 'Import in current file',
-            exact: true,
-          })
-          const folder = page.getByRole('treeitem', {
-            name: 'folder.prt',
-            exact: true,
-          })
-          await folder.click()
-          await expect(folder).toHaveAttribute('aria-expanded', 'true')
-          await expect(importPrompt).not.toBeVisible()
-          await folder.click({ button: 'right' })
-          await expect(page.getByTestId('context-menu-rename')).toBeVisible()
-          await expect(importAction).not.toBeVisible()
-          await page.keyboard.press('Escape')
-
-          await toolbar.openFile(complexPlmFileName)
-          await expect(importPrompt).not.toBeVisible()
-          await page
-            .getByRole('treeitem', { name: complexPlmFileName, exact: true })
-            .click({ button: 'right' })
-          await importAction.click()
-
-          // Check getPathFilenameInVariableCase output
-          const parsedValueFromFile =
-            await cmdBar.currentArgumentInput.inputValue()
-          expect(parsedValueFromFile).toEqual(camelCasedSolidworksFileName)
-
-          // Continue on with the flow
-          await page.keyboard.insertText('cubeSw')
-          await cmdBar.progressCmdBar()
-          await cmdBar.expectState({
-            stage: 'review',
-            headerArguments: { Path: complexPlmFileName, LocalName: 'cubeSw' },
-            commandName: 'Import',
-          })
-          await cmdBar.progressCmdBar()
-          await toolbar.closePane(DefaultLayoutPaneID.Files)
-          await toolbar.openPane(DefaultLayoutPaneID.Code)
-          await editor.expectEditor.toContain(
-            `
-          import "cube.step" as cube
-          import "${complexPlmFileName}" as cubeSw
-        `,
-            { shouldNormalise: true }
-          )
-          await scene.settled()
-
-          await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
-        })
-
-        await test.step('Module feature tree items do not offer delete', async () => {
-          await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
-          await toolbar.openFeatureTreeOperationContextMenu('cube', 0)
-          await expect(page.getByText('View KCL source code')).toBeVisible()
-          await expect(
-            page.getByTestId('context-menu-delete')
-          ).not.toBeVisible()
-        })
-      }
-    )
 
     test(
       'Assembly gets reexecuted when imported models are updated externally',
