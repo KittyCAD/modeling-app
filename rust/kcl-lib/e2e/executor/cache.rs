@@ -1,11 +1,10 @@
 //! Cache testing framework.
 
-use kcl_api::Artifact;
+use kcl_api::artifact::Artifact;
 use kcl_lib::ExecError;
 use kcl_lib::ExecOutcome;
 use kcl_lib::NodePathExt;
 use kcl_lib::NodePathStep;
-use kcl_lib::bust_cache;
 use kcl_lib::exec::Operation;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
@@ -45,7 +44,7 @@ async fn cache_test(
     .await
     .unwrap();
 
-    bust_cache().await;
+    ctx.bust_cache().await;
     let mut img_results = Vec::new();
     for (index, variation) in variations.iter().enumerate() {
         let program = kcl_lib::Program::parse_no_errs(variation.code).unwrap();
@@ -276,7 +275,10 @@ extrude(profile001, length = 100)"#
     let last = result.last().unwrap();
 
     assert!(first.1 == last.1, "The images should be the same");
-    assert_eq!(first.2, last.2, "The outcomes should be the same");
+    assert!(last.2.from_cache, "The second run should reuse the first");
+    let mut last_outcome = last.2.clone();
+    last_outcome.from_cache = false;
+    assert_eq!(first.2, last_outcome, "The outcomes should be the same");
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -805,7 +807,10 @@ extrude(profile001, length = 100)"#
     let last = result.last().unwrap();
 
     assert_ne!(first.1, last.1, "The images should be different for the grid");
-    assert_eq!(first.2, last.2, "The outcomes should be the same");
+    assert!(last.2.from_cache, "The second run should reuse the first");
+    let mut last_outcome = last.2.clone();
+    last_outcome.from_cache = false;
+    assert_eq!(first.2, last_outcome, "The outcomes should be the same");
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -1033,7 +1038,7 @@ view002 = view::named(
     let ctx = kcl_lib::ExecutorContext::new_geometry_only_with_version(kittycad_modeling_cmds::KclVersion::V2)
         .await
         .unwrap();
-    bust_cache().await;
+    ctx.bust_cache().await;
 
     ctx.run_with_caching(kcl_lib::Program::parse_no_errs(first).unwrap())
         .await

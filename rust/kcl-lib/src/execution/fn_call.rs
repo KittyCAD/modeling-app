@@ -944,7 +944,10 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                 }
                 let sketch_tags: Vec<_> = sketch.tags.values().cloned().collect();
                 let sketches_to_update: Vec<_> = exec_state.stack().find_keys_in_current_env(|v| match v {
-                    KclValue::Sketch { value: sk } => sk.original_id == sketch.original_id,
+                    KclValue::Sketch { value: sk } => match value.tag_update_source_artifact_id {
+                        Some(source) => sk.artifact_id == source,
+                        None => sk.original_id == sketch.original_id,
+                    },
                     _ => false,
                 })?;
 
@@ -1651,6 +1654,7 @@ mod test {
                 .collect::<IndexMap<_, _>>();
             let exec_ctxt = ExecutorContext {
                 engine: Arc::new(EngineManager::new_mock()),
+                cache: crate::Cache::default(),
                 engine_batch: crate::engine::EngineBatchContext::default(),
                 fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
                 settings: Default::default(),
@@ -2855,6 +2859,7 @@ plane = startSketchOn(XY)
         .unwrap();
         let exec_ctxt = ExecutorContext {
             engine: Arc::new(EngineManager::new_mock()),
+            cache: crate::Cache::default(),
             engine_batch: crate::engine::EngineBatchContext::default(),
             fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
             settings: Default::default(),

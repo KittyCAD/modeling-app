@@ -120,7 +120,8 @@ function emitZookeeperFileRequest(
   fileFocusedOnInEditor = {
     name: 'main.kcl',
     path: '/workspace/demo/main.kcl',
-  }
+  },
+  precedingResponses: MlCopilotServerMessage[] = []
 ) {
   processor.handleActorSnapshot({
     context: {
@@ -128,6 +129,7 @@ function emitZookeeperFileRequest(
         exchanges: [
           {
             responses: [
+              ...precedingResponses,
               {
                 tool_output: {
                   result: toolOutput,
@@ -261,6 +263,51 @@ describe('ZookeeperFileRequestProcessor', () => {
     })
   })
 
+  test('deletes files from the current patch and preserves files recreated by the next edit', async () => {
+    const processor = createProcessor()
+    const deletion = patchBackedZookeeperEdit('intermediate code')
+    deletion.zookeeper_edit_patch?.changed_files?.push({
+      path: 'part.kcl',
+      status: 'deleted',
+      previous_contents: 'old part',
+    })
+    emitZookeeperFileRequest(processor, 'intermediate code', 1, deletion)
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
+    const firstRequest = mocks.systemIOSend.mock.calls[0][0].data
+    expect(firstRequest.filesToDelete).toEqual([
+      { requestedFileName: 'part.kcl' },
+    ])
+    firstRequest.onFileSystemSuccess()
+    firstRequest.onSuccess()
+
+    const recreation = patchBackedZookeeperEdit('final code')
+    recreation.outputs = { ...recreation.outputs, 'part.kcl': 'new part' }
+    recreation.zookeeper_edit_patch?.changed_files?.push({
+      path: 'part.kcl',
+      status: 'created',
+      contents: 'new part',
+    })
+    emitZookeeperFileRequest(
+      processor,
+      'final code',
+      2,
+      recreation,
+      undefined,
+      [{ tool_output: { result: deletion } }]
+    )
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
+    const secondRequest = mocks.systemIOSend.mock.calls[1][0].data
+    expect(secondRequest.filesToDelete).toEqual([])
+    expect(secondRequest.files).toContainEqual({
+      requestedProjectName: 'demo',
+      requestedFileName: 'part.kcl',
+      requestedCode: 'new part',
+    })
+    secondRequest.onFileSystemSuccess()
+    secondRequest.onSuccess()
+    await processor.dispose()
+  })
+
   test('waits for the previous editor refresh before dispatching the next edit', async () => {
     const processor = createProcessor()
 
@@ -268,9 +315,11 @@ describe('ZookeeperFileRequestProcessor', () => {
     await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
 
     const firstRequest = mocks.systemIOSend.mock.calls[0][0].data
+    expect(firstRequest.orderedId).toBe(1)
     firstRequest.onFileSystemSuccess()
     await Promise.resolve()
 
+    emitZookeeperFileRequest(processor, 'intermediate code', 1)
     emitZookeeperFileRequest(processor, 'final code', 2)
     await Promise.resolve()
 
@@ -287,10 +336,68 @@ describe('ZookeeperFileRequestProcessor', () => {
     })
 
     await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
+    expect(mocks.systemIOSend.mock.calls[1][0].data.orderedId).toBe(2)
     expect(mocks.systemIOSend.mock.calls[1][0].data.files[0]).toMatchObject({
       requestedCode: 'final code',
       requestedFileName: 'main.kcl',
     })
+    firstRequest.onFileSystemSuccess()
+    firstRequest.onFileSystemError()
+    firstRequest.onSuccess()
+    expect(mocks.historyComplete).toHaveBeenCalledOnce()
+    expect(mocks.updateCodeEditor).toHaveBeenCalledOnce()
+  })
+
+  test('reorders waiting edits by orderedId without interrupting the active edit', async () => {
+    const processor = createProcessor()
+    try {
+      emitZookeeperFileRequest(processor, 'first edit', 1)
+      await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
+      const firstRequest = mocks.systemIOSend.mock.calls[0][0].data
+
+      for (const orderedId of [3, 2]) {
+        processor.enqueue(
+          {
+            orderedId,
+            toolOutput: patchBackedZookeeperEdit(`edit ${orderedId}`),
+            projectNameCurrentlyOpened: 'demo',
+            fileFocusedOnInEditor: {
+              name: 'main.kcl',
+              path: '/workspace/demo/main.kcl',
+              children: null,
+            },
+            exchangeId: 0,
+          },
+          mocks.onEditApplied
+        )
+      }
+      await Promise.resolve()
+      expect(mocks.systemIOSend).toHaveBeenCalledOnce()
+
+      firstRequest.onFileSystemSuccess()
+      firstRequest.onSuccess()
+      await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
+      const secondRequest = mocks.systemIOSend.mock.calls[1][0].data
+      // notice how it got re-ordered
+      expect(secondRequest.orderedId).toBe(2)
+      expect(secondRequest.files[0].requestedCode).toBe('edit 2')
+      expect(mocks.historyCancel).not.toHaveBeenCalled()
+
+      secondRequest.onFileSystemSuccess()
+      secondRequest.onSuccess()
+      await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(3))
+      const thirdRequest = mocks.systemIOSend.mock.calls[2][0].data
+      expect(thirdRequest.orderedId).toBe(3)
+      expect(thirdRequest.files[0].requestedCode).toBe('edit 3')
+      thirdRequest.onFileSystemSuccess()
+      thirdRequest.onSuccess()
+      await waitFor(() => expect(mocks.onEditApplied).toHaveBeenCalledTimes(3))
+    } finally {
+      for (const [event] of mocks.systemIOSend.mock.calls) {
+        event.data.onFileSystemError()
+      }
+      await processor.dispose()
+    }
   })
 
   test('retains queued live edits through EOS until files and history finish, then releases only the applied edit', async () => {
@@ -663,6 +770,35 @@ describe('ZookeeperFileRequestProcessor', () => {
     expect(mocks.updateCodeEditor).not.toHaveBeenCalled()
   })
 
+  test('reset waits for previous work without waiting for edits queued after the reset', async () => {
+    const processor = createProcessor()
+    try {
+      emitZookeeperFileRequest(processor, 'previous conversation', 1)
+      await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
+      const firstRequest = mocks.systemIOSend.mock.calls[0][0].data
+
+      const reset = processor.reset()
+      emitZookeeperFileRequest(processor, 'new conversation', 1)
+      firstRequest.onFileSystemSuccess()
+      firstRequest.onSuccess()
+      await reset
+
+      await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
+      const secondRequest = mocks.systemIOSend.mock.calls[1][0].data
+      expect(secondRequest.orderedId).toBe(2)
+      expect(secondRequest.files[0].requestedCode).toBe('new conversation')
+      expect(mocks.onEditApplied).not.toHaveBeenCalled()
+      secondRequest.onFileSystemSuccess()
+      secondRequest.onSuccess()
+      await waitFor(() => expect(mocks.onEditApplied).toHaveBeenCalledOnce())
+    } finally {
+      for (const [event] of mocks.systemIOSend.mock.calls) {
+        event.data.onFileSystemError()
+      }
+      await processor.dispose()
+    }
+  })
+
   test('finishes a dispatched edit before resetting for a new conversation', async () => {
     const processor = createProcessor()
 
@@ -760,11 +896,13 @@ describe('ZookeeperFileRequestProcessor', () => {
 
     emitZookeeperFileRequest(processor, 'stale edit', 1)
     await waitFor(() => expect(waitForIdleState).toHaveBeenCalledOnce())
+    emitZookeeperFileRequest(processor, 'queued stale edit', 2)
 
     await processor.reset()
-    emitZookeeperFileRequest(processor, 'fresh edit', 2)
+    emitZookeeperFileRequest(processor, 'fresh edit', 1)
 
     await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
+    expect(mocks.systemIOSend.mock.calls[0][0].data.orderedId).toBe(3)
     expect(mocks.historyCancel).toHaveBeenCalledWith({ exchangeId: 0 })
     expect(mocks.systemIOSend.mock.calls[0][0].data.files[0]).toMatchObject({
       requestedCode: 'fresh edit',

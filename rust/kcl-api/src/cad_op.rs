@@ -135,6 +135,10 @@ impl OpArg {
     pub fn new(value: OpKclValue, source_range: SourceRange) -> Self {
         Self { value, source_range }
     }
+
+    pub fn value(&self) -> &OpKclValue {
+        &self.value
+    }
 }
 
 fn is_false(b: &bool) -> bool {
@@ -232,6 +236,10 @@ impl OpSketch {
     pub fn new(artifact_id: ArtifactId) -> Self {
         Self { artifact_id }
     }
+
+    pub fn artifact_id(&self) -> ArtifactId {
+        self.artifact_id
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -245,6 +253,10 @@ impl OpSolid {
     pub fn new(artifact_id: ArtifactId) -> Self {
         Self { artifact_id }
     }
+
+    pub fn artifact_id(&self) -> ArtifactId {
+        self.artifact_id
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -257,5 +269,9 @@ pub struct OpHelix {
 impl OpHelix {
     pub fn new(artifact_id: ArtifactId) -> Self {
         Self { artifact_id }
+    }
+
+    pub fn artifact_id(&self) -> ArtifactId {
+        self.artifact_id
     }
 }

@@ -12,6 +12,7 @@ use crate::SourceRange;
 use crate::errors::KclErrorDetails;
 use crate::execution::typed_path::TypedPath;
 use crate::modules::ModulePath;
+use crate::modules::ModulePathExt as _;
 use crate::modules::ModuleRepr;
 use crate::parsing::ast::types::ImportPath;
 use crate::parsing::ast::types::ImportStatement;

@@ -1,7 +1,6 @@
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
   provide,
   provideService,
 } from '@kittycad/registry'
@@ -19,12 +18,14 @@ import {
   commandSystemService,
   commandsValueSpec,
 } from '@src/registry/contracts/commands'
+import { projectSession } from '@src/registry/contracts/projectSession'
+import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { useSelector } from '@xstate/react'
 import { createActor } from 'xstate'
-import { appCommands } from './appCommands'
-import { toolbarCommands } from './toolbarCommands'
+import { createAppCommands } from './appCommands'
+import { createToolbarCommands } from './toolbarCommands'
 
 type FindAndSelectCommandEvent = Extract<
   CommandBarMachineEvent,
@@ -154,30 +155,41 @@ export const commandsExtension = defineRegistryItemFactory((ctx) => {
   }
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'commands-extension',
-      providesServices: [provideService(commandSystemService, serviceImpl)],
-      dispose: () => {
-        pendingCommandSelections = []
-        stopCommandPaletteScopeSync?.()
-        ctx.services
-          .optional(commandScopeService)
-          ?.removeScope(COMMAND_PALETTE_OPEN_COMMAND_SCOPE)
-        stopCommandsEffect?.()
-        commandBarActor?.stop()
-      },
-    }),
+    id: 'commands-extension',
+    providesServices: [provideService(commandSystemService, serviceImpl)],
+    dispose: () => {
+      pendingCommandSelections = []
+      stopCommandPaletteScopeSync?.()
+      ctx.services
+        .optional(commandScopeService)
+        ?.removeScope(COMMAND_PALETTE_OPEN_COMMAND_SCOPE)
+      stopCommandsEffect?.()
+      commandBarActor?.stop()
+    },
   }
 }, 'commands-extension')
 
-const toolbarCommandsItem = defineRegistryItem({
-  id: 'toolbar-commands',
-  provides: [...toolbarCommands, ...appCommands].map((command) =>
-    provide(commandsValueSpec, command, {
-      key: commandKey(command),
-    })
-  ),
-})
+export const toolbarCommandsItem = defineRegistryItemFactory((ctx) => {
+  const getExecutingEditor = () =>
+    untracked(
+      () =>
+        ctx.services.optional(projectSession)?.project.value?.executingEditor
+          .value ?? undefined
+    )
+  return {
+    id: 'toolbar-commands',
+    provides: [
+      ...createToolbarCommands(getExecutingEditor, () =>
+        ctx.services.optional(userFeaturesService)
+      ),
+      ...createAppCommands(getExecutingEditor),
+    ].map((command) =>
+      provide(commandsValueSpec, command, {
+        key: commandKey(command),
+      })
+    ),
+  }
+}, 'toolbar-commands')
 
 const commandsRegistryItem = defineRegistryItem({
   id: 'commands',
