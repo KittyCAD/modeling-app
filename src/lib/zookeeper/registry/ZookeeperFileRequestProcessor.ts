@@ -401,7 +401,7 @@ export class ZookeeperFileRequestProcessor {
                     return
                   }
                   fileSystemSucceeded = true
-                  if (cumulativePatch) {
+                  if (cumulativePatch && requestIsCurrent()) {
                     this.latestAppliedPatch = cumulativePatch
                     this.latestAppliedExchangeId = request.exchangeId
                   }

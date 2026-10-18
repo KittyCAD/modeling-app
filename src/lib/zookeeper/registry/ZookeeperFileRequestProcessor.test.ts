@@ -778,7 +778,12 @@ describe('ZookeeperFileRequestProcessor', () => {
       const firstRequest = mocks.systemIOSend.mock.calls[0][0].data
 
       const reset = processor.reset()
-      emitZookeeperFileRequest(processor, 'new conversation', 1)
+      emitZookeeperFileRequest(
+        processor,
+        'new conversation',
+        1,
+        zookeeperEditWithoutPatch('new conversation')
+      )
       firstRequest.onFileSystemSuccess()
       firstRequest.onSuccess()
       await reset
@@ -787,6 +792,7 @@ describe('ZookeeperFileRequestProcessor', () => {
       const secondRequest = mocks.systemIOSend.mock.calls[1][0].data
       expect(secondRequest.orderedId).toBe(2)
       expect(secondRequest.files[0].requestedCode).toBe('new conversation')
+      expect(secondRequest.fileChangeSummary).toBeUndefined()
       expect(mocks.onEditApplied).not.toHaveBeenCalled()
       secondRequest.onFileSystemSuccess()
       secondRequest.onSuccess()
