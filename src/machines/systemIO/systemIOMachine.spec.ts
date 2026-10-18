@@ -7,6 +7,7 @@ import type { Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import {
+  formatZookeeperFileChangeSummary,
   renameFileForSystemIO,
   sharedBulkDeleteWorkflow,
   shouldSendProjectFolderReadProgress,
@@ -116,6 +117,16 @@ beforeEach(async () => {
 })
 
 describe('systemIOMachine - XState', () => {
+  it('keeps created, modified, and deleted counts in the Zookeeper toast', () => {
+    expect(
+      formatZookeeperFileChangeSummary({
+        created: 1,
+        modified: 2,
+        deleted: 1,
+      })
+    ).toBe('Successfully changed 4 files (1 created, 2 modified, 1 deleted)')
+  })
+
   describe('project folder reads', () => {
     it('only emits folder read progress for initial loads', () => {
       expect(shouldSendProjectFolderReadProgress(undefined)).toBe(true)
