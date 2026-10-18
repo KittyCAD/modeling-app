@@ -1,6 +1,7 @@
 import { Dialog, Popover, Transition } from '@headlessui/react'
 import { Fragment, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: command-bar lifecycle follows pathname (useLocation).
 import { useLocation } from 'react-router-dom'
 
 import CommandBarArgument from '@src/components/CommandBar/CommandBarArgument'
@@ -12,6 +13,7 @@ import Loading from '@src/components/Loading'
 import Tooltip from '@src/components/Tooltip'
 import { useApp } from '@src/lib/boot'
 import type { Command, CommandArgument } from '@src/lib/commandTypes'
+import { isModelingDialogCommand } from '@src/lib/commandUtils'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { interactions } from '@src/lib/interactionPerformance/definitions'
 import {
@@ -159,6 +161,8 @@ export const CommandBar = () => {
       }
     }
   }
+
+  if (isModelingDialogCommand(selectedCommand)) return null
 
   const commandBar = (
     <Transition.Root

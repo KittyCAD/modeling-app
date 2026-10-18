@@ -5,6 +5,7 @@ import { useDotDotSlash } from '@src/hooks/useDotDotSlash'
 import { PATHS } from '@src/lib/paths'
 import { Fragment } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: modal closing derives its parent from pathname (useLocation, useNavigate).
 import { useLocation, useNavigate } from 'react-router-dom'
 
 export const Telemetry = () => {

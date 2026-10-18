@@ -132,6 +132,7 @@ import type {
 import type { EntityReference } from '@src/machines/modelingSharedTypes'
 import type {
   EngineTopologyFallback,
+  NonCodeSelection,
   Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
@@ -140,6 +141,17 @@ import toast from 'react-hot-toast'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
+
+export function isSelections(value: unknown): value is Selections {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'graphSelections' in value &&
+    isArray(value.graphSelections) &&
+    'otherSelections' in value &&
+    isArray(value.otherSelections)
+  )
+}
 
 type NormalizableEdgeReference = Partial<
   Extract<EntityReference, { type: 'edge' }>
@@ -1282,6 +1294,28 @@ export async function getSelectionReferences({
     }
 
     if (!isPrimitiveReferenceArtifact(selection.artifact)) {
+      const artifact = resolveToCodeRef(selection, artifactGraph)?.artifact
+      const label =
+        artifact?.type === 'sketchBlock'
+          ? 'Sketch'
+          : artifact?.type === 'solid2d'
+            ? 'Profile'
+            : artifact?.type === 'path'
+              ? artifact.subType === 'region'
+                ? 'Region'
+                : 'Profile'
+              : undefined
+      if (label) {
+        references.push(
+          ...createExpressionReferences({
+            label,
+            selection,
+            artifactGraph,
+            kclManager,
+            wasmInstance,
+          })
+        )
+      }
       continue
     }
 
@@ -1430,43 +1464,49 @@ export function removeEnginePrimitiveSelectionFromSelections(
   }
 }
 
+export function selectionMatchesReference(
+  selection: Selection | NonCodeSelection,
+  reference: SelectionReference
+): boolean {
+  if (typeof selection === 'string') return false
+
+  if ('name' in selection) {
+    return Boolean(
+      reference.defaultPlaneSelection &&
+        isSameDefaultPlaneSelection(selection, reference.defaultPlaneSelection)
+    )
+  }
+
+  if ('type' in selection) {
+    return Boolean(
+      reference.enginePrimitiveSelection &&
+        isEnginePrimitiveSelection(selection) &&
+        isSameEnginePrimitiveSelection(
+          selection,
+          reference.enginePrimitiveSelection
+        )
+    )
+  }
+
+  return Boolean(
+    reference.graphSelection &&
+      isSameGraphSelection(selection, reference.graphSelection)
+  )
+}
+
 export function removeReferenceFromSelections(
   selections: Selections,
   reference: SelectionReference
 ): Selections {
-  const graphSelectionToRemove = reference.graphSelection
-  const defaultPlaneSelectionToRemove = reference.defaultPlaneSelection
-  const enginePrimitiveSelectionToRemove = reference.enginePrimitiveSelection
-
   return {
-    graphSelections: graphSelectionToRemove
+    graphSelections: reference.graphSelection
       ? selections.graphSelections.filter(
-          (selection) =>
-            !isSameGraphSelection(selection, graphSelectionToRemove)
+          (selection) => !selectionMatchesReference(selection, reference)
         )
       : selections.graphSelections,
-    otherSelections: selections.otherSelections.filter((selection) => {
-      if (
-        defaultPlaneSelectionToRemove &&
-        isDefaultPlaneSelection(selection) &&
-        isSameDefaultPlaneSelection(selection, defaultPlaneSelectionToRemove)
-      ) {
-        return false
-      }
-
-      if (
-        enginePrimitiveSelectionToRemove &&
-        isEnginePrimitiveSelection(selection) &&
-        isSameEnginePrimitiveSelection(
-          selection,
-          enginePrimitiveSelectionToRemove
-        )
-      ) {
-        return false
-      }
-
-      return true
-    }),
+    otherSelections: selections.otherSelections.filter(
+      (selection) => !selectionMatchesReference(selection, reference)
+    ),
   }
 }
 
@@ -2730,9 +2770,19 @@ export function getSelectionTypeDisplayText(
 export function canSubmitSelectionArg(
   selectionsByType: 'none' | Map<ResolvedSelectionType, number>,
   argument: CommandArgument<unknown> & {
-    inputType: 'selection' | 'selectionMixed'
-  }
+    inputType: 'selection'
+  },
+  selection?: Selections
 ) {
+  // Preserve the former mixed input's acceptance of non-empty code selections.
+  if (
+    argument.allowCodeReferences &&
+    selection?.graphSelections.some(
+      ({ codeRef }) => codeRef && codeRef.range[0] !== codeRef.range[1]
+    )
+  )
+    return true
+
   return (
     selectionsByType !== 'none' &&
     [...selectionsByType.entries()].every(([type, count]) => {

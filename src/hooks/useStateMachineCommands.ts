@@ -59,6 +59,7 @@ export default function useStateMachineCommands<
     EXPERIMENTAL_POINT_AND_CLICK_FLAG,
     false
   )
+  const modelingDialogsEnabled = userFeatures.useHas('modeling_dialogs', false)
   const settingsValues = settings.useSettings()
   const { overallState } = useNetworkContext()
   const { isStreamReady } = useAppState()
@@ -95,6 +96,17 @@ export default function useStateMachineCommands<
           showExperimentalCommands,
         })
       })
+      .map((command) =>
+        command
+          ? {
+              ...command,
+              useModelingDialog:
+                modelingDialogsEnabled &&
+                command.groupId === 'modeling' &&
+                !command.forceCommandBar,
+            }
+          : command
+      )
       .filter((c) => c !== null) as Command[] // TS isn't smart enough to know this filter removes nulls
 
     commands.send({
@@ -110,11 +122,14 @@ export default function useStateMachineCommands<
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [
+    actor,
+    send,
     shouldDisableEngineCommands,
     showExperimentalCommands,
     commandBarConfig,
     getDefaultDescription,
     kclProgramVersion,
+    modelingDialogsEnabled,
     scopes,
   ])
 }

@@ -21,6 +21,10 @@ export interface CommandWithDisabledState {
   disabled: boolean
 }
 
+export function isModelingDialogCommand(command: Command | undefined): boolean {
+  return command?.groupId === 'modeling' && command.useModelingDialog === true
+}
+
 export const commandKey = (command: Command) =>
   command.id ?? `${command.groupId}:${String(command.name)}`
 

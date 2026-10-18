@@ -9,12 +9,9 @@ import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelin
 import {
   modelingStdLibCommandName,
   modelingStdLibCommandStatus,
+  stdLibDocsLink,
   type ModelingStdLibCommandName,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
-import {
-  STD_LIB_COMMANDS,
-  type StdLibCommandName,
-} from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
 import type { Command } from '@src/lib/commandTypes'
 import { commandKey } from '@src/lib/commandUtils'
 import {
@@ -26,7 +23,6 @@ import {
   SKETCH_SELECTION_RGB_STR,
 } from '@src/lib/constants'
 import type { HotkeySequence } from '@src/lib/hotkeys'
-import { isDesktop } from '@src/lib/isDesktop'
 import { selectSketchPlane } from '@src/lib/selectSketchPlane'
 import { getSelectedDefaultPlane } from '@src/lib/selections'
 import { isArray } from '@src/lib/utils'
@@ -549,16 +545,6 @@ export function isLegacySketchEditRequest({
   )
 }
 
-function stdLibDocsLink(stdLibName: StdLibCommandName, label = 'KCL docs') {
-  const { qualName } = STD_LIB_COMMANDS[stdLibName]
-  return {
-    label,
-    url: withSiteBaseURL(
-      `/docs/kcl-std/functions/${qualName.replaceAll('::', '-')}`
-    ),
-  }
-}
-
 export function buildToolbarConfig(
   commands: ToolbarCommands,
   {
@@ -866,7 +852,6 @@ export function buildToolbarConfig(
             }),
           icon: 'import',
           status: 'available',
-          disabled: () => !isDesktop(),
           title: 'Import',
           description: 'Import from a file in the current project directory.',
           links: [

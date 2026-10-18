@@ -1,7 +1,6 @@
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
   provideService,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
@@ -40,14 +39,12 @@ export const billingExtension = defineRegistryItemFactory(() => {
   }
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'billing-extension',
-      providesServices: [provideService(billingService, serviceImpl)],
-      dispose: () => {
-        subscription.unsubscribe()
-        actor.stop()
-      },
-    }),
+    id: 'billing-extension',
+    providesServices: [provideService(billingService, serviceImpl)],
+    dispose: () => {
+      subscription.unsubscribe()
+      actor.stop()
+    },
   }
 }, 'billing-extension')
 

@@ -50,6 +50,7 @@ export function createSceneGraphDelta(
       filenames: {},
       defaultPlanes: null,
       refactorMetadata: [],
+      fromCache: false,
     },
   }
 }

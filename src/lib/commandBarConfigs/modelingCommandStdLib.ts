@@ -10,6 +10,8 @@ import { isKclVersionAvailable } from '@src/lib/kclVersionRange'
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { markdownToPlainText } from '@src/lib/markdown'
+import { KCL_STDLIB_FUNCTIONS_PATH } from '@src/lib/constants'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 export type StdLibCommandDriftConfig = {
   stdLibName: StdLibCommandName
@@ -186,23 +188,22 @@ export function stdLibCommandArgs<CommandArgs extends object>(
 ): CommandArgConfigs<CommandArgs> {
   const omitted = new Set(options.omitted ?? [])
   const includeDeprecated = new Set(options.includeDeprecated ?? [])
-  const args: Record<string, Record<string, unknown>> = Object.fromEntries(
-    STD_LIB_COMMANDS[stdLibName].args
-      .filter(
-        (arg) => !isDeprecatedStdLibArg(arg) || includeDeprecated.has(arg.name)
-      )
-      .filter((arg) => !omitted.has(arg.name))
-      .map((arg) => {
-        const commandArgName = options.argAliases?.[arg.name] ?? arg.name
-        return [
-          commandArgName,
-          {
-            ...stdLibArgBaseConfig(arg, commandArgName),
-            ...(options.overrides?.[commandArgName] ?? {}),
-          },
-        ]
-      })
-  )
+  const args: Record<string, Record<string, unknown>> = {}
+  for (const arg of STD_LIB_COMMANDS[stdLibName].args
+    .filter(
+      (arg) => !isDeprecatedStdLibArg(arg) || includeDeprecated.has(arg.name)
+    )
+    .filter((arg) => !omitted.has(arg.name))) {
+    const commandArgName = options.argAliases?.[arg.name] ?? arg.name
+    args[commandArgName] = {
+      ...stdLibArgBaseConfig(arg, commandArgName),
+      // Merged fields don't represent a single stdlib argument.
+      documentation: Object.hasOwn(args, commandArgName)
+        ? undefined
+        : arg.docs?.trim() || undefined,
+      ...(options.overrides?.[commandArgName] ?? {}),
+    }
+  }
 
   for (const [argName, override] of Object.entries(options.overrides ?? {})) {
     args[argName] ??= override
@@ -228,6 +229,19 @@ export function stdLibCommandSummary(
   return typeof summary === 'string'
     ? markdownToPlainText(summary) || undefined
     : undefined
+}
+
+export function stdLibDocsLink(
+  stdLibName: StdLibCommandName,
+  label = 'KCL docs'
+) {
+  const { qualName } = STD_LIB_COMMANDS[stdLibName]
+  return {
+    label,
+    url: withSiteBaseURL(
+      `${KCL_STDLIB_FUNCTIONS_PATH}/${qualName.replaceAll('::', '-')}`
+    ),
+  }
 }
 
 export const modelingCommandStdLibDriftConfig = {
@@ -624,6 +638,15 @@ export function modelingStdLibCommandSummary(
 
   const config = configs[commandName]
   return config ? stdLibCommandSummary(config.stdLibName) : undefined
+}
+
+export function modelingStdLibCommandDocsLink(commandName: string) {
+  const configs: Partial<Record<string, StdLibCommandDriftConfig>> =
+    modelingCommandStdLibDriftConfig
+  if (!Object.hasOwn(configs, commandName)) return undefined
+
+  const config = configs[commandName]
+  return config ? stdLibDocsLink(config.stdLibName) : undefined
 }
 
 export function modelingStdLibCommandName<

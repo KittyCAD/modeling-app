@@ -5,6 +5,10 @@ use std::sync::Arc;
 use ahash::AHashMap;
 use anyhow::Result;
 use indexmap::IndexMap;
+use kcl_api::Number;
+use kcl_api::Object;
+use kcl_api::ObjectId;
+use kcl_api::ObjectKind;
 use kcl_api::UnitAngle;
 use kcl_api::UnitLength;
 pub use kittycad_modeling_cmds::KclVersion;
@@ -49,15 +53,12 @@ use crate::execution::memory::ProgramMemory;
 use crate::execution::memory::Stack;
 use crate::execution::sketch_solve::Solved;
 use crate::execution::types::NumericType;
-use crate::front::Number;
-use crate::front::Object;
-use crate::front::ObjectId;
-use crate::front::ObjectKind;
 use crate::id::IncIdGenerator;
 use crate::modules::ModuleId;
 use crate::modules::ModuleInfo;
 use crate::modules::ModuleLoader;
 use crate::modules::ModulePath;
+use crate::modules::ModulePathExt as _;
 use crate::modules::ModuleRepr;
 use crate::modules::ModuleSource;
 use crate::parsing::ast::types::Annotation;
@@ -798,6 +799,7 @@ impl ExecState {
         Ok(ExecOutcome {
             variables,
             filenames: self.global.filenames(),
+            from_cache: false,
             operations: self.global.operations_by_module(),
             artifact_graph: self.global.artifacts.graph,
             scene_objects: self.global.root_module_artifacts.scene_objects,
@@ -973,7 +975,7 @@ impl ExecState {
         self.global.segment_ids_edited.contains(object_id)
     }
 
-    pub fn drag_anchor_target(&self, object_id: &ObjectId) -> Option<&crate::front::Point2d<crate::front::Number>> {
+    pub fn drag_anchor_target(&self, object_id: &ObjectId) -> Option<&kcl_api::Point2d<kcl_api::Number>> {
         self.global
             .drag_anchors
             .iter()
@@ -1130,7 +1132,7 @@ impl ExecState {
             .values()
             .chain(self.global.artifacts.artifacts.values())
             .filter_map(|artifact| match artifact {
-                Artifact::NamedView(view) => Some((view.code_ref.range.module_id(), view.name.as_str())),
+                Artifact::NamedView(view) => Some((view.declaring_module_id, view.name.as_str())),
                 _ => None,
             })
     }
@@ -1807,10 +1809,10 @@ impl ModuleArtifactState {
                     self.source_range_to_object.insert(cap.source.solid.range, object.id);
                 }
                 _ => match &object.source {
-                    crate::front::SourceRef::Simple { range, node_path: _ } => {
+                    kcl_api::SourceRef::Simple { range, node_path: _ } => {
                         self.source_range_to_object.insert(*range, object.id);
                     }
-                    crate::front::SourceRef::BackTrace { ranges } => {
+                    kcl_api::SourceRef::BackTrace { ranges } => {
                         // Don't map the entire backtrace, only the most specific
                         // range.
                         if let Some((range, _)) = ranges.first() {
@@ -2051,6 +2053,11 @@ impl MetaSettings {
 #[cfg(test)]
 mod tests {
 
+    use kcl_api::Object;
+    use kcl_api::ObjectId;
+    use kcl_api::ObjectKind;
+    use kcl_api::Plane;
+    use kcl_api::SourceRef;
     use uuid::Uuid;
 
     use super::KclVersion;
@@ -2059,11 +2066,6 @@ mod tests {
     use crate::NodePathExt;
     use crate::SourceRange;
     use crate::execution::ArtifactId;
-    use crate::front::Object;
-    use crate::front::ObjectId;
-    use crate::front::ObjectKind;
-    use crate::front::Plane;
-    use crate::front::SourceRef;
 
     #[test]
     fn declared_kcl_version_finds_the_setting_and_its_range() {

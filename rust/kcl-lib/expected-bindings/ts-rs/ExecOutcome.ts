@@ -38,6 +38,11 @@ issues: Array<CompilationIssue>,
  */
 filenames: { [key in ModuleId]: ModulePath }, 
 /**
+ * Whether this outcome was reused from the previous run because the
+ * program had not changed, which leaves the engine's geometry untouched.
+ */
+fromCache: boolean, 
+/**
  * The default planes.
  */
 defaultPlanes: DefaultPlanes | null, };
