@@ -13,6 +13,7 @@ import type { AuthRegistryService } from '@src/registry/contracts/auth'
 import type { ProjectSessionService } from '@src/registry/contracts/projectSession'
 import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 import type { SystemIORegistryService } from '@src/registry/contracts/systemIO'
+import type { UserFeaturesRegistryService } from '@src/registry/contracts/userFeatures'
 import { describe, expect, it, vi } from 'vitest'
 
 const projectId = '24d8709c-8d07-4855-9357-f20d7d35a499'
@@ -151,6 +152,38 @@ function createControllerLoader(
 }
 
 describe('Zookeeper runtime', () => {
+  it('advertises library commands only when the API feature is enabled', async () => {
+    const { services } = createServices()
+    const enabled = signal(false)
+    const libraryProjects = signal([])
+    const userFeatures = signal({
+      has: () => enabled.value,
+    } as unknown as UserFeaturesRegistryService)
+    const { createZookeeperSessionController, loadController } =
+      createControllerLoader()
+    const runtime = createZookeeperRuntime(
+      { ...services, libraryProjects, userFeatures },
+      loadController
+    )
+
+    await vi.waitFor(() => {
+      expect(createZookeeperSessionController).toHaveBeenCalledOnce()
+    })
+    expect(
+      createZookeeperSessionController.mock.calls[0]?.[0].libraryProjects
+    ).toBeUndefined()
+
+    enabled.value = true
+    await vi.waitFor(() => {
+      expect(createZookeeperSessionController).toHaveBeenCalledTimes(2)
+    })
+    expect(
+      createZookeeperSessionController.mock.calls[1]?.[0].libraryProjects
+    ).toBe(libraryProjects)
+
+    await runtime.dispose()
+  })
+
   it('starts without waiting for the pane once auth is hydrated', async () => {
     const { services, token } = createServices({ apiToken: '' })
     const { createZookeeperSessionController, loadController } =
