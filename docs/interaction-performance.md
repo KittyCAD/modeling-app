@@ -241,13 +241,28 @@ into a green before/after comparison.
 There are no expected-failure markers, synthetic delays, retries, or raised
 budgets. Fixing the underlying latency should make the same tests pass.
 
-The audit covers sketch entry/editing, orientation-cube faces/edges/corners,
-viewport dimming, variable and Settings dialogs, tooltip behavior, notification
-badges, toast effects, streamed Zookeeper text, editor execution, density
-updates, folder drag-hover, geometry-to-code highlighting, stream resizing,
-default-plane visibility, and keyboard-chord expiry. Each endpoint describes
-what is actually ready; text-field echo alone does not prove committed settings,
-updated physical analysis, or completed model execution.
+The audit measures real user actions through their complete usable result:
+enter/edit/exit sketch, orientation-cube selection, variable-dialog open/cancel
+and applying the conversion, Telemetry open/close, Settings open/close, editor and
+pane controls, tooltips, Copy code, Zookeeper Send, model edits, density updates,
+folder drag-hover, geometry highlighting, and viewport resizing. The browser
+handoff screen has a separate navigation-to-ready measurement. Animation phases,
+toast icons, hidden-content cleanup and shortcut dwell windows are not separate
+latency tests.
+
+The conversion case starts at the actual Add variable confirmation after name
+entry has been prepared. It requires both the rewritten code and successful
+execution of the rewritten AST, not just a closed name dialog. Telemetry opens
+through the real Go to Telemetry command, with command search prepared before
+capture. Settings must contain loaded, enabled controls. Closing Settings or
+Telemetry includes restoring the loaded model, not merely removing the dialog.
+
+Model-view outcomes also require a real client render or a fresh video frame
+submitted to the compositor after semantic readiness; cube cases additionally
+require changed visible video pixels. These scoped observations are disposed on
+completion, timeout, replacement and stop. The stream exposes no engine-command
+identifier on video frames, so this proves presented-frame activity after the
+model/camera checks, not exact command-to-frame identity or physical scanout.
 
 Every registered modeling-screen case inherits `modeling-small`,
 `modeling-large`, `modeling-large-syntax-error`, and `modeling-large-engine-error`
@@ -276,30 +291,21 @@ deliberately removes its failing tail, waits for successful execution, and requi
 self-tests, not expected-failure markers or passing latency measurements.
 
 Click measurements start at trusted pointerdown where available. Double-click,
-typing, hover, drag, resize, and keyboard cases use their declared native
-activation event. Repeated dragovers form one hover gesture; a trailing resize
-starts at the last native resize. Animation lifecycle metrics start at the
-browser's native animation/transition event, with positive CSS animation delays
-included. They measure visual effects, **not button-handler responsiveness**;
-toast display lifetimes and keyboard multi-key detection are not mislabeled as
-click latency. Missing Event Timing remains unknown for these inputs.
-Keyboard-chord expiry starts at the trusted prefix-key release, not keydown:
-the existing global keymap handler consumes prefix keydown events before document
-listeners can observe them. This is a key-release-to-expiry span, not a claim
-about keydown-handler responsiveness.
+typing, hover, drag, resize and keyboard cases use their declared native user
+activation event. Repeated dragovers form one hover gesture. Native resize starts
+at the first resize event and ends when actual engine and delivered-video
+dimensions match. Initial model loading is excluded; execution and loading caused
+by the measured action are included. Missing Event Timing remains unknown.
 
-Removed legacy UI and the dormant retry countdown remain explicitly unsupported;
-they are not passing measurements. The native backface color picker has a metric
-definition but no automated case: Playwright's color-input fill dispatches
-untrusted synthetic events, and the existing fixtures cannot operate the native
-picker. It is listed as unsupported rather than recording a fake native input.
-The web-only startup handoff has its own
-headed Chrome measurement in `playwright.interaction-browser-budget.config.ts`.
-It arms native transition listeners before navigation and measures transition
-start through a settled post-render outcome, excluding page loading,
-authentication, and API-response time. It records no invented Event Timing.
-Browser-managed smooth scrolling and engine-internal timings with no declared
-duration are not assigned invented results.
+The native backface color picker is unsupported rather than faked: Playwright's
+color-input fill dispatches untrusted input, and current fixtures cannot operate
+the native picker. Removed legacy workflows are not manufactured for measurement.
+
+The web-only startup handoff uses headed Chrome with
+`playwright.interaction-browser-budget.config.ts`. It measures navigation start
+through the complete visible, enabled handoff choices and settled render. This
+includes document startup and is not comparable to the earlier transition-only
+handoff measurement. It records no invented click Event Timing.
 
 After preparing an optimized measurement build as above, run:
 
@@ -329,14 +335,16 @@ audit does not change those workflows or claim the full schedule fits that limit
 ### Local fail-first checkpoint (2026-10-19)
 
 Headed, optimized Electron diagnostics against the unchanged application recorded
-these Settings spans, with initial model loading excluded:
+these full-flow Settings spans, with initial model loading excluded. Opening
+requires loaded controls; closing includes the preserved model and a fresh
+presented video frame:
 
 | Model | Open | Close |
 | --- | ---: | ---: |
-| Small | 749.3 ms | 450.5 ms |
-| Large | 10,186.5 ms | 911.3 ms |
-| Large with syntax error | 749.2 ms | 453.2 ms |
-| Large with engine error | 20,974.2 ms | 18,137.7 ms |
+| Small | 782.1 ms | 599.5 ms |
+| Large | 10,580.2 ms (10.580 s) | 1,007.6 ms (1.008 s) |
+| Large with syntax error | 799.8 ms | 672.8 ms |
+| Large with engine error | 20,879.4 ms (20.879 s) | 19,673.1 ms (19.673 s) |
 
 The error-profile runs preserved their expected errors and cached geometry, and
 both real-editor guard self-tests rejected accidentally successful execution.

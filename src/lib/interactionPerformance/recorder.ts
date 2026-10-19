@@ -1,6 +1,7 @@
 import type {
   InteractionDefinition,
   InteractionInputEvent,
+  InteractionOutcome,
   InteractionSample,
   InteractionSnapshot,
   InteractionTiming,
@@ -15,23 +16,6 @@ const INPUT_EVENTS: readonly InteractionInputEvent[] = [
   'auxclick',
   'contextmenu',
 ]
-
-function eventStart(event: Event, target: Element) {
-  if (event instanceof AnimationEvent) {
-    const animation = target
-      .getAnimations()
-      .find(
-        (candidate) =>
-          candidate instanceof CSSAnimation &&
-          candidate.animationName === event.animationName
-      )
-    const delay = animation?.effect?.getTiming().delay ?? 0
-    // animationstart fires after a positive CSS delay, not when the effect was
-    // requested. Preserve that otherwise invisible portion of the response.
-    return event.timeStamp - Math.max(0, delay) - event.elapsedTime * 1000
-  }
-  return event.timeStamp
-}
 
 type EventTimingEntry = PerformanceEntry & {
   interactionId: number
@@ -70,7 +54,7 @@ export class InteractionRecorder {
   private visibilityInterrupted = false
   private events = new Set<InteractionInputEvent>(INPUT_EVENTS)
   private activeDefinitions: readonly InteractionDefinition[] = []
-  private readyOutcomes = new Map<number, () => boolean>()
+  private readyOutcomes = new Map<number, InteractionOutcome>()
   private readonly definitions: Map<string, InteractionDefinition>
   constructor(
     private readonly document: Document,
@@ -103,7 +87,7 @@ export class InteractionRecorder {
     this.interactionByTimestamp.clear()
     this.timings.clear()
     this.samplesByInteraction.clear()
-    this.readyOutcomes.clear()
+    this.clearOutcomes()
     this.sequence = 0
     this.droppedSamples = 0
     this.droppedPointerEvents = 0
@@ -178,7 +162,7 @@ export class InteractionRecorder {
     if (this.task !== undefined) window.clearTimeout(this.task)
     this.frame = undefined
     this.task = undefined
-    this.readyOutcomes.clear()
+    this.clearOutcomes()
     return result
   }
 
@@ -240,13 +224,13 @@ export class InteractionRecorder {
       : undefined
     if (pending && target instanceof Element) {
       if (definition.coalesce === 'last') {
-        // A trailing debounce is measured from the final native resize, not
-        // from the first resize or from the automation call that requested it.
+        // Trailing input work starts at the last native event in the gesture,
+        // not the automation call that requested it.
         this.samplesByTimestamp.delete(pending.startTime)
-        pending.startTime = eventStart(event, target)
+        pending.startTime = event.timeStamp
         pending.renderOpportunityMs = null
         this.samplesByTimestamp.set(pending.startTime, pending)
-        this.readyOutcomes.set(
+        this.setOutcome(
           pending.sequence,
           definition.prepareOutcome?.(this.document, target, event) ??
             (() => definition.isReady(this.document))
@@ -267,11 +251,7 @@ export class InteractionRecorder {
         target instanceof Element ? target.tagName.toLowerCase() : 'unknown',
       // Include pointerdown work even when Event Timing arrives after capture
       // stops. This response span also includes time holding the button down.
-      startTime:
-        timestamps[0] ??
-        (target instanceof Element
-          ? eventStart(event, target)
-          : event.timeStamp),
+      startTime: timestamps[0] ?? event.timeStamp,
       renderOpportunityMs: null,
       outcomeMs: null,
       eventTiming: null,
@@ -280,7 +260,7 @@ export class InteractionRecorder {
     const inputType = [...this.events].find((type) => type === event.type)
     if (inputType) sample.inputType = inputType
     if (id && target instanceof Element) {
-      this.readyOutcomes.set(
+      this.setOutcome(
         sample.sequence,
         definition.prepareOutcome?.(this.document, target, event) ??
           (() => definition.isReady(this.document))
@@ -290,7 +270,7 @@ export class InteractionRecorder {
       const removed = this.samples.shift()
       if (removed) {
         this.samplesByTimestamp.delete(removed.startTime)
-        this.readyOutcomes.delete(removed.sequence)
+        this.clearOutcome(removed.sequence)
       }
       this.droppedSamples++
     }
@@ -310,6 +290,30 @@ export class InteractionRecorder {
     this.scheduleObservation()
   }
 
+  private setOutcome(
+    sequence: number,
+    outcome: (() => boolean) | InteractionOutcome
+  ) {
+    this.clearOutcome(sequence)
+    this.readyOutcomes.set(
+      sequence,
+      typeof outcome === 'function'
+        ? { isReady: outcome, dispose: () => {} }
+        : outcome
+    )
+  }
+
+  private clearOutcome(sequence: number) {
+    const outcome = this.readyOutcomes.get(sequence)
+    this.readyOutcomes.delete(sequence)
+    outcome?.dispose()
+  }
+
+  private clearOutcomes() {
+    for (const sequence of this.readyOutcomes.keys())
+      this.clearOutcome(sequence)
+  }
+
   private scheduleObservation() {
     if (!this.active || this.frame !== undefined || this.task !== undefined)
       return
@@ -321,7 +325,7 @@ export class InteractionRecorder {
             (sample) =>
               sample.status === 'pending' &&
               sample.id &&
-              this.readyOutcomes.get(sample.sequence)?.()
+              this.readyOutcomes.get(sample.sequence)?.isReady()
           )
           .map((sample) => [sample, sample.startTime])
       )
@@ -341,14 +345,14 @@ export class InteractionRecorder {
         sample.status = 'unattributed'
       } else if (
         ready.get(sample) === sample.startTime &&
-        this.readyOutcomes.get(sample.sequence)?.()
+        this.readyOutcomes.get(sample.sequence)?.isReady()
       ) {
         sample.outcomeMs = performance.now() - sample.startTime
         sample.status = 'complete'
-        this.readyOutcomes.delete(sample.sequence)
+        this.clearOutcome(sample.sequence)
       } else if (elapsed >= OUTCOME_TIMEOUT_MS) {
         sample.status = 'timeout'
-        this.readyOutcomes.delete(sample.sequence)
+        this.clearOutcome(sample.sequence)
       }
     }
     // Pending outcomes repeat the next-frame/next-task cycle until ready or timed out.

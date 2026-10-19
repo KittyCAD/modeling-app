@@ -67,11 +67,32 @@ async function selectTopPlane({ page }: BudgetFixtures) {
 async function verifySketch({ page, toolbar }: BudgetFixtures) {
   await expect(toolbar.exitSketchBtn).toBeEnabled()
   await expect(toolbar.lineBtn).toBeEnabled()
-  await page.waitForFunction(() =>
-    window.app.project?.executingEditor.value?.modelingState?.matches(
-      'sketchSolveMode'
+  await page.waitForFunction(() => {
+    const editor = window.app.project?.executingEditor.value
+    const controls = editor?.sceneInfra.camControls
+    return Boolean(
+      editor?.modelingState?.matches({ sketchSolveMode: 'active' }) &&
+        !editor.isExecutingSignal.value &&
+        controls?.syncDirection === 'clientToEngine' &&
+        !controls.isPerspective &&
+        !controls.isFovAnimationInProgress &&
+        Array.from(
+          document.querySelectorAll(
+            '[data-testid="client-side-scene"], [data-testid="toolbar"]'
+          )
+        ).every((element) =>
+          element.getAnimations({ subtree: true }).every((animation) => {
+            const endTime = animation.effect?.getComputedTiming().endTime
+            return (
+              animation.playState === 'finished' ||
+              animation.playState === 'idle' ||
+              typeof endTime !== 'number' ||
+              !Number.isFinite(endTime)
+            )
+          })
+        )
     )
-  )
+  })
 }
 
 async function prepareCube(fixtures: BudgetFixtures) {
@@ -146,6 +167,27 @@ function verifyCube(direction: Vector3) {
 
 export const modelingBudgetScenarios: BudgetScenario[] = [
   {
+    definition: modelingInteractions.sketchPlaneChooserOpen,
+    prepare: async (fixtures) => {
+      await prepareSolid(fixtures)
+      await fixtures.toolbar.openFeatureTreePane()
+      await expect(fixtures.toolbar.startSketchBtn).toBeEnabled()
+    },
+    act: async ({ toolbar }) => {
+      await toolbar.startSketchBtn.click()
+    },
+    verify: async ({ page, toolbar }) => {
+      const plane = page.getByRole('button', {
+        name: 'Top plane XY',
+        exact: true,
+      })
+      await expect(plane).toBeVisible()
+      await expect(plane).toBeEnabled()
+      await expect(toolbar.exitSketchBtn).toBeVisible()
+      await expect(toolbar.exitSketchBtn).toBeEnabled()
+    },
+  },
+  {
     definition: modelingInteractions.sketchPlaneEnter,
     unavailableWithErrors:
       'Creating a new sketch requires a valid editable AST.',
@@ -189,7 +231,7 @@ export const modelingBudgetScenarios: BudgetScenario[] = [
   {
     definition: modelingInteractions.sketchExistingEdit,
     unavailableWithErrors:
-      'Cached sketches are deliberately read-only after a parse error.',
+      'Editing a cached sketch requires a valid editable program.',
     prepare: async (fixtures) => {
       await prepareSolid(fixtures)
       const operation = await fixtures.toolbar.getFeatureTreeOperation(
@@ -223,28 +265,13 @@ export const modelingBudgetScenarios: BudgetScenario[] = [
     verify: verifyCube(new Vector3(1, -1, 1).normalize()),
   },
   {
-    definition: modelingInteractions.sceneDimmingEnter,
-    unavailableWithErrors:
-      'Entering sketch mode requires a valid editable AST.',
-    prepare: preparePlaneSelection,
-    act: selectTopPlane,
-    verify: verifySketch,
-  },
-  {
-    definition: modelingInteractions.sceneDimmingExit,
+    definition: modelingInteractions.sketchExit,
     unavailableWithErrors:
       'Preparing sketch-mode exit requires a valid editable AST.',
     prepare: async (fixtures) => {
       await preparePlaneSelection(fixtures)
       await selectTopPlane(fixtures)
       await verifySketch(fixtures)
-      await fixtures.page
-        .getByTestId('client-side-scene')
-        .evaluate(async (scene) => {
-          await Promise.all(
-            scene.getAnimations().map((animation) => animation.finished)
-          )
-        })
     },
     act: async ({ toolbar }) => {
       await toolbar.exitSketchBtn.click()

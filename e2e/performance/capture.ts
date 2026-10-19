@@ -203,7 +203,7 @@ export async function finishCapture(
     })),
     configuredViewport: page.viewportSize(),
     motion: 'no-preference',
-    timing: 'native-input-or-effect-start-to-outcome-observed-after-render',
+    timing: 'native-user-input-to-usable-outcome-observed-after-render',
     eventTimingReportingWindowMs: EVENT_TIMING_REPORTING_WINDOW_MS,
   }
   // Preserve raw records before assertions so a failed collection is inspectable.

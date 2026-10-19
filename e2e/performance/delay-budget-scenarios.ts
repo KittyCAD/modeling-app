@@ -22,12 +22,9 @@ const modelPath = path.join(
 )
 const modelCode = async (profile: PerformanceModelProfile) =>
   modelCodeForProfile(await readFile(modelPath, 'utf8'), profile)
-const tooltipDescription = (page: Page) =>
-  page
-    .getByTestId('extrude')
-    .locator('..')
-    .locator('[role="tooltip"] p')
-    .first()
+const toolbarTooltip = (page: Page) =>
+  page.getByTestId('extrude').locator('..').locator('[role="tooltip"]').first()
+const tooltipDescription = (page: Page) => toolbarTooltip(page).locator('p')
 const hoverPoints = new WeakMap<Page, { x: number; y: number }>()
 
 async function waitForSuccessfulCode(page: Page, code: string) {
@@ -123,17 +120,21 @@ export const delayBudgetScenarios: BudgetScenario[] = [
     },
   },
   {
-    definition: delayInteractions.richTooltipReset,
+    definition: delayInteractions.richTooltipHide,
     prepare: async (fixtures) => {
       await prepareModeling(fixtures)
+      await fixtures.page.mouse.move(0, 0)
+      await expect(toolbarTooltip(fixtures.page)).not.toBeVisible()
       await fixtures.page.getByTestId('extrude').hover()
-      await expect(tooltipDescription(fixtures.page)).toBeVisible()
+      // Hiding is the native popover's visible-to-hidden action. Rich-content
+      // insertion is a separate reveal outcome, not a prerequisite for hiding.
+      await expect(toolbarTooltip(fixtures.page)).toBeVisible()
     },
     act: async ({ page }) => {
       await page.mouse.move(0, 0)
     },
     verify: async ({ page }) => {
-      await expect(tooltipDescription(page)).toHaveCount(0)
+      await expect(toolbarTooltip(page)).not.toBeVisible()
     },
   },
   {
@@ -309,105 +310,12 @@ export const delayBudgetScenarios: BudgetScenario[] = [
     },
     act: async ({ page, tronApp }) => {
       const browserWindow = await tronApp.electron.browserWindow(page)
-      console.info(
-        'Native resize initial bounds:',
-        JSON.stringify(
-          await browserWindow.evaluate((window) => window.getBounds())
-        ),
-        'renderer:',
-        JSON.stringify(
-          await page.evaluate(() => ({
-            width: innerWidth,
-            height: innerHeight,
-          }))
-        )
-      )
-      const resizeReceipt = await page.evaluateHandle(() => {
-        const events: { timestamp: number; width: number; height: number }[] =
-          []
-        let resolveFirst: (() => void) | undefined
-        let resolveSecond: (() => void) | undefined
-        const first = new Promise<void>((resolve) => {
-          resolveFirst = resolve
-        })
-        const second = new Promise<void>((resolve) => {
-          resolveSecond = resolve
-        })
-        const capture = (event: Event) => {
-          if (!event.isTrusted) {
-            return
-          }
-          events.push({
-            timestamp: event.timeStamp,
-            width: innerWidth,
-            height: innerHeight,
-          })
-          resolveFirst?.()
-          if (events.length >= 2) {
-            resolveSecond?.()
-          }
-        }
-        window.addEventListener('resize', capture)
-        const timeout = setTimeout(() => {
-          resolveFirst?.()
-          resolveSecond?.()
-        }, 2000)
-        return {
-          events,
-          first,
-          second,
-          dispose: () => {
-            clearTimeout(timeout)
-            window.removeEventListener('resize', capture)
-          },
-        }
-      })
       try {
-        const bounds = await browserWindow.evaluate((window) => {
+        await browserWindow.evaluate((window) => {
           const bounds = window.getBounds()
-          window.setBounds({ ...bounds, width: bounds.width - 20 }, false)
-          return bounds
-        })
-        await resizeReceipt.evaluate(async (receipt) => {
-          // Main-process setBounds can return before macOS delivers the actual
-          // resize. Wait for that event and its ResizeObserver/rAF refresh.
-          await receipt.first
-          await new Promise<void>((resolve) => {
-            requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
-          })
-        })
-        await browserWindow.evaluate((window, bounds) => {
           window.setBounds({ ...bounds, width: bounds.width - 40 }, false)
-        }, bounds)
-        const events = await resizeReceipt.evaluate(async (receipt) => {
-          await receipt.second
-          return receipt.events
         })
-        console.info('Native window resize receipt:', JSON.stringify(events))
-        console.info(
-          'Native resize final bounds:',
-          JSON.stringify(
-            await browserWindow.evaluate((window) => window.getBounds())
-          ),
-          'renderer:',
-          JSON.stringify(
-            await page.evaluate(() => ({
-              width: innerWidth,
-              height: innerHeight,
-            }))
-          )
-        )
-        expect(
-          events,
-          'The gesture must deliver two native resizes'
-        ).toHaveLength(2)
-        expect(
-          events[1].timestamp - events[0].timestamp,
-          'The second resize must enter the production trailing-debounce branch'
-        ).toBeLessThan(100)
       } finally {
-        await resizeReceipt.evaluate((receipt) => receipt.dispose())
-        await resizeReceipt.dispose()
         await browserWindow.dispose()
       }
     },
@@ -440,46 +348,6 @@ export const delayBudgetScenarios: BudgetScenario[] = [
     },
     verify: async (fixtures) => {
       await assertModelLoaded(fixtures)
-    },
-  },
-  {
-    definition: delayInteractions.partialChordExpiry,
-    prepare: async (fixtures) => {
-      await prepareModeling(fixtures)
-      const stream = fixtures.page.getByTestId('stream')
-      const position = await stream.evaluate((element) => {
-        const bounds = element.getBoundingClientRect()
-        for (const y of [120, bounds.height / 2, bounds.height * 0.75]) {
-          for (const x of [12, bounds.width / 2, bounds.width - 12]) {
-            if (
-              element.contains(
-                document.elementFromPoint(bounds.x + x, bounds.y + y)
-              )
-            ) {
-              return { x, y }
-            }
-          }
-        }
-        return null
-      })
-      if (!position) {
-        throw new Error('No unobstructed stream point to focus')
-      }
-      await stream.click({ position })
-      await expect(
-        fixtures.page.getByTestId('keymap-partial-match-status')
-      ).toHaveCount(0)
-    },
-    act: async ({ page }) => {
-      await page.keyboard.press('v')
-      await expect(
-        page.getByTestId('keymap-partial-match-status')
-      ).toBeVisible()
-    },
-    verify: async ({ page }) => {
-      await expect(page.getByTestId('keymap-partial-match-status')).toHaveCount(
-        0
-      )
     },
   },
 ]

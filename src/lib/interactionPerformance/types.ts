@@ -9,9 +9,9 @@ export interface InteractionSample {
   sequence: number
   id: string | null
   targetTag: string
-  /** Native activation or animation lifecycle event that starts this span. */
+  /** Native user activation event that starts this span. */
   inputType?: InteractionInputEvent
-  /** Declared native activation/effect timestamp, with pointerdown when available. */
+  /** Native activation timestamp, with pointerdown when available. */
   startTime: number
   renderOpportunityMs: number | null
   outcomeMs: number | null
@@ -45,8 +45,14 @@ export interface InteractionDefinition extends InteractionDescription {
     document: Document,
     target: Element,
     event: Event
-  ) => () => boolean
+  ) => (() => boolean) | InteractionOutcome
   isReady: (document: Document) => boolean
+}
+
+/** A recording session owns and releases any view-observation callbacks. */
+export interface InteractionOutcome {
+  isReady: () => boolean
+  dispose: () => void
 }
 
 export type InteractionInputEvent =
@@ -61,5 +67,3 @@ export type InteractionInputEvent =
   | 'pointerout'
   | 'dragover'
   | 'resize'
-  | 'animationstart'
-  | 'transitionstart'

@@ -4,6 +4,7 @@ import {
   isVisible,
   transitionsEnded,
 } from '@src/lib/interactionPerformance/outcomes'
+import { createRenderedViewOutcome } from '@src/lib/interactionPerformance/renderedView'
 import type {
   InteractionDefinition,
   InteractionDescription,
@@ -21,6 +22,26 @@ export const uiInteractions = {
     testId: 'create-new-variable',
     budgetMs: 150,
     outcome: 'Convert-to-variable dialog finished closing',
+  },
+  convertVariableApply: {
+    id: 'zds.variable.apply',
+    testId: 'create-new-variable',
+    budgetMs: 150,
+    outcome:
+      'Adding a variable replaces the selected expression, successfully executes the new code, and restores the rendered model',
+  },
+  telemetryOpen: {
+    id: 'zds.telemetry.open',
+    testId: 'cmd-bar-option',
+    budgetMs: 150,
+    outcome:
+      'Go to Telemetry opens a readable, settled Telemetry dialog with usable controls',
+  },
+  telemetryClose: {
+    id: 'zds.telemetry.close',
+    testId: 'settings-close-button',
+    budgetMs: 150,
+    outcome: 'Closing Telemetry restores the usable rendered model',
   },
   settingsOpen: {
     id: 'zds.settings.open',
@@ -45,80 +66,34 @@ export const uiInteractions = {
     id: 'zds.settings.modeling.close',
     testId: 'settings-close-button',
     budgetMs: 150,
-    outcome: 'Settings finished closing over the executed model profile',
-  },
-  telemetryOpen: {
-    id: 'zds.telemetry.open',
-    testId: 'telemetry-dialog',
-    budgetMs: 150,
-    outcome: 'Telemetry backdrop transition finished after its native start',
-  },
-  browserHandoffOpen: {
-    id: 'zds.browserHandoff.open',
-    testId: 'continue-to-web-app-button',
-    budgetMs: 150,
-    outcome: 'Browser desktop-handoff screen finished its opening transition',
+    outcome:
+      'Closing Settings restores the usable model and a newly presented model frame',
   },
   paneBadgeHover: {
     id: 'zds.paneBadge.hover',
     testId: 'code-badge',
     budgetMs: 150,
-    outcome: 'Code diagnostic badge finished its hover enlargement',
+    outcome: 'Hovered code diagnostic badge is visible and settled',
   },
-  toastEnter: {
-    id: 'zds.toast.enter',
-    testId: 'toast',
+  copyCode: {
+    id: 'zds.editor.copyCode',
+    testId: 'code-pane',
     budgetMs: 150,
-    outcome: 'Toast entrance animation finished after its native start',
+    outcome:
+      'Copy code finished writing the clipboard and its complete success notification is readable and settled',
   },
-  toastExit: {
-    id: 'zds.toast.exit',
-    testId: 'toast',
+  zookeeperSend: {
+    id: 'zds.zookeeper.send',
+    testId: 'ml-ephant-conversation-input-button',
     budgetMs: 150,
-    outcome: 'Toast exit animation finished, excluding its display lifetime',
-  },
-  toastStack: {
-    id: 'zds.toast.stack',
-    testId: 'toast',
-    budgetMs: 150,
-    outcome: 'Existing toast finished repositioning after the stack changed',
-  },
-  toastSuccessIcon: {
-    id: 'zds.toast.successIcon',
-    testId: 'toast',
-    budgetMs: 150,
-    outcome: 'Success icon and checkmark animations finished, including delay',
-  },
-  toastErrorIcon: {
-    id: 'zds.toast.errorIcon',
-    testId: 'toast',
-    budgetMs: 150,
-    outcome: 'Error icon and cross animations finished, including delay',
-  },
-  toastCustomIcon: {
-    id: 'zds.toast.customIcon',
-    testId: 'toast',
-    budgetMs: 150,
-    outcome: 'Custom string toast icon finished animating, including delay',
-  },
-  zookeeperInfoFade: {
-    id: 'zds.zookeeper.infoFade',
-    testId: 'ml-response-info-chat-bubble',
-    budgetMs: 150,
-    outcome: 'Streamed Zookeeper info text finished fading in, including delay',
-  },
-  loadingCountdownFade: {
-    id: 'zds.loading.countdownFade',
-    testId: 'loading-engine',
-    budgetMs: 150,
-    outcome: 'Connection retry countdown finished fading out',
+    outcome:
+      'Sending a Zookeeper request produced a readable status response with finite UI effects finished',
   },
   featureTreeTooltip: {
     id: 'zds.featureTree.tooltip',
     testId: 'feature-tree-operation-item',
     budgetMs: 150,
-    outcome:
-      'Hovered feature-tree tooltip is visible and its transitions ended',
+    outcome: 'Hovered feature-tree operation has a readable, settled tooltip',
   },
 } satisfies Record<string, InteractionDescription>
 
@@ -136,12 +111,60 @@ function settingsDialog(document: Document) {
 
 function telemetryDialog(document: Document) {
   return Array.from(document.querySelectorAll('[role="dialog"]')).find(
-    (dialog) => dialog.querySelector('h1')?.textContent === 'Telemetry'
+    (dialog) =>
+      Array.from(dialog.querySelectorAll('h1')).some(
+        (heading) => heading.textContent?.trim() === 'Telemetry'
+      )
   )
 }
 
+function settingsReady(document: Document) {
+  const dialog = settingsDialog(document)
+  return Boolean(
+    dialogOpeningFinished(dialog) &&
+      isVisible(dialog?.querySelector('[role="combobox"]:enabled')) &&
+      isVisible(
+        dialog?.querySelector('[data-testid="settings-close-button"]:enabled')
+      ) &&
+      Array.from(
+        dialog?.querySelectorAll(
+          'section input:enabled, section select:enabled, section button:enabled'
+        ) ?? []
+      ).some(isVisible)
+  )
+}
+
+function modelPreserved(getEditor: () => KclManager | undefined) {
+  const editor = getEditor()
+  const code = editor?.code
+  const lastSuccessfulCode = editor?.lastSuccessfulCode
+  const artifacts = editor?.artifactGraph.size
+  const hasErrors = editor?.hasErrors()
+  const hasParseErrors = editor?.hasParseErrors()
+  return () => {
+    const current = getEditor()
+    return Boolean(
+      current &&
+        current.code === code &&
+        current.lastSuccessfulCode === lastSuccessfulCode &&
+        current.artifactGraph.size === artifacts &&
+        current.artifactGraph.size > 0 &&
+        current.hasErrors() === hasErrors &&
+        current.hasParseErrors() === hasParseErrors &&
+        !current.isExecuting &&
+        Object.keys(current.engineCommandManager.pendingCommands).length === 0
+    )
+  }
+}
+
 function settled(element: Element | null | undefined) {
-  return isVisible(element) && transitionsEnded(element ?? null)
+  return Boolean(
+    element &&
+      isVisible(element) &&
+      Number(getComputedStyle(element).opacity) === 1 &&
+      transitionsEnded(element) &&
+      animationsEnded(element)
+  )
 }
 
 /** Also covers Headless UI's enterFrom frames before a transition exists. */
@@ -187,57 +210,9 @@ function enters(target: Element, event: Event) {
   )
 }
 
-const toastWrapperSelector = '[data-rht-toaster] > div'
-const toastBarSelector = `${toastWrapperSelector} > div`
-
-function toastBar(target: Element) {
-  return target.closest(toastBarSelector)
-}
-
-function toastIsVisible(target: Element) {
-  // The library gives only active toast wrappers a class. Dismissed wrappers
-  // remain mounted while their bar plays its exit animation.
-  return Boolean(toastBar(target)?.parentElement?.classList.length)
-}
-
-function statusIcon(target: Element) {
-  const bar = toastBar(target)
-  return Boolean(
-    bar && target.parentElement?.parentElement?.parentElement === bar
-  )
-}
-
-function errorIcon(target: Element) {
-  return (
-    statusIcon(target) &&
-    getComputedStyle(target, '::before').content !== 'none'
-  )
-}
-
-function startsElementAnimation(event: Event) {
-  // Pseudo-element animation events have the same target as the icon circle;
-  // keep one sample per icon, not one per stroke.
-  return event instanceof AnimationEvent && event.pseudoElement === ''
-}
-
-function animationOutcome(target: Element) {
-  return () => target.isConnected && animationsEnded(target)
-}
-
-function ownAnimationOutcome(target: Element, event: Event) {
-  const name = event instanceof AnimationEvent ? event.animationName : undefined
-  return () =>
-    !target.isConnected ||
-    target
-      .getAnimations()
-      .every(
-        (animation) =>
-          !(animation instanceof CSSAnimation) ||
-          animation.animationName !== name ||
-          animation.playState === 'finished' ||
-          animation.playState === 'idle'
-      )
-}
+const copySuccessMessage = "Copied current file's code to clipboard."
+const statusSelector = '[role="status"]'
+const infoSelector = '[data-testid="ml-response-info-chat-bubble"]'
 
 export function createUiOutcomes(
   getEditor: () => KclManager | undefined
@@ -245,8 +220,7 @@ export function createUiOutcomes(
   const settingsOpen = {
     matchesTarget: (target: Element) =>
       Boolean(target.closest('[data-testid="user-settings"]')),
-    isReady: (document: Document) =>
-      dialogOpeningFinished(settingsDialog(document)),
+    isReady: settingsReady,
   }
   const settingsClose = {
     matchesTarget: (target: Element) =>
@@ -280,6 +254,154 @@ export function createUiOutcomes(
       isReady: (document) => !isVisible(variableDialog(document)),
     },
     {
+      ...uiInteractions.convertVariableApply,
+      matchesTarget: (target) =>
+        target.closest('button')?.textContent?.trim() === 'Add variable' &&
+        Boolean(variableDialog(target.ownerDocument)?.contains(target)),
+      prepareOutcome(document) {
+        const editor = getEditor()
+        const input = document.querySelector('#create-new-variable')
+        const name = input instanceof HTMLInputElement ? input.value : ''
+        const range =
+          editor?.modelingState?.context.selectionRanges.graphSelections[0]
+            ?.codeRef?.range
+        const original = editor?.ast.body.find(
+          (node) =>
+            node.type === 'VariableDeclaration' &&
+            range &&
+            node.start <= range[0] &&
+            node.end >= range[1]
+        )
+        const destination =
+          original?.type === 'VariableDeclaration'
+            ? original.declaration.id.name
+            : undefined
+        const raw =
+          original?.type === 'VariableDeclaration' &&
+          original.declaration.init.type === 'Literal'
+            ? original.declaration.init.raw
+            : undefined
+        const previousCode = editor?.code
+        const generation = editor?.engineSceneGenerationSignal.value
+        const value = destination
+          ? editor?.execState.variables[destination]
+          : undefined
+        const artifacts = editor?.artifactGraph.size
+        const hadImportedGeometry = Array.from(
+          editor?.artifactGraph.values() ?? []
+        ).some(
+          (artifact) =>
+            'codeRef' in artifact &&
+            artifact.codeRef &&
+            artifact.codeRef.range[2] !== 0
+        )
+        const dialog = variableDialog(document)
+        return createRenderedViewOutcome({
+          document,
+          getScene: () => getEditor()?.sceneInfra,
+          kind: 'stream',
+          isReady: () => {
+            const current = getEditor()
+            if (!current || !name || !destination || !raw) return false
+            const declaration = current.ast.body.find(
+              (node) =>
+                node.type === 'VariableDeclaration' &&
+                node.declaration.id.name === name
+            )
+            const replacement = current.ast.body.find(
+              (node) =>
+                node.type === 'VariableDeclaration' &&
+                node.declaration.id.name === destination
+            )
+            const executed = current.execState.variables[name]
+            const replacedValue = current.execState.variables[destination]
+            let mainArtifacts = 0
+            let importedArtifacts = 0
+            for (const artifact of current.artifactGraph.values()) {
+              if ('codeRef' in artifact && artifact.codeRef) {
+                if (artifact.codeRef.range[2] === 0) mainArtifacts++
+                else importedArtifacts++
+              }
+            }
+            // This command executes the new AST before updating the editor
+            // source. Its lastSuccessfulCode text therefore still names the
+            // old source; use the actual new execution values and scene receipt.
+            return Boolean(
+              current === editor &&
+                current.code !== previousCode &&
+                current.code.includes(`${name} = ${raw}`) &&
+                current.code.includes(`${destination} = ${name}`) &&
+                !current.hasErrors() &&
+                !current.isExecuting &&
+                Object.keys(current.engineCommandManager.pendingCommands)
+                  .length === 0 &&
+                generation !== undefined &&
+                current.engineSceneGenerationSignal.value > generation &&
+                value?.type === 'Number' &&
+                executed?.type === 'Number' &&
+                executed.value === value.value &&
+                replacedValue?.type === 'Number' &&
+                replacedValue.value === value.value &&
+                current.artifactGraph.size === artifacts &&
+                current.artifactGraph.size > 0 &&
+                (!hadImportedGeometry || importedArtifacts > mainArtifacts) &&
+                declaration?.type === 'VariableDeclaration' &&
+                declaration.declaration.init.type === 'Literal' &&
+                declaration.declaration.init.raw === raw &&
+                replacement?.type === 'VariableDeclaration' &&
+                replacement.declaration.init.type === 'Name' &&
+                replacement.declaration.init.name.name === name &&
+                (!dialog?.isConnected || !isVisible(dialog))
+            )
+          },
+        })
+      },
+      isReady: () => false,
+    },
+    {
+      ...uiInteractions.telemetryOpen,
+      matchesTarget: (target) =>
+        target
+          .closest('[data-testid="cmd-bar-option"]')
+          ?.querySelector('p')
+          ?.textContent?.trim() === 'Go to Telemetry',
+      isReady: (document) => {
+        const dialog = telemetryDialog(document)
+        return Boolean(
+          dialogOpeningFinished(dialog) &&
+            isVisible(
+              dialog?.querySelector(
+                '[data-testid="settings-close-button"]:enabled'
+              )
+            ) &&
+            Array.from(dialog?.querySelectorAll('h1') ?? []).some(
+              (heading) => heading.textContent?.trim() === 'Raw Marks'
+            ) &&
+            !isVisible(
+              document.querySelector('[data-testid="command-bar-wrapper"]')
+            )
+        )
+      },
+    },
+    {
+      ...uiInteractions.telemetryClose,
+      matchesTarget: (target) =>
+        Boolean(target.closest('[data-testid="settings-close-button"]')) &&
+        Boolean(telemetryDialog(target.ownerDocument)?.contains(target)),
+      prepareOutcome(document) {
+        const dialog = telemetryDialog(document)
+        const preserved = modelPreserved(getEditor)
+        return createRenderedViewOutcome({
+          document,
+          getScene: () => getEditor()?.sceneInfra,
+          kind: 'stream',
+          isReady: () =>
+            (!dialog?.isConnected || !isVisible(dialog)) && preserved(),
+        })
+      },
+      isReady: (document) => !isVisible(telemetryDialog(document)),
+    },
+    {
       ...uiInteractions.settingsOpen,
       ...settingsOpen,
     },
@@ -294,34 +416,17 @@ export function createUiOutcomes(
     {
       ...uiInteractions.modelSettingsClose,
       ...settingsClose,
-    },
-    {
-      ...uiInteractions.telemetryOpen,
-      events: ['transitionstart'],
-      matchesTarget: (target) =>
-        target.getAttribute('aria-hidden') === 'true' &&
-        Boolean(telemetryDialog(target.ownerDocument)?.contains(target)),
-      matchesEvent: (event) =>
-        event instanceof TransitionEvent && event.propertyName === 'opacity',
-      prepareOutcome: (_document, target) => () => transitionsEnded(target),
-      isReady: (document) => dialogOpeningFinished(telemetryDialog(document)),
-    },
-    {
-      ...uiInteractions.browserHandoffOpen,
-      events: ['transitionstart'],
-      matchesTarget: (target) =>
-        Boolean(
-          target.querySelector('[data-testid="continue-to-web-app-button"]')
-        ),
-      matchesEvent: (event) =>
-        event instanceof TransitionEvent && event.propertyName === 'opacity',
-      prepareOutcome: (_document, target) => () => transitionsEnded(target),
-      isReady: (document) =>
-        settled(
-          document
-            .querySelector('[data-testid="continue-to-web-app-button"]')
-            ?.closest('.max-w-3xl')
-        ),
+      prepareOutcome(document) {
+        const dialog = settingsDialog(document)
+        const preserved = modelPreserved(getEditor)
+        return createRenderedViewOutcome({
+          document,
+          getScene: () => getEditor()?.sceneInfra,
+          kind: 'stream',
+          isReady: () =>
+            (!dialog?.isConnected || !isVisible(dialog)) && preserved(),
+        })
+      },
     },
     {
       ...uiInteractions.paneBadgeHover,
@@ -332,70 +437,49 @@ export function createUiOutcomes(
       isReady: (document) => settled(document.querySelector('#code-badge')),
     },
     {
-      ...uiInteractions.toastEnter,
-      events: ['animationstart'],
+      ...uiInteractions.copyCode,
       matchesTarget: (target) =>
-        target.matches(toastBarSelector) && toastIsVisible(target),
-      matchesEvent: startsElementAnimation,
-      prepareOutcome: (_document, target, event) =>
-        ownAnimationOutcome(target, event),
+        getEditor() !== undefined &&
+        target.closest('[role="menuitem"]')?.textContent?.trim() ===
+          'Copy code',
+      prepareOutcome(document) {
+        const previous = new Set(document.querySelectorAll(statusSelector))
+        return () =>
+          Array.from(document.querySelectorAll(statusSelector)).some(
+            (message) => {
+              if (
+                previous.has(message) ||
+                message.textContent?.trim() !== copySuccessMessage ||
+                !isVisible(message)
+              ) {
+                return false
+              }
+              // Production creates this success toast only after writeText
+              // resolves. Include the whole notification and its positioner,
+              // not just an icon or the first appearance of the message.
+              const bar = message.closest('[data-rht-toaster] > div > div')
+              return settled(bar) && settled(bar?.parentElement)
+            }
+          )
+      },
       isReady: () => false,
     },
     {
-      ...uiInteractions.toastExit,
-      events: ['animationstart'],
+      ...uiInteractions.zookeeperSend,
       matchesTarget: (target) =>
-        target.matches(toastBarSelector) && !toastIsVisible(target),
-      matchesEvent: startsElementAnimation,
-      prepareOutcome: (_document, target, event) =>
-        ownAnimationOutcome(target, event),
-      isReady: () => false,
-    },
-    {
-      ...uiInteractions.toastStack,
-      events: ['transitionstart'],
-      matchesTarget: (target) => target.matches(toastWrapperSelector),
-      matchesEvent: (event) =>
-        event instanceof TransitionEvent && event.propertyName === 'transform',
-      prepareOutcome: (_document, target) => () => transitionsEnded(target),
-      isReady: () => false,
-    },
-    {
-      ...uiInteractions.toastSuccessIcon,
-      events: ['animationstart'],
-      matchesTarget: (target) => statusIcon(target) && !errorIcon(target),
-      matchesEvent: startsElementAnimation,
-      prepareOutcome: (_document, target) => animationOutcome(target),
-      isReady: () => false,
-    },
-    {
-      ...uiInteractions.toastErrorIcon,
-      events: ['animationstart'],
-      matchesTarget: errorIcon,
-      matchesEvent: startsElementAnimation,
-      prepareOutcome: (_document, target) => animationOutcome(target),
-      isReady: () => false,
-    },
-    {
-      ...uiInteractions.toastCustomIcon,
-      events: ['animationstart'],
-      matchesTarget: (target) =>
-        target.parentElement === toastBar(target) &&
-        target.childElementCount === 0 &&
-        Boolean(target.textContent?.trim()),
-      matchesEvent: startsElementAnimation,
-      prepareOutcome: (_document, target) => animationOutcome(target),
-      isReady: () => false,
-    },
-    {
-      ...uiInteractions.zookeeperInfoFade,
-      events: ['animationstart'],
-      matchesTarget: (target) =>
-        target.matches(
-          '[data-testid="ml-response-info-chat-bubble"] .animate-delta-in'
+        Boolean(
+          target.closest('[data-testid="ml-ephant-conversation-input-button"]')
         ),
-      matchesEvent: startsElementAnimation,
-      prepareOutcome: (_document, target) => animationOutcome(target),
+      prepareOutcome(document) {
+        const previous = new Set(document.querySelectorAll(infoSelector))
+        return () =>
+          Array.from(document.querySelectorAll(infoSelector)).some(
+            (response) =>
+              !previous.has(response) &&
+              Boolean(response.textContent?.trim()) &&
+              settled(response)
+          )
+      },
       isReady: () => false,
     },
     {

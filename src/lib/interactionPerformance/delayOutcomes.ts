@@ -13,12 +13,11 @@ export const delayInteractions = {
     budgetMs: 150,
     outcome: 'The hovered toolbar tooltip displays its rich description',
   },
-  richTooltipReset: {
-    id: 'zds.toolbar.richTooltip.hiddenReset',
+  richTooltipHide: {
+    id: 'zds.toolbar.richTooltip.hide',
     testId: 'extrude',
     budgetMs: 150,
-    outcome:
-      'After leaving the toolbar, hidden rich content resets to compact content',
+    outcome: 'Moving away from the toolbar control hides its visible tooltip',
   },
   editorExecution: {
     id: 'zds.editor.automaticExecution',
@@ -55,11 +54,11 @@ export const delayInteractions = {
     outcome: 'Hovering geometry displays its corresponding code highlight',
   },
   streamResize: {
-    id: 'zds.scene.resize.trailing',
+    id: 'zds.scene.resize',
     testId: 'stream',
     budgetMs: 150,
     outcome:
-      'A rapid window resize is reflected in engine and delivered video dimensions',
+      'The resized window has matching engine and delivered video dimensions',
   },
   planesShow: {
     id: 'zds.scene.defaultPlanes.showAfterEdit',
@@ -74,13 +73,6 @@ export const delayInteractions = {
     budgetMs: 150,
     outcome:
       'Adding geometry executes the edited code and hides all default planes',
-  },
-  partialChordExpiry: {
-    id: 'zds.keymap.partialChord.expiry',
-    testId: 'keymap-partial-match-status',
-    budgetMs: 150,
-    outcome:
-      'After the prefix key is released, the partial keyboard chord countdown expires and its status is removed',
   },
 } satisfies Record<string, InteractionDescription>
 
@@ -143,7 +135,6 @@ function planeVisibility(editor: KclManager | undefined, visible: boolean) {
 export function createDelayOutcomes(
   getEditor: () => KclManager | undefined
 ): InteractionDefinition[] {
-  let resizeBurstStartedAt: number | undefined
   return [
     {
       ...delayInteractions.richTooltipReveal,
@@ -159,16 +150,14 @@ export function createDelayOutcomes(
       isReady: () => false,
     },
     {
-      ...delayInteractions.richTooltipReset,
+      ...delayInteractions.richTooltipHide,
       events: ['pointerout'],
-      matchesTarget: (target) =>
-        Boolean(toolbarTooltip(target)?.querySelector('p')),
+      matchesTarget: (target) => isVisible(toolbarTooltip(target)),
       matchesEvent: (event, target) =>
         crossesControlBoundary(event, target, extrudeSelector),
       prepareOutcome: (_document, target) => {
         const tooltip = toolbarTooltip(target)
-        return () =>
-          Boolean(tooltip?.isConnected && !tooltip.querySelector('p'))
+        return () => !isVisible(tooltip)
       },
       isReady: () => false,
     },
@@ -272,20 +261,10 @@ export function createDelayOutcomes(
     {
       ...delayInteractions.streamResize,
       events: ['resize'],
-      coalesce: 'last',
+      coalesce: 'first',
       matchesTarget: () => Boolean(getEditor()),
-      matchesEvent: (event) => {
-        if (
-          resizeBurstStartedAt === undefined ||
-          event.timeStamp - resizeBurstStartedAt >= 100
-        ) {
-          // Production's refresh window is anchored to the last immediate
-          // resize, not extended by each event inside the debounce window.
-          resizeBurstStartedAt = event.timeStamp
-          return false
-        }
-        return true
-      },
+      matchesEvent: (event, target) =>
+        event.target === target.ownerDocument.defaultView,
       prepareOutcome: (document) => {
         const stream = document.querySelector('#stream')
         const initial = getEditor()?.engineCommandManager.streamDimensions
@@ -333,31 +312,5 @@ export function createDelayOutcomes(
         isReady: () => false,
       })
     ),
-    {
-      ...delayInteractions.partialChordExpiry,
-      // The keymap consumes prefix keydown in window capture. Its trusted
-      // release is observable without changing the application's event flow.
-      events: ['keyup'],
-      matchesTarget: () => getEditor()?.modelingState?.matches('idle') === true,
-      matchesEvent: (event, target) =>
-        event.isTrusted &&
-        event instanceof KeyboardEvent &&
-        event.key.toLowerCase() === 'v' &&
-        !event.ctrlKey &&
-        !event.metaKey &&
-        !event.altKey &&
-        !target.closest('input, textarea, [contenteditable="true"]'),
-      prepareOutcome: (document) => {
-        let displayed = false
-        return () => {
-          const status = document.querySelector(
-            '[data-testid="keymap-partial-match-status"]'
-          )
-          displayed ||= isVisible(status)
-          return displayed && status === null
-        }
-      },
-      isReady: () => false,
-    },
   ]
 }

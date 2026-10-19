@@ -3,10 +3,7 @@ import {
   unsupportedDelayBudgetScenarios,
 } from '@e2e/performance/delay-budget-scenarios'
 import { modelingBudgetScenarios } from '@e2e/performance/modeling-budget-scenarios'
-import {
-  uiBudgetScenarios,
-  unsupportedUiBudgetScenarios,
-} from '@e2e/performance/ui-budget-scenarios'
+import { uiBudgetScenarios } from '@e2e/performance/ui-budget-scenarios'
 import {
   expectInteractionBudget,
   finishCapture,
@@ -15,7 +12,6 @@ import {
 } from '@e2e/performance/capture'
 import { test } from '@e2e/performance/test'
 import type { InteractionReport } from '@src/lib/interactionPerformance/report'
-import { unsupportedModelingInteractions } from '@src/lib/interactionPerformance/modelingOutcomes'
 import {
   assertErrorModelPreserved,
   assertModelLoaded,
@@ -57,8 +53,6 @@ test.beforeAll(async ({}, testInfo) => {
           }))
         ),
         unsupported: [
-          ...unsupportedModelingInteractions,
-          ...unsupportedUiBudgetScenarios,
           ...unsupportedDelayBudgetScenarios,
           ...scenarios.flatMap((scenario) =>
             scenario.unavailableWithErrors

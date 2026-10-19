@@ -15,7 +15,8 @@ import {
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
 const scalar = 'auditLength = 13mm'
-const existingTextFile = 'audit-existing.txt'
+const convertedName = 'auditConvertedLength'
+const copiedCodeMessage = "Copied current file's code to clipboard."
 const variableChangesCode =
   'Variable-conversion preparation edits and executes KCL; preserved error profiles must keep their loaded error state unchanged.'
 
@@ -49,6 +50,25 @@ async function closeSettings({ page }: BudgetFixtures) {
   await page.getByTestId('settings-close-button').click()
 }
 
+function telemetryDialog(page: BudgetFixtures['page']) {
+  return page.getByRole('dialog').filter({
+    has: page.getByRole('heading', { name: 'Telemetry', exact: true }),
+  })
+}
+
+async function prepareTelemetry(fixtures: BudgetFixtures) {
+  await prepareModeling(fixtures)
+  await fixtures.cmdBar.openCmdBar()
+  await fixtures.cmdBar.cmdSearchInput.fill('Go to Telemetry')
+  await expect(
+    fixtures.cmdBar.cmdOptions.getByText('Go to Telemetry', { exact: true })
+  ).toBeVisible()
+}
+
+async function openTelemetry({ cmdBar }: BudgetFixtures) {
+  await cmdBar.chooseCommand('Go to Telemetry')
+}
+
 async function prepareVariable(fixtures: BudgetFixtures) {
   await prepareModeling(fixtures)
   const { editor, scene, page } = fixtures
@@ -71,6 +91,9 @@ async function openVariable({ page }: BudgetFixtures) {
 
 async function prepareCopyCode(fixtures: BudgetFixtures) {
   await prepareModeling(fixtures)
+  await expect(
+    fixtures.page.getByRole('status').filter({ hasText: copiedCodeMessage })
+  ).toHaveCount(0)
   await openCodeMenu(fixtures)
 }
 
@@ -81,8 +104,22 @@ async function openCodeMenu({ page }: BudgetFixtures) {
     .click()
 }
 
-async function copyCode({ page }: BudgetFixtures) {
+async function copyCode({ page, tronApp }: BudgetFixtures) {
+  // Match copyKclCodeToClipboard's source string, not CodeMirror's innerText
+  // serialization, which can insert extra line breaks.
+  const source = await page.evaluate(() => {
+    const editor = window.app.project?.executingEditor.value
+    if (!editor) throw new Error('Copy code requires the executing editor')
+    return editor.code
+  })
   await page.getByRole('menuitem', { name: 'Copy code', exact: true }).click()
+  await expect(
+    page.getByRole('status').filter({ hasText: copiedCodeMessage })
+  ).toBeVisible()
+  const clipboard = await tronApp.electron.evaluate(({ clipboard }) =>
+    clipboard.readText()
+  )
+  expect(clipboard).toBe(source)
 }
 
 async function prepareInvalidCode(fixtures: BudgetFixtures) {
@@ -147,6 +184,126 @@ export const uiBudgetScenarios: BudgetScenario[] = [
     },
   },
   {
+    definition: uiInteractions.convertVariableApply,
+    unavailableWithErrors: variableChangesCode,
+    prepare: async (fixtures) => {
+      await prepareVariable(fixtures)
+      await openVariable(fixtures)
+      await waitForOwnerAnimations(fixtures.page.getByRole('dialog'))
+      await fixtures.page.getByLabel('Create new variable').fill(convertedName)
+      await expect(
+        fixtures.page.getByRole('button', { name: /Add variable$/ })
+      ).toBeEnabled()
+    },
+    act: async ({ page }) => {
+      await page.getByRole('button', { name: /Add variable$/ }).click()
+    },
+    verify: async (fixtures) => {
+      await expect(fixtures.page.getByLabel('Create new variable')).toHaveCount(
+        0
+      )
+      const converted = await fixtures.page.evaluate((name) => {
+        const editor = window.app.project?.executingEditor.value
+        if (!editor) throw new Error('Conversion requires the executing editor')
+        let mainArtifacts = 0
+        let importedArtifacts = 0
+        for (const artifact of editor.artifactGraph.values()) {
+          if ('codeRef' in artifact && artifact.codeRef) {
+            if (artifact.codeRef.range[2] === 0) mainArtifacts++
+            else importedArtifacts++
+          }
+        }
+        return {
+          added: editor.ast.body.some(
+            (node) =>
+              node.type === 'VariableDeclaration' &&
+              node.declaration.id.name === name &&
+              node.declaration.init.type === 'Literal' &&
+              node.declaration.init.raw === '13mm'
+          ),
+          replaced: editor.ast.body.some(
+            (node) =>
+              node.type === 'VariableDeclaration' &&
+              node.declaration.id.name === 'auditLength' &&
+              node.declaration.init.type === 'Name' &&
+              node.declaration.init.name.name === name
+          ),
+          code: editor.code,
+          addedValue: editor.execState.variables[name],
+          replacedValue: editor.execState.variables.auditLength,
+          hasErrors: editor.hasErrors(),
+          isExecuting: editor.isExecuting,
+          pendingCommands: Object.keys(
+            editor.engineCommandManager.pendingCommands
+          ).length,
+          artifacts: editor.artifactGraph.size,
+          mainArtifacts,
+          importedArtifacts,
+          filenames: Object.values(editor.execState.filenames).flatMap(
+            (module) =>
+              module?.type === 'Local'
+                ? [module.value.replaceAll('\\', '/')]
+                : []
+          ),
+        }
+      }, convertedName)
+      expect(converted.added).toBe(true)
+      expect(converted.replaced).toBe(true)
+      expect(converted.code).toContain(`${convertedName} = 13mm`)
+      expect(converted.code).toContain(`auditLength = ${convertedName}`)
+      expect(converted.addedValue).toMatchObject({ type: 'Number', value: 13 })
+      expect(converted.replacedValue).toMatchObject({
+        type: 'Number',
+        value: 13,
+      })
+      expect(converted.hasErrors).toBe(false)
+      expect(converted.isExecuting).toBe(false)
+      expect(converted.pendingCommands).toBe(0)
+      expect(converted.artifacts).toBeGreaterThan(0)
+      if (fixtures.modelProfile === 'large') {
+        expect(
+          converted.filenames.some((filename) =>
+            filename.endsWith('large-model/main.kcl')
+          )
+        ).toBe(true)
+        expect(converted.importedArtifacts).toBeGreaterThan(
+          converted.mainArtifacts
+        )
+      }
+    },
+  },
+  {
+    definition: uiInteractions.telemetryOpen,
+    prepare: prepareTelemetry,
+    act: openTelemetry,
+    verify: async ({ page }) => {
+      await expect(
+        telemetryDialog(page).getByRole('heading', {
+          name: 'Raw Marks',
+          exact: true,
+        })
+      ).toBeVisible()
+      await expect(
+        telemetryDialog(page).getByTestId('settings-close-button')
+      ).toBeEnabled()
+    },
+  },
+  {
+    definition: uiInteractions.telemetryClose,
+    prepare: async (fixtures) => {
+      await prepareTelemetry(fixtures)
+      await openTelemetry(fixtures)
+      await waitForOwnerAnimations(telemetryDialog(fixtures.page))
+    },
+    act: async ({ page }) => {
+      await telemetryDialog(page).getByTestId('settings-close-button').click()
+    },
+    verify: async (fixtures) => {
+      await expect(telemetryDialog(fixtures.page)).toHaveCount(0)
+      await assertModelLoaded(fixtures)
+    },
+  },
+  {
     definition: uiInteractions.settingsOpen,
     context: 'home',
     prepare: async (fixtures) => {
@@ -207,23 +364,7 @@ export const uiBudgetScenarios: BudgetScenario[] = [
       await expect(
         fixtures.page.getByTestId('settings-dialog-panel')
       ).toHaveCount(0)
-    },
-  },
-  {
-    definition: uiInteractions.telemetryOpen,
-    context: 'home',
-    prepare: prepareHome,
-    act: async ({ page }) => {
-      // Telemetry is an existing diagnostic route without a launcher button.
-      // Hash navigation keeps the recorder in the same desktop document.
-      const url = new URL(page.url())
-      url.hash = `${url.hash.replace(/\/$/, '')}/telemetry`
-      await page.goto(url.toString())
-    },
-    verify: async ({ page }) => {
-      await expect(
-        page.getByRole('heading', { name: 'Telemetry', exact: true })
-      ).toBeVisible()
+      await assertModelLoaded(fixtures)
     },
   },
   {
@@ -238,94 +379,22 @@ export const uiBudgetScenarios: BudgetScenario[] = [
       await page.locator('#code-badge').hover()
     },
   },
-  ...[
-    uiInteractions.toastEnter,
-    uiInteractions.toastExit,
-    uiInteractions.toastSuccessIcon,
-  ].map(
-    (definition): BudgetScenario => ({
-      definition,
-      prepare: prepareCopyCode,
-      act: copyCode,
-    })
-  ),
   {
-    definition: uiInteractions.toastStack,
-    prepare: async (fixtures) => {
-      await prepareCopyCode(fixtures)
-      await copyCode(fixtures)
-      await expect(
-        fixtures.page.getByText("Copied current file's code to clipboard.", {
-          exact: true,
-        })
-      ).toBeVisible()
-      await openCodeMenu(fixtures)
-    },
+    definition: uiInteractions.copyCode,
+    prepare: prepareCopyCode,
     act: copyCode,
-  },
-  {
-    definition: uiInteractions.toastErrorIcon,
-    prepare: async (fixtures) => {
-      await prepareModeling(fixtures)
-      const currentFile = await fixtures.page.evaluate(() => {
-        const editor = window.app.project?.executingEditor.value
-        if (!editor) throw new Error('Duplicate file needs an open project')
-        return editor.path
-      })
-      await fixtures.fs.writeFile(
-        await fixtures.fs.join(
-          await fixtures.fs.dirname(currentFile),
-          existingTextFile
-        ),
-        new TextEncoder().encode('Existing performance audit text file.\n')
-      )
-      await fixtures.toolbar.openPane(DefaultLayoutPaneID.Files)
-      await expect(
-        fixtures.page
-          .getByTestId('file-pane-scroll-container')
-          .getByRole('treeitem', { name: existingTextFile, exact: true })
-      ).toBeVisible()
-      await fixtures.toolbar.createFileBtn.click()
-      await fixtures.toolbar.treeInputField.fill(existingTextFile)
-    },
-    act: async ({ toolbar }) => {
-      await toolbar.treeInputField.press('Enter')
-    },
     verify: async ({ page }) => {
       await expect(
-        page.getByText(`File ${existingTextFile} already exists`, {
-          exact: true,
-        })
+        page.getByRole('status').filter({ hasText: copiedCodeMessage })
       ).toBeVisible()
     },
   },
   {
-    definition: uiInteractions.toastCustomIcon,
-    prepare: prepareModeling,
-    act: async ({ page, fs, editor }) => {
-      const code = await editor.getCurrentCode()
-      const file = await page.evaluate(() => {
-        const editor = window.app.project?.executingEditor.value
-        if (!editor) throw new Error('External edit requires an open model')
-        return editor.path
-      })
-      // Write directly: folderSetupFn reloads the page and is setup-only. The
-      // native file watcher owns this notification and file reload.
-      await fs.writeFile(
-        file,
-        new TextEncoder().encode(`${code}\n// External edit\n`)
-      )
-    },
-    verify: async ({ page }) => {
-      await expect(
-        page.getByText('Reloading file from disk.', { exact: true })
-      ).toBeVisible()
-    },
-  },
-  {
-    definition: uiInteractions.zookeeperInfoFade,
+    definition: uiInteractions.zookeeperSend,
     tags: ['@zookeeper'],
     prepare: async (fixtures) => {
+      // Deterministic server input exercises the real consumer and UI after the
+      // native Send click. This is not a benchmark of AI/service response time.
       await fixtures.page.routeWebSocket('**/ws/ml/copilot**', (client) => {
         client.onMessage((message) => {
           if (typeof message !== 'string') return
@@ -364,6 +433,9 @@ export const uiBudgetScenarios: BudgetScenario[] = [
         'Show an informational status'
       )
       await expect(fixtures.copilot.submitButton).toBeEnabled()
+      await expect(
+        fixtures.page.getByTestId('ml-response-info-chat-bubble')
+      ).toHaveCount(0)
     },
     act: async ({ copilot }) => {
       await copilot.submitButton.click()
@@ -372,6 +444,9 @@ export const uiBudgetScenarios: BudgetScenario[] = [
       await expect(
         page.getByTestId('ml-response-info-chat-bubble')
       ).toContainText(infoText)
+      await expect(
+        page.getByTestId('ml-response-info-chat-bubble')
+      ).toBeVisible()
     },
   },
   {
@@ -389,13 +464,5 @@ export const uiBudgetScenarios: BudgetScenario[] = [
         page.getByRole('tooltip').filter({ hasText: 'boxVisible' })
       ).toBeVisible()
     },
-  },
-]
-
-export const unsupportedUiBudgetScenarios = [
-  {
-    definition: uiInteractions.loadingCountdownFade,
-    reason:
-      'Dormant: the only caller supplies isRetrying=false and retryAttemptCountdown=0. No real running-app countdown can be exercised without changing production behavior.',
   },
 ]
