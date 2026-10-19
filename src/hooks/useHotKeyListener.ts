@@ -8,13 +8,17 @@ import { useEffect } from 'react'
 /**
  * @deprecated Prefer registering shortcuts through `keymapValueSpec`.
  */
-export function useHotKeyListener(kclManager: KclManager) {
+export function useHotKeyListener(
+  kclManager: KclManager,
+  ctrlMultiselectOnWindows = false
+) {
   const keyName = 'Shift'
   useEffect(() => {
     const updateControlKey = (event: KeyboardEvent) => {
       // AltGr and other modifier chords must retain their existing behavior.
       kclManager.setIsControlSelectionDown(
-        platform() === 'windows' &&
+        ctrlMultiselectOnWindows &&
+          platform() === 'windows' &&
           event.ctrlKey &&
           !event.altKey &&
           !event.metaKey
@@ -56,5 +60,5 @@ export function useHotKeyListener(kclManager: KclManager) {
       document.removeEventListener('visibilitychange', handleVisibilityChange)
       resetShiftKey()
     }
-  }, [kclManager])
+  }, [kclManager, ctrlMultiselectOnWindows])
 }

@@ -484,6 +484,10 @@ const USER_APP_ONLY_SETTINGS_SECTIONS = [
     ),
   ]),
   defineAppOnlySection('modeling', [
+    defineBooleanAppOnlyField(
+      { category: 'modeling', field: 'ctrlMultiselectOnWindows' },
+      'ctrl_multiselect_on_windows'
+    ),
     defineMappedAppOnlyField(
       { category: 'modeling', field: 'mouseControls' },
       'mouse_controls',

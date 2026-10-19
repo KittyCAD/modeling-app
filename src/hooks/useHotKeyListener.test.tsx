@@ -6,13 +6,15 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@src/lib/utils', () => ({ platform: vi.fn(() => 'windows') }))
 
-function setup() {
+function setup(ctrlMultiselectOnWindows = true) {
   const manager = {
     setIsShiftDown: vi.fn(),
     setIsControlSelectionDown: vi.fn(),
   }
-  const hook = renderHook(() =>
-    useHotKeyListener(manager as unknown as KclManager)
+  const hook = renderHook(
+    ({ enabled }) =>
+      useHotKeyListener(manager as unknown as KclManager, enabled),
+    { initialProps: { enabled: ctrlMultiselectOnWindows } }
   )
   return { manager, ...hook }
 }
@@ -26,6 +28,31 @@ function key(type: 'keydown' | 'keyup', init: KeyboardEventInit) {
 afterEach(() => vi.mocked(platform).mockReturnValue('windows'))
 
 describe('selection modifiers', () => {
+  it('keeps Ctrl disabled by default and preserves Shift selection', () => {
+    const manager = {
+      setIsShiftDown: vi.fn(),
+      setIsControlSelectionDown: vi.fn(),
+    }
+    renderHook(() => useHotKeyListener(manager as unknown as KclManager))
+    key('keydown', { key: 'Control', ctrlKey: true })
+    expect(manager.setIsControlSelectionDown).toHaveBeenLastCalledWith(false)
+    key('keydown', { key: 'Shift', shiftKey: true, ctrlKey: true })
+    expect(manager.setIsShiftDown).toHaveBeenLastCalledWith(true)
+  })
+
+  it('applies setting changes without leaving Ctrl selection stuck', () => {
+    const { manager, rerender } = setup(false)
+    key('keydown', { key: 'Control', ctrlKey: true })
+    expect(manager.setIsControlSelectionDown).toHaveBeenLastCalledWith(false)
+    rerender({ enabled: true })
+    key('keydown', { key: 'Control', ctrlKey: true })
+    expect(manager.setIsControlSelectionDown).toHaveBeenLastCalledWith(true)
+    rerender({ enabled: false })
+    expect(manager.setIsControlSelectionDown).toHaveBeenLastCalledWith(false)
+    key('keydown', { key: 'z', ctrlKey: true })
+    expect(manager.setIsControlSelectionDown).toHaveBeenLastCalledWith(false)
+  })
+
   it('tracks Windows Ctrl separately and lets keyboard shortcuts propagate', () => {
     const { manager } = setup()
     key('keydown', { key: 'Control', ctrlKey: true })
