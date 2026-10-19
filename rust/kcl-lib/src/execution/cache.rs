@@ -41,6 +41,11 @@ struct CacheInner {
     pub old_ast: Option<GlobalState>,
     // The last successful run's memory. Not cleared after an unsuccessful run.
     pub prev_memory: Option<SketchModeState>,
+    /// Counts the runs that changed the engine scene. Never reset, so callers
+    /// can tell whether the scene changed since they last looked.
+    /// If the counter hasn't moved, the scene hasn't changed. If it has moved,
+    /// the scene may have changed.
+    pub engine_scene_generation: usize,
 }
 
 /// Cached execution state for one engine session and its associated mock execution.
@@ -86,6 +91,15 @@ impl Cache {
     pub(crate) async fn write_old_memory(&self, mem: SketchModeState) {
         let mut inner = self.0.inner().write().await;
         inner.prev_memory = Some(mem);
+    }
+
+    /// The number of runs that have changed the engine scene.
+    pub(crate) async fn engine_scene_generation(&self) -> usize {
+        self.0.inner().read().await.engine_scene_generation
+    }
+
+    pub(super) async fn bump_engine_scene_generation(&self) {
+        self.0.inner().write().await.engine_scene_generation += 1;
     }
 
     /// Invalidate live execution state while preserving usable sketch-mode memory.
@@ -188,7 +202,7 @@ impl GlobalState {
         Ok(ExecOutcome {
             variables,
             filenames: self.exec_state.filenames(),
-            from_cache: false,
+            engine_scene_generation: ctx.cache.engine_scene_generation().await,
             operations: self.exec_state.operations_by_module(),
             artifact_graph: self.exec_state.artifacts.graph,
             scene_objects: self.exec_state.root_module_artifacts.scene_objects,
