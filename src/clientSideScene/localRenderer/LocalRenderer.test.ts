@@ -162,14 +162,16 @@ describe('local GLB loading', () => {
 
   function planeFixture(id = 'plane-xy') {
     const f = fixture()
-    const planes = f.gpu.planeRenderer
+    const {
+      planeRenderer: planes,
+      integerIdPicker: picker,
+      selectionHighlightRenderer: highlights,
+    } = f.gpu
     planes.updateDefaultPlanes(f.manager.rustContext.defaultPlanes)
     planes.updateOffsetPlanes(new Map([['offset', offsetPlane()]]))
     const target = planes.planes.get(id)?.mesh
     if (!target) throw new Error('Missing plane mesh')
-    const picker = f.gpu.integerIdPicker
     picker.pick.mockResolvedValue({ target, stale: false })
-    const highlights = f.gpu.selectionHighlightRenderer
     const setDefaultVisibility = vi.spyOn(planes, 'setDefaultVisibility')
     f.state.previewCamera = new PerspectiveCamera()
     f.state.pointerOverCanvas = true

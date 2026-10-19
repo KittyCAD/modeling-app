@@ -2,16 +2,10 @@ import { SettingRestartButton } from '@src/components/Settings/SettingRestartBut
 import { useApp, useSingletons } from '@src/lib/boot'
 import { Setting } from '@src/lib/settings/Setting'
 import { act, fireEvent, render, screen } from '@testing-library/react'
-import { useLocation, useNavigate } from 'react-router-dom'
 import { afterEach, expect, test, vi } from 'vitest'
 import { createActor, createMachine } from 'xstate'
 
 vi.mock('@src/lib/boot', () => ({ useApp: vi.fn(), useSingletons: vi.fn() }))
-vi.mock(import('react-router-dom'), async (importOriginal) => ({
-  ...(await importOriginal()),
-  useNavigate: vi.fn(),
-  useLocation: vi.fn(),
-}))
 
 afterEach(() => {
   vi.restoreAllMocks()
@@ -34,8 +28,16 @@ function setup({ connected = true } = {}) {
       },
     })
   ).start()
+  const events: string[] = []
+  const router = {
+    getLocation: () => ({ pathname: '/file/some-project/settings' }),
+    navigate: vi.fn(async (to: string) => {
+      events.push(`navigate ${to}`)
+    }),
+  }
   vi.mocked(useApp).mockReturnValue({
     settings: { actor },
+    registry: { get: () => router },
   } as unknown as ReturnType<typeof useApp>)
   vi.mocked(useSingletons).mockReturnValue({
     kclManager: {
@@ -45,16 +47,6 @@ function setup({ connected = true } = {}) {
       },
     },
   } as unknown as ReturnType<typeof useSingletons>)
-  const events: string[] = []
-  const navigate = vi.fn(async (to: string) => {
-    events.push(`navigate ${to}`)
-  })
-  vi.mocked(useNavigate).mockReturnValue(
-    navigate as unknown as ReturnType<typeof useNavigate>
-  )
-  vi.mocked(useLocation).mockReturnValue({
-    pathname: '/file/some-project/settings',
-  } as ReturnType<typeof useLocation>)
   const reload = vi.spyOn(window.location, 'reload').mockImplementation(() => {
     events.push('reload')
   })
