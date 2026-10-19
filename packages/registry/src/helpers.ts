@@ -2,7 +2,11 @@ import {
   type ReadonlySignal as ReadonlyPreactSignal,
   computed,
 } from '@preact/signals-core'
-import { CombineMutationError, ServiceResolutionError } from './errors'
+import {
+  CombineMutationError,
+  RegistryDependencyError,
+  ServiceResolutionError,
+} from './errors'
 import type { Registry } from './registry'
 import { defineService } from './service'
 import { Slot } from './types'
@@ -15,6 +19,7 @@ import type {
   RegistryItemFactoryDefinition,
   RegistryDependencies,
   RegistryDependencySignals,
+  RegistryDependencyReader,
   RegistryItemKey,
   RegistryDisposer,
   Service,
@@ -206,11 +211,24 @@ export function defineRegistryItemFactory<D extends RegistryDependencies>(
             Object.entries(dependencies).map(([name, { token }]) => [
               name,
               'multiple' in token
-                ? computed(() => ctx.services.get(token))
+                ? computed(() => ctx.container.get(token))
                 : ctx.valueSpecs.signal(token),
             ])
           ) as RegistryDependencySignals<D>
-          return definition.create(Object.freeze(inputs))
+          // The declared token carries the result type across this heterogeneous map.
+          const read = ((name: keyof D) => {
+            const dependency = dependencies[String(name)]
+            if (!dependency) {
+              throw new RegistryDependencyError(
+                `Unknown dependency "${String(name)}".`
+              )
+            }
+            const { token } = dependency
+            return 'multiple' in token
+              ? ctx.services.get(token)
+              : ctx.valueSpecs.get(token)
+          }) as RegistryDependencyReader<D>
+          return definition.create(Object.freeze(inputs), read)
         }
   Object.defineProperty(factory, 'itemKey', {
     value:

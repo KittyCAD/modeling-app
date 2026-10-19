@@ -161,11 +161,12 @@ export const settingsTomlSerialization = defineRegistryItemFactory({
       token: settingsValueSpecExperimental,
     },
   },
-  create({ files, settings }) {
+  create({ settings }, read) {
+    const files = read('files')
     return {
       providesServices: [
         provideService(settingsTomlService, {
-          load: () => loadSettings(files.value, settings.value),
+          load: () => loadSettings(files, settings.value),
         }),
       ],
     }
@@ -173,7 +174,7 @@ export const settingsTomlSerialization = defineRegistryItemFactory({
 })
 ```
 
-`create` receives only the named dependencies as readonly signals. Service inputs
+The first `create` argument contains the named dependencies as readonly signals. Service inputs
 are required (`ReadonlySignal<T>`); missing services throw instead of returning
 `undefined`. Value-spec inputs contain the combined output from **all** active
 contributors, not just the named item. Use the ordinary callback form
@@ -200,16 +201,38 @@ do not run. Items returned by callbacks cannot be known during the initial plann
 step; their subtrees are normalized when returned, and already registered identities
 win before any of their children execute.
 
-Dependencies control inclusion and order, not access to a private registry snapshot.
-Factories still create signals or functions that read services after construction;
-eager reads of the registry during construction remain unsupported. The guarantee
-is synchronous callback ordering, not completion of asynchronous provider work.
+The second `create` argument, `read(name)`, reads a named dependency directly
+without evaluating its live signal during construction. Its return type is inferred
+from the dependency's token. The current constructor-read policy is **declared
+dependencies only**: contributions from every declared dependency subtree, including
+transitive prerequisites and returned items, participate. Unrelated roots and override
+slots do not contribute unless they are included in those prerequisites. Ordinary
+first-identity-wins planning still selects the winning dependency items.
 
-Replacing a dependency does not rerun a consumer with the same stable key. Retain
-service signals or perform lookups when an operation is called to observe replacement
-providers. Unmounted consumers dispose before their dependencies. Setup failures
-clean up newly created instances. Returned `uses` includes child items; it cannot
-establish prerequisites for the callback that returned it.
+Within this constructor scope, contributions follow dependency traversal order,
+with normal precedence, keyed deduplication, service sanitization, conflict checks,
+and combine purity rules. This guarantees synchronous provider construction, not
+completion of asynchronous provider work. The named item/token contribution checks
+above still apply; an unrelated provider or a value spec's default cannot satisfy a
+declared dependency.
+
+Live inputs retain their existing registry-wide composition and must be evaluated
+after construction. Keeping constructor reads separate avoids caching a partial
+constructor result in a signal intended to observe the complete live registry.
+Outside graph construction, `read(name)` also reads the complete registry, though
+retaining the injected live signals is preferable for reactive consumers.
+
+A factory that reads constructor dependencies captures its dependency scope.
+Replacing any item in that scope reconstructs it and its capturing dependents,
+then disposes the previous consumers before their previous providers. Unrelated
+slot changes preserve these instances. Changes to signal values alone do not rerun
+constructors: captured values are snapshots, while injected signals stay live.
+Factories using only live inputs retain their instances across provider replacement.
+Failed replacements clean up newly created instances in reverse construction order;
+the slot transaction restores the previous graph and runtime cache.
+
+Returned `uses` includes child items; it cannot establish prerequisites for the
+callback that returned it. Declare those prerequisites in `dependencies` instead.
 
 ## Package Layout
 

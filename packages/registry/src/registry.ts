@@ -4,6 +4,7 @@ import {
   batch,
   computed,
   signal,
+  untracked,
 } from '@preact/signals-core'
 import {
   MissingServiceError,
@@ -39,6 +40,7 @@ import type {
 import { SlotInstance } from './types'
 
 interface FlattenedContribution {
+  readonly owner: RegistryItemDefinition
   readonly valueSpec: ValueSpec<unknown, unknown>
   readonly value: unknown
   readonly precedence: Precedence
@@ -48,6 +50,7 @@ interface FlattenedContribution {
 }
 
 interface FlattenedServiceContribution {
+  readonly owner: RegistryItemDefinition
   readonly service: Service<unknown>
   readonly implementation: unknown
   readonly sourcePath: string
@@ -56,6 +59,7 @@ interface FlattenedServiceContribution {
 interface RuntimeInstance {
   readonly key: RegistryItemKey
   readonly item: RuntimeRegistryItemDefinition
+  readonly scope: FactoryDependencyScope
   readonly dispose?: () => void | PromiseLike<void>
 }
 
@@ -63,6 +67,35 @@ interface FlattenResult {
   readonly contributions: readonly FlattenedContribution[]
   readonly serviceContributions: readonly FlattenedServiceContribution[]
   readonly slots: ReadonlyMap<symbol, readonly RegistryItem[]>
+}
+
+/** Constructor reads see completed declared prerequisites, never a partial global graph. */
+interface FactoryDependencyScope {
+  items: readonly RegistryItemDefinition[]
+  view: FlattenResult
+  constructing: boolean
+  captured: boolean
+}
+
+/** Retain graph edges so shared and cyclic declarative subtrees keep their full scope. */
+interface ExecutedRegistryNode {
+  readonly item?: RegistryItemDefinition
+  readonly children: ExecutedRegistryNode[]
+}
+
+function collectDependencyItems(
+  root: ExecutedRegistryNode
+): readonly RegistryItemDefinition[] {
+  const visited = new Set<ExecutedRegistryNode>()
+  const items: RegistryItemDefinition[] = []
+  const visit = (entry: ExecutedRegistryNode): void => {
+    if (visited.has(entry)) return
+    visited.add(entry)
+    if (entry.item) items.push(entry.item)
+    for (const child of entry.children) visit(child)
+  }
+  visit(root)
+  return items
 }
 
 /** A planned node has no runtime instance until the execution traversal reaches it. */
@@ -126,23 +159,23 @@ export class Registry implements ValueSpecReader, ServiceReader {
   private readonly flat = computed<FlattenResult>(() => {
     this.flattenDepth++
     const previousInstances = new Map(this.runtimeInstances)
+    const createdInstances: RuntimeInstance[] = []
+    const previousScopes = new Map(
+      [...previousInstances.values()].map((instance) => [
+        instance.scope,
+        { ...instance.scope },
+      ])
+    )
 
     try {
       const contributions: FlattenedContribution[] = []
       const serviceContributions: FlattenedServiceContribution[] = []
       const slots = new Map<symbol, readonly RegistryItem[]>()
       const runtimeKeys = new Set<RegistryItemKey>()
-      // Track the winning subtree's tokens, including nodes reached through uses
-      // and slots. A provider elsewhere cannot mask an incorrect dependency pair.
-      const factoryTokens = new Map<RegistryItemKey, Set<symbol>>()
-      const itemTokens = new Map<RegistryItemKey, Set<symbol>>()
       let order = 0
 
-      const ctx: RegistryItemContext = {
-        container: this,
-        valueSpecs: this,
-        services: this,
-      }
+      const factoryItems = new Map<RegistryItemKey, ExecutedRegistryNode>()
+      const definitionItems = new Map<RegistryItemKey, ExecutedRegistryNode>()
 
       // Expand known dependencies and deduplicate before invoking any callbacks.
       const graph = this.assembleGraph(
@@ -153,51 +186,85 @@ export class Registry implements ValueSpecReader, ServiceReader {
         slots
       )
 
-      const execute = (entry: RegistryGraphNode): ReadonlySet<symbol> => {
+      const execute = (entry: RegistryGraphNode): ExecutedRegistryNode => {
         const { node, path } = entry
+        const key =
+          typeof node === 'function'
+            ? (node.itemKey ?? node)
+            : (node.id ?? node)
+        const completed =
+          typeof node === 'function' ? factoryItems : definitionItems
+        const existing = completed.get(key)
+        if (existing) return existing
+        const execution: ExecutedRegistryNode = {
+          item: typeof node === 'function' ? undefined : node,
+          children: [],
+        }
+        completed.set(key, execution)
+        const include = (children: readonly RegistryGraphNode[]) => {
+          for (const child of children) execution.children.push(execute(child))
+        }
         if (typeof node === 'function') {
-          const key = node.itemKey ?? node
-          const existing = factoryTokens.get(key)
-          if (existing) return existing
-          const tokens = new Set<symbol>()
           for (const [name, dependency] of Object.entries(
             node.dependencies ?? {}
           )) {
-            const provided = new Set(
-              (entry.dependencies[name] ?? []).flatMap((child) => [
-                ...execute(child),
-              ])
+            const prerequisites: ExecutedRegistryNode = { children: [] }
+            for (const child of entry.dependencies[name] ?? []) {
+              const completed = execute(child)
+              prerequisites.children.push(completed)
+              execution.children.push(completed)
+            }
+            const provided = collectDependencyItems(prerequisites).some(
+              (item) =>
+                (item.provides ?? []).some(
+                  (value) => value.valueSpec.id === dependency.token.id
+                ) ||
+                (item.providesServices ?? []).some(
+                  (service) => service.service.id === dependency.token.id
+                )
             )
-            if (!provided.has(dependency.token.id)) {
+            if (!provided) {
               throw new RegistryDependencyError(
                 `Factory ${String(node.itemKey ?? path)} dependency "${name}" ` +
                   `does not provide token "${dependency.token.name}" from its registryItem.`
               )
             }
-            for (const token of provided) tokens.add(token)
           }
           runtimeKeys.add(key)
-          factoryTokens.set(key, tokens)
-          const runtime = this.ensureRuntimeInstance(key, node, ctx)
+          const dependencyItems = collectDependencyItems(execution)
+          const view: FlattenResult = {
+            contributions: dependencyItems
+              .flatMap((owner) =>
+                contributions.filter((item) => item.owner === owner)
+              )
+              .map((item, order) => ({ ...item, order })),
+            serviceContributions: dependencyItems.flatMap((owner) =>
+              serviceContributions.filter((item) => item.owner === owner)
+            ),
+            slots,
+          }
+          const runtime = this.ensureRuntimeInstance(
+            key,
+            node,
+            dependencyItems,
+            view
+          )
+          if (previousInstances.get(key) !== runtime)
+            createdInstances.push(runtime)
           // Returned items are only known after the callback. Normalize that
           // subtree too; already executed identities win before any child runs.
-          for (const child of this.assembleGraph(
-            [{ node: runtime.item, path: `${path}/factory` }],
-            slots
-          ))
-            for (const token of execute(child)) tokens.add(token)
-          return tokens
+          include(
+            this.assembleGraph(
+              [{ node: runtime.item, path: `${path}/factory` }],
+              slots
+            )
+          )
+          return execution
         }
 
-        const itemKey = node.id ?? node
-        const existing = itemTokens.get(itemKey)
-        if (existing) return existing
-        const tokens = new Set<symbol>()
-        itemTokens.set(itemKey, tokens)
-
         for (const contribution of node.provides ?? []) {
-          tokens.add(contribution.valueSpec.id)
           contributions.push({
+            owner: node,
             valueSpec: contribution.valueSpec,
             value: contribution.value,
             precedence: contribution.precedence ?? 'default',
@@ -207,16 +274,15 @@ export class Registry implements ValueSpecReader, ServiceReader {
           })
         }
         for (const service of node.providesServices ?? []) {
-          tokens.add(service.service.id)
           serviceContributions.push({
+            owner: node,
             service: service.service,
             implementation: service.implementation,
             sourcePath: path,
           })
         }
-        for (const child of entry.children)
-          for (const token of execute(child)) tokens.add(token)
-        return tokens
+        include(entry.children)
+        return execution
       }
       for (const entry of graph) execute(entry)
 
@@ -224,14 +290,13 @@ export class Registry implements ValueSpecReader, ServiceReader {
       return { contributions, serviceContributions, slots }
     } catch (error) {
       // Failed construction must not retain partially initialized dependents.
-      const created = [...this.runtimeInstances.values()].filter(
-        (instance) => previousInstances.get(instance.key) !== instance
-      )
       this.runtimeInstances.clear()
       for (const [key, instance] of previousInstances)
         this.runtimeInstances.set(key, instance)
+      for (const [scope, previous] of previousScopes)
+        Object.assign(scope, previous)
       void this.enqueueDisposers(
-        created
+        createdInstances
           .reverse()
           .flatMap((instance) => (instance.dispose ? [instance.dispose] : []))
       )
@@ -316,26 +381,7 @@ export class Registry implements ValueSpecReader, ServiceReader {
     )
     if (existingRegistryValueSpecSignal) return existingRegistryValueSpecSignal
 
-    const created = computed(() => {
-      const matching = dedupeContributions(
-        sortContributions(
-          this.flat.value.contributions.filter(
-            (item) => item.valueSpec.id === arg.id
-          )
-        )
-      )
-
-      if (matching.length === 0) return arg.defaultValue
-
-      this.combineDepth++
-      try {
-        return arg.combine(
-          matching.map((item) => unwrapMaybeSignal(item.value))
-        )
-      } finally {
-        this.combineDepth--
-      }
-    })
+    const created = computed(() => this.resolveValueSpec(arg))
 
     this.registryValueSpecSignals.set(arg.id, created)
     return created
@@ -451,7 +497,13 @@ export class Registry implements ValueSpecReader, ServiceReader {
       )
     }
 
-    const view = this.flat.value
+    return this.resolveServiceFromView(service, this.flat.value)
+  }
+
+  private resolveServiceFromView<T>(
+    service: Service<T>,
+    view: FlattenResult
+  ): T | undefined {
     if (this.resolvingServices.has(service.id)) {
       throw new ServiceResolutionError(
         `Detected recursive service resolution for ${service.name}. ` +
@@ -523,19 +575,112 @@ export class Registry implements ValueSpecReader, ServiceReader {
     return sanitized as T
   }
 
-  /** Create or reuse a runtime instance for one registry item factory. */
+  /** Combine scoped and live contributions with identical precedence and purity rules. */
+  private resolveValueSpec<I, O>(
+    valueSpec: ValueSpec<I, O>,
+    view?: FlattenResult
+  ): O
+  private resolveValueSpec(
+    valueSpec: ValueSpec<unknown, unknown>,
+    view?: FlattenResult
+  ): unknown {
+    if (!view && this.flattenDepth > 0) {
+      throw new ServiceResolutionError(
+        `Value spec ${valueSpec.name} was requested while building the registry graph. ` +
+          'Use the factory context get() to read declared dependencies.'
+      )
+    }
+    const matching = dedupeContributions(
+      sortContributions(
+        (view ?? this.flat.value).contributions.filter(
+          (item) => item.valueSpec.id === valueSpec.id
+        )
+      )
+    )
+    if (matching.length === 0) return valueSpec.defaultValue
+    this.combineDepth++
+    try {
+      return valueSpec.combine(
+        matching.map((item) => unwrapMaybeSignal(item.value))
+      )
+    } finally {
+      this.combineDepth--
+    }
+  }
+
+  /** Snapshot reads during construction are scoped; deferred reads stay registry-wide. */
+  private factoryContext(scope: FactoryDependencyScope): RegistryItemContext {
+    const capture = () => {
+      if (scope.constructing) scope.captured = true
+    }
+    return {
+      container: this,
+      services: {
+        get: (service) => {
+          if (this.flattenDepth === 0) return this.get(service)
+          capture()
+          const value = this.resolveServiceFromView(service, scope.view)
+          if (value === undefined) {
+            throw new ServiceResolutionError(
+              `Service ${service.name} is not provided by this factory's declared dependencies.`
+            )
+          }
+          return value
+        },
+        optional: (service) => {
+          if (this.flattenDepth === 0) return this.optional(service)
+          capture()
+          return this.resolveServiceFromView(service, scope.view)
+        },
+        signal: (service) => this.signal(service),
+        debugService: (service) => this.debugService(service),
+      },
+      valueSpecs: {
+        get: (valueSpec) => {
+          if (this.flattenDepth === 0) return this.get(valueSpec)
+          capture()
+          return this.resolveValueSpec(valueSpec, scope.view)
+        },
+        signal: (valueSpec) => this.signal(valueSpec),
+      },
+    }
+  }
+
+  /** Rebuild captured constructor dependencies; preserve factories using only live reads. */
   private ensureRuntimeInstance(
     key: RegistryItemKey,
     factory: RegistryItemFactory,
-    ctx: RegistryItemContext
+    items: readonly RegistryItemDefinition[],
+    view: FlattenResult
   ): RuntimeInstance {
     const existing = this.runtimeInstances.get(key)
-    if (existing) return existing
+    if (
+      existing &&
+      (!existing.scope.captured ||
+        (existing.scope.items.length === items.length &&
+          existing.scope.items.every((item, index) => item === items[index])))
+    ) {
+      existing.scope.view = view
+      existing.scope.items = items
+      return existing
+    }
 
-    const item = factory(ctx)
+    const scope: FactoryDependencyScope = {
+      items,
+      view,
+      constructing: true,
+      captured: false,
+    }
+    let item: RuntimeRegistryItemDefinition
+    try {
+      item = untracked(() => factory(this.factoryContext(scope)))
+    } finally {
+      scope.constructing = false
+    }
     const instance: RuntimeInstance = {
       key,
       item,
+      scope,
       dispose: normalizeDisposer(item.dispose),
     }
     this.runtimeInstances.set(key, instance)

@@ -107,7 +107,8 @@ export interface RuntimeRegistryItemDefinition extends RegistryItemDefinition {
  *
  * Factories are where models usually live. A factory should create a stable
  * service surface and return its contributions and optional cleanup directly.
- * The registry preserves instances by item key.
+ * The registry preserves instances by item key. Factories that capture dependencies
+ * through context get()/optional() rebuild when their declared dependency items change.
  */
 export interface RegistryItemFactory {
   (ctx: RegistryItemContext): RuntimeRegistryItemDefinition
@@ -134,12 +135,20 @@ export type RegistryDependencySignals<D extends RegistryDependencies> = {
   >
 }
 
+/** Read a named input without evaluating its live signal during construction. */
+export type RegistryDependencyReader<D extends RegistryDependencies> = <
+  K extends keyof D,
+>(
+  name: K
+) => RegistryDependencySignals<D>[K]['value']
+
 /** Declarative prerequisites are planned before the ordinary lazy callback runs. */
 export interface RegistryItemFactoryDefinition<D extends RegistryDependencies> {
   readonly id?: RegistryItemKey
   readonly dependencies: D
   readonly create: (
-    dependencies: RegistryDependencySignals<D>
+    dependencies: RegistryDependencySignals<D>,
+    read: RegistryDependencyReader<D>
   ) => RuntimeRegistryItemDefinition
 }
 
@@ -175,8 +184,12 @@ export interface ServiceReader {
 }
 
 /**
- * Registry item factories receive a context that lets them read resolved value
- * specs and services lazily, after graph construction.
+ * During construction, get()/optional() read only completed declared dependencies,
+ * including transitive prerequisites and their returned items. Service absence is
+ * an error for get(), while optional() and value-spec defaults handle absence.
+ * Outside graph construction these readers resolve against the complete live registry.
+ * signal() creates a live registry-wide signal; defer reading it until construction
+ * has finished. container reads do not provide construction-time dependency access.
  */
 export interface RegistryItemContext {
   readonly container: RegistryLike
