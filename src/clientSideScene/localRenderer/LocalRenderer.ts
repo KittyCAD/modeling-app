@@ -129,10 +129,6 @@ export class LocalRenderer {
   private loadedSceneGeneration: number | null = null
   private hasFittedModel = false
   private previewCamera: PerspectiveCamera | OrthographicCamera | null = null
-  private readonly previewTarget = new Vector3()
-  private readonly convertedSharedPosition = new Vector3()
-  private readonly convertedSharedTarget = new Vector3()
-  private readonly convertedSharedUp = new Vector3()
   private ambientOcclusionRadius = 0.01
   private ambientOcclusionPipeline: AmbientOcclusionPipeline | null = null
   private baseRenderDirty = true
@@ -537,21 +533,15 @@ export class LocalRenderer {
       return
     }
 
-    this.convertedSharedPosition.copy(
-      convertEngineWorldVectorToGltfWorld(
-        sharedCamera.position,
-        ENGINE_MILLIMETERS_TO_GLTF_METERS
-      )
+    const position = convertEngineWorldVectorToGltfWorld(
+      sharedCamera.position,
+      ENGINE_MILLIMETERS_TO_GLTF_METERS
     )
-    this.convertedSharedTarget.copy(
-      convertEngineWorldVectorToGltfWorld(
-        sharedTarget,
-        ENGINE_MILLIMETERS_TO_GLTF_METERS
-      )
+    const target = convertEngineWorldVectorToGltfWorld(
+      sharedTarget,
+      ENGINE_MILLIMETERS_TO_GLTF_METERS
     )
-    this.convertedSharedUp.copy(
-      convertEngineWorldVectorToGltfWorld(sharedCamera.up)
-    )
+    const up = convertEngineWorldVectorToGltfWorld(sharedCamera.up)
 
     if (
       sharedCamera instanceof PerspectiveCamera &&
@@ -566,14 +556,13 @@ export class LocalRenderer {
     }
 
     this.previewCamera.layers.mask = sharedCamera.layers.mask
-    this.previewCamera.position.copy(this.convertedSharedPosition)
-    this.previewCamera.up.copy(this.convertedSharedUp)
+    this.previewCamera.position.copy(position)
+    this.previewCamera.up.copy(up)
     // Preserve the shared clip range, including a negative orthographic near plane.
     this.previewCamera.near =
       sharedCamera.near * ENGINE_MILLIMETERS_TO_GLTF_METERS
     this.previewCamera.far =
       sharedCamera.far * ENGINE_MILLIMETERS_TO_GLTF_METERS
-    this.previewTarget.copy(this.convertedSharedTarget)
 
     if (
       sharedCamera instanceof PerspectiveCamera &&
@@ -598,7 +587,7 @@ export class LocalRenderer {
       this.previewCamera.zoom = sharedCamera.zoom
     }
 
-    this.previewCamera.lookAt(this.previewTarget)
+    this.previewCamera.lookAt(target)
     this.previewCamera.updateProjectionMatrix()
     this.previewCamera.updateMatrixWorld(true)
     this.gpu?.integerIdPicker.invalidate()
@@ -958,7 +947,6 @@ export class LocalRenderer {
     }
 
     const sharedCamera = kclManager.sceneInfra.camControls.camera
-    const sharedTarget = kclManager.sceneInfra.camControls.target
     if (sharedCamera instanceof PerspectiveCamera) {
       this.previewCamera = sharedCamera.clone()
       this.previewCamera.aspect =
@@ -969,7 +957,6 @@ export class LocalRenderer {
       this.previewCamera = new PerspectiveCamera(45, 1, 0.01, 1000)
     }
     this.previewCamera.layers.mask = sharedCamera.layers.mask
-    this.previewTarget.copy(sharedTarget)
     this.disposers.push(
       kclManager.sceneInfra.camControls.cameraChange.add(
         this.syncPreviewCameraFromShared
