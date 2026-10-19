@@ -31,11 +31,8 @@ test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
       server.onMessage((message) => {
         const response = (
           typeof message === 'string' ? JSON.parse(message) : decode(message)
-        ) as { body?: MlCopilotServerMessage }
-        const result =
-          response.body &&
-          'tool_output' in response.body &&
-          response.body.tool_output.result
+        ) as MlCopilotServerMessage
+        const result = 'tool_output' in response && response.tool_output.result
         if (
           result &&
           result.type === 'edit_kcl_code' &&
