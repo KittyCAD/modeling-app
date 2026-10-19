@@ -878,3 +878,132 @@ pub(crate) fn get_tangent_point_from_previous_arc(
         libm::sin(tangential_angle.to_radians()) * 10.0 + last_arc_end[1],
     ]
 }
+
+/// Given an elliptic arc that ends at `last_arc_end`, returns a point one unit
+/// behind that end along the arc's tangent, so that `last_arc_end` minus the
+/// result points the way the arc is heading when it ends.
+///
+/// The ellipse is `center + R(phi) * (a cos t, b sin t)`, where `phi` is the
+/// direction of `major_axis`, `a` is its length and `b` is `minor_radius`.
+/// At the end point `(x, y)` in the ellipse's own frame, `cos t = x / a` and
+/// `sin t = y / b`, so the tangent `(-a sin t, b cos t)` is
+/// `(-y a / b, x b / a)`. It is rotated back by `R(phi)` and reversed for a
+/// clockwise arc. Only the ratio `a / b` is used, so `major_axis` and
+/// `minor_radius` may be in different units from `center` and `last_arc_end`.
+pub(crate) fn get_tangent_point_from_previous_ellipse(
+    center: Coords2d,
+    major_axis: Coords2d,
+    minor_radius: f64,
+    ccw: bool,
+    last_arc_end: Coords2d,
+) -> Coords2d {
+    let ratio = libm::hypot(major_axis[0], major_axis[1]) / minor_radius;
+    if !ratio.is_normal() {
+        // A zero or non-finite radius has no usable tangent; behave like a
+        // straight segment of zero length rather than returning NaN.
+        return last_arc_end;
+    }
+    let phi = libm::atan2(major_axis[1], major_axis[0]);
+    let (sin_phi, cos_phi) = (libm::sin(phi), libm::cos(phi));
+
+    // The end point in the ellipse's own frame.
+    let dx = last_arc_end[0] - center[0];
+    let dy = last_arc_end[1] - center[1];
+    let x = dx * cos_phi + dy * sin_phi;
+    let y = -dx * sin_phi + dy * cos_phi;
+
+    // The tangent there in the ellipse's own frame, in the direction of travel.
+    let direction = if ccw { 1.0 } else { -1.0 };
+    let tx = -y * ratio * direction;
+    let ty = x / ratio * direction;
+    // Back into sketch coordinates.
+    let gx = tx * cos_phi - ty * sin_phi;
+    let gy = tx * sin_phi + ty * cos_phi;
+    let length = libm::hypot(gx, gy);
+    if !length.is_normal() {
+        // The end point is the center, so there is no usable tangent either.
+        return last_arc_end;
+    }
+    [last_arc_end[0] - gx / length, last_arc_end[1] - gy / length]
+}
+
+#[cfg(test)]
+mod get_tangent_point_from_previous_ellipse_tests {
+    use approx::assert_relative_eq;
+
+    use super::*;
+
+    /// The direction, in degrees, that an elliptic arc is heading at `end`.
+    fn end_tangent_degrees(center: Coords2d, major_axis: Coords2d, minor_radius: f64, ccw: bool, end: Coords2d) -> f64 {
+        let previous = get_tangent_point_from_previous_ellipse(center, major_axis, minor_radius, ccw, end);
+        libm::atan2(end[1] - previous[1], end[0] - previous[0]).to_degrees()
+    }
+
+    #[test]
+    fn axis_aligned_ellipse() {
+        // a = 2, b = 1: the arc ends at parameter t = 90deg, (0, 1).
+        assert_relative_eq!(
+            end_tangent_degrees([0.0, 0.0], [2.0, 0.0], 1.0, true, [0.0, 1.0]),
+            180.0
+        );
+        assert_relative_eq!(end_tangent_degrees([0.0, 0.0], [2.0, 0.0], 1.0, false, [0.0, 1.0]), 0.0);
+        // t = 0, (2, 0).
+        assert_relative_eq!(end_tangent_degrees([0.0, 0.0], [2.0, 0.0], 1.0, true, [2.0, 0.0]), 90.0);
+        assert_relative_eq!(
+            end_tangent_degrees([0.0, 0.0], [2.0, 0.0], 1.0, false, [2.0, 0.0]),
+            -90.0
+        );
+        // t = 45deg: (-2 sin 45, cos 45) is 180 - atan(1/2) degrees.
+        let end = [2.0 * libm::cos(45f64.to_radians()), libm::sin(45f64.to_radians())];
+        assert_relative_eq!(
+            end_tangent_degrees([0.0, 0.0], [2.0, 0.0], 1.0, true, end),
+            180.0 - libm::atan(0.5).to_degrees()
+        );
+    }
+
+    #[test]
+    fn rotated_and_offset_ellipse() {
+        // Major axis along y, centred at (3, 4): t = 90deg is at (2, 4).
+        assert_relative_eq!(
+            end_tangent_degrees([3.0, 4.0], [0.0, 2.0], 1.0, true, [2.0, 4.0]),
+            -90.0
+        );
+        assert_relative_eq!(
+            end_tangent_degrees([3.0, 4.0], [0.0, 2.0], 1.0, false, [2.0, 4.0]),
+            90.0
+        );
+        // Major axis at 45 degrees: t = 90deg is at center + R(45) * (0, 1).
+        let s = libm::sin(45f64.to_radians());
+        assert_relative_eq!(
+            end_tangent_degrees([0.0, 0.0], [2.0 * s, 2.0 * s], 1.0, true, [-s, s]),
+            -135.0
+        );
+    }
+
+    #[test]
+    fn radii_may_be_in_other_units_than_the_points() {
+        // Points in inches, radii in mm: still t = 90deg on a 2:1 ellipse.
+        assert_relative_eq!(
+            end_tangent_degrees([0.0, 0.0], [50.8, 0.0], 25.4, true, [0.0, 1.0]),
+            180.0
+        );
+    }
+
+    #[test]
+    fn degenerate_ellipse_does_not_produce_nan() {
+        // Zero, infinite and NaN radii, and an end point at the center.
+        for (major_axis, minor_radius, end) in [
+            ([0.0, 0.0], 0.0, [1.0, 1.0]),
+            ([0.0, 0.0], 1.0, [1.0, 1.0]),
+            ([2.0, 0.0], 0.0, [1.0, 1.0]),
+            ([f64::INFINITY, 0.0], 1.0, [1.0, 1.0]),
+            ([2.0, 0.0], f64::INFINITY, [1.0, 1.0]),
+            ([2.0, 0.0], f64::NAN, [1.0, 1.0]),
+            ([f64::NAN, 0.0], 1.0, [1.0, 1.0]),
+            ([2.0, 0.0], 1.0, [0.0, 0.0]),
+        ] {
+            let previous = get_tangent_point_from_previous_ellipse([0.0, 0.0], major_axis, minor_radius, true, end);
+            assert_eq!(previous, end, "{major_axis:?}, {minor_radius}");
+        }
+    }
+}
