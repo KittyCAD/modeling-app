@@ -6939,7 +6939,7 @@ export default {
         "name": "end",
         "ty": "Point2d",
         "docs": "Where should the path end? Relative to the start point. Incompatible with `interiorAbsolute` or `endAbsolute`.",
-        "required": true,
+        "required": false,
         "special": false,
         "experimental": false,
         "addedIn": null,
