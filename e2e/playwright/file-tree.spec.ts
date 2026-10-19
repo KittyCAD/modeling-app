@@ -24,7 +24,7 @@ const exists = async (
 
 test(
   'opens and saves text files from the project explorer',
-  { tag: ['@web', '@desktop', '@skipLocalEngine'] },
+  { tag: ['@desktop', '@windows'] },
   async ({ folderSetupFn, fs, homePage, toolbar, page }) => {
     const projectName = 'text-files'
     const encoder = new TextEncoder()
