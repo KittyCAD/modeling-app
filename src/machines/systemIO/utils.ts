@@ -168,6 +168,11 @@ export type SystemIOContext = SystemIOInput & {
   lastOperation: any
 }
 
+export interface BulkFileWriteProgress {
+  written: number
+  total: number
+}
+
 export type RequestedKCLFile = {
   requestedProjectName: string
   requestedFileName: string

@@ -1,9 +1,11 @@
-import { signal } from '@preact/signals-core'
+import { signal, type Signal } from '@preact/signals-core'
 import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import type * as ZookeeperManagerMachineModule from '@src/lib/zookeeper/zookeeperManagerMachine'
 import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
+import type { BulkFileWriteProgress } from '@src/machines/systemIO/utils'
 import type * as SystemIOUtilsModule from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
+import toast from 'react-hot-toast'
 import { NIL as uuidNIL } from 'uuid'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -24,6 +26,9 @@ const workerMocks = vi.hoisted(() => ({
     reset: ReturnType<typeof vi.fn>
   }>,
   processors: [] as Array<{
+    hasPendingRequests: boolean
+    fileWriteProgress: Signal<BulkFileWriteProgress | undefined>
+    onQueueIdle: () => void
     dispose: ReturnType<typeof vi.fn>
     handleActorSnapshot: ReturnType<typeof vi.fn>
     reset: ReturnType<typeof vi.fn>
@@ -61,11 +66,17 @@ vi.mock('@src/lib/zookeeper/registry/ZookeeperEditPatchHistory', () => ({
 
 vi.mock('@src/lib/zookeeper/registry/ZookeeperFileRequestProcessor', () => ({
   ZookeeperFileRequestProcessor: class MockZookeeperFileRequestProcessor {
+    hasPendingRequests = false
+    readonly fileWriteProgress = signal<BulkFileWriteProgress | undefined>(
+      undefined
+    )
+    readonly onQueueIdle: () => void
     readonly dispose = vi.fn(async () => undefined)
     readonly handleActorSnapshot = vi.fn()
     readonly reset = vi.fn(async () => undefined)
 
-    constructor() {
+    constructor(deps: { onQueueIdle: () => void }) {
+      this.onQueueIdle = deps.onQueueIdle
       workerMocks.processors.push(this)
     }
   },
@@ -414,6 +425,69 @@ describe('Zookeeper session controller', () => {
       projectFiles: [],
       type: ZookeeperManagerTransitions.MessageSend,
     })
+  })
+
+  it('updates one bottom-center progress notification without a mounted pane', () => {
+    const loading = vi
+      .spyOn(toast, 'loading')
+      .mockReturnValue('file-write-toast')
+    const dismiss = vi.spyOn(toast, 'dismiss')
+    createHarness()
+    const processor = workerMocks.processors.at(-1)!
+
+    processor.fileWriteProgress.value = { written: 0, total: 25 }
+    expect(loading).toHaveBeenLastCalledWith('0 of 25 files written', {
+      id: expect.any(String),
+      position: 'bottom-center',
+    })
+    const toastId = loading.mock.calls[0][1]?.id
+    processor.fileWriteProgress.value = { written: 12, total: 25 }
+    expect(loading).toHaveBeenLastCalledWith('12 of 25 files written', {
+      id: toastId,
+      position: 'bottom-center',
+    })
+    processor.fileWriteProgress.value = undefined
+    expect(dismiss).toHaveBeenLastCalledWith(toastId)
+  })
+
+  it('dismisses progress on session disposal and ignores subsequent updates', async () => {
+    const loading = vi
+      .spyOn(toast, 'loading')
+      .mockReturnValue('file-write-toast')
+    const dismiss = vi.spyOn(toast, 'dismiss')
+    const { controller } = createHarness()
+    const processor = workerMocks.processors.at(-1)!
+    processor.fileWriteProgress.value = { written: 1, total: 25 }
+    const toastId = loading.mock.calls[0][1]?.id
+
+    await controller.dispose()
+    expect(dismiss).toHaveBeenLastCalledWith(toastId)
+    loading.mockClear()
+    processor.fileWriteProgress.value = { written: 2, total: 25 }
+    expect(loading).not.toHaveBeenCalled()
+  })
+
+  it('waits for file edits and editor synchronization before collecting the next prompt', async () => {
+    const { actor, controller } = createHarness({ actorState: 'ready-await' })
+    const processor = workerMocks.processors.at(-1)!
+    processor.hasPendingRequests = true
+    controller.sendOrQueue('use the new files', undefined, [])
+    actor.emit('ready-await', { awaitingResponse: false })
+    await flushPromises()
+    expect(projectFilesMocks.collect).not.toHaveBeenCalled()
+    expect(
+      sentEvents(actor, ZookeeperManagerTransitions.MessageSend)
+    ).toHaveLength(0)
+    expect(controller.queue.value).toHaveLength(1)
+
+    processor.hasPendingRequests = false
+    processor.onQueueIdle()
+    await vi.waitFor(() => {
+      expect(
+        sentEvents(actor, ZookeeperManagerTransitions.MessageSend)
+      ).toHaveLength(1)
+    })
+    expect(controller.queue.value).toHaveLength(0)
   })
 
   it('retains a prompt through a same-project editor readiness gap', async () => {

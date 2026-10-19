@@ -43,6 +43,7 @@ import {
 } from '@src/machines/systemIO/errorReporting'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type {
+  BulkFileWriteProgress,
   RequestedKCLFile,
   RequestedKCLFileDelete,
   RequestedProjectFile,
@@ -269,8 +270,10 @@ const sharedBulkCreateWorkflow = async ({
     files: RequestedKCLFile[]
     wasmInstance: ModuleType
     override?: boolean
+    onFileWriteProgress?: (progress: BulkFileWriteProgress) => void
   }
 }) => {
+  input.onFileWriteProgress?.({ written: 0, total: input.files.length })
   const {
     configuration,
     projectDirectoryPath,
@@ -309,6 +312,10 @@ const sharedBulkCreateWorkflow = async ({
       fileName,
       projectDirectoryPath
     )
+    input.onFileWriteProgress?.({
+      written: fileIndex + 1,
+      total: input.files.length,
+    })
   }
   const numberOfFiles = input.files.length
   const fileText = numberOfFiles > 1 ? 'files' : 'file'
@@ -874,6 +881,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             requestedFileNameWithExtension: string
             requestedSubRoute?: string
             onFileSystemError?: () => void
+            onFileWriteProgress?: (progress: BulkFileWriteProgress) => void
             onFileSystemSuccess?: () => void
             onSuccess?: () => void
           }
