@@ -16,10 +16,17 @@ import {
   setCallInAst,
 } from '@src/lang/modifyAst'
 import {
+  getNodeFromPath,
   getVariableExprsFromSelection,
   valueOrVariable,
 } from '@src/lang/queryAst'
-import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
+import type {
+  ArtifactGraph,
+  CallExpressionKw,
+  Expr,
+  PathToNode,
+  Program,
+} from '@src/lang/wasm'
 import { modelingStdLibCall } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { err } from '@src/lib/trap'
@@ -49,10 +56,10 @@ export function addNamedView({
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   name: string
-  orientation: Orientation
+  orientation?: Orientation
   target?: KclCommandValue
   distance?: KclCommandValue
-  projection: Projection
+  projection?: Projection
   baseline: Visibility
   except?: Selections
   nodeToEdit?: PathToNode
@@ -77,25 +84,43 @@ export function addNamedView({
     return exceptVars
   }
 
-  const camera = createCallExpressionStdLibKw(
-    'oriented',
-    viewEnum('Orientation', orientation),
-    [
-      ...(target ? [createLabeledArg('target', valueOrVariable(target))] : []),
-      ...(distance
-        ? [createLabeledArg('distance', valueOrVariable(distance))]
-        : []),
-      createLabeledArg('projection', viewEnum('Projection', projection)),
-    ],
-    undefined,
-    [createIdentifier('view')]
-  )
-  if (target && 'variableName' in target && target.variableName) {
-    insertVariableAndOffsetPathToNode(target, modifiedAst, mNodeToEdit)
+  let camera: Expr | undefined
+  if (orientation && projection) {
+    camera = createCallExpressionStdLibKw(
+      'oriented',
+      viewEnum('Orientation', orientation),
+      [
+        ...(target
+          ? [createLabeledArg('target', valueOrVariable(target))]
+          : []),
+        ...(distance
+          ? [createLabeledArg('distance', valueOrVariable(distance))]
+          : []),
+        createLabeledArg('projection', viewEnum('Projection', projection)),
+      ],
+      undefined,
+      [createIdentifier('view')]
+    )
+    if (target && 'variableName' in target && target.variableName) {
+      insertVariableAndOffsetPathToNode(target, modifiedAst, mNodeToEdit)
+    }
+    if (distance && 'variableName' in distance && distance.variableName) {
+      insertVariableAndOffsetPathToNode(distance, modifiedAst, mNodeToEdit)
+    }
+  } else if (mNodeToEdit) {
+    // Shared cameras, directed cameras, and custom helpers remain untouched.
+    const result = getNodeFromPath<CallExpressionKw>(
+      modifiedAst,
+      mNodeToEdit,
+      wasmInstance,
+      'CallExpressionKw'
+    )
+    if (err(result)) return result
+    camera = result.node.arguments.find(
+      (argument) => argument.label?.name === 'camera'
+    )?.arg
   }
-  if (distance && 'variableName' in distance && distance.variableName) {
-    insertVariableAndOffsetPathToNode(distance, modifiedAst, mNodeToEdit)
-  }
+  if (!camera) return new Error('Could not determine the named view camera.')
 
   const call = createCallExpressionStdLibKw(
     namedCall.name,

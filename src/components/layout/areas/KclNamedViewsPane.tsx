@@ -173,7 +173,6 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
   }
 
   const updateViewCamera = async (view: KclNamedView) => {
-    setIsChangingSource(true)
     try {
       const camera = await captureNamedViewCamera(
         kclManager.sceneInfra.camControls
@@ -202,8 +201,6 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
           ? reason.message
           : `Could not update “${view.artifact.name}”.`
       )
-    } finally {
-      setIsChangingSource(false)
     }
   }
 
