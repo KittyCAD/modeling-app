@@ -50,6 +50,8 @@ function fixture(t) {
     'rust/kcl-lib/tests/named_views_hide_extrude/input.kcl',
     'base workload\n'
   )
+  write(root, 'public/kcl-samples/cpu-cooler/main.kcl', 'large workload\n')
+  write(root, 'public/kcl-samples/cpu-cooler/fan.kcl', 'imported workload\n')
   git(root, 'add', '.')
   git(root, 'commit', '-qm', 'Base without comparison harness')
   const base = git(root, 'rev-parse', 'HEAD')
@@ -262,6 +264,14 @@ test('real manifest producer and consumer reject mixed builds, lock drift, and c
     () => verifyApp(baseRoot, root, plan, 'base'),
     /Empty build artifact/
   )
+  const importedSample = 'public/kcl-samples/cpu-cooler/fan.kcl'
+  const originalSample = fs.readFileSync(path.join(root, importedSample))
+  write(root, importedSample, 'changed imported geometry\n')
+  assert.throws(
+    () => verifyApp(root, root, plan, 'candidate'),
+    /Committed file/
+  )
+  fs.writeFileSync(path.join(root, importedSample), originalSample)
   write(
     root,
     'rust/kcl-lib/tests/named_views_hide_extrude/input.kcl',

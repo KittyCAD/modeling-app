@@ -10,19 +10,32 @@ function matchesControl(target: Element, testId: string, pressed?: boolean) {
   )
 }
 
-function isVisible(element: Element | null | undefined) {
+export function isVisible(element: Element | null | undefined) {
   return Boolean(
     element?.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true })
   )
 }
 
-function transitionsEnded(element: Element | null) {
+export function transitionsEnded(element: Element | null | undefined) {
   return !element
     ?.getAnimations({ subtree: true })
     .some(
       (animation) =>
         animation instanceof CSSTransition && animation.playState === 'running'
     )
+}
+
+/** Ignore perpetual loading/caret effects, but include delayed finite effects. */
+export function animationsEnded(element: Element | null | undefined) {
+  return !element?.getAnimations({ subtree: true }).some((animation) => {
+    const endTime = animation.effect?.getComputedTiming().endTime
+    return (
+      animation.playState !== 'finished' &&
+      animation.playState !== 'idle' &&
+      typeof endTime === 'number' &&
+      Number.isFinite(endTime)
+    )
+  })
 }
 
 function firstSketchGroup(document: Document) {
@@ -55,6 +68,30 @@ function extrudeIsOpen(document: Document) {
     document
       .querySelector('[data-testid="command-name"]')
       ?.textContent?.trim() === 'Extrude'
+  )
+}
+
+function visibleOperation(panel: Element | null, readOnly: boolean) {
+  return isVisible(
+    panel?.querySelector(
+      `[data-testid="feature-tree-operation-item"] > button${readOnly ? '' : ':not(:disabled)'}`
+    )
+  )
+}
+
+function featureTreeReady(document: Document, readOnly = false) {
+  const panel = document.querySelector('#operations-list-pane')
+  return visibleOperation(panel, readOnly) && transitionsEnded(panel)
+}
+
+function sketchGroupReady(document: Document, readOnly = false) {
+  const control = firstSketchGroup(document)
+  const panelId = control?.getAttribute('aria-controls')
+  const panel = panelId ? document.getElementById(panelId) : null
+  return (
+    control?.getAttribute('aria-expanded') === 'true' &&
+    visibleOperation(panel, readOnly) &&
+    transitionsEnded(panel)
   )
 }
 
@@ -173,13 +210,7 @@ export const interactionOutcomes = {
     ...interactions.featureTreeOpen,
     matchesTarget: (target) =>
       matchesControl(target, interactions.featureTreeOpen.testId, false),
-    isReady(document) {
-      const panel = document.querySelector('#operations-list-pane')
-      const operation = panel?.querySelector(
-        '[data-testid="feature-tree-operation-item"] > button:not(:disabled)'
-      )
-      return isVisible(operation) && transitionsEnded(panel)
-    },
+    isReady: featureTreeReady,
   },
   featureTreeClose: {
     ...interactions.featureTreeClose,
@@ -192,19 +223,7 @@ export const interactionOutcomes = {
   sketchGroupExpand: {
     ...interactions.sketchGroupExpand,
     matchesTarget: (target) => matchesSketchGroup(target, false),
-    isReady(document) {
-      const control = firstSketchGroup(document)
-      const panelId = control?.getAttribute('aria-controls')
-      const panel = panelId ? document.getElementById(panelId) : null
-      const operation = panel?.querySelector(
-        '[data-testid="feature-tree-operation-item"] > button:not(:disabled)'
-      )
-      return (
-        control?.getAttribute('aria-expanded') === 'true' &&
-        isVisible(operation) &&
-        transitionsEnded(panel)
-      )
-    },
+    isReady: sketchGroupReady,
   },
   sketchGroupCollapse: {
     ...interactions.sketchGroupCollapse,
@@ -277,3 +296,19 @@ export const interactionOutcomes = {
     },
   },
 } satisfies Record<keyof typeof interactions, InteractionDefinition>
+
+export function createInteractionOutcomes(hasParseErrors: () => boolean) {
+  return {
+    ...interactionOutcomes,
+    featureTreeOpen: {
+      ...interactionOutcomes.featureTreeOpen,
+      isReady: (document: Document) =>
+        featureTreeReady(document, hasParseErrors()),
+    },
+    sketchGroupExpand: {
+      ...interactionOutcomes.sketchGroupExpand,
+      isReady: (document: Document) =>
+        sketchGroupReady(document, hasParseErrors()),
+    },
+  }
+}

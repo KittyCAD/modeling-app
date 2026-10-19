@@ -5,18 +5,22 @@ import { expect } from '@playwright/test'
 import { reportInteractions } from '@src/lib/interactionPerformance/report'
 import type { InteractionReport } from '@src/lib/interactionPerformance/report'
 import type { ComparisonSessionIdentity } from '@e2e/performance/comparison'
+import type { PerformanceModelProfile } from '@e2e/performance/models'
 
 const POLL_INTERVAL_MS = 10
 const EVENT_TIMING_REPORTING_WINDOW_MS = 1000
 
-export async function startCapture(page: Page) {
-  await page.evaluate(() => {
+export async function startCapture(
+  page: Page,
+  interactionIds?: readonly string[]
+) {
+  await page.evaluate((ids) => {
     const recorder = window.app.interactionPerformance
     if (!recorder) {
       throw new Error('Build the app with VITE_INTERACTION_PERFORMANCE=1.')
     }
-    return recorder.start()
-  })
+    return recorder.start(ids)
+  }, interactionIds)
 }
 
 export function readCapture() {
@@ -36,8 +40,116 @@ export async function waitForSample(page: Page, id: string, count: number) {
           (sample) => sample.id === id && sample.status === 'complete'
         ).length === count,
     { id, count },
-    { timeout: 10_000, polling: POLL_INTERVAL_MS }
+    { timeout: 35_000, polling: POLL_INTERVAL_MS }
   )
+}
+
+export async function attachOutcomeDiagnostics(
+  page: Page,
+  testInfo: TestInfo,
+  reason: string
+) {
+  const evidence = await page.evaluate(() => {
+    const describe = (element: Element | null) => {
+      if (!element) return null
+      const style = getComputedStyle(element)
+      const bounds = element.getBoundingClientRect()
+      return {
+        tag: element.localName,
+        id: element.id,
+        testId: element.getAttribute('data-testid'),
+        classes: element.classList.value,
+        visible: element.checkVisibility({
+          checkOpacity: true,
+          checkVisibilityCSS: true,
+        }),
+        opacity: style.opacity,
+        transform: style.transform,
+        identityTransform:
+          style.transform === 'none' ||
+          new DOMMatrixReadOnly(style.transform).isIdentity,
+        display: style.display,
+        visibility: style.visibility,
+        transitionProperty: style.transitionProperty,
+        transitionDuration: style.transitionDuration,
+        transitionDelay: style.transitionDelay,
+        width: bounds.width,
+        height: bounds.height,
+        animations: element
+          .getAnimations({ subtree: true })
+          .map((animation) => {
+            const effect = animation.effect
+            const computed = effect?.getComputedTiming()
+            const target =
+              effect instanceof KeyframeEffect ? effect.target : null
+            return {
+              kind: animation.constructor.name,
+              name:
+                animation instanceof CSSAnimation
+                  ? animation.animationName
+                  : null,
+              property:
+                animation instanceof CSSTransition
+                  ? animation.transitionProperty
+                  : null,
+              state: animation.playState,
+              currentTime:
+                typeof animation.currentTime === 'number'
+                  ? animation.currentTime
+                  : null,
+              endTime:
+                computed?.endTime === Infinity ? 'Infinity' : computed?.endTime,
+              delay: effect?.getTiming().delay,
+              targetId: target instanceof Element ? target.id : null,
+              targetTestId:
+                target instanceof Element
+                  ? target.getAttribute('data-testid')
+                  : null,
+            }
+          }),
+      }
+    }
+    const editor = window.app.project?.executingEditor.value
+    return {
+      url: location.href,
+      visibility: document.visibilityState,
+      settingsState: window.app.settings.actor.getSnapshot().value,
+      headings: Array.from(document.querySelectorAll('h1')).map(
+        (heading) => heading.textContent
+      ),
+      dialogs: Array.from(document.querySelectorAll('[role="dialog"]')).map(
+        (dialog) => ({
+          owner: describe(dialog),
+          panel: describe(
+            dialog.querySelector('[id^="headlessui-dialog-panel-"]')
+          ),
+          backdrop: describe(
+            dialog.querySelector('[aria-hidden="true"].fixed.inset-0')
+          ),
+        })
+      ),
+      editor: editor
+        ? {
+            isExecuting: editor.isExecutingSignal.value,
+            hasEditsSinceLastExecution:
+              editor.hasEditsSinceLastExecutionSignal.value,
+            lastSuccessfulCodeMatchesCurrent:
+              editor.lastSuccessfulCode === editor.code,
+            artifactCount: editor.artifactGraph.size,
+            pendingCommandCount: Object.keys(
+              editor.engineCommandManager.pendingCommands
+            ).length,
+            errorCount: editor.errors.length,
+            importedModuleCount: Object.keys(editor.execState.filenames).length,
+            largeProfile: editor.code.includes('import "large-model/main.kcl"'),
+          }
+        : null,
+    }
+  })
+  await testInfo.attach('interaction-outcome-diagnostics', {
+    body: JSON.stringify({ reason, evidence }, null, 2),
+    contentType: 'application/json',
+  })
 }
 
 export async function finishCapture(
@@ -46,7 +158,8 @@ export async function finishCapture(
   scenario: string,
   expected: Readonly<Record<string, number>>,
   tronApp: ElectronZoo | undefined,
-  comparison?: Readonly<ComparisonSessionIdentity>
+  comparison?: Readonly<ComparisonSessionIdentity>,
+  modelProfile?: PerformanceModelProfile
 ): Promise<InteractionReport> {
   const snapshot = await page.evaluate(async (reportingWindowMs) => {
     const recorder = window.app.interactionPerformance
@@ -69,6 +182,7 @@ export async function finishCapture(
   const metadata = {
     scenario,
     comparison,
+    modelProfile,
     calibrationFault: process.env.INTERACTION_CALIBRATION_FAULT ?? 'none',
     repeatIndex: testInfo.repeatEachIndex,
     commit: process.env.GITHUB_SHA ?? null,
@@ -83,9 +197,13 @@ export async function finishCapture(
     memoryBytes: totalmem(),
     node: process.version,
     ...runtime,
-    viewport: page.viewportSize(),
+    viewport: await page.evaluate(() => ({
+      width: innerWidth,
+      height: innerHeight,
+    })),
+    configuredViewport: page.viewportSize(),
     motion: 'no-preference',
-    timing: 'pointerdown-to-outcome-observed-after-render',
+    timing: 'native-input-or-effect-start-to-outcome-observed-after-render',
     eventTimingReportingWindowMs: EVENT_TIMING_REPORTING_WINDOW_MS,
   }
   // Preserve raw records before assertions so a failed collection is inspectable.
@@ -93,6 +211,9 @@ export async function finishCapture(
     body: JSON.stringify({ metadata, snapshot, report }, null, 2),
     contentType: 'application/json',
   })
+  if (report.errors.length > 0) {
+    await attachOutcomeDiagnostics(page, testInfo, report.errors.join('\n'))
+  }
   const duration = (value: number | null) =>
     value === null ? 'unreported' : `${value.toFixed(1)} ms`
   await testInfo.attach('interaction-summary', {

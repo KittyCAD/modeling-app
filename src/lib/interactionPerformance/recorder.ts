@@ -1,13 +1,37 @@
 import type {
   InteractionDefinition,
+  InteractionInputEvent,
   InteractionSample,
   InteractionSnapshot,
   InteractionTiming,
 } from '@src/lib/interactionPerformance/types'
 
 const MAX_SAMPLES = 1000
-const OUTCOME_TIMEOUT_MS = 5000
-const INPUT_EVENTS = ['click', 'auxclick', 'contextmenu']
+// Expensive model edits may genuinely take seconds. Keep collecting their real
+// outcome instead of turning known latency debt into an unmeasured timeout.
+const OUTCOME_TIMEOUT_MS = 30_000
+const INPUT_EVENTS: readonly InteractionInputEvent[] = [
+  'click',
+  'auxclick',
+  'contextmenu',
+]
+
+function eventStart(event: Event, target: Element) {
+  if (event instanceof AnimationEvent) {
+    const animation = target
+      .getAnimations()
+      .find(
+        (candidate) =>
+          candidate instanceof CSSAnimation &&
+          candidate.animationName === event.animationName
+      )
+    const delay = animation?.effect?.getTiming().delay ?? 0
+    // animationstart fires after a positive CSS delay, not when the effect was
+    // requested. Preserve that otherwise invisible portion of the response.
+    return event.timeStamp - Math.max(0, delay) - event.elapsedTime * 1000
+  }
+  return event.timeStamp
+}
 
 type EventTimingEntry = PerformanceEntry & {
   interactionId: number
@@ -44,6 +68,9 @@ export class InteractionRecorder {
   private droppedSamples = 0
   private droppedPointerEvents = 0
   private visibilityInterrupted = false
+  private events = new Set<InteractionInputEvent>(INPUT_EVENTS)
+  private activeDefinitions: readonly InteractionDefinition[] = []
+  private readyOutcomes = new Map<number, () => boolean>()
   private readonly definitions: Map<string, InteractionDefinition>
   constructor(
     private readonly document: Document,
@@ -52,23 +79,42 @@ export class InteractionRecorder {
     this.definitions = new Map(
       definitions.map((definition) => [definition.id, definition])
     )
+    this.activeDefinitions = definitions
   }
 
-  start() {
+  start(interactionIds?: readonly string[]) {
+    const selected: InteractionDefinition[] = []
+    for (const id of interactionIds ?? this.definitions.keys()) {
+      const definition = this.definitions.get(id)
+      if (!definition) return new Error(`Unknown interaction: ${id}`)
+      selected.push(definition)
+    }
     this.stop()
+    this.activeDefinitions = selected
+    this.events = new Set<InteractionInputEvent>([
+      ...INPUT_EVENTS,
+      ...this.activeDefinitions.flatMap(
+        ({ events }): readonly InteractionInputEvent[] => events ?? ['click']
+      ),
+    ])
     this.samples = []
     this.samplesByTimestamp.clear()
     this.pointerTimestamps.clear()
     this.interactionByTimestamp.clear()
     this.timings.clear()
     this.samplesByInteraction.clear()
+    this.readyOutcomes.clear()
     this.sequence = 0
     this.droppedSamples = 0
     this.droppedPointerEvents = 0
     this.visibilityInterrupted = this.document.visibilityState !== 'visible'
     this.active = true
-    for (const event of INPUT_EVENTS) {
-      this.document.addEventListener(event, this.capture, true)
+    for (const event of this.events) {
+      if (event === 'resize') {
+        this.document.defaultView?.addEventListener(event, this.capture, true)
+      } else {
+        this.document.addEventListener(event, this.capture, true)
+      }
     }
     this.document.addEventListener('pointerdown', this.capturePointer, true)
     this.document.addEventListener('pointerup', this.capturePointer, true)
@@ -87,7 +133,7 @@ export class InteractionRecorder {
         ...sample,
         eventTiming: sample.eventTiming ? { ...sample.eventTiming } : null,
       })),
-      registered: [...this.definitions.values()].map(
+      registered: this.activeDefinitions.map(
         ({ id, testId, budgetMs, outcome }) => ({
           id,
           testId,
@@ -106,8 +152,16 @@ export class InteractionRecorder {
     this.active = false
     this.observer?.disconnect()
     this.observer = undefined
-    for (const event of INPUT_EVENTS) {
-      this.document.removeEventListener(event, this.capture, true)
+    for (const event of this.events) {
+      if (event === 'resize') {
+        this.document.defaultView?.removeEventListener(
+          event,
+          this.capture,
+          true
+        )
+      } else {
+        this.document.removeEventListener(event, this.capture, true)
+      }
     }
     this.document.removeEventListener('pointerdown', this.capturePointer, true)
     this.document.removeEventListener('pointerup', this.capturePointer, true)
@@ -124,6 +178,7 @@ export class InteractionRecorder {
     if (this.task !== undefined) window.clearTimeout(this.task)
     this.frame = undefined
     this.task = undefined
+    this.readyOutcomes.clear()
     return result
   }
 
@@ -154,21 +209,51 @@ export class InteractionRecorder {
 
   private capture = (event: Event) => {
     if (!event.isTrusted) return
-    const target = event.composedPath().find((node) => node instanceof Element)
+    const target =
+      event.composedPath().find((node) => node instanceof Element) ??
+      (event.type === 'resize' ? this.document.documentElement : undefined)
     // Both builds use the same selectors and pre-action state, independent of
     // measurement annotations added or removed by the application revision.
     const matchingDefinitions =
       target instanceof Element
-        ? [...this.definitions.values()].filter((definition) =>
-            definition.matchesTarget(target)
+        ? this.activeDefinitions.filter(
+            (definition) =>
+              (definition.events ?? ['click']).some(
+                (type) => type === event.type
+              ) &&
+              definition.matchesTarget(target) &&
+              (definition.matchesEvent?.(event, target) ?? true)
           )
         : []
     // A control's primary action does not describe its context menu or middle
     // click. Keep those inputs in discovery without claiming that action ran.
     const id =
-      event.type === 'click' && matchingDefinitions.length === 1
-        ? matchingDefinitions[0].id
-        : null
+      matchingDefinitions.length === 1 ? matchingDefinitions[0].id : null
+    // Discovery retains unknown clicks. Do not flood it with unrelated hover,
+    // typing, resize, or perpetual animation events.
+    if (id === null && !INPUT_EVENTS.some((type) => type === event.type)) return
+    const definition = matchingDefinitions[0]
+    const pending = definition?.coalesce
+      ? this.samples.find(
+          (sample) => sample.id === id && sample.status === 'pending'
+        )
+      : undefined
+    if (pending && target instanceof Element) {
+      if (definition.coalesce === 'last') {
+        // A trailing debounce is measured from the final native resize, not
+        // from the first resize or from the automation call that requested it.
+        this.samplesByTimestamp.delete(pending.startTime)
+        pending.startTime = eventStart(event, target)
+        pending.renderOpportunityMs = null
+        this.samplesByTimestamp.set(pending.startTime, pending)
+        this.readyOutcomes.set(
+          pending.sequence,
+          definition.prepareOutcome?.(this.document, target, event) ??
+            (() => definition.isReady(this.document))
+        )
+      }
+      return
+    }
     const timestamps =
       event instanceof PointerEvent
         ? (this.pointerTimestamps.get(event.pointerId) ?? [])
@@ -182,15 +267,31 @@ export class InteractionRecorder {
         target instanceof Element ? target.tagName.toLowerCase() : 'unknown',
       // Include pointerdown work even when Event Timing arrives after capture
       // stops. This response span also includes time holding the button down.
-      startTime: timestamps[0] ?? event.timeStamp,
+      startTime:
+        timestamps[0] ??
+        (target instanceof Element
+          ? eventStart(event, target)
+          : event.timeStamp),
       renderOpportunityMs: null,
       outcomeMs: null,
       eventTiming: null,
       status: 'pending',
     }
+    const inputType = [...this.events].find((type) => type === event.type)
+    if (inputType) sample.inputType = inputType
+    if (id && target instanceof Element) {
+      this.readyOutcomes.set(
+        sample.sequence,
+        definition.prepareOutcome?.(this.document, target, event) ??
+          (() => definition.isReady(this.document))
+      )
+    }
     if (this.samples.length === MAX_SAMPLES) {
       const removed = this.samples.shift()
-      if (removed) this.samplesByTimestamp.delete(removed.startTime)
+      if (removed) {
+        this.samplesByTimestamp.delete(removed.startTime)
+        this.readyOutcomes.delete(removed.sequence)
+      }
       this.droppedSamples++
     }
     this.samples.push(sample)
@@ -214,20 +315,22 @@ export class InteractionRecorder {
       return
     this.frame = requestAnimationFrame(() => {
       this.frame = undefined
-      const ready = new Set(
-        this.samples.filter(
-          (sample) =>
-            sample.status === 'pending' &&
-            sample.id &&
-            this.definitions.get(sample.id)?.isReady(this.document)
-        )
+      const ready = new Map(
+        this.samples
+          .filter(
+            (sample) =>
+              sample.status === 'pending' &&
+              sample.id &&
+              this.readyOutcomes.get(sample.sequence)?.()
+          )
+          .map((sample) => [sample, sample.startTime])
       )
       // Observe the ready outcome in a task after this rendering opportunity.
       this.task = window.setTimeout(() => this.observeOutcomes(ready), 0)
     })
   }
 
-  private observeOutcomes = (ready: ReadonlySet<InteractionSample>) => {
+  private observeOutcomes = (ready: ReadonlyMap<InteractionSample, number>) => {
     this.task = undefined
     for (const sample of this.samples) {
       if (sample.status !== 'pending') continue
@@ -236,11 +339,16 @@ export class InteractionRecorder {
       const definition = sample.id ? this.definitions.get(sample.id) : undefined
       if (!definition) {
         sample.status = 'unattributed'
-      } else if (ready.has(sample) && definition.isReady(this.document)) {
+      } else if (
+        ready.get(sample) === sample.startTime &&
+        this.readyOutcomes.get(sample.sequence)?.()
+      ) {
         sample.outcomeMs = performance.now() - sample.startTime
         sample.status = 'complete'
+        this.readyOutcomes.delete(sample.sequence)
       } else if (elapsed >= OUTCOME_TIMEOUT_MS) {
         sample.status = 'timeout'
+        this.readyOutcomes.delete(sample.sequence)
       }
     }
     // Pending outcomes repeat the next-frame/next-task cycle until ready or timed out.

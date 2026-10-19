@@ -4,17 +4,20 @@ import path from 'node:path'
 
 import { expect, test as zooTest } from '@e2e/playwright/zoo-test'
 import type { ComparisonVariant } from '@e2e/performance/comparison'
+import type { PerformanceModelProfile } from '@e2e/performance/models'
 
 export { expect }
 
 export interface PerformanceOptions {
   performanceVariant: ComparisonVariant
+  modelProfile: PerformanceModelProfile
 }
 
 const SETUP_TIMEOUT = 120_000
 
 export const test = zooTest.extend<PerformanceOptions>({
   performanceVariant: ['candidate', { option: true }],
+  modelProfile: ['small', { option: true }],
   tronApp: [
     async ({ performanceVariant, userFeatures }, use, testInfo) => {
       const variable =

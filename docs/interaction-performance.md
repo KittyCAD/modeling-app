@@ -8,8 +8,10 @@ No retries, discarded warm-up inputs, or Test Analysis Bot overrides are allowed
 
 ## What is measured
 
-Home measures command-palette open and close. A loaded small modeling project
-measures those actions plus:
+The paired contexts are `home`, `modeling-small`, `modeling-large`,
+`modeling-large-syntax-error`, and `modeling-large-engine-error`. Home measures
+command-palette open and close. All four modeling profiles measure those actions
+plus:
 
 - Code Editor and Project Files open and close.
 - Feature Tree open and close, including expanding and collapsing its first
@@ -20,16 +22,48 @@ measures those actions plus:
 These controls are chosen from core modeling workflows, not usage telemetry.
 Modeling starts with Code open and Files/Feature Tree closed, so Code runs
 close-then-open. Each cycle restores that layout without discarded setup clicks.
-The fixture is `rust/kcl-lib/tests/named_views_hide_extrude/input.kcl` from the
-selected harness. Large projects, file switching, typing, keyboard shortcuts,
-native menus, panel-header close buttons, camera motion, and completed modeling
-operations are not covered by this gate.
+All modeling profiles retain the interaction geometry from
+`rust/kcl-lib/tests/named_views_hide_extrude/input.kcl`: one visible cube and its
+first sketch group. The three large profiles also copy the multi-file
+`public/kcl-samples/cpu-cooler` project into `large-model/` and append its import
+to the same main file. Existing file settings are preserved. Shared setup waits
+for successful execution, matching current/last-successful code, a populated
+artifact graph, drained engine commands, scene readiness, and fonts before capture.
+Large-model evidence additionally requires the executed module path and more
+imported-module artifacts than main-module artifacts. Source text alone is not
+proof of a loaded large model.
+
+Both error profiles first execute that same large model successfully, then use
+the real editor to append a failing statement at EOF. Loading an already-broken
+file is not equivalent:
+
+- `large-syntax-error` leaves an expression unclosed. It requires the parser-error
+  flag and the expected parser diagnostic at the intentionally broken tail.
+- `large-engine-error` attempts an oversized fillet on the existing cube. It must
+  parse successfully, then produce a real `KCLError.kind === 'engine'` with the
+  expected fillet-failure message and a root-module source range in the appended
+  statement. Syntax, semantic, transport, and unrelated engine errors do not
+  satisfy this profile.
+
+Before capture, the harness requires the specific error, idle execution, drained
+commands, and retained large-model artifacts. After every measured interaction it
+requires that same error category and origin to remain, with unchanged
+last-successful code and the error-state artifact count. Clearing the error or
+successfully executing the failing buffer fails collection, even if the UI was
+fast. If a parser or engine fix makes the fixture succeed, the profile must fail;
+the harness does not silently accept success or substitute another error.
+
+File switching, typing, keyboard shortcuts, native menus, panel-header close
+buttons, camera motion, and completed modeling operations remain outside the
+paired regression workload. The separate absolute-budget audit below covers
+additional interaction types.
 
 `definitions.ts` fixes the identities and 150 ms targets. `outcomes.ts` matches
 existing test IDs and pre-click toggle state, then checks usable content or
 unmount. Code opening requires visible editable CodeMirror content; Files opening
 requires visible enabled entries. Feature Tree and sketch-group opening require
-visible, enabled operation buttons; expanding a caret alone is insufficient.
+visible operation buttons, enabled unless a parser error makes the cached tree
+read-only; expanding a caret alone is insufficient.
 Transform opening requires usable Translate and Rotate choices. Extrude opening
 requires its visible selection prompt and enabled input, whose transparent overlay
 is intentional. Cancellation and search-palette closing have distinct identities.
@@ -59,8 +93,10 @@ or application appearance change.
 ## Paired decision
 
 The fixed schedule has ten paired blocks, five base-first and five candidate-first,
-with one fresh Electron process per context and variant. Every renderer performs
-one first-use cycle and ten repeated cycles. All 3,520 ordinary clicks are retained.
+with one fresh Electron process per context and variant: **100 renderer sessions**
+across the five contexts. Every renderer performs one first-use cycle and ten
+repeated cycles. All **12,760 ordinary clicks** are retained: 20 variant sessions
+per context × 11 cycles × (2 Home + 14 actions for each of four model profiles).
 First-use means the first input to the control in that renderer, not a cold host
 GPU cache or the first mount of a default-open pane.
 
@@ -68,6 +104,9 @@ For each interaction and context, compare first-use latency, the median of its t
 repeated inputs, and their maximum. The renderer/session is the sampling unit;
 ten clicks in one renderer are not ten independent trials. The maximum protects
 against repeated-use stalls that a mean or median would hide.
+The 58 context/action combinations produce **348 comparison strata**: three
+phases × outcome and Event Timing. Missing presentation coverage is still a
+missing stratum, not a reason to reduce the required schedule.
 
 The provisional regression rule requires a median paired increase of at least
 24 ms, a positive increase in at least nine of ten pairs, and positive median
@@ -86,9 +125,11 @@ Missing sessions, outcomes, duplicates, unexpected inputs, invalid records,
 visibility interruptions, retries, repeats, skipped probes, changed order, and
 partial CLI selections fail collection. Timing decisions happen after the complete
 schedule so a slow sample cannot restart a worker and alter subsequent conditions.
-Five mandatory harness probes then run on each build: delayed click, delayed
+Eight mandatory harness probes then run on each build: delayed click, delayed
 pointerdown, missing measurement, secondary-click/restart, and delayed modeling
-content (Code, Files, Feature Tree, sketch children, transform tools, and Extrude).
+content (Code, Files, Feature Tree, sketch children, transform tools, and Extrude)
+with each of the four model profiles. The complete schedule contains **116 test
+attempts**: 100 comparison sessions plus eight probes on each build.
 They exercise the real application and verify that the collector rejects bad data
 and includes injected delays.
 
@@ -99,7 +140,7 @@ The baseline is the tested merge's first parent, with its second parent required
 to match the event PR head. The event's base SHA is retained and must be an
 ancestor of that baseline; main may have advanced before GitHub created the merge.
 Each app uses its own locked dependencies, Wasm, generated bindings, and Electron
-runtime. Both receive the same six-file test-instrumentation overlay. Workload,
+runtime. Both receive the same nine-file test-instrumentation overlay. Workload,
 selectors, collector, schedule, and comparison policy come from the base revision.
 The initial rollout explicitly uses the candidate harness when the base has no
 comparison entrypoint. An incompatible existing base harness fails rather than
@@ -189,6 +230,121 @@ For a confirmed runner/setup failure, rerun the complete workflow on the same
 commit and retain the failed attempt. A valid slow measurement is evidence, not a
 reason to retry until green. Do not use `--repeat-each`, `--grep`, multiple workers,
 or skipped probes to produce a passing gate.
+
+## Absolute-budget audit
+
+`playwright.interaction-budget.config.ts` runs the audited interactions and the
+original 14 core modeling actions against the candidate application with the same
+opt-in recorder and **150 ms absolute budget**. This is separate from the paired
+regression schedule: unchanged latency debt must fail these checks, not disappear
+into a green before/after comparison.
+There are no expected-failure markers, synthetic delays, retries, or raised
+budgets. Fixing the underlying latency should make the same tests pass.
+
+The audit covers sketch entry/editing, orientation-cube faces/edges/corners,
+viewport dimming, variable and Settings dialogs, tooltip behavior, notification
+badges, toast effects, streamed Zookeeper text, editor execution, density
+updates, folder drag-hover, geometry-to-code highlighting, stream resizing,
+default-plane visibility, and keyboard-chord expiry. Each endpoint describes
+what is actually ready; text-field echo alone does not prove committed settings,
+updated physical analysis, or completed model execution.
+
+Every registered modeling-screen case inherits `modeling-small`,
+`modeling-large`, `modeling-large-syntax-error`, and `modeling-large-engine-error`
+automatically, including Settings and the core controls. Future modeling cases
+inherit all four unless explicitly
+declared Home-only or unavailable with errors. They use the shared model setup
+described above; initial model loading and execution are complete **before
+capture starts** and their durations stay in the separate `model-setup`
+attachment. Settings opening and closing have independent spans, and closing
+preparation waits for the real panel and backdrop to finish opening. Geometry
+creation explicitly starts empty and creates the selected profile. The diagnostic
+badge case intentionally appends an error after a successful load and verifies
+that the previously executed profile's geometry remains cached and idle.
+
+Actions that inherently require a valid AST or replace the erroneous buffer have
+explicit `unavailableWithErrors` reasons. These include sketch creation/editing,
+convert-to-variable, successful editor execution, and the default-plane geometry
+creation/removal cases. Their error-profile combinations are retained in the
+unsupported inventory as **unmeasured**, not silently repaired, skipped as passing,
+or assigned invented latency. Other interactions must preserve the specific error
+and cached geometry through the post-action guard.
+
+`error-profile.spec.ts` checks both guards through the real editor: each case
+deliberately removes its failing tail, waits for successful execution, and requires
+`assertErrorModelPreserved` to reject the repaired state. These are guard
+self-tests, not expected-failure markers or passing latency measurements.
+
+Click measurements start at trusted pointerdown where available. Double-click,
+typing, hover, drag, resize, and keyboard cases use their declared native
+activation event. Repeated dragovers form one hover gesture; a trailing resize
+starts at the last native resize. Animation lifecycle metrics start at the
+browser's native animation/transition event, with positive CSS animation delays
+included. They measure visual effects, **not button-handler responsiveness**;
+toast display lifetimes and keyboard multi-key detection are not mislabeled as
+click latency. Missing Event Timing remains unknown for these inputs.
+Keyboard-chord expiry starts at the trusted prefix-key release, not keydown:
+the existing global keymap handler consumes prefix keydown events before document
+listeners can observe them. This is a key-release-to-expiry span, not a claim
+about keydown-handler responsiveness.
+
+Removed legacy UI and the dormant retry countdown remain explicitly unsupported;
+they are not passing measurements. The native backface color picker has a metric
+definition but no automated case: Playwright's color-input fill dispatches
+untrusted synthetic events, and the existing fixtures cannot operate the native
+picker. It is listed as unsupported rather than recording a fake native input.
+The web-only startup handoff has its own
+headed Chrome measurement in `playwright.interaction-browser-budget.config.ts`.
+It arms native transition listeners before navigation and measures transition
+start through a settled post-render outcome, excluding page loading,
+authentication, and API-response time. It records no invented Event Timing.
+Browser-managed smooth scrolling and engine-internal timings with no declared
+duration are not assigned invented results.
+
+After preparing an optimized measurement build as above, run:
+
+```sh
+NODE_ENV=production TARGET=desktop VITE_ZOO_BASE_DOMAIN=dev.zoo.dev \
+  env -u HEADLESS npm exec -- playwright test --config=playwright.interaction-budget.config.ts --headed
+
+NODE_ENV=production TARGET=web VITE_ZOO_BASE_DOMAIN=dev.zoo.dev \
+  env -u HEADLESS npm exec -- playwright test --config=playwright.interaction-browser-budget.config.ts --headed
+```
+
+Each case gets a fresh renderer, and raw samples are attached before budget
+assertions. Results are retained in `test-results/interaction-budget` and
+`playwright-report/interaction-budget`; the browser configuration uses the
+corresponding `interaction-browser-budget` directories. The browser configuration
+serves the existing optimized renderer output rather than building it. Collection
+or setup failures are not proof of a latency breach. A currently fast interaction
+stays green; do not manufacture a failure to match an audit assumption. These
+diagnostic runs do not establish native CI calibration or an independently built
+merge-base comparison. The expanded model matrix still requires native calibration;
+the presence of tests or a successful build does not establish measured results.
+The existing native measurement jobs still have a 15-minute limit. Local
+four-profile setup times indicate that the expanded paired schedule needs a
+separate CI runtime-budget review alongside calibration before rollout; this
+audit does not change those workflows or claim the full schedule fits that limit.
+
+### Local fail-first checkpoint (2026-10-19)
+
+Headed, optimized Electron diagnostics against the unchanged application recorded
+these Settings spans, with initial model loading excluded:
+
+| Model | Open | Close |
+| --- | ---: | ---: |
+| Small | 749.3 ms | 450.5 ms |
+| Large | 10,186.5 ms | 911.3 ms |
+| Large with syntax error | 749.2 ms | 453.2 ms |
+| Large with engine error | 20,974.2 ms | 18,137.7 ms |
+
+The error-profile runs preserved their expected errors and cached geometry, and
+both real-editor guard self-tests rejected accidentally successful execution.
+Large-model Physical Analysis remained on `Analyzing...` beyond its 30-second
+preparation wait, so that density case is an **unmeasured readiness failure**, not
+proof of a latency breach. Raw attempts, including invalid setup attempts, remain
+in `test-results/interaction-budget`. These local results do not establish CI
+calibration or independently built merge-base provenance.
 
 ## Discovery during functional tests
 

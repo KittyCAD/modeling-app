@@ -1,16 +1,24 @@
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
-import { expect } from '@playwright/test'
-import type { Locator, Page } from '@playwright/test'
-import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
 import type { ComparisonContext } from '@e2e/performance/comparison'
+import type { PerformanceModelProfile } from '@e2e/performance/models'
+import {
+  assertModelLoaded,
+  appendProfileError,
+  copyProfileModelFiles,
+  modelCodeForProfile,
+  isErrorProfile,
+} from '@e2e/performance/models'
+import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
+import type { Locator, Page } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import { interactions } from '@src/lib/interactionPerformance/definitions'
 import type { InteractionDescription } from '@src/lib/interactionPerformance/types'
 
 export type ScenarioFixtures = Pick<
   Fixtures,
   'homePage' | 'scene' | 'fs' | 'folderSetupFn'
-> & { page: Page }
+> & { page: Page; modelProfile?: PerformanceModelProfile }
 
 export async function prepareHome({
   page,
@@ -38,28 +46,38 @@ export async function prepareHome({
   await expect(page.getByTestId('command-bar-wrapper')).toBeHidden()
 }
 
-export async function prepareModeling({
-  page,
-  homePage,
-  scene,
-  fs,
-  folderSetupFn,
-}: ScenarioFixtures) {
+export async function prepareModeling(
+  {
+    page,
+    homePage,
+    scene,
+    fs,
+    folderSetupFn,
+    modelProfile = 'small',
+  }: ScenarioFixtures,
+  { code }: { code?: string } = {}
+) {
   const projectName = 'interaction-performance'
   await folderSetupFn(async (dir) => {
     const projectDir = path.join(dir, projectName)
     await fs.mkdir(projectDir, { recursive: true })
+    await copyProfileModelFiles(fs, projectDir, modelProfile)
     await fs.writeFile(
       path.join(projectDir, 'main.kcl'),
-      new Uint8Array(
-        await readFile(
-          path.join(
-            'rust',
-            'kcl-lib',
-            'tests',
-            'named_views_hide_extrude',
-            'input.kcl'
-          )
+      new TextEncoder().encode(
+        modelCodeForProfile(
+          code ??
+            (await readFile(
+              path.join(
+                'rust',
+                'kcl-lib',
+                'tests',
+                'named_views_hide_extrude',
+                'input.kcl'
+              ),
+              'utf8'
+            )),
+          modelProfile
         )
       )
     )
@@ -71,19 +89,25 @@ export async function prepareModeling({
   // Select the scored viewport before loading, including stream configuration.
   await page.emulateMedia({ reducedMotion: 'no-preference' })
   await page.setBodyDimensions({ width: 1200, height: 800 })
+  const loadStartedAt = Date.now()
   await homePage.openProject(projectName)
   await scene.connectionEstablished()
-  await scene.settled()
-  await page.waitForFunction(() => {
-    const editor = window.app.project?.executingEditor.value
-    return (
-      editor && !editor.isExecutingSignal.value && editor.artifactGraph.size > 0
-    )
+  const successfulLoad = await assertModelLoaded({
+    page,
+    modelProfile: isErrorProfile(modelProfile) ? 'large' : modelProfile,
   })
-  expect(
-    await page.evaluate(() => window.app.project?.executingEditor.value?.errors)
-  ).toEqual([])
+  await appendProfileError({ page, modelProfile })
+  const evidence = await assertModelLoaded({ page, modelProfile })
+  await scene.settled({ expectError: isErrorProfile(modelProfile) })
   await page.evaluate(() => document.fonts.ready)
+  await test.info().attach('model-setup', {
+    body: JSON.stringify({
+      ...evidence,
+      successfulLoad: isErrorProfile(modelProfile) ? successfulLoad : undefined,
+      modelLoadMs: Date.now() - loadStartedAt,
+    }),
+    contentType: 'application/json',
+  })
   // Preserve the initial layout, so the first cycle contains the first pane inputs.
   await expect(
     page.getByTestId(interactions.codePaneClose.testId)
@@ -218,7 +242,7 @@ export function scenarioActions(
           verify: async () => {
             await expect(page.getByTestId('command-name')).toHaveText('Extrude')
             await expect(page.locator('#arg-form label')).toContainText(
-              'Please select'
+              /Please select|regions? selected/
             )
             await expect(
               page.locator('#arg-form input[name="selection"]')

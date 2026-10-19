@@ -3,6 +3,13 @@ import {
   COMPARISON_PLAN,
   COMPARISON_WARM_CYCLES,
 } from '@e2e/performance/comparison'
+import type { ComparisonContext } from '@e2e/performance/comparison'
+import {
+  assertErrorModelPreserved,
+  assertModelLoaded,
+  isErrorProfile,
+} from '@e2e/performance/models'
+import type { PerformanceModelProfile } from '@e2e/performance/models'
 import {
   finishCapture,
   startCapture,
@@ -17,6 +24,13 @@ import { expect, test } from '@e2e/performance/test'
 import type { InteractionReport } from '@src/lib/interactionPerformance/report'
 
 const calibrationFault = process.env.INTERACTION_CALIBRATION_FAULT ?? 'none'
+const profilesByContext = {
+  home: 'small',
+  'modeling-small': 'small',
+  'modeling-large': 'large',
+  'modeling-large-syntax-error': 'large-syntax-error',
+  'modeling-large-engine-error': 'large-engine-error',
+} satisfies Record<ComparisonContext, PerformanceModelProfile>
 if (!['none', 'first', 'warm', 'stall'].includes(calibrationFault)) {
   throw new Error('Unknown interaction calibration fault.')
 }
@@ -32,7 +46,10 @@ if (
 
 for (const session of COMPARISON_PLAN) {
   test.describe(`block ${session.block + 1} ${session.variant} ${session.context}`, () => {
-    test.use({ performanceVariant: session.variant })
+    test.use({
+      performanceVariant: session.variant,
+      modelProfile: profilesByContext[session.context],
+    })
 
     test('collects first and repeated interactions', async ({
       page,
@@ -41,16 +58,27 @@ for (const session of COMPARISON_PLAN) {
       fs,
       folderSetupFn,
       tronApp,
+      modelProfile,
     }, testInfo) => {
       if (session.context === 'home') {
         await prepareHome({ page, homePage })
       } else {
-        await prepareModeling({ page, homePage, scene, fs, folderSetupFn })
+        await prepareModeling({
+          page,
+          homePage,
+          scene,
+          fs,
+          folderSetupFn,
+          modelProfile,
+        })
       }
       const actions = scenarioActions(session.context, page)
       expect(actions.map(({ definition }) => definition.id)).toEqual(
         COMPARISON_ACTIONS[session.context]
       )
+      const modelReceipt = isErrorProfile(modelProfile)
+        ? await assertModelLoaded({ page, modelProfile })
+        : undefined
       await startCapture(page)
       let report: InteractionReport
       try {
@@ -82,6 +110,12 @@ for (const session of COMPARISON_PLAN) {
             await (control ?? page.getByTestId(definition.testId)).click()
             await waitForSample(page, definition.id, cycle)
             await verify()
+            if (modelReceipt) {
+              await assertErrorModelPreserved(
+                { page, modelProfile },
+                modelReceipt
+              )
+            }
           }
         }
       } finally {
@@ -96,7 +130,8 @@ for (const session of COMPARISON_PLAN) {
             ])
           ),
           tronApp,
-          session
+          session,
+          session.context === 'home' ? undefined : modelProfile
         )
       }
       // Latency is judged by the reporter after the complete paired schedule.
