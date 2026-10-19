@@ -146,7 +146,9 @@ class SessionController implements ZookeeperSessionController {
           enabled: deps.clientCommandsEnabled,
         })
       : undefined
-    this.actor = createZookeeperManagerActor(deps.apiToken, this.clientCommands)
+    this.actor = this.clientCommands
+      ? createZookeeperManagerActor(deps.apiToken, this.clientCommands)
+      : createZookeeperManagerActor(deps.apiToken)
     this.history = new ZookeeperEditPatchHistory(
       deps.kclManager,
       deps.fileOperations
