@@ -590,15 +590,18 @@ export class KclManager extends File {
   private _execState = signal<ExecState>(emptyExecState())
   /**
    * The engine scene generation from the last execution: the number of runs
-   * that changed the engine scene. Runs answered from the cache leave it
-   * unchanged.
+   * that changed the engine scene. Cached runs don't increment it.
    *
    * Sketch-solve syncs and mock executions replace `execState` without sending
    * an engine command.  A consumer that must act only on a rebuilt scene
    * subscribes here rather than to `execStateSignal`.
    */
   private _engineSceneGeneration = signal(0)
-  /** Incremented on every execution completion (success, failure, or cancel). Used so callers can wait for "next" run. */
+  /** 
+   * Incremented on every execution completion (success, failure, or cancel),
+   * even if cached. 
+   * Used so callers can wait for "next" run.
+   */
   private _executionGeneration = 0
   private _lastExecutionCompletion: ExecutionCompletionResult = {
     generation: 0,

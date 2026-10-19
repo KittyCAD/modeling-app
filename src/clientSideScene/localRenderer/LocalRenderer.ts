@@ -124,7 +124,8 @@ export class LocalRenderer {
   private animationFrameId = -1
   private currentModel: Object3D | null = null
   private readonly gltfLoader = new GLTFLoader()
-  private modelRequestVersion = 0
+  /** Bumped when an execution starts. Async work started before it is stale. */
+  private executionVersion = 0
   /** The engine scene generation of the model on screen, once it has loaded. */
   private loadedSceneGeneration: number | null = null
   private hasFittedModel = false
@@ -174,8 +175,9 @@ export class LocalRenderer {
         ),
       kclManager.isExecutingSignal.subscribe((isExecuting) => {
         if (isExecuting) {
-          // A new execution invalidates any export or GLB parse still in flight.
-          this.modelRequestVersion += 1
+          // A new execution invalidates exports, GLB parses, picks and engine
+          // queries still in flight.
+          this.executionVersion += 1
           this.clearHover()
         }
       }),
@@ -295,15 +297,15 @@ export class LocalRenderer {
     if (cached) {
       return cached
     }
-    const version = this.modelRequestVersion
+    const version = this.executionVersion
     const response =
       await this.kclManager.engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd_id: uuidv4(),
         cmd: { type: 'query_entity_type', entity_id: entityId },
       })
-    // The model changed while the engine was answering.
-    if (version !== this.modelRequestVersion) {
+    // An execution started while the engine was answering.
+    if (version !== this.executionVersion) {
       return undefined
     }
     // A reply from the engine arrives wrapped in a one-element array
@@ -379,7 +381,7 @@ export class LocalRenderer {
       const requestVersion = isHover
         ? ++this.hoverRequestVersion
         : this.hoverRequestVersion
-      const modelVersion = this.modelRequestVersion
+      const executionVersion = this.executionVersion
       const result = await this.gpu?.integerIdPicker.pick({
         ...cmd.selected_at_window,
         streamWidth: streamDimensions.width,
@@ -391,7 +393,7 @@ export class LocalRenderer {
         this.disposed ||
         !this.settings.pickingEnabled ||
         this.kclManager.isExecuting ||
-        modelVersion !== this.modelRequestVersion ||
+        executionVersion !== this.executionVersion ||
         result?.stale ||
         (isHover && requestVersion !== this.hoverRequestVersion)
       )
@@ -422,7 +424,7 @@ export class LocalRenderer {
         ? ((await this.getEngineEntityReference(entityId)) ??
           this.getLocalEntityReference(entityId))
         : undefined
-      if (modelVersion !== this.modelRequestVersion) return {}
+      if (executionVersion !== this.executionVersion) return {}
       const response = {
         type: 'query_entity_type_with_point',
         data: { reference },
@@ -746,7 +748,7 @@ export class LocalRenderer {
       this.kclManager.isExecuting
     )
       return []
-    const version = this.modelRequestVersion
+    const version = this.executionVersion
     const rect = canvas.getBoundingClientRect()
     this.currentModel.updateWorldMatrix(true, true)
     camera.updateMatrixWorld(true)
@@ -767,11 +769,7 @@ export class LocalRenderer {
         streamHeight: rect.height,
         camera,
       })
-      if (
-        this.disposed ||
-        version !== this.modelRequestVersion ||
-        result?.stale
-      )
+      if (this.disposed || version !== this.executionVersion || result?.stale)
         return []
       entities.push({
         id,
@@ -1033,10 +1031,11 @@ export class LocalRenderer {
   }
 
   private async refreshModel() {
-    const version = ++this.modelRequestVersion
+    // Loads only start between executions, so two loads never overlap without
+    // an execution starting in between.
+    const version = this.executionVersion
     const sceneGeneration = this.kclManager.engineSceneGenerationSignal.peek()
-    const isCurrent = () =>
-      !this.disposed && version === this.modelRequestVersion
+    const isCurrent = () => !this.disposed && version === this.executionVersion
     // Reference planes do not depend on a successful GLB export.
     this.gpu?.planeRenderer.updateOffsetPlanes(this.kclManager.artifactGraph)
     this.syncPlaneScale()
