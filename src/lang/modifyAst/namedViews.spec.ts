@@ -117,7 +117,7 @@ extrude001 = extrude(region001, length = 5mm)`
     ).toBe(true)
   })
 
-  it('preserves unchanged expressions while editing name and camera', async () => {
+  it('edits name and camera while preserving framing expressions and exceptions', async () => {
     const code = `${settings}
 
 sketch001 = sketch(on = XY) {
@@ -181,9 +181,12 @@ view001 = view::named(
     })
     if (err(renamed)) throw renamed
     const renamedCode = recast(renamed.modifiedAst, instance)
-    expect(renamedCode).toContain('view::oriented(\n    orientation,')
-    expect(renamedCode).toContain('projection = projection')
-    expect(renamedCode).toContain('baseline = baseline')
+    expect(renamedCode).toContain('view::Orientation::Front')
+    expect(renamedCode).toContain('projection = view::Projection::Perspective')
+    expect(renamedCode).toContain('baseline = view::Visibility::Show')
+    expect(renamedCode).toContain('target = [1 + 2, 3, 4]')
+    expect(renamedCode).toContain('distance = 200mm')
+    expect(renamedCode).toContain('except = exceptions')
 
     const result = addNamedView({
       ast,
