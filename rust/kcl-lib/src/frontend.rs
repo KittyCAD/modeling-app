@@ -2085,7 +2085,7 @@ impl FrontendState {
             filenames,
             // Errors from run_with_caching always carry the generation, and
             // update_state_after_exec doesn't read it anyway. TODO: return a
-            // narrower type than ExecOutcome so this doesn't need be filled in?
+            // narrower type than ExecOutcome so this doesn't need to be filled in?
             engine_scene_generation: engine_scene_generation.unwrap_or_default(),
             operations,
             artifact_graph,

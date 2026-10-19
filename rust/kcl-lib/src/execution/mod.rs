@@ -5451,7 +5451,11 @@ solid7 = extrude(r7, length = width)
 
         let invalid = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = missing").unwrap();
         let err = ctx.run_with_caching(invalid).await.unwrap_err();
-        assert_eq!(err.engine_scene_generation, Some(2), "a failed run may still change the scene");
+        assert_eq!(
+            err.engine_scene_generation,
+            Some(2),
+            "a failed run may still change the scene"
+        );
         ctx.close().await;
     }
 
