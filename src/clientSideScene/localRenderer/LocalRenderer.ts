@@ -83,6 +83,27 @@ type AmbientOcclusionPipeline = {
 type DisposableGpuDevice = {
   destroy: () => void
 }
+/** Created together by initialize(), once the renderer is ready. */
+type GpuResources = {
+  renderer: WebGPURenderer
+  device: DisposableGpuDevice | null
+  scene: Scene
+  envMapLoader: EnvMapLoader
+  edgeRenderer: EdgeRenderer
+  sketchLineRenderer: EdgeRenderer
+  planeRenderer: PlaneRenderer
+  integerIdPicker: IntegerIdPicker
+  selectionHighlightRenderer: SelectionHighlightRenderer
+}
+/** What LocalWebGPUScene last passed in, through the constructor or a setter. */
+type RendererSettings = {
+  theme: ResolvedTheme
+  enableSSAO: boolean
+  highlightEdges: boolean
+  fixedSizeGrid: boolean
+  pickingEnabled: boolean
+  defaultPlaneVisibility: PlaneVisibilityMap
+}
 export interface LocalRendererProps {
   theme: ResolvedTheme
   enableSSAO: boolean
@@ -95,22 +116,11 @@ export interface LocalRendererProps {
 export class LocalRenderer {
   private readonly container: HTMLDivElement
   private readonly kclManager: KclManager
-  private theme: ResolvedTheme
-  private enableSSAO: boolean
-  private highlightEdges: boolean
-  private fixedSizeGrid: boolean
-  private onModelLoadSettled: LocalRendererProps['onModelLoadSettled']
-  private renderer: WebGPURenderer | null = null
-  private device: DisposableGpuDevice | null = null
-  private scene: Scene | null = null
-  private envMapLoader: EnvMapLoader | null = null
-  private edgeRenderer: EdgeRenderer | null = null
-  private sketchLineRenderer: EdgeRenderer | null = null
-  private planeRenderer: PlaneRenderer | null = null
-  private integerIdPicker: IntegerIdPicker | null = null
-  private selectionHighlightRenderer: SelectionHighlightRenderer | null = null
-  private resizeObserver: ResizeObserver | null = null
-  private readonly dprDetector: DprDetector
+  private readonly settings: RendererSettings
+  private readonly onModelLoadSettled: LocalRendererProps['onModelLoadSettled']
+  private gpu: GpuResources | null = null
+  /** Undo what this renderer registered elsewhere; dispose() runs them. */
+  private readonly disposers: (() => void)[] = []
   private animationFrameId = -1
   private currentModel: Object3D | null = null
   private readonly gltfLoader = new GLTFLoader()
@@ -118,24 +128,15 @@ export class LocalRenderer {
   /** The engine scene generation of the model on screen, once it has loaded. */
   private loadedSceneGeneration: number | null = null
   private hasFittedModel = false
-  private unregisterExecutionListener: (() => void) | null = null
   private previewCamera: PerspectiveCamera | OrthographicCamera | null = null
   private readonly previewTarget = new Vector3()
   private readonly convertedSharedPosition = new Vector3()
   private readonly convertedSharedTarget = new Vector3()
   private readonly convertedSharedUp = new Vector3()
-  private unregisterSharedCameraListener: (() => void) | null = null
-  private readonly unregisterBaseUnitListener: () => void
   private ambientOcclusionRadius = 0.01
   private ambientOcclusionPipeline: AmbientOcclusionPipeline | null = null
   private baseRenderDirty = true
   private disposed = false
-  private pickingEnabled = false
-  private defaultPlaneVisibility: PlaneVisibilityMap = {
-    xy: true,
-    xz: true,
-    yz: true,
-  }
   // What the engine last said is selected, kept so that the highlight can be
   // redrawn when the meshes are rebuilt.
   private selectedEntityIds: string[] = []
@@ -145,7 +146,6 @@ export class LocalRenderer {
   private hoveredTarget: Mesh | null = null
   private hoverRequestVersion = 0
   private pointerOverCanvas = false
-  private unregisterPicking: (() => void) | null = null
 
   constructor(
     container: HTMLDivElement,
@@ -154,49 +154,57 @@ export class LocalRenderer {
   ) {
     this.container = container
     this.kclManager = kclManager
-    this.theme = props.theme
-    this.enableSSAO = props.enableSSAO
-    this.highlightEdges = props.highlightEdges
-    this.fixedSizeGrid = props.fixedSizeGrid
+    this.settings = {
+      theme: props.theme,
+      enableSSAO: props.enableSSAO,
+      highlightEdges: props.highlightEdges,
+      fixedSizeGrid: props.fixedSizeGrid,
+      pickingEnabled: false,
+      defaultPlaneVisibility: { xy: true, xz: true, yz: true },
+    }
     this.onModelLoadSettled = props.onModelLoadSettled
 
     this.container.style.opacity = '0'
-    this.kclManager.addEventListener(
+    kclManager.addEventListener(
       KclManagerEvents.ExecutionDone,
       this.onExecutionDone
     )
-    this.unregisterExecutionListener = kclManager.isExecutingSignal.subscribe(
-      (isExecuting) => {
+    const dprDetector = new DprDetector(this.resize)
+    this.disposers.push(
+      () =>
+        kclManager.removeEventListener(
+          KclManagerEvents.ExecutionDone,
+          this.onExecutionDone
+        ),
+      kclManager.isExecutingSignal.subscribe((isExecuting) => {
         if (isExecuting) {
           // A new execution invalidates any export or GLB parse still in flight.
           this.modelLoadGeneration += 1
           this.clearHover()
         }
-      }
+      }),
+      kclManager.sceneInfra.baseUnitChange.add(this.syncPlaneScale),
+      () => dprDetector.dispose()
     )
-    this.unregisterBaseUnitListener = kclManager.sceneInfra.baseUnitChange.add(
-      this.syncPlaneScale
-    )
-    this.dprDetector = new DprDetector(this.resize)
     void this.initialize().catch(this.handleInitializationError)
   }
 
   setFixedSizeGrid(fixedSizeGrid: boolean) {
-    if (this.fixedSizeGrid === fixedSizeGrid) return
-    this.fixedSizeGrid = fixedSizeGrid
+    if (this.settings.fixedSizeGrid === fixedSizeGrid) return
+    this.settings.fixedSizeGrid = fixedSizeGrid
     this.syncPlaneScale()
   }
 
   setPickingEnabled(enabled: boolean) {
-    this.pickingEnabled = enabled
-    this.integerIdPicker?.invalidate()
+    this.settings.pickingEnabled = enabled
+    this.gpu?.integerIdPicker.invalidate()
     if (!enabled) this.clearHover()
   }
 
   setDefaultPlaneVisibility(visibility: PlaneVisibilityMap) {
-    this.defaultPlaneVisibility = { ...visibility }
-    this.planeRenderer?.setDefaultVisibility(visibility)
-    this.integerIdPicker?.invalidate()
+    this.settings.defaultPlaneVisibility = { ...visibility }
+    this.gpu?.planeRenderer.setDefaultVisibility(visibility)
+    this.gpu?.integerIdPicker.invalidate()
     this.clearHover()
     this.updateSelection()
     this.invalidateBaseRender()
@@ -204,7 +212,7 @@ export class LocalRenderer {
 
   private getPlaneTarget(id: string | null): Mesh | null {
     if (!id) return null
-    const plane = this.planeRenderer?.planes.get(id)
+    const plane = this.gpu?.planeRenderer.planes.get(id)
     return plane?.group.visible ? plane.mesh : null
   }
 
@@ -212,25 +220,25 @@ export class LocalRenderer {
     const targets = this.selectedEntityIds
       .map((id) => this.getPlaneTarget(id) ?? this.targetByEntityId.get(id))
       .filter(isNonNullable)
-    this.selectionHighlightRenderer?.setSelection(targets)
+    this.gpu?.selectionHighlightRenderer.setSelection(targets)
     this.scheduleRender()
   }
 
   private readonly clearHover = () => {
     this.hoverRequestVersion++
     this.hoveredTarget = null
-    this.selectionHighlightRenderer?.setHover(null)
+    this.gpu?.selectionHighlightRenderer.setHover(null)
     this.scheduleRender()
   }
 
   private rebuildSelectionTargets() {
-    if (!this.planeRenderer) return
-    this.planeRenderer.updateDefaultPlanes(
-      this.kclManager.rustContext.defaultPlanes
-    )
-    this.planeRenderer.setDefaultVisibility(this.defaultPlaneVisibility)
+    const { gpu } = this
+    if (!gpu) return
+    const { planeRenderer, edgeRenderer, sketchLineRenderer } = gpu
+    planeRenderer.updateDefaultPlanes(this.kclManager.rustContext.defaultPlanes)
+    planeRenderer.setDefaultVisibility(this.settings.defaultPlaneVisibility)
     const targets = Array.from(
-      this.planeRenderer.planes.values(),
+      planeRenderer.planes.values(),
       ({ mesh }) => mesh
     )
     this.targetByEntityId.clear()
@@ -243,24 +251,19 @@ export class LocalRenderer {
         this.targetByEntityId.set(object.userData.faceUuid, object as Mesh)
       }
     })
-    const edgeTargets = this.edgeRenderer?.getSelectionTargets() ?? []
-    const sketchLineTargets =
-      this.sketchLineRenderer?.getSelectionTargets() ?? []
+    const edgeTargets = edgeRenderer.getSelectionTargets()
+    const sketchLineTargets = sketchLineRenderer.getSelectionTargets()
     for (const { object } of [...edgeTargets, ...sketchLineTargets]) {
       this.targetByEntityId.set(object.userData.edgeUuid, object)
     }
 
-    this.integerIdPicker?.setTargets(
+    gpu.integerIdPicker.setTargets(
       targets,
       this.currentModel,
-      this.edgeRenderer
-        ? { source: this.edgeRenderer.lines, targets: edgeTargets }
-        : undefined,
-      this.sketchLineRenderer
-        ? { source: this.sketchLineRenderer.lines, targets: sketchLineTargets }
-        : undefined
+      { source: edgeRenderer.lines, targets: edgeTargets },
+      { source: sketchLineRenderer.lines, targets: sketchLineTargets }
     )
-    this.selectionHighlightRenderer?.setTargets([
+    gpu.selectionHighlightRenderer.setTargets([
       ...targets,
       ...edgeTargets.map(({ object }) => object),
       ...sketchLineTargets.map(({ object }) => object),
@@ -270,7 +273,7 @@ export class LocalRenderer {
   }
 
   private getLocalEntityReference(entityId: string) {
-    if (this.planeRenderer?.planes.has(entityId)) {
+    if (this.gpu?.planeRenderer.planes.has(entityId)) {
       return { type: 'plane' as const, plane_id: entityId }
     }
     const artifact = this.kclManager.artifactGraph.get(entityId)
@@ -368,7 +371,7 @@ export class LocalRenderer {
       const isHover = cmd.type === 'highlight_set_entity'
       const controls = this.kclManager.sceneInfra.camControls
       if (
-        !this.pickingEnabled ||
+        !this.settings.pickingEnabled ||
         this.kclManager.isExecuting ||
         controls.isDragging ||
         (isHover &&
@@ -381,7 +384,7 @@ export class LocalRenderer {
         ? ++this.hoverRequestVersion
         : this.hoverRequestVersion
       const generation = this.modelLoadGeneration
-      const result = await this.integerIdPicker?.pick({
+      const result = await this.gpu?.integerIdPicker.pick({
         ...cmd.selected_at_window,
         streamWidth: streamDimensions.width,
         streamHeight: streamDimensions.height,
@@ -390,7 +393,7 @@ export class LocalRenderer {
 
       if (
         this.disposed ||
-        !this.pickingEnabled ||
+        !this.settings.pickingEnabled ||
         this.kclManager.isExecuting ||
         generation !== this.modelLoadGeneration ||
         result?.stale ||
@@ -403,13 +406,13 @@ export class LocalRenderer {
           target.userData.edgeUuid) ||
         (typeof target?.userData.faceUuid === 'string' &&
           target.userData.faceUuid) ||
-        (target && this.planeRenderer?.planes.has(target.name)
+        (target && this.gpu?.planeRenderer.planes.has(target.name)
           ? target.name
           : null)
       if (isHover) {
         if (this.hoveredTarget !== target) {
           this.hoveredTarget = target
-          this.selectionHighlightRenderer?.setHover(target)
+          this.gpu?.selectionHighlightRenderer.setHover(target)
           this.scheduleRender()
         }
         return {
@@ -442,35 +445,37 @@ export class LocalRenderer {
     }
 
   private get backgroundColor() {
-    return getThemeBackgroundColor(this.theme)
+    return getThemeBackgroundColor(this.settings.theme)
   }
 
   setTheme(theme: ResolvedTheme) {
-    if (this.theme === theme) return
-    this.theme = theme
-    this.selectionHighlightRenderer?.setBackgroundColor(this.backgroundColor)
-    this.planeRenderer?.setTheme(theme)
-    this.sketchLineRenderer?.setColor(getSketchLineColor(theme))
+    if (this.settings.theme === theme) return
+    this.settings.theme = theme
+    this.gpu?.selectionHighlightRenderer.setBackgroundColor(
+      this.backgroundColor
+    )
+    this.gpu?.planeRenderer.setTheme(theme)
+    this.gpu?.sketchLineRenderer.setColor(getSketchLineColor(theme))
     this.invalidateBaseRender()
   }
 
   setEnableSSAO(enableSSAO: boolean) {
-    if (this.enableSSAO === enableSSAO) {
+    if (this.settings.enableSSAO === enableSSAO) {
       return
     }
 
-    this.enableSSAO = enableSSAO
+    this.settings.enableSSAO = enableSSAO
     this.invalidateBaseRender()
   }
 
   setHighlightEdges(highlightEdges: boolean) {
-    if (this.highlightEdges === highlightEdges) {
+    if (this.settings.highlightEdges === highlightEdges) {
       return
     }
 
-    this.highlightEdges = highlightEdges
-    this.edgeRenderer?.setVisible(highlightEdges)
-    this.integerIdPicker?.setEdgesVisible(highlightEdges)
+    this.settings.highlightEdges = highlightEdges
+    this.gpu?.edgeRenderer.setVisible(highlightEdges)
+    this.gpu?.integerIdPicker.setEdgesVisible(highlightEdges)
     this.invalidateBaseRender()
   }
 
@@ -480,45 +485,29 @@ export class LocalRenderer {
     }
 
     this.disposed = true
-    this.unregisterPicking?.()
-    this.unregisterPicking = null
-    this.unregisterExecutionListener?.()
-    this.unregisterExecutionListener = null
-    this.kclManager.removeEventListener(
-      KclManagerEvents.ExecutionDone,
-      this.onExecutionDone
-    )
+    for (const dispose of this.disposers.splice(0)) {
+      dispose()
+    }
     this.container.style.opacity = '0'
-    this.unregisterSharedCameraListener?.()
-    this.unregisterSharedCameraListener = null
-    this.unregisterBaseUnitListener()
     this.clearModel()
-    this.planeRenderer?.dispose()
-    this.planeRenderer = null
-    this.edgeRenderer?.dispose()
-    this.edgeRenderer = null
-    this.sketchLineRenderer?.dispose()
-    this.sketchLineRenderer = null
-    this.integerIdPicker?.dispose()
-    this.integerIdPicker = null
-    this.selectionHighlightRenderer?.dispose()
-    this.selectionHighlightRenderer = null
-    this.resizeObserver?.disconnect()
-    this.resizeObserver = null
-    this.dprDetector.dispose()
     if (this.animationFrameId !== -1) {
       cancelAnimationFrame(this.animationFrameId)
       this.animationFrameId = -1
     }
     this.disposeAmbientOcclusionPipeline()
-    this.envMapLoader?.dispose()
-    this.envMapLoader = null
-    this.renderer?.domElement.remove()
-    this.renderer?.dispose()
-    this.renderer = null
-    this.device?.destroy()
-    this.device = null
-    this.scene = null
+    const { gpu } = this
+    this.gpu = null
+    if (gpu) {
+      gpu.planeRenderer.dispose()
+      gpu.edgeRenderer.dispose()
+      gpu.sketchLineRenderer.dispose()
+      gpu.integerIdPicker.dispose()
+      gpu.selectionHighlightRenderer.dispose()
+      gpu.envMapLoader.dispose()
+      gpu.renderer.domElement.remove()
+      gpu.renderer.dispose()
+      gpu.device?.destroy()
+    }
     this.previewCamera = null
   }
 
@@ -526,12 +515,12 @@ export class LocalRenderer {
     const { camControls, baseUnitMultiplier } = this.kclManager.sceneInfra
     // Match the engine's fixed grid: ten file units, expressed in decimeters.
     // baseUnitMultiplier converts one file unit to mm; 100 mm = one dm.
-    const fixedGridScale = this.fixedSizeGrid
+    const fixedGridScale = this.settings.fixedSizeGrid
       ? (10 * baseUnitMultiplier) / 100
       : undefined
     const distance = camControls.camera.position.distanceTo(camControls.target)
-    this.planeRenderer?.updateScale(distance, fixedGridScale)
-    this.integerIdPicker?.invalidate()
+    this.gpu?.planeRenderer.updateScale(distance, fixedGridScale)
+    this.gpu?.integerIdPicker.invalidate()
     this.invalidateBaseRender()
   }
 
@@ -612,7 +601,7 @@ export class LocalRenderer {
     this.previewCamera.lookAt(this.previewTarget)
     this.previewCamera.updateProjectionMatrix()
     this.previewCamera.updateMatrixWorld(true)
-    this.integerIdPicker?.invalidate()
+    this.gpu?.integerIdPicker.invalidate()
     this.invalidateBaseRender()
   }
 
@@ -667,17 +656,17 @@ export class LocalRenderer {
   }
 
   private renderPreview() {
-    const previewCamera = this.previewCamera
-    const renderer = this.renderer
-    const scene = this.scene
-    if (!previewCamera || !renderer || !scene) {
+    const { previewCamera, gpu } = this
+    if (!previewCamera || !gpu) {
       return
     }
+    const { renderer, scene, selectionHighlightRenderer } = gpu
 
-    const baseRendered =
-      this.selectionHighlightRenderer?.beginFrame(this.baseRenderDirty) ?? true
+    const baseRendered = selectionHighlightRenderer.beginFrame(
+      this.baseRenderDirty
+    )
     if (baseRendered) {
-      if (!this.enableSSAO) {
+      if (!this.settings.enableSSAO) {
         renderer.render(scene, previewCamera)
       } else {
         if (this.ambientOcclusionPipeline?.camera !== previewCamera) {
@@ -748,17 +737,17 @@ export class LocalRenderer {
 
         this.ambientOcclusionPipeline.pipeline.render()
       }
-      this.selectionHighlightRenderer?.cacheBaseFrame()
+      selectionHighlightRenderer.cacheBaseFrame()
       this.baseRenderDirty = false
     }
 
-    this.selectionHighlightRenderer?.render(previewCamera)
+    selectionHighlightRenderer.render(previewCamera)
   }
 
   /** Debug/E2E snapshot in CSS viewport pixels, using the same camera and picker as clicks. */
   async getProjectedEntities() {
     const camera = this.previewCamera
-    const canvas = this.renderer?.domElement
+    const canvas = this.gpu?.renderer.domElement
     if (
       !camera ||
       !canvas ||
@@ -782,7 +771,7 @@ export class LocalRenderer {
       point.applyMatrix4(object.matrixWorld)
       const projected = projectEntityPoint(point, camera, rect)
       if (!projected) continue
-      const result = await this.integerIdPicker?.pick({
+      const result = await this.gpu?.integerIdPicker.pick({
         x: projected.x - rect.left,
         y: projected.y - rect.top,
         streamWidth: rect.width,
@@ -811,9 +800,10 @@ export class LocalRenderer {
    * call: WebGPU and WebGL canvases read back blank in a later task.
    */
   readFrame<T>(read: (canvas: HTMLCanvasElement) => T) {
-    if (!this.renderer || !this.previewCamera || !this.scene) return undefined
+    const { gpu } = this
+    if (!gpu || !this.previewCamera) return undefined
     this.renderPreview()
-    return read(this.renderer.domElement)
+    return read(gpu.renderer.domElement)
   }
 
   private scheduleRender() {
@@ -837,7 +827,7 @@ export class LocalRenderer {
   }
 
   private readonly resize = () => {
-    const { renderer } = this
+    const renderer = this.gpu?.renderer
     const width = this.container.clientWidth
     const height = this.container.clientHeight
     if (!renderer || width === 0 || height === 0) {
@@ -851,19 +841,20 @@ export class LocalRenderer {
     } else {
       this.syncPreviewCameraFromShared()
     }
-    this.integerIdPicker?.invalidate()
+    this.gpu?.integerIdPicker.invalidate()
     this.invalidateBaseRender()
   }
 
   private clearModel() {
+    const { gpu } = this
     this.loadedSceneGeneration = null
     this.engineEntityReferences.clear()
-    this.integerIdPicker?.clearModel()
-    this.selectionHighlightRenderer?.clearModel()
+    gpu?.integerIdPicker.clearModel()
+    gpu?.selectionHighlightRenderer.clearModel()
     if (this.currentModel) {
-      this.scene?.remove(this.currentModel)
-      this.edgeRenderer?.removeFromParent()
-      this.sketchLineRenderer?.removeFromParent()
+      gpu?.scene.remove(this.currentModel)
+      gpu?.edgeRenderer.removeFromParent()
+      gpu?.sketchLineRenderer.removeFromParent()
       disposeObject3D(this.currentModel)
       this.currentModel = null
     }
@@ -921,7 +912,6 @@ export class LocalRenderer {
     container.appendChild(renderer.domElement)
 
     const scene = new Scene()
-    this.scene = scene
     scene.background = null
     const envMapLoader = new EnvMapLoader(renderer, device)
     const hdrEnvMapUrl = HDR_ENV_MAP_URL?.trim()
@@ -939,25 +929,33 @@ export class LocalRenderer {
       renderer.domElement.remove()
       renderer.dispose()
       device?.destroy()
-      this.scene = null
       return
     }
 
-    this.edgeRenderer = new EdgeRenderer(this.highlightEdges)
-    this.sketchLineRenderer = new EdgeRenderer(
-      true,
-      getSketchLineColor(this.theme),
-      LOCAL_WEBGPU_SKETCH_LINE_WIDTH_PX
-    )
+    const { theme, highlightEdges } = this.settings
     // Keep reference planes separate from the GLB and its fit-to-model bounds.
-    this.planeRenderer = new PlaneRenderer(this.theme)
-    this.planeRenderer.addTo(scene)
-    this.integerIdPicker = new IntegerIdPicker(renderer)
-    this.integerIdPicker.setEdgesVisible(this.highlightEdges)
-    this.selectionHighlightRenderer = new SelectionHighlightRenderer(
+    const planeRenderer = new PlaneRenderer(theme)
+    planeRenderer.addTo(scene)
+    const integerIdPicker = new IntegerIdPicker(renderer)
+    integerIdPicker.setEdgesVisible(highlightEdges)
+    this.gpu = {
       renderer,
-      this.backgroundColor
-    )
+      device: device ?? null,
+      scene,
+      envMapLoader,
+      edgeRenderer: new EdgeRenderer(highlightEdges),
+      sketchLineRenderer: new EdgeRenderer(
+        true,
+        getSketchLineColor(theme),
+        LOCAL_WEBGPU_SKETCH_LINE_WIDTH_PX
+      ),
+      planeRenderer,
+      integerIdPicker,
+      selectionHighlightRenderer: new SelectionHighlightRenderer(
+        renderer,
+        this.backgroundColor
+      ),
+    }
 
     const sharedCamera = kclManager.sceneInfra.camControls.camera
     const sharedTarget = kclManager.sceneInfra.camControls.target
@@ -972,14 +970,11 @@ export class LocalRenderer {
     }
     this.previewCamera.layers.mask = sharedCamera.layers.mask
     this.previewTarget.copy(sharedTarget)
-    this.unregisterSharedCameraListener =
+    this.disposers.push(
       kclManager.sceneInfra.camControls.cameraChange.add(
         this.syncPreviewCameraFromShared
       )
-
-    this.renderer = renderer
-    this.device = device ?? null
-    this.envMapLoader = envMapLoader
+    )
 
     this.rebuildSelectionTargets()
     const removeSelectionHandler =
@@ -996,7 +991,7 @@ export class LocalRenderer {
             this.syncSelectionFromEngine().catch(reportRejection)
             return null
           }
-          return this.pickingEnabled
+          return this.settings.pickingEnabled
             ? this.handleLocalSelectionCommand(command, context)
             : null
         }
@@ -1012,16 +1007,17 @@ export class LocalRenderer {
     }
     inputCanvas.addEventListener('pointerenter', onEnter)
     inputCanvas.addEventListener('pointerleave', onLeave)
-    this.unregisterPicking = () => {
+    this.disposers.push(() => {
       removeSelectionHandler()
       inputCanvas.removeEventListener('pointerenter', onEnter)
       inputCanvas.removeEventListener('pointerleave', onLeave)
-    }
+    })
 
     this.resize()
     this.syncPreviewCameraFromShared()
-    this.resizeObserver = new ResizeObserver(this.resize)
-    this.resizeObserver.observe(container)
+    const resizeObserver = new ResizeObserver(this.resize)
+    resizeObserver.observe(container)
+    this.disposers.push(() => resizeObserver.disconnect())
 
     this.scheduleRender()
 
@@ -1061,7 +1057,7 @@ export class LocalRenderer {
     }
 
     // Before initialization finishes, initialize() loads the completed scene.
-    if (this.renderer) {
+    if (this.gpu) {
       void this.refreshModel().catch(reportRejection)
     }
   }
@@ -1072,7 +1068,7 @@ export class LocalRenderer {
     const isCurrent = () =>
       !this.disposed && generation === this.modelLoadGeneration
     // Reference planes do not depend on a successful GLB export.
-    this.planeRenderer?.updateOffsetPlanes(this.kclManager.artifactGraph)
+    this.gpu?.planeRenderer.updateOffsetPlanes(this.kclManager.artifactGraph)
     this.syncPlaneScale()
     // An empty execution has no GLB to export, but must clear the old model.
     if (this.kclManager.artifactGraph.size === 0) {
@@ -1117,12 +1113,13 @@ export class LocalRenderer {
       this.clearModel()
       assignFaceUuids(gltf)
       this.currentModel = gltf.scene
-      this.scene?.add(gltf.scene)
+      const { gpu } = this
+      gpu?.scene.add(gltf.scene)
 
-      this.edgeRenderer?.buildEdges(gltf, getBodyEdges(gltf))
-      this.edgeRenderer?.addTo(gltf.scene)
-      this.sketchLineRenderer?.buildEdges(gltf, getSketchSegmentEdges(gltf))
-      this.sketchLineRenderer?.addTo(gltf.scene)
+      gpu?.edgeRenderer.buildEdges(gltf, getBodyEdges(gltf))
+      gpu?.edgeRenderer.addTo(gltf.scene)
+      gpu?.sketchLineRenderer.buildEdges(gltf, getSketchSegmentEdges(gltf))
+      gpu?.sketchLineRenderer.addTo(gltf.scene)
       for (const mesh of createRegionMeshes(gltf)) {
         gltf.scene.add(mesh)
       }

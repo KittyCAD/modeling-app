@@ -33,37 +33,57 @@ import type { Artifact } from '@src/lang/wasm'
 type RendererInternals = {
   initialize(): Promise<void>
   scheduleRender(): void
-  renderer: { dispose(): void; domElement: HTMLCanvasElement } | null
-  scene: Scene | null
+  gpu: FakeGpu | null
   currentModel: Group | null
-  planeRenderer: PlaneRenderer | null
   previewCamera: PerspectiveCamera | OrthographicCamera | null
   handleLocalSelectionCommand: LocalSelectionCommandHandler
   syncSelectionFromEngine(): Promise<void>
   baseRenderDirty: boolean
   pointerOverCanvas: boolean
-  integerIdPicker: {
-    pick: ReturnType<
-      typeof vi.fn<
-        () => Promise<{
-          target: Mesh | null
-          stale: boolean
-        }>
-      >
-    >
-    invalidate: ReturnType<typeof vi.fn>
-    setTargets: ReturnType<typeof vi.fn>
-    clearModel: ReturnType<typeof vi.fn>
-    dispose: ReturnType<typeof vi.fn>
-  } | null
-  selectionHighlightRenderer: {
-    setTargets: ReturnType<typeof vi.fn>
-    setHover: ReturnType<typeof vi.fn>
-    setSelection: ReturnType<typeof vi.fn>
-    clearModel: ReturnType<typeof vi.fn>
-    dispose: ReturnType<typeof vi.fn>
-  } | null
 }
+
+// What initialize() creates, minus the GPU. Only the plane renderer is real.
+function fakeGpu() {
+  const lines = () => ({
+    lines: {},
+    getSelectionTargets: vi.fn(() => []),
+    buildEdges: vi.fn(),
+    addTo: vi.fn(),
+    removeFromParent: vi.fn(),
+    setVisible: vi.fn(),
+    setColor: vi.fn(),
+    dispose: vi.fn(),
+  })
+  return {
+    renderer: {
+      dispose: vi.fn(),
+      domElement: document.createElement('canvas'),
+    },
+    device: null,
+    scene: new Scene(),
+    envMapLoader: { dispose: vi.fn() },
+    edgeRenderer: lines(),
+    sketchLineRenderer: lines(),
+    planeRenderer: new PlaneRenderer(Themes.Light),
+    integerIdPicker: {
+      pick: vi.fn<() => Promise<{ target: Mesh | null; stale: boolean }>>(),
+      invalidate: vi.fn(),
+      setTargets: vi.fn(),
+      setEdgesVisible: vi.fn(),
+      clearModel: vi.fn(),
+      dispose: vi.fn(),
+    },
+    selectionHighlightRenderer: {
+      setTargets: vi.fn(),
+      setHover: vi.fn(),
+      setSelection: vi.fn(),
+      setBackgroundColor: vi.fn(),
+      clearModel: vi.fn(),
+      dispose: vi.fn(),
+    },
+  }
+}
+type FakeGpu = ReturnType<typeof fakeGpu>
 
 function fixture(
   camera: PerspectiveCamera | OrthographicCamera = new PerspectiveCamera(
@@ -115,11 +135,8 @@ function fixture(
     }
   )
   const state = renderer as unknown as RendererInternals
-  state.renderer = {
-    dispose: vi.fn(),
-    domElement: document.createElement('canvas'),
-  }
-  state.scene = new Scene()
+  const gpu = fakeGpu()
+  state.gpu = gpu
   // Executions rebuild the engine scene unless they were answered from the cache.
   const done = (successful = true, sceneChanged = true) => {
     if (sceneChanged) manager.engineSceneGenerationSignal.value += 1
@@ -130,7 +147,7 @@ function fixture(
       })
     )
   }
-  return { renderer, state, manager, done, onModelLoadSettled }
+  return { renderer, state, gpu, manager, done, onModelLoadSettled }
 }
 
 describe('local GLB loading', () => {
@@ -145,29 +162,15 @@ describe('local GLB loading', () => {
 
   function planeFixture(id = 'plane-xy') {
     const f = fixture()
-    const planes = new PlaneRenderer(Themes.Light)
+    const planes = f.gpu.planeRenderer
     planes.updateDefaultPlanes(f.manager.rustContext.defaultPlanes)
     planes.updateOffsetPlanes(new Map([['offset', offsetPlane()]]))
     const target = planes.planes.get(id)?.mesh
     if (!target) throw new Error('Missing plane mesh')
-    const picker = {
-      pick: vi.fn().mockResolvedValue({ target, stale: false }),
-      invalidate: vi.fn(),
-      setTargets: vi.fn(),
-      clearModel: vi.fn(),
-      dispose: vi.fn(),
-    }
-    const highlights = {
-      setTargets: vi.fn(),
-      setHover: vi.fn(),
-      setSelection: vi.fn(),
-      clearModel: vi.fn(),
-      dispose: vi.fn(),
-    }
-    f.state.planeRenderer = planes
+    const picker = f.gpu.integerIdPicker
+    picker.pick.mockResolvedValue({ target, stale: false })
+    const highlights = f.gpu.selectionHighlightRenderer
     const setDefaultVisibility = vi.spyOn(planes, 'setDefaultVisibility')
-    f.state.integerIdPicker = picker
-    f.state.selectionHighlightRenderer = highlights
     f.state.previewCamera = new PerspectiveCamera()
     f.state.pointerOverCanvas = true
     f.renderer.setPickingEnabled(true)
@@ -341,10 +344,9 @@ describe('local GLB loading', () => {
     'clears the old model on %s, preserving default planes',
     async (failure) => {
       const f = planeFixture()
-      const referencePlane =
-        f.state.planeRenderer?.planes.get('plane-xy')?.group
+      const referencePlane = f.gpu.planeRenderer.planes.get('plane-xy')?.group
       if (!referencePlane) throw new Error('Missing reference plane')
-      f.state.scene?.add(referencePlane)
+      f.gpu.scene.add(referencePlane)
       f.done()
       await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
       const mesh = f.state.currentModel?.children[0]
@@ -370,13 +372,13 @@ describe('local GLB loading', () => {
       expect(f.state.currentModel).toBeNull()
       expect(disposeGeometry).toHaveBeenCalledOnce()
       expect(disposeMaterial).toHaveBeenCalledOnce()
-      expect(f.state.scene?.children).toEqual([referencePlane])
-      // The third argument is the edge data, absent without an edge renderer.
+      expect(f.gpu.scene.children).toEqual([referencePlane])
+      // The edge and sketch-line data are empty: the fake edge renderers have no lines.
       expect(f.picker.setTargets).toHaveBeenLastCalledWith(
         f.defaultTargets,
         null,
-        undefined,
-        undefined
+        { source: f.gpu.edgeRenderer.lines, targets: [] },
+        { source: f.gpu.sketchLineRenderer.lines, targets: [] }
       )
       expect(f.highlights.setTargets).toHaveBeenLastCalledWith(f.defaultTargets)
       expect(f.state.baseRenderDirty).toBe(true)
