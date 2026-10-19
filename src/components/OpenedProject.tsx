@@ -169,9 +169,11 @@ export function OpenedProject() {
     )
   }, [lsp, projectName, projectPath, project])
 
-  useHotKeyListener(kclManager)
-
   const settingsValues = settings.useSettings()
+  useHotKeyListener(
+    kclManager,
+    settingsValues.modeling.ctrlMultiselectOnWindows.current
+  )
   const machineApiEnabled = settingsValues.app.machineApi.current
   const registryGlobalStatusBarItems = filterStatusBarItemsForScopes(
     registry.signal(statusBarGlobalItemsValueSpec).value,

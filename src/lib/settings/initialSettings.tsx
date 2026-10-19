@@ -25,7 +25,7 @@ import type { BaseUnit, SettingsLevel } from '@src/lib/settings/settingsTypes'
 import { baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { Themes } from '@src/lib/theme'
 import { isEnumMember } from '@src/lib/types'
-import { capitaliseFC, isArray } from '@src/lib/utils'
+import { capitaliseFC, isArray, platform } from '@src/lib/utils'
 import { hexToRgba } from '@src/lib/utils'
 import { Setting } from '@src/lib/settings/Setting'
 
@@ -322,6 +322,17 @@ function createCoreSettings() {
             </ul>
           </>
         ),
+      }),
+      ctrlMultiselectOnWindows: new Setting<boolean>({
+        defaultValue: false,
+        hideOnLevel: 'project',
+        hideOnPlatform: async () => (platform() === 'windows' ? null : 'both'),
+        description:
+          'Use Ctrl+click to add or remove geometry from the selection on Windows. Shift selection and camera controls remain available.',
+        validate: (v) => typeof v === 'boolean',
+        commandConfig: {
+          inputType: 'boolean',
+        },
       }),
       /** Whether to enable the touch listeners for controlling the camera, which run separate from the mouse control listeners
        *

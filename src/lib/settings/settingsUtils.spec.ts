@@ -62,6 +62,32 @@ const createSettingsWithProjectLibraries = () =>
   createSettings(projectLibrariesExtensionSettings)
 
 describe('testing settings initialization', () => {
+  it.each([true, false])(
+    'persists the user Ctrl multiselect preference: %s',
+    (enabled) => {
+      const settings = createSettings()
+      expect(settings.modeling.ctrlMultiselectOnWindows.current).toBe(false)
+      expect(settings.modeling.ctrlMultiselectOnWindows.hideOnLevel).toBe(
+        'project'
+      )
+      const configuration = settingsPayloadToConfiguration({
+        modeling: { ctrlMultiselectOnWindows: enabled },
+      })
+      const payload = configurationToSettingsPayload(configuration)
+      expect(payload.modeling?.ctrlMultiselectOnWindows).toBe(enabled)
+      setSettingsAtLevel(settings, 'user', payload)
+      expect(settings.modeling.ctrlMultiselectOnWindows.current).toBe(enabled)
+      const projectPayload = projectConfigurationToSettingsPayload(
+        settingsPayloadToProjectConfiguration({
+          modeling: { ctrlMultiselectOnWindows: !enabled },
+        })
+      )
+      expect(projectPayload.modeling?.ctrlMultiselectOnWindows).toBeUndefined()
+      setSettingsAtLevel(settings, 'project', projectPayload)
+      expect(settings.modeling.ctrlMultiselectOnWindows.current).toBe(enabled)
+    }
+  )
+
   it(`sets settings at the 'user' level`, () => {
     const settings = createSettings()
     const appConfiguration: DeepPartial<Configuration> = {
@@ -319,6 +345,7 @@ describe('project settings serialization regression', () => {
           },
           modeling: {
             mouseControls: 'OnShape',
+            ctrlMultiselectOnWindows: true,
             gizmoType: 'axis',
             enableTouchControls: false,
             useSketchSolveMode: false,
@@ -358,6 +385,7 @@ describe('project settings serialization regression', () => {
     expect(serializedToml).toContain('show_panel = true')
     expect(serializedToml).toContain('show_modeling_machine_state = true')
     expect(serializedToml).toContain('mouse_controls = "onshape"')
+    expect(serializedToml).toContain('ctrl_multiselect_on_windows = true')
     expect(serializedToml).toContain('gizmo_type = "axis"')
     expect(serializedToml).toContain('enable_touch_controls = false')
     expect(serializedToml).toContain('use_sketch_solve_mode = false')
@@ -403,6 +431,7 @@ describe('project settings serialization regression', () => {
     expect(parsedPayload.debug?.showModelingMachineState).toBe(true)
     expect(parsedPayload.projects?.defaultProjectName).toBe('plugin-template')
     expect(parsedPayload.modeling?.mouseControls).toBe('OnShape')
+    expect(parsedPayload.modeling?.ctrlMultiselectOnWindows).toBe(true)
     expect(parsedPayload.modeling?.gizmoType).toBe('axis')
     expect(parsedPayload.modeling?.enableTouchControls).toBe(false)
     expect(parsedPayload.modeling?.useSketchSolveMode).toBe(false)

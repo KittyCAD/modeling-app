@@ -1,6 +1,6 @@
-import { describe, expect, it, vi } from 'vitest'
-
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { cameraMouseDragGuards } from '@src/lib/cameraControls'
+import { describe, expect, it, vi } from 'vitest'
 
 function makeSceneInfraForCallbacksTest() {
   return new SceneInfra(
@@ -62,5 +62,44 @@ describe('SceneInfra non-primary mouse buttons', () => {
     )
 
     expect(onClick).not.toHaveBeenCalled()
+  })
+})
+
+describe('SceneInfra camera gestures', () => {
+  it('reserves Creo Ctrl+left-drag for the camera without starting sketch edits', () => {
+    const sceneInfra = makeSceneInfraForCallbacksTest()
+    sceneInfra.camControls.interactionGuards = cameraMouseDragGuards.Creo
+    const onMouseDownSelection = vi.fn(() => true)
+    sceneInfra.setCallbacks({ onMouseDownSelection })
+    sceneInfra.onMouseDown(
+      new MouseEvent('mousedown', { button: 0, buttons: 1, ctrlKey: true })
+    )
+    expect(onMouseDownSelection).not.toHaveBeenCalled()
+    expect(sceneInfra.selected).toBeNull()
+    expect(sceneInfra.areaSelect).toBeNull()
+  })
+
+  it('allows a stationary Creo Ctrl+click to select', async () => {
+    const sceneInfra = makeSceneInfraForCallbacksTest()
+    sceneInfra.camControls.interactionGuards = cameraMouseDragGuards.Creo
+    const onClick = vi.fn()
+    sceneInfra.setCallbacks({ onClick })
+    await sceneInfra.onMouseUp(
+      new MouseEvent('mouseup', { button: 0, ctrlKey: true })
+    )
+    expect(onClick).toHaveBeenCalledOnce()
+  })
+
+  it('does not select on mouse up after a camera drag', async () => {
+    const sceneInfra = makeSceneInfraForCallbacksTest()
+    const onClick = vi.fn()
+    sceneInfra.setCallbacks({ onClick })
+    sceneInfra.camControls.wasDragging = true
+    await sceneInfra.onMouseUp(
+      new MouseEvent('mouseup', { button: 0, ctrlKey: true })
+    )
+    expect(onClick).not.toHaveBeenCalled()
+    expect(sceneInfra.selected).toBeNull()
+    expect(sceneInfra.areaSelect).toBeNull()
   })
 })
