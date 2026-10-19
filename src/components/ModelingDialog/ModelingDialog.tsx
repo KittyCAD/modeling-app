@@ -1,7 +1,7 @@
 import { useSignals } from '@preact/signals-react/runtime'
 import { Draggable } from '@kittycad/ui-components'
 import type { RefObject } from 'react'
-import { useEffect, useId, useRef, useState } from 'react'
+import { use, useEffect, useId, useRef, useState } from 'react'
 import decamelize from 'decamelize'
 import {
   CommandKclInput,
@@ -31,6 +31,8 @@ import {
 import { useDialogSelection } from '@src/components/ModelingDialog/useDialogSelection'
 import { ArgumentHelp } from '@src/components/ModelingDialog/ArgumentHelp'
 import { CommandHelp } from '@src/components/ModelingDialog/CommandHelp'
+import { BooleanParameterInput } from '@src/components/CommandBar/BooleanParameterInput'
+import { getBooleanOptions } from '@src/lib/booleanInput'
 
 export default function ModelingDialog({
   containerRef,
@@ -52,6 +54,7 @@ export default function ModelingDialog({
   modelingSend: EngineSceneViewExtensionProps['modelingSend']
 }) {
   useSignals()
+  const wasmInstance = use(wasmPromise)
   const state = commands.useState()
   const fieldIdPrefix = useId()
   const { selectedCommand: command } = state.context
@@ -275,6 +278,29 @@ export default function ModelingDialog({
           {description}
         </div>
       )
+    if (arg.inputType === 'boolean' && arg.allowVariables) {
+      return (
+        <div key={name} className="flex flex-col gap-1">
+          {fieldLabel}
+          <BooleanParameterInput
+            id={fieldId}
+            value={value}
+            options={getBooleanOptions({
+              required,
+              allowVariables: true,
+              currentValue: value,
+              ast: kclManager.astSignal.value,
+              variables: kclManager.variablesSignal.value,
+              nodeToEdit: context.argumentsToSubmit.nodeToEdit,
+              wasmInstance,
+            })}
+            autoFocus={name === firstFieldName}
+            onChange={(next) => save(name, next)}
+          />
+          {description}
+        </div>
+      )
+    }
     if (arg.inputType === 'options' || arg.inputType === 'boolean') {
       const choices =
         arg.inputType === 'boolean'

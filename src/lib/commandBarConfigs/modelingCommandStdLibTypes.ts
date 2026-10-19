@@ -106,6 +106,7 @@ export type HelixModes = 'Axis' | 'Edge' | 'Cylinder'
 export type ExtrudeCommandArgs = Override<
   PointAndClickCommandArgs<'Extrude'>,
   {
+    symmetric?: boolean | KclCommandValue
     direction?: Selections
     method?: KclPreludeExtrudeMethod
     bodyType?: KclPreludeBodyType

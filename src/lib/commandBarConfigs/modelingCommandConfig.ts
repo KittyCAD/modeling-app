@@ -21,6 +21,7 @@ import type {
   StateMachineCommandSetConfig,
 } from '@src/lib/commandTypes'
 import { isKclCommandValue } from '@src/lib/commandUtils'
+import { booleanValueSummary } from '@src/lib/booleanInput'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   KCL_AXIS_X,
@@ -656,6 +657,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           length: {
             defaultValue: KCL_DEFAULT_LENGTH,
             prepopulate: true,
+          },
+          symmetric: {
+            allowVariables: true,
+            valueSummary: booleanValueSummary,
           },
           to: {
             inputType: 'selection',

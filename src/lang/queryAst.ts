@@ -446,9 +446,9 @@ export function findAllPreviousVariablesPath(
   memVars: VariableMap,
   path: PathToNode,
   wasmInstance: ModuleType,
-  type: 'number' | 'string' = 'number'
+  type: 'number' | 'string' | 'boolean' = 'number'
 ): {
-  variables: PrevVariable<typeof type extends 'number' ? number : string>[]
+  variables: PrevVariable<number | string | boolean>[]
   bodyPath: PathToNode
   insertIndex: number
 } {
@@ -505,9 +505,9 @@ export function findAllPreviousVariables(
   memVars: VariableMap,
   sourceRange: SourceRange,
   wasmInstance: ModuleType,
-  type: 'number' | 'string' = 'number'
+  type: 'number' | 'string' | 'boolean' = 'number'
 ): {
-  variables: PrevVariable<typeof type extends 'number' ? number : string>[]
+  variables: PrevVariable<number | string | boolean>[]
   bodyPath: PathToNode
   insertIndex: number
 } {

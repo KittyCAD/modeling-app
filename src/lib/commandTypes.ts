@@ -300,6 +300,7 @@ export type CommandArgumentConfig<
     }
   | {
       inputType: 'boolean'
+      allowVariables?: boolean
       defaultValue?:
         | OutputType
         | ((
@@ -493,6 +494,7 @@ export type CommandArgument<
     }
   | {
       inputType: 'boolean'
+      allowVariables?: boolean
       defaultValue?:
         | OutputType
         | ((

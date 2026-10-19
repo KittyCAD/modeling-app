@@ -97,7 +97,7 @@ export function addExtrude({
   wasmInstance: ModuleType
   length?: KclCommandValue
   to?: Selections
-  symmetric?: boolean
+  symmetric?: boolean | KclCommandValue
   direction?: Selections
   bidirectionalLength?: KclCommandValue
   tagStart?: string
@@ -268,7 +268,14 @@ export function addExtrude({
   }
   const symmetricExpr =
     symmetric !== undefined
-      ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
+      ? [
+          createLabeledArg(
+            'symmetric',
+            typeof symmetric === 'boolean'
+              ? createLiteral(symmetric, wasmInstance)
+              : valueOrVariable(symmetric)
+          ),
+        ]
       : []
   let directionExpr: LabeledArg[] = []
   if (direction && !mNodeToEdit) {

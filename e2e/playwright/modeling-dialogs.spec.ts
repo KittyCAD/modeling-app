@@ -1,5 +1,109 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
 
+for (const dialogs of [true, false]) {
+  test.describe(
+    `Boolean parameter inputs (${dialogs ? 'dialog' : 'command bar'})`,
+    { tag: '@web' },
+    () => {
+      test.use({ userFeatures: dialogs ? ['modeling_dialogs'] : [] })
+
+      test('Binds Extrude Symmetric without replacing the parameter during edits', async ({
+        page,
+        homePage,
+        scene,
+        editor,
+        toolbar,
+        cmdBar,
+        modelingDialog,
+      }) => {
+        const code = `@settings(kclVersion = 3.0)
+mirrorEnabled = false
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region001 = region(segments = [sketch001.circle1])`
+        await homePage.goToModelingScene()
+        await scene.settled()
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('', code)
+        )
+        await editor.selectText('region(')
+        await toolbar.extrudeButton.click()
+
+        async function openSymmetric() {
+          const continueButton = page.getByTestId('command-bar-continue')
+          const submitButton = page.getByTestId('command-bar-submit')
+          await expect(continueButton.or(submitButton)).toBeVisible()
+          while (await continueButton.isVisible()) await cmdBar.progressCmdBar()
+          await expect(submitButton).toBeVisible()
+          if (await page.getByTestId('arg-name-symmetric').isVisible())
+            await cmdBar.clickHeaderArgument('symmetric')
+          else await cmdBar.clickOptionalArgument('symmetric')
+        }
+        async function choose(name: string) {
+          if (dialogs) {
+            const input = modelingDialog.options(/^symmetric$/i)
+            await input.fill(name)
+          } else {
+            await openSymmetric()
+            await cmdBar.argumentInput.fill(name)
+          }
+          await page.getByRole('option', { name, exact: true }).click()
+        }
+        async function save() {
+          if (dialogs) {
+            await expect(modelingDialog.submitButton).toBeEnabled()
+            await modelingDialog.submitButton.click()
+            await expect(modelingDialog.locator).not.toBeAttached()
+          } else {
+            for (
+              let step = 0;
+              step < 3 && (await cmdBar.cmdBarElement.isVisible());
+              step++
+            ) {
+              await cmdBar.progressCmdBar()
+            }
+            await expect(cmdBar.cmdBarElement).not.toBeVisible()
+          }
+          await scene.settled()
+        }
+        await choose('mirrorEnabled (Off)')
+        await save()
+        await editor.expectEditor.toContain('symmetric = mirrorEnabled')
+        await scene.waitForExecutionDoneAfter(() =>
+          editor.replaceCode('mirrorEnabled = false', 'mirrorEnabled = true')
+        )
+
+        await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
+        if (dialogs) {
+          await expect(modelingDialog.options(/^symmetric$/i)).toHaveValue(
+            'mirrorEnabled (On)'
+          )
+          await modelingDialog.input(/^length$/i).fill('8mm')
+        } else {
+          await openSymmetric()
+          await expect(cmdBar.argumentInput).toHaveAttribute(
+            'placeholder',
+            'mirrorEnabled (On)'
+          )
+          await cmdBar.selectOption({ name: 'mirrorEnabled (On)' }).click()
+        }
+        await save()
+        await editor.expectEditor.toContain('symmetric = mirrorEnabled')
+
+        await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
+        await choose('Off')
+        await save()
+        await editor.expectEditor.toContain('symmetric = false')
+        await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
+        await choose('Use default')
+        await save()
+        await editor.expectEditor.not.toContain('symmetric =')
+      })
+    }
+  )
+}
+
 const profileCode = `@settings(kclVersion = 3.0)
 sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var 2mm, var 10mm], center = [var 0mm, var 10mm])

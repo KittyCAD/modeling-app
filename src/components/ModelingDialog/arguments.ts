@@ -3,6 +3,7 @@ import { evaluateCommandArgumentFlags } from '@src/components/CommandBar/utils'
 import type { ArtifactGraph, Program } from '@src/lang/wasm'
 import { coerceSelectionsForBodyOnlySelectionTypes } from '@src/lang/std/selectionCoercion'
 import type { CommandArgument } from '@src/lib/commandTypes'
+import { resolveBooleanValue } from '@src/lib/booleanInput'
 import { isKclCommandValue } from '@src/lib/commandUtils'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type RustContext from '@src/lib/rustContext'
@@ -132,6 +133,9 @@ export async function resolveArguments(
         return new Error(`Select ${arg.displayName || name}.`)
       }
       value = selection
+    } else if (arg.inputType === 'boolean' && arg.allowVariables) {
+      value = await resolveBooleanValue(value, rustContext)
+      if (isErr(value)) return value
     } else if (
       (arg.inputType === 'kcl' ||
         arg.inputType === 'vector2d' ||

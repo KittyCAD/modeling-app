@@ -510,13 +510,27 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
         : axisEdgeSelection.edge
   }
 
-  // symmetric argument from a string to boolean
-  let symmetric: boolean | undefined
+  // Keep variable references and expressions when reopening the boolean field.
+  let symmetric: ModelingCommandSchema['Extrude']['symmetric']
   if ('symmetric' in operation.labeledArgs && operation.labeledArgs.symmetric) {
-    symmetric =
-      code.slice(
-        ...operation.labeledArgs.symmetric.sourceRange.map(boundToUtf16)
-      ) === 'true'
+    const expression = code.slice(
+      ...operation.labeledArgs.symmetric.sourceRange.map(boundToUtf16)
+    )
+    if (expression === 'true' || expression === 'false') {
+      symmetric = expression === 'true'
+    } else {
+      const result = await stringToKclExpression(expression, rustContext, {
+        allowBooleans: true,
+      })
+      if (
+        isErr(result) ||
+        'errors' in result ||
+        (result.valueCalculated !== 'true' &&
+          result.valueCalculated !== 'false')
+      )
+        return { reason: "Couldn't retrieve symmetric argument" }
+      symmetric = result
+    }
   }
 
   // bidirectionalLength argument from a string to a KCL expression

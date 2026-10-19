@@ -1,5 +1,6 @@
 import CommandArgOptionInput from '@src/components/CommandBar/CommandArgOptionInput'
 import CommandBarBasicInput from '@src/components/CommandBar/CommandBarBasicInput'
+import { CommandBarBooleanInput } from '@src/components/CommandBar/CommandBarBooleanInput'
 import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
 import CommandBarHeaderFooter from '@src/components/CommandBar/CommandBarHeaderFooter'
 import CommandBarKclInput from '@src/components/CommandBar/CommandBarKclInput'
@@ -88,6 +89,15 @@ function ArgumentInput({
         />
       )
     case 'boolean':
+      if (arg.allowVariables && executingEditor)
+        return (
+          <CommandBarBooleanInput
+            arg={arg}
+            kclManager={executingEditor}
+            stepBack={stepBack}
+            onSubmit={onSubmit}
+          />
+        )
       return (
         <CommandArgOptionInput
           arg={{
