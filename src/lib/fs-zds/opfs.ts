@@ -524,7 +524,9 @@ const impl: IZooDesignStudioFS = {
   readdir,
   stat,
   realpath: async (targetPath) => {
-    await stat(targetPath)
+    if ((await walk(targetPath)) === undefined) {
+      return Promise.reject('ENOENT')
+    }
     return path.resolve(targetPath)
   },
   mkdir,
