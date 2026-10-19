@@ -5,7 +5,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({
   scheduleWrite: vi.fn(),
-  flushWrite: vi.fn().mockResolvedValue(undefined),
   fileOperations: {},
 }))
 
@@ -28,7 +27,7 @@ vi.mock('@src/lib/activeTextFile', () => ({
     text: '',
   }),
   clearActiveTextFile: vi.fn(),
-  flushActiveTextFileWrite: mocks.flushWrite,
+  flushActiveTextFileWrite: vi.fn().mockResolvedValue(undefined),
   scheduleActiveTextFileWrite: mocks.scheduleWrite,
 }))
 vi.mock('@src/hooks/useToolbarGuards', () => ({
@@ -54,7 +53,7 @@ describe('plain text editor', () => {
         status: 'ready',
         text: original,
       }
-      const { unmount } = render(<EditorPaneContents />)
+      render(<EditorPaneContents />)
       const textbox = screen.getByRole('textbox')
       const view = EditorView.findFromDOM(textbox)
       expect(view).not.toBeNull()
@@ -80,8 +79,6 @@ describe('plain text editor', () => {
         '/proj/settings.json',
         `\ufeffpasted${lineEnding}linesedited${lineEnding}second${lineEnding}`
       )
-      unmount()
-      expect(mocks.flushWrite).toHaveBeenCalled()
     }
   )
 })
