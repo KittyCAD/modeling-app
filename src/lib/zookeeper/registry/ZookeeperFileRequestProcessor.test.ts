@@ -223,6 +223,11 @@ describe('ZookeeperFileRequestProcessor', () => {
     const processor = createProcessor()
     const firstOutput = patchBackedZookeeperEdit('first edit')
     firstOutput.outputs = { 'main.kcl': 'first edit', 'part.kcl': 'part = 1' }
+    firstOutput.zookeeper_edit_patch?.changed_files?.push({
+      path: 'part.kcl',
+      status: 'created',
+      contents: 'part = 1',
+    })
     emitZookeeperFileRequest(processor, 'first edit', 1, firstOutput)
     await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
     const first = mocks.systemIOSend.mock.calls[0][0].data
@@ -594,7 +599,7 @@ describe('ZookeeperFileRequestProcessor', () => {
       processor,
       'edit without history',
       1,
-      zookeeperEditWithoutPatch('edit without history')
+      patchBackedZookeeperEdit('edit without history')
     )
     await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
 
@@ -606,34 +611,56 @@ describe('ZookeeperFileRequestProcessor', () => {
     await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
   })
 
-  test('waits for an editor refresh when an edit has no history patch', async () => {
+  test('ignores outputs without a patch and allows the next authorized edit', async () => {
     const processor = createProcessor()
-
     emitZookeeperFileRequest(
       processor,
-      'edit without history',
+      'unlisted edit',
       1,
-      zookeeperEditWithoutPatch('edit without history')
+      zookeeperEditWithoutPatch('unlisted edit')
     )
-    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
+    expect(mocks.systemIOSend).not.toHaveBeenCalled()
+    expect(mocks.updateCodeEditor).not.toHaveBeenCalled()
+    expect(mocks.historyBegin).not.toHaveBeenCalled()
+    expect(processor.hasPendingRequests).toBe(false)
+    expect(processor.fileWriteProgress.value).toBeUndefined()
 
-    const firstRequest = mocks.systemIOSend.mock.calls[0][0].data
-    firstRequest.onFileSystemSuccess()
     emitZookeeperFileRequest(processor, 'next edit', 2)
-    await Promise.resolve()
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
+    const request = mocks.systemIOSend.mock.calls[0][0].data
+    expect(request.files[0].requestedCode).toBe('next edit')
+    request.onFileSystemSuccess()
+    request.onSuccess()
+    await processor.dispose()
+  })
 
-    expect(mocks.systemIOSend).toHaveBeenCalledOnce()
-
-    firstRequest.onSuccess()
-
-    expect(mocks.updateCodeEditor).toHaveBeenCalledWith(
-      'edit without history',
-      expect.objectContaining({
-        shouldClearHistory: true,
-        shouldWriteToDisk: true,
-      })
-    )
-    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
+  test('counts and dispatches only patch-listed files from a large output snapshot', async () => {
+    const processor = createProcessor()
+    const output = patchBackedZookeeperEdit('changed code')
+    output.outputs = {
+      ...Object.fromEntries(
+        Array.from({ length: 100 }, (_, index) => [
+          `untouched-${index}.kcl`,
+          'height = 1',
+        ])
+      ),
+      ...output.outputs,
+    }
+    emitZookeeperFileRequest(processor, 'changed code', 1, output)
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
+    const request = mocks.systemIOSend.mock.calls[0][0].data
+    expect(request.files).toEqual([
+      {
+        requestedFileName: 'main.kcl',
+        requestedCode: 'changed code',
+        requestedProjectName: 'demo',
+      },
+    ])
+    expect(processor.fileWriteProgress.value).toEqual({ written: 0, total: 1 })
+    request.onFileWriteProgress({ written: 1, total: 1 })
+    request.onFileSystemSuccess()
+    request.onSuccess()
+    await processor.dispose()
   })
 
   test('does not refresh an inactive file or stall the next edit', async () => {
@@ -713,14 +740,14 @@ describe('ZookeeperFileRequestProcessor', () => {
     expect(mocks.updateCodeEditor).not.toHaveBeenCalled()
   })
 
-  test('waits for a dispatched write before disposing an edit without a patch', async () => {
+  test('waits for a dispatched write before disposing an edit', async () => {
     const processor = createProcessor()
 
     emitZookeeperFileRequest(
       processor,
       'edit without history',
       1,
-      zookeeperEditWithoutPatch('edit without history')
+      patchBackedZookeeperEdit('edit without history')
     )
     await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
     const request = mocks.systemIOSend.mock.calls[0][0].data

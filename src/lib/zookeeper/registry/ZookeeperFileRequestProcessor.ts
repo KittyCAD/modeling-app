@@ -209,6 +209,10 @@ export class ZookeeperFileRequestProcessor {
     if (!payload) {
       return
     }
+    if (payload.files.length === 0 && payload.filesToDelete.length === 0) {
+      onApplied()
+      return
+    }
 
     const activeRelativePath =
       requestProjectPath && activeFilePath

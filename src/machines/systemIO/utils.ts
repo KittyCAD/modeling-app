@@ -21,6 +21,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
   getZookeeperEditPatchFromToolOutput,
   isZookeeperProjectEntrypointPath,
+  normalizeZookeeperPatchPath,
 } from '@src/lib/zookeeper/zookeeperEditPatch'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
@@ -483,18 +484,23 @@ export const prepareZookeeperNewFileRequest = ({
   ) {
     return
   }
-  const outputsRecord: Record<string, string> = {
-    ...(toolOutput.outputs ?? {}),
-  }
-  const requestedFiles: RequestedKCLFile[] = Object.entries(outputsRecord).map(
-    ([relativePath, fileContents]) => {
-      return {
-        requestedCode: fileContents,
-        requestedFileName: relativePath,
-        requestedProjectName: projectNameCurrentlyOpened,
-      }
-    }
+  const rawZookeeperEditPatch = getZookeeperEditPatchFromToolOutput(toolOutput)
+  const writablePaths = new Set(
+    (rawZookeeperEditPatch?.changed_files ?? [])
+      .filter((file) => file.status === 'created' || file.status === 'modified')
+      .map((file) => normalizeZookeeperPatchPath(file.path))
   )
+  const requestedFiles: RequestedKCLFile[] = Object.entries(
+    toolOutput.outputs ?? {}
+  )
+    .filter(([relativePath]) =>
+      writablePaths.has(normalizeZookeeperPatchPath(relativePath))
+    )
+    .map(([relativePath, fileContents]) => ({
+      requestedCode: fileContents,
+      requestedFileName: normalizeZookeeperPatchPath(relativePath),
+      requestedProjectName: projectNameCurrentlyOpened,
+    }))
 
   // getFilePathRelativeToProject intentionally keeps the leading separator
   // (e.g. "/newFile.kcl"). Strip it here so the returned value is genuinely
@@ -506,7 +512,6 @@ export const prepareZookeeperNewFileRequest = ({
   const requestedFileNameWithExtension = rawRelativePath.startsWith(fsZds.sep)
     ? rawRelativePath.slice(fsZds.sep.length)
     : rawRelativePath
-  const rawZookeeperEditPatch = getZookeeperEditPatchFromToolOutput(toolOutput)
   const zookeeperEditPatch = rawZookeeperEditPatch
     ? {
         ...rawZookeeperEditPatch,
