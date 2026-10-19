@@ -1061,8 +1061,6 @@ export class LocalRenderer {
       this.kclManager.engineSceneGenerationSignal.peek() ===
       this.loadedSceneGeneration
     ) {
-      this.rebuildSelectionTargets()
-      this.syncPlaneScale()
       this.pendingModelRefresh = false
       this.onModelLoadSettled?.()
       return
