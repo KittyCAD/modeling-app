@@ -1,5 +1,6 @@
 mod cache;
 mod execution_order;
+mod planar_surface;
 
 use kcl_lib::BacktraceItem;
 use kcl_lib::BacktraceItemKind;
