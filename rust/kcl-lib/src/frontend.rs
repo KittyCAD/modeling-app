@@ -2077,6 +2077,7 @@ impl FrontendState {
             #[cfg(test)]
             test_program_memory: Default::default(),
             filenames,
+            from_cache: false,
             operations,
             artifact_graph,
             scene_objects,
@@ -9325,6 +9326,7 @@ cylinder = startSketchOn(XY)
             refactor_metadata: Default::default(),
             issues: Default::default(),
             filenames: Default::default(),
+            from_cache: false,
             source_files: Default::default(),
             default_planes: Default::default(),
         };
@@ -9481,6 +9483,7 @@ sketch(on = XY) {
             refactor_metadata: Default::default(),
             issues: Default::default(),
             filenames: Default::default(),
+            from_cache: false,
             source_files: Default::default(),
             default_planes: Default::default(),
         }

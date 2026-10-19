@@ -829,6 +829,7 @@ function createSceneGraphDelta(objects: Array<ApiObject>): SceneGraphDelta {
       filenames: {},
       defaultPlanes: null,
       refactorMetadata: [],
+      fromCache: false,
     },
   }
 }

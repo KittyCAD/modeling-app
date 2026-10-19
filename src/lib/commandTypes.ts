@@ -29,7 +29,6 @@ const _INPUT_TYPES = [
   'text',
   'kcl',
   'selection',
-  'selectionMixed',
   'boolean',
   'vector3d',
 ] as const
@@ -190,6 +189,8 @@ export type CommandArgumentConfig<
   available?: (context: C) => boolean
   displayName?: string
   description?: string
+  /** Reference documentation shown on demand, separate from command-bar hints. */
+  documentation?: string
   status?: CommandArgumentStatus
   statusMessage?: string
   required: CommandArgumentRequired<C>
@@ -236,6 +237,8 @@ export type CommandArgumentConfig<
   | {
       inputType: 'selection'
       selectionTypes: CommandSelectionType[]
+      /** Accept non-empty code selections for codemod resolution. */
+      allowCodeReferences?: boolean
       clearSelectionFirst?: boolean
       selectionFilter?: EntityType[]
       multiple: boolean
@@ -244,23 +247,6 @@ export type CommandArgumentConfig<
         context: CommandBarContext
         machineContext?: C
       }) => Promise<boolean | string>
-    }
-  | {
-      inputType: 'selectionMixed'
-      selectionTypes: CommandSelectionType[]
-      selectionFilter?: EntityType[]
-      multiple: boolean
-      clearSelectionFirst?: boolean
-      allowNoSelection?: boolean
-      validation?: (props: {
-        data: any
-        context: CommandBarContext
-        machineContext?: C
-      }) => Promise<boolean | string>
-      selectionSource?: {
-        allowSceneSelection?: boolean
-        allowCodeSelection?: boolean
-      }
     }
   | {
       inputType: 'kcl'
@@ -381,6 +367,8 @@ export type CommandArgument<
 > = {
   displayName?: string
   description?: string
+  /** Reference documentation shown on demand, separate from command-bar hints. */
+  documentation?: string
   status?: CommandArgumentStatus
   statusMessage?: string
   required:
@@ -433,6 +421,7 @@ export type CommandArgument<
   | {
       inputType: 'selection'
       selectionTypes: CommandSelectionType[]
+      allowCodeReferences?: boolean
       clearSelectionFirst?: boolean
       selectionFilter?: EntityType[]
       multiple: boolean
@@ -441,23 +430,6 @@ export type CommandArgument<
         context: CommandBarContext
         machineContext?: ContextFrom<T>
       }) => Promise<boolean | string>
-    }
-  | {
-      inputType: 'selectionMixed'
-      selectionTypes: CommandSelectionType[]
-      selectionFilter?: EntityType[]
-      multiple: boolean
-      clearSelectionFirst?: boolean
-      allowNoSelection?: boolean
-      validation?: (props: {
-        data: any
-        context: CommandBarContext
-        machineContext?: ContextFrom<T>
-      }) => Promise<boolean | string>
-      selectionSource?: {
-        allowSceneSelection?: boolean
-        allowCodeSelection?: boolean
-      }
     }
   | {
       inputType: 'kcl'

@@ -7,7 +7,7 @@ import { isCursorInSketchCommandRange } from '@src/lang/util'
 import type { Command } from '@src/lib/commandTypes'
 import { EXPERIMENTAL_POINT_AND_CLICK_FLAG } from '@src/lib/constants'
 import { selectSketchPlane } from '@src/lib/selectSketchPlane'
-import type { CommandBarContext } from '@src/machines/commandBarMachine'
+import type { UserFeaturesService } from '@src/machines/userFeaturesMachine'
 import type {
   ModelingMachineEvent,
   modelingMachine,
@@ -34,7 +34,6 @@ const SKETCH_TOOL_NONE: SketchTool = 'none'
 export { TOOLBAR_COMMAND_IDS }
 
 type ModelingState = StateFrom<typeof modelingMachine>
-type ToolbarCommandSubmit = { context: CommandBarContext }
 
 type ToolbarCommandConfig = {
   id: string
@@ -103,485 +102,466 @@ const createToolbarCommand = ({
   onSubmit,
 })
 
-// Temporary adapter between registry commands and the pre-registry modeling
-// runtime. Command submissions carry command bar context in `input`, including
-// the active KclManager while we wait for KclManager/modelingMachine to become
-// registry services. Once those services exist, toolbar commands should consume
-// them directly and this helper layer can go away.
-function getCommandBarContext(input: unknown): CommandBarContext | undefined {
-  return input &&
-    typeof input === 'object' &&
-    'context' in input &&
-    input.context &&
-    typeof input.context === 'object'
-    ? (input as ToolbarCommandSubmit).context
-    : undefined
-}
-
-function getKclManager(input: unknown): KclManager | undefined {
-  return getCommandBarContext(input)?.kclManager
-}
-
-function getUserFeatures(input: unknown): CommandBarContext['userFeatures'] {
-  return getCommandBarContext(input)?.userFeatures
-}
-
-function hasSketchExperimentalFeatures(input: unknown): boolean {
-  return (
-    getUserFeatures(input)?.has(EXPERIMENTAL_POINT_AND_CLICK_FLAG, false) ??
-    false
-  )
-}
-
-function getModelingState(input: unknown): ModelingState | undefined {
-  return getKclManager(input)?.modelingState ?? undefined
-}
-
-function sendModelingEvent(
-  input: unknown,
-  event: ModelingMachineEvent
-): true | Error {
-  const kclManager = getKclManager(input)
-
-  if (!kclManager?.modelingState) {
-    return new Error('No active modeling context')
+/** Shared command definitions use the current project editor at submission time. */
+export function createToolbarCommands(
+  getExecutingEditor: () => KclManager | undefined,
+  getUserFeatures: () => UserFeaturesService | undefined = () => undefined
+): readonly Command[] {
+  function hasSketchExperimentalFeatures(): boolean {
+    return (
+      getUserFeatures()?.has(EXPERIMENTAL_POINT_AND_CLICK_FLAG, false) ?? false
+    )
   }
 
-  kclManager.sendModelingEvent(event)
-  return true
-}
+  function getModelingState(): ModelingState | undefined {
+    return getExecutingEditor()?.modelingState ?? undefined
+  }
 
-function createLegacySketchToolCommand({
-  id,
-  displayName,
-  description,
-  icon,
-  tool,
-  isActive,
-}: LegacySketchToolCommand): Command {
-  return createToolbarCommand({
+  function sendModelingEvent(event: ModelingMachineEvent): true | Error {
+    const kclManager = getExecutingEditor()
+
+    if (!kclManager?.modelingState) {
+      return new Error('No active modeling context')
+    }
+
+    kclManager.sendModelingEvent(event)
+    return true
+  }
+
+  function createLegacySketchToolCommand({
     id,
     displayName,
     description,
-    icon,
-    scopes: [MODE_SKETCHING_COMMAND_SCOPE],
-    onSubmit: (input) => {
-      const state = getModelingState(input)
-      if (!state || state.matches('Sketch no face')) {
-        return
-      }
-
-      return sendModelingEvent(input, {
-        type: 'change tool',
-        data: { tool: isActive(state) ? SKETCH_TOOL_NONE : tool },
-      })
-    },
-  })
-}
-
-function createSketchSolveToolCommand({
-  id,
-  displayName,
-  description,
-  icon,
-  tool,
-  experimental = false,
-}: SketchSolveToolCommand): Command {
-  return createToolbarCommand({
-    id,
-    displayName,
-    description,
-    icon,
-    scopes: [MODE_SKETCH_SOLVE_COMMAND_SCOPE],
-    onSubmit: (input) => {
-      if (experimental && !hasSketchExperimentalFeatures(input)) {
-        return
-      }
-
-      return toggleSketchSolveTool(input, tool)
-    },
-  })
-}
-
-function createSketchSolveConstraintToolCommand({
-  id,
-  icon,
-  tool,
-}: SketchSolveConstraintToolCommand): Command {
-  const metadata = constraintToolMetadata[tool]
-
-  return createSketchSolveToolCommand({
-    id,
-    displayName: metadata.title,
-    description: metadata.description,
     icon,
     tool,
-  })
-}
+    isActive,
+  }: LegacySketchToolCommand): Command {
+    return createToolbarCommand({
+      id,
+      displayName,
+      description,
+      icon,
+      scopes: [MODE_SKETCHING_COMMAND_SCOPE],
+      onSubmit: () => {
+        const state = getModelingState()
+        if (!state || state.matches('Sketch no face')) {
+          return
+        }
 
-function toggleSketchSolveTool(input: unknown, tool: EquipTool) {
-  const state = getModelingState(input)
-  if (!state?.matches('sketchSolveMode')) {
-    return
-  }
-
-  return sendModelingEvent(
-    input,
-    state.context.sketchSolveToolName === tool
-      ? { type: 'unequip tool' }
-      : { type: 'equip tool', data: { tool } }
-  )
-}
-
-function createSketchSolveActionCommand({
-  id,
-  displayName,
-  description,
-  icon,
-  event,
-}: SketchSolveActionCommand): Command {
-  return createToolbarCommand({
-    id,
-    displayName,
-    description,
-    icon,
-    scopes: [MODE_SKETCH_SOLVE_COMMAND_SCOPE],
-    onSubmit: (input) => sendModelingEvent(input, { type: event }),
-  })
-}
-
-async function enterSketch(input: unknown) {
-  const kclManager = getKclManager(input)
-  const state = kclManager?.modelingState
-  if (!kclManager || !state) {
-    return new Error('No active modeling context')
-  }
-
-  const wasmInstance = await kclManager.wasmInstancePromise
-  const cursorSelection = state.context.selectionRanges.graphSelections[0]
-  const sketchPathId = isCursorInFunctionDefinition(
-    kclManager.ast,
-    cursorSelection,
-    wasmInstance
-  )
-    ? false
-    : isCursorInSketchCommandRange(
-        kclManager.artifactGraph,
-        state.context.selectionRanges
-      )
-  const isSketchBlock = isSketchBlockSelected(
-    state.context.selectionRanges,
-    state.context.kclManager.artifactGraph
-  )
-  const selectedSketchTarget = getSelectedSketchTarget(
-    state.context.selectionRanges
-  )
-
-  // Legacy KCL 1.0 sketch editing is no longer supported.
-  if (kclManager.editorView.hasFocus && sketchPathId && !isSketchBlock) {
-    return
-  }
-  if (isSketchBlock) {
-    return sendModelingEvent(input, { type: 'Enter sketch' })
-  }
-
-  if (!selectedSketchTarget) {
-    return sendModelingEvent(input, {
-      type: 'Enter sketch',
-      data: { forceNewSketch: true },
+        return sendModelingEvent({
+          type: 'change tool',
+          data: { tool: isActive(state) ? SKETCH_TOOL_NONE : tool },
+        })
+      },
     })
   }
 
-  const result = sendModelingEvent(input, {
-    type: 'Enter sketch',
-    data: {
-      forceNewSketch: true,
-      keepDefaultPlaneVisibility: true,
-    },
-  })
+  function createSketchSolveToolCommand({
+    id,
+    displayName,
+    description,
+    icon,
+    tool,
+    experimental = false,
+  }: SketchSolveToolCommand): Command {
+    return createToolbarCommand({
+      id,
+      displayName,
+      description,
+      icon,
+      scopes: [MODE_SKETCH_SOLVE_COMMAND_SCOPE],
+      onSubmit: () => {
+        if (experimental && !hasSketchExperimentalFeatures()) {
+          return
+        }
 
-  if (result instanceof Error) {
+        return toggleSketchSolveTool(tool)
+      },
+    })
+  }
+
+  function createSketchSolveConstraintToolCommand({
+    id,
+    icon,
+    tool,
+  }: SketchSolveConstraintToolCommand): Command {
+    const metadata = constraintToolMetadata[tool]
+
+    return createSketchSolveToolCommand({
+      id,
+      displayName: metadata.title,
+      description: metadata.description,
+      icon,
+      tool,
+    })
+  }
+
+  function toggleSketchSolveTool(tool: EquipTool) {
+    const state = getModelingState()
+    if (!state?.matches('sketchSolveMode')) {
+      return
+    }
+
+    return sendModelingEvent(
+      state.context.sketchSolveToolName === tool
+        ? { type: 'unequip tool' }
+        : { type: 'equip tool', data: { tool } }
+    )
+  }
+
+  function createSketchSolveActionCommand({
+    id,
+    displayName,
+    description,
+    icon,
+    event,
+  }: SketchSolveActionCommand): Command {
+    return createToolbarCommand({
+      id,
+      displayName,
+      description,
+      icon,
+      scopes: [MODE_SKETCH_SOLVE_COMMAND_SCOPE],
+      onSubmit: () => sendModelingEvent({ type: event }),
+    })
+  }
+
+  async function enterSketch() {
+    const kclManager = getExecutingEditor()
+    if (!kclManager?.modelingState) {
+      return new Error('No active modeling context')
+    }
+
+    const path = kclManager.path
+    const wasmInstance = await kclManager.wasmInstancePromise
+    if (getExecutingEditor() !== kclManager || kclManager.path !== path) return
+    const state = kclManager.modelingState
+    if (!state) return new Error('No active modeling context')
+    const cursorSelection = state.context.selectionRanges.graphSelections[0]
+    const sketchPathId = isCursorInFunctionDefinition(
+      kclManager.ast,
+      cursorSelection,
+      wasmInstance
+    )
+      ? false
+      : isCursorInSketchCommandRange(
+          kclManager.artifactGraph,
+          state.context.selectionRanges
+        )
+    const isSketchBlock = isSketchBlockSelected(
+      state.context.selectionRanges,
+      state.context.kclManager.artifactGraph
+    )
+    const selectedSketchTarget = getSelectedSketchTarget(
+      state.context.selectionRanges
+    )
+
+    // Legacy KCL 1.0 sketch editing is no longer supported.
+    if (kclManager.editorView.hasFocus && sketchPathId && !isSketchBlock) {
+      return
+    }
+    if (isSketchBlock) {
+      return sendModelingEvent({ type: 'Enter sketch' })
+    }
+
+    if (!selectedSketchTarget) {
+      return sendModelingEvent({
+        type: 'Enter sketch',
+        data: { forceNewSketch: true },
+      })
+    }
+
+    const result = sendModelingEvent({
+      type: 'Enter sketch',
+      data: {
+        forceNewSketch: true,
+        keepDefaultPlaneVisibility: true,
+      },
+    })
+
+    if (result instanceof Error) {
+      return result
+    }
+
+    void selectSketchPlane(
+      selectedSketchTarget,
+      state.context.store.useSketchSolveMode?.current,
+      kclManager
+    )
+
     return result
   }
 
-  void selectSketchPlane(
-    selectedSketchTarget,
-    state.context.store.useSketchSolveMode?.current,
-    kclManager
-  )
+  function exitSketch() {
+    const state = getModelingState()
 
-  return result
-}
+    if (state?.matches('Sketch') || state?.matches('Sketch no face')) {
+      return sendModelingEvent({ type: 'Cancel' })
+    }
 
-function exitSketch(input: unknown) {
-  const state = getModelingState(input)
-
-  if (state?.matches('Sketch') || state?.matches('Sketch no face')) {
-    return sendModelingEvent(input, { type: 'Cancel' })
+    if (state?.matches('sketchSolveMode')) {
+      return sendModelingEvent({ type: 'Exit sketch' })
+    }
   }
 
-  if (state?.matches('sketchSolveMode')) {
-    return sendModelingEvent(input, { type: 'Exit sketch' })
+  function cancelLegacySketchTool() {
+    const state = getModelingState()
+    if (!state?.matches('Sketch') || state.matches({ Sketch: 'SketchIdle' })) {
+      return
+    }
+
+    return sendModelingEvent({
+      type: 'change tool',
+      data: { tool: SKETCH_TOOL_NONE },
+    })
   }
+
+  return [
+    createToolbarCommand({
+      id: TOOLBAR_COMMAND_IDS.modeling.sketch,
+      displayName: 'Start or edit sketch',
+      description: 'Start drawing a 2D sketch.',
+      icon: 'sketch',
+      scopes: [MODE_MODELING_COMMAND_SCOPE],
+      onSubmit: enterSketch,
+    }),
+    createToolbarCommand({
+      id: TOOLBAR_COMMAND_IDS.sketching.exit,
+      displayName: 'Exit sketch',
+      description: 'Exit the current sketch.',
+      icon: 'arrowShortLeft',
+      scopes: [MODE_SKETCHING_COMMAND_SCOPE, MODE_SKETCH_NO_FACE_COMMAND_SCOPE],
+      onSubmit: exitSketch,
+    }),
+    createToolbarCommand({
+      id: TOOLBAR_COMMAND_IDS.sketching.cancelTool,
+      displayName: 'Cancel sketch tool',
+      description: 'Cancel the active sketch tool.',
+      scopes: [MODE_SKETCHING_COMMAND_SCOPE],
+      onSubmit: cancelLegacySketchTool,
+    }),
+    createLegacySketchToolCommand({
+      id: TOOLBAR_COMMAND_IDS.sketching.line,
+      displayName: 'Line',
+      description: 'Start drawing straight lines.',
+      icon: 'line',
+      tool: 'line',
+      isActive: (state) => state.matches({ Sketch: 'Line tool' }),
+    }),
+    createLegacySketchToolCommand({
+      id: TOOLBAR_COMMAND_IDS.sketching.threePointArc,
+      displayName: 'Three-Point Arc',
+      description: 'Draw a circular arc defined by three points.',
+      icon: 'arc',
+      tool: 'arcThreePoint',
+      isActive: (state) => state.matches({ Sketch: 'Arc three point tool' }),
+    }),
+    createLegacySketchToolCommand({
+      id: TOOLBAR_COMMAND_IDS.sketching.tangentialArc,
+      displayName: 'Tangential Arc',
+      description: 'Start drawing an arc tangent to the current segment.',
+      icon: 'arc',
+      tool: 'tangentialArc',
+      isActive: (state) => state.matches({ Sketch: 'Tangential arc to' }),
+    }),
+    createLegacySketchToolCommand({
+      id: TOOLBAR_COMMAND_IDS.sketching.circleCenter,
+      displayName: 'Center Circle',
+      description: 'Start drawing a circle from its center.',
+      icon: 'circle',
+      tool: 'circle',
+      isActive: (state) => state.matches({ Sketch: 'Circle tool' }),
+    }),
+    createLegacySketchToolCommand({
+      id: TOOLBAR_COMMAND_IDS.sketching.circleThreePoints,
+      displayName: '3-Point Circle',
+      description: 'Draw a circle defined by three points.',
+      icon: 'circle',
+      tool: 'circleThreePoint',
+      isActive: (state) => state.matches({ Sketch: 'Circle three point tool' }),
+    }),
+    createLegacySketchToolCommand({
+      id: TOOLBAR_COMMAND_IDS.sketching.cornerRectangle,
+      displayName: 'Corner Rectangle',
+      description: 'Start drawing a rectangle.',
+      icon: 'rectangle',
+      tool: 'rectangle',
+      isActive: (state) => state.matches({ Sketch: 'Rectangle tool' }),
+    }),
+    createLegacySketchToolCommand({
+      id: TOOLBAR_COMMAND_IDS.sketching.centerRectangle,
+      displayName: 'Center Rectangle',
+      description: 'Start drawing a rectangle from its center.',
+      icon: 'rectangle',
+      tool: 'center rectangle',
+      isActive: (state) => state.matches({ Sketch: 'Center Rectangle tool' }),
+    }),
+    createToolbarCommand({
+      id: TOOLBAR_COMMAND_IDS.sketchSolve.exit,
+      displayName: 'Exit sketch',
+      description: 'Exit the current sketch.',
+      icon: 'arrowShortLeft',
+      scopes: [MODE_SKETCH_SOLVE_COMMAND_SCOPE],
+      onSubmit: () => sendModelingEvent({ type: 'Exit sketch' }),
+    }),
+    createToolbarCommand({
+      id: TOOLBAR_COMMAND_IDS.sketchSolve.cancel,
+      displayName: 'Cancel sketch solve action',
+      description: 'Cancel the active sketch solve action.',
+      scopes: [MODE_SKETCH_SOLVE_COMMAND_SCOPE],
+      onSubmit: () => sendModelingEvent({ type: 'Cancel' }),
+    }),
+    createToolbarCommand({
+      id: TOOLBAR_COMMAND_IDS.sketchSolve.toolPicker,
+      displayName: 'Pick hovered sketch tool',
+      description:
+        'Equip the sketch tool matching the object under the cursor.',
+      scopes: [MODE_SKETCH_SOLVE_COMMAND_SCOPE],
+      onSubmit: () => sendModelingEvent({ type: 'pick hovered tool' }),
+    }),
+    createSketchSolveToolCommand({
+      id: TOOLBAR_COMMAND_IDS.sketchSolve.line,
+      displayName: 'Line',
+      description: 'Start drawing straight lines.',
+      icon: 'line',
+      tool: 'lineTool',
+    }),
+    createSketchSolveToolCommand({
+      id: TOOLBAR_COMMAND_IDS.sketchSolve.point,
+      displayName: 'Point',
+      description: 'Start drawing straight points.',
+      icon: 'oneDot',
+      tool: 'pointTool',
+    }),
+    createSketchSolveToolCommand({
+      id: TOOLBAR_COMMAND_IDS.sketchSolve.spline,
+      displayName: 'Spline',
+      description: 'Draw a control-point spline.',
+      icon: 'spline',
+      tool: 'splineTool',
+      experimental: true,
+    }),
+    createSketchSolveToolCommand({
+      id: TOOLBAR_COMMAND_IDS.sketchSolve.circleCenter,
+      displayName: 'Center Circle',
+      description: 'Draw a circle from a center point and radius.',
+      icon: 'circle',
+      tool: 'circleTool',
+    }),
+    createSketchSolveToolCommand({
+      id: TOOLBAR_COMMAND_IDS.sketchSolve.centerArc,
+      displayName: 'Center Arc',
+      description: 'Draw an arc by center and two endpoints.',
+      icon: 'arcCenter',
+      tool: 'centerArcTool',
+    }),
+    createSketchSolveToolCommand({
+      id: TOOLBAR_COMMAND_IDS.sketchSolve.threePointArc,
+      displayName: '3-Point Arc',
+      description: 'Draw an arc from start, end, and a third point.',
+      icon: 'arc',
+      tool: 'threePointArcTool',
+    }),
+    createSketchSolveToolCommand({
+      id: TOOLBAR_COMMAND_IDS.sketchSolve.tangentialArc,
+      displayName: 'Tangential Arc',
+      description: 'Draw an arc tangent to an existing line endpoint.',
+      icon: 'tangent',
+      tool: 'tangentialArcTool',
+    }),
+    createSketchSolveToolCommand({
+      id: TOOLBAR_COMMAND_IDS.sketchSolve.trim,
+      displayName: 'Trim',
+      description:
+        'Draw a trimming line through parts of segments to be removed.',
+      icon: 'trimTool',
+      tool: 'trimTool',
+    }),
+    createSketchSolveToolCommand({
+      id: TOOLBAR_COMMAND_IDS.sketchSolve.cornerRectangle,
+      displayName: 'Corner Rectangle',
+      description: 'Start drawing a rectangle.',
+      icon: 'rectangle',
+      tool: 'cornerRectTool',
+    }),
+    createSketchSolveToolCommand({
+      id: TOOLBAR_COMMAND_IDS.sketchSolve.centerRectangle,
+      displayName: 'Center Rectangle',
+      description: 'Start drawing a rectangle from its center.',
+      icon: 'rectangleCenter',
+      tool: 'centerRectTool',
+    }),
+    createSketchSolveToolCommand({
+      id: TOOLBAR_COMMAND_IDS.sketchSolve.angledRectangle,
+      displayName: 'Angled Rectangle',
+      description: 'Draw a rotated rectangle with three clicks.',
+      icon: 'rectangleAngled',
+      tool: 'angledRectTool',
+    }),
+    createSketchSolveConstraintToolCommand({
+      id: TOOLBAR_COMMAND_IDS.sketchSolve.coincident,
+      icon: 'coincident',
+      tool: 'coincidentConstraintTool',
+    }),
+    createSketchSolveConstraintToolCommand({
+      id: TOOLBAR_COMMAND_IDS.sketchSolve.midpoint,
+      icon: 'midpoint',
+      tool: 'midpointConstraintTool',
+    }),
+    createSketchSolveConstraintToolCommand({
+      id: TOOLBAR_COMMAND_IDS.sketchSolve.tangent,
+      icon: 'tangent',
+      tool: 'tangentConstraintTool',
+    }),
+    createSketchSolveConstraintToolCommand({
+      id: TOOLBAR_COMMAND_IDS.sketchSolve.parallel,
+      icon: 'parallel',
+      tool: 'parallelConstraintTool',
+    }),
+    createSketchSolveConstraintToolCommand({
+      id: TOOLBAR_COMMAND_IDS.sketchSolve.perpendicular,
+      icon: 'perpendicular',
+      tool: 'perpendicularConstraintTool',
+    }),
+    createSketchSolveConstraintToolCommand({
+      id: TOOLBAR_COMMAND_IDS.sketchSolve.equal,
+      icon: 'equal',
+      tool: 'equalLengthConstraintTool',
+    }),
+    createSketchSolveConstraintToolCommand({
+      id: TOOLBAR_COMMAND_IDS.sketchSolve.symmetric,
+      icon: 'symmetric',
+      tool: 'symmetricConstraintTool',
+    }),
+    createSketchSolveConstraintToolCommand({
+      id: TOOLBAR_COMMAND_IDS.sketchSolve.vertical,
+      icon: 'vertical',
+      tool: 'verticalConstraintTool',
+    }),
+    createSketchSolveConstraintToolCommand({
+      id: TOOLBAR_COMMAND_IDS.sketchSolve.horizontal,
+      icon: 'horizontal',
+      tool: 'horizontalConstraintTool',
+    }),
+    createSketchSolveConstraintToolCommand({
+      id: TOOLBAR_COMMAND_IDS.sketchSolve.fixed,
+      icon: 'fix',
+      tool: 'fixedConstraintTool',
+    }),
+    createSketchSolveActionCommand({
+      id: TOOLBAR_COMMAND_IDS.sketchSolve.dimension,
+      displayName: 'Dimension',
+      description:
+        'Constrain distance between points, length of lines, or radius of arcs.',
+      icon: 'dimension',
+      event: 'Dimension',
+    }),
+    createSketchSolveActionCommand({
+      id: TOOLBAR_COMMAND_IDS.sketchSolve.construction,
+      displayName: 'Construction',
+      description: 'Toggle construction geometry on selected segments.',
+      icon: 'construction',
+      event: 'construction',
+    }),
+  ]
 }
-
-function cancelLegacySketchTool(input: unknown) {
-  const state = getModelingState(input)
-  if (!state?.matches('Sketch') || state.matches({ Sketch: 'SketchIdle' })) {
-    return
-  }
-
-  return sendModelingEvent(input, {
-    type: 'change tool',
-    data: { tool: SKETCH_TOOL_NONE },
-  })
-}
-
-export const toolbarCommands: readonly Command[] = [
-  createToolbarCommand({
-    id: TOOLBAR_COMMAND_IDS.modeling.sketch,
-    displayName: 'Start or edit sketch',
-    description: 'Start drawing a 2D sketch.',
-    icon: 'sketch',
-    scopes: [MODE_MODELING_COMMAND_SCOPE],
-    onSubmit: enterSketch,
-  }),
-  createToolbarCommand({
-    id: TOOLBAR_COMMAND_IDS.sketching.exit,
-    displayName: 'Exit sketch',
-    description: 'Exit the current sketch.',
-    icon: 'arrowShortLeft',
-    scopes: [MODE_SKETCHING_COMMAND_SCOPE, MODE_SKETCH_NO_FACE_COMMAND_SCOPE],
-    onSubmit: exitSketch,
-  }),
-  createToolbarCommand({
-    id: TOOLBAR_COMMAND_IDS.sketching.cancelTool,
-    displayName: 'Cancel sketch tool',
-    description: 'Cancel the active sketch tool.',
-    scopes: [MODE_SKETCHING_COMMAND_SCOPE],
-    onSubmit: cancelLegacySketchTool,
-  }),
-  createLegacySketchToolCommand({
-    id: TOOLBAR_COMMAND_IDS.sketching.line,
-    displayName: 'Line',
-    description: 'Start drawing straight lines.',
-    icon: 'line',
-    tool: 'line',
-    isActive: (state) => state.matches({ Sketch: 'Line tool' }),
-  }),
-  createLegacySketchToolCommand({
-    id: TOOLBAR_COMMAND_IDS.sketching.threePointArc,
-    displayName: 'Three-Point Arc',
-    description: 'Draw a circular arc defined by three points.',
-    icon: 'arc',
-    tool: 'arcThreePoint',
-    isActive: (state) => state.matches({ Sketch: 'Arc three point tool' }),
-  }),
-  createLegacySketchToolCommand({
-    id: TOOLBAR_COMMAND_IDS.sketching.tangentialArc,
-    displayName: 'Tangential Arc',
-    description: 'Start drawing an arc tangent to the current segment.',
-    icon: 'arc',
-    tool: 'tangentialArc',
-    isActive: (state) => state.matches({ Sketch: 'Tangential arc to' }),
-  }),
-  createLegacySketchToolCommand({
-    id: TOOLBAR_COMMAND_IDS.sketching.circleCenter,
-    displayName: 'Center Circle',
-    description: 'Start drawing a circle from its center.',
-    icon: 'circle',
-    tool: 'circle',
-    isActive: (state) => state.matches({ Sketch: 'Circle tool' }),
-  }),
-  createLegacySketchToolCommand({
-    id: TOOLBAR_COMMAND_IDS.sketching.circleThreePoints,
-    displayName: '3-Point Circle',
-    description: 'Draw a circle defined by three points.',
-    icon: 'circle',
-    tool: 'circleThreePoint',
-    isActive: (state) => state.matches({ Sketch: 'Circle three point tool' }),
-  }),
-  createLegacySketchToolCommand({
-    id: TOOLBAR_COMMAND_IDS.sketching.cornerRectangle,
-    displayName: 'Corner Rectangle',
-    description: 'Start drawing a rectangle.',
-    icon: 'rectangle',
-    tool: 'rectangle',
-    isActive: (state) => state.matches({ Sketch: 'Rectangle tool' }),
-  }),
-  createLegacySketchToolCommand({
-    id: TOOLBAR_COMMAND_IDS.sketching.centerRectangle,
-    displayName: 'Center Rectangle',
-    description: 'Start drawing a rectangle from its center.',
-    icon: 'rectangle',
-    tool: 'center rectangle',
-    isActive: (state) => state.matches({ Sketch: 'Center Rectangle tool' }),
-  }),
-  createToolbarCommand({
-    id: TOOLBAR_COMMAND_IDS.sketchSolve.exit,
-    displayName: 'Exit sketch',
-    description: 'Exit the current sketch.',
-    icon: 'arrowShortLeft',
-    scopes: [MODE_SKETCH_SOLVE_COMMAND_SCOPE],
-    onSubmit: (input) => sendModelingEvent(input, { type: 'Exit sketch' }),
-  }),
-  createToolbarCommand({
-    id: TOOLBAR_COMMAND_IDS.sketchSolve.cancel,
-    displayName: 'Cancel sketch solve action',
-    description: 'Cancel the active sketch solve action.',
-    scopes: [MODE_SKETCH_SOLVE_COMMAND_SCOPE],
-    onSubmit: (input) => sendModelingEvent(input, { type: 'Cancel' }),
-  }),
-  createToolbarCommand({
-    id: TOOLBAR_COMMAND_IDS.sketchSolve.toolPicker,
-    displayName: 'Pick hovered sketch tool',
-    description: 'Equip the sketch tool matching the object under the cursor.',
-    scopes: [MODE_SKETCH_SOLVE_COMMAND_SCOPE],
-    onSubmit: (input) =>
-      sendModelingEvent(input, { type: 'pick hovered tool' }),
-  }),
-  createSketchSolveToolCommand({
-    id: TOOLBAR_COMMAND_IDS.sketchSolve.line,
-    displayName: 'Line',
-    description: 'Start drawing straight lines.',
-    icon: 'line',
-    tool: 'lineTool',
-  }),
-  createSketchSolveToolCommand({
-    id: TOOLBAR_COMMAND_IDS.sketchSolve.point,
-    displayName: 'Point',
-    description: 'Start drawing straight points.',
-    icon: 'oneDot',
-    tool: 'pointTool',
-  }),
-  createSketchSolveToolCommand({
-    id: TOOLBAR_COMMAND_IDS.sketchSolve.spline,
-    displayName: 'Spline',
-    description: 'Draw a control-point spline.',
-    icon: 'spline',
-    tool: 'splineTool',
-    experimental: true,
-  }),
-  createSketchSolveToolCommand({
-    id: TOOLBAR_COMMAND_IDS.sketchSolve.circleCenter,
-    displayName: 'Center Circle',
-    description: 'Draw a circle from a center point and radius.',
-    icon: 'circle',
-    tool: 'circleTool',
-  }),
-  createSketchSolveToolCommand({
-    id: TOOLBAR_COMMAND_IDS.sketchSolve.centerArc,
-    displayName: 'Center Arc',
-    description: 'Draw an arc by center and two endpoints.',
-    icon: 'arcCenter',
-    tool: 'centerArcTool',
-  }),
-  createSketchSolveToolCommand({
-    id: TOOLBAR_COMMAND_IDS.sketchSolve.threePointArc,
-    displayName: '3-Point Arc',
-    description: 'Draw an arc from start, end, and a third point.',
-    icon: 'arc',
-    tool: 'threePointArcTool',
-  }),
-  createSketchSolveToolCommand({
-    id: TOOLBAR_COMMAND_IDS.sketchSolve.tangentialArc,
-    displayName: 'Tangential Arc',
-    description: 'Draw an arc tangent to an existing line endpoint.',
-    icon: 'tangent',
-    tool: 'tangentialArcTool',
-  }),
-  createSketchSolveToolCommand({
-    id: TOOLBAR_COMMAND_IDS.sketchSolve.trim,
-    displayName: 'Trim',
-    description:
-      'Draw a trimming line through parts of segments to be removed.',
-    icon: 'trimTool',
-    tool: 'trimTool',
-  }),
-  createSketchSolveToolCommand({
-    id: TOOLBAR_COMMAND_IDS.sketchSolve.cornerRectangle,
-    displayName: 'Corner Rectangle',
-    description: 'Start drawing a rectangle.',
-    icon: 'rectangle',
-    tool: 'cornerRectTool',
-  }),
-  createSketchSolveToolCommand({
-    id: TOOLBAR_COMMAND_IDS.sketchSolve.centerRectangle,
-    displayName: 'Center Rectangle',
-    description: 'Start drawing a rectangle from its center.',
-    icon: 'rectangleCenter',
-    tool: 'centerRectTool',
-  }),
-  createSketchSolveToolCommand({
-    id: TOOLBAR_COMMAND_IDS.sketchSolve.angledRectangle,
-    displayName: 'Angled Rectangle',
-    description: 'Draw a rotated rectangle with three clicks.',
-    icon: 'rectangleAngled',
-    tool: 'angledRectTool',
-  }),
-  createSketchSolveConstraintToolCommand({
-    id: TOOLBAR_COMMAND_IDS.sketchSolve.coincident,
-    icon: 'coincident',
-    tool: 'coincidentConstraintTool',
-  }),
-  createSketchSolveConstraintToolCommand({
-    id: TOOLBAR_COMMAND_IDS.sketchSolve.midpoint,
-    icon: 'midpoint',
-    tool: 'midpointConstraintTool',
-  }),
-  createSketchSolveConstraintToolCommand({
-    id: TOOLBAR_COMMAND_IDS.sketchSolve.tangent,
-    icon: 'tangent',
-    tool: 'tangentConstraintTool',
-  }),
-  createSketchSolveConstraintToolCommand({
-    id: TOOLBAR_COMMAND_IDS.sketchSolve.parallel,
-    icon: 'parallel',
-    tool: 'parallelConstraintTool',
-  }),
-  createSketchSolveConstraintToolCommand({
-    id: TOOLBAR_COMMAND_IDS.sketchSolve.perpendicular,
-    icon: 'perpendicular',
-    tool: 'perpendicularConstraintTool',
-  }),
-  createSketchSolveConstraintToolCommand({
-    id: TOOLBAR_COMMAND_IDS.sketchSolve.equal,
-    icon: 'equal',
-    tool: 'equalLengthConstraintTool',
-  }),
-  createSketchSolveConstraintToolCommand({
-    id: TOOLBAR_COMMAND_IDS.sketchSolve.symmetric,
-    icon: 'symmetric',
-    tool: 'symmetricConstraintTool',
-  }),
-  createSketchSolveConstraintToolCommand({
-    id: TOOLBAR_COMMAND_IDS.sketchSolve.vertical,
-    icon: 'vertical',
-    tool: 'verticalConstraintTool',
-  }),
-  createSketchSolveConstraintToolCommand({
-    id: TOOLBAR_COMMAND_IDS.sketchSolve.horizontal,
-    icon: 'horizontal',
-    tool: 'horizontalConstraintTool',
-  }),
-  createSketchSolveConstraintToolCommand({
-    id: TOOLBAR_COMMAND_IDS.sketchSolve.fixed,
-    icon: 'fix',
-    tool: 'fixedConstraintTool',
-  }),
-  createSketchSolveActionCommand({
-    id: TOOLBAR_COMMAND_IDS.sketchSolve.dimension,
-    displayName: 'Dimension',
-    description:
-      'Constrain distance between points, length of lines, or radius of arcs.',
-    icon: 'dimension',
-    event: 'Dimension',
-  }),
-  createSketchSolveActionCommand({
-    id: TOOLBAR_COMMAND_IDS.sketchSolve.construction,
-    displayName: 'Construction',
-    description: 'Toggle construction geometry on selected segments.',
-    icon: 'construction',
-    event: 'construction',
-  }),
-]
