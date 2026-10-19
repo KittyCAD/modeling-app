@@ -49,8 +49,8 @@ export interface ValueSpec<Input, Output> {
 declare const serviceType: unique symbol
 
 /**
- * A Service is a named capability exposed by one registry item for other
- * registry items to consume.
+ * A Service is a named capability with exactly one active provider per registry.
+ * Other registry items consume the capability through its shared token.
  *
  * Services are the capability / dependency-injection layer. They usually wrap
  * stable objects whose fields may include readonly Preact signals and methods.
@@ -60,7 +60,7 @@ export interface Service<T> {
   readonly [serviceType]?: T
   readonly id: symbol
   readonly name: string
-  readonly multiple: boolean
+  readonly kind: 'service'
 }
 
 /**
@@ -219,7 +219,6 @@ export interface DebugValueSpecItem {
 export interface DebugServiceItem {
   readonly serviceName: string
   readonly sourcePath: string
-  readonly multiple: boolean
 }
 
 /**

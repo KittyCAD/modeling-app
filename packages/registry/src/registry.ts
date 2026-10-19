@@ -68,17 +68,16 @@ interface FlattenResult {
   readonly slots: ReadonlyMap<symbol, readonly RegistryItem[]>
 }
 
-/** Singleton provider selection is explicit; graph order never selects an implementation. */
-function assertSingletonProvider(
+/** Service provider selection is explicit; graph order never selects an implementation. */
+function assertServiceProvider(
   matches: readonly FlattenedServiceContribution[]
 ): void {
   const service = matches[0]?.service
-  if (!service || service.multiple || matches.length < 2) return
+  if (!service || matches.length < 2) return
   throw new ServiceConflictError(
     `Service ${service.name} has ${matches.length} providers (${matches
       .map((item) => item.sourcePath)
-      .join(', ')}). ` +
-      'Singleton services must have exactly one active provider.'
+      .join(', ')}). ` + 'Services must have exactly one active provider.'
   )
 }
 
@@ -122,7 +121,7 @@ interface RegistryGraphNode {
 function isServiceDefinition(
   arg: Service<unknown> | ValueSpec<unknown, unknown>
 ): arg is Service<unknown> {
-  return 'multiple' in arg
+  return 'kind' in arg
 }
 
 /**
@@ -298,7 +297,7 @@ export class Registry implements ValueSpecReader, ServiceReader {
         matches.push(contribution)
         providers.set(contribution.service.id, matches)
       }
-      for (const matches of providers.values()) assertSingletonProvider(matches)
+      for (const matches of providers.values()) assertServiceProvider(matches)
 
       this.reconcileRuntimeInstances(runtimeKeys, previousInstances)
       return { contributions, serviceContributions, slots }
@@ -465,7 +464,6 @@ export class Registry implements ValueSpecReader, ServiceReader {
       return matching.map((item) => ({
         serviceName: service.name,
         sourcePath: item.sourcePath,
-        multiple: service.multiple,
       }))
     })
 
@@ -500,7 +498,7 @@ export class Registry implements ValueSpecReader, ServiceReader {
    * Guards enforced here:
    * - no eager service reads while building the registry graph
    * - no recursive resolution cycles
-   * - singleton services must have exactly one provider
+   * - services must have exactly one provider
    * - exposed services are sanitized before being returned
    */
   private resolveService<T>(service: Service<T>): T | undefined {
@@ -533,24 +531,7 @@ export class Registry implements ValueSpecReader, ServiceReader {
       const matches = providers.filter((item) => item.service.id === service.id)
       if (matches.length === 0) return undefined
 
-      assertSingletonProvider(matches)
-
-      if (service.multiple) {
-        return Object.freeze(
-          matches.map((item) => {
-            if (
-              !item.implementation ||
-              typeof item.implementation !== 'object'
-            ) {
-              throw new ServiceResolutionError(
-                `Service ${service.name} must be provided by an object so Preact signals and methods can be protected.`
-              )
-            }
-
-            return this.sanitizeService(service, item.implementation)
-          })
-        ) as unknown as T
-      }
+      assertServiceProvider(matches)
 
       const provider = matches[0]?.implementation
       if (!provider || typeof provider !== 'object') {

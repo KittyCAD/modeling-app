@@ -138,7 +138,7 @@ export const settingsValueSpec = mergeObjectsValueSpec<AppSettings>(
 /**
  * Services are the dependency-injection layer.
  *
- * Unlike value specs, services are usually singleton capabilities that other
+ * Unlike value specs, services are single-provider capabilities that other
  * registry items read lazily from the registry.
  */
 export const searchService = defineService<SearchService>('search')

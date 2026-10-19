@@ -127,7 +127,7 @@ describe('constructor dependency reads', () => {
     expect(() => registry.inspect()).toThrow(ServiceResolutionError)
   })
 
-  it('rejects an unrelated second singleton provider in every root order', () => {
+  it('rejects an unrelated second service provider in every root order', () => {
     const source = defineService<{ name: string }>('source')
     const output = defineService<{ name: string }>('output')
     const production = {

@@ -139,10 +139,10 @@ That keeps contracts close to the registry layer while still avoiding a single
 ## Capabilities and Composition
 
 Use a service for an owned capability: a filesystem implementation, runtime instance,
-or external connection. A singleton service has one active provider. The registry
-checks the complete graph for duplicate singleton providers before committing it,
-even if consumers only read the service through a declared constructor scope.
-Contracts that explicitly opt into multiple providers remain supported.
+or external connection. A service has exactly one active provider per registry. The registry checks the
+complete graph for duplicate providers before committing it, even if consumers only
+read the service through a declared constructor scope. Collections of contributions
+belong in ValueSpecs.
 
 Use a ValueSpec when multiple contributions have domain meaning: command collections,
 keymaps, or configuration layers with explicit precedence. First-wins or last-wins
@@ -236,7 +236,7 @@ The named item/token contribution checks above still apply.
 Constructor reads wire stable capabilities into models. A service read chooses an
 implementation; it does not clone the service or freeze its internal state. It also
 does not wait for asynchronous provider initialization. Unrelated roots cannot override
-the declared capability, and an extra singleton provider elsewhere fails the complete
+the declared capability, and an extra service provider elsewhere fails the complete
 graph's uniqueness check.
 
 ValueSpecs are composed across the complete graph and cannot be read during

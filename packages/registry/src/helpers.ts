@@ -210,7 +210,7 @@ export function defineRegistryItemFactory<D extends RegistryDependencies>(
           const inputs = Object.fromEntries(
             Object.entries(dependencies).map(([name, { token }]) => [
               name,
-              'multiple' in token
+              'kind' in token
                 ? computed(() => ctx.container.get(token))
                 : ctx.valueSpecs.signal(token),
             ])
@@ -224,7 +224,7 @@ export function defineRegistryItemFactory<D extends RegistryDependencies>(
               )
             }
             const { token } = dependency
-            if (!('multiple' in token)) {
+            if (!('kind' in token)) {
               throw new RegistryDependencyError(
                 `Dependency "${String(name)}" is a ValueSpec. Read its live input after construction.`
               )

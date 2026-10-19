@@ -184,7 +184,7 @@ describe('services', () => {
     expect(dispose).toHaveBeenCalledTimes(2)
   })
 
-  it('resolves singleton services and exposes readonly Preact signal fields', () => {
+  it('resolves services and exposes readonly Preact signal fields', () => {
     const searchService = defineService<{
       query: { readonly value: string }
       setQuery(v: string): void
@@ -219,7 +219,7 @@ describe('services', () => {
     expect(() => container.get(service)).toThrow(MissingServiceError)
   })
 
-  it('throws for conflicting singleton services', () => {
+  it('rejects multiple providers for one service', () => {
     const service = defineService<{ id: string }>('workspace')
     const container = new Registry()
     container.configure([
@@ -461,7 +461,6 @@ describe('services', () => {
       {
         serviceName: 'workspace',
         sourcePath: 'root[0]',
-        multiple: false,
       },
     ])
   })

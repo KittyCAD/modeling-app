@@ -6,7 +6,7 @@ export class RegistryError extends Error {
   }
 }
 
-/** Thrown when a singleton service has more than one provider. */
+/** Thrown when a service has more than one provider. */
 export class ServiceConflictError extends RegistryError {}
 
 /** Thrown when a required service cannot be resolved. */
