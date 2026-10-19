@@ -293,6 +293,9 @@ fn plane(artifact_id: ArtifactId) -> Artifact {
         id: artifact_id,
         path_ids: Vec::new(),
         code_ref: Default::default(),
+        plane_info: None,
+        size: None,
+        hidden: false,
     })
 }
 
@@ -708,6 +711,9 @@ fn only_standalone_graph_planes_enter_visibility() {
                 id: id(2),
                 path_ids: vec![id(5)],
                 code_ref: Default::default(),
+                plane_info: None,
+                size: None,
+                hidden: false,
             }),
             Artifact::PlaneOfFace(PlaneOfFace {
                 id: id(3),
