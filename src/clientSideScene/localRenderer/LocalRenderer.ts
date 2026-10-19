@@ -824,14 +824,7 @@ export class LocalRenderer {
     }
 
     renderer.setDrawingBufferSize(width, height, window.devicePixelRatio)
-    if (this.previewCamera instanceof PerspectiveCamera) {
-      this.previewCamera.aspect = width / height
-      this.previewCamera.updateProjectionMatrix()
-    } else {
-      this.syncPreviewCameraFromShared()
-    }
-    this.gpu?.integerIdPicker.invalidate()
-    this.invalidateBaseRender()
+    this.syncPreviewCameraFromShared()
   }
 
   private clearModel() {
