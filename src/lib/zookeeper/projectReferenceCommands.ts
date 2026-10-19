@@ -40,6 +40,7 @@ type ClientCommandRequest = {
 export interface ProjectReferenceCommandTransport {
   advertise(ws: WebSocket): void
   handleRequest(ws: WebSocket, message: unknown): boolean
+  setEnabled(enabled: boolean): void
 }
 
 const commands = [
@@ -162,10 +163,25 @@ export function createProjectReferenceCommands(deps: {
   entries: ReadonlySignal<readonly HomeProjectEntry[]>
   fileOperations: FileOperationsRegistryService
   getApiToken: () => string
+  enabled?: boolean
 }): ProjectReferenceCommandTransport {
   const projectIds = new Map<string, string>()
   const projectKeys = new Map<string, string>()
   const pending = new Map<string, Promise<unknown>>()
+  let enabled = deps.enabled ?? true
+  let revision = 1
+  let activeSocket: WebSocket | undefined
+
+  function sendCatalog(ws: WebSocket, advertisedCommands: readonly unknown[]) {
+    ws.send(
+      JSON.stringify({
+        type: 'update_client_command_schema',
+        protocol_version: 1,
+        revision,
+        commands: advertisedCommands,
+      })
+    )
+  }
 
   function resolveProject(projectId: unknown): HomeProjectEntry | undefined {
     if (typeof projectId !== 'string') {
@@ -486,7 +502,7 @@ export function createProjectReferenceCommands(deps: {
   }
 
   function execute(request: ClientCommandRequest): Promise<unknown> {
-    if (request.catalog_revision !== 1) {
+    if (!enabled || request.catalog_revision !== revision) {
       return Promise.reject(
         new ProjectReferenceCommandError('The command catalog changed.')
       )
@@ -507,14 +523,20 @@ export function createProjectReferenceCommands(deps: {
 
   return {
     advertise(ws) {
-      ws.send(
-        JSON.stringify({
-          type: 'update_client_command_schema',
-          protocol_version: 1,
-          revision: 1,
-          commands,
-        })
-      )
+      activeSocket = ws
+      if (enabled) {
+        sendCatalog(ws, commands)
+      }
+    },
+    setEnabled(nextEnabled) {
+      if (enabled === nextEnabled) {
+        return
+      }
+      enabled = nextEnabled
+      revision += 1
+      if (activeSocket?.readyState === WebSocket.OPEN) {
+        sendCatalog(activeSocket, enabled ? commands : [])
+      }
     },
     handleRequest(ws, message) {
       const request = parseRequest(message)
@@ -533,6 +555,18 @@ export function createProjectReferenceCommands(deps: {
       void task.then(
         (result) => {
           if (ws.readyState !== WebSocket.OPEN) {
+            return
+          }
+          if (!enabled || request.catalog_revision !== revision) {
+            ws.send(
+              JSON.stringify({
+                type: 'client_command_response',
+                request_id: request.request_id,
+                catalog_revision: request.catalog_revision,
+                status: 'rejected',
+                error: 'The command catalog changed.',
+              })
+            )
             return
           }
           ws.send(

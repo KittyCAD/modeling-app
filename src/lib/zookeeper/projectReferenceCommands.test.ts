@@ -50,6 +50,7 @@ function fixture(
   options: {
     initialEntries?: HomeProjectEntry[]
     fileOperations?: FileOperationsRegistryService
+    enabled?: boolean
   } = {}
 ) {
   const entries = signal<readonly HomeProjectEntry[]>(
@@ -105,15 +106,20 @@ function fixture(
     entries,
     fileOperations: options.fileOperations ?? fileOperations,
     getApiToken: () => 'token',
+    enabled: options.enabled,
   })
   let nextRequest = 0
-  async function request(commandId: string, args: Record<string, unknown>) {
+  async function request(
+    commandId: string,
+    args: Record<string, unknown>,
+    catalogRevision = 1
+  ) {
     const requestId = `request-${++nextRequest}`
     expect(
       commands.handleRequest(ws, {
         client_command_request: {
           request_id: requestId,
-          catalog_revision: 1,
+          catalog_revision: catalogRevision,
           command_id: commandId,
           arguments: args,
         },
@@ -176,6 +182,38 @@ describe('Zookeeper project reference commands', () => {
     ])
     expect(JSON.stringify(projects)).not.toContain('/private/library')
     expect(JSON.stringify(projects)).not.toContain('cloud-123')
+  })
+
+  it('updates the live catalog without returning results from a disabled revision', async () => {
+    const { commands, readDirectory, request, sent, ws } = fixture({
+      enabled: false,
+    })
+    commands.advertise(ws)
+    expect(sent).toHaveLength(0)
+
+    commands.setEnabled(true)
+    expect(sent[0]).toMatchObject({
+      type: 'update_client_command_schema',
+      revision: 2,
+    })
+    expect((sent[0].commands as unknown[]).length).toBe(3)
+
+    const found = await request('projects.search', { query: 'TRUCK' }, 2)
+    const projectId = (
+      found.result?.projects as Array<{ project_id: string }>
+    )[0].project_id
+    let finishRead!: (names: readonly string[]) => void
+    const pausedRead = new Promise<readonly string[]>((resolve) => {
+      finishRead = resolve
+    })
+    readDirectory.mockImplementationOnce(() => pausedRead)
+    const listing = request('projects.list_files', { project_id: projectId }, 2)
+    await vi.waitFor(() => expect(readDirectory).toHaveBeenCalledOnce())
+
+    commands.setEnabled(false)
+    expect(sent.find((frame) => frame.revision === 3)?.commands).toEqual([])
+    finishRead(['main.kcl'])
+    expect((await listing).error).toBe('The command catalog changed.')
   })
 
   it('finds projects beyond the first page of library results', async () => {

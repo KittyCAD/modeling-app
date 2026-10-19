@@ -258,7 +258,6 @@ export function createZookeeperRuntime(
       activation &&
       (activation.projectPath !== projectPath ||
         activation.projectId !== projectId ||
-        activation.clientCommandsEnabled !== clientCommandsEnabled ||
         (kclManager !== null &&
           kclManager !== undefined &&
           activation.kclManager !== kclManager))
@@ -274,6 +273,12 @@ export function createZookeeperRuntime(
       if (!isLoggedIn) {
         deactivate()
         return
+      }
+      if (currentActivation.clientCommandsEnabled !== clientCommandsEnabled) {
+        currentActivation.clientCommandsEnabled = clientCommandsEnabled
+        currentActivation.controller?.updateClientCommandsEnabled(
+          clientCommandsEnabled
+        )
       }
       if (currentActivation.apiToken !== apiToken) {
         currentActivation.apiToken = apiToken
@@ -318,15 +323,14 @@ export function createZookeeperRuntime(
         const controller = createZookeeperSessionController({
           apiToken: next.apiToken,
           billing,
+          clientCommandsEnabled: next.clientCommandsEnabled,
           conversationStore: makeProjectZookeeperConversationStore(
             fileOperations,
             next.projectPath,
             getEnvironmentNameFromEnv(env())
           ),
           fileOperations,
-          libraryProjects: next.clientCommandsEnabled
-            ? services.libraryProjects
-            : undefined,
+          libraryProjects: services.libraryProjects,
           kclManager: next.kclManager,
           project: next.project,
           projectId: next.projectId,

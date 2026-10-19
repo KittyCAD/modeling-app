@@ -9,7 +9,10 @@ import { type ZDSProject } from '@src/lib/projectSession'
 import { BillingTransition } from '@src/lib/billing'
 import type { BillingRegistryService } from '@src/lib/billing/registry/contract'
 import { getParentAbsolutePath } from '@src/lib/paths'
-import { createProjectReferenceCommands } from '@src/lib/zookeeper/projectReferenceCommands'
+import {
+  createProjectReferenceCommands,
+  type ProjectReferenceCommandTransport,
+} from '@src/lib/zookeeper/projectReferenceCommands'
 import type { Project } from '@src/lib/project'
 import { reportRejection, trap } from '@src/lib/trap'
 import { ZookeeperEditPatchHistory } from '@src/lib/zookeeper/registry/ZookeeperEditPatchHistory'
@@ -39,6 +42,7 @@ export interface ZookeeperSessionControllerDependencies {
   apiToken: string
   billing: BillingRegistryService
   conversationStore: ZookeeperConversationStore
+  clientCommandsEnabled: boolean
   fileOperations: FileOperationsRegistryService
   libraryProjects?: ReadonlySignal<readonly HomeProjectEntry[]>
   kclManager: KclManager
@@ -76,6 +80,7 @@ export interface ZookeeperSessionController {
   ): void
   steer(id: string): void
   updateAuthToken(apiToken: string): void
+  updateClientCommandsEnabled(enabled: boolean): void
 }
 
 type ZookeeperSnapshot = SnapshotFrom<ZookeeperManagerActor>
@@ -127,21 +132,21 @@ class SessionController implements ZookeeperSessionController {
 
   private readonly history: ZookeeperEditPatchHistory
   private readonly fileRequestProcessor: ZookeeperFileRequestProcessor
+  private readonly clientCommands: ProjectReferenceCommandTransport | undefined
 
   constructor(private readonly deps: ZookeeperSessionControllerDependencies) {
     this.apiToken = deps.apiToken
     this.projectId = deps.projectId
     this.projectPath = deps.projectPath
-    this.actor = deps.libraryProjects
-      ? createZookeeperManagerActor(
-          deps.apiToken,
-          createProjectReferenceCommands({
-            entries: deps.libraryProjects,
-            fileOperations: deps.fileOperations,
-            getApiToken: () => this.apiToken,
-          })
-        )
-      : createZookeeperManagerActor(deps.apiToken)
+    this.clientCommands = deps.libraryProjects
+      ? createProjectReferenceCommands({
+          entries: deps.libraryProjects,
+          fileOperations: deps.fileOperations,
+          getApiToken: () => this.apiToken,
+          enabled: deps.clientCommandsEnabled,
+        })
+      : undefined
+    this.actor = createZookeeperManagerActor(deps.apiToken, this.clientCommands)
     this.history = new ZookeeperEditPatchHistory(
       deps.kclManager,
       deps.fileOperations
@@ -231,6 +236,13 @@ class SessionController implements ZookeeperSessionController {
       type: ZookeeperManagerTransitions.AuthTokenChanged,
       apiToken,
     })
+  }
+
+  updateClientCommandsEnabled(enabled: boolean) {
+    if (!this.active) {
+      return
+    }
+    this.clientCommands?.setEnabled(enabled)
   }
 
   sendOrQueue(

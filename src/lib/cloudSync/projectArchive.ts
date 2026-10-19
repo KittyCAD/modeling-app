@@ -18,7 +18,7 @@ import {
   getProjectTitleFromProjectTomlContents,
   setProjectTitleInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
-import { isArray } from '@src/lib/utils'
+import { isArray, isRecord } from '@src/lib/utils'
 import JSZip from 'jszip'
 
 const localFs = opfs.impl
@@ -439,9 +439,9 @@ export async function parseProjectArchive(
         if (zipError instanceof ProjectArchiveLimitError) {
           return Promise.reject(zipError)
         }
-        const jsonProject = parseJsonProjectArchive(archive)
+        const jsonProject = parseJsonProjectArchive(archive, limits)
         if (jsonProject) {
-          return limitProjectArchiveFiles(jsonProject, limits)
+          return jsonProject
         }
         // eslint-disable-next-line suggest-no-throw/suggest-no-throw
         throw zipError
@@ -491,34 +491,6 @@ function readZipEntryWithinLimit(entry: JSZip.JSZipObject, limit: number) {
       })
       .resume()
   })
-}
-
-async function limitProjectArchiveFiles(
-  files: ProjectArchiveFile[],
-  limits?: ProjectArchiveReadLimits
-) {
-  if (!limits) {
-    return files
-  }
-  const selected = files.filter((file) => limits.includePath(file.relativePath))
-  if (selected.length > limits.maxFiles) {
-    return Promise.reject(
-      new ProjectArchiveLimitError('Too many project files.')
-    )
-  }
-  let total = 0
-  for (const file of selected) {
-    total += file.data.byteLength
-    if (
-      file.data.byteLength > limits.maxFileBytes ||
-      total > limits.maxTotalBytes
-    ) {
-      return Promise.reject(
-        new ProjectArchiveLimitError('Project archive is too large.')
-      )
-    }
-  }
-  return selected
 }
 
 async function parseZipProjectArchive(
@@ -572,40 +544,73 @@ async function parseZipProjectArchive(
   return files
 }
 
-function parseJsonProjectArchive(archive: ArrayBuffer) {
+function parseJsonProjectArchive(
+  archive: ArrayBuffer,
+  limits?: ProjectArchiveReadLimits
+) {
+  let parsed: unknown
   try {
     const decoded = new TextDecoder().decode(new Uint8Array(archive))
-    const parsed = JSON.parse(decoded)
-    if (!parsed || typeof parsed !== 'object' || !isArray(parsed.files)) {
-      return undefined
-    }
-
-    const files: ProjectArchiveFile[] = []
-    for (const file of parsed.files) {
-      if (!file || typeof file !== 'object') {
-        continue
-      }
-      const relativePath =
-        typeof file.relativePath === 'string'
-          ? file.relativePath
-          : typeof file.requestedFileName === 'string'
-            ? file.requestedFileName
-            : undefined
-      if (!relativePath) {
-        continue
-      }
-
-      if (typeof file.contents === 'string') {
-        files.push({
-          relativePath: normalizeRelativePath(relativePath),
-          data: new TextEncoder().encode(file.contents),
-        })
-      }
-    }
-    return files
+    parsed = JSON.parse(decoded)
   } catch {
     return undefined
   }
+  if (!isRecord(parsed)) {
+    return undefined
+  }
+  const entries = parsed.files
+  if (!isArray(entries)) {
+    return undefined
+  }
+  if (limits && entries.length > limits.maxArchiveEntries) {
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw new ProjectArchiveLimitError('Too many archive entries.')
+  }
+
+  const files: ProjectArchiveFile[] = []
+  let total = 0
+  const encoder = new TextEncoder()
+  for (const file of entries) {
+    if (!isRecord(file)) {
+      continue
+    }
+    const relativePath =
+      typeof file.relativePath === 'string'
+        ? file.relativePath
+        : typeof file.requestedFileName === 'string'
+          ? file.requestedFileName
+          : undefined
+    if (!relativePath || typeof file.contents !== 'string') {
+      continue
+    }
+    const normalizedPath = normalizeRelativePath(relativePath)
+    if (limits && !limits.includePath(normalizedPath)) {
+      continue
+    }
+    if (limits && files.length >= limits.maxFiles) {
+      // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+      throw new ProjectArchiveLimitError('Too many project files.')
+    }
+    if (
+      limits &&
+      (file.contents.length > limits.maxFileBytes ||
+        file.contents.length > limits.maxTotalBytes - total)
+    ) {
+      // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+      throw new ProjectArchiveLimitError('Project archive is too large.')
+    }
+    const data = encoder.encode(file.contents)
+    total += data.byteLength
+    if (
+      limits &&
+      (data.byteLength > limits.maxFileBytes || total > limits.maxTotalBytes)
+    ) {
+      // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+      throw new ProjectArchiveLimitError('Project archive is too large.')
+    }
+    files.push({ relativePath: normalizedPath, data })
+  }
+  return files
 }
 
 function getCommonArchiveRoot(fileNames: string[]) {

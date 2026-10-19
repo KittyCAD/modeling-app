@@ -251,6 +251,58 @@ describe('cloud sync failure boundaries', () => {
     expect(files.map((file) => file.relativePath)).toEqual(['main.kcl'])
   })
 
+  it('rejects excessive unrelated JSON entries', async () => {
+    const archive = new TextEncoder().encode(
+      JSON.stringify({
+        files: Array.from({ length: 20 }, (_, index) => ({
+          relativePath: `asset-${index}.png`,
+          contents: 'x',
+        })),
+      })
+    ).buffer
+
+    await expect(
+      parseProjectArchive(archive, {
+        includePath: (path) => path.endsWith('.kcl'),
+        maxArchiveEntries: 10,
+        maxFileBytes: 256 * 1024,
+        maxFiles: 2_000,
+        maxTotalBytes: 32 * 1024 * 1024,
+      })
+    ).rejects.toThrow('Too many archive entries.')
+  })
+
+  it('skips unrelated JSON contents before checking selected file sizes', async () => {
+    const archive = new TextEncoder().encode(
+      JSON.stringify({
+        files: [
+          { relativePath: 'render.png', contents: 'x'.repeat(100) },
+          { relativePath: 'main.kcl', contents: 'cube = 1' },
+        ],
+      })
+    ).buffer
+    const limits = {
+      includePath: (path: string) => path.endsWith('.kcl'),
+      maxArchiveEntries: 10,
+      maxFileBytes: 10,
+      maxFiles: 2,
+      maxTotalBytes: 10,
+    }
+
+    const files = await parseProjectArchive(archive, limits)
+    expect(files.map((file) => file.relativePath)).toEqual(['main.kcl'])
+    await expect(
+      parseProjectArchive(
+        new TextEncoder().encode(
+          JSON.stringify({
+            files: [{ relativePath: 'main.kcl', contents: 'x'.repeat(11) }],
+          })
+        ).buffer,
+        limits
+      )
+    ).rejects.toThrow('Project archive is too large.')
+  })
+
   it('classifies project manifest hashing failures', async () => {
     const failure = new TypeError('Private crypto implementation detail')
     vi.stubGlobal('crypto', {
