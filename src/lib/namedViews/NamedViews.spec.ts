@@ -1,5 +1,6 @@
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import { signal } from '@preact/signals-core'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 
@@ -13,9 +14,6 @@ const renderMocks = vi.hoisted(() => ({
   kclManager: {
     ast: {},
     code: '',
-    execStateSignal: {
-      value: { artifactGraph: new Map(), filenames: {} },
-    },
     isExecutingSignal: { value: false },
   },
 }))
@@ -24,6 +22,12 @@ vi.mock('@src/lib/boot', () => ({
   useApp: () => ({
     commands: { actor: { send: renderMocks.appSend } },
     userFeatures: { useHas: () => renderMocks.experimentalPointAndClick },
+    registry: {
+      get: () => ({
+        execState,
+        isExecuting: renderMocks.kclManager.isExecutingSignal,
+      }),
+    },
   }),
   useSingletons: () => ({ kclManager: renderMocks.kclManager }),
 }))
@@ -54,6 +58,9 @@ import type { KclNamedView } from '@src/lang/std/kclNamedViews'
 import { activeViewSignal } from '@src/lib/kclNamedViewActivation'
 import { initialiseWasmNode } from '@src/lang/wasmUtilsNode'
 import { getKclDefaultViewName } from '@src/lib/wasm_lib_wrapper'
+import { emptyExecState } from '@src/lang/wasm'
+
+const execState = signal(emptyExecState())
 
 beforeAll(async () => {
   await initialiseWasmNode()
@@ -215,7 +222,8 @@ describe('NamedViews', () => {
     'applies views independently of experimental editing (%s)',
     async (experimentalPointAndClick) => {
       const namedView = view({ name: 'Front', modulePath: { type: 'Main' } })
-      renderMocks.kclManager.execStateSignal.value = {
+      execState.value = {
+        ...emptyExecState(),
         artifactGraph: new Map([
           [namedView.artifact.id, { type: 'namedView', ...namedView.artifact }],
         ]),
@@ -248,6 +256,13 @@ describe('NamedViews', () => {
       fireEvent.doubleClick(label)
       expect(renderMocks.prepareNamedViewEditCommand).toHaveBeenCalledTimes(
         experimentalPointAndClick ? 1 : 0
+      )
+
+      act(() => {
+        execState.value = emptyExecState()
+      })
+      await waitFor(() =>
+        expect(screen.queryByText('Front', { exact: true })).toBeNull()
       )
     }
   )

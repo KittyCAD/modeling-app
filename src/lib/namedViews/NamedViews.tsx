@@ -27,6 +27,7 @@ import {
 import { prepareNamedViewEditCommand } from '@src/lib/kclNamedViewEdit'
 import { reportRejection, trap } from '@src/lib/trap'
 import { getKclDefaultViewName } from '@src/lib/wasm_lib_wrapper'
+import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { useState, type ReactNode } from 'react'
 import toast from 'react-hot-toast'
 
@@ -109,10 +110,9 @@ export function NamedViews({
   )
   const { kclManager } = useSingletons()
   const [isChangingSource, setIsChangingSource] = useState(false)
-  const execState = kclManager.execStateSignal.value
-  const cannotReachEngine = useReliesOnEngine(
-    kclManager.isExecutingSignal.value ?? false
-  )
+  const execution = app.registry.get(executingEditorService)
+  const execState = execution.execState.value
+  const cannotReachEngine = useReliesOnEngine(execution.isExecuting.value)
   const { state: modelingState } = useModelingContext()
   const inSketchMode = isSketchSessionOpen(modelingState)
 
@@ -145,7 +145,9 @@ export function NamedViews({
   }
 
   const removeView = async (view: KclNamedView) => {
-    const artifact = kclManager.execState.artifactGraph.get(view.artifact.id)
+    const artifact = execution.execState
+      .peek()
+      .artifactGraph.get(view.artifact.id)
     if (artifact?.type !== 'namedView') {
       toast.error(`Could not find “${view.artifact.name}”.`)
       return
