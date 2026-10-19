@@ -2008,7 +2008,7 @@ impl FrontendState {
             Err(mut err) => {
                 // Don't return an error just because execution failed. Instead,
                 // update state as much as possible.
-                let outcome = self.exec_outcome_from_exec_error(ctx, err.clone()).await?;
+                let outcome = self.exec_outcome_from_exec_error(err.clone())?;
                 self.update_state_after_exec(outcome, true);
                 err.scene_graph = Some(self.scene_graph_for_ui());
                 Ok(SetProgramOutcome::ExecFailure { error: Box::new(err) })
@@ -2043,7 +2043,7 @@ impl FrontendState {
             }
             Err(mut err) => {
                 // Update state as much as possible, even when there's an error.
-                let outcome = self.exec_outcome_from_exec_error(ctx, err.clone()).await?;
+                let outcome = self.exec_outcome_from_exec_error(err.clone())?;
                 self.update_state_after_exec(outcome, true);
                 err.scene_graph = Some(self.scene_graph_for_ui());
                 Err(err)
@@ -2051,11 +2051,7 @@ impl FrontendState {
         }
     }
 
-    async fn exec_outcome_from_exec_error(
-        &self,
-        ctx: &ExecutorContext,
-        err: KclErrorWithOutputs,
-    ) -> Result<ExecOutcome, KclErrorWithOutputs> {
+    fn exec_outcome_from_exec_error(&self, err: KclErrorWithOutputs) -> Result<ExecOutcome, KclErrorWithOutputs> {
         if matches!(err.error, KclError::EngineHangup { .. }) {
             // It's not ideal to special-case this, but this error is very
             // common during development, and it causes confusing downstream
@@ -2076,6 +2072,7 @@ impl FrontendState {
             filenames,
             source_files,
             default_planes,
+            engine_scene_generation,
             ..
         } = err;
 
@@ -2086,7 +2083,10 @@ impl FrontendState {
             #[cfg(test)]
             test_program_memory: Default::default(),
             filenames,
-            engine_scene_generation: ctx.cache.engine_scene_generation().await,
+            // Errors from run_with_caching always carry the generation, and
+            // update_state_after_exec doesn't read it anyway. TODO: return a
+            // narrower type than ExecOutcome so this doesn't need be filled in?
+            engine_scene_generation: engine_scene_generation.unwrap_or_default(),
             operations,
             artifact_graph,
             scene_objects,
