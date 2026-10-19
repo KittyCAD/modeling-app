@@ -185,11 +185,12 @@ export function CommandKclInput({
     onValidationChangeRef.current = onValidationChange
   }, [onValidationChange])
 
+  const allowBooleans = arg.allowBooleans ?? false
   const allowArrays = arg.allowArrays ?? false
   const allowStringArrays = arg.allowStringArrays ?? false
   const options = useMemo(
-    () => ({ allowArrays, allowStringArrays }),
-    [allowArrays, allowStringArrays]
+    () => ({ allowBooleans, allowArrays, allowStringArrays }),
+    [allowBooleans, allowArrays, allowStringArrays]
   )
 
   const {

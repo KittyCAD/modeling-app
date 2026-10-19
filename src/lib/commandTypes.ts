@@ -250,6 +250,7 @@ export type CommandArgumentConfig<
     }
   | {
       inputType: 'kcl'
+      allowBooleans?: boolean
       allowArrays?: boolean
       allowStringArrays?: boolean
       allowUncalculated?: boolean
@@ -434,6 +435,7 @@ export type CommandArgument<
   | {
       inputType: 'kcl'
       allowArrays?: boolean
+      allowBooleans?: boolean
       allowStringArrays?: boolean
       allowUncalculated?: boolean
       inputToKclValue?: (value: string) => string

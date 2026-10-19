@@ -419,7 +419,8 @@ const prepareToEditParameter: PrepareToEditCallback = async ({
   // 1. Convert from the parameter's Operation to a KCL-type arg value
   const value = await stringToKclExpression(
     code.slice(...operation.sourceRange.map((r) => toUtf16(r, code))),
-    rustContext
+    rustContext,
+    { allowBooleans: true }
   )
   if (err(value) || 'errors' in value) {
     return { reason: "Couldn't retrieve length argument" }

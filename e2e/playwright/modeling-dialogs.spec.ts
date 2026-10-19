@@ -10,6 +10,76 @@ region001 = region(segments = [sketch001.circle1])`
 test.describe('Modeling dialogs', { tag: '@web' }, () => {
   test.use({ userFeatures: ['modeling_dialogs'] })
 
+  test('Creates numeric and boolean parameters and edits them from the feature tree', async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+    modelingDialog,
+  }) => {
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', '@settings(kclVersion = 3.0)\nbase = 10mm')
+    )
+
+    await cmdBar.cmdBarOpenBtn.click()
+    await cmdBar.chooseCommand('create parameter')
+    const value = modelingDialog.input(/^value$/i)
+    const variableName = modelingDialog.input('Variable name')
+    await expect(value).toHaveText('5')
+    await variableName.fill('distance')
+    await value.fill('base +')
+    await expect(modelingDialog.submitButton).toBeDisabled()
+    await value.fill('base + 5mm')
+    await expect(modelingDialog.submitButton).toBeEnabled()
+    await scene.waitForExecutionDoneAfter(() =>
+      modelingDialog.submitButton.click()
+    )
+    await expect(modelingDialog.locator).not.toBeAttached()
+    await editor.expectEditor.toContain('distance = base + 5mm')
+
+    await cmdBar.cmdBarOpenBtn.click()
+    await cmdBar.chooseCommand('create parameter')
+    await variableName.fill('enabled')
+    await value.fill('true')
+    await expect(modelingDialog.submitButton).toBeEnabled()
+    await value.fill('false')
+    await expect(modelingDialog.submitButton).toBeEnabled()
+    await scene.waitForExecutionDoneAfter(() =>
+      modelingDialog.submitButton.click()
+    )
+    await editor.expectEditor.toContain('enabled = false')
+
+    await (await toolbar.getFeatureTreeOperation('enabled', 0)).dblclick()
+    const editValue = cmdBar.argumentInput.locator('[contenteditable]')
+    await expect(editValue).toHaveText('false')
+    await editValue.fill('true')
+    await expect(page.locator('#arg-form')).toHaveAttribute(
+      'data-can-submit',
+      'true'
+    )
+    await cmdBar.progressCmdBar()
+    await cmdBar.progressCmdBar()
+    await editor.expectEditor.toContain('enabled = true')
+    await scene.settled()
+
+    await cmdBar.cmdBarOpenBtn.click()
+    await cmdBar.chooseCommand('edit parameter')
+    await cmdBar.selectOption({ name: 'enabled' }).click()
+    await expect(editValue).toHaveText('true')
+    await editValue.fill('false')
+    await expect(page.locator('#arg-form')).toHaveAttribute(
+      'data-can-submit',
+      'true'
+    )
+    await cmdBar.progressCmdBar()
+    await cmdBar.progressCmdBar()
+    await editor.expectEditor.toContain('enabled = false')
+  })
+
   test('Preserves an Extrude draft while hiding an obstruction', async ({
     page,
     homePage,

@@ -144,6 +144,7 @@ export async function resolveArguments(
           ? arg.inputToKclValue(value.trim())
           : value.trim()
       const parsed = await stringToKclExpression(expression, rustContext, {
+        allowBooleans: arg.inputType === 'kcl' && arg.allowBooleans,
         allowArrays: arg.inputType !== 'kcl' || arg.allowArrays,
         allowStringArrays:
           arg.inputType === 'kcl' ? arg.allowStringArrays : undefined,

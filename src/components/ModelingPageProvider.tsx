@@ -62,7 +62,9 @@ export const ModelingPageProvider = ({
   children: React.ReactNode
 }) => {
   useSignals()
-  const { auth, commands, settings, project, systemIOActor } = useApp()
+  const { auth, commands, settings, project, systemIOActor, userFeatures } =
+    useApp()
+  const modelingDialogsEnabled = userFeatures.useHas('modeling_dialogs', false)
   const { kclManager } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const navigate = useNavigate()
@@ -254,9 +256,10 @@ export const ModelingPageProvider = ({
       project: projectIORef?.value,
       systemIOActor,
       wasmInstance,
+      modelingDialogsEnabled,
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [kclManager, project, file])
+  }, [kclManager, project, file, modelingDialogsEnabled])
 
   useEffect(() => {
     commands.send({

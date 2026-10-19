@@ -39,6 +39,7 @@ export async function getCalculatedKclExpressionValue(
   value: string,
   rustContext: RustContext,
   options?: {
+    allowBooleans?: boolean
     allowArrays?: boolean
     allowStringArrays?: boolean
   }
@@ -140,7 +141,8 @@ export async function getCalculatedKclExpressionValue(
     varValue && 'value' in varValue ? varValue.value : undefined
   const valueAsString = resultValueWithUnits
     ? resultValueWithUnits
-    : typeof resultRawValue === 'number'
+    : typeof resultRawValue === 'number' ||
+        (options?.allowBooleans && typeof resultRawValue === 'boolean')
       ? String(resultRawValue)
       : 'NAN'
 
@@ -154,6 +156,7 @@ export async function stringToKclExpression(
   value: string,
   providedRustContext: RustContext,
   options?: {
+    allowBooleans?: boolean
     allowArrays?: boolean
     allowStringArrays?: boolean
   }
