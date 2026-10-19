@@ -173,21 +173,6 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
   }
 
   const updateViewCamera = async (view: KclNamedView) => {
-    const ast = kclManager.ast
-    const code = kclManager.code
-    const path = kclManager.path
-    const projectPath = kclManager.systemDeps.project.value?.path
-    const checkSource = () => {
-      if (
-        code !== kclManager.code ||
-        path !== kclManager.path ||
-        projectPath !== kclManager.systemDeps.project.value?.path
-      ) {
-        return new Error(
-          'The source changed while updating the named view. Try again.'
-        )
-      }
-    }
     setIsChangingSource(true)
     try {
       const camera = await captureNamedViewCamera(
@@ -199,12 +184,8 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
       }
 
       const wasmInstance = await kclManager.wasmInstancePromise
-      if (ast !== kclManager.ast || checkSource()) {
-        toast.error('The source changed while capturing the camera. Try again.')
-        return
-      }
       const modifiedAst = updateNamedViewCamera({
-        ast,
+        ast: kclManager.ast,
         pathToNode: view.artifact.codeRef.pathToNode,
         camera,
         wasmInstance,
@@ -214,9 +195,7 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
         return
       }
 
-      await updateModelingState(modifiedAst, EXECUTION_TYPE_REAL, kclManager, {
-        checkSource,
-      })
+      await updateModelingState(modifiedAst, EXECUTION_TYPE_REAL, kclManager)
     } catch (reason) {
       toast.error(
         reason instanceof Error
