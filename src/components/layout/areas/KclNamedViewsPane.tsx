@@ -262,7 +262,7 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                 >
                   <span
                     data-testid="named-view-label"
-                    className="shrink-0 truncate"
+                    className="min-w-0 truncate"
                   >
                     {row.label}
                   </span>

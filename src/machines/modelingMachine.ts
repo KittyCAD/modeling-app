@@ -165,6 +165,7 @@ import {
 } from '@src/lib/constants'
 import { exportMake } from '@src/lib/exportMake'
 import { exportSave } from '@src/lib/exportSave'
+import { submitNamedViewCommand } from '@src/lib/kclNamedViewEdit'
 import { toProjectRelativePath, webSafePathSplit } from '@src/lib/paths'
 import { toPlaneName } from '@src/lib/planes'
 import type { Project } from '@src/lib/project'
@@ -4226,9 +4227,7 @@ export const modelingMachine = setup({
 
     /* Below are recent modeling codemods that are using updateModelinState,
      * trigger toastError on Error, and have the 'no kcl errors' guard yet */
-    namedViewAstMod: fromPromise(
-      createModelingCodemodActor(modelingCommandCodemods['Named View'])
-    ),
+    namedViewAstMod: fromPromise(submitNamedViewCommand),
     extrudeAstMod: fromPromise(
       createModelingCodemodActor(modelingCommandCodemods.Extrude)
     ),

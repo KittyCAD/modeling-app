@@ -65,7 +65,12 @@ region001 = region(segments = [sketch001.circle1])`
     const row = pane
       .getByTestId('named-view-row')
       .filter({ hasText: 'Inspection' })
+    await row
+      .getByRole('button', { name: 'Apply Inspection', exact: true })
+      .click()
+    await expect(row).toHaveAttribute('data-active', 'true')
     await row.getByTestId('named-view-label').dblclick()
+    await name.fill('Inspection updated')
     await expect(exceptions).toBeDisabled()
     await expect(exceptions).toContainText(/1 region/i)
     await dialog
@@ -73,6 +78,8 @@ region001 = region(segments = [sketch001.circle1])`
       .selectOption({ label: 'Hide all' })
     await scene.waitForExecutionDoneAfter(() => submit.click())
     await expect(dialog).not.toBeAttached()
+    await expect(row).toContainText('Inspection updated')
+    await expect(row).toHaveAttribute('data-active', 'true')
     await editor.expectEditor.toContain('view::Visibility::Hide')
     await editor.expectEditor.toContain('except = [region001]')
     await editor.expectEditor.toContain('distance = 100mm')
