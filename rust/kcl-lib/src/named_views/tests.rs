@@ -89,7 +89,7 @@ fn path(artifact_id: ArtifactId, sweep_id: Option<ArtifactId>) -> Artifact {
     Artifact::Path(Path {
         id: artifact_id,
         sub_type: PathSubType::Region,
-        plane_id: id(20),
+        plane_id: Some(id(20)),
         seg_ids: Vec::new(),
         consumed: true,
         sweep_id,
@@ -880,6 +880,7 @@ fn default_visibility_reads_all_artifact_id_shapes_across_modules_and_nested_arr
         OpKclValue::Helix {
             value: Box::new(OpHelix::new(id(8))),
         },
+        OpKclValue::Path3d { artifact_id: id(9) },
     ];
     let mut operations = IndexMap::new();
     for (module, value) in values.into_iter().enumerate() {
@@ -890,18 +891,50 @@ fn default_visibility_reads_all_artifact_id_shapes_across_modules_and_nested_arr
             })],
         );
     }
-    let graph = graph((1..=9).map(|value| plane(id(value))).collect());
+    let graph = graph((1..=10).map(|value| plane(id(value))).collect());
     let resolved = NamedViewResolver::new(&graph, &operations, &IndexMap::new())
         .unwrap()
         .resolve(&ViewTarget::Default)
         .unwrap();
     assert_eq!(
         resolved.visibility(),
-        &(1..=9)
-            .map(|value| (Uuid::from_u128(value), value <= 8))
+        &(1..=10)
+            .map(|value| (Uuid::from_u128(value), value <= 9))
             .collect::<IndexMap<_, _>>()
     );
     assert!(matches!(resolved, ResolvedView::Default { .. }));
+}
+
+#[test]
+fn default_visibility_hides_spatial_paths_and_excludes_consumed_paths() {
+    let artifacts = (1..=3)
+        .map(|value| {
+            let Artifact::Path(mut path) = path(id(value), None) else {
+                panic!("expected a path fixture");
+            };
+            path.sub_type = PathSubType::Spatial;
+            path.plane_id = None;
+            path.consumed = value == 3;
+            Artifact::Path(path)
+        })
+        .collect();
+    let operations = [(
+        ModuleId::default(),
+        vec![hide(OpKclValue::Path3d { artifact_id: id(1) })],
+    )]
+    .into_iter()
+    .collect();
+    let graph = graph(artifacts);
+    let resolved = NamedViewResolver::new(&graph, &operations, &IndexMap::new())
+        .unwrap()
+        .resolve(&ViewTarget::Default)
+        .unwrap();
+    assert_eq!(
+        resolved.visibility(),
+        &[(Uuid::from_u128(1), true), (Uuid::from_u128(2), false)]
+            .into_iter()
+            .collect::<IndexMap<_, _>>()
+    );
 }
 
 #[test]
