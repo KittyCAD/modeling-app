@@ -57,6 +57,8 @@ macro_rules! eprint {
 static ALLOC: dhat::Alloc = dhat::Alloc;
 
 pub mod collections;
+#[cfg(test)]
+mod csg_test_fixtures;
 mod docs;
 mod engine;
 mod errors;

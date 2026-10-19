@@ -275,7 +275,10 @@ extrude(profile001, length = 100)"#
     let last = result.last().unwrap();
 
     assert!(first.1 == last.1, "The images should be the same");
-    assert_eq!(first.2, last.2, "The outcomes should be the same");
+    assert!(last.2.from_cache, "The second run should reuse the first");
+    let mut last_outcome = last.2.clone();
+    last_outcome.from_cache = false;
+    assert_eq!(first.2, last_outcome, "The outcomes should be the same");
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -804,7 +807,10 @@ extrude(profile001, length = 100)"#
     let last = result.last().unwrap();
 
     assert_ne!(first.1, last.1, "The images should be different for the grid");
-    assert_eq!(first.2, last.2, "The outcomes should be the same");
+    assert!(last.2.from_cache, "The second run should reuse the first");
+    let mut last_outcome = last.2.clone();
+    last_outcome.from_cache = false;
+    assert_eq!(first.2, last_outcome, "The outcomes should be the same");
 }
 
 #[tokio::test(flavor = "multi_thread")]
