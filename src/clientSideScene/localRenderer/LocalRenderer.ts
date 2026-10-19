@@ -115,10 +115,8 @@ export class LocalRenderer {
   private currentModel: Object3D | null = null
   private readonly gltfLoader = new GLTFLoader()
   private modelLoadGeneration = 0
-  private projectedModelGeneration = -1
   /** The engine scene generation of the model on screen, once it has loaded. */
   private loadedSceneGeneration: number | null = null
-  private pendingModelRefresh = false
   private hasFittedModel = false
   private unregisterExecutionListener: (() => void) | null = null
   private previewCamera: PerspectiveCamera | OrthographicCamera | null = null
@@ -172,7 +170,6 @@ export class LocalRenderer {
         if (isExecuting) {
           // A new execution invalidates any export or GLB parse still in flight.
           this.modelLoadGeneration += 1
-          this.pendingModelRefresh = false
           this.clearHover()
         }
       }
@@ -766,8 +763,8 @@ export class LocalRenderer {
       !camera ||
       !canvas ||
       !this.currentModel ||
-      this.pendingModelRefresh ||
-      this.projectedModelGeneration !== this.modelLoadGeneration ||
+      this.loadedSceneGeneration !==
+        this.kclManager.engineSceneGenerationSignal.peek() ||
       this.kclManager.isExecuting
     )
       return []
@@ -1032,10 +1029,9 @@ export class LocalRenderer {
     // Execution may finish while the GPU/environment is initializing, or before
     // this renderer is mounted. Load that completed scene once, too.
     if (
-      this.pendingModelRefresh ||
-      (!kclManager.isExecuting &&
-        kclManager.engineSceneGenerationSignal.peek() > 0 &&
-        !kclManager.hasErrors())
+      !kclManager.isExecuting &&
+      kclManager.engineSceneGenerationSignal.peek() > 0 &&
+      !kclManager.hasErrors()
     ) {
       void this.refreshModel().catch(reportRejection)
     } else if (!kclManager.isExecuting) {
@@ -1051,7 +1047,6 @@ export class LocalRenderer {
     if (!detail.successful) {
       this.rebuildSelectionTargets()
       this.syncPlaneScale()
-      this.pendingModelRefresh = false
       this.onModelLoadSettled?.()
       return
     }
@@ -1061,19 +1056,17 @@ export class LocalRenderer {
       this.kclManager.engineSceneGenerationSignal.peek() ===
       this.loadedSceneGeneration
     ) {
-      this.pendingModelRefresh = false
       this.onModelLoadSettled?.()
       return
     }
 
-    this.pendingModelRefresh = true
+    // Before initialization finishes, initialize() loads the completed scene.
     if (this.renderer) {
       void this.refreshModel().catch(reportRejection)
     }
   }
 
   private async refreshModel() {
-    this.pendingModelRefresh = false
     const generation = ++this.modelLoadGeneration
     const sceneGeneration = this.kclManager.engineSceneGenerationSignal.peek()
     const isCurrent = () =>
@@ -1142,7 +1135,6 @@ export class LocalRenderer {
         this.hasFittedModel = true
       }
       this.invalidateBaseRender()
-      this.projectedModelGeneration = generation
       this.loadedSceneGeneration = sceneGeneration
       this.onModelLoadSettled?.(true)
     } catch (error) {
