@@ -946,17 +946,8 @@ export class LocalRenderer {
       ),
     }
 
-    const sharedCamera = kclManager.sceneInfra.camControls.camera
-    if (sharedCamera instanceof PerspectiveCamera) {
-      this.previewCamera = sharedCamera.clone()
-      this.previewCamera.aspect =
-        Math.max(container.clientWidth, 1) / Math.max(container.clientHeight, 1)
-    } else if (sharedCamera instanceof OrthographicCamera) {
-      this.previewCamera = sharedCamera.clone()
-    } else {
-      this.previewCamera = new PerspectiveCamera(45, 1, 0.01, 1000)
-    }
-    this.previewCamera.layers.mask = sharedCamera.layers.mask
+    // syncPreviewCameraFromShared() below matches this to the shared camera.
+    this.previewCamera = new PerspectiveCamera()
     this.disposers.push(
       kclManager.sceneInfra.camControls.cameraChange.add(
         this.syncPreviewCameraFromShared
