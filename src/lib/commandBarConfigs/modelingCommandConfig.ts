@@ -10,7 +10,6 @@ import { findUniqueName } from '@src/lang/create'
 import { createModelingCodemodReviewValidation } from '@src/lang/modifyAst/modelingCodemod'
 import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
 import type { Artifact, PathToNode } from '@src/lang/wasm'
-import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import {
   modelingStdLibCommandArgs,
@@ -216,12 +215,6 @@ type WithCommandBarEditFlowArgs<Schema> = {
 const isEditingNode = (context: {
   argumentsToSubmit: Record<string, unknown>
 }) => Boolean(context.argumentsToSubmit.nodeToEdit)
-
-// Custom camera expressions remain untouched when editing a named view.
-const preserveNamedViewCamera = (context: {
-  argumentsToSubmit: Record<string, unknown>
-}) =>
-  isEditingNode(context) && context.argumentsToSubmit.orientation === undefined
 
 const isEditingNodeSelection = (context: {
   argumentsToSubmit: Record<string, unknown>
@@ -650,10 +643,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           orientation: {
             inputType: 'options',
-            required: (context) => !preserveNamedViewCamera(context),
-            hidden: preserveNamedViewCamera,
-            defaultValue: (context: CommandBarContext) =>
-              isEditingNode(context) ? undefined : 'Isometric',
+            defaultValue: 'Isometric',
             options: stdLibEnumOptions(
               STD_LIB_ENUMS['view::Orientation'],
               'Isometric'
@@ -661,8 +651,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           },
           projection: {
             inputType: 'options',
-            required: (context) => !preserveNamedViewCamera(context),
-            hidden: preserveNamedViewCamera,
+            required: true,
             defaultValue: 'Orthographic',
             options: stdLibEnumOptions(
               STD_LIB_ENUMS['view::Projection'],
@@ -698,11 +687,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             multiple: true,
           },
           target: {
-            hidden: preserveNamedViewCamera,
             dialog: { advanced: true },
           },
           distance: {
-            hidden: preserveNamedViewCamera,
             dialog: { advanced: true },
           },
         },

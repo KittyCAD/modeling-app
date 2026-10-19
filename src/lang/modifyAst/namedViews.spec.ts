@@ -246,7 +246,7 @@ view001 = view::named("Inspection view", camera = view::oriented(view::Orientati
     await enginelessExecutor(result.modifiedAst, rustContext)
   })
 
-  it('keeps a custom camera helper when editing a view', async () => {
+  it('rejects editing a custom camera helper', async () => {
     const code = `${settings}
 fn oriented(@orientation: view::Orientation) {
   return view::oriented(orientation, distance = 123mm)
@@ -268,32 +268,8 @@ view001 = view::named("Inspection view", camera = oriented(view::Orientation::Fr
       code,
       rustContext,
     })
-    if (err(event)) throw event
-    if (event.type !== 'Find and select command') {
-      throw new Error(`Expected an edit command, got ${event.type}`)
-    }
-    expect(event.data.argDefaultValues).toMatchObject({
-      orientation: undefined,
-      projection: undefined,
-    })
-
-    const result = addNamedView({
-      ast,
-      artifactGraph: execState.artifactGraph,
-      ...event.data.argDefaultValues,
-      name: 'Renamed view',
-      baseline: 'Hide',
-      wasmInstance: instance,
-    })
-    if (err(result)) throw result
-    const updatedCode = recast(result.modifiedAst, instance)
-    expect(updatedCode).toContain('camera = oriented(view::Orientation::Front)')
-    expect(updatedCode).toContain('"Renamed view"')
-    expect(updatedCode).toContain('view::Visibility::Hide')
-    const updated = await enginelessExecutor(result.modifiedAst, rustContext)
-    const updatedView = [...updated.artifactGraph.values()].find(
-      (candidate) => candidate.type === 'namedView'
+    expect(event).toEqual(
+      new Error('Editing custom cameras is not supported yet.')
     )
-    expect(updatedView?.camera.distance).toBe(123)
   })
 })

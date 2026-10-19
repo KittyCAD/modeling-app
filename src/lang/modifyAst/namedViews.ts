@@ -81,10 +81,10 @@ export function addNamedView({
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   name: string
-  orientation?: Orientation
+  orientation: Orientation
   target?: KclCommandValue
   distance?: KclCommandValue
-  projection?: Projection
+  projection: Projection
   baseline: Visibility
   except?: Selections
   nodeToEdit?: PathToNode
@@ -120,52 +120,45 @@ export function addNamedView({
   const orientedCamera = isOrientedCameraCall(existingCamera)
     ? existingCamera
     : undefined
-  let camera = existingCamera
-  // Shared cameras, directed cameras, and custom helpers remain untouched.
-  if (!mNodeToEdit || orientedCamera) {
-    if (!orientation || !projection) {
-      return new Error('Could not determine the named view camera.')
-    }
-    camera = createCallExpressionStdLibKw(
-      'oriented',
-      viewEnum(
-        'Orientation',
-        orientation,
-        view?.camera.look.type === 'oriented'
-          ? view.camera.look.orientation
-          : undefined,
-        orientedCamera?.unlabeled
-      ),
-      [
-        ...(target
-          ? [createLabeledArg('target', valueOrVariable(target))]
-          : []),
-        ...(distance
-          ? [createLabeledArg('distance', valueOrVariable(distance))]
-          : []),
-        createLabeledArg(
-          'projection',
-          viewEnum(
-            'Projection',
-            projection,
-            view?.camera.projection,
-            orientedCamera?.arguments.find(
-              (argument) => argument.label?.name === 'projection'
-            )?.arg
-          )
-        ),
-      ],
-      undefined,
-      [createIdentifier('view')]
-    )
-    if (target && 'variableName' in target && target.variableName) {
-      insertVariableAndOffsetPathToNode(target, modifiedAst, mNodeToEdit)
-    }
-    if (distance && 'variableName' in distance && distance.variableName) {
-      insertVariableAndOffsetPathToNode(distance, modifiedAst, mNodeToEdit)
-    }
+  if (mNodeToEdit && !orientedCamera) {
+    return new Error('Editing custom cameras is not supported yet.')
   }
-  if (!camera) return new Error('Could not determine the named view camera.')
+  const camera = createCallExpressionStdLibKw(
+    'oriented',
+    viewEnum(
+      'Orientation',
+      orientation,
+      view?.camera.look.type === 'oriented'
+        ? view.camera.look.orientation
+        : undefined,
+      orientedCamera?.unlabeled
+    ),
+    [
+      ...(target ? [createLabeledArg('target', valueOrVariable(target))] : []),
+      ...(distance
+        ? [createLabeledArg('distance', valueOrVariable(distance))]
+        : []),
+      createLabeledArg(
+        'projection',
+        viewEnum(
+          'Projection',
+          projection,
+          view?.camera.projection,
+          orientedCamera?.arguments.find(
+            (argument) => argument.label?.name === 'projection'
+          )?.arg
+        )
+      ),
+    ],
+    undefined,
+    [createIdentifier('view')]
+  )
+  if (target && 'variableName' in target && target.variableName) {
+    insertVariableAndOffsetPathToNode(target, modifiedAst, mNodeToEdit)
+  }
+  if (distance && 'variableName' in distance && distance.variableName) {
+    insertVariableAndOffsetPathToNode(distance, modifiedAst, mNodeToEdit)
+  }
 
   const exceptVars =
     !mNodeToEdit && except

@@ -116,8 +116,8 @@ export type NamedViewCommandArgs = Override<
   PointAndClickCommandArgs<'Named View'>,
   {
     baseline: Visibility
-    orientation?: Orientation
-    projection?: Projection
+    orientation: Orientation
+    projection: Projection
   }
 >
 

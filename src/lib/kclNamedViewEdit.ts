@@ -46,14 +46,14 @@ export async function prepareNamedViewEditCommand({
   const camera = callResult.node.arguments.find(
     (argument) => argument.label?.name === 'camera'
   )?.arg
-  const orientedCamera = isOrientedCameraCall(camera) ? camera : undefined
+  const look = artifact.camera.look
+  if (!isOrientedCameraCall(camera) || look.type !== 'oriented') {
+    return new Error('Editing custom cameras is not supported yet.')
+  }
   const extractCameraArgument = async (
     name: 'target' | 'distance'
   ): Promise<KclCommandValue | undefined | Error> => {
-    if (!orientedCamera) {
-      return undefined
-    }
-    const argument = orientedCamera.arguments.find(
+    const argument = camera.arguments.find(
       (candidate) => candidate.label?.name === name
     )?.arg
     if (!argument) {
@@ -88,24 +88,21 @@ export async function prepareNamedViewEditCommand({
       ? retrieveSelectionsFromArtifactIds(exceptIds, artifactGraph)
       : undefined
 
-  // Other camera expressions stay in source; only name and visibility are editable.
-  const look = artifact.camera.look
-  const orientation =
-    orientedCamera && look.type === 'oriented'
-      ? STD_LIB_ENUMS['view::Orientation'].find(
-          (value) => value.toLowerCase() === look.orientation
-        )
-      : undefined
+  const orientation = STD_LIB_ENUMS['view::Orientation'].find(
+    (value) => value.toLowerCase() === look.orientation
+  )
+  if (!orientation) {
+    return new Error('Could not determine the named view orientation.')
+  }
   const argDefaultValues: ModelingCommandSchema['Named View'] = {
     name: artifact.name,
     orientation,
     target,
     distance,
-    projection: orientation
-      ? artifact.camera.projection === 'orthographic'
+    projection:
+      artifact.camera.projection === 'orthographic'
         ? 'Orthographic'
-        : 'Perspective'
-      : undefined,
+        : 'Perspective',
     baseline: artifact.baseline === 'show' ? 'Show' : 'Hide',
     // Selection reconstruction is best-effort; edits preserve the original except expression.
     except: isErr(except) ? undefined : except,
