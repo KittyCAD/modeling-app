@@ -17,6 +17,7 @@ import {
   reportOnboardingStartFailure,
   useOnboardingStartPending,
 } from '@src/routes/Onboarding/utils'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: help and onboarding navigation (useNavigate).
 import { useNavigate } from 'react-router-dom'
 
 const HelpMenuDivider = () => (

@@ -93,6 +93,7 @@ import {
   keymapService,
 } from '@src/registry/contracts/keymap'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: feature-tree file opening (useNavigate).
 import { useNavigate } from 'react-router-dom'
 
 type Singletons = ReturnType<typeof useSingletons>

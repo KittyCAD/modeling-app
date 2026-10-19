@@ -9,17 +9,13 @@ import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelin
 import {
   modelingStdLibCommandName,
   modelingStdLibCommandStatus,
+  stdLibDocsLink,
   type ModelingStdLibCommandName,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
-import {
-  STD_LIB_COMMANDS,
-  type StdLibCommandName,
-} from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
 import type { Command } from '@src/lib/commandTypes'
 import { commandKey } from '@src/lib/commandUtils'
 import {
   EXPERIMENTAL_POINT_AND_CLICK_FLAG,
-  LEGACY_SKETCH_MODE_FEATURE_FLAG,
   LEGACY_SKETCH_MODE_REMOVED_MESSAGE,
   SKETCH_DEFAULT_PLANE_XY,
   SKETCH_DEFAULT_PLANE_XZ,
@@ -27,7 +23,6 @@ import {
   SKETCH_SELECTION_RGB_STR,
 } from '@src/lib/constants'
 import type { HotkeySequence } from '@src/lib/hotkeys'
-import { isDesktop } from '@src/lib/isDesktop'
 import { selectSketchPlane } from '@src/lib/selectSketchPlane'
 import { getSelectedDefaultPlane } from '@src/lib/selections'
 import { isArray } from '@src/lib/utils'
@@ -550,24 +545,12 @@ export function isLegacySketchEditRequest({
   )
 }
 
-function stdLibDocsLink(stdLibName: StdLibCommandName, label = 'KCL docs') {
-  const { qualName } = STD_LIB_COMMANDS[stdLibName]
-  return {
-    label,
-    url: withSiteBaseURL(
-      `/docs/kcl-std/functions/${qualName.replaceAll('::', '-')}`
-    ),
-  }
-}
-
 export function buildToolbarConfig(
   commands: ToolbarCommands,
   {
     showExperimentalFeatures = false,
-    hasLegacySketchMode = false,
   }: {
     showExperimentalFeatures?: boolean
-    hasLegacySketchMode?: boolean
   } = {}
 ): ToolbarConfig {
   const modelingCommand = (
@@ -671,7 +654,7 @@ export function buildToolbarConfig(
               getSelectedSketchTarget(modelingState.context.selectionRanges)
                 ?.id ?? null
 
-            if (isLegacySketchEditRequest(props) && !hasLegacySketchMode) {
+            if (isLegacySketchEditRequest(props)) {
               return
             }
 
@@ -704,11 +687,9 @@ export function buildToolbarConfig(
             getSelectedSketchIconColor(modelingState.context.selectionRanges),
           status: 'available',
           disabled: (_state, _wasmInstance, props) =>
-            Boolean(
-              props && isLegacySketchEditRequest(props) && !hasLegacySketchMode
-            ),
+            Boolean(props && isLegacySketchEditRequest(props)),
           disabledReason: (_state, props) =>
-            props && isLegacySketchEditRequest(props) && !hasLegacySketchMode
+            props && isLegacySketchEditRequest(props)
               ? LEGACY_SKETCH_MODE_REMOVED_MESSAGE
               : undefined,
           title: ({ editorHasFocus, sketchPathId, modelingState }) => {
@@ -871,7 +852,6 @@ export function buildToolbarConfig(
             }),
           icon: 'import',
           status: 'available',
-          disabled: () => !isDesktop(),
           title: 'Import',
           description: 'Import from a file in the current project directory.',
           links: [
@@ -1881,18 +1861,13 @@ export const useToolbarConfig = () => {
     EXPERIMENTAL_POINT_AND_CLICK_FLAG,
     false
   )
-  const hasLegacySketchMode = userFeatures.useHas(
-    LEGACY_SKETCH_MODE_FEATURE_FLAG,
-    false
-  )
 
   return useMemo<Record<ToolbarModeName, ToolbarMode>>(
     () =>
       buildToolbarConfig(commands, {
         showExperimentalFeatures,
-        hasLegacySketchMode,
       }),
-    [commands, showExperimentalFeatures, hasLegacySketchMode]
+    [commands, showExperimentalFeatures]
   )
 }
 

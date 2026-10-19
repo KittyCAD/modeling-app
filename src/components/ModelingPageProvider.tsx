@@ -1,6 +1,7 @@
 import { EditorSelection } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
 import React, { use, useEffect, useMemo } from 'react'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: route-command setup (useLocation, useNavigate).
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import { useSignals } from '@preact/signals-react/runtime'

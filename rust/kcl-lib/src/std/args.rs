@@ -1,6 +1,8 @@
 use std::num::NonZeroU32;
 
 use anyhow::Result;
+use kcl_api::Number;
+use kcl_api::NumericSuffixTypeConvertError;
 use kcl_api::UnitAngle;
 use kcl_api::UnitLength;
 use kcmc::shared::BodyType;
@@ -38,13 +40,11 @@ use crate::execution::annotations;
 pub use crate::execution::fn_call::Args;
 use crate::execution::kcl_value::FunctionSource;
 use crate::execution::types::CoercionMode;
-use crate::execution::types::NumericSuffixTypeConvertError;
 use crate::execution::types::NumericType;
 use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::execution::types::UnitType;
-use crate::front::Number;
 use crate::parsing::ast::types::TagNode;
 use crate::std::CircularDirection;
 use crate::std::edge::check_tag_not_ambiguous;
@@ -187,8 +187,8 @@ impl TyF64 {
 
     // This can't be a TryFrom impl because `Point2d` is defined in another
     // crate.
-    pub fn to_point2d(value: &[TyF64; 2]) -> Result<crate::front::Point2d<Number>, NumericSuffixTypeConvertError> {
-        Ok(crate::front::Point2d {
+    pub fn to_point2d(value: &[TyF64; 2]) -> Result<kcl_api::Point2d<Number>, NumericSuffixTypeConvertError> {
+        Ok(kcl_api::Point2d {
             x: Number {
                 value: value[0].n,
                 units: value[0].ty.try_into()?,

@@ -1,7 +1,7 @@
 [package]
 name = "kcl-lib"
 description = "KittyCAD Language implementation and tools"
-version = "0.2.191"
+version = "0.2.192"
 edition = "2024"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
@@ -55,7 +55,7 @@ clap = { version = "4.6.1", default-features = false, optional = true, features 
   "derive",
 ] }
 convert_case = "0.12.0"
-csscolorparser = "0.8.3"
+csscolorparser = "0.9.0"
 dhat = { version = "0.3", optional = true }
 form_urlencoded = "1.2.2"
 futures = { version = "0.3.32" }
@@ -66,11 +66,10 @@ image-compare = "0.5.0"
 imbl = { version = "7.0.1", features = ["serde"] }
 indexmap = { workspace = true, features = ["serde", "rayon"] }
 itertools = "0.15.0"
-kcl-api = { version = "=0.2.191", path = "../kcl-api" }
-kcl-derive-docs = { version = "=0.2.191", path = "../kcl-derive-docs" }
-kcl-engine-codec = { version = "=0.2.191", path = "../kcl-engine-codec" }
-kcl-error = { version = "=0.2.191", path = "../kcl-error" }
-kcl-syntax = { version = "=0.2.191", path = "../kcl-syntax" }
+kcl-api = { version = "=0.2.192", path = "../kcl-api" }
+kcl-engine-codec = { version = "=0.2.192", path = "../kcl-engine-codec" }
+kcl-error = { version = "=0.2.192", path = "../kcl-error" }
+kcl-syntax = { version = "=0.2.192", path = "../kcl-syntax" }
 ezpz = { workspace = true }
 kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
@@ -100,7 +99,6 @@ schemars = { version = "0.8.17", features = [
 serde = { workspace = true }
 serde_json = { workspace = true }
 sha2 = "0.11.0"
-tempfile = "3.27"
 thiserror = "2.0.18"
 toml = "1.1.0"
 ts-rs = { workspace = true }
@@ -109,7 +107,6 @@ unicase = "2.9.0"
 url = { version = "2.5.8", features = ["serde"] }
 uuid = { workspace = true, features = ["v4", "v5", "js", "serde"] }
 validator = { version = "0.21.0", features = ["derive"] }
-walkdir = "2.5.0"
 web-time = "1.1"
 winnow = "1.0"
 bon = "3.9.3"
@@ -142,12 +139,15 @@ glb-render = { path = "../glb-render" }
 handlebars = "6.4.1"
 image = { version = "0.25.10", default-features = false, features = ["png"] }
 insta = { version = "1.47.0", features = ["json", "filters", "redactions"] }
+kcl-derive-docs = { version = "=0.2.192", path = "../kcl-derive-docs" }
 kcl-directory-test-macro = { version = "0.1", path = "../kcl-directory-test-macro" }
 miette = { version = "7.6.0", features = ["fancy"] }
 pretty_assertions = "1.4.1"
 proptest = { workspace = true }
+tempfile = "3.27"
 tokio = { version = "1.52.3", features = ["rt-multi-thread", "macros", "time"] }
 twenty-twenty = "0.8.4"
+walkdir = "2.5.0"
 
 [lints]
 workspace = true

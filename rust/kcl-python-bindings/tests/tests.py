@@ -332,6 +332,37 @@ solid = extrude(disk, length = 10mm)
         assert (await session.sketch_constraint_report()).total_sketches() == 1
 
 
+@requires_engine
+@pytest.mark.asyncio
+@pytest.mark.parametrize("geometry_only", [False, True])
+async def test_kcl_session_snapshots_respect_highlight_edges(geometry_only):
+    # Regression test. graphics-on-CPU-only mode was ignoring the graphics settings,
+    # e.g. whether to highlight edges or not.
+    code = """
+@settings(kclVersion = 2.0)
+profile = sketch(on = XY) {
+  circle001 = circle(center = [var 0mm, var 0mm], start = [var 5mm, var 0mm])
+}
+disk = region(point = [0mm, 0mm], sketch = profile)
+solid = extrude(disk, length = 10mm)
+"""
+    images = []
+    for highlight_edges in [False, True]:
+        async with await execute_with_retries(
+            kcl.new_kcl_session_code,
+            code,
+            geometry_only=geometry_only,
+            highlight_edges=highlight_edges,
+        ) as session:
+            snapshots = await session.snapshots(kcl.ImageFormat.Png, [])
+            assert len(snapshots) == 1
+            image = bytes(snapshots[0])
+            assert image.startswith(b"\x89PNG\r\n\x1a\n")
+            images.append(image)
+
+    assert images[0] != images[1], "highlight_edges must change the rendered image"
+
+
 @pytest.mark.asyncio
 async def test_kcl_session_sketch_constraint_report(tmp_path):
     source = tmp_path / "main.kcl"

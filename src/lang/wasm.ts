@@ -349,6 +349,8 @@ export interface ExecState {
   edgeRefactorMetadata: EdgeRefactorMeta[]
   /** Populated when fillet/chamfer is called with direct tags (e.g. tags = [e1]). Used for Z0006 code mod. */
   directTagFilletMetadata: DirectTagFilletMeta[]
+  /** The program had not changed, so the last run was reused and the engine's geometry was left as it was. */
+  fromCache: boolean
 }
 
 export function emptyOperationsByModule(): OperationsByModule {
@@ -391,6 +393,7 @@ export function emptyExecState(): ExecState {
     defaultPlanes: null,
     edgeRefactorMetadata: [],
     directTagFilletMetadata: [],
+    fromCache: false,
   }
 }
 
@@ -503,6 +506,7 @@ export function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
     defaultPlanes: execOutcome.defaultPlanes,
     edgeRefactorMetadata,
     directTagFilletMetadata,
+    fromCache: execOutcome.fromCache,
   }
 }
 

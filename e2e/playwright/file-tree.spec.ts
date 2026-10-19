@@ -1,21 +1,14 @@
 import {
-  PLAYWRIGHT_TEST_SCOPE_KEY,
   createProject,
   executorInputPath,
   getUtils,
+  PLAYWRIGHT_TEST_SCOPE_KEY,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import {
-  FILE_EXT,
-  LEGACY_SKETCH_MODE_FEATURE_FLAG,
-  PROJECT_SETTINGS_FILE_NAME,
-} from '@src/lib/constants'
+import { FILE_EXT, PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import type { PromisifiedZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import * as nodeFsP from 'fs/promises'
-
-// Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
-test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
 
 const exists = async (
   fs: PromisifiedZooDesignStudioFS,
@@ -28,6 +21,67 @@ const exists = async (
     return false
   }
 }
+
+test(
+  'opens and saves text files from the project explorer',
+  { tag: ['@desktop', '@windows'] },
+  async ({ folderSetupFn, fs, homePage, toolbar, page }) => {
+    const projectName = 'text-files'
+    const encoder = new TextEncoder()
+    const { dir } = await folderSetupFn(async (dir) => {
+      const projectPath = await fs.join(dir, projectName)
+      await fs.mkdir(projectPath, { recursive: true })
+      await fs.writeFile(
+        await fs.join(projectPath, 'main.kcl'),
+        encoder.encode('@settings(kclVersion = 3.0)\n')
+      )
+      await fs.writeFile(
+        await fs.join(projectPath, 'config.toml'),
+        encoder.encode('\ufefftitle = "Example"\r\n')
+      )
+      await fs.writeFile(
+        await fs.join(projectPath, 'config'),
+        encoder.encode('No extension')
+      )
+    })
+    await homePage.openProject(projectName)
+    await toolbar.openPane(DefaultLayoutPaneID.Files)
+    await toolbar.closePane(DefaultLayoutPaneID.Code)
+
+    const textEditor = page.locator('#code-pane').getByRole('textbox')
+    await toolbar.openFile('config.toml')
+    await expect(textEditor).toContainText('title = "Example"')
+    await textEditor.press('ControlOrMeta+End')
+    await textEditor.pressSequentially('enabled = true')
+    await textEditor.press('Enter')
+    await page.evaluate(() => navigator.clipboard.writeText('count = 2\n'))
+    await textEditor.press('ControlOrMeta+KeyV')
+    const textFilePath = await fs.join(dir, projectName, 'config.toml')
+    await expect
+      .poll(async () => Array.from(await fs.readFile(textFilePath)))
+      .toEqual(
+        Array.from(
+          encoder.encode(
+            '\ufefftitle = "Example"\r\nenabled = true\r\ncount = 2\r\n'
+          )
+        )
+      )
+
+    await toolbar.openFile('config')
+    await expect(textEditor).toHaveText('No extension')
+    await toolbar.closePane(DefaultLayoutPaneID.Code)
+    const tree = page.getByRole('tree', { name: 'Files Explorer' })
+    await tree.press('ArrowDown')
+    await expect(
+      page.getByRole('treeitem', { name: 'config', exact: true })
+    ).toHaveAttribute('aria-selected', 'true')
+    await tree.press('Enter')
+    await expect(textEditor).toHaveText('No extension')
+
+    await toolbar.openFile('main.kcl')
+    await expect(page.locator('.cm-content[data-language="kcl"]')).toBeVisible()
+  }
+)
 
 test.describe('desktop fixture isolation', { tag: ['@desktop'] }, () => {
   test('does not run init scripts outside the test that registered them', async ({
@@ -49,69 +103,6 @@ test.describe('desktop fixture isolation', { tag: ['@desktop'] }, () => {
     await expect
       .poll(() => page.evaluate(() => localStorage.getItem('persistCode')))
       .toBeNull()
-  })
-})
-
-test.describe('integrations tests', { tag: ['@desktop'] }, () => {
-  test('Creating a new file or switching file while in sketchMode should exit sketchMode', async ({
-    page,
-    folderSetupFn,
-    homePage,
-    scene,
-    toolbar,
-    cmdBar,
-    fs,
-  }) => {
-    await folderSetupFn(async (dir) => {
-      const bracketDir = await fs.join(dir, 'test-sample')
-      await fs.mkdir(bracketDir, { recursive: true })
-      const testData = await nodeFsP.readFile(
-        executorInputPath('e2e-can-sketch-on-chamfer.kcl')
-      )
-      await fs.writeFile(await fs.join(bracketDir, 'main.kcl'), testData)
-    })
-
-    await test.step('setup test', async () => {
-      await homePage.expectState({
-        projectCards: [
-          {
-            title: 'test-sample',
-            fileCount: 1,
-          },
-        ],
-        sortBy: 'last-modified-desc',
-      })
-      await homePage.openProject('test-sample')
-      await scene.connectionEstablished()
-      await scene.settled()
-    })
-
-    await toolbar.editSketch()
-
-    const fileName = 'Untitled.kcl'
-    await test.step('check sketch mode is exited when creating new file', async () => {
-      await toolbar.openPane(DefaultLayoutPaneID.Files)
-      await toolbar.expectFileTreeState(['main.kcl'])
-
-      await toolbar.createFile({ fileName, waitForToastToDisappear: true })
-
-      // check we're out of sketch mode
-      await expect(toolbar.exitSketchBtn).not.toBeVisible()
-      await expect(toolbar.startSketchBtn).toBeVisible()
-    })
-    await test.step('setup for next assertion', async () => {
-      await scene.waitForExecutionDoneAfter(() => toolbar.openFile('main.kcl'))
-      await scene.settled()
-      await toolbar.editSketch()
-      await toolbar.expectFileTreeState(['main.kcl', fileName])
-    })
-    await test.step('check sketch mode is exited when opening a different file', async () => {
-      await toolbar.openFile(fileName)
-
-      // check we're out of sketch mode
-      await expect(toolbar.exitSketchBtn).not.toBeVisible()
-      await expect(toolbar.startSketchBtn).toBeVisible()
-    })
   })
 })
 

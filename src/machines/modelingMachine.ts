@@ -4544,13 +4544,8 @@ export const modelingMachine = setup({
           return
         }
 
-        const fileOperations = kclManager.fileOperations
-        if (!fileOperations) {
-          return new Error('File operations are not configured.')
-        }
-
         await exportSave({
-          fileOperations,
+          fileOperations: kclManager.systemDeps.fileOperations,
           files,
           toastId,
           fileName,

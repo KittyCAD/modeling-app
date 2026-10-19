@@ -1,12 +1,7 @@
-import { join } from 'path'
-import * as fsp from 'fs/promises'
-
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { LEGACY_SKETCH_MODE_FEATURE_FLAG } from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
-
-// These sketches are KCL 1.0, so editing them needs the legacy sketch flag.
-test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
+import * as fsp from 'fs/promises'
+import { join } from 'path'
 
 const FEATURE_TREE_EXAMPLE_CODE = `export fn timesFive(@x) {
   return 5 * x
@@ -39,24 +34,6 @@ sketch002 = startSketchOn(plane001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch002, length = 10)
-`
-
-const FEATURE_TREE_SKETCH_CODE = `sketch001 = startSketchOn(XZ)
-  |> startProfile(at = [0, 0])
-  |> angledLine(angle = 0, length = 4, tag = $rectangleSegmentA001)
-  |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 2, tag = $rectangleSegmentB001)
-  |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $rectangleSegmentC001)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close(%)
-extrude001 = extrude(sketch001, length = 10)
-sketch002 = startSketchOn(extrude001, face = rectangleSegmentB001)
-  |> circle(
-       center = [-1, 2],
-       radius = .5
-     )
-plane001 = offsetPlane(XZ, offset = -5)
-sketch003 = startSketchOn(plane001)
-  |> circle(center = [0, 0], radius = 5)
 `
 
 const FEATURE_TREE_FUNCTION_BODY_APPEARANCE_CODE = `export fn cylinder(d, l) {
@@ -364,79 +341,6 @@ test.describe('Feature Tree pane', { tag: '@desktop' }, () => {
     })
   })
 
-  test(`User can edit sketch (but not on offset plane yet) from the feature tree`, async ({
-    context,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    page,
-  }) => {
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, FEATURE_TREE_SKETCH_CODE)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-    await homePage.goToModelingScene()
-
-    await test.step('force re-exe', async () => {
-      await page.waitForTimeout(1000)
-      await editor.replaceCode('90', '91')
-      await page.waitForTimeout(1500)
-    })
-
-    await test.step('On a default plane should work', async () => {
-      await (await toolbar.getFeatureTreeOperation('Sketch', 0)).dblclick()
-      await expect(
-        toolbar.exitSketchBtn,
-        'We should be in sketch mode now'
-      ).toBeVisible()
-      await editor.expectState({
-        highlightedCode: '',
-        diagnostics: [],
-        activeLines: ['sketch001 = startSketchOn(XZ)'],
-      })
-      await toolbar.exitSketchBtn.click()
-    })
-
-    await test.step('On an extrude face should *not* work', async () => {
-      await toolbar.closeFeatureTreePane()
-      await page.waitForTimeout(1000)
-      await editor.replaceCode('91', '90')
-      await page.waitForTimeout(2000)
-      await toolbar.waitForFeatureTreeToBeBuilt()
-      const sketchOnFaceBtn = await toolbar.getFeatureTreeOperation('Sketch', 1)
-      await sketchOnFaceBtn.scrollIntoViewIfNeeded()
-      await sketchOnFaceBtn.dblclick()
-
-      await expect(
-        toolbar.exitSketchBtn,
-        'We should be in sketch mode now'
-      ).toBeVisible()
-      await editor.expectState({
-        highlightedCode: '',
-        diagnostics: [],
-        activeLines: [
-          'sketch002=startSketchOn(extrude001,face=rectangleSegmentB001)',
-        ],
-      })
-      await toolbar.exitSketchBtn.click()
-    })
-
-    await test.step('On an offset plane should work', async () => {
-      // Tooltip is getting in the way of clicking, so I'm first closing the pane
-      await toolbar.closeFeatureTreePane()
-      await (await toolbar.getFeatureTreeOperation('Sketch', 2)).dblclick()
-      await editor.expectState({
-        highlightedCode: '',
-        diagnostics: [],
-        activeLines: ['sketch003=startSketchOn(plane001)'],
-      })
-      await expect(
-        toolbar.exitSketchBtn,
-        'We should be in sketch mode now'
-      ).toBeVisible()
-    })
-  })
   test(`User can edit an extrude operation from the feature tree`, async ({
     homePage,
     scene,
@@ -705,133 +609,6 @@ profile003 = startProfile(sketch001, at = [0, -4.93])
 
       // Verify the plane code is gone, and https://github.com/KittyCAD/modeling-app/issues/5988 is fixed.
       await editor.expectEditor.not.toContain('plane001 =')
-    })
-  })
-
-  test('User can edit sketch via right-click context menu when sketch is on face', async ({
-    homePage,
-    scene,
-    toolbar,
-    cmdBar,
-    page,
-  }) => {
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `@settings(defaultLengthUnit = mm)
-
-// Define dimensions
-controllerWidth = 102
-controllerHeight = 173
-controllerDepth = 14
-
-dpadSize = 20
-
-controllerBody = startSketchOn(XY)
-  |> startProfile(at = [
-       -controllerWidth / 2,
-       -controllerHeight / 2
-     ])
-  |> xLine(length = controllerWidth)
-  |> yLine(length = controllerHeight)
-  |> xLine(length = -controllerWidth)
-  |> close()
-  |> extrude(length = controllerDepth)
-
-// Simplified D-pad as a single rectangle
-test = startSketchOn(controllerBody, face = END)
-  |> startProfile(at = [-dpadSize / 2, -dpadSize / 2])
-  |> xLine(length = dpadSize)
-  |> yLine(length = dpadSize)
-  |> xLine(length = -dpadSize)
-  |> close()
-  |> extrude(length = 2)
-`
-      )
-    })
-
-    await homePage.goToModelingScene()
-    await scene.settled()
-    await toolbar.openFeatureTreePane()
-
-    await test.step('right-click on second sketch and select Edit', async () => {
-      // Get the second sketch (index 1) - the "test" sketch on controllerBody
-      const sketchOperation = await toolbar.getFeatureTreeOperation('Sketch', 1)
-      await sketchOperation.click({ button: 'right' })
-
-      // Click the Edit menu item from the context menu
-      const editMenuItem = page.getByRole('button', { name: 'Edit' })
-      await expect(editMenuItem).toBeVisible()
-      await editMenuItem.click()
-
-      // Wait for animation to complete
-      await page.waitForTimeout(600)
-    })
-
-    await test.step('verify we entered sketch mode', async () => {
-      await expect(
-        toolbar.exitSketchBtn,
-        'We should be in sketch mode now'
-      ).toBeVisible()
-      await expect(toolbar.exitSketchBtn).not.toBeDisabled()
-    })
-
-    await test.step('exit sketch mode', async () => {
-      await toolbar.exitSketchBtn.click()
-      await expect(toolbar.startSketchBtn).toBeVisible()
-    })
-  })
-
-  test('User can edit sketch via feature tree when sketch is used in patternLinear2d', async ({
-    homePage,
-    scene,
-    toolbar,
-    cmdBar,
-    page,
-  }) => {
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `sketch001 = startSketchOn(XZ)
-profile001 = startProfile(sketch001, at = [-3.75, 3.75])
-  |> line(end = [-4.98, -8.91])
-  |> line(end = [5.5, 1.5])
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-  |> patternLinear2d(instances = 3, distance = 10, axis = [1, 0])
-`
-      )
-    })
-
-    await homePage.goToModelingScene()
-    await scene.settled()
-    await toolbar.openFeatureTreePane()
-
-    await test.step('double-click on sketch to enter edit mode', async () => {
-      const sketchOperation = await toolbar.getFeatureTreeOperation('Sketch', 0)
-      await sketchOperation.dblclick()
-
-      // Wait for animation to complete
-      await page.waitForTimeout(600)
-    })
-
-    await test.step('verify we entered sketch mode', async () => {
-      await expect(
-        toolbar.exitSketchBtn,
-        'We should be in sketch mode now'
-      ).toBeVisible()
-      await expect(toolbar.exitSketchBtn).not.toBeDisabled()
-    })
-
-    await test.step('verify segment overlays are visible', async () => {
-      // The sketch has 3 line segments plus close, so we expect 4 segment overlays
-      const segmentOverlays = page.getByTestId('segment-overlay')
-      await expect(segmentOverlays).toHaveCount(4, { timeout: 5000 })
-    })
-
-    await test.step('exit sketch mode', async () => {
-      await toolbar.exitSketchBtn.click()
-      await expect(toolbar.startSketchBtn).toBeVisible()
     })
   })
 })

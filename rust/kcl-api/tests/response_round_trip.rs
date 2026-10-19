@@ -45,6 +45,48 @@ fn operations_by_module_round_trips_inside_untagged_response() {
 }
 
 #[test]
+fn hide_operation_payloads_are_readable_after_round_trip() {
+    use kcl_api::ArtifactId;
+    use kcl_api::OpKclValue;
+    use uuid::Uuid;
+
+    for (kind, id) in [
+        ("Sketch", Uuid::from_u128(1)),
+        ("Solid", Uuid::from_u128(2)),
+        ("Helix", Uuid::from_u128(3)),
+    ] {
+        let json = serde_json::json!({
+            "type": "StdLibCall",
+            "name": "hide",
+            "unlabeledArg": {
+                "value": { "type": kind, "value": { "artifactId": id } },
+                "sourceRange": [0, 8, 0],
+            },
+            "labeledArgs": {},
+            "nodePath": { "steps": [] },
+            "sourceRange": [0, 8, 0],
+        });
+        let operation: Operation = serde_json::from_value(json.clone()).unwrap();
+        let Operation::StdLibCall {
+            unlabeled_arg: Some(argument),
+            ..
+        } = &operation
+        else {
+            panic!("expected a standard library call with an unlabeled argument");
+        };
+
+        let artifact_id = match argument.value() {
+            OpKclValue::Sketch { value } => value.artifact_id(),
+            OpKclValue::Solid { value } => value.artifact_id(),
+            OpKclValue::Helix { value } => value.artifact_id(),
+            value => panic!("unexpected operation argument: {value:?}"),
+        };
+        assert_eq!(artifact_id, ArtifactId::new(id));
+        assert_eq!(serde_json::to_value(&operation).unwrap(), json);
+    }
+}
+
+#[test]
 fn tag_identifier_has_one_discriminator_and_round_trips() {
     let value = KclValueView::TagIdentifier {
         value: "edge01".to_owned(),
