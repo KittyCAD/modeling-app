@@ -509,6 +509,18 @@ function getSyncPolicyProjectRoot(targetPath: string) {
   )
 }
 
+/** Check runtime path eligibility without reading project files or sync metadata. */
+export function shouldObserveCloudSyncMutation(targetPath: string) {
+  return (
+    isConfiguredForCloud() &&
+    !isCloudSyncExcludedPath(targetPath) &&
+    Boolean(
+      getSyncPolicyProjectRoot(targetPath) ||
+        isCloudLibraryMaterializationPath(targetPath)
+    )
+  )
+}
+
 function isCloudLibraryMaterializationPath(targetPath: string) {
   const normalizedTargetPath = normalizePathForSync(targetPath)
   return getCloudLibraryMaterializationPaths().some(
@@ -1258,21 +1270,34 @@ async function clearOutboxEntriesTouchingProject(projectPath: string) {
 }
 
 async function refreshPendingCount() {
+  const publishPendingCount = (pendingCount: number) => {
+    if (cloudSyncStatus.value.pendingCount !== pendingCount) {
+      updateStatus({ pendingCount })
+    }
+  }
+  if (!isConfiguredForCloud() || (syncScopeProjectPath && !syncScopeSyncable)) {
+    publishPendingCount(0)
+    return
+  }
+
   try {
     const entries = await getAllOutboxEntries()
-    updateStatus({
-      pendingCount: getCloudSyncScopePlanForScope(
-        entries,
-        syncScopeProjectPath
-          ? {
-              projectPath: syncScopeProjectPath,
-              syncable: syncScopeSyncable,
-            }
-          : undefined
-      ).pendingCount,
-    })
+    // Configuration or the opened project can change while IndexedDB is read.
+    publishPendingCount(
+      !isConfiguredForCloud()
+        ? 0
+        : getCloudSyncScopePlanForScope(
+            entries,
+            syncScopeProjectPath
+              ? {
+                  projectPath: syncScopeProjectPath,
+                  syncable: syncScopeSyncable,
+                }
+              : undefined
+          ).pendingCount
+    )
   } catch {
-    updateStatus({ pendingCount: 0 })
+    publishPendingCount(0)
   }
 }
 
@@ -4528,10 +4553,16 @@ export function configureCloudSyncLocalFileSystem(
 }
 
 export async function notifyCloudSyncWriteLikeMutation(targetPath: string) {
+  if (!shouldObserveCloudSyncMutation(targetPath)) {
+    return
+  }
   await afterWriteLikeMutation(targetPath).catch(markCloudMetadataFailure)
 }
 
 export async function notifyCloudSyncRemoveMutation(targetPath: string) {
+  if (!shouldObserveCloudSyncMutation(targetPath)) {
+    return
+  }
   await afterRemoveMutation(targetPath).catch(markCloudMetadataFailure)
 }
 
@@ -4539,6 +4570,9 @@ export async function notifyCloudSyncRenameMutation(
   sourcePath: string,
   targetPath: string
 ) {
+  if (!shouldObserveCloudSyncMutation(targetPath)) {
+    return
+  }
   await registerProjectRename(sourcePath, targetPath).catch(
     markCloudMetadataFailure
   )
@@ -4587,6 +4621,7 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
     updateStatus({
       enabled: false,
       state: 'disabled',
+      pendingCount: 0,
       activeProjectPath: undefined,
       scopedProjectPath: undefined,
       scopedProjectCloudProjectId: undefined,
