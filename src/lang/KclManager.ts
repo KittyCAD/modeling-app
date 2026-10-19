@@ -805,7 +805,7 @@ export class KclManager extends File {
   private disposeSettings: (() => void) | undefined
   private _automaticallyRenderEnabled = true
   private _editorModifiedAt = 0
-  private _syncedEditorModifiedAt = 0
+  private _syncedDocumentVersion = 0
   private _diskModifiedAt = 0
   private diskWriteInProgress: Promise<void> | undefined
   private pendingRecoverySnapshot: {
@@ -1275,10 +1275,8 @@ export class KclManager extends File {
     if (update.docChanged) {
       const newCode = update.view.state.doc.toString()
       this._documentVersion += 1
-      this._editorModifiedAt = Math.max(
-        Date.now(),
-        this._editorModifiedAt + 0.001
-      )
+      // Keep epoch milliseconds for disk comparisons, with sub-millisecond precision.
+      this._editorModifiedAt = performance.timeOrigin + performance.now()
       const isProgrammaticUpdate = update.transactions.some((tr) => {
         const ignoredEvents = [
           tr.annotation(updateOutsideEditorEvent.type),
@@ -1894,6 +1892,8 @@ export class KclManager extends File {
         recoverySnapshot.modifiedAt > snapshot.modifiedAt
       ) {
         editor._editorModifiedAt = recoverySnapshot.modifiedAt
+        // Recovered code is an unsaved revision of the disk snapshot.
+        editor._documentVersion += 1
         editor.persistRecoverySnapshot()
       }
       editor.watch()
@@ -1952,6 +1952,8 @@ export class KclManager extends File {
     providedEditor.markFileAsSynced(snapshot.modifiedAt)
     if (recoverySnapshot && recoverySnapshot.modifiedAt > snapshot.modifiedAt) {
       providedEditor._editorModifiedAt = recoverySnapshot.modifiedAt
+      // Recovered code is an unsaved revision of the disk snapshot.
+      providedEditor._documentVersion += 1
       providedEditor.persistRecoverySnapshot()
     }
     providedEditor.startWatchingSettings()
@@ -2053,15 +2055,15 @@ export class KclManager extends File {
 
   private markFileAsSynced(
     modifiedAt = this._diskModifiedAt,
-    editorModifiedAt = this._editorModifiedAt
+    documentVersion = this._documentVersion
   ) {
     this._diskModifiedAt = modifiedAt
-    this._syncedEditorModifiedAt = editorModifiedAt
+    this._syncedDocumentVersion = documentVersion
     this.persistRecoverySnapshot()
   }
 
   private hasUnsavedLocalChanges() {
-    return this._editorModifiedAt > this._syncedEditorModifiedAt
+    return this._documentVersion !== this._syncedDocumentVersion
   }
 
   private persistRecoverySnapshot() {
@@ -3977,7 +3979,7 @@ export class KclManager extends File {
       const modifiedAt = await this.textFileIO.modifiedAt(requestedPath)
       if (requestedPath !== this.path) return
       // An edit during the write stays dirty even though this save completed.
-      this.markFileAsSynced(modifiedAt, editorModifiedAt)
+      this.markFileAsSynced(modifiedAt, requestedDocumentVersion)
     } catch (err: unknown) {
       // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
       console.warn('error saving file', err)

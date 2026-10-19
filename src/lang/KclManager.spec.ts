@@ -2046,45 +2046,55 @@ describe('KclManager diagnostics', () => {
     expect(clientErrorMocks.reportSystemIOError).not.toHaveBeenCalled()
   })
 
-  it('restores the local recovery snapshot when reopening a file after unsaved edits', async () => {
-    vi.useFakeTimers()
+  it.each([false, true])(
+    'restores unsaved recovery data when reusing an editor: %s',
+    async (reuseEditor) => {
+      vi.useFakeTimers()
 
-    const path = '/tmp/kcl-manager-recovery-test.kcl'
-    const recoveryKey = getRecoverySnapshotKey(path)
-    const { kclManager } = createKclManagerTestHarness('disk base')
+      const path = '/tmp/kcl-manager-recovery-test.kcl'
+      const recoveryKey = getRecoverySnapshotKey(path)
+      const { kclManager } = createKclManagerTestHarness('disk base')
 
-    kclManager.path = path
-    ;(kclManager as any).markFileAsSynced()
+      kclManager.path = path
+      ;(kclManager as any).markFileAsSynced()
 
-    kclManager.updateCodeEditor('recovered newer', {
-      shouldExecute: false,
-      shouldWriteToDisk: false,
-      shouldResetCamera: false,
-      shouldAddToHistory: false,
-    })
+      kclManager.updateCodeEditor('recovered newer', {
+        shouldExecute: false,
+        shouldWriteToDisk: false,
+        shouldResetCamera: false,
+        shouldAddToHistory: false,
+      })
 
-    await vi.advanceTimersByTimeAsync(300)
+      await vi.advanceTimersByTimeAsync(300)
 
-    const persistedSnapshot = localStorage.getItem(recoveryKey)
-    expect(persistedSnapshot).not.toBeNull()
-    expect(persistedSnapshot!).toContain('recovered newer')
+      const persistedSnapshot = localStorage.getItem(recoveryKey)
+      expect(persistedSnapshot).not.toBeNull()
+      expect(persistedSnapshot!).toContain('recovered newer')
 
-    vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('disk base')
+      vi.spyOn(kclManager.textFileIO, 'read').mockResolvedValue('disk base')
 
-    const reopened = await KclManager.fromFile(
-      new File(path, kclManager.textFileIO, 99),
-      (kclManager as any).systemDeps
-    )
+      const providedEditor = reuseEditor
+        ? new KclManager('/tmp/previous.kcl', '', kclManager.systemDeps)
+        : undefined
+      const reopened = await KclManager.fromFile(
+        new File(path, kclManager.textFileIO, 99),
+        kclManager.systemDeps,
+        providedEditor
+      )
 
-    expect(reopened.code).toBe('recovered newer')
-    expect((reopened as any).hasUnsavedLocalChanges()).toBe(true)
-  })
+      expect(reopened.code).toBe('recovered newer')
+      expect((reopened as any).hasUnsavedLocalChanges()).toBe(true)
+      reopened.close()
+    }
+  )
 })
 
 describe('editor and disk timestamp ordering', () => {
   async function openFile() {
     vi.useFakeTimers()
     vi.setSystemTime(2000)
+    vi.spyOn(performance, 'timeOrigin', 'get').mockReturnValue(2000)
+    vi.spyOn(performance, 'now').mockReturnValue(0.25)
     const harness = createKclManagerTestHarness()
     const { kclManager } = harness
     const path = '/tmp/timestamp-ordering.kcl'
@@ -2110,7 +2120,7 @@ describe('editor and disk timestamp ordering', () => {
     })
   }
 
-  it.each([1500, 2000])(
+  it.each([1500, 2000, 2000.125])(
     'writes newer editor data over disk timestamp %s without reading its contents',
     async (diskTime) => {
       const { app, kclManager, timestamp, read } = await openFile()
@@ -2164,7 +2174,7 @@ describe('editor and disk timestamp ordering', () => {
     }
   })
 
-  it('keeps a later edit dirty when an earlier save completes and ignores its watcher echo', async () => {
+  it('keeps a later edit with the same timestamp dirty when an earlier save completes and ignores its watcher echo', async () => {
     const { app, kclManager, timestamp, read, path } = await openFile()
     try {
       edit(kclManager, 'first')
@@ -2176,7 +2186,6 @@ describe('editor and disk timestamp ordering', () => {
       const save = kclManager.flushWriteToFile()
       await flushPromises()
       expect(write).toHaveBeenCalledWith('first')
-      vi.setSystemTime(3000)
       edit(kclManager, 'second')
       timestamp.mockResolvedValue(4000)
       read.mockClear()
