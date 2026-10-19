@@ -105,37 +105,18 @@ it('does not watch an empty path or restart watching when the path is cleared', 
 })
 
 describe('reading a file with its timestamp', () => {
-  it('retries a read when its disk timestamp changes while reading', async () => {
+  it('reads the modification time and contents once', async () => {
     const { io } = createIO()
-    const timestamp = vi
-      .spyOn(io, 'modifiedAt')
-      .mockResolvedValueOnce(1000)
-      .mockResolvedValueOnce(2000)
-      .mockResolvedValue(2000)
-    const read = vi
-      .spyOn(io, 'read')
-      .mockResolvedValueOnce('old bytes')
-      .mockResolvedValueOnce('new bytes')
-
-    await expect(
-      new File('/tmp/model.kcl', io).readWithTimestamp()
-    ).resolves.toEqual({
-      code: 'new bytes',
-      modifiedAt: 2000,
-    })
-    expect(read).toHaveBeenCalledTimes(2)
-    expect(timestamp).toHaveBeenCalledTimes(4)
-  })
-
-  it('fails instead of returning bytes with the wrong timestamp after repeated changes', async () => {
-    const { io } = createIO()
-    let modifiedAt = 0
-    vi.spyOn(io, 'modifiedAt').mockImplementation(async () => ++modifiedAt)
+    const timestamp = vi.spyOn(io, 'modifiedAt').mockResolvedValue(1000)
     const read = vi.spyOn(io, 'read').mockResolvedValue('bytes')
 
     await expect(
       new File('/tmp/model.kcl', io).readWithTimestamp()
-    ).rejects.toThrow('File kept changing while reading')
-    expect(read).toHaveBeenCalledTimes(3)
+    ).resolves.toEqual({
+      code: 'bytes',
+      modifiedAt: 1000,
+    })
+    expect(timestamp).toHaveBeenCalledExactlyOnceWith('/tmp/model.kcl')
+    expect(read).toHaveBeenCalledExactlyOnceWith('/tmp/model.kcl')
   })
 })

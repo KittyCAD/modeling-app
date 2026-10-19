@@ -34,17 +34,12 @@ export class File extends EventTarget {
     return this.textFileIO.read(this.pathSignal.value)
   }
 
-  /** Read bytes and their disk timestamp from the same stable file revision. */
+  /** Read file contents and their disk modification time. */
   async readWithTimestamp(): Promise<{ code: string; modifiedAt: number }> {
     const path = this.path
-    for (let attempt = 0; attempt < 3; attempt += 1) {
-      const modifiedAt = await this.textFileIO.modifiedAt(path)
-      const code = await this.textFileIO.read(path)
-      if (modifiedAt === (await this.textFileIO.modifiedAt(path))) {
-        return { code, modifiedAt }
-      }
-    }
-    return Promise.reject(new Error('File kept changing while reading'))
+    const modifiedAt = await this.textFileIO.modifiedAt(path)
+    const code = await this.textFileIO.read(path)
+    return { code, modifiedAt }
   }
 
   write(newContent: string) {
