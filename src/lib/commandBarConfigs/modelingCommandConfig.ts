@@ -21,7 +21,6 @@ import type {
   StateMachineCommandSetConfig,
 } from '@src/lib/commandTypes'
 import { isKclCommandValue } from '@src/lib/commandUtils'
-import { booleanValueSummary } from '@src/lib/booleanInput'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   KCL_AXIS_X,
@@ -658,10 +657,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             defaultValue: KCL_DEFAULT_LENGTH,
             prepopulate: true,
           },
-          symmetric: {
-            allowVariables: true,
-            valueSummary: booleanValueSummary,
-          },
           to: {
             inputType: 'selection',
             // TODO: add edgeCut during https://github.com/KittyCAD/modeling-app/issues/8831
@@ -754,10 +749,23 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         translateProfileToPath: {
           inputType: 'boolean',
           required: false,
+          // Keep the recommended creation defaults visible and clearable.
+          prepopulate: true,
+          defaultValue: ({
+            argumentsToSubmit,
+          }: {
+            argumentsToSubmit: Record<string, unknown>
+          }) => (argumentsToSubmit.nodeToEdit ? undefined : false),
         },
         orientProfilePerpendicular: {
           inputType: 'boolean',
           required: false,
+          prepopulate: true,
+          defaultValue: ({
+            argumentsToSubmit,
+          }: {
+            argumentsToSubmit: Record<string, unknown>
+          }) => (argumentsToSubmit.nodeToEdit ? undefined : false),
         },
         bodyType: {
           inputType: 'options',

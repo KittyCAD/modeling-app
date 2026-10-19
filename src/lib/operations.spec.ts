@@ -3,6 +3,9 @@ import type { NodePath } from '@rust/kcl-lib/bindings/NodePath'
 import type { OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { defaultSourceRange } from '@src/lang/sourceRange'
+import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
+import type { ModelingCodemod } from '@src/lang/modifyAst/modelingCodemod'
+import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import { topLevelRange } from '@src/lang/util'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -15,6 +18,7 @@ import {
   defaultNodePath,
   nodePathFromRange,
   pathToNodeFromRustNodePath,
+  recast,
 } from '@src/lang/wasm'
 import type { Artifact, ArtifactGraph } from '@src/lang/wasm'
 import {
@@ -568,7 +572,7 @@ describe('operations.test.ts', () => {
 
   describe('tangent chain edit flow', () => {
     it.each(['fillet', 'chamfer'])(
-      'restores evaluated booleans for %s',
+      'preserves boolean references and their evaluated values for %s',
       async (name) => {
         const { rustContext } = await buildTheWorldAndNoEngineConnection()
         const dimension = name === 'fillet' ? 'radius' : 'length'
@@ -594,7 +598,137 @@ describe('operations.test.ts', () => {
           if (isErr(result)) throw result
           if (result.type !== 'Find and select command')
             throw new Error('Expected edit flow')
-          expect(result.data.argDefaultValues?.tangentChain).toBe(value)
+          expect(result.data.argDefaultValues?.tangentChain).toMatchObject({
+            valueText: 'chain',
+            valueCalculated: String(value),
+            valueAst: { type: 'Name' },
+          })
+        }
+      }
+    )
+  })
+
+  describe('modeling boolean edit round trips', () => {
+    const cases = [
+      ['Extrude', 'extrude', 'length = 5mm', ['symmetric', 'hideSeams']],
+      [
+        'Sweep',
+        'sweep',
+        'path = trajectory',
+        ['sectional', 'translateProfileToPath', 'orientProfilePerpendicular'],
+      ],
+      ['Loft', 'loft', '', ['bezApproximateRational']],
+      ['Revolve', 'revolve', 'angle = 90deg', ['symmetric']],
+      ['Fillet', 'fillet', 'radius = 2mm', ['tangentChain']],
+      ['Chamfer', 'chamfer', 'length = 2mm', ['tangentChain']],
+      ['Helix', 'helix', 'revolutions = 3, angleStart = 0deg', ['ccw']],
+      [
+        'Pattern Circular 3D',
+        'patternCircular3d',
+        'instances = 3, axis = Z, center = [0mm, 0mm, 0mm]',
+        ['rotateDuplicates', 'useOriginal'],
+      ],
+      [
+        'Pattern Linear 3D',
+        'patternLinear3d',
+        'instances = 3, axis = X, distance = 5mm',
+        ['useOriginal'],
+      ],
+      ['Translate', 'translate', 'x = 1mm', ['global']],
+      ['Rotate', 'rotate', 'yaw = 90deg', ['global']],
+      ['Scale', 'scale', 'factor = 2', ['global']],
+      ['Boolean Split', 'split', 'tools = tool', ['merge', 'keepTools']],
+    ] as const
+
+    it.each(cases)(
+      'preserves literals, bindings, expressions, and omission for %s',
+      async (commandName, name, requiredArgs, booleanArgs) => {
+        const { rustContext, instance, kclManager } =
+          await buildTheWorldAndNoEngineConnection()
+        for (const expression of [
+          'true',
+          'false',
+          'mirrorEnabled',
+          '!mirrorEnabled',
+        ]) {
+          const args = [
+            requiredArgs,
+            ...booleanArgs.map((name) => `${name} = ${expression}`),
+          ]
+            .filter(Boolean)
+            .join(', ')
+          const code = `@settings(kclVersion = 3.0)\nmirrorEnabled = false\npart = ${name}(body, ${args})`
+          const ast = assertParse(code, instance)
+          const declaration = ast.body.at(-1)
+          if (
+            declaration?.type !== 'VariableDeclaration' ||
+            declaration.declaration.init.type !== 'CallExpressionKw'
+          )
+            throw new Error('Expected call declaration')
+          const operation = stdlib(name)
+          if (operation.type !== 'StdLibCall')
+            throw new Error('Expected stdlib call')
+          for (const arg of declaration.declaration.init.arguments) {
+            if (!arg.label) continue
+            operation.labeledArgs[arg.label.name] = {
+              sourceRange: [arg.arg.start, arg.arg.end, 0],
+              value: booleanArgs.some((name) => name === arg.label?.name)
+                ? {
+                    type: 'Bool',
+                    value:
+                      expression === 'true' || expression === '!mirrorEnabled',
+                  }
+                : { type: 'Number', value: 1, ty: { type: 'Any' } },
+            }
+          }
+          const edit = await enterEditFlow({
+            operation,
+            code,
+            artifactGraph: new Map(),
+            rustContext,
+            artifact: compositeSolidArtifact('part', defaultSourceRange()),
+          })
+          if (isErr(edit)) throw edit
+          if (edit.type !== 'Find and select command')
+            throw new Error('Expected edit flow')
+          for (const name of booleanArgs) {
+            const value = edit.data.argDefaultValues?.[name]
+            if (expression === 'true' || expression === 'false')
+              expect(value).toBe(expression === 'true')
+            else
+              expect(value).toMatchObject({
+                valueText: expression,
+                valueAst: {
+                  type: expression.startsWith('!') ? 'UnaryExpression' : 'Name',
+                },
+              })
+          }
+          const codemod = modelingCommandCodemods[
+            commandName
+          ] as ModelingCodemod<Record<string, unknown>>
+          const common = { ast, kclManager, wasmInstance: instance }
+          const commandArgs = {
+            ...edit.data.argDefaultValues,
+            nodeToEdit: createPathToNodeForLastVariable(ast, false),
+          }
+          const saved = await codemod.run({ ...common, args: commandArgs })
+          if (isErr(saved)) throw saved
+          const savedCode = recast(saved.modifiedAst, instance)
+          for (const name of booleanArgs)
+            expect(savedCode).toContain(`${name} = ${expression}`)
+          const cleared = await codemod.run({
+            ...common,
+            args: {
+              ...commandArgs,
+              ...Object.fromEntries(
+                booleanArgs.map((name) => [name, undefined])
+              ),
+            },
+          })
+          if (isErr(cleared)) throw cleared
+          const clearedCode = recast(cleared.modifiedAst, instance)
+          for (const name of booleanArgs)
+            expect(clearedCode).not.toContain(`${name} =`)
         }
       }
     )

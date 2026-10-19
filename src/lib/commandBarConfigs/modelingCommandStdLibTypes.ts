@@ -60,7 +60,7 @@ type PointAndClickStdLibCommandArg<
 // Maps KCL types to TS types, with a fallback to Selections
 type StdLibCommandArgValue<Arg extends { readonly ty: string | null }> =
   Arg['ty'] extends 'bool'
-    ? boolean
+    ? boolean | KclCommandValue
     : Arg['ty'] extends 'string' | 'TagDecl'
       ? string
       : Arg['ty'] extends
@@ -106,7 +106,6 @@ export type HelixModes = 'Axis' | 'Edge' | 'Cylinder'
 export type ExtrudeCommandArgs = Override<
   PointAndClickCommandArgs<'Extrude'>,
   {
-    symmetric?: boolean | KclCommandValue
     direction?: Selections
     method?: KclPreludeExtrudeMethod
     bodyType?: KclPreludeBodyType

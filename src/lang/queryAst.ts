@@ -1201,6 +1201,15 @@ export const valueOrVariable = (variable: KclCommandValue) => {
     : variable.valueAst
 }
 
+export function booleanOrExpression(
+  value: boolean | KclCommandValue,
+  wasmInstance: ModuleType
+) {
+  return typeof value === 'boolean'
+    ? createLiteral(value, wasmInstance)
+    : valueOrVariable(value)
+}
+
 /**
  * Single id carried by an entity reference, when it has one.
  * Edges and vertices are not a single artifact: an edge id here is only the

@@ -36,6 +36,7 @@ import {
   isEnginePrimitiveSelection,
   resolveToCodeRef,
   traverse,
+  booleanOrExpression,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import { programTextEqual } from '@src/lang/programTextEqual'
@@ -116,7 +117,7 @@ export function addFillet({
   tolerance?: KclCommandValue
   tag?: string
   version?: KclCommandValue
-  tangentChain?: boolean
+  tangentChain?: boolean | KclCommandValue
   nodeToEdit?: PathToNode
   wasmInstance: ModuleType
 }):
@@ -136,7 +137,7 @@ export function addFillet({
       ? [
           createLabeledArg(
             'tangentChain',
-            createLiteral(tangentChain, wasmInstance)
+            booleanOrExpression(tangentChain, wasmInstance)
           ),
         ]
       : []),
@@ -275,7 +276,7 @@ export function addChamfer({
   angle?: KclCommandValue
   tag?: string
   version?: KclCommandValue
-  tangentChain?: boolean
+  tangentChain?: boolean | KclCommandValue
   nodeToEdit?: PathToNode
   wasmInstance: ModuleType
 }):
@@ -295,7 +296,7 @@ export function addChamfer({
       ? [
           createLabeledArg(
             'tangentChain',
-            createLiteral(tangentChain, wasmInstance)
+            booleanOrExpression(tangentChain, wasmInstance)
           ),
         ]
       : []),

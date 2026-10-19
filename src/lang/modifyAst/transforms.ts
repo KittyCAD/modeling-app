@@ -19,6 +19,7 @@ import { getAxisExpression } from '@src/lang/modifyAst/geometry'
 import {
   getVariableExprsFromSelection,
   resolveToCodeRef,
+  booleanOrExpression,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import type {
@@ -54,7 +55,7 @@ export function addTranslate({
   x?: KclCommandValue
   y?: KclCommandValue
   z?: KclCommandValue
-  global?: boolean
+  global?: boolean | KclCommandValue
   xyz?: KclCommandValue
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
@@ -80,7 +81,7 @@ export function addTranslate({
   const zExpr = z ? [createLabeledArg('z', valueOrVariable(z))] : []
   const globalExpr =
     global !== undefined
-      ? [createLabeledArg('global', createLiteral(global, wasmInstance))]
+      ? [createLabeledArg('global', booleanOrExpression(global, wasmInstance))]
       : []
   const xyzExpr = xyz ? [createLabeledArg('xyz', valueOrVariable(xyz))] : []
 
@@ -147,7 +148,7 @@ export function addRotate({
   yaw?: KclCommandValue
   axis?: string
   angle?: KclCommandValue
-  global?: boolean
+  global?: boolean | KclCommandValue
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
@@ -178,7 +179,7 @@ export function addRotate({
     : []
   const globalExpr =
     global !== undefined
-      ? [createLabeledArg('global', createLiteral(global, wasmInstance))]
+      ? [createLabeledArg('global', booleanOrExpression(global, wasmInstance))]
       : []
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
@@ -249,7 +250,7 @@ export function addScale({
   y?: KclCommandValue
   z?: KclCommandValue
   factor?: KclCommandValue
-  global?: boolean
+  global?: boolean | KclCommandValue
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
@@ -277,7 +278,7 @@ export function addScale({
     : []
   const globalExpr =
     global !== undefined
-      ? [createLabeledArg('global', createLiteral(global, wasmInstance))]
+      ? [createLabeledArg('global', booleanOrExpression(global, wasmInstance))]
       : []
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)

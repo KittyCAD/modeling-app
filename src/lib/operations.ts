@@ -49,7 +49,9 @@ import {
   type ArtifactGraph,
   type CallExpressionKw,
   type Program,
+  parse,
   pathToNodeFromRustNodePath,
+  resultIsOk,
 } from '@src/lang/wasm'
 import type {
   HelixModes,
@@ -326,9 +328,36 @@ function retrieveFaceSelectionsForEdit(
   return isErr(result) ? emptySelections() : result.faces
 }
 
-function extractBooleanArgument(operation: StdLibCallOp, name: string) {
-  const value = operation.labeledArgs[name]?.value
-  return value?.type === 'Bool' ? value.value : undefined
+async function extractBooleanArgument(
+  code: string,
+  operation: StdLibCallOp,
+  name: string,
+  rustContext: RustContext
+): Promise<boolean | KclExpression | undefined | Error> {
+  const arg = operation.labeledArgs[name]
+  if (!arg) return undefined
+  const valueText = code.slice(
+    ...arg.sourceRange.map((offset) => toUtf16(offset, code))
+  )
+  if (valueText === 'true' || valueText === 'false') return valueText === 'true'
+
+  // Use the operation's evaluated value for display, and keep its source for
+  // edits. Submission reevaluates the expression against the current model.
+  const parsed = parse(
+    `__result__ = ${valueText}`,
+    await rustContext.wasmInstancePromise
+  )
+  if (isErr(parsed)) return parsed
+  if (!resultIsOk(parsed) || arg.value.type !== 'Bool')
+    return new Error(`Couldn't retrieve ${name} argument`)
+  const declaration = parsed.program.body[0]
+  if (declaration?.type !== 'VariableDeclaration')
+    return new Error(`Couldn't retrieve ${name} argument`)
+  return {
+    valueAst: declaration.declaration.init,
+    valueText,
+    valueCalculated: String(arg.value.value),
+  }
 }
 
 function extractStringArgument(
@@ -510,28 +539,13 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
         : axisEdgeSelection.edge
   }
 
-  // Keep variable references and expressions when reopening the boolean field.
-  let symmetric: ModelingCommandSchema['Extrude']['symmetric']
-  if ('symmetric' in operation.labeledArgs && operation.labeledArgs.symmetric) {
-    const expression = code.slice(
-      ...operation.labeledArgs.symmetric.sourceRange.map(boundToUtf16)
-    )
-    if (expression === 'true' || expression === 'false') {
-      symmetric = expression === 'true'
-    } else {
-      const result = await stringToKclExpression(expression, rustContext, {
-        allowBooleans: true,
-      })
-      if (
-        isErr(result) ||
-        'errors' in result ||
-        (result.valueCalculated !== 'true' &&
-          result.valueCalculated !== 'false')
-      )
-        return { reason: "Couldn't retrieve symmetric argument" }
-      symmetric = result
-    }
-  }
+  const symmetric = await extractBooleanArgument(
+    code,
+    operation,
+    'symmetric',
+    rustContext
+  )
+  if (isErr(symmetric)) return { reason: symmetric.message }
 
   // bidirectionalLength argument from a string to a KCL expression
   let bidirectionalLength: KclCommandValue | undefined
@@ -650,14 +664,13 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
     }
   }
 
-  // hideSeams argument from a string to boolean
-  let hideSeams: boolean | undefined
-  if ('hideSeams' in operation.labeledArgs && operation.labeledArgs.hideSeams) {
-    hideSeams =
-      code.slice(
-        ...operation.labeledArgs.hideSeams.sourceRange.map(boundToUtf16)
-      ) === 'true'
-  }
+  const hideSeams = await extractBooleanArgument(
+    code,
+    operation,
+    'hideSeams',
+    rustContext
+  )
+  if (isErr(hideSeams)) return { reason: hideSeams.message }
 
   // bodyType argument from a string
   let bodyType: KclPreludeBodyType | undefined
@@ -734,19 +747,14 @@ const prepareToEditLoft: PrepareToEditCallback = async ({
     vDegree = result
   }
 
-  // bezApproximateRational argument from a string to boolean
-  let bezApproximateRational: boolean | undefined
-  if (
-    'bezApproximateRational' in operation.labeledArgs &&
-    operation.labeledArgs.bezApproximateRational
-  ) {
-    bezApproximateRational =
-      code.slice(
-        ...operation.labeledArgs.bezApproximateRational.sourceRange.map(
-          boundToUtf16
-        )
-      ) === 'true'
-  }
+  const bezApproximateRational = await extractBooleanArgument(
+    code,
+    operation,
+    'bezApproximateRational',
+    rustContext
+  )
+  if (isErr(bezApproximateRational))
+    return { reason: bezApproximateRational.message }
 
   // baseCurveIndex argument from a string to a KCL expression
   let baseCurveIndex: KclCommandValue | undefined
@@ -887,11 +895,19 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
   )
   const version = 'error' in versionResult ? undefined : versionResult
 
+  const tangentChain = await extractBooleanArgument(
+    code,
+    operation,
+    'tangentChain',
+    rustContext
+  )
+  if (isErr(tangentChain)) return { reason: tangentChain.message }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
   const argDefaultValues: ModelingCommandSchema['Fillet'] = {
-    tangentChain: extractBooleanArgument(operation, 'tangentChain'),
+    tangentChain,
     selection,
     radius,
     tolerance,
@@ -964,11 +980,19 @@ const prepareToEditChamfer: PrepareToEditCallback = async ({
 
   const tag = extractStringArgument(code, operation, 'tag')
 
+  const tangentChain = await extractBooleanArgument(
+    code,
+    operation,
+    'tangentChain',
+    rustContext
+  )
+  if (isErr(tangentChain)) return { reason: tangentChain.message }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
   const argDefaultValues: ModelingCommandSchema['Chamfer'] = {
-    tangentChain: extractBooleanArgument(operation, 'tangentChain'),
+    tangentChain,
     selection,
     length,
     secondLength,
@@ -1445,13 +1469,13 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
     : emptySelections()
 
   // optional arguments
-  let sectional: boolean | undefined
-  if ('sectional' in operation.labeledArgs && operation.labeledArgs.sectional) {
-    sectional =
-      code.slice(
-        ...operation.labeledArgs.sectional.sourceRange.map(boundToUtf16)
-      ) === 'true'
-  }
+  const sectional = await extractBooleanArgument(
+    code,
+    operation,
+    'sectional',
+    rustContext
+  )
+  if (isErr(sectional)) return { reason: sectional.message }
 
   const toleranceResult = await extractOptionalKclArgument(
     code,
@@ -1464,31 +1488,23 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
   }
   const tolerance = toleranceResult
 
-  let translateProfileToPath: boolean | undefined
-  if (
-    'translateProfileToPath' in operation.labeledArgs &&
-    operation.labeledArgs.translateProfileToPath
-  ) {
-    translateProfileToPath =
-      code.slice(
-        ...operation.labeledArgs.translateProfileToPath.sourceRange.map(
-          boundToUtf16
-        )
-      ) === 'true'
-  }
+  const translateProfileToPath = await extractBooleanArgument(
+    code,
+    operation,
+    'translateProfileToPath',
+    rustContext
+  )
+  if (isErr(translateProfileToPath))
+    return { reason: translateProfileToPath.message }
 
-  let orientProfilePerpendicular: boolean | undefined
-  if (
-    'orientProfilePerpendicular' in operation.labeledArgs &&
-    operation.labeledArgs.orientProfilePerpendicular
-  ) {
-    orientProfilePerpendicular =
-      code.slice(
-        ...operation.labeledArgs.orientProfilePerpendicular.sourceRange.map(
-          boundToUtf16
-        )
-      ) === 'true'
-  }
+  const orientProfilePerpendicular = await extractBooleanArgument(
+    code,
+    operation,
+    'orientProfilePerpendicular',
+    rustContext
+  )
+  if (isErr(orientProfilePerpendicular))
+    return { reason: orientProfilePerpendicular.message }
 
   let relativeTo: SweepRelativeTo | undefined
   if (
@@ -1691,12 +1707,8 @@ const prepareToEditHelix: PrepareToEditCallback = async ({
   }
 
   // counterClockWise boolean arg (optional)
-  let ccw: boolean | undefined
-  if ('ccw' in operation.labeledArgs && operation.labeledArgs.ccw) {
-    ccw =
-      code.slice(...operation.labeledArgs.ccw.sourceRange.map(boundToUtf16)) ===
-      'true'
-  }
+  const ccw = await extractBooleanArgument(code, operation, 'ccw', rustContext)
+  if (isErr(ccw)) return { reason: ccw.message }
 
   // Assemble the default argument values for the Offset Plane command,
   // with `nodeToEdit` set, which will let the Offset Plane actor know
@@ -1811,14 +1823,13 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
   }
   const tolerance = toleranceResult
 
-  // symmetric argument from a string to boolean
-  let symmetric: boolean | undefined
-  if ('symmetric' in operation.labeledArgs && operation.labeledArgs.symmetric) {
-    symmetric =
-      code.slice(
-        ...operation.labeledArgs.symmetric.sourceRange.map(boundToUtf16)
-      ) === 'true'
-  }
+  const symmetric = await extractBooleanArgument(
+    code,
+    operation,
+    'symmetric',
+    rustContext
+  )
+  if (isErr(symmetric)) return { reason: symmetric.message }
 
   // bidirectionalLength argument from a string to a KCL expression
   let bidirectionalAngle: KclCommandValue | undefined
@@ -1964,27 +1975,21 @@ const prepareToEditPatternCircular3d: PrepareToEditCallback = async ({
     arcDegrees = result
   }
 
-  let rotateDuplicates: boolean | undefined
-  if (
-    'rotateDuplicates' in operation.labeledArgs &&
-    operation.labeledArgs.rotateDuplicates
-  ) {
-    rotateDuplicates =
-      code.slice(
-        ...operation.labeledArgs.rotateDuplicates.sourceRange.map(boundToUtf16)
-      ) === 'true'
-  }
+  const rotateDuplicates = await extractBooleanArgument(
+    code,
+    operation,
+    'rotateDuplicates',
+    rustContext
+  )
+  if (isErr(rotateDuplicates)) return { reason: rotateDuplicates.message }
 
-  let useOriginal: boolean | undefined
-  if (
-    'useOriginal' in operation.labeledArgs &&
-    operation.labeledArgs.useOriginal
-  ) {
-    useOriginal =
-      code.slice(
-        ...operation.labeledArgs.useOriginal.sourceRange.map(boundToUtf16)
-      ) === 'true'
-  }
+  const useOriginal = await extractBooleanArgument(
+    code,
+    operation,
+    'useOriginal',
+    rustContext
+  )
+  if (isErr(useOriginal)) return { reason: useOriginal.message }
 
   // 6. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
@@ -2064,15 +2069,13 @@ const prepareToEditPatternLinear3d: PrepareToEditCallback = async ({
   }
   const axisString = axisResult
 
-  // 5. Convert the useOriginal argument from a string to a boolean
-  const useOriginalArg = operation.labeledArgs?.['useOriginal']
-  let useOriginal: boolean | undefined
-  if (useOriginalArg && useOriginalArg.sourceRange) {
-    const useOriginalString = code.slice(
-      ...useOriginalArg.sourceRange.map(boundToUtf16)
-    )
-    useOriginal = useOriginalString === 'true'
-  }
+  const useOriginal = await extractBooleanArgument(
+    code,
+    operation,
+    'useOriginal',
+    rustContext
+  )
+  if (isErr(useOriginal)) return { reason: useOriginal.message }
 
   // 6. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
@@ -3144,6 +3147,7 @@ const prepareToEditSplit: PrepareToEditCallback = async ({
   operation,
   artifactGraph,
   code,
+  rustContext,
 }) => {
   const baseCommand = {
     name: 'Boolean Split',
@@ -3163,29 +3167,21 @@ const prepareToEditSplit: PrepareToEditCallback = async ({
     )
   }
 
-  let merge: boolean | undefined
-  const mergeArg = operation.labeledArgs?.merge
-  if (mergeArg) {
-    const mergeValue = code.slice(
-      ...mergeArg.sourceRange.map((r) => toUtf16(r, code))
-    )
-    if (mergeValue !== 'true' && mergeValue !== 'false') {
-      return { reason: "Couldn't retrieve merge argument" }
-    }
-    merge = mergeValue === 'true'
-  }
+  const merge = await extractBooleanArgument(
+    code,
+    operation,
+    'merge',
+    rustContext
+  )
+  if (isErr(merge)) return { reason: merge.message }
 
-  let keepTools: boolean | undefined
-  const keepToolsArg = operation.labeledArgs?.keepTools
-  if (keepToolsArg) {
-    const keepToolsValue = code.slice(
-      ...keepToolsArg.sourceRange.map((r) => toUtf16(r, code))
-    )
-    if (keepToolsValue !== 'true' && keepToolsValue !== 'false') {
-      return { reason: "Couldn't retrieve keepTools argument" }
-    }
-    keepTools = keepToolsValue === 'true'
-  }
+  const keepTools = await extractBooleanArgument(
+    code,
+    operation,
+    'keepTools',
+    rustContext
+  )
+  if (isErr(keepTools)) return { reason: keepTools.message }
 
   const argDefaultValues: ModelingCommandSchema['Boolean Split'] = {
     targets,
@@ -3925,7 +3921,6 @@ async function prepareToEditTranslate({
   let x: KclCommandValue | undefined = undefined
   let y: KclCommandValue | undefined = undefined
   let z: KclCommandValue | undefined = undefined
-  let global: boolean | undefined
   if (operation.labeledArgs.x) {
     const result = await stringToKclExpression(
       code.slice(...operation.labeledArgs.x.sourceRange.map(boundToUtf16)),
@@ -3971,12 +3966,13 @@ async function prepareToEditTranslate({
   }
   const xyz = xyzResult
 
-  if (operation.labeledArgs.global) {
-    global =
-      code.slice(
-        ...operation.labeledArgs.global.sourceRange.map(boundToUtf16)
-      ) === 'true'
-  }
+  const global = await extractBooleanArgument(
+    code,
+    operation,
+    'global',
+    rustContext
+  )
+  if (isErr(global)) return { reason: global.message }
 
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
@@ -4015,9 +4011,6 @@ async function prepareToEditScale({
     }
   }
 
-  /** Version of `toUtf16` bound to our code, for mapping source range values. */
-  const boundToUtf16 = (n: number) => toUtf16(n, code)
-
   const objects = retrieveUnlabeledSelectionsForEdit(operation, artifactGraph)
 
   // 2. Convert the x y z arguments from a string to a KCL expression
@@ -4025,7 +4018,6 @@ async function prepareToEditScale({
   let y: KclCommandValue | undefined = undefined
   let z: KclCommandValue | undefined = undefined
   let factor: KclCommandValue | undefined = undefined
-  let global: boolean | undefined
   if (operation.labeledArgs.x) {
     const res = await extractKclArgument(code, operation, 'x', rustContext)
     if ('error' in res) return { reason: res.error }
@@ -4046,12 +4038,13 @@ async function prepareToEditScale({
     if ('error' in res) return { reason: res.error }
     factor = res
   }
-  if (operation.labeledArgs.global) {
-    global =
-      code.slice(
-        ...operation.labeledArgs.global.sourceRange.map(boundToUtf16)
-      ) === 'true'
-  }
+  const global = await extractBooleanArgument(
+    code,
+    operation,
+    'global',
+    rustContext
+  )
+  if (isErr(global)) return { reason: global.message }
 
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
@@ -4099,7 +4092,6 @@ async function prepareToEditRotate({
   let roll: KclCommandValue | undefined = undefined
   let pitch: KclCommandValue | undefined = undefined
   let yaw: KclCommandValue | undefined = undefined
-  let global: boolean | undefined
   if (operation.labeledArgs.roll) {
     const result = await stringToKclExpression(
       code.slice(...operation.labeledArgs.roll.sourceRange.map(boundToUtf16)),
@@ -4146,12 +4138,13 @@ async function prepareToEditRotate({
   }
   const angle = angleResult
 
-  if (operation.labeledArgs.global) {
-    global =
-      code.slice(
-        ...operation.labeledArgs.global.sourceRange.map(boundToUtf16)
-      ) === 'true'
-  }
+  const global = await extractBooleanArgument(
+    code,
+    operation,
+    'global',
+    rustContext
+  )
+  if (isErr(global)) return { reason: global.message }
 
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
