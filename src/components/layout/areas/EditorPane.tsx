@@ -178,17 +178,12 @@ function TextFileEditor({
     const path = activeTextFile.path
     const isMarkdown = path.toLowerCase().endsWith('.md')
     const languageExtension = isMarkdown ? [markdown()] : []
+    const lineSeparator = activeTextFile.text.match(/\r\n|\r|\n/)?.[0]
 
     const view = new EditorView({
       state: EditorState.create({
         doc: activeTextFile.text,
         extensions: [
-          EditorState.lineSeparator.of(
-            activeTextFile.text.match(/\r\n|\r|\n/)?.[0] ?? '\n'
-          ),
-          EditorView.clipboardInputFilter.of((text, state) =>
-            text.replace(/\r\n?|\n/g, state.lineBreak)
-          ),
           textThemeCompartment.of(
             textEditorThemeExtensions(resolvedTheme, isMarkdown)
           ),
@@ -206,7 +201,7 @@ function TextFileEditor({
               scheduleActiveTextFileWrite(
                 fileOperations,
                 path,
-                update.state.sliceDoc()
+                update.state.doc.sliceString(0, undefined, lineSeparator)
               )
             }
           }),
