@@ -34,6 +34,7 @@ if (typeof process !== 'undefined' && process.title !== 'browser') {
     writeFile: fs.writeFile,
     readdir: fs.readdir,
     stat: fs.stat,
+    realpath: fs.realpath,
     mkdir: fs.mkdir,
     rm: fs.rm,
     detach,

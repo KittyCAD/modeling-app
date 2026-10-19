@@ -523,6 +523,10 @@ const impl: IZooDesignStudioFS = {
   writeFile,
   readdir,
   stat,
+  realpath: async (targetPath) => {
+    await stat(targetPath)
+    return path.resolve(targetPath)
+  },
   mkdir,
   rm,
   detach: async () => {

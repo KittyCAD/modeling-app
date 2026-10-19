@@ -42,6 +42,7 @@ export type FileSystemOperation =
   | 'create-file'
   | 'read-directory'
   | 'read-file'
+  | 'realpath'
   | 'remove'
   | 'rename'
   | 'stat'
@@ -96,6 +97,7 @@ export type FileSystemError =
  */
 export interface FileSystemService {
   readonly stat: (path: string) => Effect.Effect<FileStat, FileSystemError>
+  readonly realpath: (path: string) => Effect.Effect<string, FileSystemError>
   readonly canReadWrite: (
     path: string
   ) => Effect.Effect<boolean, FileSystemError>
@@ -275,6 +277,8 @@ export function makeFileSystem(backing: IZooDesignStudioFS): FileSystemService {
 
   const service: FileSystemService = {
     stat,
+    realpath: (path) =>
+      tryBacking('realpath', path, () => backing.realpath(path)),
     canReadWrite,
     exists,
     readFile,
@@ -315,6 +319,9 @@ export const fileSystemLayer = (backing: IZooDesignStudioFS) =>
 
 export const stat = (path: string) =>
   FileSystem.pipe(Effect.flatMap((fileSystem) => fileSystem.stat(path)))
+
+export const realpath = (path: string) =>
+  FileSystem.pipe(Effect.flatMap((fileSystem) => fileSystem.realpath(path)))
 
 export const canReadWrite = (path: string) =>
   FileSystem.pipe(Effect.flatMap((fileSystem) => fileSystem.canReadWrite(path)))

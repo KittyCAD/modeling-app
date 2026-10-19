@@ -343,16 +343,31 @@ export function toArrayBuffer(data: Uint8Array): ArrayBuffer {
   return copy.buffer
 }
 
-export async function parseProjectArchive(archive: ArrayBuffer) {
+export type ProjectArchiveReadLimits = {
+  includePath: (relativePath: string) => boolean
+  maxFileBytes: number
+  maxFiles: number
+  maxTotalBytes: number
+}
+
+class ProjectArchiveLimitError extends Error {}
+
+export async function parseProjectArchive(
+  archive: ArrayBuffer,
+  limits?: ProjectArchiveReadLimits
+) {
   return withCloudSyncFailureContext(
     { stage: 'archive', point: 'parse-project-archive' },
     async () => {
       try {
-        return await parseZipProjectArchive(archive)
+        return await parseZipProjectArchive(archive, limits)
       } catch (zipError) {
+        if (zipError instanceof ProjectArchiveLimitError) {
+          return Promise.reject(zipError)
+        }
         const jsonProject = parseJsonProjectArchive(archive)
         if (jsonProject) {
-          return jsonProject
+          return limitProjectArchiveFiles(jsonProject, limits)
         }
         // eslint-disable-next-line suggest-no-throw/suggest-no-throw
         throw zipError
@@ -361,7 +376,81 @@ export async function parseProjectArchive(archive: ArrayBuffer) {
   )
 }
 
-async function parseZipProjectArchive(archive: ArrayBuffer) {
+function readZipEntryWithinLimit(entry: JSZip.JSZipObject, limit: number) {
+  return new Promise<Uint8Array>((resolve, reject) => {
+    // JSZip exposes internalStream at runtime, but omits it from JSZipObject's
+    // declaration. Streaming lets us stop expansion at the byte limit.
+    const stream = (
+      entry as JSZip.JSZipObject & {
+        internalStream(type: 'uint8array'): JSZip.JSZipStreamHelper<Uint8Array>
+      }
+    ).internalStream('uint8array')
+    const chunks: Uint8Array[] = []
+    let size = 0
+    let exceeded = false
+    stream
+      .on('data', (chunk: Uint8Array) => {
+        if (exceeded) {
+          return
+        }
+        if (size + chunk.byteLength > limit) {
+          exceeded = true
+          stream.pause()
+          reject(new ProjectArchiveLimitError('Project archive is too large.'))
+          return
+        }
+        chunks.push(chunk)
+        size += chunk.byteLength
+      })
+      .on('error', reject)
+      .on('end', () => {
+        if (exceeded) {
+          return
+        }
+        const data = new Uint8Array(size)
+        let offset = 0
+        for (const chunk of chunks) {
+          data.set(chunk, offset)
+          offset += chunk.byteLength
+        }
+        resolve(data)
+      })
+      .resume()
+  })
+}
+
+async function limitProjectArchiveFiles(
+  files: ProjectArchiveFile[],
+  limits?: ProjectArchiveReadLimits
+) {
+  if (!limits) {
+    return files
+  }
+  const selected = files.filter((file) => limits.includePath(file.relativePath))
+  if (selected.length > limits.maxFiles) {
+    return Promise.reject(
+      new ProjectArchiveLimitError('Too many project files.')
+    )
+  }
+  let total = 0
+  for (const file of selected) {
+    total += file.data.byteLength
+    if (
+      file.data.byteLength > limits.maxFileBytes ||
+      total > limits.maxTotalBytes
+    ) {
+      return Promise.reject(
+        new ProjectArchiveLimitError('Project archive is too large.')
+      )
+    }
+  }
+  return selected
+}
+
+async function parseZipProjectArchive(
+  archive: ArrayBuffer,
+  limits?: ProjectArchiveReadLimits
+) {
   const zip = await JSZip.loadAsync(archive)
   const zipEntries = Object.values(zip.files).filter(
     (entry) => !entry.dir && !entry.name.startsWith('__MACOSX/')
@@ -370,14 +459,40 @@ async function parseZipProjectArchive(archive: ArrayBuffer) {
     zipEntries.map((entry) => entry.name)
   )
 
-  return Promise.all(
-    zipEntries.map(async (entry) => ({
+  const selected = zipEntries
+    .map((entry) => ({
+      entry,
       relativePath: normalizeRelativePath(
         stripArchiveRoot(entry.name, rootDirectory)
       ),
-      data: Uint8Array.from(await entry.async('uint8array')),
     }))
-  )
+    .filter(({ relativePath }) => !limits || limits.includePath(relativePath))
+
+  if (!limits) {
+    return Promise.all(
+      selected.map(async ({ entry, relativePath }) => ({
+        relativePath,
+        data: Uint8Array.from(await entry.async('uint8array')),
+      }))
+    )
+  }
+  if (selected.length > limits.maxFiles) {
+    return Promise.reject(
+      new ProjectArchiveLimitError('Too many project files.')
+    )
+  }
+
+  const files: ProjectArchiveFile[] = []
+  let total = 0
+  for (const { entry, relativePath } of selected) {
+    const data = await readZipEntryWithinLimit(
+      entry,
+      Math.min(limits.maxFileBytes, limits.maxTotalBytes - total)
+    )
+    total += data.byteLength
+    files.push({ relativePath, data })
+  }
+  return files
 }
 
 function parseJsonProjectArchive(archive: ArrayBuffer) {

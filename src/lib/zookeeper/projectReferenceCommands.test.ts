@@ -1,6 +1,11 @@
+import { mkdtemp, mkdir, rm, symlink, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import path from 'node:path'
 import { signal } from '@preact/signals-core'
 import type { ProjectArchiveFile } from '@src/lib/cloudSync/types'
+import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+import nodeFileSystem from '@src/lib/fs-zds/nodefs'
 import { createProjectReferenceCommands } from '@src/lib/zookeeper/projectReferenceCommands'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import type { HomeProjectEntry } from '@src/registry/contracts/homeProjects'
@@ -35,11 +40,15 @@ const cloudProject: HomeProjectEntry = {
   readWriteAccess: true,
 }
 
-function fixture() {
-  const entries = signal<readonly HomeProjectEntry[]>([
-    localProject,
-    cloudProject,
-  ])
+function fixture(
+  options: {
+    initialEntries?: HomeProjectEntry[]
+    fileOperations?: FileOperationsRegistryService
+  } = {}
+) {
+  const entries = signal<readonly HomeProjectEntry[]>(
+    options.initialEntries ?? [localProject, cloudProject]
+  )
   const readFile = vi.fn(async (path: string) => {
     if (path === '/private/library/TRUCK/main.kcl') {
       return new TextEncoder().encode('wheel = circle(10)')
@@ -71,9 +80,11 @@ function fixture() {
         : ('file' as const),
     size: 20,
   }))
+  const realpath = vi.fn(async (path: string) => path)
   const fileOperations = {
     readDirectory,
     readFile,
+    realpath,
     stat,
     writeFile: vi.fn(),
   } as unknown as FileOperationsRegistryService
@@ -84,7 +95,7 @@ function fixture() {
   } as unknown as WebSocket
   const commands = createProjectReferenceCommands({
     entries,
-    fileOperations,
+    fileOperations: options.fileOperations ?? fileOperations,
     getApiToken: () => 'token',
   })
   let nextRequest = 0
@@ -109,7 +120,18 @@ function fixture() {
       error?: string
     }
   }
-  return { commands, entries, fileOperations, readFile, request, sent, ws }
+  return {
+    commands,
+    entries,
+    fileOperations,
+    readDirectory,
+    readFile,
+    realpath,
+    request,
+    sent,
+    stat,
+    ws,
+  }
 }
 
 describe('Zookeeper project reference commands', () => {
@@ -207,6 +229,130 @@ describe('Zookeeper project reference commands', () => {
     })
     expect(response.status).toBe('rejected')
     expect(readFile).not.toHaveBeenCalled()
+  })
+
+  it('does not follow a project symlink outside its root', async () => {
+    const { readDirectory, readFile, realpath, request, stat } = fixture()
+    readDirectory.mockImplementation(async (path) => {
+      if (path === '/private/library/TRUCK') {
+        return ['linked']
+      }
+      if (path === '/private/outside') {
+        return ['secret.kcl']
+      }
+      return []
+    })
+    realpath.mockImplementation(async (path) =>
+      path === '/private/library/TRUCK/linked' ? '/private/outside' : path
+    )
+    stat.mockImplementation(async (path) => ({
+      kind: path.endsWith('/linked') ? 'directory' : 'file',
+      size: 20,
+    }))
+    const found = await request('projects.search', { query: 'TRUCK' })
+    const projectId = (
+      found.result?.projects as Array<{ project_id: string }>
+    )[0].project_id
+
+    const listing = await request('projects.list_files', {
+      project_id: projectId,
+    })
+    expect(listing.result?.files).toEqual([])
+    const read = await request('projects.read_file', {
+      project_id: projectId,
+      path: 'linked/secret.kcl',
+    })
+    expect(read.status).toBe('rejected')
+    expect(readFile).not.toHaveBeenCalled()
+    expect(readDirectory).not.toHaveBeenCalledWith('/private/outside')
+  })
+
+  it('blocks real desktop file and directory symlinks outside the project', async () => {
+    const temp = await mkdtemp(path.join(tmpdir(), 'zds-project-reference-'))
+    const root = path.join(temp, 'project')
+    const outside = path.join(temp, 'outside')
+    const runtime = createFileOperationsRuntime(nodeFileSystem.impl)
+    try {
+      await mkdir(root)
+      await mkdir(outside)
+      await writeFile(path.join(root, 'main.kcl'), 'cube = 1')
+      await writeFile(path.join(outside, 'secret.kcl'), 'secret = 1')
+      await symlink(outside, path.join(root, 'linked'), 'dir')
+      await symlink(
+        path.join(outside, 'secret.kcl'),
+        path.join(root, 'secret.kcl'),
+        'file'
+      )
+      const { request } = fixture({
+        initialEntries: [{ ...localProject, localProjectPath: root }],
+        fileOperations: runtime.operations,
+      })
+      const found = await request('projects.search', { query: 'TRUCK' })
+      const projectId = (
+        found.result?.projects as Array<{ project_id: string }>
+      )[0].project_id
+
+      const listing = await request('projects.list_files', {
+        project_id: projectId,
+      })
+      expect(listing.result?.files).toEqual(['main.kcl'])
+      for (const forbiddenPath of ['secret.kcl', 'linked/secret.kcl']) {
+        const read = await request('projects.read_file', {
+          project_id: projectId,
+          path: forbiddenPath,
+        })
+        expect(read.status).toBe('rejected')
+      }
+    } finally {
+      await runtime.dispose()
+      await rm(temp, { recursive: true, force: true })
+    }
+  })
+
+  it('keeps Unicode characters whole across file pages', async () => {
+    const { readFile, request } = fixture()
+    const content = `${'a'.repeat(7_999)}🚗 more`
+    readFile.mockResolvedValue(new TextEncoder().encode(content))
+    const found = await request('projects.search', { query: 'TRUCK' })
+    const projectId = (
+      found.result?.projects as Array<{ project_id: string }>
+    )[0].project_id
+    const first = await request('projects.read_file', {
+      project_id: projectId,
+      path: 'main.kcl',
+    })
+    const second = await request('projects.read_file', {
+      project_id: projectId,
+      path: 'main.kcl',
+      offset: first.result?.next_offset,
+    })
+
+    expect(first.result?.next_offset).toBe(7_999)
+    expect(`${first.result?.content}${second.result?.content}`).toBe(content)
+    const invalid = await request('projects.read_file', {
+      project_id: projectId,
+      path: 'main.kcl',
+      offset: 8_000,
+    })
+    expect(invalid.status).toBe('rejected')
+  })
+
+  it('does not include local paths in failed command responses', async () => {
+    const { readDirectory, request } = fixture()
+    readDirectory.mockRejectedValueOnce(
+      new Error('Unable to read-directory /private/library/TRUCK')
+    )
+    const found = await request('projects.search', { query: 'TRUCK' })
+    const projectId = (
+      found.result?.projects as Array<{ project_id: string }>
+    )[0].project_id
+    const response = await request('projects.list_files', {
+      project_id: projectId,
+    })
+
+    expect(response.status).toBe('rejected')
+    expect(response.error).not.toContain('/private/library/TRUCK')
+    expect(response.error).toBe('Could not access the library project.')
   })
 
   it('reads cloud-only project archives without materializing them', async () => {

@@ -103,6 +103,7 @@ export function createCloudSyncTestFs(
     basename,
     dirname,
     getPath: async () => '/documents',
+    realpath: async (path: string) => normalizeTestPath(path),
     access: async (path: string) => {
       const normalizedPath = normalizeTestPath(path)
       if (!files.has(normalizedPath) && !directories.has(normalizedPath)) {

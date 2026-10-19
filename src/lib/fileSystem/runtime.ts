@@ -12,6 +12,7 @@ import {
   pendingFileOperations,
   readDirectory as readDirectoryOperation,
   readFile as readFileOperation,
+  realpath as realpathOperation,
   remove as removeOperation,
   rename as renameOperation,
   stat as statOperation,
@@ -74,6 +75,8 @@ export function createFileOperationsRuntime(
   const operations: FileOperationsRegistryService = {
     pending: () => runRuntimePromise(pendingFileOperations),
     stat: (path) => runFileOperationsPromise('stat', statOperation(path)),
+    realpath: (path) =>
+      runFileOperationsPromise('realpath', realpathOperation(path)),
     canReadWrite: (path) =>
       runFileOperationsPromise('access', canReadWriteOperation(path)),
     exists: (path) => runFileOperationsPromise('exists', existsOperation(path)),

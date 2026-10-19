@@ -20,6 +20,8 @@ const MAX_LIST_PAGE_BYTES = 32 * 1024
 const MAX_ARCHIVE_BYTES = 32 * 1024 * 1024
 const MAX_DEPTH = 16
 
+class ProjectReferenceCommandError extends Error {}
+
 type CommandId =
   | 'projects.search'
   | 'projects.list_files'
@@ -121,6 +123,14 @@ function positiveOffset(value: unknown): number | undefined {
     : undefined
 }
 
+function isLowSurrogate(codeUnit: number): boolean {
+  return codeUnit >= 0xdc00 && codeUnit <= 0xdfff
+}
+
+function isHighSurrogate(codeUnit: number): boolean {
+  return codeUnit >= 0xd800 && codeUnit <= 0xdbff
+}
+
 function parseRequest(message: unknown): ClientCommandRequest | undefined {
   if (!isRecord(message) || !isRecord(message.client_command_request)) {
     return undefined
@@ -170,7 +180,9 @@ export function createProjectReferenceCommands(deps: {
       args.query.length > 200 ||
       offset === undefined
     ) {
-      return Promise.reject(new Error('query or offset is invalid.'))
+      return Promise.reject(
+        new ProjectReferenceCommandError('query or offset is invalid.')
+      )
     }
     const query = args.query.trim().toLocaleLowerCase()
     const matches = deps.entries.value
@@ -209,7 +221,9 @@ export function createProjectReferenceCommands(deps: {
   ): Promise<ProjectArchiveFile[]> {
     if (!entry.remoteProjectId) {
       return Promise.reject(
-        new Error('Project is unavailable in this library.')
+        new ProjectReferenceCommandError(
+          'Project is unavailable in this library.'
+        )
       )
     }
     const config: CloudSyncConfig = {
@@ -222,21 +236,56 @@ export function createProjectReferenceCommands(deps: {
     )
     if (archive.byteLength > MAX_ARCHIVE_BYTES) {
       return Promise.reject(
-        new Error('Project archive is too large to reference.')
+        new ProjectReferenceCommandError(
+          'Project archive is too large to reference.'
+        )
       )
     }
-    return parseProjectArchive(archive)
+    try {
+      return await parseProjectArchive(archive, {
+        includePath: isReadableFile,
+        maxFileBytes: MAX_FILE_BYTES,
+        maxFiles: MAX_FILES,
+        maxTotalBytes: MAX_ARCHIVE_BYTES,
+      })
+    } catch {
+      return Promise.reject(
+        new ProjectReferenceCommandError(
+          'Project archive cannot be referenced.'
+        )
+      )
+    }
+  }
+
+  async function resolvedProjectPath(root: string, path: string) {
+    const resolved = await deps.fileOperations.realpath(path)
+    const relative = fsZds.relative(root, resolved)
+    if (
+      relative === '..' ||
+      relative.startsWith(`..${fsZds.sep}`) ||
+      relative.startsWith(fsZds.sep) ||
+      relative.includes(':')
+    ) {
+      return undefined
+    }
+    return resolved
   }
 
   async function localFiles(root: string): Promise<string[]> {
     const found: string[] = []
-    const queue = [{ absolute: root, relative: '', depth: 0 }]
+    const projectRoot = await deps.fileOperations.realpath(root)
+    const queue = [{ absolute: projectRoot, relative: '', depth: 0 }]
+    const seenDirectories = new Set<string>()
     let visited = 0
     while (queue.length) {
       const current = queue.shift()
       if (!current) {
         break
       }
+      if (seenDirectories.has(current.absolute)) {
+        continue
+      }
+      seenDirectories.add(current.absolute)
       for (const name of await deps.fileOperations.readDirectory(
         current.absolute
       )) {
@@ -246,10 +295,18 @@ export function createProjectReferenceCommands(deps: {
         visited += 1
         if (visited > MAX_FILES) {
           return Promise.reject(
-            new Error('Project has too many files to reference.')
+            new ProjectReferenceCommandError(
+              'Project has too many files to reference.'
+            )
           )
         }
-        const absolute = fsZds.join(current.absolute, name)
+        const absolute = await resolvedProjectPath(
+          projectRoot,
+          fsZds.join(current.absolute, name)
+        )
+        if (!absolute) {
+          continue
+        }
         const relative = current.relative
           ? webSafeJoin([current.relative, name])
           : name
@@ -278,7 +335,9 @@ export function createProjectReferenceCommands(deps: {
     const entry = resolveProject(args.project_id)
     const offset = positiveOffset(args.offset)
     if (!entry || offset === undefined) {
-      return Promise.reject(new Error('Invalid project_id or offset.'))
+      return Promise.reject(
+        new ProjectReferenceCommandError('Invalid project_id or offset.')
+      )
     }
     const files = await filesFor(entry)
     const page: string[] = []
@@ -311,21 +370,39 @@ export function createProjectReferenceCommands(deps: {
       typeof path !== 'string' ||
       !isReadableFile(path)
     ) {
-      return Promise.reject(new Error('Invalid project_id, path, or offset.'))
+      return Promise.reject(
+        new ProjectReferenceCommandError('Invalid project_id, path, or offset.')
+      )
     }
     let bytes: Uint8Array
     if (entry.localProjectPath) {
       const availableFiles = await localFiles(entry.localProjectPath)
       if (!availableFiles.includes(path)) {
-        return Promise.reject(new Error('File is not in the library project.'))
+        return Promise.reject(
+          new ProjectReferenceCommandError(
+            'File is not in the library project.'
+          )
+        )
       }
-      const absolute = fsZds.join(
-        entry.localProjectPath,
-        ...webSafePathSplit(path)
+      const projectRoot = await deps.fileOperations.realpath(
+        entry.localProjectPath
       )
+      const absolute = await resolvedProjectPath(
+        projectRoot,
+        fsZds.join(entry.localProjectPath, ...webSafePathSplit(path))
+      )
+      if (!absolute) {
+        return Promise.reject(
+          new ProjectReferenceCommandError(
+            'File is not in the library project.'
+          )
+        )
+      }
       const stat = await deps.fileOperations.stat(absolute)
       if (stat.kind !== 'file' || stat.size > MAX_FILE_BYTES) {
-        return Promise.reject(new Error('File is not a supported text file.'))
+        return Promise.reject(
+          new ProjectReferenceCommandError('File is not a supported text file.')
+        )
       }
       bytes = await deps.fileOperations.readFile(absolute)
     } else {
@@ -333,32 +410,54 @@ export function createProjectReferenceCommands(deps: {
         (candidate) => candidate.relativePath === path
       )
       if (!file) {
-        return Promise.reject(new Error('File is no longer available.'))
+        return Promise.reject(
+          new ProjectReferenceCommandError('File is no longer available.')
+        )
       }
       bytes = file.data
     }
     if (bytes.byteLength > MAX_FILE_BYTES) {
-      return Promise.reject(new Error('File is too large to reference.'))
+      return Promise.reject(
+        new ProjectReferenceCommandError('File is too large to reference.')
+      )
     }
     const content = new TextDecoder('utf-8', { fatal: true }).decode(bytes)
     if (content.includes('\0')) {
-      return Promise.reject(new Error('File is not a supported text file.'))
+      return Promise.reject(
+        new ProjectReferenceCommandError('File is not a supported text file.')
+      )
     }
-    const page = content.slice(offset, offset + READ_CHARS)
+    if (
+      isLowSurrogate(content.charCodeAt(offset)) &&
+      isHighSurrogate(content.charCodeAt(offset - 1))
+    ) {
+      return Promise.reject(
+        new ProjectReferenceCommandError('offset splits a Unicode character.')
+      )
+    }
+    let end = Math.min(content.length, offset + READ_CHARS)
+    if (
+      isHighSurrogate(content.charCodeAt(end - 1)) &&
+      isLowSurrogate(content.charCodeAt(end))
+    ) {
+      end -= 1
+    }
+    const page = content.slice(offset, end)
     return {
       project_id: args.project_id,
       path,
       content: page,
       offset,
-      next_offset:
-        offset + page.length < content.length ? offset + page.length : null,
+      next_offset: end < content.length ? end : null,
       total_chars: content.length,
     }
   }
 
   function execute(request: ClientCommandRequest): Promise<unknown> {
     if (request.catalog_revision !== 1) {
-      return Promise.reject(new Error('The command catalog changed.'))
+      return Promise.reject(
+        new ProjectReferenceCommandError('The command catalog changed.')
+      )
     }
     switch (request.command_id as CommandId) {
       case 'projects.search':
@@ -368,7 +467,9 @@ export function createProjectReferenceCommands(deps: {
       case 'projects.read_file':
         return readFile(request.arguments)
       default:
-        return Promise.reject(new Error('Unknown client command.'))
+        return Promise.reject(
+          new ProjectReferenceCommandError('Unknown client command.')
+        )
     }
   }
 
@@ -422,7 +523,10 @@ export function createProjectReferenceCommands(deps: {
               request_id: request.request_id,
               catalog_revision: request.catalog_revision,
               status: 'rejected',
-              error: error instanceof Error ? error.message : 'Command failed.',
+              error:
+                error instanceof ProjectReferenceCommandError
+                  ? error.message
+                  : 'Could not access the library project.',
             })
           )
         }

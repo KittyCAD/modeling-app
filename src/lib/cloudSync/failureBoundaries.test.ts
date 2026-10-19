@@ -15,6 +15,7 @@ import {
 } from '@src/lib/cloudSync/projectArchive'
 import { getAllOutboxEntries } from '@src/lib/cloudSync/syncDb'
 import type { CloudSyncConfig } from '@src/lib/cloudSync/types'
+import JSZip from 'jszip'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const config: CloudSyncConfig = {
@@ -97,6 +98,59 @@ describe('cloud sync failure boundaries', () => {
       stage: 'archive',
       point: 'parse-project-archive',
     })
+  })
+
+  it('bounds extracted reference files and skips unrelated archive assets', async () => {
+    const zip = new JSZip()
+    zip.file('project/main.kcl', 'shape = circle(10)')
+    zip.file('project/render.png', 'x'.repeat(8 * 1024 * 1024))
+    const archive = await zip.generateAsync({
+      type: 'arraybuffer',
+      compression: 'DEFLATE',
+    })
+    const limits = {
+      includePath: (path: string) => path.endsWith('.kcl'),
+      maxFileBytes: 256 * 1024,
+      maxFiles: 2_000,
+      maxTotalBytes: 32 * 1024 * 1024,
+    }
+
+    const files = await parseProjectArchive(archive, limits)
+    expect(files.map((file) => file.relativePath)).toEqual(['main.kcl'])
+    expect(new TextDecoder().decode(files[0].data)).toBe('shape = circle(10)')
+
+    const oversized = new JSZip()
+    oversized.file('project/main.kcl', 'x'.repeat(1024 * 1024))
+    const oversizedArchive = await oversized.generateAsync({
+      type: 'arraybuffer',
+      compression: 'DEFLATE',
+    })
+    await expect(parseProjectArchive(oversizedArchive, limits)).rejects.toThrow(
+      'Project archive is too large.'
+    )
+  })
+
+  it('caps the count and combined size of selected archive files', async () => {
+    const zip = new JSZip()
+    zip.file('project/first.kcl', '12345678')
+    zip.file('project/second.kcl', '12345678')
+    const archive = await zip.generateAsync({
+      type: 'arraybuffer',
+      compression: 'DEFLATE',
+    })
+    const limits = {
+      includePath: (path: string) => path.endsWith('.kcl'),
+      maxFileBytes: 10,
+      maxFiles: 1,
+      maxTotalBytes: 10,
+    }
+
+    await expect(parseProjectArchive(archive, limits)).rejects.toThrow(
+      'Too many project files.'
+    )
+    await expect(
+      parseProjectArchive(archive, { ...limits, maxFiles: 2 })
+    ).rejects.toThrow('Project archive is too large.')
   })
 
   it('classifies project manifest hashing failures', async () => {
