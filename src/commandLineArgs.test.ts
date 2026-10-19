@@ -81,3 +81,30 @@ describe('getPathOrUrlFromArgs', () => {
     })
   })
 })
+
+describe('app configuration arguments', () => {
+  it.each([
+    ['--app-config', '/tmp/app config.toml'],
+    ['--app-config=/tmp/app config.toml'],
+  ])(
+    'consumes the manifest path without treating it as a project path',
+    (...flags) => {
+      const args = parseCLIArgs([
+        '/app/electron',
+        ...flags,
+        '/project/main.kcl',
+      ])
+      expect(args['app-config']).toBe('/tmp/app config.toml')
+      expect(getPathOrUrlFromArgs(args)).toBe('/project/main.kcl')
+    }
+  )
+
+  it('does not treat the configuration file as a project when there is no project argument', () => {
+    const args = parseCLIArgs([
+      '/app/electron',
+      '--app-config',
+      '/tmp/app.toml',
+    ])
+    expect(getPathOrUrlFromArgs(args)).toBeUndefined()
+  })
+})

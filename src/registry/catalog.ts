@@ -1,4 +1,5 @@
 import type { RegistryItem } from '@kittycad/registry'
+import type { BundledRegistryItemId } from '@src/registry/catalogMetadata'
 import lspItem from '@src/lang/lsp/registry'
 import billingItem from '@src/lib/billing/registry'
 import cursorBlinkingItem from '@src/lib/cursorBlinking/registry'
@@ -66,6 +67,6 @@ export const bundledRegistryItemCatalog = {
   'zoo:commandBar': commandBarItem,
   'zoo:publish': publishItem,
   'zoo:slicer': slicerItem,
-} satisfies Record<string, RegistryItem | undefined>
+} satisfies Record<BundledRegistryItemId, RegistryItem | undefined>
 
-export type BundledRegistryItemId = keyof typeof bundledRegistryItemCatalog
+export type { BundledRegistryItemId } from '@src/registry/catalogMetadata'

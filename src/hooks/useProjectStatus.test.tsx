@@ -1,6 +1,6 @@
 import { Client } from '@kittycad/lib'
 import { useProjectStatuses } from '@src/hooks/useProjectStatus'
-import { renderHook, waitFor } from '@testing-library/react'
+import { act, renderHook, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 const fetchMock = vi.hoisted(() => vi.fn<typeof fetch>())
@@ -45,6 +45,7 @@ describe('useProjectStatuses', () => {
 
     const { result } = renderHook(() =>
       useProjectStatuses(
+        true,
         [
           { remoteProjectId: 'project-pending' },
           { remoteProjectId: 'project-changes-requested' },
@@ -81,7 +82,7 @@ describe('useProjectStatuses', () => {
     },
   ])('skips fetching without authentication or a remote project', (args) => {
     const { result } = renderHook(() =>
-      useProjectStatuses(args.homeProjects, args.token)
+      useProjectStatuses(true, args.homeProjects, args.token)
     )
 
     expect(result.current.size).toBe(0)
@@ -115,7 +116,7 @@ describe('useProjectStatuses', () => {
       )
 
     const { result, rerender } = renderHook(
-      ({ homeProjects }) => useProjectStatuses(homeProjects, 'token-123'),
+      ({ homeProjects }) => useProjectStatuses(true, homeProjects, 'token-123'),
       {
         initialProps: {
           homeProjects: [{ remoteProjectId: 'project-a' }],
@@ -168,7 +169,7 @@ test('includes statuses on later pages without publishing a partial list', async
         })
     )
   const { result } = renderHook(() =>
-    useProjectStatuses([{ remoteProjectId: 'last' }], 'token-123')
+    useProjectStatuses(true, [{ remoteProjectId: 'last' }], 'token-123')
   )
   await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2))
   expect(result.current.size).toBe(0)
@@ -210,8 +211,73 @@ test('does not publish first-page statuses when a later page fails', async () =>
     )
     .mockResolvedValueOnce(respond({ message: 'temporarily unavailable' }, 503))
   const { result } = renderHook(() =>
-    useProjectStatuses([{ remoteProjectId: 'first' }], 'token-123')
+    useProjectStatuses(true, [{ remoteProjectId: 'first' }], 'token-123')
   )
   await waitFor(() => expect(console.error).toHaveBeenCalled())
   expect(result.current.size).toBe(0)
+})
+
+describe('publication status ownership', () => {
+  test('does not fetch statuses when publishing is absent or inactive', () => {
+    const { result } = renderHook(() =>
+      useProjectStatuses(
+        false,
+        [{ remoteProjectId: 'published-project' }],
+        'token-123'
+      )
+    )
+    expect(result.current.size).toBe(0)
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  test('immediately hides cached statuses when publishing is disabled', async () => {
+    fetchMock.mockResolvedValue(
+      respond([{ id: 'published-project', publication_status: 'published' }])
+    )
+    const { result, rerender } = renderHook(
+      ({ enabled }) =>
+        useProjectStatuses(
+          enabled,
+          [{ remoteProjectId: 'published-project' }],
+          'token-123'
+        ),
+      { initialProps: { enabled: true } }
+    )
+    await waitFor(() =>
+      expect(result.current.get('published-project')?.publicationStatus).toBe(
+        'published'
+      )
+    )
+    fetchMock.mockClear()
+    rerender({ enabled: false })
+    expect(result.current.size).toBe(0)
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  test('ignores an in-flight publication request after publishing is disabled', async () => {
+    let finish: (response: Response) => void = () => {}
+    fetchMock.mockImplementation(
+      () =>
+        new Promise<Response>((resolve) => {
+          finish = resolve
+        })
+    )
+    const { result, rerender } = renderHook(
+      ({ enabled }) =>
+        useProjectStatuses(
+          enabled,
+          [{ remoteProjectId: 'published-project' }],
+          'token-123'
+        ),
+      { initialProps: { enabled: true } }
+    )
+    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1))
+    rerender({ enabled: false })
+    await act(async () => {
+      finish(
+        respond([{ id: 'published-project', publication_status: 'published' }])
+      )
+    })
+    expect(result.current.size).toBe(0)
+  })
 })

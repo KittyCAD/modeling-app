@@ -7,3 +7,5 @@ interface ImportMetaEnv {
   readonly MODELING_APP_COMMIT_SHA?: string
   readonly VERCEL_ENV?: 'development' | 'preview' | 'production'
 }
+
+declare const __APP_STARTUP_COMPOSITION__: import('./src/registry/startupComposition').AppStartupComposition
