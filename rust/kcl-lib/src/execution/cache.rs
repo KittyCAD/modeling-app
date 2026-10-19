@@ -43,6 +43,8 @@ struct CacheInner {
     pub prev_memory: Option<SketchModeState>,
     /// Counts the runs that changed the engine scene. Never reset, so callers
     /// can tell whether the scene changed since they last looked.
+    /// If the counter hasn't moved, the scene hasn't changed. If it has moved,
+    /// the scene may have changed.
     pub engine_scene_generation: usize,
 }
 
