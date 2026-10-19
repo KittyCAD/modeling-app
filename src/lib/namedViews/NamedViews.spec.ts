@@ -1,5 +1,4 @@
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
-import { AreaType, LayoutType } from '@src/lib/layout'
 import { act, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
@@ -46,16 +45,11 @@ vi.mock('@src/lib/kclNamedViewActivation', async (importOriginal) => ({
   activateNamedView: renderMocks.activateNamedView,
 }))
 
-vi.mock('@src/components/layout/Panel', () => ({
-  LayoutPanel: ({ children }: { children: unknown }) => children,
-  LayoutPanelHeader: ({ Menu }: { Menu: unknown }) => Menu,
-}))
-
 import {
-  KclNamedViewsPane,
+  NamedViews,
   canManageNamedView,
   viewRows,
-} from '@src/components/layout/areas/KclNamedViewsPane'
+} from '@src/lib/namedViews/NamedViews'
 import type { KclNamedView } from '@src/lang/std/kclNamedViews'
 import { activeViewSignal } from '@src/lib/kclNamedViewActivation'
 import { initialiseWasmNode } from '@src/lang/wasmUtilsNode'
@@ -207,19 +201,12 @@ describe('viewRows', () => {
   })
 })
 
-describe('KclNamedViewsPane', () => {
-  function renderPane(experimentalPointAndClick = true) {
+describe('NamedViews', () => {
+  function renderViews(experimentalPointAndClick = true) {
     renderMocks.experimentalPointAndClick = experimentalPointAndClick
     return render(
-      createElement(KclNamedViewsPane, {
-        layout: {
-          id: 'named-views',
-          label: 'Named Views',
-          type: LayoutType.Simple,
-          areaType: AreaType.NamedViews,
-        },
-        areaConfig: { hide: () => false },
-        onClose: vi.fn(),
+      createElement(NamedViews, {
+        renderHeader: (actions) => actions,
       })
     )
   }
@@ -237,7 +224,7 @@ describe('KclNamedViewsPane', () => {
       renderMocks.activateNamedView.mockClear()
       renderMocks.prepareNamedViewEditCommand.mockClear()
 
-      renderPane(experimentalPointAndClick)
+      renderViews(experimentalPointAndClick)
 
       const label = await screen.findByRole('button', { name: /^Front/ })
       fireEvent.click(label)
