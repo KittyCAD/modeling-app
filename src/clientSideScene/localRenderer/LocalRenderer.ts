@@ -124,7 +124,7 @@ export class LocalRenderer {
   private animationFrameId = -1
   private currentModel: Object3D | null = null
   private readonly gltfLoader = new GLTFLoader()
-  private modelLoadGeneration = 0
+  private modelRequestVersion = 0
   /** The engine scene generation of the model on screen, once it has loaded. */
   private loadedSceneGeneration: number | null = null
   private hasFittedModel = false
@@ -175,7 +175,7 @@ export class LocalRenderer {
       kclManager.isExecutingSignal.subscribe((isExecuting) => {
         if (isExecuting) {
           // A new execution invalidates any export or GLB parse still in flight.
-          this.modelLoadGeneration += 1
+          this.modelRequestVersion += 1
           this.clearHover()
         }
       }),
@@ -295,7 +295,7 @@ export class LocalRenderer {
     if (cached) {
       return cached
     }
-    const generation = this.modelLoadGeneration
+    const version = this.modelRequestVersion
     const response =
       await this.kclManager.engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
@@ -303,7 +303,7 @@ export class LocalRenderer {
         cmd: { type: 'query_entity_type', entity_id: entityId },
       })
     // The model changed while the engine was answering.
-    if (generation !== this.modelLoadGeneration) {
+    if (version !== this.modelRequestVersion) {
       return undefined
     }
     // A reply from the engine arrives wrapped in a one-element array
@@ -379,7 +379,7 @@ export class LocalRenderer {
       const requestVersion = isHover
         ? ++this.hoverRequestVersion
         : this.hoverRequestVersion
-      const generation = this.modelLoadGeneration
+      const modelVersion = this.modelRequestVersion
       const result = await this.gpu?.integerIdPicker.pick({
         ...cmd.selected_at_window,
         streamWidth: streamDimensions.width,
@@ -391,7 +391,7 @@ export class LocalRenderer {
         this.disposed ||
         !this.settings.pickingEnabled ||
         this.kclManager.isExecuting ||
-        generation !== this.modelLoadGeneration ||
+        modelVersion !== this.modelRequestVersion ||
         result?.stale ||
         (isHover && requestVersion !== this.hoverRequestVersion)
       )
@@ -422,7 +422,7 @@ export class LocalRenderer {
         ? ((await this.getEngineEntityReference(entityId)) ??
           this.getLocalEntityReference(entityId))
         : undefined
-      if (generation !== this.modelLoadGeneration) return {}
+      if (modelVersion !== this.modelRequestVersion) return {}
       const response = {
         type: 'query_entity_type_with_point',
         data: { reference },
@@ -746,7 +746,7 @@ export class LocalRenderer {
       this.kclManager.isExecuting
     )
       return []
-    const generation = this.modelLoadGeneration
+    const version = this.modelRequestVersion
     const rect = canvas.getBoundingClientRect()
     this.currentModel.updateWorldMatrix(true, true)
     camera.updateMatrixWorld(true)
@@ -769,7 +769,7 @@ export class LocalRenderer {
       })
       if (
         this.disposed ||
-        generation !== this.modelLoadGeneration ||
+        version !== this.modelRequestVersion ||
         result?.stale
       )
         return []
@@ -1010,7 +1010,6 @@ export class LocalRenderer {
     if (this.disposed || this.kclManager.isExecuting) return
 
     const { detail } = event as CustomEvent<KclExecutionDoneDetail>
-    this.modelLoadGeneration += 1
     if (!detail.successful) {
       this.rebuildSelectionTargets()
       this.syncPlaneScale()
@@ -1034,10 +1033,10 @@ export class LocalRenderer {
   }
 
   private async refreshModel() {
-    const generation = ++this.modelLoadGeneration
+    const version = ++this.modelRequestVersion
     const sceneGeneration = this.kclManager.engineSceneGenerationSignal.peek()
     const isCurrent = () =>
-      !this.disposed && generation === this.modelLoadGeneration
+      !this.disposed && version === this.modelRequestVersion
     // Reference planes do not depend on a successful GLB export.
     this.gpu?.planeRenderer.updateOffsetPlanes(this.kclManager.artifactGraph)
     this.syncPlaneScale()
