@@ -10,6 +10,8 @@ import { createActor } from 'xstate'
 /** Own the filesystem workflow actor without requiring a constructed App. */
 export default defineRegistryItemFactory((ctx) => {
   let actor: SystemIOActor | undefined
+  // Factories run during registry graph assembly. Wait until the service's actor
+  // is requested so reading the WASM value does not reenter graph assembly.
   const ensureActor = (): SystemIOActor => {
     if (actor) return actor
     const wasmInstancePromise =
@@ -24,14 +26,15 @@ export default defineRegistryItemFactory((ctx) => {
       },
       wasmPromise: wasmInstancePromise,
       get systemIOActor() {
-        return ensureActor()
+        return createdActor
       },
     }
-    actor = createActor(systemIOMachineImpl, {
+    const createdActor = createActor(systemIOMachineImpl, {
       input: { wasmInstancePromise, host },
     })
-    actor.start()
-    return actor
+    actor = createdActor
+    createdActor.start()
+    return createdActor
   }
   return {
     id: 'system-io',
