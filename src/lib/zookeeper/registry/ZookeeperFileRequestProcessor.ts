@@ -1,3 +1,4 @@
+import { signal, type ReadonlySignal } from '@preact/signals-core'
 import type { MlCopilotServerMessage, MlToolResult } from '@kittycad/lib'
 import type { KclManager } from '@src/lang/KclManager'
 import fsZds from '@src/lib/fs-zds'
@@ -5,6 +6,7 @@ import type { FileEntry, Project } from '@src/lib/project'
 import type { ZookeeperEditPatchHistory } from '@src/lib/zookeeper/registry/ZookeeperEditPatchHistory'
 import type { ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import {
+  type BulkFileWriteProgress,
   normalizeKCLFileDeletePath,
   prepareZookeeperNewFileRequest,
   type SystemIOActor,
@@ -20,6 +22,7 @@ interface ZookeeperFileRequestProcessorDependencies {
   kclManager: KclManager
   systemIOActor: SystemIOActor
   onEditApplied: (response: MlCopilotServerMessage) => void
+  onQueueIdle?: () => void
 }
 
 export type ZookeeperNewFileRequest = {
@@ -52,6 +55,17 @@ export class ZookeeperFileRequestProcessor {
   private activeRequest: QueuedZookeeperFileRequest | undefined
   private queue: QueuedZookeeperFileRequest[] = []
   private processingQueue = false
+  private pendingRequestCount = 0
+  private readonly fileWriteProgressSignal = signal<
+    BulkFileWriteProgress | undefined
+  >(undefined)
+  readonly fileWriteProgress: ReadonlySignal<
+    BulkFileWriteProgress | undefined
+  > = this.fileWriteProgressSignal
+
+  get hasPendingRequests() {
+    return this.pendingRequestCount > 0
+  }
 
   constructor(
     private readonly deps: ZookeeperFileRequestProcessorDependencies
@@ -60,6 +74,7 @@ export class ZookeeperFileRequestProcessor {
   dispose() {
     if (!this.disposed) {
       this.disposed = true
+      this.fileWriteProgressSignal.value = undefined
       this.abortController.abort()
     }
     return this.waitForQueuedRequests()
@@ -70,6 +85,7 @@ export class ZookeeperFileRequestProcessor {
       return this.waitForQueuedRequests()
     }
     this.generation += 1
+    this.fileWriteProgressSignal.value = undefined
     this.abortController.abort()
     this.abortController = new AbortController()
     this.lastMessageId = undefined
@@ -153,6 +169,11 @@ export class ZookeeperFileRequestProcessor {
           if (this.activeOrderedId === queuedEdit.request.orderedId) {
             this.activeOrderedId = undefined
           }
+          this.pendingRequestCount -= 1
+          if (!this.hasPendingRequests) {
+            this.fileWriteProgressSignal.value = undefined
+            this.deps.onQueueIdle?.()
+          }
         }
       }
     } finally {
@@ -222,6 +243,29 @@ export class ZookeeperFileRequestProcessor {
         exchangeId: request.exchangeId,
         projectPath: requestProjectPath,
       })
+    }
+
+    this.pendingRequestCount += 1
+    const previousProgress = this.fileWriteProgressSignal.peek()
+    this.fileWriteProgressSignal.value = {
+      written: previousProgress?.written ?? 0,
+      total: (previousProgress?.total ?? 0) + payload.files.length,
+    }
+    let writtenCount = 0
+    const updateWriteProgress = (written: number) => {
+      if (!requestIsCurrent()) return
+      const progress = this.fileWriteProgressSignal.peek()
+      if (!progress) return
+      const nextWritten = Math.min(
+        payload.files.length,
+        Math.max(writtenCount, written)
+      )
+      if (nextWritten === writtenCount) return
+      this.fileWriteProgressSignal.value = {
+        ...progress,
+        written: progress.written + nextWritten - writtenCount,
+      }
+      writtenCount = nextWritten
     }
 
     const { promise: completed, resolve: finish } =
@@ -336,6 +380,10 @@ export class ZookeeperFileRequestProcessor {
                 requestedProjectPath: requestProjectPath,
                 requestedFileNameWithExtension:
                   payload.requestedFileNameWithExtension ?? '',
+                onFileWriteProgress: ({ written }) => {
+                  if (!settled && requestCanFinish())
+                    updateWriteProgress(written)
+                },
                 onFileSystemError: () => {
                   if (settled || this.activeOrderedId !== request.orderedId) {
                     console.warn(
@@ -378,6 +426,7 @@ export class ZookeeperFileRequestProcessor {
                     return
                   }
                   fileSystemSucceeded = true
+                  updateWriteProgress(payload.files.length)
                   if (!postWriteCompleted) {
                     if (
                       abortSignal.aborted ||

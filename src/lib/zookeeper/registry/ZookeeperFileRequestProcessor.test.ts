@@ -219,6 +219,64 @@ describe('ZookeeperFileRequestProcessor', () => {
     await processor.dispose()
   })
 
+  test('counts completed writes across queued batches and stays busy until editor refresh finishes', async () => {
+    const processor = createProcessor()
+    const firstOutput = patchBackedZookeeperEdit('first edit')
+    firstOutput.outputs = { 'main.kcl': 'first edit', 'part.kcl': 'part = 1' }
+    emitZookeeperFileRequest(processor, 'first edit', 1, firstOutput)
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
+    const first = mocks.systemIOSend.mock.calls[0][0].data
+    expect(processor.hasPendingRequests).toBe(true)
+    expect(processor.fileWriteProgress.value).toEqual({ written: 0, total: 2 })
+    first.onFileWriteProgress({ written: 1, total: 2 })
+    expect(processor.fileWriteProgress.value).toEqual({ written: 1, total: 2 })
+
+    emitZookeeperFileRequest(processor, 'second edit', 2)
+    expect(processor.fileWriteProgress.value).toEqual({ written: 1, total: 3 })
+    first.onFileWriteProgress({ written: 2, total: 2 })
+    first.onFileSystemSuccess()
+    await Promise.resolve()
+    expect(processor.hasPendingRequests).toBe(true)
+    expect(processor.fileWriteProgress.value).toEqual({ written: 2, total: 3 })
+    expect(mocks.systemIOSend).toHaveBeenCalledOnce()
+    first.onSuccess()
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
+    const second = mocks.systemIOSend.mock.calls[1][0].data
+    second.onFileWriteProgress({ written: 1, total: 1 })
+    second.onFileSystemSuccess()
+    expect(processor.fileWriteProgress.value).toEqual({ written: 3, total: 3 })
+    second.onSuccess()
+    await waitFor(() => expect(processor.hasPendingRequests).toBe(false))
+    expect(processor.fileWriteProgress.value).toBeUndefined()
+    await processor.dispose()
+  })
+
+  test('clears progress after a failed write without counting it as written', async () => {
+    const processor = createProcessor()
+    emitZookeeperFileRequest(processor, 'first edit', 1)
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
+    const request = mocks.systemIOSend.mock.calls[0][0].data
+    request.onFileSystemError()
+    await waitFor(() => expect(processor.hasPendingRequests).toBe(false))
+    expect(processor.fileWriteProgress.value).toBeUndefined()
+    expect(mocks.onEditApplied).not.toHaveBeenCalled()
+    await processor.dispose()
+  })
+
+  test('ignores old progress callbacks after resetting for a new conversation', async () => {
+    const processor = createProcessor()
+    emitZookeeperFileRequest(processor, 'old edit', 1)
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledOnce())
+    const request = mocks.systemIOSend.mock.calls[0][0].data
+    const reset = processor.reset()
+    expect(processor.fileWriteProgress.value).toBeUndefined()
+    request.onFileWriteProgress({ written: 1, total: 1 })
+    expect(processor.fileWriteProgress.value).toBeUndefined()
+    request.onFileSystemSuccess()
+    await reset
+    await processor.dispose()
+  })
+
   test('waits for the previous editor refresh before dispatching the next edit', async () => {
     const processor = createProcessor()
 
