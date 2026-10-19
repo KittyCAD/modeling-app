@@ -76,6 +76,8 @@ export interface HomeProjectEntry {
   conflict?: unknown
   syncFailure?: HomeProjectSyncFailure
   cloudRelationshipId?: string
+  /** The primary local realization in the Personal Cloud directory. */
+  canonicalCloudProjectPath?: string
   duplicateRealizations?: readonly HomeProjectDuplicateRealization[]
   /** Other local folders discovered with this project's project.toml ID. */
   duplicateProjectIdPaths?: readonly string[]

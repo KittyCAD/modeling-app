@@ -17,6 +17,8 @@ import {
   getHomeProjectDisplayName,
   shouldPreserveRemoteOnHomeProjectDelete,
 } from '@src/lib/homeProjects'
+import { getHomeProjectUrl } from '@src/lib/projectNavigation'
+import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { reportRejection, trap } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
@@ -309,10 +311,8 @@ function AppProjectCard({
   )
     ? `Are you sure you want to delete the local copy of "${deleteProjectDisplayName}"? This action cannot be undone.`
     : `Are you sure you want to delete "${deleteProjectDisplayName}"? This action cannot be undone.`
-  const openHref =
-    project.readWriteAccess && project.defaultFile
-      ? `${PATHS.FILE}/${encodeURIComponent(project.defaultFile)}`
-      : ''
+  const openHref = getHomeProjectUrl(project) ?? ''
+  const cloudProjectHref = openHref.startsWith(`${PATHS.PROJECT}/`)
   const statusBadgeLabel =
     !showCloudSyncUi || !showSourceStatusBadges
       ? undefined
@@ -620,6 +620,8 @@ function AppProjectCard({
       }
       dialogs={dialogs}
       onOpen={(e) => {
+        // The project route owns access checks and cloud materialization.
+        if (cloudProjectHref) return
         e.preventDefault()
         if (!canOpen) {
           return
@@ -628,7 +630,8 @@ function AppProjectCard({
         void projectActions
           .open(project)
           .then((result) => {
-            if (result?.defaultFile) {
+            if (result?.url) void navigate(result.url)
+            else if (isDesktop() && result?.defaultFile) {
               void navigate(
                 `${PATHS.FILE}/${encodeURIComponent(result.defaultFile)}`
               )

@@ -1,3 +1,4 @@
+vi.mock('@src/lib/isDesktop', () => ({ isDesktop: () => true }))
 import {
   createPlugin,
   defineRegistryItem,
@@ -1365,7 +1366,7 @@ describe('home project actions', () => {
     ])
   })
 
-  it('opens remote-only cloud projects without forcing a full folder rescan', async () => {
+  it('returns remote cloud URLs before materialization', async () => {
     const wasmInstance = {} as never
     const wasmPromise = Promise.resolve(wasmInstance)
     const systemIO = createSystemIOService()
@@ -1381,6 +1382,7 @@ describe('home project actions', () => {
     })
     const remoteOnlyProject = {
       id: 'remote:remote-123',
+      cloudRelationshipId: 'cloud:remote-123',
       source: 'remote',
       status: 'cloud-only',
       libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
@@ -1444,28 +1446,21 @@ describe('home project actions', () => {
 
     await expect(
       registry.get(homeProjectActionsService).open(remoteOnlyProject)
-    ).resolves.toEqual({
-      defaultFile: '/cloud-projects/remote-title/main.kcl',
-    })
-    expect(cloudSync.ensureProjectLocallySynced).toHaveBeenCalledWith(
-      'remote-123',
-      '/cloud-projects'
-    )
-    expect(desktopMocks.getProjectInfo).toHaveBeenCalledWith(
-      expect.objectContaining({ readFile: expect.any(Function) }),
-      '/cloud-projects/remote-title',
-      wasmInstance
-    )
+    ).resolves.toEqual({ defaultFile: '', url: '/project/remote-123' })
+    expect(cloudSync.ensureProjectLocallySynced).not.toHaveBeenCalled()
+    expect(desktopMocks.getProjectInfo).not.toHaveBeenCalled()
     expect(systemIO.send).not.toHaveBeenCalled()
   })
 
-  it('opens locally materialized cloud library projects without re-syncing them first', async () => {
+  it('returns canonical URLs for primary desktop cloud projects', async () => {
     const wasmInstance = {} as never
     const wasmPromise = Promise.resolve(wasmInstance)
     const systemIO = createSystemIOService()
     const cloudSync = createCloudSyncService()
     const localCloudProject = {
       id: 'remote:remote-123',
+      cloudRelationshipId: 'cloud:remote-123',
+      canonicalCloudProjectPath: '/cloud-projects/remote-title',
       source: 'local',
       status: 'synced',
       libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
@@ -1531,6 +1526,7 @@ describe('home project actions', () => {
     await expect(
       registry.get(homeProjectActionsService).open(localCloudProject)
     ).resolves.toEqual({
+      url: '/project/remote-123',
       defaultFile: '/cloud-projects/remote-title/main.kcl',
     })
     expect(cloudSync.ensureProjectLocallySynced).not.toHaveBeenCalled()

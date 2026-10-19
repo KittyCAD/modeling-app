@@ -22,6 +22,7 @@ import type {
   CloudProjectRelationship,
   CloudSyncRegistryService,
 } from '@src/registry/contracts/cloudSync'
+import type { HomeProjectEntry } from '@src/registry/contracts/homeProjects'
 
 export type ProjectRouteSource = Pick<
   Project,
@@ -50,6 +51,21 @@ export function getProjectFileUrl(
   return project.cloudSource
     ? cloudFileUrl(project.cloudSource.id, project.path, filePath, search)
     : `${PATHS.FILE}/${safeEncodeForRouterPaths(filePath)}${search ? `?${new URLSearchParams(search)}` : ''}`
+}
+
+export function getHomeProjectUrl(project: HomeProjectEntry) {
+  if (
+    project.remoteProjectId &&
+    (!isDesktop() ||
+      (project.cloudRelationshipId &&
+        (!project.localProjectPath ||
+          project.canonicalCloudProjectPath === project.localProjectPath)))
+  ) {
+    return formatCloudProjectUrl(project.remoteProjectId)
+  }
+  return isDesktop() && project.readWriteAccess && project.defaultFile
+    ? `${PATHS.FILE}/${safeEncodeForRouterPaths(project.defaultFile)}`
+    : undefined
 }
 
 export async function resolveProjectFileUrl({
