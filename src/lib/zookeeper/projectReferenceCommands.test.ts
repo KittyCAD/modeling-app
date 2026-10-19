@@ -2,6 +2,7 @@ import { mkdtemp, mkdir, rm, symlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { signal } from '@preact/signals-core'
+import { RemoteProjectArchiveLimitError } from '@src/lib/cloudSync/cloudApi'
 import type { ProjectArchiveFile } from '@src/lib/cloudSync/types'
 import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
@@ -18,6 +19,11 @@ const cloudMocks = vi.hoisted(() => ({
 
 vi.mock('@src/lib/cloudSync/cloudApi', () => ({
   downloadRemoteProjectArchive: cloudMocks.download,
+  RemoteProjectArchiveLimitError: class RemoteProjectArchiveLimitError extends Error {
+    constructor() {
+      super('Project archive is too large to reference.')
+    }
+  },
 }))
 vi.mock('@src/lib/cloudSync/projectArchive', () => ({
   parseProjectArchive: cloudMocks.parse,
@@ -73,19 +79,21 @@ function fixture(
       return []
     }
   )
-  const stat = vi.fn(async (path: string) => ({
+  const statReadOnly = vi.fn(async (path: string) => ({
     kind:
       path.endsWith('/assets') || path.endsWith('/parts')
         ? ('directory' as const)
         : ('file' as const),
     size: 20,
   }))
+  const stat = vi.fn()
   const realpath = vi.fn(async (path: string) => path)
   const fileOperations = {
     readDirectory,
     readFile,
     realpath,
     stat,
+    statReadOnly,
     writeFile: vi.fn(),
   } as unknown as FileOperationsRegistryService
   const sent: Record<string, unknown>[] = []
@@ -130,6 +138,7 @@ function fixture(
     request,
     sent,
     stat,
+    statReadOnly,
     ws,
   }
 }
@@ -207,6 +216,8 @@ describe('Zookeeper project reference commands', () => {
     })
     expect(read.result?.content).toBe('wheel = circle(10)')
     expect(readFile).toHaveBeenCalledWith('/private/library/TRUCK/main.kcl')
+    expect(fileOperations.stat).not.toHaveBeenCalled()
+    expect(fileOperations.statReadOnly).toHaveBeenCalled()
     expect(fileOperations.writeFile).not.toHaveBeenCalled()
   })
 
@@ -232,7 +243,8 @@ describe('Zookeeper project reference commands', () => {
   })
 
   it('does not follow a project symlink outside its root', async () => {
-    const { readDirectory, readFile, realpath, request, stat } = fixture()
+    const { readDirectory, readFile, realpath, request, statReadOnly } =
+      fixture()
     readDirectory.mockImplementation(async (path) => {
       if (path === '/private/library/TRUCK') {
         return ['linked']
@@ -245,7 +257,7 @@ describe('Zookeeper project reference commands', () => {
     realpath.mockImplementation(async (path) =>
       path === '/private/library/TRUCK/linked' ? '/private/outside' : path
     )
-    stat.mockImplementation(async (path) => ({
+    statReadOnly.mockImplementation(async (path) => ({
       kind: path.endsWith('/linked') ? 'directory' : 'file',
       size: 20,
     }))
@@ -321,20 +333,57 @@ describe('Zookeeper project reference commands', () => {
       project_id: projectId,
       path: 'main.kcl',
     })
-    const second = await request('projects.read_file', {
+    const missingVersion = await request('projects.read_file', {
       project_id: projectId,
       path: 'main.kcl',
       offset: first.result?.next_offset,
     })
+    const second = await request('projects.read_file', {
+      project_id: projectId,
+      path: 'main.kcl',
+      offset: first.result?.next_offset,
+      version: first.result?.version,
+    })
 
     expect(first.result?.next_offset).toBe(7_999)
+    expect(missingVersion.error).toBe(
+      'version is required for continued reads.'
+    )
     expect(`${first.result?.content}${second.result?.content}`).toBe(content)
     const invalid = await request('projects.read_file', {
       project_id: projectId,
       path: 'main.kcl',
       offset: 8_000,
+      version: first.result?.version,
     })
     expect(invalid.status).toBe('rejected')
+  })
+
+  it('rejects a later page when the source changes without changing length', async () => {
+    const { readFile, request } = fixture()
+    readFile
+      .mockResolvedValueOnce(new TextEncoder().encode('a'.repeat(8_001)))
+      .mockResolvedValueOnce(new TextEncoder().encode('b'.repeat(8_001)))
+    const found = await request('projects.search', { query: 'TRUCK' })
+    const projectId = (
+      found.result?.projects as Array<{ project_id: string }>
+    )[0].project_id
+    const first = await request('projects.read_file', {
+      project_id: projectId,
+      path: 'main.kcl',
+    })
+    const second = await request('projects.read_file', {
+      project_id: projectId,
+      path: 'main.kcl',
+      offset: first.result?.next_offset,
+      version: first.result?.version,
+    })
+
+    expect(first.result?.next_offset).toBe(8_000)
+    expect(second.status).toBe('rejected')
+    expect(second.error).toBe(
+      'File changed while reading. Start again from offset 0.'
+    )
   })
 
   it('does not include local paths in failed command responses', async () => {
@@ -376,10 +425,27 @@ describe('Zookeeper project reference commands', () => {
     expect(read.result?.content).toBe('cloudWheel = circle(12)')
     expect(cloudMocks.download).toHaveBeenCalledWith(
       { enabled: true, token: 'token' },
-      'cloud-123'
+      'cloud-123',
+      32 * 1024 * 1024
     )
     expect(readFile).not.toHaveBeenCalled()
     expect(cloudMocks.download).toHaveBeenCalledTimes(1)
+  })
+
+  it('reports an oversized cloud archive without exposing request details', async () => {
+    const { request } = fixture()
+    cloudMocks.download.mockRejectedValue(new RemoteProjectArchiveLimitError())
+    const found = await request('projects.search', { query: 'TRUCK cloud' })
+    const projectId = (
+      found.result?.projects as Array<{ project_id: string }>
+    )[0].project_id
+
+    const listing = await request('projects.list_files', {
+      project_id: projectId,
+    })
+    expect(listing.status).toBe('rejected')
+    expect(listing.error).toBe('Project archive is too large to reference.')
+    expect(cloudMocks.parse).not.toHaveBeenCalled()
   })
 
   it('keeps long file listings within the broker response limit', async () => {

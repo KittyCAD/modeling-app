@@ -145,7 +145,10 @@ const scan = async (
   return visited
 }
 
-const stat = async (targetPath: string): Promise<IStat> => {
+const stat = async (
+  targetPath: string,
+  options?: { readOnly?: boolean }
+): Promise<IStat> => {
   const handle = await walk(targetPath)
   if (handle === undefined) return Promise.reject('ENOENT')
 
@@ -197,8 +200,10 @@ const stat = async (targetPath: string): Promise<IStat> => {
   }
 
   if (!isMetaFileDirectoryData(obj)) {
-    obj = createDirectoryMetadata()
-    await writeDirectoryMetadata(metaFilePath, obj)
+    obj = options?.readOnly ? { mtimeMs: 0 } : createDirectoryMetadata()
+    if (!options?.readOnly) {
+      await writeDirectoryMetadata(metaFilePath, obj)
+    }
   }
 
   return {

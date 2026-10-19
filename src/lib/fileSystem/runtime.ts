@@ -16,6 +16,7 @@ import {
   remove as removeOperation,
   rename as renameOperation,
   stat as statOperation,
+  statReadOnly as statReadOnlyOperation,
   writeFile as writeFileOperation,
 } from '@src/lib/fileSystem/fileOperations'
 import {
@@ -75,6 +76,8 @@ export function createFileOperationsRuntime(
   const operations: FileOperationsRegistryService = {
     pending: () => runRuntimePromise(pendingFileOperations),
     stat: (path) => runFileOperationsPromise('stat', statOperation(path)),
+    statReadOnly: (path) =>
+      runFileOperationsPromise('stat', statReadOnlyOperation(path)),
     realpath: (path) =>
       runFileOperationsPromise('realpath', realpathOperation(path)),
     canReadWrite: (path) =>

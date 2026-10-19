@@ -449,13 +449,62 @@ export async function deleteRemoteProject(
 
 export async function downloadRemoteProjectArchive(
   config: CloudSyncConfig,
-  projectId: string
+  projectId: string,
+  maxBytes?: number
 ) {
   const response = await cloudFetch(
     config,
     `/user/projects/${projectId}/download?format=zip`
   )
-  return response.arrayBuffer()
+  if (maxBytes === undefined) {
+    return response.arrayBuffer()
+  }
+
+  const contentLength = response.headers.get('Content-Length')
+  if (contentLength !== null && Number(contentLength) > maxBytes) {
+    await response.body?.cancel().catch(() => undefined)
+    return Promise.reject(new RemoteProjectArchiveLimitError())
+  }
+
+  if (!response.body) {
+    return new ArrayBuffer(0)
+  }
+
+  const reader = response.body.getReader()
+  let bytes = new Uint8Array(Math.min(maxBytes, 64 * 1024))
+  let totalBytes = 0
+  try {
+    while (true) {
+      const { done, value } = await reader.read()
+      if (done) {
+        break
+      }
+      const nextTotal = totalBytes + value.byteLength
+      if (nextTotal > maxBytes) {
+        await reader.cancel().catch(() => undefined)
+        return Promise.reject(new RemoteProjectArchiveLimitError())
+      }
+      if (nextTotal > bytes.byteLength) {
+        const grown = new Uint8Array(
+          Math.min(maxBytes, Math.max(nextTotal, bytes.byteLength * 2))
+        )
+        grown.set(bytes.subarray(0, totalBytes))
+        bytes = grown
+      }
+      bytes.set(value, totalBytes)
+      totalBytes = nextTotal
+    }
+  } finally {
+    reader.releaseLock()
+  }
+
+  return bytes.slice(0, totalBytes).buffer
+}
+
+export class RemoteProjectArchiveLimitError extends Error {
+  constructor() {
+    super('Project archive is too large to reference.')
+  }
 }
 
 export async function createRemoteProject(
