@@ -15,7 +15,7 @@ import type { AppHeaderItemProps } from '@src/registry/contracts/appHeader'
 import { layoutService } from '@src/registry/contracts/layout'
 import { useHotkeys } from 'react-hotkeys-hook'
 
-export function ZookeeperHeaderButton({ app, className }: AppHeaderItemProps) {
+export function ZookeeperHeaderButton({ app }: AppHeaderItemProps) {
   useSignals()
   const platform = usePlatform()
   const layout = app.registry.optional(layoutService)
@@ -57,17 +57,21 @@ export function ZookeeperHeaderButton({ app, className }: AppHeaderItemProps) {
         aria-label="Zookeeper"
         aria-pressed={isOpen}
         onClick={toggle}
-        className={`${className} m-0 !h-6 !p-0 !border-ml-green !bg-ml-green !text-chalkboard-100 hover:brightness-95 ${isOpen ? 'ring-1 ring-inset ring-chalkboard-100/40' : ''}`}
+        className="group/avatar m-0 grid place-items-center border-0 p-0 rounded bg-transparent hover:bg-transparent hover:brightness-95 focus-visible:outline-appForeground"
       >
-        {isRunning ? (
-          <CustomIcon
-            name="loading"
-            className="w-5 h-5 animate-spin"
-            aria-hidden
-          />
-        ) : (
-          <span className="bg-img-mel w-5 h-5 rounded-sm" aria-hidden />
-        )}
+        <span
+          className={`avatar bg-ml-green ${isOpen ? 'ring-1 ring-inset ring-chalkboard-100/40' : ''}`}
+        >
+          {isRunning ? (
+            <CustomIcon
+              name="loading"
+              className="w-6 h-6 animate-spin text-chalkboard-100"
+              aria-hidden
+            />
+          ) : (
+            <span className="bg-img-mel w-6 h-6" aria-hidden />
+          )}
+        </span>
       </button>
       <Tooltip
         position="bottom-right"

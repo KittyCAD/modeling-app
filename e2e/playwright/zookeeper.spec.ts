@@ -40,6 +40,14 @@ test.describe('Zookeeper tests', { tag: ZOOKEEPER_TEST_TAGS }, () => {
     })
     expect(headerHeights.withToggle).toBe(headerHeights.withoutToggle)
     await expect(toggle.locator('.bg-img-mel')).toBeVisible()
+    const avatarSize = await page
+      .getByTestId('user-sidebar-toggle')
+      .locator('.avatar')
+      .boundingBox()
+    const toggleSize = await toggle.boundingBox()
+    expect(toggleSize?.width).toBe(avatarSize?.width)
+    expect(toggleSize?.height).toBe(avatarSize?.height)
+    expect(toggleSize?.width).toBe(toggleSize?.height)
     await expect(rightPane.locator('[data-pane-toolbar]')).toBeHidden()
 
     const handle = page.locator(
