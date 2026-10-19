@@ -37,7 +37,7 @@ test(
       )
       await fs.writeFile(
         await fs.join(projectPath, 'config.toml'),
-        encoder.encode('title = "Example"')
+        encoder.encode('\ufefftitle = "Example"\r\n')
       )
       await fs.writeFile(
         await fs.join(projectPath, 'config'),
@@ -50,12 +50,22 @@ test(
 
     const textEditor = page.locator('#code-pane').getByRole('textbox')
     await toolbar.openFile('config.toml')
-    await expect(textEditor).toHaveText('title = "Example"')
-    await textEditor.fill('title = "Updated"')
+    await expect(textEditor).toContainText('title = "Example"')
+    await textEditor.press('ControlOrMeta+End')
+    await textEditor.pressSequentially('enabled = true')
+    await textEditor.press('Enter')
+    await page.evaluate(() => navigator.clipboard.writeText('count = 2\n'))
+    await textEditor.press('ControlOrMeta+KeyV')
     const textFilePath = await fs.join(dir, projectName, 'config.toml')
     await expect
-      .poll(() => fs.readFile(textFilePath, 'utf8'))
-      .toBe('title = "Updated"')
+      .poll(async () => Array.from(await fs.readFile(textFilePath)))
+      .toEqual(
+        Array.from(
+          encoder.encode(
+            '\ufefftitle = "Example"\r\nenabled = true\r\ncount = 2\r\n'
+          )
+        )
+      )
 
     await toolbar.openFile('config')
     await expect(textEditor).toHaveText('No extension')
