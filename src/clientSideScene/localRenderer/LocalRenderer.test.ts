@@ -75,6 +75,7 @@ function fixture(
 ) {
   const manager = Object.assign(new EventTarget(), {
     artifactGraph: new Map([['triangle', { type: 'sweep' }]]),
+    engineSceneGenerationSignal: signal(0),
     isExecutingSignal: signal(false),
     get isExecuting() {
       return this.isExecutingSignal.value
@@ -119,7 +120,9 @@ function fixture(
     domElement: document.createElement('canvas'),
   }
   state.scene = new Scene()
-  const done = (successful = true) => {
+  // Executions rebuild the engine scene unless they were answered from the cache.
+  const done = (successful = true, sceneChanged = true) => {
+    if (sceneChanged) manager.engineSceneGenerationSignal.value += 1
     manager.isExecutingSignal.value = false
     manager.dispatchEvent(
       new CustomEvent('execution-done', {
@@ -298,6 +301,22 @@ describe('local GLB loading', () => {
       500, -0, 500,
     ])
     expect(f.onModelLoadSettled).toHaveBeenCalledExactlyOnceWith(true)
+    f.renderer.dispose()
+  })
+
+  it('keeps the loaded model when an execution leaves the scene unchanged', async () => {
+    const f = fixture()
+    f.done()
+    await vi.waitFor(() => expect(f.state.currentModel).not.toBeNull())
+    const model = f.state.currentModel
+    f.onModelLoadSettled.mockClear()
+
+    f.manager.isExecutingSignal.value = true
+    f.done(true, false)
+
+    expect(f.manager.rustContext.export).toHaveBeenCalledOnce()
+    expect(f.state.currentModel).toBe(model)
+    expect(f.onModelLoadSettled).toHaveBeenCalledExactlyOnceWith()
     f.renderer.dispose()
   })
 

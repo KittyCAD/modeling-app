@@ -116,6 +116,8 @@ export class LocalRenderer {
   private readonly gltfLoader = new GLTFLoader()
   private modelLoadGeneration = 0
   private projectedModelGeneration = -1
+  /** The engine scene generation of the model on screen, once it has loaded. */
+  private loadedSceneGeneration: number | null = null
   private pendingModelRefresh = false
   private hasFittedModel = false
   private unregisterExecutionListener: (() => void) | null = null
@@ -857,6 +859,7 @@ export class LocalRenderer {
   }
 
   private clearModel() {
+    this.loadedSceneGeneration = null
     this.engineEntityReferences.clear()
     this.integerIdPicker?.clearModel()
     this.selectionHighlightRenderer?.clearModel()
@@ -1053,6 +1056,18 @@ export class LocalRenderer {
       return
     }
 
+    // A cache hit leaves the engine scene as it was, so keep the loaded model.
+    if (
+      this.kclManager.engineSceneGenerationSignal.peek() ===
+      this.loadedSceneGeneration
+    ) {
+      this.rebuildSelectionTargets()
+      this.syncPlaneScale()
+      this.pendingModelRefresh = false
+      this.onModelLoadSettled?.()
+      return
+    }
+
     this.pendingModelRefresh = true
     if (this.renderer) {
       void this.refreshModel().catch(reportRejection)
@@ -1062,6 +1077,7 @@ export class LocalRenderer {
   private async refreshModel() {
     this.pendingModelRefresh = false
     const generation = ++this.modelLoadGeneration
+    const sceneGeneration = this.kclManager.engineSceneGenerationSignal.peek()
     const isCurrent = () =>
       !this.disposed && generation === this.modelLoadGeneration
     // Reference planes do not depend on a successful GLB export.
@@ -1070,6 +1086,7 @@ export class LocalRenderer {
     // An empty execution has no GLB to export, but must clear the old model.
     if (this.kclManager.artifactGraph.size === 0) {
       this.clearModel()
+      this.loadedSceneGeneration = sceneGeneration
       this.rebuildSelectionTargets()
       this.onModelLoadSettled?.(true)
       return
@@ -1128,6 +1145,7 @@ export class LocalRenderer {
       }
       this.invalidateBaseRender()
       this.projectedModelGeneration = generation
+      this.loadedSceneGeneration = sceneGeneration
       this.onModelLoadSettled?.(true)
     } catch (error) {
       if (isCurrent()) this.handleModelLoadError(error)
