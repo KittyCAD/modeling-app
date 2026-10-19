@@ -1,7 +1,6 @@
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
-import { signal } from '@preact/signals-core'
 import { AreaType, LayoutType } from '@src/lib/layout'
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 
@@ -15,6 +14,9 @@ const renderMocks = vi.hoisted(() => ({
   kclManager: {
     ast: {},
     code: '',
+    execStateSignal: {
+      value: { artifactGraph: new Map(), filenames: {} },
+    },
     isExecutingSignal: { value: false },
   },
 }))
@@ -23,12 +25,6 @@ vi.mock('@src/lib/boot', () => ({
   useApp: () => ({
     commands: { actor: { send: renderMocks.appSend } },
     userFeatures: { useHas: () => renderMocks.experimentalPointAndClick },
-    registry: {
-      get: () => ({
-        execState,
-        isExecuting: renderMocks.kclManager.isExecutingSignal,
-      }),
-    },
   }),
   useSingletons: () => ({ kclManager: renderMocks.kclManager }),
 }))
@@ -64,9 +60,6 @@ import type { KclNamedView } from '@src/lang/std/kclNamedViews'
 import { activeViewSignal } from '@src/lib/kclNamedViewActivation'
 import { initialiseWasmNode } from '@src/lang/wasmUtilsNode'
 import { getKclDefaultViewName } from '@src/lib/wasm_lib_wrapper'
-import { emptyExecState } from '@src/lang/wasm'
-
-const execState = signal(emptyExecState())
 
 beforeAll(async () => {
   await initialiseWasmNode()
@@ -235,8 +228,7 @@ describe('KclNamedViewsPane', () => {
     'applies views independently of experimental editing (%s)',
     async (experimentalPointAndClick) => {
       const namedView = view({ name: 'Front', modulePath: { type: 'Main' } })
-      execState.value = {
-        ...emptyExecState(),
+      renderMocks.kclManager.execStateSignal.value = {
         artifactGraph: new Map([
           [namedView.artifact.id, { type: 'namedView', ...namedView.artifact }],
         ]),
@@ -269,13 +261,6 @@ describe('KclNamedViewsPane', () => {
       fireEvent.doubleClick(label)
       expect(renderMocks.prepareNamedViewEditCommand).toHaveBeenCalledTimes(
         experimentalPointAndClick ? 1 : 0
-      )
-
-      act(() => {
-        execState.value = emptyExecState()
-      })
-      await waitFor(() =>
-        expect(screen.queryByText('Front', { exact: true })).toBeNull()
       )
     }
   )

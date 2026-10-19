@@ -29,7 +29,6 @@ import { prepareNamedViewEditCommand } from '@src/lib/kclNamedViewEdit'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { reportRejection, trap } from '@src/lib/trap'
 import { getKclDefaultViewName } from '@src/lib/wasm_lib_wrapper'
-import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 
@@ -108,9 +107,10 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
   )
   const { kclManager } = useSingletons()
   const [isChangingSource, setIsChangingSource] = useState(false)
-  const execution = app.registry.get(executingEditorService)
-  const execState = execution.execState.value
-  const cannotReachEngine = useReliesOnEngine(execution.isExecuting.value)
+  const execState = kclManager.execStateSignal.value
+  const cannotReachEngine = useReliesOnEngine(
+    kclManager.isExecutingSignal.value ?? false
+  )
   const { state: modelingState } = useModelingContext()
   const inSketchMode = isSketchSessionOpen(modelingState)
 
@@ -143,9 +143,7 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
   }
 
   const removeView = async (view: KclNamedView) => {
-    const artifact = execution.execState
-      .peek()
-      .artifactGraph.get(view.artifact.id)
+    const artifact = kclManager.execState.artifactGraph.get(view.artifact.id)
     if (artifact?.type !== 'namedView') {
       toast.error(`Could not find “${view.artifact.name}”.`)
       return
