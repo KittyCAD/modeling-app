@@ -127,7 +127,7 @@ export interface SystemIOHost {
 
 export type SystemIOInput = {
   wasmInstancePromise: Promise<ModuleType>
-  app: SystemIOHost
+  host: SystemIOHost
 }
 
 export type SystemIOContext = SystemIOInput & {

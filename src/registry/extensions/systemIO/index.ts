@@ -28,7 +28,7 @@ export default defineRegistryItemFactory((ctx) => {
       },
     }
     actor = createActor(systemIOMachineImpl, {
-      input: { wasmInstancePromise, app: host },
+      input: { wasmInstancePromise, host },
     })
     actor.start()
     return actor

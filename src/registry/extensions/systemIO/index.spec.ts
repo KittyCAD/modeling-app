@@ -21,7 +21,7 @@ it('owns one filesystem actor without an App and stops it on disposal', async ()
   try {
     expect(registry.get(systemIOService).actor).toBe(actor)
     expect(actor.getSnapshot().status).toBe('active')
-    const host = actor.getSnapshot().context.app
+    const host = actor.getSnapshot().context.host
     expect(host.fileOperations).toBe(registry.get(fileOperationsService))
     expect(host.systemIOActor).toBe(actor)
     expect(host.project).toBe(registry.get(projectSession).getProject())

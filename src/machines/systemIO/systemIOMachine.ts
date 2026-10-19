@@ -576,7 +576,7 @@ export const systemIOMachine = setup({
           requestedFileNameWithExtension: string
           requestedCode: string
           requestedSubRoute?: string
-          app: SystemIOHost
+          host: SystemIOHost
         }
       }): Promise<{
         message: string
@@ -749,7 +749,7 @@ export const systemIOMachine = setup({
           absolutePathToParentDirectory: string
           requestedProjectName?: string
           requestedFileNameWithExtension?: string
-          app: SystemIOHost
+          host: SystemIOHost
         }
       }) => {
         return {
@@ -770,7 +770,7 @@ export const systemIOMachine = setup({
           requestedFileNameWithExtension: string
           fileNameWithExtension: string
           absolutePathToParentDirectory: string
-          app: SystemIOHost
+          host: SystemIOHost
         }
       }) => {
         return {
@@ -1316,7 +1316,7 @@ export const systemIOMachine = setup({
             requestedFileNameWithExtension:
               event.data.requestedFileNameWithExtension,
             requestedCode: event.data.requestedCode,
-            app: context.app,
+            host: context.host,
           }
         },
         onDone: {
@@ -1341,7 +1341,7 @@ export const systemIOMachine = setup({
               event.data.requestedFileNameWithExtension,
             requestedSubRoute: event.data.requestedSubRoute,
             requestedCode: event.data.requestedCode,
-            app: context.app,
+            host: context.host,
           }
         },
         onDone: {
@@ -1827,7 +1827,7 @@ export const systemIOMachine = setup({
             folderName: event.data.folderName,
             absolutePathToParentDirectory:
               event.data.absolutePathToParentDirectory,
-            app: context.app,
+            host: context.host,
           }
         },
         onDone: {
@@ -1853,7 +1853,7 @@ export const systemIOMachine = setup({
             fileNameWithExtension: event.data.fileNameWithExtension,
             absolutePathToParentDirectory:
               event.data.absolutePathToParentDirectory,
-            app: context.app,
+            host: context.host,
           }
         },
         onDone: {
@@ -1942,7 +1942,7 @@ export const systemIOMachine = setup({
             fileNameWithExtension: event.data.fileNameWithExtension,
             absolutePathToParentDirectory:
               event.data.absolutePathToParentDirectory,
-            app: context.app,
+            host: context.host,
           }
         },
         onDone: {
@@ -1997,7 +1997,7 @@ export const systemIOMachine = setup({
             requestedProjectName: event.data.requestedProjectName,
             requestedFileNameWithExtension:
               event.data.requestedFileNameWithExtension,
-            app: context.app,
+            host: context.host,
           }
         },
         onDone: {
