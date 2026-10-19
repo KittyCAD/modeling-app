@@ -1,5 +1,6 @@
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 import { signal } from '@preact/signals-core'
+import { AreaType, LayoutType } from '@src/lib/layout'
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { createElement } from 'react'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
@@ -49,11 +50,16 @@ vi.mock('@src/lib/kclNamedViewActivation', async (importOriginal) => ({
   activateNamedView: renderMocks.activateNamedView,
 }))
 
+vi.mock('@src/components/layout/Panel', () => ({
+  LayoutPanel: ({ children }: { children: unknown }) => children,
+  LayoutPanelHeader: ({ Menu }: { Menu: unknown }) => Menu,
+}))
+
 import {
-  NamedViews,
+  KclNamedViewsPane,
   canManageNamedView,
   viewRows,
-} from '@src/lib/namedViews/NamedViews'
+} from '@src/components/layout/areas/KclNamedViewsPane'
 import type { KclNamedView } from '@src/lang/std/kclNamedViews'
 import { activeViewSignal } from '@src/lib/kclNamedViewActivation'
 import { initialiseWasmNode } from '@src/lang/wasmUtilsNode'
@@ -208,12 +214,19 @@ describe('viewRows', () => {
   })
 })
 
-describe('NamedViews', () => {
-  function renderViews(experimentalPointAndClick = true) {
+describe('KclNamedViewsPane', () => {
+  function renderPane(experimentalPointAndClick = true) {
     renderMocks.experimentalPointAndClick = experimentalPointAndClick
     return render(
-      createElement(NamedViews, {
-        renderHeader: (actions) => actions,
+      createElement(KclNamedViewsPane, {
+        layout: {
+          id: 'named-views',
+          label: 'Named Views',
+          type: LayoutType.Simple,
+          areaType: AreaType.NamedViews,
+        },
+        areaConfig: { hide: () => false },
+        onClose: vi.fn(),
       })
     )
   }
@@ -232,7 +245,7 @@ describe('NamedViews', () => {
       renderMocks.activateNamedView.mockClear()
       renderMocks.prepareNamedViewEditCommand.mockClear()
 
-      renderViews(experimentalPointAndClick)
+      renderPane(experimentalPointAndClick)
 
       const label = await screen.findByRole('button', { name: /^Front/ })
       fireEvent.click(label)
