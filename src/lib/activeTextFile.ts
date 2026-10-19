@@ -191,13 +191,11 @@ export async function openActiveTextFile(
     let text: string
     try {
       text = decoder.decode(bytes)
-      // Allow tabs and line endings, but reject binary control characters.
+      // Allow tabs and line endings, but reject other control characters.
       for (const character of text) {
-        const code = character.charCodeAt(0)
-        if (
-          (code < 32 && code !== 9 && code !== 10 && code !== 13) ||
-          (code >= 127 && code <= 159)
-        ) {
+        const isControlCharacter = /\p{Control}/u.test(character)
+        const isAllowedWhitespace = '\t\n\r'.includes(character)
+        if (isControlCharacter && !isAllowedWhitespace) {
           return setActiveTextFileError(path, name, UNSUPPORTED_TEXT_MESSAGE)
         }
       }
