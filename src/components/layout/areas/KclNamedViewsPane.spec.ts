@@ -14,12 +14,10 @@ const renderMocks = vi.hoisted(() => ({
   kclManager: {
     ast: {},
     code: '',
-    path: '/project/main.kcl',
     execStateSignal: {
       value: { artifactGraph: new Map(), filenames: {} },
     },
     isExecutingSignal: { value: false },
-    systemDeps: { project: { value: { path: '/project' } } },
   },
 }))
 
@@ -263,40 +261,6 @@ describe('KclNamedViewsPane', () => {
       fireEvent.doubleClick(label)
       expect(renderMocks.prepareNamedViewEditCommand).toHaveBeenCalledTimes(
         experimentalPointAndClick ? 1 : 0
-      )
-    }
-  )
-
-  it.each(['unchanged', 'file'])(
-    'only opens a prepared edit for the same source (%s)',
-    async (change) => {
-      const namedView = view({ name: 'Front', modulePath: { type: 'Main' } })
-      renderMocks.kclManager.execStateSignal.value = {
-        artifactGraph: new Map([
-          [namedView.artifact.id, { type: 'namedView', ...namedView.artifact }],
-        ]),
-        filenames: { 0: { type: 'Main' } },
-      }
-      renderMocks.kclManager.path = '/project/main.kcl'
-      renderMocks.appSend.mockClear()
-      let finishEdit: (event: { type: string }) => void = () => {}
-      renderMocks.prepareNamedViewEditCommand.mockReturnValueOnce(
-        new Promise((resolve) => {
-          finishEdit = resolve
-        })
-      )
-      renderPane()
-
-      fireEvent.doubleClick(
-        await screen.findByRole('button', { name: /^Front/ })
-      )
-      if (change === 'file') renderMocks.kclManager.path = '/project/other.kcl'
-      await act(async () => {
-        finishEdit({ type: 'Find and select command' })
-      })
-
-      expect(renderMocks.appSend).toHaveBeenCalledTimes(
-        change === 'unchanged' ? 1 : 0
       )
     }
   )

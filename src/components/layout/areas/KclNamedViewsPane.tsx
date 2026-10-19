@@ -123,8 +123,6 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
   const actionsDisabled = cannotReachEngine || inSketchMode || isChangingSource
 
   const editView = (view: KclNamedView) => {
-    const { ast, code, path } = kclManager
-    const projectPath = kclManager.systemDeps.project.value?.path
     const artifact = execState.artifactGraph.get(view.artifact.id)
     if (artifact?.type !== 'namedView') {
       toast.error(`Could not find “${view.artifact.name}”.`)
@@ -132,20 +130,13 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
     }
     prepareNamedViewEditCommand({
       artifact,
-      ast,
-      code,
+      ast: kclManager.ast,
+      code: kclManager.code,
       artifactGraph: execState.artifactGraph,
       rustContext: kclManager.rustContext,
     })
       .then((event) => {
-        if (
-          ast !== kclManager.ast ||
-          code !== kclManager.code ||
-          path !== kclManager.path ||
-          projectPath !== kclManager.systemDeps.project.value?.path ||
-          trap(event)
-        )
-          return
+        if (trap(event)) return
         app.commands.actor.send(event)
       })
       .catch((reason) => toast.error(String(reason)))
