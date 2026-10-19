@@ -40,7 +40,7 @@ export type ActiveTextFile =
 
 export const activeTextFileSignal = signal<ActiveTextFile | null>(null)
 
-// Keep a UTF-8 BOM in the buffer so editing does not silently remove it.
+// Preserve the UTF-8 byte order mark when editing.
 const decoder = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true })
 export const MAX_EDITABLE_TEXT_FILE_BYTES = 1024 * 1024
 const FILE_TOO_LARGE_MESSAGE = 'Text files larger than 1 MiB cannot be edited.'

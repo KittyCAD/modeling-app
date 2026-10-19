@@ -45,7 +45,7 @@ describe('plain text editor', () => {
   beforeEach(() => vi.clearAllMocks())
 
   it.each(['\n', '\r\n', '\r'])(
-    'preserves BOM and %j line endings on edit and paste',
+    'preserves byte order mark and %j line endings on edit and paste',
     (lineEnding) => {
       const original = `\ufefffirst${lineEnding}second${lineEnding}`
       activeTextFileSignal.value = {
