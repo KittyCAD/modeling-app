@@ -208,6 +208,44 @@ view001 = view::named(
     await enginelessExecutor(result.modifiedAst, rustContext)
   })
 
+  it('preserves read-only exceptions that cannot be reconstructed', async () => {
+    const code = `${settings}
+plane001 = offsetPlane(XY, offset = 10mm)
+exceptions = [plane001]
+view001 = view::named("Inspection view", camera = view::oriented(view::Orientation::Front), baseline = view::Visibility::Show, except = exceptions)`
+    const ast = assertParse(code, instance)
+    const execState = await enginelessExecutor(ast, rustContext)
+    const artifact = [...execState.artifactGraph.values()].find(
+      (candidate) => candidate.type === 'namedView'
+    )
+    if (!artifact || artifact.type !== 'namedView') {
+      throw new Error('Expected a named view artifact')
+    }
+
+    const event = await prepareNamedViewEditCommand({
+      artifact,
+      artifactGraph: new Map(),
+      ast,
+      code,
+      rustContext,
+    })
+    if (err(event)) throw event
+    expect(event.data.argDefaultValues.except).toBeUndefined()
+
+    const result = addNamedView({
+      ast,
+      artifactGraph: execState.artifactGraph,
+      ...event.data.argDefaultValues,
+      name: 'Renamed view',
+      wasmInstance: instance,
+    })
+    if (err(result)) throw result
+    const updatedCode = recast(result.modifiedAst, instance)
+    expect(updatedCode).toContain('"Renamed view"')
+    expect(updatedCode).toContain('except = exceptions')
+    await enginelessExecutor(result.modifiedAst, rustContext)
+  })
+
   it('keeps a custom camera helper when editing a view', async () => {
     const code = `${settings}
 fn oriented(@orientation: view::Orientation) {

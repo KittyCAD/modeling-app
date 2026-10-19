@@ -87,7 +87,6 @@ export async function prepareNamedViewEditCommand({
     exceptIds.length > 0
       ? retrieveSelectionsFromArtifactIds(exceptIds, artifactGraph)
       : undefined
-  if (isErr(except)) return except
 
   // Other camera expressions stay in source; only name and visibility are editable.
   const look = artifact.camera.look
@@ -108,7 +107,8 @@ export async function prepareNamedViewEditCommand({
         : 'Perspective'
       : undefined,
     baseline: artifact.baseline === 'show' ? 'Show' : 'Hide',
-    except,
+    // Selection reconstruction is best-effort; edits preserve the original except expression.
+    except: isErr(except) ? undefined : except,
     nodeToEdit: structuredClone(artifact.codeRef.pathToNode),
   }
 

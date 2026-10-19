@@ -1,10 +1,11 @@
+import { Menu } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 
 import { ActionButton } from '@src/components/ActionButton'
-import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
+import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useReliesOnEngine } from '@src/hooks/useReliesOnEngine'
 import type { KclNamedView } from '@src/lang/std/kclNamedViews'
@@ -28,8 +29,7 @@ import { prepareNamedViewEditCommand } from '@src/lib/kclNamedViewEdit'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { reportRejection, trap } from '@src/lib/trap'
 import { getKclDefaultViewName } from '@src/lib/wasm_lib_wrapper'
-import type { RefObject } from 'react'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import toast from 'react-hot-toast'
 
 export type ViewRow = {
@@ -191,11 +191,19 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
         title={props.layout.label}
         Menu={
           canManageViews ? (
-            <PaneIconButton
-              icon="plus"
-              label="Create named view"
-              testId="named-view-create"
+            <ActionButton
+              Element="button"
+              aria-label="Create named view"
+              title="Create named view"
+              data-testid="named-view-create"
               disabled={actionsDisabled}
+              tabIndex={0}
+              iconStart={{
+                icon: 'plus',
+                iconClassName: '!text-current',
+                bgClassName: 'bg-transparent dark:bg-transparent',
+              }}
+              className="h-6 w-6 shrink-0 justify-center !p-0 !bg-transparent hover:text-primary border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 !outline-none disabled:opacity-40"
               onClick={() => {
                 app.commands.actor.send({
                   type: 'Find and select command',
@@ -269,11 +277,32 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
                   </span>
                 </button>
                 {manageableView ? (
-                  <NamedViewRowMenu
+                  <HeaderMenu
+                    aria-label="Named view actions"
+                    data-testid="named-view-actions"
                     disabled={actionsDisabled}
-                    onEdit={() => editView(manageableView)}
-                    onRemove={() => void removeView(manageableView)}
-                  />
+                  >
+                    <Menu.Item disabled={actionsDisabled}>
+                      <button
+                        type="button"
+                        className="menuButton"
+                        data-testid="named-view-edit"
+                        onClick={() => editView(manageableView)}
+                      >
+                        Edit
+                      </button>
+                    </Menu.Item>
+                    <Menu.Item disabled={actionsDisabled}>
+                      <button
+                        type="button"
+                        className="menuButton"
+                        data-testid="named-view-remove"
+                        onClick={() => void removeView(manageableView)}
+                      >
+                        Remove
+                      </button>
+                    </Menu.Item>
+                  </HeaderMenu>
                 ) : row.target.kind === 'declared' &&
                   !canManageNamedView(row.target.view) ? (
                   <CustomIcon
@@ -288,86 +317,5 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
         </ul>
       </section>
     </LayoutPanel>
-  )
-}
-
-function PaneIconButton({
-  buttonRef,
-  icon,
-  label,
-  testId,
-  disabled,
-  onClick,
-}: {
-  buttonRef?: RefObject<HTMLButtonElement | null>
-  icon: 'plus' | 'three-dots'
-  label: string
-  testId: string
-  disabled: boolean
-  onClick?: () => void
-}) {
-  return (
-    <ActionButton
-      ref={buttonRef}
-      Element="button"
-      aria-label={label}
-      title={label}
-      data-testid={testId}
-      disabled={disabled}
-      tabIndex={0}
-      iconStart={{
-        icon,
-        iconClassName: '!text-current',
-        bgClassName: 'bg-transparent dark:bg-transparent',
-      }}
-      className="h-6 w-6 shrink-0 justify-center !p-0 !bg-transparent hover:text-primary border-transparent dark:!border-transparent hover:!border-primary dark:hover:!border-chalkboard-70 !outline-none disabled:opacity-40"
-      onClick={onClick}
-    />
-  )
-}
-
-function NamedViewRowMenu({
-  disabled,
-  onEdit,
-  onRemove,
-}: {
-  disabled: boolean
-  onEdit: () => void
-  onRemove: () => void
-}) {
-  const triggerRef = useRef<HTMLButtonElement>(null)
-
-  return (
-    <>
-      <PaneIconButton
-        buttonRef={triggerRef}
-        icon="three-dots"
-        label="Named view actions"
-        testId="named-view-actions"
-        disabled={disabled}
-      />
-      <ContextMenu
-        event="mouseup"
-        menuTargetElement={triggerRef}
-        items={[
-          <ContextMenuItem
-            key="edit"
-            data-testid="named-view-edit"
-            onClick={onEdit}
-            disabled={disabled}
-          >
-            Edit
-          </ContextMenuItem>,
-          <ContextMenuItem
-            key="remove"
-            data-testid="named-view-remove"
-            onClick={onRemove}
-            disabled={disabled}
-          >
-            Remove
-          </ContextMenuItem>,
-        ]}
-      />
-    </>
   )
 }
