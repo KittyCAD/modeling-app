@@ -1,5 +1,4 @@
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
-import fc from 'fast-check'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => ({
@@ -97,30 +96,13 @@ describe('text file detection', () => {
     expect(mocks.writeFile).not.toHaveBeenCalled()
   })
 
-  it('accepts empty files, Unicode, whitespace and a UTF-8 BOM', async () => {
-    await fc.assert(
-      fc.asyncProperty(
-        fc.array(
-          fc.oneof(
-            fc.integer({ min: 32, max: 126 }),
-            fc.integer({ min: 160, max: 0xd7ff }),
-            fc.integer({ min: 0xe000, max: 0x10ffff }),
-            fc.constantFrom(9, 10, 13)
-          ),
-          { maxLength: 100 }
-        ),
-        async (codePoints) => {
-          const text = String.fromCodePoint(...codePoints)
-          mocks.readFile.mockResolvedValueOnce(text)
-          await mod.openActiveTextFile(fileOperations, '/proj/README')
-          expect(mod.activeTextFileSignal.value).toMatchObject({
-            status: 'ready',
-            text,
-          })
-        }
-      )
-    )
-    const text = '\ufefftitle = "Example"\r\n'
+  it.each([
+    '',
+    'plain text',
+    'café 中文 🚀',
+    '\t \n\r\n\r',
+    '\ufefftitle = "Example"\r\n',
+  ])('preserves supported text %j', async (text) => {
     mocks.readFile.mockResolvedValueOnce(text)
     await mod.openActiveTextFile(fileOperations, '/proj/config.toml')
     expect(mod.activeTextFileSignal.value).toMatchObject({

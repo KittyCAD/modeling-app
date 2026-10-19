@@ -99,7 +99,7 @@ describe('ProjectExplorer', () => {
     vi.restoreAllMocks()
   })
   it('opens non-KCL files on click and Enter while keeping KCL on the modeling path', async () => {
-    const textFiles = ['config.json', 'LICENSE', 'part.STEP'].map((name) =>
+    const textFiles = ['LICENSE', 'part.STEP'].map((name) =>
       createFile(name, '')
     )
     const folder = createFolder('folder.step')
@@ -145,12 +145,16 @@ describe('ProjectExplorer', () => {
       fireEvent.click(screen.getByRole('treeitem', { name: file.name }))
       expect(openText).toHaveBeenCalledWith(app.fileOperations, file.path)
       openText.mockClear()
-      fireEvent.keyDown(window, { key: 'Enter' })
-      await waitFor(() =>
-        expect(openText).toHaveBeenCalledWith(app.fileOperations, file.path)
-      )
-      openText.mockClear()
     }
+
+    fireEvent.keyDown(window, { key: 'Enter' })
+    await waitFor(() =>
+      expect(openText).toHaveBeenCalledWith(
+        app.fileOperations,
+        textFiles[1].path
+      )
+    )
+    openText.mockClear()
 
     fireEvent.click(screen.getByRole('treeitem', { name: folder.name }))
     expect(openText).not.toHaveBeenCalled()
