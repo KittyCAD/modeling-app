@@ -2,6 +2,11 @@ import { signal } from '@preact/signals-core'
 import fc from 'fast-check'
 import { describe, expect, expectTypeOf, it, vi } from 'vitest'
 import { defineRegistryItemFactory, provide, provideService } from './helpers'
+import {
+  RegistryDependencyError,
+  ServiceConflictError,
+  ServiceResolutionError,
+} from './errors'
 import { Registry } from './registry'
 import { defineService } from './service'
 import { Slot, type RegistryItem, type RegistryItemDefinition } from './types'
@@ -28,12 +33,9 @@ describe('constructor dependency reads', () => {
     expect(registry.get(output).name).toBe('ready')
   })
 
-  it('separates scoped constructor values from complete live composition', () => {
+  it('keeps value composition live and rejects constructor reads in types and JavaScript', () => {
     const commands = appendValueSpec<string>('commands')
-    const output = defineService<{
-      captured: readonly string[]
-      live(): readonly string[]
-    }>('output')
+    const output = defineService<{ live(): readonly string[] }>('output')
     const source = signal('Open')
     const core = { provides: [provide(commands, source)] }
     const plugin = { provides: [provide(commands, 'Export')] }
@@ -42,12 +44,13 @@ describe('constructor dependency reads', () => {
       dependencies: { commands: { registryItem: core, token: commands } },
       create(live, read) {
         create()
-        const captured = read('commands')
-        expectTypeOf(captured).toEqualTypeOf<readonly string[]>()
+        expect(() => {
+          // @ts-expect-error Value specs are composed after constructor capabilities are wired.
+          read('commands')
+        }).toThrow(RegistryDependencyError)
         return {
           providesServices: [
             provideService(output, {
-              captured,
               live: () => live.commands.value,
             }),
           ],
@@ -57,56 +60,132 @@ describe('constructor dependency reads', () => {
     const registry = new Registry()
     registry.configure([consumer, plugin])
     const result = registry.get(output)
-    expect(result.captured).toEqual(['Open'])
     expect(result.live()).toEqual(['Open', 'Export'])
     source.value = 'Open recent'
     expect(registry.get(output)).toBe(result)
-    expect(result.captured).toEqual(['Open'])
     expect(result.live()).toEqual(['Open recent', 'Export'])
     expect(create).toHaveBeenCalledTimes(1)
   })
 
-  it('composes constructor values independently of root ordering', () => {
-    const values = appendValueSpec<string>('values')
-    const output = defineService<{ captured: readonly string[] }>('output')
-    const first = { provides: [provide(values, 'first', { key: 'duplicate' })] }
-    const second = {
-      provides: [
-        provide(values, 'discarded', { key: 'duplicate' }),
-        provide(values, 'priority', { precedence: 'highest' }),
+  it('selects a test runtime explicitly without constructing the production provider', async () => {
+    const runtime = defineService<{ ready: Promise<string> }>('runtime')
+    const output = defineService<{ ready: Promise<string> }>('output')
+    const production = vi.fn(() => ({
+      providesServices: [
+        provideService(runtime, { ready: Promise.resolve('production') }),
       ],
+    }))
+    const productionProvider = defineRegistryItemFactory(
+      production,
+      'production-runtime'
+    )
+    let finishInitialization: (value: string) => void = () => {
+      throw new Error('Missing resolver')
     }
-    const unrelated = { provides: [provide(values, 'unrelated')] }
+    const ready = new Promise<string>((resolve) => {
+      finishInitialization = resolve
+    })
+    const mockProvider = defineRegistryItemFactory(
+      () => ({
+        providesServices: [provideService(runtime, { ready })],
+      }),
+      'mock-runtime'
+    )
+    const createConsumer = (provider: RegistryItem) =>
+      defineRegistryItemFactory({
+        dependencies: { runtime: { registryItem: provider, token: runtime } },
+        create(_live, read) {
+          return {
+            providesServices: [
+              provideService(output, { ready: read('runtime').ready }),
+            ],
+          }
+        },
+      })
+    // The composition root chooses the test provider instead of installing both.
+    const selectedProvider = {
+      production: productionProvider,
+      test: mockProvider,
+    }.test
+    const registry = new Registry()
+    registry.configure([createConsumer(selectedProvider)])
+    expect(registry.get(output).ready).toBe(ready)
+    expect(production).not.toHaveBeenCalled()
+    finishInitialization('test-runtime')
+    await expect(registry.get(output).ready).resolves.toBe('test-runtime')
+    await registry.disposeAsync()
+  })
+
+  it('rejects value-spec construction reads through the callback context too', () => {
+    const commands = appendValueSpec<string>('commands')
+    const consumer = defineRegistryItemFactory(({ valueSpecs }) => {
+      valueSpecs.get(commands)
+      return {}
+    })
+    const registry = new Registry()
+    registry.configure([consumer])
+    expect(() => registry.inspect()).toThrow(ServiceResolutionError)
+  })
+
+  it('rejects an unrelated second singleton provider in every root order', () => {
+    const source = defineService<{ name: string }>('source')
+    const output = defineService<{ name: string }>('output')
+    const production = {
+      providesServices: [provideService(source, { name: 'production' })],
+    }
+    const mock = {
+      providesServices: [provideService(source, { name: 'test' })],
+    }
     const consumer = defineRegistryItemFactory({
-      dependencies: {
-        first: { registryItem: first, token: values },
-        second: { registryItem: second, token: values },
-      },
+      dependencies: { source: { registryItem: production, token: source } },
       create(_live, read) {
-        return {
-          providesServices: [
-            provideService(output, { captured: read('first') }),
-          ],
-        }
+        return { providesServices: [provideService(output, read('source'))] }
       },
     })
     fc.assert(
       fc.property(
-        fc.shuffledSubarray([first, second, unrelated, consumer], {
-          minLength: 4,
-          maxLength: 4,
+        fc.shuffledSubarray([production, mock, consumer], {
+          minLength: 3,
+          maxLength: 3,
         }),
         (roots) => {
           const registry = new Registry()
           registry.configure(roots)
-          try {
-            expect(registry.get(output).captured).toEqual(['priority', 'first'])
-          } finally {
-            registry[Symbol.dispose]()
-          }
+          expect(() => registry.get(output)).toThrow(ServiceConflictError)
+          registry[Symbol.dispose]()
         }
       )
     )
+  })
+
+  it('rolls back a conflicting provider without replacing the captured runtime', async () => {
+    const source = defineService<{ name: string }>('source')
+    const output = defineService<{ name: string }>('output')
+    const extra = new Slot()
+    const disposeMock = vi.fn()
+    const production = {
+      providesServices: [provideService(source, { name: 'production' })],
+    }
+    const mock = defineRegistryItemFactory(() => ({
+      providesServices: [provideService(source, { name: 'test' })],
+      dispose: disposeMock,
+    }))
+    const consumer = defineRegistryItemFactory({
+      dependencies: { source: { registryItem: production, token: source } },
+      create(_live, read) {
+        return { providesServices: [provideService(output, read('source'))] }
+      },
+    })
+    const registry = new Registry()
+    registry.configure([consumer, extra.of()])
+    const original = registry.get(output)
+    await expect(registry.reconfigure(extra, [mock])).rejects.toThrow(
+      ServiceConflictError
+    )
+    expect(registry.get(output)).toBe(original)
+    expect(registry.get(source).name).toBe('production')
+    expect(disposeMock).toHaveBeenCalledOnce()
+    await registry.disposeAsync()
   })
 
   it('includes complete shared declarative cycles in the dependency scope', () => {

@@ -40,7 +40,6 @@ import type {
 import { SlotInstance } from './types'
 
 interface FlattenedContribution {
-  readonly owner: RegistryItemDefinition
   readonly valueSpec: ValueSpec<unknown, unknown>
   readonly value: unknown
   readonly precedence: Precedence
@@ -69,10 +68,24 @@ interface FlattenResult {
   readonly slots: ReadonlyMap<symbol, readonly RegistryItem[]>
 }
 
+/** Singleton provider selection is explicit; graph order never selects an implementation. */
+function assertSingletonProvider(
+  matches: readonly FlattenedServiceContribution[]
+): void {
+  const service = matches[0]?.service
+  if (!service || service.multiple || matches.length < 2) return
+  throw new ServiceConflictError(
+    `Service ${service.name} has ${matches.length} providers (${matches
+      .map((item) => item.sourcePath)
+      .join(', ')}). ` +
+      'Singleton services must have exactly one active provider.'
+  )
+}
+
 /** Constructor reads see completed declared prerequisites, never a partial global graph. */
 interface FactoryDependencyScope {
   items: readonly RegistryItemDefinition[]
-  view: FlattenResult
+  providers: readonly FlattenedServiceContribution[]
   constructing: boolean
   captured: boolean
 }
@@ -232,22 +245,14 @@ export class Registry implements ValueSpecReader, ServiceReader {
           }
           runtimeKeys.add(key)
           const dependencyItems = collectDependencyItems(execution)
-          const view: FlattenResult = {
-            contributions: dependencyItems
-              .flatMap((owner) =>
-                contributions.filter((item) => item.owner === owner)
-              )
-              .map((item, order) => ({ ...item, order })),
-            serviceContributions: dependencyItems.flatMap((owner) =>
-              serviceContributions.filter((item) => item.owner === owner)
-            ),
-            slots,
-          }
+          const providers = dependencyItems.flatMap((owner) =>
+            serviceContributions.filter((item) => item.owner === owner)
+          )
           const runtime = this.ensureRuntimeInstance(
             key,
             node,
             dependencyItems,
-            view
+            providers
           )
           if (previousInstances.get(key) !== runtime)
             createdInstances.push(runtime)
@@ -264,7 +269,6 @@ export class Registry implements ValueSpecReader, ServiceReader {
 
         for (const contribution of node.provides ?? []) {
           contributions.push({
-            owner: node,
             valueSpec: contribution.valueSpec,
             value: contribution.value,
             precedence: contribution.precedence ?? 'default',
@@ -285,6 +289,16 @@ export class Registry implements ValueSpecReader, ServiceReader {
         return execution
       }
       for (const entry of graph) execute(entry)
+
+      // Check the complete graph too: constructor scope must not hide a second
+      // provider installed elsewhere, even when nobody reads that service live.
+      const providers = new Map<symbol, FlattenedServiceContribution[]>()
+      for (const contribution of serviceContributions) {
+        const matches = providers.get(contribution.service.id) ?? []
+        matches.push(contribution)
+        providers.set(contribution.service.id, matches)
+      }
+      for (const matches of providers.values()) assertSingletonProvider(matches)
 
       this.reconcileRuntimeInstances(runtimeKeys, previousInstances)
       return { contributions, serviceContributions, slots }
@@ -497,12 +511,15 @@ export class Registry implements ValueSpecReader, ServiceReader {
       )
     }
 
-    return this.resolveServiceFromView(service, this.flat.value)
+    return this.resolveServiceFromProviders(
+      service,
+      this.flat.value.serviceContributions
+    )
   }
 
-  private resolveServiceFromView<T>(
+  private resolveServiceFromProviders<T>(
     service: Service<T>,
-    view: FlattenResult
+    providers: readonly FlattenedServiceContribution[]
   ): T | undefined {
     if (this.resolvingServices.has(service.id)) {
       throw new ServiceResolutionError(
@@ -513,19 +530,10 @@ export class Registry implements ValueSpecReader, ServiceReader {
 
     this.resolvingServices.add(service.id)
     try {
-      const matches = view.serviceContributions.filter(
-        (item) => item.service.id === service.id
-      )
+      const matches = providers.filter((item) => item.service.id === service.id)
       if (matches.length === 0) return undefined
 
-      if (!service.multiple && matches.length > 1) {
-        throw new ServiceConflictError(
-          `Service ${service.name} has ${matches.length} providers (${matches
-            .map((item) => item.sourcePath)
-            .join(', ')}). ` +
-            'Singleton services must have exactly one active provider.'
-        )
-      }
+      assertSingletonProvider(matches)
 
       if (service.multiple) {
         return Object.freeze(
@@ -575,24 +583,17 @@ export class Registry implements ValueSpecReader, ServiceReader {
     return sanitized as T
   }
 
-  /** Combine scoped and live contributions with identical precedence and purity rules. */
-  private resolveValueSpec<I, O>(
-    valueSpec: ValueSpec<I, O>,
-    view?: FlattenResult
-  ): O
-  private resolveValueSpec(
-    valueSpec: ValueSpec<unknown, unknown>,
-    view?: FlattenResult
-  ): unknown {
-    if (!view && this.flattenDepth > 0) {
+  /** Compose values only after every active contributor has been collected. */
+  private resolveValueSpec(valueSpec: ValueSpec<unknown, unknown>): unknown {
+    if (this.flattenDepth > 0) {
       throw new ServiceResolutionError(
         `Value spec ${valueSpec.name} was requested while building the registry graph. ` +
-          'Use the factory context get() to read declared dependencies.'
+          'Read its live input after construction; use services for constructor capabilities.'
       )
     }
     const matching = dedupeContributions(
       sortContributions(
-        (view ?? this.flat.value).contributions.filter(
+        this.flat.value.contributions.filter(
           (item) => item.valueSpec.id === valueSpec.id
         )
       )
@@ -619,7 +620,10 @@ export class Registry implements ValueSpecReader, ServiceReader {
         get: (service) => {
           if (this.flattenDepth === 0) return this.get(service)
           capture()
-          const value = this.resolveServiceFromView(service, scope.view)
+          const value = this.resolveServiceFromProviders(
+            service,
+            scope.providers
+          )
           if (value === undefined) {
             throw new ServiceResolutionError(
               `Service ${service.name} is not provided by this factory's declared dependencies.`
@@ -630,19 +634,12 @@ export class Registry implements ValueSpecReader, ServiceReader {
         optional: (service) => {
           if (this.flattenDepth === 0) return this.optional(service)
           capture()
-          return this.resolveServiceFromView(service, scope.view)
+          return this.resolveServiceFromProviders(service, scope.providers)
         },
         signal: (service) => this.signal(service),
         debugService: (service) => this.debugService(service),
       },
-      valueSpecs: {
-        get: (valueSpec) => {
-          if (this.flattenDepth === 0) return this.get(valueSpec)
-          capture()
-          return this.resolveValueSpec(valueSpec, scope.view)
-        },
-        signal: (valueSpec) => this.signal(valueSpec),
-      },
+      valueSpecs: this,
     }
   }
 
@@ -651,7 +648,7 @@ export class Registry implements ValueSpecReader, ServiceReader {
     key: RegistryItemKey,
     factory: RegistryItemFactory,
     items: readonly RegistryItemDefinition[],
-    view: FlattenResult
+    providers: readonly FlattenedServiceContribution[]
   ): RuntimeInstance {
     const existing = this.runtimeInstances.get(key)
     if (
@@ -660,14 +657,14 @@ export class Registry implements ValueSpecReader, ServiceReader {
         (existing.scope.items.length === items.length &&
           existing.scope.items.every((item, index) => item === items[index])))
     ) {
-      existing.scope.view = view
+      existing.scope.providers = providers
       existing.scope.items = items
       return existing
     }
 
     const scope: FactoryDependencyScope = {
       items,
-      view,
+      providers,
       constructing: true,
       captured: false,
     }

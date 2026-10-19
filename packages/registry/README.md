@@ -107,13 +107,12 @@ The helper below makes that intent explicit:
 import {
   defineContract,
   defineService,
-  firstWinsValueSpec,
+  appendValueSpec,
 } from '@kittycad/registry'
 
 export const weatherContract = defineContract({
-  currentTemperatureValueSpec: firstWinsValueSpec<number>(
-    'weather.current-temperature',
-    0
+  temperatureReadingsValueSpec: appendValueSpec<number>(
+    'weather.temperature-readings'
   ),
   weatherSummaryService: defineService<{ readonly summary: string }>(
     'weather.summary'
@@ -136,6 +135,32 @@ contracts area instead of collecting them into one global file. A good shape is:
 
 That keeps contracts close to the registry layer while still avoiding a single
 "misc contracts" bucket.
+
+## Capabilities and Composition
+
+Use a service for an owned capability: a filesystem implementation, runtime instance,
+or external connection. A singleton service has one active provider. The registry
+checks the complete graph for duplicate singleton providers before committing it,
+even if consumers only read the service through a declared constructor scope.
+Contracts that explicitly opt into multiple providers remain supported.
+
+Use a ValueSpec when multiple contributions have domain meaning: command collections,
+keymaps, or configuration layers with explicit precedence. First-wins or last-wins
+composition should not select a runtime implementation or act as dependency injection.
+Those helpers remain available for value composition; their ordering is not a service
+override mechanism.
+
+Tests select a mock provider instead of the production provider at the composition
+root. For a named dependency, pass the selected registry item into the consumer factory
+or mount it in the dependency's provider slot. Registering a mock elsewhere does not
+replace the declared production provider: installing both is a configuration error.
+Stable item identities deduplicate graph nodes; do not use identity collisions or
+registration order to choose between production and test implementations.
+
+An asynchronously initialized capability can still be a synchronous service object
+with a `ready: Promise<Runtime>` field. Consumers can receive that object during
+construction, then await initialization when performing work. Ownership and cleanup
+belong to its provider rather than to an ordered promise ValueSpec.
 
 ## Factory Dependencies
 
@@ -201,32 +226,31 @@ do not run. Items returned by callbacks cannot be known during the initial plann
 step; their subtrees are normalized when returned, and already registered identities
 win before any of their children execute.
 
-The second `create` argument, `read(name)`, reads a named dependency directly
-without evaluating its live signal during construction. Its return type is inferred
-from the dependency's token. The current constructor-read policy is **declared
-dependencies only**: contributions from every declared dependency subtree, including
-transitive prerequisites and returned items, participate. Unrelated roots and override
-slots do not contribute unless they are included in those prerequisites. Ordinary
-first-identity-wins planning still selects the winning dependency items.
+The second `create` argument, `read(name)`, reads a named **service** directly
+without evaluating its live signal during construction. Only service dependency names
+are accepted by TypeScript; JavaScript calls with a ValueSpec name also fail explicitly.
+Its return type is inferred from the service token. The constructor scope consists of
+all declared dependency subtrees, including transitive prerequisites and returned items.
+The named item/token contribution checks above still apply.
 
-Within this constructor scope, contributions follow dependency traversal order,
-with normal precedence, keyed deduplication, service sanitization, conflict checks,
-and combine purity rules. This guarantees synchronous provider construction, not
-completion of asynchronous provider work. The named item/token contribution checks
-above still apply; an unrelated provider or a value spec's default cannot satisfy a
-declared dependency.
+Constructor reads wire stable capabilities into models. A service read chooses an
+implementation; it does not clone the service or freeze its internal state. It also
+does not wait for asynchronous provider initialization. Unrelated roots cannot override
+the declared capability, and an extra singleton provider elsewhere fails the complete
+graph's uniqueness check.
 
-Live inputs retain their existing registry-wide composition and must be evaluated
-after construction. Keeping constructor reads separate avoids caching a partial
-constructor result in a signal intended to observe the complete live registry.
-Outside graph construction, `read(name)` also reads the complete registry, though
-retaining the injected live signals is preferable for reactive consumers.
+ValueSpecs are composed across the complete graph and cannot be read during
+construction, including through the ordinary callback context. Retain their injected
+live signals and read them in later effects or handlers. Service inputs also retain
+their existing live signals for consumers that should follow provider replacement.
+Outside graph construction, `read(name)` reads the current service from the complete
+registry, though retaining injected signals is preferable for reactive consumers.
 
 A factory that reads constructor dependencies captures its dependency scope.
 Replacing any item in that scope reconstructs it and its capturing dependents,
 then disposes the previous consumers before their previous providers. Unrelated
 slot changes preserve these instances. Changes to signal values alone do not rerun
-constructors: captured values are snapshots, while injected signals stay live.
+constructors: captured service handles retain their identity, while injected signals stay live.
 Factories using only live inputs retain their instances across provider replacement.
 Failed replacements clean up newly created instances in reverse construction order;
 the slot transaction restores the previous graph and runtime cache.

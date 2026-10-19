@@ -23,7 +23,10 @@ export function appendValueSpec<T>(name: string) {
   })
 }
 
-/** Create a value spec where the highest-priority contribution wins. */
+/**
+ * Select a composed value by precedence. Do not use contribution order to select
+ * a runtime implementation or a test override; use an explicitly chosen service provider.
+ */
 export function firstWinsValueSpec<T>(name: string, defaultValue: T) {
   return defineValueSpec<T, T>({
     name,

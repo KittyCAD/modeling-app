@@ -224,9 +224,12 @@ export function defineRegistryItemFactory<D extends RegistryDependencies>(
               )
             }
             const { token } = dependency
-            return 'multiple' in token
-              ? ctx.services.get(token)
-              : ctx.valueSpecs.get(token)
+            if (!('multiple' in token)) {
+              throw new RegistryDependencyError(
+                `Dependency "${String(name)}" is a ValueSpec. Read its live input after construction.`
+              )
+            }
+            return ctx.services.get(token)
           }) as RegistryDependencyReader<D>
           return definition.create(Object.freeze(inputs), read)
         }

@@ -135,9 +135,14 @@ export type RegistryDependencySignals<D extends RegistryDependencies> = {
   >
 }
 
-/** Read a named input without evaluating its live signal during construction. */
+/** Only capability inputs can be consumed before global value composition finishes. */
+export type RegistryServiceDependencyName<D extends RegistryDependencies> = {
+  [K in keyof D]: D[K]['token'] extends Service<unknown> ? K : never
+}[keyof D]
+
+/** Read a named service without evaluating its live signal during construction. */
 export type RegistryDependencyReader<D extends RegistryDependencies> = <
-  K extends keyof D,
+  K extends RegistryServiceDependencyName<D>,
 >(
   name: K
 ) => RegistryDependencySignals<D>[K]['value']
@@ -184,9 +189,9 @@ export interface ServiceReader {
 }
 
 /**
- * During construction, get()/optional() read only completed declared dependencies,
- * including transitive prerequisites and their returned items. Service absence is
- * an error for get(), while optional() and value-spec defaults handle absence.
+ * During construction, service get()/optional() read only completed declared
+ * dependencies, including transitive prerequisites and their returned items.
+ * Value specs compose the complete graph and may only be read after construction.
  * Outside graph construction these readers resolve against the complete live registry.
  * signal() creates a live registry-wide signal; defer reading it until construction
  * has finished. container reads do not provide construction-time dependency access.
