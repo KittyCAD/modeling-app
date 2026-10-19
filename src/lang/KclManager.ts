@@ -597,9 +597,9 @@ export class KclManager extends File {
    * subscribes here rather than to `execStateSignal`.
    */
   private _engineSceneGeneration = signal(0)
-  /** 
+  /**
    * Incremented on every execution completion (success, failure, or cancel),
-   * even if cached. 
+   * even if cached.
    * Used so callers can wait for "next" run.
    */
   private _executionGeneration = 0
