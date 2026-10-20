@@ -2205,7 +2205,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             description:
               'Select one closed region, or select coplanar curves in the order they connect.',
             selectionTypes: [
-              'solid2d',
               'segment',
               'sweepEdge',
               'primitiveEdge',

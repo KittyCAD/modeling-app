@@ -1,22 +1,13 @@
 import type { KclManager } from '@src/lang/KclManager'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
-import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
-import {
-  codeRefFromRange,
-  getArtifactFromRange,
-} from '@src/lang/std/artifactGraph'
+import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import { engineIdForArtifact } from '@src/lang/std/kclNamedViews'
 import {
   addFlipSurface,
   addJoinSurfaces,
   addPlanarSurface,
 } from '@src/lang/modifyAst/surfaces'
-import {
-  type Artifact,
-  assertParse,
-  getAllOperations,
-  recast,
-} from '@src/lang/wasm'
+import { type Artifact, assertParse, recast } from '@src/lang/wasm'
 import { artifactToEntityRef } from '@src/lang/queryAst'
 import type RustContext from '@src/lib/rustContext'
 import { getPrimitiveSelectionForEntity } from '@src/lib/selections'
@@ -460,79 +451,6 @@ sketch001 = sketch(on = XY) {
   }
 
   it.each([
-    {
-      name: 'an unordered rectangle',
-      boundary: `bottom = line(start = [0mm, 0mm], end = [2mm, 0mm])
-  top = line(start = [2mm, 2mm], end = [0mm, 2mm])
-  right = line(start = [2mm, 0mm], end = [2mm, 2mm])
-  left = line(start = [0mm, 2mm], end = [0mm, 0mm])`,
-    },
-    {
-      name: 'a clockwise unordered rectangle',
-      boundary: `left = line(start = [0mm, 0mm], end = [0mm, 2mm])
-  right = line(start = [2mm, 2mm], end = [2mm, 0mm])
-  top = line(start = [0mm, 2mm], end = [2mm, 2mm])
-  bottom = line(start = [2mm, 0mm], end = [0mm, 0mm])`,
-    },
-    {
-      name: 'a rectangle with reversed edge directions',
-      boundary: `bottom = line(start = [0mm, 0mm], end = [2mm, 0mm])
-  left = line(start = [0mm, 0mm], end = [0mm, 2mm])
-  top = line(start = [0mm, 2mm], end = [2mm, 2mm])
-  right = line(start = [2mm, 2mm], end = [2mm, 0mm])`,
-    },
-    {
-      name: 'an unordered arc and line boundary',
-      boundary: `arc1 = arc(start = [2mm, 0mm], end = [0mm, 2mm], center = [0mm, 0mm])
-  bottom = line(start = [0mm, 0mm], end = [2mm, 0mm])
-  left = line(start = [0mm, 2mm], end = [0mm, 0mm])`,
-    },
-  ])('creates and deletes a surface from $name', async ({ boundary }) => {
-    for (const plane of ['XY', 'XZ']) {
-      const source = `@settings(kclVersion = 2.0, experimentalFeatures = allow)
-sketch001 = sketch(on = ${plane}) {
-  ${boundary}
-}`
-      const code = `${source}\nsurface001 = planarSurface(sketch001)`
-      const { ast, artifactGraph, operations, variables } = await setup(code)
-      expect(kclManagerInThisFile.errors).toEqual([])
-      const operation = getAllOperations(operations).find(
-        (op) => op.type === 'StdLibCall' && op.name === 'planarSurface'
-      )
-      if (!operation || operation.type !== 'StdLibCall') {
-        throw new Error('Missing Planar Surface operation')
-      }
-      const selection = {
-        codeRef: codeRefFromRange(operation.sourceRange, ast),
-        artifact:
-          getArtifactFromRange(operation.sourceRange, artifactGraph) ??
-          undefined,
-      }
-      // Boundary normalization must keep the feature-tree operation deletable
-      // without removing the source sketch.
-      expect(selection.artifact).toMatchObject({
-        type: 'sweep',
-        subType: 'planarSurface',
-      })
-      const deleted = await deleteFromSelection(
-        ast,
-        selection,
-        variables,
-        artifactGraph,
-        instanceInThisFile
-      )
-      if (err(deleted)) throw deleted
-      expect(recast(deleted, instanceInThisFile)).toBe(
-        recast(assertParse(source, instanceInThisFile), instanceInThisFile)
-      )
-      const deletedCode = recast(deleted, instanceInThisFile)
-      if (err(deletedCode)) throw deletedCode
-      await setup(deletedCode)
-      expect(kclManagerInThisFile.errors).toEqual([])
-    }
-  })
-
-  it.each([
     { name: 'a single region', code: circle },
     {
       name: 'a single region in KCL 3',
@@ -638,8 +556,28 @@ surface001 = planarSurface(region001)`
     )
   })
 
-  it.each(['path', 'solid2d'] as const)(
-    'uses a legacy closed sketch directly from a %s selection',
+  it('uses an explicitly named region', async () => {
+    const { ast, artifactGraph } =
+      await setup(`${circle.replace('kclVersion = 2.0', 'kclVersion = 3.0')}
+region001 = region(segments = [sketch001.circle1])`)
+    const region = [...artifactGraph.values()].find(
+      (artifact) => artifact.type === 'path' && artifact.subType === 'region'
+    )
+    if (!region) throw new Error('Missing region')
+    const result = addPlanarSurface({
+      ast,
+      artifactGraph,
+      curves: createSelectionFromArtifacts([region], artifactGraph),
+      wasmInstance: instanceInThisFile,
+    })
+    if (err(result)) throw result
+    expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
+      'surface001 = planarSurface(region001)'
+    )
+  })
+
+  it.each(['path', 'solid2d', 'segment'] as const)(
+    'rejects a legacy whole sketch from a %s selection',
     async (type) => {
       const { ast, artifactGraph } = await setup(`sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 10)`)
@@ -647,22 +585,14 @@ profile001 = circle(sketch001, center = [0, 0], radius = 10)`)
         (artifact) => artifact.type === type
       )
       if (!path) throw new Error('Missing sketch path')
-      const result = addPlanarSurface({
-        ast,
-        artifactGraph,
-        curves: createSelectionFromArtifacts([path], artifactGraph),
-        wasmInstance: instanceInThisFile,
-      })
-      if (err(result)) throw result
-      expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
-        'surface001 = planarSurface(profile001)'
-      )
       expect(
-        await mockExecAstAndReportErrors(
-          result.modifiedAst,
-          rustContextInThisFile
-        )
-      ).toBeUndefined()
+        addPlanarSurface({
+          ast,
+          artifactGraph,
+          curves: createSelectionFromArtifacts([path], artifactGraph),
+          wasmInstance: instanceInThisFile,
+        })
+      ).toBeInstanceOf(Error)
     }
   )
 

@@ -305,7 +305,7 @@ export function addPlanarSurface({
     }
     const artifact = selection.artifact
     if (
-      artifact?.type !== 'path' &&
+      !(artifact?.type === 'path' && artifact.subType === 'region') &&
       artifact?.type !== 'segment' &&
       artifact?.type !== 'primitiveEdge'
     ) {
@@ -373,9 +373,12 @@ export function addPlanarSurface({
       if (isErr(pipeResult)) return pipeResult
       exprs.push(result.expr)
     } else {
-      isRegion ||=
-        artifact.type === 'path' ||
-        (artifact.type === 'segment' && !isSolvedSegment)
+      if (artifact.type === 'segment' && !isSolvedSegment) {
+        return new Error(
+          'Select a region or sketch curves from a sketch block.'
+        )
+      }
+      isRegion ||= artifact.type === 'path'
       const result = getVariableExprsFromSelection(
         { graphSelections: [selection], otherSelections: [] },
         artifactGraph,
@@ -414,7 +417,7 @@ export function addPlanarSurface({
     exprs.push(...regionResult)
   }
 
-  // The stdlib takes one Sketch directly, but requires arrays for curves,
+  // The stdlib takes one region directly, but requires arrays for curves,
   // including a single closed curve such as a circle.
   const curvesExpr = isRegion
     ? createVariableExpressionsArray(exprs)
