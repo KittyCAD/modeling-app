@@ -156,6 +156,12 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
     EXPERIMENTAL_POINT_AND_CLICK_FLAG,
     false
   )
+  const canCreateView = app.commands
+    .useState()
+    .context.commands.some(
+      (command) =>
+        command.groupId === 'modeling' && command.name === 'Named View'
+    )
   const { kclManager } = useSingletons()
   const execState = kclManager.execStateSignal.value
   const cannotReachEngine = useReliesOnEngine(
@@ -232,7 +238,7 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
         icon="namedView"
         title={props.layout.label}
         Menu={
-          canManageViews ? (
+          canCreateView ? (
             <ActionButton
               Element="button"
               aria-label="Create named view"
