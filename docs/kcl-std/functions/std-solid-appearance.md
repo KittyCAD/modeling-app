@@ -361,4 +361,39 @@ offsetPlane(XZ, offset = 4mm)
 
 ![Rendered example of appearance 10](/kcl-test-outputs/serial_test_example_fn_std-solid-appearance10.png)
 
+```kcl
+@settings(kclVersion = 3.0)
+
+sketch001 = sketch(on = XY) {
+  arc001 = arc(
+    start = [var -2.88mm, var 2.53mm],
+    end = [var 2.99mm, var -2.69mm],
+    center = [var -2.21mm, var -2.63mm],
+    direction = CW,
+  )
+}
+extrude002 = extrude(sketch001.arc001, length = 5, bodyType = SURFACE)
+  |> appearance(
+       color = "#da4333",
+       metalness = 90,
+       roughness = 50,
+       backfaceColor = "#ee00ff",
+     )
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the appearance function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-appearance11_output.glb"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solid-appearance11.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
 
