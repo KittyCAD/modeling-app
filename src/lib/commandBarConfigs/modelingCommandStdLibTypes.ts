@@ -201,6 +201,7 @@ export type AppearanceCommandArgs = Override<
   {
     objects: Selections
     color: string
+    backfaceColor?: string
   }
 >
 
