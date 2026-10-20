@@ -187,6 +187,13 @@ test.describe(
 
       await toolbar.openPane(DefaultLayoutPaneID.Files)
       await toolbar.openFile('invalid.kcl')
+      // Both files contain the same invalid source. Wait for the file handoff
+      // before accepting diagnostics left over from the original editor.
+      await expect
+        .poll(() =>
+          page.evaluate(() => window.app.project?.executingEditor.value?.path)
+        )
+        .toBe(path.join(path.dirname(original.path), 'invalid.kcl'))
       await waitForParseFailure(page, syntaxErrorCode)
       await expect
         .poll(async () => (await modelReceipt(page)).path)

@@ -26,6 +26,7 @@ import fsp from 'fs/promises'
 import pixelMatch from 'pixelmatch'
 import type { Protocol } from 'playwright-core/types/protocol'
 import { PNG } from 'pngjs'
+import { parse as parseToml } from 'smol-toml'
 
 const NODE_ENV = process.env.NODE_ENV || 'development'
 dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
@@ -1497,8 +1498,7 @@ export function tomlToSettings(toml: string): DeepPartial<Configuration> {
 export function tomlToPerProjectSettings(
   toml: string
 ): DeepPartial<ProjectConfiguration> {
-  // eslint-disable-next-line no-restricted-syntax
-  return TOML.parse(toml)
+  return parseToml(toml)
 }
 
 export function perProjectSettingsToToml(
