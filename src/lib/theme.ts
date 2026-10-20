@@ -76,10 +76,10 @@ export function getThemeColorForEngine(theme: Themes) {
     : { r: light, g: light, b: light, a: 1 }
 }
 
-/** Same edge color regardless of theme */
+/** Subtle body edges keep thin parts' surfaces visible in either theme. */
 export function edgeColor() {
   const light = 28 / 255
-  return { r: light, g: light, b: light, a: 1 }
+  return { r: light, g: light, b: light, a: 0.4 }
 }
 
 /**
