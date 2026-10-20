@@ -45,6 +45,9 @@ uniform vec4 uXAxisColor;
 uniform vec4 uYAxisColor;
 uniform float uFadeStart;
 uniform float uFadeEnd;
+uniform float uGridLevelBlend;
+uniform float uMinorOpacity;
+uniform float uNextMinorOpacity;
 
 float perimeterBlend(vec2 point)
 {
@@ -109,7 +112,15 @@ void main()
 	float alpha = color.a * max(minorCoverage, majorCoverage);
 	if (uFadeDenseGrid)
 	{
-		alpha = max(uMinorColor.a * minorCoverage, uMajorColor.a * majorCoverage);
+		float currentAlpha = max(uMinorColor.a * minorCoverage * uMinorOpacity,
+			uMajorColor.a * majorCoverage);
+		// Crossfade adjacent, world-aligned levels instead of replacing all
+		// minor lines at a zoom threshold. Coincident lines keep their opacity.
+		float nextMinor = gridCoverage(gridPoint.xy, uMinorSpacing * 10.0);
+		float nextMajor = gridCoverage(gridPoint.xy, uMajorSpacing * 10.0);
+		float nextAlpha = max(uMinorColor.a * nextMinor * uNextMinorOpacity,
+			uMajorColor.a * nextMajor);
+		alpha = mix(currentAlpha, nextAlpha, uGridLevelBlend);
 	}
 
 	if (uShowAxes)
@@ -179,6 +190,9 @@ export class InfiniteGridRenderer extends Mesh<
         uYAxisColor: { value: [22 / 255, 202 / 255, 51 / 255, 0.9] },
         uFadeStart: { value: 1 },
         uFadeEnd: { value: 2 },
+        uGridLevelBlend: { value: 0 },
+        uMinorOpacity: { value: 1 },
+        uNextMinorOpacity: { value: 1 },
       },
       transparent: false,
       alphaToCoverage: true,
