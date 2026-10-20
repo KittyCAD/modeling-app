@@ -30,6 +30,12 @@ export class ScaleGridRenderer extends InfiniteGridRenderer {
   ) {
     this.scale.setScalar(baseUnitMultiplier)
     const pixelsPerBaseUnit = this.getPixelsPerBaseUnit(camera, viewportSize)
+    // Anchor the fade to the world origin and let its radius follow zoom.
+    // Keep the central working area at full strength.
+    const viewportSpan =
+      Math.min(...viewportSize) / window.devicePixelRatio / pixelsPerBaseUnit
+    this.material.uniforms.uFadeStart.value = viewportSpan * 0.35
+    this.material.uniforms.uFadeEnd.value = viewportSpan * 0.9
     const gridScaleFactor = getGridScaleFactor({
       ...options,
       pixelsPerBaseUnit,
