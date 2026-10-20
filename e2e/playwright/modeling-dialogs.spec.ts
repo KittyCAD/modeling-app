@@ -10,6 +10,55 @@ region001 = region(segments = [sketch001.circle1])`
 test.describe('Modeling dialogs', { tag: '@web' }, () => {
   test.use({ userFeatures: ['modeling_dialogs'] })
 
+  test('Creates and edits Appearance with a color picker', async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    modelingDialog,
+  }) => {
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode(
+        '',
+        `${profileCode}\nextrude001 = extrude(region001, length = 10mm)`
+      )
+    )
+    await (await toolbar.getFeatureTreeOperation('Extrude', 0)).click({
+      button: 'right',
+    })
+    await page.getByTestId('context-menu-set-appearance').click()
+
+    const color = modelingDialog.locator.getByLabel(/^color/i)
+    await expect(color).toHaveAttribute('type', 'color')
+    await expect(color).toHaveValue('#000000')
+    await expect(modelingDialog.submitButton).toBeEnabled()
+    await scene.waitForExecutionDoneAfter(() =>
+      modelingDialog.submitButton.click()
+    )
+    await expect(modelingDialog.locator).not.toBeAttached()
+    await editor.expectEditor.toContain(
+      'appearance(extrude001, color = "#000000")'
+    )
+
+    await (await toolbar.getFeatureTreeOperation('Appearance', 0)).dblclick()
+    await expect(color).toHaveValue('#000000')
+    await color.fill('#ff0000')
+    await scene.waitForExecutionDoneAfter(() =>
+      modelingDialog.submitButton.click()
+    )
+    await expect(modelingDialog.locator).not.toBeAttached()
+    await editor.expectEditor.toContain(
+      'appearance(extrude001, color = "#ff0000")'
+    )
+
+    await (await toolbar.getFeatureTreeOperation('Appearance', 0)).dblclick()
+    await expect(color).toHaveValue('#ff0000')
+    await modelingDialog.cancelButton.click()
+  })
+
   test('Preserves an Extrude draft while hiding an obstruction', async ({
     page,
     homePage,

@@ -71,6 +71,9 @@ export async function initializeArguments(
         value = (options.find((option) => option.isCurrent) ?? options[0])
           ?.value
       }
+      if (value === undefined && arg.inputType === 'color') {
+        value = '#000000'
+      }
     }
     values[name] = value
   }
