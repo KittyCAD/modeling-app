@@ -11,22 +11,14 @@ use uuid::Uuid;
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_planar_surface_preserves_transformed_boundaries() {
-    for (transform, center_x, requires_region) in [
-        ("transformed = mirror2d(sketch001, axis = Y)", -2.0, true),
-        (
-            "copies = patternLinear2d(sketch001, instances = 2, distance = 10mm, axis = [1, 0])\ntransformed = copies[1]",
-            12.0,
-            true,
-        ),
+    for (transform, center_x) in [
         (
             "selected = region(segments = [sketch001.bottom, sketch001.right])\ntransformed = mirror2d(selected, axis = Y)",
             -2.0,
-            false,
         ),
         (
             "selected = region(segments = [sketch001.bottom, sketch001.right])\ncopies = patternLinear2d(selected, instances = 2, distance = 10mm, axis = [1, 0])\ntransformed = copies[1]",
             12.0,
-            false,
         ),
     ] {
         let boundary = [
@@ -37,10 +29,8 @@ async fn kcl_test_planar_surface_preserves_transformed_boundaries() {
         ];
         for order in [[0, 1, 2, 3], [0, 2, 1, 3]] {
             let boundary = order.map(|index| boundary[index]).join("\n  ");
-            // Raw sketch transforms exercise legacy KCL 2; KCL 3 patterns require regions.
-            let version = if requires_region { "2.0" } else { "3.0" };
             let code = format!(
-                "@settings(kclVersion = {version}, experimentalFeatures = allow)\nsketch001 = sketch(on = XY) {{\n  {boundary}\n}}\n{transform}\nsurface001 = planarSurface(transformed)"
+                "@settings(kclVersion = 3.0, experimentalFeatures = allow)\nsketch001 = sketch(on = XY) {{\n  {boundary}\n}}\n{transform}\nsurface001 = planarSurface(transformed)"
             );
             let program = Program::parse_no_errs(&code).unwrap();
             let ctx = ExecutorContext::new_geometry_only_with_version(program.kcl_version)
@@ -48,18 +38,6 @@ async fn kcl_test_planar_surface_preserves_transformed_boundaries() {
                 .unwrap();
             let mut state = ExecState::new(&ctx);
             let result = ctx.run(&program, &mut state).await;
-            if requires_region && order[1] == 2 {
-                ctx.close().await;
-                assert!(
-                    result
-                        .unwrap_err()
-                        .error
-                        .message()
-                        .contains("Select its boundary with `region(...)` before applying the transform"),
-                    "{transform}"
-                );
-                continue;
-            }
             let (environment, _) = result.unwrap_or_else(|error| panic!("{transform}: {}", error.error));
             let outcome = state.into_exec_outcome(environment, &ctx).await.unwrap();
             let surface_id = outcome

@@ -553,10 +553,17 @@ async fn coerce_planar_surface_target(
 
         let Some(curve) = CurveType::from_kcl_val(&value) else {
             return Err(KclError::new_type(KclErrorDetails::new(
-                "Expected sketches, edges, or solved sketch segments for creating a planar surface.".to_owned(),
+                "Expected a region, edges, or solved sketch segments for creating a planar surface.".to_owned(),
                 vec![source_range],
             )));
         };
+        if matches!(&curve, CurveType::Sketch(sketch) if sketch.origin_sketch_id.is_none()) {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Select a region with `region(...)`, or pass a list of edges or sketch segments to `planarSurface`."
+                    .to_owned(),
+                vec![source_range],
+            )));
+        }
         curves.push(curve);
     }
 
@@ -585,7 +592,7 @@ fn prepare_single_closed_region(curves: &mut Vec<CurveType>, source_range: crate
 
     if curves.len() != 1 || sketches.len() != 1 {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "Provide either one sketch or one list of edges or segments when creating a planar surface.".to_owned(),
+            "Provide either one region or one list of edges or segments when creating a planar surface.".to_owned(),
             vec![source_range],
         )));
     }
@@ -594,18 +601,6 @@ fn prepare_single_closed_region(curves: &mut Vec<CurveType>, source_range: crate
     // The engine has already traced this region. Its paths retain coordinates
     // and pen-jump metadata from the source sketch, not the trimmed boundary.
     if sketch.origin_sketch_id.is_some() {
-        return Ok(());
-    }
-    // Mirrors and pattern copies retain source path IDs. Reordering those IDs
-    // would fill the original sketch, while the current engine path may still
-    // contain pen jumps. Require an explicit region before transforming it.
-    if sketch.id != sketch.original_id || sketch.mirror.is_some() {
-        if !sketch.synthetic_jump_path_ids.is_empty() {
-            return Err(KclError::new_semantic(KclErrorDetails::new(
-                "`planarSurface` cannot use this transformed sketch directly. Select its boundary with `region(...)` before applying the transform, then pass the transformed region to `planarSurface`.".to_owned(),
-                vec![source_range],
-            )));
-        }
         return Ok(());
     }
 
@@ -645,7 +640,7 @@ fn prepare_single_closed_region(curves: &mut Vec<CurveType>, source_range: crate
 
     if neighbors.is_empty() || neighbors.iter().any(|edges| edges.len() != 2) {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "A sketch or segment list passed to `planarSurface` must form one closed region.".to_owned(),
+            "A segment list passed to `planarSurface` must form one closed region.".to_owned(),
             vec![source_range],
         )));
     }
@@ -666,7 +661,7 @@ fn prepare_single_closed_region(curves: &mut Vec<CurveType>, source_range: crate
     }
     if ordered_path_ids.len() != path_ids.len() {
         return Err(KclError::new_semantic(KclErrorDetails::new(
-            "A sketch or segment list passed to `planarSurface` must contain exactly one region.".to_owned(),
+            "A segment list passed to `planarSurface` must contain exactly one region.".to_owned(),
             vec![source_range],
         )));
     }
@@ -761,12 +756,13 @@ mod tests {
     async fn planar_surface_returns_one_surface_in_mock_execution() {
         let result = parse_execute(
             r#"
-@settings(kclVersion = 2.0, experimentalFeatures = allow)
+@settings(kclVersion = 3.0, experimentalFeatures = allow)
 
 profile = sketch(on = XY) {
   circle1 = circle(start = [2mm, 0mm], center = [0mm, 0mm])
 }
-surface = planarSurface(profile, tolerance = 0.01mm)
+selected = region(segments = [profile.circle1])
+surface = planarSurface(selected, tolerance = 0.01mm)
 "#,
         )
         .await
@@ -786,35 +782,10 @@ surface = planarSurface(profile, tolerance = 0.01mm)
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn planar_surface_accepts_a_tiny_straight_closing_edge() {
-        for version in ["2.0", "3.0"] {
-            let result = parse_execute(&format!(
-                r#"
-@settings(kclVersion = {version}, experimentalFeatures = allow)
-profile = sketch(on = XY) {{
-  bottom = line(start = [0mm, 0mm], end = [2mm, 0mm])
-  right = line(start = [2mm, 0mm], end = [2mm, 2mm])
-  top = line(start = [2mm, 2mm], end = [0mm, 2mm])
-  left = line(start = [0mm, 2mm], end = [0mm, 0.000000002mm])
-  closing = line(start = [0mm, 0.000000002mm], end = [0mm, 0mm])
-}}
-surface = planarSurface(profile)
-"#,
-            ))
-            .await
-            .unwrap();
-
-            assert!(result.root_module_artifact_commands().iter().any(|artifact_command| {
-                matches!(&artifact_command.command, ModelingCmd::CreatePlanarSurface(command) if command.curve_ids.len() == 1)
-            }));
-        }
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
     async fn planar_surface_accepts_one_closed_segment_list_in_mock_execution() {
         let result = parse_execute(
             r#"
-@settings(kclVersion = 2.0, experimentalFeatures = allow)
+@settings(kclVersion = 3.0, experimentalFeatures = allow)
 
 profile = sketch(on = XY) {
   line1 = line(start = [0mm, 0mm], end = [2mm, 0mm])
@@ -853,7 +824,7 @@ surface = planarSurface([profile.line1, profile.line2, profile.line3, profile.li
         ] {
             let result = parse_execute(&format!(
                 r#"
-@settings(kclVersion = 2.0, experimentalFeatures = allow)
+@settings(kclVersion = 3.0, experimentalFeatures = allow)
 profile = sketch(on = XY) {{
   circle1 = circle(start = [2mm, 0mm], center = [0mm, 0mm])
   circle2 = circle(start = [8mm, 0mm], center = [6mm, 0mm])
@@ -873,87 +844,36 @@ surface = planarSurface(selected)
 
     #[tokio::test(flavor = "multi_thread")]
     async fn planar_surface_accepts_a_closed_boundary_in_any_declaration_order() {
-        for curves in ["profile", "[profile.bottom, profile.top, profile.right, profile.left]"] {
-            let result = parse_execute(&format!(
-                r#"
-@settings(kclVersion = 2.0, experimentalFeatures = allow)
-profile = sketch(on = XY) {{
+        let result = parse_execute(
+            r#"
+@settings(kclVersion = 3.0, experimentalFeatures = allow)
+profile = sketch(on = XY) {
   bottom = line(start = [0mm, 0mm], end = [2mm, 0mm])
   top = line(start = [2mm, 2mm], end = [0mm, 2mm])
   right = line(start = [2mm, 0mm], end = [2mm, 2mm])
   left = line(start = [0mm, 2mm], end = [0mm, 0mm])
-}}
-surface = planarSurface({curves})
-"#
-            ))
-            .await
-            .unwrap();
-
-            let commands = result.root_module_artifact_commands();
-            assert!(commands.iter().any(|artifact_command| {
-                matches!(&artifact_command.command, ModelingCmd::CreatePlanarSurface(command) if command.curve_ids.len() == 4)
-            }));
-        }
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn planar_surface_does_not_reuse_source_edges_after_transforming() {
-        let result = parse_execute(
-            r#"
-@settings(kclVersion = 2.0, experimentalFeatures = allow)
-profile = sketch(on = XY) {
-  bottom = line(start = [1mm, 1mm], end = [3mm, 1mm])
-  top = line(start = [3mm, 3mm], end = [1mm, 3mm])
-  right = line(start = [3mm, 1mm], end = [3mm, 3mm])
-  left = line(start = [1mm, 3mm], end = [1mm, 1mm])
 }
-resolved = mirror2d(profile, axis = Y)
+surface = planarSurface([profile.bottom, profile.top, profile.right, profile.left])
 "#,
         )
         .await
         .unwrap();
-        let KclValue::Sketch { value: source } = result.variable("resolved") else {
-            panic!("Expected a sketch");
-        };
-        assert!(!source.synthetic_jump_path_ids.is_empty());
 
-        // Mock mirroring does not assign engine topology. Reproduce the live
-        // metadata for a pattern copy and for a mirror whose ID is retained.
-        for mirrored in [false, true] {
-            let mut sketch = source.clone();
-            sketch.id = uuid::Uuid::new_v4();
-            if mirrored {
-                sketch.original_id = sketch.id;
-                sketch.mirror = Some(uuid::Uuid::new_v4());
-            }
-            let mut curves = vec![CurveType::Sketch(sketch.clone())];
-            let error = prepare_single_closed_region(&mut curves, crate::SourceRange::default()).unwrap_err();
-            assert!(
-                error
-                    .to_string()
-                    .contains("Select its boundary with `region(...)` before applying the transform")
-            );
-
-            // Explicit regions may retain pen jumps in their source metadata,
-            // but their current engine entity already has a traced boundary.
-            sketch.origin_sketch_id = Some(source.id);
-            let expected = CurveType::Sketch(sketch);
-            curves = vec![expected.clone()];
-            prepare_single_closed_region(&mut curves, crate::SourceRange::default()).unwrap();
-            assert_eq!(curves, vec![expected]);
-        }
+        assert!(result.root_module_artifact_commands().iter().any(|artifact_command| {
+            matches!(&artifact_command.command, ModelingCmd::CreatePlanarSurface(command) if command.curve_ids.len() == 4)
+        }));
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn planar_surface_rejects_a_closed_loop_with_an_open_branch() {
         let err = parse_execute(
             r#"
-@settings(kclVersion = 2.0, experimentalFeatures = allow)
+@settings(kclVersion = 3.0, experimentalFeatures = allow)
 profile = sketch(on = XY) {
   circle1 = circle(start = [2mm, 0mm], center = [0mm, 0mm])
   branch = line(start = [2mm, 0mm], end = [4mm, 0mm])
 }
-surface = planarSurface(profile)
+surface = planarSurface([profile.circle1, profile.branch])
 "#,
         )
         .await
@@ -965,7 +885,7 @@ surface = planarSurface(profile)
     async fn planar_surface_accepts_tagged_and_raw_edge_lists_in_mock_execution() {
         let result = parse_execute(
             r#"
-@settings(kclVersion = 2.0, experimentalFeatures = allow)
+@settings(kclVersion = 3.0, experimentalFeatures = allow)
 
 profile = sketch(on = XY) {
   circle1 = circle(start = [2mm, 0mm], center = [0mm, 0mm])
@@ -996,7 +916,7 @@ rawEdgeSurface = planarSurface([rawEdge])
     async fn planar_surface_rejects_an_empty_curve_list() {
         let err = parse_execute(
             r#"
-@settings(kclVersion = 2.0, experimentalFeatures = allow)
+@settings(kclVersion = 3.0, experimentalFeatures = allow)
 surface = planarSurface([])
 "#,
         )
@@ -1008,40 +928,24 @@ surface = planarSurface([])
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn planar_surface_rejects_an_open_sketch() {
-        let err = parse_execute(
-            r#"
-@settings(kclVersion = 2.0, experimentalFeatures = allow)
-
-profile = sketch(on = XY) {
-  line1 = line(start = [0mm, 0mm], end = [2mm, 0mm])
-}
-surface = planarSurface(profile)
-"#,
-        )
-        .await
-        .unwrap_err();
-
-        assert!(err.message().contains("must form one closed region"), "{err:?}");
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn planar_surface_rejects_a_sketch_with_multiple_regions() {
-        let err = parse_execute(
-            r#"
-@settings(kclVersion = 2.0, experimentalFeatures = allow)
-
-profile = sketch(on = XY) {
+    async fn planar_surface_rejects_a_whole_sketch() {
+        for version in ["2.0", "3.0"] {
+            let error = parse_execute(&format!(
+                r#"
+@settings(kclVersion = {version}, experimentalFeatures = allow)
+profile = sketch(on = XY) {{
   circle1 = circle(start = [2mm, 0mm], center = [0mm, 0mm])
-  circle2 = circle(start = [6mm, 0mm], center = [4mm, 0mm])
-}
+}}
 surface = planarSurface(profile)
 "#,
-        )
-        .await
-        .unwrap_err();
-
-        assert!(err.message().contains("exactly one region"), "{err:?}");
+            ))
+            .await
+            .unwrap_err();
+            assert!(
+                error.message().contains("Select a region with `region(...)`"),
+                "{error:?}"
+            );
+        }
     }
 
     #[test]
