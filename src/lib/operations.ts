@@ -4184,10 +4184,13 @@ async function prepareToEditAppearance({
   }
 
   const color = getStringValue(code, operation.labeledArgs.color.sourceRange)
-  const backfaceColor = getStringValue(
-    code,
-    operation.labeledArgs.backfaceColor.sourceRange
-  )
+  let backfaceColor: string | undefined
+  if (operation.labeledArgs.backfaceColor) {
+    backfaceColor = getStringValue(
+      code,
+      operation.labeledArgs.backfaceColor.sourceRange
+    )
+  }
 
   let metalness: KclCommandValue | undefined
   if (operation.labeledArgs.metalness) {
