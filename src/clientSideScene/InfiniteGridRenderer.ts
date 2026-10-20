@@ -38,6 +38,11 @@ uniform float uMinorSpacing;
 uniform float uMajorSpacing;
 uniform vec4 uMajorColor;
 uniform vec4 uMinorColor;
+uniform bool uFadeDenseGrid;
+uniform bool uShowAxes;
+uniform float uPixelRatio;
+uniform vec4 uXAxisColor;
+uniform vec4 uYAxisColor;
 
 vec3 clipToGrid(float ndcZ)
 {
@@ -52,9 +57,18 @@ float gridCoverage(vec2 point, float spacing)
 	vec2 derivative = max(fwidth(coordinate), vec2(1e-6));
 	vec2 coverage = 1.0 - smoothstep(vec2(0.0), derivative, distanceToLine);
 
-	// Fade a family of grid lines when its spacing falls below a pixel.
 	vec2 spacingPixels = 1.0 / derivative;
-	coverage *= smoothstep(vec2(1.0), vec2(2.0), spacingPixels);
+	if (uFadeDenseGrid)
+	{
+		// Fade the entire layer when either side of a cell becomes crowded.
+		// Fading each line family separately leaves bright stripes at the horizon.
+		float cellSpacing = min(spacingPixels.x, spacingPixels.y) / uPixelRatio;
+		coverage *= smoothstep(3.0, 12.0, cellSpacing);
+	}
+	else
+	{
+		coverage *= smoothstep(vec2(1.0), vec2(2.0), spacingPixels);
+	}
 
 	return max(coverage.x, coverage.y);
 }
@@ -84,15 +98,41 @@ void main()
 	vec3 gridPoint = rayStart + distanceAlongRay * rayDirection;
 	float minorCoverage = gridCoverage(gridPoint.xy, uMinorSpacing);
 	float majorCoverage = gridCoverage(gridPoint.xy, uMajorSpacing);
-	float coverage = max(minorCoverage, majorCoverage);
+	vec4 color = mix(uMinorColor, uMajorColor, majorCoverage);
+	float alpha = color.a * max(minorCoverage, majorCoverage);
+	if (uFadeDenseGrid)
+	{
+		alpha = max(uMinorColor.a * minorCoverage, uMajorColor.a * majorCoverage);
+	}
 
-	if (coverage <= 0.001)
+	if (uShowAxes)
+	{
+		// These are single world-space lines, independent of the grid's spacing.
+		vec2 pixelWidth = max(fwidth(gridPoint.xy), vec2(1e-6));
+		vec2 distancePixels = abs(gridPoint.xy) / pixelWidth;
+		vec2 axes = 1.0 - smoothstep(vec2(0.5), vec2(1.5), distancePixels / uPixelRatio);
+		float xAlpha = axes.y * uXAxisColor.a;
+		float yAlpha = axes.x * uYAxisColor.a;
+		float axisAlpha = max(xAlpha, yAlpha);
+		if (axisAlpha > 0.0)
+		{
+			vec3 axisColor = xAlpha > yAlpha ? uXAxisColor.rgb : uYAxisColor.rgb;
+			color.rgb = mix(color.rgb, axisColor, axisAlpha / max(alpha, axisAlpha));
+			alpha = max(alpha, axisAlpha);
+		}
+	}
+
+	if (uFadeDenseGrid)
+	{
+		// Ray angle is evaluated per fragment, so distant cells fade before the
+		// camera itself reaches a grazing angle. This also fades the axes.
+		alpha *= smoothstep(0.035, 0.2, abs(normalize(rayDirection).z));
+	}
+	if (alpha <= 0.001)
 	{
 		discard;
 	}
-
-	vec4 color = mix(uMinorColor, uMajorColor, majorCoverage);
-	fragColor = vec4(color.rgb, color.a * coverage);
+	fragColor = vec4(color.rgb, alpha);
 }`
 
 /**
@@ -107,7 +147,7 @@ export class InfiniteGridRenderer extends Mesh<
   private minMinorGridPixelSpacing = 10
   private minMajorGridPixelSpacing = 10
 
-  constructor() {
+  constructor(options: { fadeDenseGrid?: boolean; showAxes?: boolean } = {}) {
     const geometry = new BufferGeometry()
     geometry.name = 'InfiniteGridGeometry'
     geometry.setDrawRange(0, 3)
@@ -123,6 +163,11 @@ export class InfiniteGridRenderer extends Mesh<
         uMajorSpacing: { value: 4.0 },
         uMajorColor: { value: [0.3, 0.3, 0.3, 1.0] },
         uMinorColor: { value: [0.2, 0.2, 0.2, 1.0] },
+        uFadeDenseGrid: { value: options.fadeDenseGrid ?? false },
+        uShowAxes: { value: options.showAxes ?? false },
+        uPixelRatio: { value: 1 },
+        uXAxisColor: { value: [220 / 255, 2 / 255, 31 / 255, 0.9] },
+        uYAxisColor: { value: [22 / 255, 202 / 255, 51 / 255, 0.9] },
       },
       transparent: false,
       alphaToCoverage: true,
@@ -205,7 +250,7 @@ export class InfiniteGridRenderer extends Mesh<
     let effectiveMinorSpacing = minorSpacing
     this.visible = true
 
-    if (options.fixedSizeGrid) {
+    if (options.fixedSizeGrid && !this.material.uniforms.uFadeDenseGrid.value) {
       // If major grid would be too dense on screen, hide the grid entirely.
       if (majorSpacingPx < this.minMajorGridPixelSpacing) {
         this.visible = false
@@ -230,6 +275,7 @@ export class InfiniteGridRenderer extends Mesh<
     material.uniforms.uMinorSpacing.value = effectiveMinorSpacing
     material.uniforms.uMajorSpacing.value = effectiveMajorSpacing
     material.uniforms.uPerspective.value = camera instanceof PerspectiveCamera
+    material.uniforms.uPixelRatio.value = window.devicePixelRatio
 
     if (effectiveMinorGridsPerMajor === 1) {
       material.uniforms.uMinorColor.value = options.majorColor
