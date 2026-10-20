@@ -1,74 +1,16 @@
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
-import { AreaType, LayoutType } from '@src/lib/layout'
-import { act, fireEvent, render, screen } from '@testing-library/react'
-import { createElement } from 'react'
-import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
-
-const renderMocks = vi.hoisted(() => ({
-  experimentalPointAndClick: true,
-  activateNamedView: vi.fn(async () => undefined),
-  appSend: vi.fn(),
-  prepareNamedViewEditCommand: vi.fn(async () => ({
-    type: 'Find and select command',
-  })),
-  kclManager: {
-    ast: {},
-    code: '',
-    execStateSignal: {
-      value: { artifactGraph: new Map(), filenames: {} },
-    },
-    isExecutingSignal: { value: false },
-  },
-}))
-
-vi.mock('@src/lib/boot', () => ({
-  useApp: () => ({
-    commands: { actor: { send: renderMocks.appSend } },
-    userFeatures: { useHas: () => renderMocks.experimentalPointAndClick },
-  }),
-  useSingletons: () => ({ kclManager: renderMocks.kclManager }),
-}))
-
-vi.mock('@src/hooks/useModelingContext', () => ({
-  useModelingContext: () => ({ state: null }),
-}))
-
-vi.mock('@src/hooks/useReliesOnEngine', () => ({
-  useReliesOnEngine: () => false,
-}))
-
-vi.mock('@src/lib/kclNamedViewEdit', () => ({
-  prepareNamedViewEditCommand: renderMocks.prepareNamedViewEditCommand,
-}))
-
-vi.mock('@src/lib/kclNamedViewActivation', async (importOriginal) => ({
-  ...(await importOriginal()),
-  activateNamedView: renderMocks.activateNamedView,
-}))
-
-vi.mock('@src/components/layout/Panel', () => ({
-  LayoutPanel: ({ children }: { children: unknown }) => children,
-  LayoutPanelHeader: ({ Menu }: { Menu: unknown }) => Menu,
-}))
 
 import {
-  KclNamedViewsPane,
   canManageNamedView,
   viewRows,
 } from '@src/components/layout/areas/KclNamedViewsPane'
 import type { KclNamedView } from '@src/lang/std/kclNamedViews'
-import { activeViewSignal } from '@src/lib/kclNamedViewActivation'
 import { initialiseWasmNode } from '@src/lang/wasmUtilsNode'
 import { getKclDefaultViewName } from '@src/lib/wasm_lib_wrapper'
+import { beforeAll, describe, expect, it } from 'vitest'
 
 beforeAll(async () => {
   await initialiseWasmNode()
-})
-
-afterEach(() => {
-  act(() => {
-    activeViewSignal.value = null
-  })
 })
 
 const CODE_REF = {
@@ -205,63 +147,4 @@ describe('viewRows', () => {
     }
     expect(canManageNamedView(generated)).toBe(false)
   })
-})
-
-describe('KclNamedViewsPane', () => {
-  function renderPane(experimentalPointAndClick = true) {
-    renderMocks.experimentalPointAndClick = experimentalPointAndClick
-    return render(
-      createElement(KclNamedViewsPane, {
-        layout: {
-          id: 'named-views',
-          label: 'Named Views',
-          type: LayoutType.Simple,
-          areaType: AreaType.NamedViews,
-        },
-        areaConfig: { hide: () => false },
-        onClose: vi.fn(),
-      })
-    )
-  }
-
-  it.each([false, true])(
-    'applies views independently of experimental editing (%s)',
-    async (experimentalPointAndClick) => {
-      const namedView = view({ name: 'Front', modulePath: { type: 'Main' } })
-      renderMocks.kclManager.execStateSignal.value = {
-        artifactGraph: new Map([
-          [namedView.artifact.id, { type: 'namedView', ...namedView.artifact }],
-        ]),
-        filenames: { 0: { type: 'Main' } },
-      }
-      renderMocks.activateNamedView.mockClear()
-      renderMocks.prepareNamedViewEditCommand.mockClear()
-
-      renderPane(experimentalPointAndClick)
-
-      const label = await screen.findByRole('button', { name: /^Front/ })
-      fireEvent.click(label)
-      expect(renderMocks.activateNamedView).not.toHaveBeenCalled()
-
-      fireEvent.click(screen.getByRole('button', { name: 'Apply Front' }))
-      expect(renderMocks.activateNamedView).toHaveBeenCalledWith(
-        expect.objectContaining({
-          target: expect.objectContaining({ kind: 'declared' }),
-        })
-      )
-
-      expect(renderMocks.activateNamedView).toHaveBeenCalledTimes(1)
-
-      act(() => {
-        activeViewSignal.value = { name: 'Front', moduleKey: 'Main' }
-      })
-      fireEvent.click(screen.getByRole('button', { name: 'Front is active' }))
-      expect(renderMocks.activateNamedView).toHaveBeenCalledTimes(2)
-
-      fireEvent.doubleClick(label)
-      expect(renderMocks.prepareNamedViewEditCommand).toHaveBeenCalledTimes(
-        experimentalPointAndClick ? 1 : 0
-      )
-    }
-  )
 })

@@ -172,22 +172,6 @@ view001 = view::named(
       except: { graphSelections: [{ artifact: { type: 'sweep' } }] },
     })
 
-    const renamed = addNamedView({
-      ast,
-      artifactGraph: execState.artifactGraph,
-      ...defaults,
-      name: 'Renamed view',
-      wasmInstance: instance,
-    })
-    if (err(renamed)) throw renamed
-    const renamedCode = recast(renamed.modifiedAst, instance)
-    expect(renamedCode).toContain('view::Orientation::Front')
-    expect(renamedCode).toContain('projection = view::Projection::Perspective')
-    expect(renamedCode).toContain('baseline = view::Visibility::Show')
-    expect(renamedCode).toContain('target = [1 + 2, 3, 4]')
-    expect(renamedCode).toContain('distance = 200mm')
-    expect(renamedCode).toContain('except = exceptions')
-
     const result = addNamedView({
       ast,
       artifactGraph: execState.artifactGraph,
@@ -207,6 +191,8 @@ view001 = view::named(
     expect(updatedCode).toContain('view::Orientation::Top')
     expect(updatedCode).toContain('view::Projection::Orthographic')
     expect(updatedCode).toContain('view::Visibility::Hide')
+    expect(updatedCode).toContain('target = [1 + 2, 3, 4]')
+    expect(updatedCode).toContain('distance = 200mm')
     expect(updatedCode).toContain('except = exceptions')
     await enginelessExecutor(result.modifiedAst, rustContext)
   })

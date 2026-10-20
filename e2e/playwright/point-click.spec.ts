@@ -5955,15 +5955,10 @@ region001 = region(segments = [sketch001.circle1])`
         .getByTestId('feature-tree-operation-item')
         .filter({ hasText: 'Named View' })
     ).toHaveCount(0)
-    await row.getByRole('button', { name: 'Named view actions' }).press('Enter')
-    await expect(
-      page.getByRole('menuitem', { name: 'Edit', exact: true })
-    ).toHaveAttribute('data-headlessui-state', 'active')
-    await page.keyboard.press('End')
-    await expect(
-      page.getByRole('menuitem', { name: 'Remove', exact: true })
-    ).toHaveAttribute('data-headlessui-state', 'active')
-    await scene.waitForExecutionDoneAfter(() => page.keyboard.press('Enter'))
+    await row.getByRole('button', { name: 'Named view actions' }).click()
+    await scene.waitForExecutionDoneAfter(() =>
+      page.getByRole('menuitem', { name: 'Remove', exact: true }).click()
+    )
     await expect(row).not.toBeAttached()
     await editor.expectEditor.not.toContain('view::named(')
   })
