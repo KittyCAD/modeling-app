@@ -84,7 +84,9 @@ describe('tryConnecting', () => {
       rerender({ geometryOnly })
       manager.started = false
       vi.mocked(resetCameraPosition).mockClear()
-      vi.mocked(reapplyActiveViewAfterReconnect).mockClear()
+      // mockReset, unlike mockClear, also drops a once-implementation that a
+      // camera restoration test queued but never used.
+      vi.mocked(reapplyActiveViewAfterReconnect).mockReset()
       syncCameraToEngine.mockClear()
       await expect(
         reconnect({
@@ -187,15 +189,6 @@ describe('tryConnecting', () => {
   it.each([true, false])(
     'stops the initial retry loop after a terminal connection error (geometryOnly=%s)',
     async (geometryOnly) => {
-      vi.mocked(preflightEngineVideoCodecSupport).mockImplementation(
-        async () => {
-          if (geometryOnly)
-            throw new Error(
-              'WebSocket-only connections must not check video codecs'
-            )
-          return undefined
-        }
-      )
       const connectionError: EngineConnectionError = {
         kind: EngineConnectionErrorKind.BackendDisconnect,
         message: 'backend disconnected',
