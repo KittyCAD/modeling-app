@@ -621,67 +621,7 @@ export class CameraControls {
     }
 
     if (this.isDragging) {
-      this.mouseNewPosition.set(event.clientX, event.clientY)
-      const deltaMove = this.mouseNewPosition
-        .clone()
-        .sub(this.mouseDownPosition)
-      this.mouseDownPosition.copy(this.mouseNewPosition)
-
-      const interaction = this.getInteractionType(event)
-      if (interaction === 'none') {
-        return
-      }
-
-      // If there's a valid interaction and the mouse is moving,
-      // our past (and current) interaction was a drag.
-      this.wasDragging = true
-
-      if (this.effectiveCameraMode === 'engineToClient') {
-        this.moveSender.send(() => {
-          this.doMove(interaction, [event.clientX, event.clientY])
-        })
-        return
-      }
-
-      if (this.effectiveCameraMode === 'local' && interaction === 'rotate') {
-        this.orbitLocalCamera(deltaMove)
-        this.update(true)
-        return
-      }
-
-      // Else the client owns the camera, either with engine synchronization
-      // for sketch mode or without it for local rendering.
-      // Implement camera movement logic here based on deltaMove
-      // For example, for rotating the camera around the target:
-      if (
-        interaction === 'rotate' ||
-        (this.effectiveCameraMode === 'local' &&
-          interaction === 'rotatetrackball')
-      ) {
-        this.pendingRotation = this.pendingRotation
-          ? this.pendingRotation
-          : new Vector2()
-        this.pendingRotation.x += deltaMove.x
-        this.pendingRotation.y += deltaMove.y
-      } else if (interaction === 'zoom') {
-        this.pendingZoom = this.pendingZoom ? this.pendingZoom : 1
-        this.pendingZoom *= 1 + deltaMove.y * 0.01
-      } else if (interaction === 'pan') {
-        this.pendingPan = this.pendingPan ?? new Vector3()
-        if (this.camera instanceof PerspectiveCamera) {
-          const distance = this.camera.position.distanceTo(this.target)
-          const panSpeed =
-            (distance / 1000 / 45) * this.perspectiveFovBeforeOrtho
-          this.pendingPan.x += -deltaMove.x * panSpeed
-          this.pendingPan.y += deltaMove.y * panSpeed
-        } else {
-          const newPosition = this.screenToWorld(event, this.cameraDown)
-          this.pendingPan = newPosition.sub(this.worldDownPosition)
-        }
-      }
-      if (this.effectiveCameraMode === 'local') {
-        this.update()
-      }
+      this.dragTo(event)
     } else {
       /**
        * If we're not in sketch mode and not dragging, we can highlight entities
@@ -716,6 +656,68 @@ export class CameraControls {
           cmd_id: newCmdId,
         })
       }
+    }
+  }
+
+  /** Moves the camera for a drag that onMouseDown started, by mouse or touch. */
+  private dragTo(event: PointerEvent) {
+    this.mouseNewPosition.set(event.clientX, event.clientY)
+    const deltaMove = this.mouseNewPosition.clone().sub(this.mouseDownPosition)
+    this.mouseDownPosition.copy(this.mouseNewPosition)
+
+    const interaction = this.getInteractionType(event)
+    if (interaction === 'none') {
+      return
+    }
+
+    // If there's a valid interaction and the mouse is moving,
+    // our past (and current) interaction was a drag.
+    this.wasDragging = true
+
+    if (this.effectiveCameraMode === 'engineToClient') {
+      this.moveSender.send(() => {
+        this.doMove(interaction, [event.clientX, event.clientY])
+      })
+      return
+    }
+
+    if (this.effectiveCameraMode === 'local' && interaction === 'rotate') {
+      this.orbitLocalCamera(deltaMove)
+      this.update(true)
+      return
+    }
+
+    // Else the client owns the camera, either with engine synchronization
+    // for sketch mode or without it for local rendering.
+    // Implement camera movement logic here based on deltaMove
+    // For example, for rotating the camera around the target:
+    if (
+      interaction === 'rotate' ||
+      (this.effectiveCameraMode === 'local' &&
+        interaction === 'rotatetrackball')
+    ) {
+      this.pendingRotation = this.pendingRotation
+        ? this.pendingRotation
+        : new Vector2()
+      this.pendingRotation.x += deltaMove.x
+      this.pendingRotation.y += deltaMove.y
+    } else if (interaction === 'zoom') {
+      this.pendingZoom = this.pendingZoom ? this.pendingZoom : 1
+      this.pendingZoom *= 1 + deltaMove.y * 0.01
+    } else if (interaction === 'pan') {
+      this.pendingPan = this.pendingPan ?? new Vector3()
+      if (this.camera instanceof PerspectiveCamera) {
+        const distance = this.camera.position.distanceTo(this.target)
+        const panSpeed = (distance / 1000 / 45) * this.perspectiveFovBeforeOrtho
+        this.pendingPan.x += -deltaMove.x * panSpeed
+        this.pendingPan.y += deltaMove.y * panSpeed
+      } else {
+        const newPosition = this.screenToWorld(event, this.cameraDown)
+        this.pendingPan = newPosition.sub(this.worldDownPosition)
+      }
+    }
+    if (this.effectiveCameraMode === 'local') {
+      this.update()
     }
   }
 
@@ -1914,34 +1916,17 @@ export class CameraControls {
       clearIntervals()
     })
 
-    // Orbit gesture is a 1-finger "pan"
+    // Orbit gesture is a 1-finger "pan", handled like a mouse drag: onMouseDown
+    // started it, and getInteractionType() makes a touch drag orbit.
+    // Sketch mode has no touch support yet.
     hammertime.on('pan', (ev) => {
-      if (ev.maxPointers !== 1 || !this.enableRotate) return
-      const orbitMode =
-        this.getSettings?.().modeling.cameraOrbit.current !== 'spherical'
-          ? 'rotatetrackball'
-          : 'rotate'
-      if (this.effectiveCameraMode === 'engineToClient') {
-        this.moveSender.send(() => {
-          this.doMove(orbitMode, [ev.center.x, ev.center.y])
-        })
-      } else if (this.effectiveCameraMode === 'local') {
-        // Orbit like a mouse drag: onMouseDown recorded where the touch began.
-        this.mouseNewPosition.set(ev.center.x, ev.center.y)
-        const deltaMove = this.mouseNewPosition
-          .clone()
-          .sub(this.mouseDownPosition)
-        this.mouseDownPosition.copy(this.mouseNewPosition)
-        this.wasDragging = true
-        if (orbitMode === 'rotate') {
-          this.orbitLocalCamera(deltaMove)
-          this.update(true)
-        } else {
-          this.pendingRotation = (this.pendingRotation ?? new Vector2()).add(
-            deltaMove
-          )
-          this.update()
-        }
+      if (
+        ev.maxPointers === 1 &&
+        this.enableRotate &&
+        this.effectiveCameraMode !== 'clientToEngine' &&
+        ev.srcEvent instanceof PointerEvent
+      ) {
+        this.dragTo(ev.srcEvent)
       }
     })
     // Fake flicking by sending decaying orbit events in the last direction of orbit
