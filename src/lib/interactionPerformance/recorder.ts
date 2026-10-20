@@ -330,6 +330,7 @@ export class InteractionRecorder {
           .map((sample) => [sample, sample.startTime])
       )
       // Observe the ready outcome in a task after this rendering opportunity.
+      // zds-performance-exception: render-observation -- Observe after the actual render opportunity; this zero-delay task measures presentation and never delays the product action.
       this.task = window.setTimeout(() => this.observeOutcomes(ready), 0)
     })
   }

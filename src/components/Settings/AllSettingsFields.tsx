@@ -168,6 +168,7 @@ export const AllSettingsFields = forwardRef(
                 icon: 'refresh',
                 size: 'sm',
                 className: `p-1 ${
+                  // zds-performance-exception: activity-indicator -- Show that onboarding setup is pending while its asynchronous work runs; no action is delayed by the spinner.
                   isOnboardingStartPending ? 'animate-spin' : ''
                 }`,
               }}

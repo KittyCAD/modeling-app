@@ -15,14 +15,12 @@ import {
 import { reportRejection } from '@src/lib/trap'
 import { isArray, uuidv4 } from '@src/lib/utils'
 
-const HOVER_ENTITY_REFERENCE_DEBOUNCE_MS = 250
-
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
   const { engineCommandManager, kclManager, rustContext, wasmInstance } =
     context
   const stateRef = useRef(state)
-  const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const hoverFrameRef = useRef<number | null>(null)
   const hoveredEntityIdRef = useRef<string | null>(null)
   const resolvedEntityIdRef = useRef<string | null>(null)
   const pendingEntityIdRef = useRef<string | null>(null)
@@ -32,10 +30,10 @@ export function useEngineConnectionSubscriptions() {
   useEffect(() => {
     if (!engineCommandManager) return
 
-    const clearHoverTimer = () => {
-      if (hoverTimerRef.current !== null) {
-        clearTimeout(hoverTimerRef.current)
-        hoverTimerRef.current = null
+    const clearHoverFrame = () => {
+      if (hoverFrameRef.current !== null) {
+        cancelAnimationFrame(hoverFrameRef.current)
+        hoverFrameRef.current = null
       }
     }
 
@@ -79,6 +77,7 @@ export function useEngineConnectionSubscriptions() {
       entityId: string,
       requestToken: number
     ) => {
+      const connection = engineCommandManager.connection
       let res = await engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
@@ -90,7 +89,8 @@ export function useEngineConnectionSubscriptions() {
 
       if (
         hoverRequestTokenRef.current !== requestToken ||
-        hoveredEntityIdRef.current !== entityId
+        hoveredEntityIdRef.current !== entityId ||
+        engineCommandManager.connection !== connection
       ) {
         return
       }
@@ -121,11 +121,9 @@ export function useEngineConnectionSubscriptions() {
     }
 
     const unSubHover = engineCommandManager.subscribeToUnreliable({
-      // Immediate hover now uses `highlight_set_entity` for visual feedback,
-      // then requests the heavier EntityReference payload only after the hover
-      // remains stable on the same entity for a short debounce window.
+      // Coalesce pointer samples into the entity actually hovered this frame.
       event: 'highlight_set_entity',
-      callback: ({ data }: { data: any }) => {
+      callback: ({ data }) => {
         const entityId =
           data?.entity_id && typeof data.entity_id === 'string'
             ? data.entity_id
@@ -136,7 +134,7 @@ export function useEngineConnectionSubscriptions() {
           hoveredEntityIdRef.current = null
           resolvedEntityIdRef.current = null
           pendingEntityIdRef.current = null
-          clearHoverTimer()
+          clearHoverFrame()
           clearHoverRanges()
           return
         }
@@ -145,7 +143,7 @@ export function useEngineConnectionSubscriptions() {
           if (
             resolvedEntityIdRef.current === entityId ||
             pendingEntityIdRef.current === entityId ||
-            hoverTimerRef.current !== null
+            hoverFrameRef.current !== null
           ) {
             return
           }
@@ -154,17 +152,19 @@ export function useEngineConnectionSubscriptions() {
           hoveredEntityIdRef.current = entityId
           resolvedEntityIdRef.current = null
           pendingEntityIdRef.current = null
-          clearHoverTimer()
+          clearHoverFrame()
         }
 
         const requestToken = hoverRequestTokenRef.current
-        hoverTimerRef.current = setTimeout(() => {
-          hoverTimerRef.current = null
+        const connection = engineCommandManager.connection
+        hoverFrameRef.current = requestAnimationFrame(() => {
+          hoverFrameRef.current = null
+          if (engineCommandManager.connection !== connection) return
           pendingEntityIdRef.current = entityId
           void queryHoverReference(entityId, requestToken).catch(
             reportRejection
           )
-        }, HOVER_ENTITY_REFERENCE_DEBOUNCE_MS)
+        })
       },
     })
     const unSubClick = engineCommandManager.subscribeTo({
@@ -257,7 +257,11 @@ export function useEngineConnectionSubscriptions() {
       },
     })
     return () => {
-      clearHoverTimer()
+      clearHoverFrame()
+      hoverRequestTokenRef.current += 1
+      hoveredEntityIdRef.current = null
+      resolvedEntityIdRef.current = null
+      pendingEntityIdRef.current = null
       unSubHover()
       unSubClick()
     }

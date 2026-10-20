@@ -403,6 +403,16 @@ pub struct ExecOutcome {
     pub default_planes: Option<DefaultPlanes>,
 }
 
+/// Parsing an execution source also owns file-switch and engine-session semantics.
+#[derive(Debug, Clone, Serialize, ts_rs::TS)]
+#[ts(export)]
+pub struct ParsedExecutionSource {
+    pub program: Option<crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>>,
+    pub kcl_version: Option<KclVersion>,
+    pub issues: Vec<CompilationIssue>,
+    pub default_planes: Option<DefaultPlanes>,
+}
+
 /// Per-segment freedom used by the constraint report. Mirrors
 /// [`kcl_api::Freedom`] but adds an `Error` variant for when
 /// a point lookup fails.
@@ -1207,7 +1217,7 @@ impl ExecutorContext {
         Self {
             engine: self.engine.clone(),
             cache: self.cache.clone(),
-            engine_batch: EngineBatchContext::new(),
+            engine_batch: self.engine_batch.fresh(),
             fs: self.fs.clone(),
             settings: self.settings.clone(),
             context_type: self.context_type.clone(),
@@ -1691,22 +1701,76 @@ impl ExecutorContext {
         Ok((exec_state, main_ref))
     }
 
+    /// Parse the next entry point without discarding a usable model for an
+    /// incomplete edit in the same file. A different invalid file must never
+    /// display the previous file's geometry or inherit its mock memory.
+    pub async fn parse_for_execution(&self, source: &str) -> Result<ParsedExecutionSource, KclErrorWithOutputs> {
+        let parsed = crate::Program::parse(source);
+        let invalid = match &parsed {
+            Ok((program, issues)) => program.is_none() || issues.iter().any(|issue| issue.severity.is_err()),
+            Err(_) => true,
+        };
+        if invalid {
+            let session = self
+                .engine_batch
+                .expected_session()
+                .cloned()
+                .unwrap_or_else(|| self.engine.session_identity());
+            let batch = EngineBatchContext::for_session(session);
+            let (cache, owner_changed) = self
+                .cache
+                .for_execution(&self.engine, &batch, &self.settings)
+                .await
+                .map_err(KclErrorWithOutputs::no_outputs)?;
+            let mut ctx = self.clone().with_cache(cache);
+            ctx.engine_batch = batch;
+            if owner_changed {
+                // Ordinary empty execution applies the normal Rust scene and
+                // cache lifecycle. JavaScript never decides what to invalidate.
+                ctx.run_with_caching(crate::Program::empty()).await?;
+            }
+        }
+        let default_planes = self.engine.get_default_planes().read().await.clone();
+        let (program, issues) = parsed.map_err(|error| KclErrorWithOutputs {
+            default_planes: default_planes.clone(),
+            ..KclErrorWithOutputs::no_outputs(error)
+        })?;
+        Ok(ParsedExecutionSource {
+            kcl_version: program.as_ref().map(|program| program.kcl_version),
+            program: program.map(|program| program.ast),
+            issues,
+            default_planes,
+        })
+    }
+
     /// Plan, execute, and save in separate phases so cache-management stack
     /// frames are not held underneath deep KCL execution in debug builds.
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(!self.is_mock());
-        let exec_fut = self.run_with_caching_inner(program);
-        let result = if self.configure_engine_render {
-            self.with_engine_execution(Box::pin(exec_fut)).await
+        let session = self
+            .engine_batch
+            .expected_session()
+            .cloned()
+            .unwrap_or_else(|| self.engine.session_identity());
+        let batch = EngineBatchContext::for_session(session);
+        let (cache, _) = self
+            .cache
+            .for_execution(&self.engine, &batch, &self.settings)
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+        let mut ctx = self.clone().with_cache(cache);
+        ctx.engine_batch = batch;
+        let exec_fut = ctx.run_with_caching_inner(program);
+        let result = if ctx.configure_engine_render {
+            ctx.with_engine_execution(Box::pin(exec_fut)).await
         } else {
             exec_fut.await
         };
-
         match result {
             Ok(outcome) => Ok(outcome),
             Err(mut err) => {
-                self.cache.bust_cache().await;
-                err.engine_scene_generation = Some(self.cache.engine_scene_generation().await);
+                ctx.cache.bust_cache().await;
+                err.engine_scene_generation = Some(ctx.cache.engine_scene_generation().await);
                 Err(err)
             }
         }
@@ -2074,7 +2138,7 @@ impl ExecutorContext {
         // Their IDs must not consume or collide with the model's stable artifact IDs.
         self.engine
             .send_modeling_cmd(
-                &EngineBatchContext::new(),
+                &self.engine_batch.fresh(),
                 uuid::Uuid::new_v4(),
                 SourceRange::synthetic(),
                 &cmd,
@@ -5397,6 +5461,140 @@ solid7 = extrude(r7, length = width)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn cached_execution_contract_file_identity_is_not_a_graphics_setting() {
+        let project = tempfile::tempdir().unwrap();
+        let first = crate::TypedPath(project.path().join("first.kcl"));
+        let second = crate::TypedPath(project.path().join("second.kcl"));
+        let source = "@settings(kclVersion = 3.0)\nx = 2";
+        tokio::fs::write(&first.0, source).await.unwrap();
+        tokio::fs::write(&second.0, source).await.unwrap();
+        let mut settings = ExecutorSettings::default();
+        settings.with_current_file(first);
+        let mut ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), settings);
+        let program = crate::Program::parse_no_errs(source).unwrap();
+        ctx.run_with_caching(program.clone()).await.unwrap();
+        assert!(ctx.run_with_caching(program.clone()).await.unwrap().from_cache);
+        ctx.settings.with_current_file(second);
+        assert!(
+            !ctx.run_with_caching(program.clone()).await.unwrap().from_cache,
+            "a different entry file needs its own execution metadata"
+        );
+        assert!(ctx.run_with_caching(program).await.unwrap().from_cache);
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn cached_execution_contract_replacement_engine_cannot_reuse_previous_scene() {
+        let first = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
+        let program = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 2").unwrap();
+        first.run_with_caching(program.clone()).await.unwrap();
+        assert!(first.run_with_caching(program.clone()).await.unwrap().from_cache);
+        let replacement = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default())
+            .with_cache(first.cache.clone());
+        assert!(
+            !replacement.run_with_caching(program.clone()).await.unwrap().from_cache,
+            "memoized scene IDs cannot belong to a replacement engine"
+        );
+        assert!(replacement.run_with_caching(program).await.unwrap().from_cache);
+        first.close().await;
+        replacement.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn cached_execution_contract_retired_future_cannot_overwrite_or_clear_replacement() {
+        let first = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
+        let original = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 2").unwrap();
+        first.run_with_caching(original).await.unwrap();
+        let (stale, _) = first
+            .cache
+            .for_execution(
+                &first.engine,
+                &EngineBatchContext::for_session(first.engine.session_identity()),
+                &first.settings,
+            )
+            .await
+            .unwrap();
+        let old_ast = stale.read_old_ast().await.unwrap();
+        let old_memory = stale.read_old_memory().await.unwrap();
+        let replacement = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default())
+            .with_cache(first.cache.clone());
+        let updated = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 7").unwrap();
+        replacement.run_with_caching(updated.clone()).await.unwrap();
+        // Complete every kind of old continuation after the replacement wins.
+        stale.write_old_ast(old_ast).await;
+        stale.write_old_memory(old_memory).await;
+        stale.bust_cache().await;
+        stale.clear_mem_cache().await;
+        assert!(stale.read_old_ast().await.is_none());
+        assert!(stale.read_old_memory().await.is_none());
+        let error = stale
+            .for_execution(
+                &first.engine,
+                &EngineBatchContext::for_session(first.engine.session_identity()),
+                &first.settings,
+            )
+            .await
+            .unwrap_err();
+        assert!(
+            matches!(error, KclError::Engine { details } if details.message == "Execution cache owner was superseded.")
+        );
+        let cached = replacement.run_with_caching(updated).await.unwrap();
+        assert!(cached.from_cache);
+        assert_number_variable(&cached.variables, "x", 7.0);
+        let mock = ExecutorContext::new_mock(None)
+            .await
+            .with_cache(replacement.cache.clone());
+        let expression = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\ny = x + 1").unwrap();
+        assert_number_variable(
+            &mock
+                .run_mock(&expression, &MockConfig::default())
+                .await
+                .unwrap()
+                .variables,
+            "y",
+            8.0,
+        );
+        first.close().await;
+        replacement.close().await;
+        mock.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn cached_execution_contract_syntax_error_preserves_only_its_own_file() {
+        let project = tempfile::tempdir().unwrap();
+        let first_path = crate::TypedPath(project.path().join("first.kcl"));
+        let second_path = crate::TypedPath(project.path().join("second.kcl"));
+        let mut settings = ExecutorSettings::default();
+        settings.with_current_file(first_path);
+        let mut ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), settings);
+        let program = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 2").unwrap();
+        ctx.run_with_caching(program.clone()).await.unwrap();
+        let invalid = "@settings(kclVersion = 3.0)\nx = )";
+        let assert_syntax_error = |parsed: Result<ParsedExecutionSource, KclErrorWithOutputs>| match parsed {
+            Ok(parsed) => assert!(parsed.issues.iter().any(|issue| issue.severity.is_err())),
+            Err(error) => assert!(matches!(error.error, KclError::Syntax { .. })),
+        };
+        assert_syntax_error(ctx.parse_for_execution(invalid).await);
+        assert!(ctx.run_with_caching(program.clone()).await.unwrap().from_cache);
+        let runtime_error = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 2\nbad = missing").unwrap();
+        ctx.run_with_caching(runtime_error).await.unwrap_err();
+        assert!(ctx.cache.read_old_ast().await.is_none());
+        assert!(ctx.cache.read_old_memory_var("x").await.is_some());
+        assert_syntax_error(ctx.parse_for_execution(invalid).await);
+        // A failed execution is not a file switch. Keep its usable partial state.
+        assert!(ctx.cache.read_old_ast().await.is_none());
+        assert!(ctx.cache.read_old_memory_var("x").await.is_some());
+        ctx.settings.with_current_file(second_path);
+        assert_syntax_error(ctx.parse_for_execution(invalid).await);
+        let empty = ctx.cache.read_old_ast().await.unwrap();
+        assert_eq!(empty.settings.current_file, ctx.settings.current_file);
+        assert!(empty.main.ast.body.is_empty());
+        assert!(ctx.cache.read_old_memory_var("x").await.is_none());
+        assert!(!ctx.run_with_caching(program).await.unwrap().from_cache);
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn session_cache_shares_clones_and_associated_mock_memory() {
         let ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
         let program = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 2").unwrap();
@@ -5530,6 +5728,41 @@ solid7 = extrude(r7, length = width)
             assert_number_variable(&outcome.variables, "y", 8.0);
         }
 
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn cached_execution_imported_grid_preferences_survive_repeated_toggles() {
+        let project = tempfile::tempdir().unwrap();
+        let main = project.path().join("main.kcl");
+        let source = "@settings(kclVersion = 3.0)\nimport x from 'values.kcl'\ny = x + 1";
+        tokio::fs::write(&main, source).await.unwrap();
+        tokio::fs::write(
+            project.path().join("values.kcl"),
+            "@settings(kclVersion = 3.0)\nexport x = 2",
+        )
+        .await
+        .unwrap();
+        let mut settings = ExecutorSettings::default();
+        settings.with_current_file(crate::TypedPath(main));
+        settings.show_grid = false;
+        let mut ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), settings);
+        let program = crate::Program::parse_no_errs(source).unwrap();
+        ctx.run_with_caching(program.clone()).await.unwrap();
+
+        // Andrew #9101: an unchanged imported module must not retain the first
+        // applied preference and swallow a later on/off/on transition.
+        for visible in [true, false, true] {
+            ctx.settings.show_grid = visible;
+            let outcome = ctx.run_with_caching(program.clone()).await.unwrap();
+            assert!(outcome.from_cache, "a grid preference must not rerun imported KCL");
+            assert_number_variable(&outcome.variables, "y", 3.0);
+            assert!(
+                outcome.filenames.len() > 1,
+                "the dependency must actually load from disk"
+            );
+            assert_eq!(ctx.cache.read_old_ast().await.unwrap().settings.show_grid, visible);
+        }
         ctx.close().await;
     }
 

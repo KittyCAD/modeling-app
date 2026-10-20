@@ -1,4 +1,5 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import { STRAIGHT_SEGMENT } from '@src/clientSideScene/sceneConstants'
 import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 import {
   createIdentifier,
@@ -39,6 +40,7 @@ import {
   buildTheWorldAndNoEngineConnection,
 } from '@src/unitTestUtils'
 import toast from 'react-hot-toast'
+import { Group } from 'three'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { vi } from 'vitest'
 import { type ActorRefFrom, createActor, fromPromise } from 'xstate'
@@ -179,6 +181,121 @@ describe('modelingMachine.test.ts', () => {
   }
 
   describe('modelingMachine - XState', () => {
+    describe('legacy overlay pointer retention', () => {
+      function createOverlayActor() {
+        const input = generateModelingMachineDefaultContext({
+          kclManager: kclManagerInThisFile,
+          rustContext: rustContextInThisFile,
+          wasmInstance: instanceInThisFile,
+          engineCommandManager: engineCommandManagerInThisFile,
+          commandBarActor: commandBarActorInThisFile,
+          machineManager: machineManagerInThisFile,
+        })
+        const actor = createActor(modelingMachine, { input }).start()
+        const group = new Group()
+        group.userData = { type: STRAIGHT_SEGMENT, pathToNode: [] }
+        return { actor, group, key: '[]' }
+      }
+
+      it('shows immediately and retains controls while the pointer crosses their gap', () => {
+        vi.useFakeTimers()
+        const { actor, group, key } = createOverlayActor()
+        const scene = kclManagerInThisFile.sceneInfra
+        const previousSend = scene.modelingSend
+        scene.setSend((event) => actor.send(event))
+        try {
+          actor.send({
+            type: 'Set mouse state',
+            data: { type: 'isHovering', on: group },
+          })
+          expect(actor.getSnapshot().context.segmentHoverMap[key]).toBe(0)
+          actor.send({ type: 'Set mouse state', data: { type: 'idle' } })
+          const retained = actor.getSnapshot().context.segmentHoverMap[key]
+          expect(retained).toBeDefined()
+          vi.advanceTimersByTime(500)
+          expect(actor.getSnapshot().context.segmentHoverMap[key]).toBe(
+            retained
+          )
+          actor.send({
+            type: 'Set mouse state',
+            data: { type: 'isHovering', on: group },
+          })
+          vi.advanceTimersByTime(1500)
+          expect(actor.getSnapshot().context.segmentHoverMap[key]).toBe(0)
+          actor.send({ type: 'Set mouse state', data: { type: 'idle' } })
+          vi.advanceTimersByTime(1000)
+          expect(
+            actor.getSnapshot().context.segmentHoverMap[key]
+          ).toBeUndefined()
+        } finally {
+          actor.stop()
+          scene.setSend(previousSend)
+          vi.clearAllTimers()
+          vi.useRealTimers()
+        }
+      })
+
+      it('cannot remove a replacement actor toolbar with the same segment key', () => {
+        vi.useFakeTimers()
+        const retired = createOverlayActor()
+        const scene = kclManagerInThisFile.sceneInfra
+        const previousSend = scene.modelingSend
+        scene.setSend((event) => retired.actor.send(event))
+        retired.actor.send({
+          type: 'Set mouse state',
+          data: { type: 'isHovering', on: retired.group },
+        })
+        retired.actor.send({ type: 'Set mouse state', data: { type: 'idle' } })
+        retired.actor.stop()
+        const current = createOverlayActor()
+        scene.setSend((event) => current.actor.send(event))
+        try {
+          current.actor.send({
+            type: 'Set mouse state',
+            data: { type: 'isHovering', on: current.group },
+          })
+          vi.advanceTimersByTime(1500)
+          expect(
+            current.actor.getSnapshot().context.segmentHoverMap[current.key]
+          ).toBe(0)
+        } finally {
+          current.actor.stop()
+          scene.setSend(previousSend)
+          vi.clearAllTimers()
+          vi.useRealTimers()
+        }
+      })
+
+      it('does not publish an old file timeout after the editor switches files', () => {
+        vi.useFakeTimers()
+        const { actor, group, key } = createOverlayActor()
+        const scene = kclManagerInThisFile.sceneInfra
+        const previousSend = scene.modelingSend
+        const previousPath = kclManagerInThisFile.path
+        scene.setSend((event) => actor.send(event))
+        try {
+          actor.send({
+            type: 'Set mouse state',
+            data: { type: 'isHovering', on: group },
+          })
+          actor.send({ type: 'Set mouse state', data: { type: 'idle' } })
+          const retained = actor.getSnapshot().context.segmentHoverMap[key]
+          kclManagerInThisFile.path = 'another-overlay-file.kcl'
+          vi.advanceTimersByTime(1500)
+          expect(actor.getSnapshot().context.mouseState.type).toBe('idle')
+          expect(actor.getSnapshot().context.segmentHoverMap[key]).toBe(
+            retained
+          )
+        } finally {
+          actor.stop()
+          kclManagerInThisFile.path = previousPath
+          scene.setSend(previousSend)
+          vi.clearAllTimers()
+          vi.useRealTimers()
+        }
+      })
+    })
+
     describe('when initialized', () => {
       it('should start in the idle state', async () => {
         const contextCopied = generateModelingMachineDefaultContext({

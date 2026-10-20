@@ -25,10 +25,15 @@ import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
 import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
+import type { ParsedExecutionSource } from '@rust/kcl-lib/bindings/ParsedExecutionSource'
 import { type Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { ExecCallbacks, ExecState } from '@src/lang/wasm'
-import { errFromErrWithOutputs, execStateFromRust } from '@src/lang/wasm'
+import {
+  errFromErrWithOutputs,
+  execStateFromRust,
+  ParseResult,
+} from '@src/lang/wasm'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 import type { DefaultPlaneStr } from '@src/lib/planes'
@@ -44,89 +49,197 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import toast from 'react-hot-toast'
 
+interface ProjectSnapshot {
+  currentFilePath: string | null
+  files: ApiFile[]
+}
+
 export default class RustContext {
-  private rustInstance: ModuleType | null = null
   private ctxInstance: Context | null = null
+  private initialization: Promise<Context> | undefined
+  private contextChanged = new AbortController()
+  private moduleGeneration = 0
+  private destroyed = false
+  private projectSnapshot: ProjectSnapshot | null = null
+  private projectRevision = 0
+  private restoredProjectRevision = -1
   private _defaultPlanes: DefaultPlanes | null = null
   public readonly planesCreated = new LegacySignal()
 
   constructor(
-    public readonly wasmInstancePromise: Promise<ModuleType>,
+    private modulePromise: Promise<ModuleType>,
     private readonly engineCommandManager: ConnectionManager,
     public readonly settingsActor: SettingsActorType,
     private projectId = 0,
     private readonly geometryOnly = false
   ) {
-    wasmInstancePromise
-      .then((instance) => this.createFromInstance(instance))
-      .catch(reportRejection)
+    this.initialization = this.createContextFromWasm(modulePromise, 0)
+    void this.initialization.catch((error: unknown) => {
+      if (!this.destroyed && this.moduleGeneration === 0) reportRejection(error)
+    })
   }
 
-  /** Create a new context instance */
-  private async createContextFromWasm(): Promise<Context> {
-    this.rustInstance = await this.wasmInstancePromise
+  get wasmInstancePromise() {
+    return this.modulePromise
+  }
 
-    const ctxInstance = new this.rustInstance.Context(
+  /** Replace a crashed runtime, never the execution cache of a live runtime. */
+  async replaceWasmInstance(modulePromise: Promise<ModuleType>): Promise<void> {
+    if (this.destroyed)
+      return Promise.reject(new Error('Rust context has been destroyed.'))
+    const changed = this.contextChanged
+    this.contextChanged = new AbortController()
+    this.modulePromise = modulePromise
+    this.moduleGeneration += 1
+    // Published wrappers may still be held by in-flight AST calls. Their
+    // wasm-bindgen finalizer frees them after those references are released.
+    this.ctxInstance = null
+    this._defaultPlanes = null
+    this.hasOpenedProject = false
+    this.restoredProjectRevision = -1
+    this.initialization = this.createContextFromWasm(
+      modulePromise,
+      this.moduleGeneration
+    )
+    changed.abort()
+    await this._checkContextInstance()
+  }
+
+  private async createContextFromWasm(
+    modulePromise: Promise<ModuleType>,
+    generation: number
+  ): Promise<Context> {
+    const instance = await modulePromise
+    if (this.destroyed || generation !== this.moduleGeneration)
+      return this._checkContextInstance()
+    const context = new instance.Context(
       this.engineCommandManager,
       projectFsManager,
       undefined,
       this.geometryOnly
     )
-
-    return ctxInstance
+    try {
+      let revision: number
+      do {
+        revision = this.projectRevision
+        const snapshot = this.projectSnapshot
+        if (snapshot) {
+          await context.open_project(
+            this.projectId,
+            JSON.stringify(snapshot.files),
+            snapshot.files.find(
+              (file) => file.path === snapshot.currentFilePath
+            )?.id ?? -1
+          )
+        }
+        if (this.destroyed || generation !== this.moduleGeneration) {
+          this.releaseUnpublishedContext(context)
+          return this._checkContextInstance()
+        }
+        // Edits received while replay was pending belong in the replacement
+        // too. Reopen only this unpublished context, never an existing model.
+      } while (revision !== this.projectRevision)
+      this.ctxInstance = context
+      this.restoredProjectRevision = revision
+      this.hasOpenedProject = this.projectSnapshot !== null
+      return context
+    } catch (error) {
+      this.releaseUnpublishedContext(context)
+      if (this.destroyed || generation !== this.moduleGeneration)
+        return this._checkContextInstance()
+      return Promise.reject(error)
+    }
   }
 
-  private createFromInstance(instance: ModuleType) {
-    this.rustInstance = instance
+  private releaseUnpublishedContext(context: Context) {
+    try {
+      context.free()
+    } catch (error) {
+      reportRejection(error)
+    }
+  }
 
-    const ctxInstance = new this.rustInstance.Context(
-      this.engineCommandManager,
-      projectFsManager,
-      undefined,
-      this.geometryOnly
-    )
-
-    this.ctxInstance = ctxInstance
+  private async applyProjectChange(
+    snapshot: ProjectSnapshot | null,
+    revision: number,
+    apply: (context: Context) => Promise<void>
+  ): Promise<boolean> {
+    const context = await this._checkContextInstance()
+    if (snapshot !== this.projectSnapshot) return false
+    if (snapshot && revision <= this.restoredProjectRevision)
+      return this.hasOpenedProject
+    await apply(context)
+    return context === this.ctxInstance && snapshot === this.projectSnapshot
   }
 
   public hasOpenedProject = false
 
   /** Project lifecycle method for WASM, setting up initial snapshot of project */
   async sendOpenProject(currentFilePath: string | null, kclFiles: ApiFile[]) {
-    // TODO: The rust side should really honor having no current file ID
-    const currentFileId =
-      kclFiles.find((f) => f.path === currentFilePath)?.id || -1
-    await this.ctxInstance?.open_project(
-      this.projectId,
-      JSON.stringify(kclFiles),
-      currentFileId
+    const snapshot = {
+      currentFilePath,
+      files: kclFiles.map((file) => ({ ...file })),
+    }
+    this.projectSnapshot = snapshot
+    this.hasOpenedProject = false
+    const applied = await this.applyProjectChange(
+      snapshot,
+      ++this.projectRevision,
+      (context) =>
+        context.open_project(
+          this.projectId,
+          JSON.stringify(snapshot.files),
+          snapshot.files.find((file) => file.path === currentFilePath)?.id ?? -1
+        )
     )
-    this.hasOpenedProject = true
+    if (applied) this.hasOpenedProject = true
   }
 
   /** Helper to verify the state on the WASM side, useful for testing */
   async getProjectState() {
-    return this.ctxInstance?.get_project(this.projectId)
+    const context = await this._checkContextInstance()
+    return context.get_project(this.projectId)
   }
 
   /** Helper to verify the state on the WASM side, useful for testing */
   async getFileState(fileId: number) {
-    return this.ctxInstance?.get_file(this.projectId, fileId)
+    const context = await this._checkContextInstance()
+    return context.get_file(this.projectId, fileId)
   }
 
   async sendAddFile(file: ApiFile) {
-    return this.ctxInstance?.add_file(this.projectId, JSON.stringify(file))
+    const snapshot = this.projectSnapshot
+    const ownedFile = { ...file }
+    if (snapshot)
+      snapshot.files = [
+        ...snapshot.files.filter((current) => current.id !== file.id),
+        ownedFile,
+      ]
+    await this.applyProjectChange(snapshot, ++this.projectRevision, (context) =>
+      context.add_file(this.projectId, JSON.stringify(ownedFile))
+    )
   }
 
   async sendUpdateFile(fileId: number, code: string) {
-    if (!this.hasOpenedProject) {
+    const snapshot = this.projectSnapshot
+    if (!snapshot) {
       return
     }
-    return this.ctxInstance?.update_file(this.projectId, fileId, code)
+    snapshot.files = snapshot.files.map((file) =>
+      file.id === fileId ? { ...file, text: code } : file
+    )
+    await this.applyProjectChange(snapshot, ++this.projectRevision, (context) =>
+      context.update_file(this.projectId, fileId, code)
+    )
   }
 
   async sendRemoveFile(fileId: number) {
-    return this.ctxInstance?.remove_file(this.projectId, fileId)
+    const snapshot = this.projectSnapshot
+    if (snapshot)
+      snapshot.files = snapshot.files.filter((file) => file.id !== fileId)
+    await this.applyProjectChange(snapshot, ++this.projectRevision, (context) =>
+      context.remove_file(this.projectId, fileId)
+    )
   }
 
   /** Execute a program. */
@@ -195,6 +308,33 @@ export default class RustContext {
     }
   }
 
+  /** Parse the active entry point. Rust owns scene/cache behavior for invalid files. */
+  async parseForExecution(
+    code: string,
+    settings: DeepPartial<Configuration>,
+    path?: string
+  ): Promise<ParseResult | Error> {
+    const instance = await this._checkContextInstance()
+    try {
+      const parsed: ParsedExecutionSource = await instance.parseForExecution(
+        code,
+        JSON.stringify(settings),
+        path
+      )
+      this.setDefaultPlanes(parsed.default_planes)
+      return new ParseResult(
+        parsed.program,
+        parsed.kcl_version,
+        parsed.issues.filter((issue) => issue.severity !== 'Warning'),
+        parsed.issues.filter((issue) => issue.severity === 'Warning')
+      )
+    } catch (error) {
+      const failure = errFromErrWithOutputs(error)
+      this.setDefaultPlanes(failure.defaultPlanes)
+      return failure
+    }
+  }
+
   /** Evaluate an input expression with the current Rust model's settings. */
   async evaluateExpression(node: Node<Program>): Promise<ExecState> {
     const instance = await this._checkContextInstance()
@@ -249,20 +389,12 @@ export default class RustContext {
   }
 
   /**
-   * Clear/reset the scene and bust the cache.
-   * Do not use this function unless you absolutely need to. In most cases,
-   * we should just fix the  cache for whatever bug you are seeing.
-   * The only time it makes sense to run this is if the engine disconnects and
-   * reconnects. The rust side has no idea that happened and will think the
-   * cache is still valid.
-   * Caching on the rust side accounts for changes to files outside of the
-   * scope of the current file the user is on. It collects all the dependencies
-   * and checks if any of them have changed. If they have, it will bust the
-   * cache and recompile the scene.
-   * The typescript side should never raw dog clear the scene since that would
-   * fuck with the cache as well. So if you _really_ want to just clear the scene
-   * AND NOT re-execute, you can use this for that. But in 99.999999% of cases just
-   * re-execute.
+   * WARNING: NO ONE CAN CALL THIS FUNCTION WITHOUT FIRST ASKING @jessfraz.
+   *
+   * This manually discards the execution cache and resets the engine scene.
+   * Do not use it to work around file changes, settings changes, navigation,
+   * or stale results. Rust owns cache validity and dependency tracking. Fix
+   * incorrect invalidation in Rust and cover it with execution/I/O tests.
    */
   async clearSceneAndBustCache(
     settings: DeepPartial<Configuration>,
@@ -969,20 +1101,37 @@ export default class RustContext {
 
   /** Helper to check if context instance exists */
   private async _checkContextInstance(): Promise<Context> {
-    if (!this.ctxInstance) {
-      // Create the context instance.
-      this.ctxInstance = await this.createContextFromWasm()
+    while (!this.destroyed) {
+      if (this.ctxInstance) return this.ctxInstance
+      const initialization = this.initialization
+      if (!initialization) break
+      const signal = this.contextChanged.signal
+      const changed = Promise.withResolvers<null>()
+      const onChanged = () => changed.resolve(null)
+      signal.addEventListener('abort', onChanged, { once: true })
+      try {
+        const context = await Promise.race([initialization, changed.promise])
+        if (context && initialization === this.initialization) return context
+      } catch (error) {
+        if (initialization === this.initialization && !this.destroyed)
+          return Promise.reject(error)
+      } finally {
+        signal.removeEventListener('abort', onChanged)
+      }
     }
-
-    return this.ctxInstance
+    return Promise.reject(new Error('Rust context has been destroyed.'))
   }
 
   /** Clean up resources */
   destroy() {
-    if (this.ctxInstance) {
-      // In a real implementation, you might need to manually free resources
-      this.ctxInstance = null
-    }
+    this.destroyed = true
+    this.moduleGeneration += 1
+    this.ctxInstance = null
+    this.initialization = undefined
+    this.projectSnapshot = null
+    this._defaultPlanes = null
+    this.hasOpenedProject = false
+    this.contextChanged.abort()
   }
 }
 

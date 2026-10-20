@@ -7,7 +7,7 @@ import {
   BillingRemainingMode,
   EBillingError,
 } from '@kittycad/ui-components'
-import { expect, test } from 'vitest'
+import { expect, test, vi } from 'vitest'
 
 const userPaymentBalance = {
   created_at: '2026-01-02T21:57:20.048Z',
@@ -28,6 +28,39 @@ test('Shows a loading spinner when uninitialized credit count', async () => {
   expect(queryByTestId('spinner')).toBeVisible()
   expect(queryByTestId('billing-remaining-error-indicator')).toBeNull()
 })
+
+test.each([
+  BillingRemainingMode.ProgressBarFixed,
+  BillingRemainingMode.ProgressBarStretch,
+])(
+  'Pending data in mode %s stays pending until a balance or error actually arrives',
+  (mode) => {
+    vi.useFakeTimers()
+    try {
+      const { queryByTestId, queryByText, rerender } = render(
+        <BillingRemaining mode={mode} balance={Number.NaN} />
+      )
+      vi.advanceTimersByTime(10_000)
+      expect(queryByTestId('spinner')).toBeVisible()
+      expect(queryByText('NaN min')).toBeNull()
+      rerender(<BillingRemaining mode={mode} balance={12} />)
+      expect(queryByText(/^12 min/)).toBeVisible()
+      expect(queryByTestId('spinner')).toBeNull()
+      rerender(
+        <BillingRemaining
+          mode={mode}
+          balance={Number.NaN}
+          error={new BillingError({ type: EBillingError.CatastrophicRequest })}
+        />
+      )
+      expect(queryByTestId('billing-remaining-error-indicator')).toBeVisible()
+      expect(queryByTestId('spinner')).toBeNull()
+      expect(queryByText('NaN min')).toBeNull()
+    } finally {
+      vi.useRealTimers()
+    }
+  }
+)
 
 test('Shows an error message when billing fails', async () => {
   const billingError = new BillingError({

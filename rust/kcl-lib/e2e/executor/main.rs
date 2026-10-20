@@ -1,5 +1,7 @@
 mod cache;
+mod cache_contract;
 mod execution_order;
+mod render_settings_contract;
 
 use kcl_lib::BacktraceItem;
 use kcl_lib::BacktraceItemKind;

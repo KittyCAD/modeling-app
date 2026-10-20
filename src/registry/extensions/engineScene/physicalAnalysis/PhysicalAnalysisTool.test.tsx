@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const useModelingContext = vi.hoisted(() => vi.fn())
@@ -121,7 +121,7 @@ function setupDeferredModelingContext(defaultLengthUnit: string) {
     },
   })
 
-  return { release: () => release?.() }
+  return { release: () => release?.(), sendSceneCommand }
 }
 
 describe('physical analysis tool', () => {
@@ -131,6 +131,111 @@ describe('physical analysis tool', () => {
     physicalAnalysisService.reloadPreferences()
     physicalAnalysisService.close()
     measurementToolService.close()
+  })
+
+  it('applies density immediately, serializes requests, and publishes only the latest result', async () => {
+    const consoleError = vi.spyOn(console, 'error')
+    const { sendSceneCommand } = setupModelingContext('mm')
+    const send = sendSceneCommand.getMockImplementation()
+    if (!send) expect.fail('The engine fixture must provide responses')
+    const pending: Array<{
+      density: unknown
+      resolve: (response: ReturnType<typeof modelingResponse>) => void
+    }> = []
+    sendSceneCommand.mockImplementation((request) => {
+      if (request.cmd.type !== 'mass') return send(request)
+      return new Promise<ReturnType<typeof modelingResponse>>((resolve) => {
+        pending.push({ density: request.cmd.material_density, resolve })
+      })
+    })
+    render(<PhysicalAnalysisTool />)
+    await waitFor(() => expect(pending).toHaveLength(1))
+
+    const density = screen.getByTestId('physical-analysis-density')
+    fireEvent.change(density, { target: { value: '7' } })
+    expect(physicalAnalysisService.preferences.peek().materialDensity).toBe(7)
+    fireEvent.change(density, { target: { value: '8' } })
+    expect(physicalAnalysisService.preferences.peek().materialDensity).toBe(8)
+    expect(pending).toHaveLength(1)
+
+    await act(async () => {
+      pending[0].resolve(modelingResponse('mass', { mass: 7.85 }))
+    })
+    await waitFor(() => expect(pending).toHaveLength(2))
+    expect(pending[1].density).toBe(8)
+    expect(screen.queryByText('7.85')).not.toBeInTheDocument()
+    expect(screen.getByText('Analyzing...')).toBeInTheDocument()
+
+    await act(async () => {
+      pending[1].resolve(modelingResponse('mass', { mass: 8 }))
+    })
+    await waitFor(() =>
+      expect(screen.queryByText('Analyzing...')).not.toBeInTheDocument()
+    )
+    expect(screen.getByText('8')).toBeInTheDocument()
+    expect(pending).toHaveLength(2)
+    expect(consoleError).not.toHaveBeenCalled()
+    consoleError.mockRestore()
+  })
+
+  it('drains sibling engine queries after a rejection before starting the latest density', async () => {
+    const { sendSceneCommand } = setupModelingContext('mm')
+    const send = sendSceneCommand.getMockImplementation()
+    if (!send) expect.fail('The engine fixture must provide responses')
+    let firstVolume = true
+    let firstMass = true
+    let release: (response: ReturnType<typeof modelingResponse>) => void =
+      () => {}
+    const mass = new Promise<ReturnType<typeof modelingResponse>>((resolve) => {
+      release = resolve
+    })
+    sendSceneCommand.mockImplementation((request) => {
+      if (request.cmd.type === 'volume' && firstVolume) {
+        firstVolume = false
+        return Promise.reject<ReturnType<typeof modelingResponse>>(
+          new Error('Rejected volume query')
+        )
+      }
+      if (request.cmd.type === 'mass' && firstMass) {
+        firstMass = false
+        return mass
+      }
+      return send(request)
+    })
+    render(<PhysicalAnalysisTool />)
+    await waitFor(() => expect(sendSceneCommand).toHaveBeenCalledTimes(4))
+    fireEvent.change(screen.getByTestId('physical-analysis-density'), {
+      target: { value: '8' },
+    })
+    await act(async () => {
+      await Promise.resolve()
+    })
+    expect(sendSceneCommand).toHaveBeenCalledTimes(4)
+    await act(async () => {
+      release(modelingResponse('mass', { mass: 7.85 }))
+    })
+    await waitFor(() => expect(sendSceneCommand).toHaveBeenCalledTimes(8))
+    expect(sendSceneCommand.mock.calls[7][0].cmd).toMatchObject({
+      type: 'mass',
+      material_density: 8,
+    })
+    await waitFor(() =>
+      expect(screen.queryByText('Analyzing...')).not.toBeInTheDocument()
+    )
+    expect(screen.getByText('7.85')).toBeInTheDocument()
+    expect(screen.queryByText('Rejected volume query')).not.toBeInTheDocument()
+  })
+
+  it('does not start queued analysis after the panel unmounts', async () => {
+    const { release, sendSceneCommand } = setupDeferredModelingContext('mm')
+    const { unmount } = render(<PhysicalAnalysisTool />)
+    await waitFor(() => expect(sendSceneCommand).toHaveBeenCalledTimes(4))
+    fireEvent.change(screen.getByTestId('physical-analysis-density'), {
+      target: { value: '8' },
+    })
+    unmount()
+    await act(async () => release())
+    expect(sendSceneCommand).toHaveBeenCalledTimes(4)
   })
 
   it('seeds the unit dropdowns from the file length unit', async () => {

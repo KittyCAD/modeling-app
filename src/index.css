@@ -609,7 +609,7 @@ code,
 }
 
 .animate-shimmer {
-  animation-delay: 0.5s;
+  /* zds-performance-exception: activity-indicator -- Keep pending loading placeholders visibly active without delaying their first frame. */
   animation-duration: 1s;
   animation-iteration-count: infinite;
   animation-name: loading-shimmer;

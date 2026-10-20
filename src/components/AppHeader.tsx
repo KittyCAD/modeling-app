@@ -70,7 +70,7 @@ export const AppHeader = ({
           }
         }}
         onHomeNavigate={() => {
-          kclManager.switchedFiles = true
+          kclManager.resetForFileSwitch()
         }}
       >
         {projectMenuChildren}

@@ -290,6 +290,7 @@ export class Connection extends EventTarget {
       return
     }
 
+    // zds-performance-exception: background-polling -- Detect dead engine connections with heartbeat pings; interaction commands do not wait for this interval.
     this._pingIntervalId = setInterval(() => {
       if (this._pingPongSpan.ping) {
         return

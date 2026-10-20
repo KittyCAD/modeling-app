@@ -89,8 +89,6 @@ export interface LanguageServerOptions {
     notification: LSP.NotificationMessage
   ) => void
 
-  changesDelay?: number
-
   doSemanticTokens?: boolean
   doFoldingRanges?: boolean
 
@@ -106,7 +104,6 @@ export class LanguageServerPlugin implements PluginValue {
   private previousSemanticTokens: SemanticToken[] = []
 
   private allowHTMLContent: boolean = true
-  private changesDelay: number = 600
   private processLspNotification?: (
     plugin: LanguageServerPlugin,
     notification: LSP.NotificationMessage
@@ -115,10 +112,9 @@ export class LanguageServerPlugin implements PluginValue {
   private doSemanticTokens: boolean = false
   private doFoldingRanges: boolean = false
 
-  // When a doc update needs to be sent to the server, this holds the
-  // timeout handle for it. When null, the server has the up-to-date
-  // document.
-  private sendScheduled: number | null = null
+  // Coalesce synchronous edits without delaying diagnostics behind a timer.
+  private sendScheduled: symbol | null = null
+  private destroyed = false
 
   private onGoToDefinition: ((result: DefinitionResult) => void) | undefined
 
@@ -132,10 +128,6 @@ export class LanguageServerPlugin implements PluginValue {
     this.doSemanticTokens = options.doSemanticTokens ?? false
     this.doFoldingRanges = options.doFoldingRanges ?? false
 
-    if (options.changesDelay) {
-      this.changesDelay = options.changesDelay
-    }
-
     if (options.allowHTMLContent !== undefined) {
       this.allowHTMLContent = options.allowHTMLContent
     }
@@ -147,9 +139,7 @@ export class LanguageServerPlugin implements PluginValue {
     this.onGoToDefinition = options.onGoToDefinition
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.initialize({
-      documentText: this.getDocText(),
-    })
+    this.initialize()
   }
 
   private getDocPath(view = this.view) {
@@ -175,20 +165,23 @@ export class LanguageServerPlugin implements PluginValue {
   }
 
   destroy() {
+    this.destroyed = true
+    this.sendScheduled = null
     this.client.detachPlugin(this)
   }
 
-  async initialize({ documentText }: { documentText: string }) {
+  async initialize() {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     if (this.client.initializePromise) {
       await this.client.initializePromise
     }
+    if (this.destroyed) return
 
     this.client.textDocumentDidOpen({
       textDocument: {
         uri: this.getDocUri(),
         languageId: this.getLanguageId(),
-        text: documentText,
+        text: this.getDocText(),
         version: this.documentVersion,
       },
     })
@@ -233,20 +226,17 @@ export class LanguageServerPlugin implements PluginValue {
   }
 
   scheduleSendDoc() {
-    if (this.sendScheduled != null) window.clearTimeout(this.sendScheduled)
-    this.sendScheduled = window.setTimeout(
-      () => this.sendDoc(),
-      this.changesDelay
-    )
+    if (this.destroyed || this.sendScheduled !== null) return
+    const scheduled = Symbol()
+    this.sendScheduled = scheduled
+    queueMicrotask(() => {
+      if (!this.destroyed && this.sendScheduled === scheduled) this.sendDoc()
+    })
   }
 
   sendDoc() {
-    if (this.sendScheduled != null) {
-      window.clearTimeout(this.sendScheduled)
-      this.sendScheduled = null
-    }
-
-    if (!this.client.ready) return
+    this.sendScheduled = null
+    if (this.destroyed || !this.client.ready) return
 
     try {
       // Update the state (not the editor) with the new code.
@@ -273,22 +263,45 @@ export class LanguageServerPlugin implements PluginValue {
 
   async getFoldingRanges(): Promise<LSP.FoldingRange[] | null> {
     if (
+      this.destroyed ||
       !this.doFoldingRanges ||
       !this.client.ready ||
       !this.client.getServerCapabilities().foldingRangeProvider
     )
       return null
 
+    this.ensureDocSent()
+    const document = this.view.state.doc
+    const uri = this.getDocUri()
+    const version = this.documentVersion
     const result = await this.client.textDocumentFoldingRange({
-      textDocument: { uri: this.getDocUri() },
+      textDocument: { uri },
     })
+    if (
+      this.destroyed ||
+      this.view.state.doc !== document ||
+      this.getDocUri() !== uri ||
+      this.documentVersion !== version
+    )
+      return null
 
     return result || null
   }
 
   async updateFoldingRanges() {
+    this.ensureDocSent()
+    const document = this.view.state.doc
+    const uri = this.getDocUri()
+    const version = this.documentVersion
     const foldingRanges = await this.getFoldingRanges()
-    if (foldingRanges === null) return
+    if (
+      foldingRanges === null ||
+      this.destroyed ||
+      this.view.state.doc !== document ||
+      this.getDocUri() !== uri ||
+      this.documentVersion !== version
+    )
+      return
     // Update the folding ranges.
     this.foldingRanges = foldingRanges
   }
@@ -754,7 +767,7 @@ export class LanguageServerPlugin implements PluginValue {
           return {
             dom,
             mount: () => {
-              // Preserve the existing timeout and editor-input dismissal.
+              // zds-performance-exception: feedback-lifetime -- Keep already visible signature help readable for ten seconds; editor input dismisses it sooner.
               timeout = setTimeout(removeTooltip, 10000)
               view.dom.addEventListener('keydown', removeTooltip)
               view.dom.addEventListener('mousedown', removeTooltip)
@@ -1140,6 +1153,7 @@ export class LanguageServerPlugin implements PluginValue {
 
   async requestSemanticTokens() {
     if (
+      this.destroyed ||
       !this.doSemanticTokens ||
       !this.client.ready ||
       !this.client.getServerCapabilities().semanticTokensProvider
@@ -1147,10 +1161,21 @@ export class LanguageServerPlugin implements PluginValue {
       return null
     }
 
+    this.ensureDocSent()
+    const document = this.view.state.doc
+    const uri = this.getDocUri()
+    const version = this.documentVersion
     const result = await this.client.textDocumentSemanticTokensFull({
-      textDocument: { uri: this.getDocUri() },
+      textDocument: { uri },
     })
-    if (!result) return null
+    if (
+      !result ||
+      this.destroyed ||
+      this.view.state.doc !== document ||
+      this.getDocUri() !== uri ||
+      this.documentVersion !== version
+    )
+      return null
 
     const { data } = result
     this.previousSemanticTokens = this.parseSemanticTokens(this.view, data)

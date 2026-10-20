@@ -62,6 +62,7 @@ export const GetInfoModal = ({
   const {
     prevVariables,
     inputRef,
+    setInputRef,
     calcResult,
     valueNode,
     setNewVariableName,
@@ -116,7 +117,7 @@ export const GetInfoModal = ({
                 type="text"
                 name="val"
                 id="val"
-                ref={inputRef}
+                ref={setInputRef}
                 className="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm text-gray-900 border-gray-300 rounded-md font-mono"
                 value={value}
                 onChange={(e) => {

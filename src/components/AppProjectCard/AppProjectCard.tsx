@@ -250,19 +250,22 @@ function AppProjectCard({
       return
     }
 
-    // Context menu actions run before the Headless UI dialog finishes closing.
-    // Select after that focus restoration so project rename behaves like the
-    // old hover action buttons.
-    const timeout = window.setTimeout(() => {
-      if (!inputRef.current) {
+    // Headless UI restores focus in an unmount microtask. This effect runs
+    // after that cleanup has queued, so select the committed rename input
+    // after the old focus owner releases it, without a timer or extra frame.
+    let cancelled = false
+    queueMicrotask(() => {
+      if (cancelled || !inputRef.current) {
         return
       }
 
       inputRef.current.focus()
       inputRef.current.select()
-    }, 0)
+    })
 
-    return () => window.clearTimeout(timeout)
+    return () => {
+      cancelled = true
+    }
   }, [isEditing])
 
   useEffect(() => {

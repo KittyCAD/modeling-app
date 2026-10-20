@@ -1971,7 +1971,7 @@ export const modelingMachine = setup({
         return {}
       }
     ),
-    'Set mouse state': assign(({ context, event }) => {
+    'Set mouse state': assign(({ context, event, self }) => {
       if (event.type !== 'Set mouse state') return {}
       const nextSegmentHoverMap = () => {
         if (event.data.type === 'isHovering') {
@@ -2001,15 +2001,27 @@ export const modelingMachine = setup({
           const pathToNodeString = JSON.stringify(
             mouseOnParent?.userData?.pathToNode
           )
-          const timeoutId = setTimeout(() => {
-            context.kclManager.sceneInfra.modelingSend({
+          const filePath = context.kclManager.path
+          const projectPath = context.kclManager.systemDeps.project.peek()?.path
+          // zds-performance-exception: feedback-lifetime -- Keep the visible toolbar reachable while the pointer crosses its 20px gap to the controls.
+          const timeoutId = window.setTimeout(() => {
+            const snapshot = self.getSnapshot()
+            if (
+              snapshot.status !== 'active' ||
+              snapshot.context.kclManager.path !== filePath ||
+              snapshot.context.kclManager.systemDeps.project.peek()?.path !==
+                projectPath ||
+              snapshot.context.segmentHoverMap[pathToNodeString] !== timeoutId
+            )
+              return
+            self.send({
               type: 'Set mouse state',
               data: {
                 type: 'timeoutEnd',
                 pathToNodeString,
               },
             })
-          }, OVERLAY_TIMEOUT_MS) as unknown as number
+          }, OVERLAY_TIMEOUT_MS)
           return {
             ...context.segmentHoverMap,
             [pathToNodeString]: timeoutId,

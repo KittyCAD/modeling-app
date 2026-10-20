@@ -135,6 +135,26 @@ impl Context {
         Ok(ctx)
     }
 
+    /// Parse an execution entry point using Rust-owned scene/cache lifecycle.
+    #[wasm_bindgen(js_name = parseForExecution)]
+    pub async fn parse_for_execution(
+        &self,
+        source: &str,
+        settings: &str,
+        path: Option<String>,
+    ) -> Result<JsValue, JsValue> {
+        let ctx = self
+            .create_executor_ctx(settings, path, false)
+            .map_err(|error| JsValue::from_str(&error))?;
+        // Use the same owner lock as execution so parsing another entry point
+        // cannot clear a scene while its previous execution is publishing.
+        let _owner = self.frontend.write().await;
+        match ctx.parse_for_execution(source).await {
+            Ok(parsed) => JsValue::from_serde(&parsed).map_err(|error| JsValue::from_str(&error.to_string())),
+            Err(error) => Err(JsValue::from_serde(&error).map_err(|error| JsValue::from_str(&error.to_string()))?),
+        }
+    }
+
     /// Execute a program.
     #[wasm_bindgen]
     pub async fn execute(
@@ -181,8 +201,12 @@ impl Context {
         guard.engine_execute(&ctx, program).await
     }
 
-    /// Reset the scene and bust the cache.
-    /// ONLY use this if you absolutely need to reset the scene and bust the cache.
+    /// WARNING: NO ONE CAN CALL THIS FUNCTION WITHOUT FIRST ASKING @jessfraz.
+    ///
+    /// This manually discards the execution cache and resets the engine scene.
+    /// Do not use it to work around file changes, settings changes, navigation,
+    /// or stale results. Rust owns cache validity and dependency tracking. Fix
+    /// incorrect invalidation in Rust and cover it with execution/I/O tests.
     #[wasm_bindgen(js_name = bustCacheAndResetScene)]
     pub async fn bust_cache_and_reset_scene(&self, settings: &str, path: Option<String>) -> Result<JsValue, String> {
         console_error_panic_hook::set_once();

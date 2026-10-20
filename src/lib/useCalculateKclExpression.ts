@@ -40,6 +40,7 @@ export function useCalculateKclExpression({
   options?: { allowArrays?: boolean; allowStringArrays?: boolean }
 }): {
   inputRef: React.RefObject<HTMLInputElement | null>
+  setInputRef: React.RefCallback<HTMLInputElement>
   valueNode: Expr | null
   calcResult: string
   prevVariables: PrevVariable<unknown>[]
@@ -64,6 +65,14 @@ export function useCalculateKclExpression({
     return r.length === 3 ? r : [r[0] ?? 0, r[1] ?? 0, 0]
   }, [code, selectionRange, sourceRange])
   const inputRef = useRef<HTMLInputElement>(null)
+  const setInputRef = useCallback((element: HTMLInputElement | null) => {
+    inputRef.current = element
+    if (!element) return
+    // Dialog portals can mount after the hook's initial effect. Focus/select
+    // only when the actual input commits, before the focus trap initializes.
+    element.focus()
+    element.setSelectionRange(0, element.value.length)
+  }, [])
   const [availableVarInfo, setAvailableVarInfo] = useState<
     ReturnType<typeof findAllPreviousVariables>
   >({
@@ -87,12 +96,6 @@ export function useCalculateKclExpression({
   )
 
   useEffect(() => {
-    setTimeout(() => {
-      if (inputRef.current) {
-        inputRef.current.focus()
-        inputRef.current.setSelectionRange(0, String(value).length)
-      }
-    }, 100)
     setNewVariableName(findUniqueName(ast, valueName))
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
@@ -184,6 +187,7 @@ export function useCalculateKclExpression({
     isNewVariableNameUnique,
     setNewVariableName,
     inputRef,
+    setInputRef,
     isExecuting: Boolean(value) && (!hasCurrentResult || isExecuting),
   }
 }

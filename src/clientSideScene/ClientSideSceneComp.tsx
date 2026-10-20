@@ -23,7 +23,6 @@ import {
   PROFILE_START,
   getParentGroup,
 } from '@src/clientSideScene/sceneConstants'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import {
   ARROWHEAD,
   DEBUG_SHOW_BOTH_SCENES,
@@ -48,7 +47,7 @@ import { cameraMouseDragGuards } from '@src/lib/cameraControls'
 import type { CameraSystem } from '@src/lib/cameraControls'
 import { getSketchSolveToolIconMap, useToolbarConfig } from '@src/lib/toolbar'
 import { err, reportRejection, trap } from '@src/lib/trap'
-import { throttle, toSync } from '@src/lib/utils'
+import { toSync } from '@src/lib/utils'
 import type { SegmentOverlay } from '@src/machines/modelingSharedTypes'
 import { cleanupSketchSolveGroup } from '@src/machines/sketchSolve/sketchSolveImpl'
 
@@ -781,13 +780,6 @@ const ConstraintSymbol = ({
   )
 }
 
-const throttled = (sceneInfra: SceneInfra) =>
-  throttle((a: ReactCameraProperties) => {
-    if (a.type === 'perspective' && a.fov) {
-      sceneInfra.camControls.dollyZoom(a.fov).catch(reportRejection)
-    }
-  }, 1000 / 15)
-
 export const CamDebugSettings = () => {
   const { commands } = useApp()
   const {
@@ -800,6 +792,8 @@ export const CamDebugSettings = () => {
 
   useEffect(() => {
     sceneInfra.camControls.setReactCameraPropertiesCallback(setCamSettings)
+    return () =>
+      sceneInfra.camControls.setReactCameraPropertiesCallback(() => {})
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [sceneInfra])
   useEffect(() => {
@@ -845,10 +839,9 @@ export const CamDebugSettings = () => {
           onChange={(e) => {
             setFov(parseFloat(e.target.value))
 
-            throttled(sceneInfra)({
-              ...camSettings,
-              fov: parseFloat(e.target.value),
-            })
+            sceneInfra.camControls
+              .dollyZoom(parseFloat(e.target.value))
+              .catch(reportRejection)
           }}
           className="w-full cursor-pointer pointer-events-auto"
         />

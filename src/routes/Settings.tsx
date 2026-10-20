@@ -1,6 +1,6 @@
 import { Dialog } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: query-based tabs and hash-based scrolling (useLocation, useNavigate, useSearchParams).
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
@@ -87,6 +87,21 @@ export const Settings = () => {
   ])
 
   const scrollRef = useRef<HTMLDivElement>(null)
+  // The Dialog portal can mount after this component's first effect. Own hash
+  // scrolling at the real fields' ref commit rather than guessing a next tick.
+  const setScrollContainer = useCallback(
+    (element: HTMLDivElement | null) => {
+      scrollRef.current = element
+      if (!element || !location.hash) return
+      const target = element.ownerDocument.getElementById(
+        decodeURIComponent(location.hash.slice(1))
+      )
+      if (!target || !element.contains(target)) return
+      target.scrollIntoView({ block: 'center', behavior: 'instant' })
+      target.querySelector<HTMLElement>('input, select, textarea')?.focus()
+    },
+    [location.hash]
+  )
   const settingsSearchKeybinding = keymapKeystrokesDisplay(
     keymap
       ? findKeymapItemForCommand(
@@ -110,24 +125,6 @@ export const Settings = () => {
       keymap.removeScope('settings-open')
     }
   }, [keymap])
-
-  // Scroll to the hash on load if it exists
-  useEffect(() => {
-    console.log('hash', location.hash)
-    if (location.hash) {
-      setTimeout(() => {
-        // GOTCHA: Next tick required, you can instantly navigate to a path and this code will find a null element and not scroll into view.
-        const elementID = decodeURIComponent(location.hash.slice(1))
-        const element = document.getElementById(elementID)
-        if (element) {
-          element.scrollIntoView({ block: 'center', behavior: 'instant' })
-          ;(
-            element.querySelector('input, select, textarea') as HTMLInputElement
-          )?.focus()
-        }
-      }, 0)
-    }
-  }, [location.hash])
 
   return (
     <Dialog
@@ -183,14 +180,14 @@ export const Settings = () => {
               <AllSettingsFields
                 searchParamTab={searchParamTab}
                 isFileSettings={isFileSettings}
-                ref={scrollRef}
+                ref={setScrollContainer}
               />
             </>
           ) : searchParamTab === 'keybindings' ? (
-            <AllKeybindingsFields ref={scrollRef} />
+            <AllKeybindingsFields ref={setScrollContainer} />
           ) : searchParamTab === 'plugins' ? (
             <PluginsList
-              ref={scrollRef}
+              ref={setScrollContainer}
               registry={app.registry}
               plugins={app.registry.signal(pluginsValueSpec).value}
             />

@@ -23,6 +23,7 @@ use tokio::sync::RwLock;
 use uuid::Uuid;
 
 use crate::SourceRange;
+use crate::engine::engine_manager::EngineSessionId;
 use crate::execution::PlaneInfo;
 use crate::execution::Point3d;
 use crate::unit_conversion::ToKcmc;
@@ -99,6 +100,8 @@ lazy_static::lazy_static! {
 pub struct EngineBatchContext {
     batch: Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>>,
     batch_end: Arc<RwLock<IndexMap<Uuid, (WebSocketRequest, SourceRange)>>>,
+    // The lease belongs to this execution handle, not its shared queue storage.
+    expected_session: Option<EngineSessionId>,
 }
 
 impl Default for EngineBatchContext {
@@ -112,7 +115,29 @@ impl EngineBatchContext {
         Self {
             batch: Arc::new(RwLock::new(Vec::new())),
             batch_end: Arc::new(RwLock::new(IndexMap::new())),
+            expected_session: None,
         }
+    }
+
+    /// Bind an execution's queues to the engine session it started against.
+    pub fn for_session(session: EngineSessionId) -> Self {
+        Self {
+            expected_session: Some(session),
+            ..Self::new()
+        }
+    }
+
+    /// Independent queues for imported modules and execution boundaries keep
+    /// the original execution's lease, including after transport replacement.
+    pub fn fresh(&self) -> Self {
+        Self {
+            expected_session: self.expected_session.clone(),
+            ..Self::new()
+        }
+    }
+
+    pub(crate) fn expected_session(&self) -> Option<&EngineSessionId> {
+        self.expected_session.as_ref()
     }
 
     pub async fn is_empty(&self) -> bool {
@@ -124,16 +149,8 @@ impl EngineBatchContext {
         self.batch_end.write().await.clear();
     }
 
-    async fn push(&self, req: WebSocketRequest, source_range: SourceRange) {
-        self.batch.write().await.push((req, source_range));
-    }
-
     async fn extend(&self, requests: Vec<(WebSocketRequest, SourceRange)>) {
         self.batch.write().await.extend(requests);
-    }
-
-    async fn insert_end(&self, id: Uuid, req: WebSocketRequest, source_range: SourceRange) {
-        self.batch_end.write().await.insert(id, (req, source_range));
     }
 
     pub(crate) async fn move_batch_end_to_batch(&self, ids: Vec<Uuid>) {

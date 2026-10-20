@@ -72,6 +72,8 @@ impl ResponseInformation {
 
 #[derive(bon::Builder)]
 pub struct EngineManager {
+    #[builder(default = Uuid::new_v4())]
+    session_id: Uuid,
     // Replaces `engine_req_tx: mpsc::Sender<ToEngineReq>`
     // from the original native connection type.
     pub transport: Arc<Box<dyn EngineTransport>>,
@@ -94,6 +96,14 @@ pub struct EngineManager {
 
     #[builder(default)]
     async_tasks: AsyncTasks,
+}
+
+/// Identity of the engine scene currently owned by a manager and its transport.
+/// Manager handles share an identity; replacing a transport session changes it.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct EngineSessionId {
+    manager_id: Uuid,
+    transport_id: Option<String>,
 }
 
 impl std::fmt::Debug for EngineManager {
@@ -125,6 +135,7 @@ impl EngineManager {
         let responses = response_context.response_information();
 
         Self {
+            session_id: Uuid::new_v4(),
             transport: Arc::new(Box::new(wasm_transport::WasmTransport::new(manager))),
             responses,
             pending_errors,
@@ -171,6 +182,7 @@ impl EngineManager {
         .await;
 
         Self {
+            session_id: Uuid::new_v4(),
             transport: Arc::new(Box::new(transport)),
             responses,
             pending_errors,
@@ -195,6 +207,7 @@ impl EngineManager {
             responses: Arc::new(RwLock::new(IndexMap::new())),
         };
         Self {
+            session_id: Uuid::new_v4(),
             transport: Arc::new(Box::new(mock_transport::MockTransport::new(responses.clone()))),
             responses,
             pending_errors,
@@ -209,8 +222,13 @@ impl EngineManager {
     }
 
     /// Take the ids of async commands that have accumulated so far and clear them.
-    async fn take_ids_of_async_commands(&self) -> IndexMap<Uuid, SourceRange> {
-        std::mem::take(&mut *self.ids_of_async_commands().write().await)
+    async fn take_ids_of_async_commands(
+        &self,
+        batch_context: &EngineBatchContext,
+    ) -> Result<IndexMap<Uuid, SourceRange>, KclError> {
+        let mut ids = self.ids_of_async_commands.write().await;
+        self.validate_session(batch_context, SourceRange::default())?;
+        Ok(std::mem::take(&mut *ids))
     }
 
     /// Take the responses that have accumulated so far and clear them.
@@ -226,6 +244,7 @@ impl EngineManager {
         kcl_version: Option<KclVersion>,
         geometry_only: bool,
     ) -> Result<(), crate::errors::KclError> {
+        self.validate_session(batch_context, source_range)?;
         // Clear any batched commands leftover from previous scenes.
         self.clear_queues(batch_context).await;
 
@@ -261,9 +280,11 @@ impl EngineManager {
     /// Ensure a specific async command has been completed.
     pub async fn ensure_async_command_completed(
         &self,
+        batch_context: &EngineBatchContext,
         id: uuid::Uuid,
         source_range: Option<SourceRange>,
     ) -> Result<OkWebSocketResponseData, KclError> {
+        self.validate_session(batch_context, source_range.unwrap_or_default())?;
         let source_range = if let Some(source_range) = source_range {
             source_range
         } else {
@@ -286,7 +307,9 @@ impl EngineManager {
         const ASYNC_CMD_TIMEOUT_SECS: u64 = 600;
         let current_time = Instant::now();
         while current_time.elapsed().as_secs() < ASYNC_CMD_TIMEOUT_SECS {
+            self.validate_session(batch_context, source_range)?;
             let responses = self.responses().read().await.clone();
+            self.validate_session(batch_context, source_range)?;
             let Some(resp) = responses.get(&id) else {
                 // Yield to the event loop so that we don’t block the UI thread.
                 // No seriously WE DO NOT WANT TO PAUSE THE WHOLE APP ON THE JS SIDE.
@@ -321,12 +344,14 @@ impl EngineManager {
 
     /// Ensure ALL async commands have been completed.
     pub async fn ensure_async_commands_completed(&self, batch_context: &EngineBatchContext) -> Result<(), KclError> {
+        self.validate_session(batch_context, SourceRange::default())?;
         // Check if all async commands have been completed.
-        let ids = self.take_ids_of_async_commands().await;
+        let ids = self.take_ids_of_async_commands(batch_context).await?;
 
         // Try to get them from the responses.
         for (id, source_range) in ids {
-            self.ensure_async_command_completed(id, Some(source_range)).await?;
+            self.ensure_async_command_completed(batch_context, id, Some(source_range))
+                .await?;
         }
 
         // Make sure we check for all async tasks as well.
@@ -426,13 +451,16 @@ impl EngineManager {
         source_range: SourceRange,
         cmd: &ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
+        self.validate_session(batch_context, source_range)?;
         let req = WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
             cmd: cmd.clone(),
             cmd_id: id.into(),
         });
 
         // Add cmd to the batch.
-        batch_context.push(req, source_range).await;
+        let mut batch = batch_context.batch.write().await;
+        self.validate_session(batch_context, source_range)?;
+        batch.push((req, source_range));
         self.stats().commands_batched.fetch_add(1, Relaxed);
 
         Ok(())
@@ -448,13 +476,16 @@ impl EngineManager {
         source_range: SourceRange,
         cmds: &[ModelingCmdReq],
     ) -> Result<(), crate::errors::KclError> {
+        self.validate_session(batch_context, source_range)?;
         // Add cmds to the batch.
         let mut extended_cmds = Vec::with_capacity(cmds.len());
         for cmd in cmds {
             extended_cmds.push((WebSocketRequest::ModelingCmdReq(cmd.clone()), source_range));
         }
         self.stats().commands_batched.fetch_add(extended_cmds.len(), Relaxed);
-        batch_context.extend(extended_cmds).await;
+        let mut batch = batch_context.batch.write().await;
+        self.validate_session(batch_context, source_range)?;
+        batch.extend(extended_cmds);
 
         Ok(())
     }
@@ -469,13 +500,16 @@ impl EngineManager {
         source_range: SourceRange,
         cmd: &ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
+        self.validate_session(batch_context, source_range)?;
         let req = WebSocketRequest::ModelingCmdReq(ModelingCmdReq {
             cmd: cmd.clone(),
             cmd_id: id.into(),
         });
 
         // Add cmd to the batch end.
-        batch_context.insert_end(id, req, source_range).await;
+        let mut batch_end = batch_context.batch_end.write().await;
+        self.validate_session(batch_context, source_range)?;
+        batch_end.insert(id, (req, source_range));
         self.stats().commands_batched.fetch_add(1, Relaxed);
         Ok(())
     }
@@ -488,6 +522,7 @@ impl EngineManager {
         source_range: SourceRange,
         cmd: &ModelingCmd,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
+        self.validate_session(batch_context, source_range)?;
         let mut requests = batch_context.take_batch().await;
 
         // Add the command to the batch.
@@ -501,20 +536,27 @@ impl EngineManager {
         self.stats().commands_batched.fetch_add(1, Relaxed);
 
         // Flush the batch queue.
-        self.run_batch(requests, source_range).await
+        self.run_batch(batch_context, requests, source_range).await
     }
 
     /// Send the modeling cmd async and don't wait for the response.
     /// Add it to our list of async commands.
     pub async fn async_modeling_cmd(
         &self,
+        batch_context: &EngineBatchContext,
         id: uuid::Uuid,
         source_range: SourceRange,
         cmd: &ModelingCmd,
     ) -> Result<(), crate::errors::KclError> {
+        self.validate_session(batch_context, source_range)?;
         // Add the command ID to the list of async commands.
-        self.ids_of_async_commands().write().await.insert(id, source_range);
+        {
+            let mut ids = self.ids_of_async_commands.write().await;
+            self.validate_session(batch_context, source_range)?;
+            ids.insert(id, source_range);
+        }
 
+        self.validate_session(batch_context, source_range)?;
         // Fire off the command now, but don't wait for the response, we don't care about it.
         self.transport
             .inner_fire_modeling_cmd(
@@ -534,9 +576,11 @@ impl EngineManager {
     /// Run the batch for the specific commands.
     async fn run_batch(
         &self,
+        batch_context: &EngineBatchContext,
         orig_requests: Vec<(WebSocketRequest, SourceRange)>,
         source_range: SourceRange,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
+        self.validate_session(batch_context, source_range)?;
         // Return early if we have no commands to send.
         if orig_requests.is_empty() {
             return Ok(OkWebSocketResponseData::Modeling {
@@ -601,7 +645,13 @@ impl EngineManager {
                 // Get the last command ID.
                 let last_id = requests.last().unwrap().cmd_id;
                 let ws_resp = self
-                    .inner_send_modeling_cmd(batch_id.into(), source_range, final_req, id_to_source_range.clone())
+                    .inner_send_modeling_cmd(
+                        batch_context,
+                        batch_id.into(),
+                        source_range,
+                        final_req,
+                        id_to_source_range.clone(),
+                    )
                     .await?;
                 let response = self.parse_websocket_response(ws_resp, source_range)?;
 
@@ -631,7 +681,13 @@ impl EngineManager {
                     ))
                 })?;
                 let ws_resp = self
-                    .inner_send_modeling_cmd(cmd_id.into(), source_range, final_req, id_to_source_range)
+                    .inner_send_modeling_cmd(
+                        batch_context,
+                        cmd_id.into(),
+                        source_range,
+                        final_req,
+                        id_to_source_range,
+                    )
                     .await?;
                 self.parse_websocket_response(ws_resp, source_range)
             }
@@ -651,6 +707,7 @@ impl EngineManager {
         batch_end: bool,
         source_range: SourceRange,
     ) -> Result<OkWebSocketResponseData, crate::errors::KclError> {
+        self.validate_session(batch_context, source_range)?;
         let all_requests = if batch_end {
             let mut requests = batch_context.take_batch().await;
             requests.extend(batch_context.take_batch_end().await.values().cloned());
@@ -659,7 +716,7 @@ impl EngineManager {
             batch_context.take_batch().await
         };
 
-        self.run_batch(all_requests, source_range).await
+        self.run_batch(batch_context, all_requests, source_range).await
     }
 
     async fn make_default_plane(
@@ -930,7 +987,12 @@ impl EngineManager {
 
     pub async fn clear_queues(&self, batch_context: &EngineBatchContext) {
         batch_context.clear().await;
-        self.ids_of_async_commands().write().await.clear();
+        let mut ids = self.ids_of_async_commands.write().await;
+        if self.validate_session(batch_context, SourceRange::default()).is_err() {
+            return;
+        }
+        ids.clear();
+        drop(ids);
         self.async_tasks().clear().await;
     }
 
@@ -965,8 +1027,12 @@ impl EngineManager {
         let new_planes = self
             .new_default_planes(batch_context, id_generator, source_range, geometry_only)
             .await?;
-        *self.default_planes.write().await = Some(new_planes);
+        let mut default_planes = self.default_planes.write().await;
+        self.validate_session(batch_context, source_range)?;
+        *default_planes = Some(new_planes);
+        drop(default_planes);
 
+        self.validate_session(batch_context, source_range)?;
         self.transport.start_new_session(source_range).await?;
 
         Ok(())
@@ -974,22 +1040,50 @@ impl EngineManager {
 
     async fn inner_send_modeling_cmd(
         &self,
+        batch_context: &EngineBatchContext,
         id: uuid::Uuid,
         source_range: SourceRange,
         cmd: WebSocketRequest,
         id_to_source_range: HashMap<Uuid, SourceRange>,
     ) -> Result<WebSocketResponse, KclError> {
+        self.validate_session(batch_context, source_range)?;
         let response = self
             .transport
             .inner_send_modeling_cmd(id, source_range, cmd, id_to_source_range)
             .await?;
 
+        self.validate_session(batch_context, source_range)?;
         self.responses.add(id, response.clone()).await;
         Ok(response)
     }
 
     pub async fn get_session_data(&self) -> Option<ModelingSessionData> {
         self.session_data.read().await.clone()
+    }
+
+    /// Observe session replacement without changing the engine scene or cache.
+    pub fn session_identity(&self) -> EngineSessionId {
+        EngineSessionId {
+            manager_id: self.session_id,
+            transport_id: self.transport.session_id(),
+        }
+    }
+
+    pub(crate) fn validate_session(
+        &self,
+        batch_context: &EngineBatchContext,
+        source_range: SourceRange,
+    ) -> Result<(), KclError> {
+        if batch_context
+            .expected_session()
+            .is_some_and(|expected| *expected != self.session_identity())
+        {
+            return Err(KclError::new_engine(KclErrorDetails::new(
+                "Engine session changed during execution.".to_owned(),
+                vec![source_range],
+            )));
+        }
+        Ok(())
     }
 
     /// Request ID returned by the HTTP request that upgraded to this WebSocket.
@@ -1007,4 +1101,313 @@ impl EngineManager {
 pub enum SocketHealth {
     Active,
     Inactive,
+}
+
+#[cfg(all(test, not(target_arch = "wasm32")))]
+mod tests {
+    use std::collections::HashMap;
+    use std::sync::Arc;
+    use std::sync::atomic::AtomicBool;
+    use std::sync::atomic::AtomicUsize;
+    use std::sync::atomic::Ordering;
+
+    use kcmc::websocket::WebSocketRequest;
+    use kcmc::websocket::WebSocketResponse;
+    use kittycad_modeling_cmds as kcmc;
+    use tokio::sync::Notify;
+    use tokio::sync::RwLock;
+    use uuid::Uuid;
+
+    use crate::ExecutorContext;
+    use crate::ExecutorSettings;
+    use crate::SourceRange;
+    use crate::TypedPath;
+    use crate::engine::EngineBatchContext;
+    use crate::engine::engine_manager::EngineManager;
+    use crate::engine::engine_manager::EngineTransport;
+    use crate::engine::engine_manager::TransportCloseError;
+    use crate::errors::KclError;
+    use crate::fs::FileManager;
+    use crate::fs::FileSystem;
+
+    struct SessionTransport {
+        inner: Arc<Box<dyn EngineTransport>>,
+        epoch: Arc<AtomicUsize>,
+        requests: Arc<RwLock<Vec<(usize, WebSocketRequest)>>>,
+    }
+
+    #[async_trait::async_trait]
+    impl EngineTransport for SessionTransport {
+        fn session_id(&self) -> Option<String> {
+            Some(self.epoch.load(Ordering::SeqCst).to_string())
+        }
+
+        async fn inner_fire_modeling_cmd(
+            &self,
+            id: Uuid,
+            range: SourceRange,
+            cmd: WebSocketRequest,
+            id_to_range: HashMap<Uuid, SourceRange>,
+        ) -> Result<(), KclError> {
+            self.requests
+                .write()
+                .await
+                .push((self.epoch.load(Ordering::SeqCst), cmd.clone()));
+            self.inner.inner_fire_modeling_cmd(id, range, cmd, id_to_range).await
+        }
+
+        async fn inner_send_modeling_cmd(
+            &self,
+            id: Uuid,
+            range: SourceRange,
+            cmd: WebSocketRequest,
+            id_to_range: HashMap<Uuid, SourceRange>,
+        ) -> Result<WebSocketResponse, KclError> {
+            self.requests
+                .write()
+                .await
+                .push((self.epoch.load(Ordering::SeqCst), cmd.clone()));
+            self.inner.inner_send_modeling_cmd(id, range, cmd, id_to_range).await
+        }
+
+        async fn close(&self) -> Result<(), TransportCloseError> {
+            self.inner.close().await
+        }
+    }
+
+    struct SessionEngine {
+        engine: Arc<EngineManager>,
+        epoch: Arc<AtomicUsize>,
+        requests: Arc<RwLock<Vec<(usize, WebSocketRequest)>>>,
+    }
+
+    fn session_engine() -> SessionEngine {
+        let epoch = Arc::new(AtomicUsize::new(0));
+        let requests = Arc::new(RwLock::new(Vec::new()));
+        let mut engine = EngineManager::new_mock();
+        engine.transport = Arc::new(Box::new(SessionTransport {
+            inner: engine.transport.clone(),
+            epoch: epoch.clone(),
+            requests: requests.clone(),
+        }));
+        SessionEngine {
+            engine: Arc::new(engine),
+            epoch,
+            requests,
+        }
+    }
+
+    struct FileReadGate {
+        path: TypedPath,
+        pending: AtomicBool,
+        entered: Notify,
+        release: Notify,
+    }
+
+    struct GatedFileManager {
+        inner: FileManager,
+        gate: Arc<FileReadGate>,
+    }
+
+    impl GatedFileManager {
+        async fn after_read(&self, path: &TypedPath) {
+            if path == &self.gate.path && self.gate.pending.swap(false, Ordering::SeqCst) {
+                self.gate.entered.notify_one();
+                self.gate.release.notified().await;
+            }
+        }
+    }
+
+    #[async_trait::async_trait]
+    impl FileSystem for GatedFileManager {
+        async fn read(&self, path: &TypedPath, range: SourceRange) -> Result<Vec<u8>, KclError> {
+            let bytes = self.inner.read(path, range).await?;
+            self.after_read(path).await;
+            Ok(bytes)
+        }
+
+        async fn read_to_string(&self, path: &TypedPath, range: SourceRange) -> Result<String, KclError> {
+            let source = self.inner.read_to_string(path, range).await?;
+            self.after_read(path).await;
+            Ok(source)
+        }
+
+        async fn exists(&self, path: &TypedPath, range: SourceRange) -> Result<bool, KclError> {
+            self.inner.exists(path, range).await
+        }
+
+        async fn get_all_files(&self, path: &TypedPath, range: SourceRange) -> Result<Vec<TypedPath>, KclError> {
+            self.inner.get_all_files(path, range).await
+        }
+    }
+
+    #[test]
+    fn session_identity_is_shared_by_handles_but_not_independent_managers() {
+        let engine = Arc::new(EngineManager::new_mock());
+        let handle = Arc::clone(&engine);
+        let replacement = EngineManager::new_mock();
+
+        assert_eq!(engine.session_identity(), handle.session_identity());
+        assert_ne!(engine.session_identity(), replacement.session_identity());
+    }
+
+    #[tokio::test]
+    async fn execution_session_lease_rejects_flush_after_waiting_for_the_queue() {
+        let SessionEngine {
+            engine,
+            epoch,
+            requests,
+        } = session_engine();
+        let batch = EngineBatchContext::for_session(engine.session_identity());
+        let cmd = kcmc::ModelingCmd::from(kcmc::each_cmd::EndExecution::default());
+        engine
+            .batch_modeling_cmd(&batch, Uuid::new_v4(), SourceRange::default(), &cmd)
+            .await
+            .unwrap();
+
+        let queue = batch.batch.write().await;
+        let flush = engine.flush_batch(&batch, false, SourceRange::default());
+        tokio::pin!(flush);
+        assert!(futures::poll!(&mut flush).is_pending());
+        epoch.store(1, Ordering::SeqCst);
+        drop(queue);
+        let error = flush.await.unwrap_err();
+        assert!(error.to_string().contains("Engine session changed during execution."));
+        assert!(requests.read().await.is_empty());
+        assert!(
+            engine
+                .batch_modeling_cmd(&batch.fresh(), Uuid::new_v4(), SourceRange::default(), &cmd)
+                .await
+                .is_err()
+        );
+
+        // Unscoped direct commands remain usable against the current session.
+        engine
+            .send_modeling_cmd(&EngineBatchContext::new(), Uuid::new_v4(), SourceRange::default(), &cmd)
+            .await
+            .unwrap();
+        assert_eq!(requests.read().await.len(), 1);
+    }
+
+    #[tokio::test]
+    async fn execution_session_lease_rejects_async_send_after_waiting_for_ids() {
+        let SessionEngine {
+            engine,
+            epoch,
+            requests,
+        } = session_engine();
+        let batch = EngineBatchContext::for_session(engine.session_identity());
+        let cmd = kcmc::ModelingCmd::from(kcmc::each_cmd::EndExecution::default());
+        let ids = engine.ids_of_async_commands.write().await;
+        let send = engine.async_modeling_cmd(&batch, Uuid::new_v4(), SourceRange::default(), &cmd);
+        tokio::pin!(send);
+        assert!(futures::poll!(&mut send).is_pending());
+        epoch.store(1, Ordering::SeqCst);
+        drop(ids);
+        let error = send.await.unwrap_err();
+        assert!(error.to_string().contains("Engine session changed during execution."));
+        assert!(requests.read().await.is_empty());
+
+        let current = EngineBatchContext::for_session(engine.session_identity());
+        let current_id = Uuid::new_v4();
+        engine
+            .async_modeling_cmd(&current, current_id, SourceRange::default(), &cmd)
+            .await
+            .unwrap();
+        engine.clear_queues(&batch).await;
+        assert!(engine.ids_of_async_commands.read().await.contains_key(&current_id));
+    }
+
+    #[tokio::test]
+    async fn execution_session_lease_stops_waiting_for_a_retired_async_response() {
+        let SessionEngine { engine, epoch, .. } = session_engine();
+        let batch = EngineBatchContext::for_session(engine.session_identity());
+        let wait = engine.ensure_async_command_completed(&batch, Uuid::new_v4(), None);
+        tokio::pin!(wait);
+        assert!(futures::poll!(&mut wait).is_pending());
+        epoch.store(1, Ordering::SeqCst);
+        let error = tokio::time::timeout(std::time::Duration::from_secs(5), wait)
+            .await
+            .unwrap()
+            .unwrap_err();
+        assert!(error.to_string().contains("Engine session changed during execution."));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn execution_session_lease_retires_real_file_io_without_sending_to_replacement() {
+        for (name, contents, source) in [
+            (
+                "part.obj",
+                "v 0 0 0\nv 1 0 0\nv 0 1 0\nf 1 2 3\n",
+                "@settings(kclVersion = 3.0)\nimport \"part.obj\" as part\nmodel = part\n",
+            ),
+            (
+                "child.kcl",
+                "@settings(kclVersion = 3.0)\nexport value = 7\n",
+                "@settings(kclVersion = 3.0)\nimport value from \"child.kcl\"\nx = value\n",
+            ),
+        ] {
+            let directory = tempfile::tempdir().unwrap();
+            let imported_path = TypedPath(directory.path().join(name));
+            tokio::fs::write(&imported_path.0, contents).await.unwrap();
+            let main_path = TypedPath(directory.path().join("main.kcl"));
+            tokio::fs::write(&main_path.0, source).await.unwrap();
+            let gate = Arc::new(FileReadGate {
+                path: imported_path,
+                pending: AtomicBool::new(true),
+                entered: Notify::new(),
+                release: Notify::new(),
+            });
+            let SessionEngine {
+                engine,
+                epoch,
+                requests,
+            } = session_engine();
+            let mut settings = ExecutorSettings {
+                geometry_only: true,
+                ..Default::default()
+            };
+            settings.with_current_file(main_path);
+            let ctx = ExecutorContext::new_with_engine_and_fs(
+                engine,
+                crate::fs::new_file_system_handle(GatedFileManager {
+                    inner: FileManager::new(),
+                    gate: gate.clone(),
+                }),
+                settings,
+            );
+            let program = crate::Program::parse_no_errs(source).unwrap();
+            let running = tokio::spawn({
+                let ctx = ctx.clone();
+                let program = program.clone();
+                async move { ctx.run_with_caching(program).await }
+            });
+            tokio::time::timeout(std::time::Duration::from_secs(5), gate.entered.notified())
+                .await
+                .unwrap();
+            epoch.store(1, Ordering::SeqCst);
+            gate.release.notify_one();
+            let error = tokio::time::timeout(std::time::Duration::from_secs(5), running)
+                .await
+                .unwrap()
+                .unwrap()
+                .unwrap_err();
+            assert!(
+                error
+                    .error
+                    .to_string()
+                    .contains("Engine session changed during execution."),
+                "{name}: {error:?}"
+            );
+            assert!(
+                requests.read().await.iter().all(|(epoch, _)| *epoch == 0),
+                "retired {name} execution reached replacement transport"
+            );
+
+            ctx.run_with_caching(program.clone()).await.unwrap();
+            assert!(requests.read().await.iter().any(|(epoch, _)| *epoch == 1));
+            assert!(ctx.run_with_caching(program).await.unwrap().from_cache);
+            ctx.close().await;
+        }
+    }
 }

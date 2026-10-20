@@ -118,9 +118,7 @@ describe('immediate camera changes', () => {
     )
     controls.syncDirection = 'clientToEngine'
     controls.camera.position.set(0, 0, 10)
-    vi.spyOn(controls, 'throttledUpdateEngineCamera').mockImplementation(
-      () => {}
-    )
+    vi.spyOn(controls, 'updateEngineCamera').mockImplementation(() => {})
     const updated = promiseFactory<WebSocketResponse>()
     const send = vi
       .spyOn(manager, 'sendSceneCommand')
@@ -165,6 +163,94 @@ describe('immediate camera changes', () => {
     await expect(
       enterSketchModeAndSyncCamera(manager, 'plane-id')
     ).rejects.toThrow('Camera command enable_sketch_mode was not acknowledged')
+  })
+})
+
+describe('camera frame ownership', () => {
+  afterEach(() => vi.useRealTimers())
+
+  it('sends the latest rapid camera change on the next frame without a trailing timer', () => {
+    vi.useFakeTimers()
+    const manager = makeConnectionManager({ width: 256, height: 256 })
+    const controls = new CameraControls(
+      makeCanvas(256, 256),
+      manager,
+      unusedSettings
+    )
+    controls.syncDirection = 'clientToEngine'
+    controls.onCameraChange()
+    vi.advanceTimersToNextFrame()
+    const send = vi.spyOn(manager, 'sendSceneCommand').mockClear()
+    const cameraChanged = vi.fn()
+    controls.setReactCameraPropertiesCallback(cameraChanged)
+
+    controls.camera.position.set(1, 0, 10)
+    controls.onCameraChange()
+    controls.camera.position.set(2, 0, 10)
+    controls.onCameraChange()
+    vi.advanceTimersToNextFrame()
+
+    expect(send).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        cmd: expect.objectContaining({
+          type: 'default_camera_look_at',
+          vantage: new Vector3(2, 0, 10),
+        }),
+      })
+    )
+    expect(cameraChanged).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({ position: [2, 0, 10] })
+    )
+    vi.advanceTimersByTime(500)
+    expect(send).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not publish queued camera work after control returns to the engine', () => {
+    vi.useFakeTimers()
+    const manager = makeConnectionManager({ width: 256, height: 256 })
+    const controls = new CameraControls(
+      makeCanvas(256, 256),
+      manager,
+      unusedSettings
+    )
+    controls.syncDirection = 'clientToEngine'
+    controls.onCameraChange()
+    vi.advanceTimersToNextFrame()
+    const send = vi.spyOn(manager, 'sendSceneCommand').mockClear()
+    const cameraChanged = vi.fn()
+    controls.setReactCameraPropertiesCallback(cameraChanged)
+
+    controls.onCameraChange()
+    controls.syncDirection = 'engineToClient'
+    vi.advanceTimersByTime(500)
+
+    expect(send).not.toHaveBeenCalled()
+    expect(cameraChanged).not.toHaveBeenCalled()
+  })
+
+  it('flushes the final drag movement before ending the gesture and never sends it afterward', () => {
+    vi.useFakeTimers()
+    const canvas = makeCanvas(256, 256)
+    Object.defineProperties(canvas, {
+      setPointerCapture: { value: vi.fn() },
+      releasePointerCapture: { value: vi.fn() },
+    })
+    const manager = makeConnectionManager({ width: 256, height: 256 })
+    const controls = new CameraControls(canvas, manager, unusedSettings)
+    vi.advanceTimersToNextFrame()
+    const send = vi.spyOn(manager, 'sendSceneCommand').mockClear()
+    vi.spyOn(controls, 'getInteractionType').mockReturnValue('pan')
+
+    controls.onMouseDown(new PointerEvent('pointerdown', { clientX: 10 }))
+    controls.onMouseMove(new PointerEvent('pointermove', { clientX: 20 }))
+    controls.onMouseUpInner(new PointerEvent('pointerup', { clientX: 20 }))
+    vi.advanceTimersToNextFrame()
+
+    expect(
+      send.mock.calls.map(([command]) =>
+        command.type === 'modeling_cmd_req' ? command.cmd.type : null
+      )
+    ).toEqual(['camera_drag_start', 'camera_drag_move', 'camera_drag_end'])
   })
 })
 

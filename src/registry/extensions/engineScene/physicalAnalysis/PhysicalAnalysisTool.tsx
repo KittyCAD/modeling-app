@@ -39,7 +39,10 @@ import {
   unitAreaLabels,
   unitVolumeLabels,
 } from '../measurementUtils'
-import { physicalAnalysisService } from './physicalAnalysisService'
+import {
+  type PhysicalAnalysisPreferences,
+  physicalAnalysisService,
+} from './physicalAnalysisService'
 import {
   convertMaterialDensity,
   getDefaultDensityUnit,
@@ -55,7 +58,6 @@ import {
 } from './physicalAnalysisUtils'
 
 const physicalAnalysisFailedMessage = 'Physical analysis failed'
-const densityCommitDebounceMs = 400
 // Sized so every result fits without truncating or scrolling: content is
 // 289px tall at any width, and values stop being clipped at 380px wide.
 const defaultPanelWidth = 400
@@ -124,12 +126,9 @@ async function requestPhysicalAnalysis({
   densityUnit: UnitDensity
   materialDensity: number
 }): Promise<PhysicalAnalysisResult | Error> {
-  const [
-    volumeResponse,
-    surfaceAreaResponse,
-    centerOfMassResponse,
-    massResponse,
-  ] = await Promise.all([
+  // A rejected query does not cancel its sibling engine commands. Drain all
+  // four before a newer analysis can own the connection's measurement work.
+  const responses = await Promise.allSettled([
     sendModelingCommand({
       type: 'volume',
       entity_ids: [],
@@ -153,6 +152,20 @@ async function requestPhysicalAnalysis({
       material_density_unit: densityUnit,
     }),
   ])
+  const rejected = responses.find((response) => response.status === 'rejected')
+  if (rejected) {
+    return new Error(
+      getResponseErrorMessage(rejected.reason, physicalAnalysisFailedMessage)
+    )
+  }
+  const [
+    volumeResponse,
+    surfaceAreaResponse,
+    centerOfMassResponse,
+    massResponse,
+  ] = responses.map((response) =>
+    response.status === 'fulfilled' ? response.value : undefined
+  )
 
   const results = [
     getModelingData(volumeResponse, 'volume', physicalAnalysisFailedMessage),
@@ -315,22 +328,30 @@ const copyResultsButtonClassName =
   'm-0 w-full border-0 bg-transparent text-left hover:bg-chalkboard-20 focus:bg-chalkboard-20 focus:outline-none dark:hover:bg-chalkboard-90 dark:focus:bg-chalkboard-90'
 
 export function PhysicalAnalysisTool() {
-  useSignals()
   const { state } = useModelingContext()
   const { engineCommandManager, kclManager, store } = state.context
   const [status, setStatus] = useState<'idle' | 'analyzing'>('idle')
   const [result, setResult] = useState<PhysicalAnalysisResult | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const latestRequestKey = useRef<string | null>(null)
+  const analysisQueue = useRef<Promise<void>>(Promise.resolve())
 
   const isIdle = state.matches('idle')
-  const isExecuting = kclManager.isExecutingSignal.value
-  const preferences = physicalAnalysisService.preferences.value
-
-  const fileLengthUnit =
-    kclManager.fileSettings.defaultLengthUnit ??
-    store.defaultUnit?.current ??
-    DEFAULT_DEFAULT_LENGTH_UNIT
+  const signals = useSignals(1)
+  let isExecuting: boolean
+  let preferences: PhysicalAnalysisPreferences
+  let fileLengthUnit: UnitLength
+  try {
+    isExecuting = kclManager.isExecutingSignal.value
+    preferences = physicalAnalysisService.preferences.value
+    fileLengthUnit =
+      kclManager.fileSettings.defaultLengthUnit ??
+      store.defaultUnit?.current ??
+      DEFAULT_DEFAULT_LENGTH_UNIT
+  } finally {
+    // End render tracking before immediate input writes can notify subscribers.
+    signals.f()
+  }
 
   // A null preference means "follow the file", so untouched dropdowns re-seed
   // when the file's unit changes while explicit choices stay pinned.
@@ -348,24 +369,14 @@ export function PhysicalAnalysisTool() {
   const isDensityInputValid = isValidMaterialDensity(parsedDensityInput)
 
   useEffect(() => {
-    setDensityInput(String(materialDensity))
+    // Preserve a valid draft such as "1." while applying its numeric value.
+    // Unit changes and external preference updates still replace stale drafts.
+    setDensityInput((current) =>
+      Number.parseFloat(current) === materialDensity
+        ? current
+        : String(materialDensity)
+    )
   }, [materialDensity])
-
-  // Debounce so typing a density does not fire an engine request per keystroke.
-  useEffect(() => {
-    if (!isDensityInputValid || parsedDensityInput === materialDensity) {
-      return
-    }
-
-    const timeoutId = setTimeout(() => {
-      physicalAnalysisService.setPreference(
-        'materialDensity',
-        parsedDensityInput
-      )
-    }, densityCommitDebounceMs)
-
-    return () => clearTimeout(timeoutId)
-  }, [isDensityInputValid, parsedDensityInput, materialDensity])
 
   const sendModelingCommand = useCallback(
     (cmd: ModelingCmd) =>
@@ -378,6 +389,7 @@ export function PhysicalAnalysisTool() {
   )
 
   useEffect(() => {
+    latestRequestKey.current = null
     if (!isIdle) {
       return
     }
@@ -397,43 +409,49 @@ export function PhysicalAnalysisTool() {
     const requestKey = `${lengthUnit}:${areaUnit}:${volumeUnit}:${massUnit}:${densityUnit}:${materialDensity}:${uuidv4()}`
     latestRequestKey.current = requestKey
     setStatus('analyzing')
+    let cancelled = false
+    const isCurrent = () =>
+      !cancelled && latestRequestKey.current === requestKey
 
-    requestPhysicalAnalysis({
-      sendModelingCommand,
-      lengthUnit,
-      areaUnit,
-      volumeUnit,
-      massUnit,
-      densityUnit,
-      materialDensity,
-    })
-      .then((analysisResult) => {
-        if (latestRequestKey.current !== requestKey) {
-          return
-        }
-
+    // Start immediately when idle. While an engine analysis is in flight,
+    // retain only the latest requested inputs instead of overlapping queries.
+    analysisQueue.current = analysisQueue.current.then(async () => {
+      if (!isCurrent()) return
+      try {
+        const analysisResult = await requestPhysicalAnalysis({
+          sendModelingCommand,
+          lengthUnit,
+          areaUnit,
+          volumeUnit,
+          massUnit,
+          densityUnit,
+          materialDensity,
+        })
+        if (!isCurrent()) return
         if (analysisResult instanceof Error) {
           setResult(null)
           setErrorMessage(analysisResult.message)
-          return
+        } else {
+          setResult(analysisResult)
         }
-
-        setResult(analysisResult)
-      })
-      .catch((error) => {
-        if (latestRequestKey.current === requestKey) {
+      } catch (error) {
+        if (isCurrent()) {
           setResult(null)
           setErrorMessage(
             getResponseErrorMessage(error, physicalAnalysisFailedMessage)
           )
         }
         reportRejection(error)
-      })
-      .finally(() => {
-        if (latestRequestKey.current === requestKey) {
-          setStatus('idle')
-        }
-      })
+      } finally {
+        if (isCurrent()) setStatus('idle')
+      }
+    })
+    return () => {
+      cancelled = true
+      if (latestRequestKey.current === requestKey) {
+        latestRequestKey.current = null
+      }
+    }
   }, [
     areaUnit,
     densityUnit,
@@ -505,7 +523,20 @@ export function PhysicalAnalysisTool() {
             min={0}
             className="w-full rounded-sm border border-chalkboard-30 bg-transparent p-1 text-xs dark:border-chalkboard-80"
             value={densityInput}
-            onChange={(event) => setDensityInput(event.target.value)}
+            onChange={(event) => {
+              const nextInput = event.target.value
+              setDensityInput(nextInput)
+              const nextDensity = Number.parseFloat(nextInput)
+              if (
+                isValidMaterialDensity(nextDensity) &&
+                nextDensity !== materialDensity
+              ) {
+                physicalAnalysisService.setPreference(
+                  'materialDensity',
+                  nextDensity
+                )
+              }
+            }}
           />
         </label>
         <UnitSelect

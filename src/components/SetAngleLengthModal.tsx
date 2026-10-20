@@ -63,6 +63,7 @@ export const SetAngleLengthModal = ({
     newVariableName,
     setNewVariableName,
     inputRef,
+    setInputRef,
     newVariableInsertIndex,
   } = useCalculateKclExpression({
     value,
@@ -111,7 +112,7 @@ export const SetAngleLengthModal = ({
               </button>
               <input
                 {...noAutofillInputProps}
-                ref={inputRef}
+                ref={setInputRef}
                 type="text"
                 name="val"
                 id="val"

@@ -409,8 +409,13 @@ describe('project system', () => {
 
       const setting = app.settings.get().modeling.highlightEdges
       setting.user = !setting.current
-      expect(edges).toHaveBeenCalledExactlyOnceWith(setting.current)
-      expect(execute).toHaveBeenCalledTimes(1)
+      expect(edges).toHaveBeenCalledExactlyOnceWith(
+        setting.current,
+        expect.any(Function)
+      )
+      expect(edges.mock.calls[0]?.[1]?.()).toBe(true)
+      expect(execute).not.toHaveBeenCalled()
+      expect(clear).not.toHaveBeenCalled()
       edges.mockClear()
 
       // A different editor still takes ownership and applies current values.
@@ -419,6 +424,8 @@ describe('project system', () => {
       expect(theme).toHaveBeenCalledTimes(1)
       expect(edges).toHaveBeenCalledTimes(1)
       expect(backface).toHaveBeenCalledTimes(1)
+      expect(execute).not.toHaveBeenCalled()
+      expect(clear).not.toHaveBeenCalled()
       project.executingPath = second.path
       expect(theme).toHaveBeenCalledTimes(1)
       expect(edges).toHaveBeenCalledTimes(1)
@@ -453,12 +460,13 @@ describe('project system', () => {
       const singletonExecute = vi
         .spyOn(app.singletons.kclManager, 'executeCode')
         .mockResolvedValue(undefined)
+      const clear = vi.spyOn(app.rustContext, 'clearSceneAndBustCache')
       vi.spyOn(app.engineCommandManager, 'setTheme').mockResolvedValue(
         undefined
       )
-      vi.spyOn(app.engineCommandManager, 'setHighlightEdges').mockResolvedValue(
-        undefined
-      )
+      const edges = vi
+        .spyOn(app.engineCommandManager, 'setHighlightEdges')
+        .mockResolvedValue(undefined)
       vi.spyOn(
         app.engineCommandManager,
         'setDefaultSystemProperties'
@@ -468,20 +476,39 @@ describe('project system', () => {
       } as typeof app.engineCommandManager.connection
       const setting = app.settings.get().modeling.highlightEdges
       setting.user = !setting.current
-      expect(firstExecute).toHaveBeenCalledTimes(1)
+      expect(edges).toHaveBeenCalledExactlyOnceWith(
+        setting.current,
+        expect.any(Function)
+      )
+      const firstIsCurrent = edges.mock.calls[0]?.[1]
+      expect(firstIsCurrent?.()).toBe(true)
+      expect(firstExecute).not.toHaveBeenCalled()
       expect(secondExecute).not.toHaveBeenCalled()
       expect(singletonExecute).not.toHaveBeenCalled()
 
       project.executingPath = second.path
+      expect(firstIsCurrent?.()).toBe(false)
+      edges.mockClear()
       setting.user = !setting.current
-      expect(firstExecute).toHaveBeenCalledTimes(1)
-      expect(secondExecute).toHaveBeenCalledTimes(1)
+      expect(edges).toHaveBeenCalledExactlyOnceWith(
+        setting.current,
+        expect.any(Function)
+      )
+      const secondIsCurrent = edges.mock.calls[0]?.[1]
+      expect(secondIsCurrent?.()).toBe(true)
+      expect(firstExecute).not.toHaveBeenCalled()
+      expect(secondExecute).not.toHaveBeenCalled()
       expect(singletonExecute).not.toHaveBeenCalled()
 
       project.executingPath = null
+      expect(secondIsCurrent?.()).toBe(false)
+      edges.mockClear()
       setting.user = !setting.current
-      expect(firstExecute).toHaveBeenCalledTimes(1)
-      expect(secondExecute).toHaveBeenCalledTimes(1)
+      expect(edges).not.toHaveBeenCalled()
+      expect(firstExecute).not.toHaveBeenCalled()
+      expect(secondExecute).not.toHaveBeenCalled()
+      expect(singletonExecute).not.toHaveBeenCalled()
+      expect(clear).not.toHaveBeenCalled()
     } finally {
       app.dispose()
     }
@@ -662,6 +689,37 @@ describe('project system', () => {
       expect(nextWasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
         expectedRuntimeFlags()
       )
+      await expect(app.wasmPromise).resolves.toBe(nextWasmInstance)
+      expect(app.registry.get(wasmPromiseValueSpec)).toBe(app.wasmPromise)
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('does not restore an obsolete startup module after a newer lifecycle announcement', async () => {
+    const userFeatures = createUserFeaturesForTest(new Set())
+    const initial = Promise.withResolvers<ModuleType>()
+    const initialWasmInstance = createRuntimeFlagsWasmInstance()
+    const nextWasmInstance = createRuntimeFlagsWasmInstance()
+    const app = createAppForTest({
+      userFeatures,
+      wasmPromise: initial.promise,
+      registryOverrides: [createTestWasmRegistryItem(initial.promise)],
+    })
+
+    try {
+      await notifyActiveWasmInstance(nextWasmInstance)
+      initial.resolve(initialWasmInstance)
+      await initial.promise
+      await expect(app.wasmPromise).resolves.toBe(nextWasmInstance)
+      await expect(app.registry.get(wasmPromiseValueSpec)).resolves.toBe(
+        nextWasmInstance
+      )
+      userFeatures.setFeatureIds(new Set())
+      expect(nextWasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
+        expectedRuntimeFlags()
+      )
+      expect(initialWasmInstance.set_kcl_runtime_flags).not.toHaveBeenCalled()
     } finally {
       app.dispose()
     }

@@ -23,7 +23,9 @@ import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
 import { Themes } from '@src/lib/theme'
 import { isArray, uuidv4 } from '@src/lib/utils'
 import * as fsp from 'fs/promises'
+import assert from 'node:assert/strict'
 import path, { join } from 'path'
+import { PNG } from 'pngjs'
 
 const settingsSwitchTab = (page: Page) => async (tab: 'user' | 'proj') => {
   const projectSettingsTab = page.getByRole('radio', { name: 'Project' })
@@ -720,6 +722,237 @@ test.describe(
         })
       }
     )
+
+    test('Imported model scale grid toggles on off on in live video without executing KCL', async ({
+      page,
+      homePage,
+      scene,
+      cmdBar,
+      tronApp,
+      folderSetupFn,
+    }) => {
+      test.setTimeout(90_000)
+      if (!tronApp) throwTronAppMissing()
+      await tronApp.cleanProjectDir({
+        ...TEST_SETTINGS,
+        modeling: {
+          ...TEST_SETTINGS.modeling,
+          show_scale_grid: true,
+          // A fixed 10mm grid is completely covered by this 20mm cylinder.
+          fixed_size_grid: false,
+        },
+      })
+      const code =
+        '@settings(defaultLengthUnit = mm, kclVersion = 3.0)\nimport importedBody from "body.kcl"\nbody = importedBody\n'
+      const bodyCode = `@settings(defaultLengthUnit = mm, kclVersion = 3.0)
+radiusValue = 10mm
+height = 5mm
+profile = sketch(on = XY) {
+  perimeter = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([perimeter.center, ORIGIN])
+  radius(perimeter) == radiusValue
+  horizontal([perimeter.center, perimeter.start])
+}
+body = extrude(region(segments = [profile.perimeter]), length = height)
+export importedBody = body
+`
+      await folderSetupFn(async (directory) => {
+        const project = path.join(directory, 'imported-grid')
+        await fsp.mkdir(project, { recursive: true })
+        await fsp.writeFile(path.join(project, 'main.kcl'), code)
+        await fsp.writeFile(path.join(project, 'body.kcl'), bodyCode)
+      })
+      await page.setBodyDimensions({ width: 1200, height: 700 })
+      await homePage.openProject('imported-grid')
+      await scene.settled()
+      await page.waitForFunction(() => {
+        const editor = window.app.project?.executingEditor.value
+        return (
+          editor &&
+          !editor.isExecutingSignal.value &&
+          !editor.hasErrors() &&
+          editor.artifactGraph.size > 0 &&
+          Object.keys(editor.engineCommandManager.pendingCommands).length ===
+            0 &&
+          Object.values(editor.execState.filenames).some(
+            (module) =>
+              module?.type === 'Local' && /body\.kcl$/.test(module.value)
+          )
+        )
+      })
+      await scene.moveCameraTo({ x: 45, y: -60, z: 45 })
+      await scene.getCameraInfo()
+
+      const setGrid = async (visible: boolean) => {
+        await page.waitForFunction(() =>
+          window.app.settings.actor.getSnapshot().matches('idle')
+        )
+        await cmdBar.openCmdBar()
+        await cmdBar.chooseCommand('Settings · modeling · show scale grid')
+        await page
+          .getByRole('option', { name: visible ? 'On' : 'Off', exact: true })
+          .click()
+        await expect
+          .poll(() =>
+            page.evaluate(
+              () => window.app.settings.get().modeling.showScaleGrid.current
+            )
+          )
+          .toBe(visible)
+        await page.waitForFunction(() => {
+          const editor = window.app.project?.executingEditor.value
+          return (
+            window.app.settings.actor.getSnapshot().matches('idle') &&
+            editor &&
+            !editor.isExecutingSignal.value &&
+            Object.keys(editor.engineCommandManager.pendingCommands).length ===
+              0
+          )
+        })
+        const notification = page.getByText(
+          `Set show scale grid to "${visible}" as a user default.`,
+          { exact: true }
+        )
+        await expect(notification).toBeVisible()
+        await expect(notification).not.toBeVisible()
+        await page.mouse.move(0, 0)
+      }
+      const stream = page.locator('#video-stream')
+      const readFrame = async () => {
+        // Observe the real video: TakeSnapshot does not promise video-feed
+        // overlays. No application state or synthetic frame is injected.
+        expect(
+          await stream.evaluate((video) => {
+            if (
+              !(video instanceof HTMLVideoElement) ||
+              video.paused ||
+              video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA
+            )
+              return false
+            return new Promise<boolean>((resolve) =>
+              video.requestVideoFrameCallback(() => resolve(true))
+            )
+          })
+        ).toBe(true)
+        return PNG.sync.read(await stream.screenshot())
+      }
+      const distance = (first: PNG, second: PNG, index: number) =>
+        Math.abs(first.data[index] - second.data[index]) +
+        Math.abs(first.data[index + 1] - second.data[index + 1]) +
+        Math.abs(first.data[index + 2] - second.data[index + 2])
+      const assertNoExecution = async () => {
+        expect(
+          await page.evaluate(
+            () =>
+              window.app.project?.executingEditor.value?.engineCommandManager.commandLogs.filter(
+                (log) => log.type === 'execution-done'
+              ).length ?? -1
+          )
+        ).toBe(0)
+        expect(
+          await page.evaluate(() => {
+            const editor = window.app.project?.executingEditor.value
+            return (
+              editor && !editor.isExecutingSignal.value && !editor.hasErrors()
+            )
+          })
+        ).toBe(true)
+      }
+      await setGrid(false)
+      const off = await readFrame()
+      const before = await page.evaluate(() => {
+        const editor = window.app.project?.executingEditor.value
+        return {
+          code: editor?.code,
+          artifacts: [...(editor?.artifactGraph.keys() ?? [])].sort(),
+        }
+      })
+      expect(before.code).toBe(code)
+      expect(before.artifacts.length).toBeGreaterThan(0)
+      expect(
+        await page.evaluate(() => {
+          const manager =
+            window.app.project?.executingEditor.value?.engineCommandManager
+          if (!manager) return false
+          manager.clearCommandLogs()
+          return true
+        })
+      ).toBe(true)
+
+      await setGrid(true)
+      let firstOn: PNG | undefined
+      let changed: number[] = []
+      try {
+        await expect
+          .poll(async () => {
+            const frame = await readFrame()
+            expect([frame.width, frame.height]).toEqual([off.width, off.height])
+            const pixels: number[] = []
+            for (let y = 0; y < off.height; y++)
+              for (let x = 0; x < off.width; x++) {
+                if (
+                  x >= off.width / 3 &&
+                  x < (off.width * 2) / 3 &&
+                  y >= off.height / 3 &&
+                  y < (off.height * 2) / 3
+                )
+                  continue
+                const index = (y * off.width + x) * 4
+                if (distance(frame, off, index) >= 48) pixels.push(index)
+              }
+            firstOn = frame
+            changed = pixels
+            return pixels.length
+          })
+          .toBeGreaterThanOrEqual(Math.ceil((off.width * off.height) / 1000))
+      } catch (error) {
+        await test.info().attach('scale-grid-off.png', {
+          body: PNG.sync.write(off),
+          contentType: 'image/png',
+        })
+        if (firstOn) {
+          await test.info().attach('scale-grid-first-on.png', {
+            body: PNG.sync.write(firstOn),
+            contentType: 'image/png',
+          })
+        }
+        throw error
+      }
+      assert.ok(firstOn, 'A real video frame must show the grid')
+      const on = firstOn
+      await assertNoExecution()
+      await setGrid(false)
+      await expect
+        .poll(async () => {
+          const frame = await readFrame()
+          return (
+            changed.filter((index) => distance(frame, off, index) <= 24)
+              .length / changed.length
+          )
+        })
+        .toBeGreaterThanOrEqual(0.9)
+      await assertNoExecution()
+      await setGrid(true)
+      await expect
+        .poll(async () => {
+          const frame = await readFrame()
+          return (
+            changed.filter((index) => distance(frame, on, index) <= 24).length /
+            changed.length
+          )
+        })
+        .toBeGreaterThanOrEqual(0.9)
+      await assertNoExecution()
+      expect(
+        await page.evaluate(() => {
+          const editor = window.app.project?.executingEditor.value
+          return {
+            code: editor?.code,
+            artifacts: [...(editor?.artifactGraph.keys() ?? [])].sort(),
+          }
+        })
+      ).toEqual(before)
+    })
 
     test('Changing backface color setting sends updated backface command to engine', async ({
       page,

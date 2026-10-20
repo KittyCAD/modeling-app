@@ -35,12 +35,7 @@ import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { Signal as LegacySignal } from '@src/lib/signal'
 import { reportRejection } from '@src/lib/trap'
 import { err, isErr } from '@src/lib/trap'
-import {
-  getNormalisedCoordinates,
-  roundOff,
-  throttle,
-  uuidv4,
-} from '@src/lib/utils'
+import { getNormalisedCoordinates, roundOff, uuidv4 } from '@src/lib/utils'
 import { deg2Rad } from '@src/lib/utils2d'
 import { type ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import {
@@ -49,7 +44,6 @@ import {
   type Subscription,
   type UnreliableSubscription,
 } from '@src/lib/engineConnection/utils'
-import { degToRad } from 'three/src/math/MathUtils'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const EXPECTED_WORLD_COORD_SYSTEM = 'right_handed_up_z'
@@ -86,30 +80,41 @@ export type ReactCameraProperties =
       quaternion: [number, number, number, number]
     }
 
-class CameraRateLimiter {
-  lastSend?: Date = undefined
-  rateLimitMs: number = 16 //60 FPS
+class CameraFrame {
+  private frame: number | null = null
+  private callback: (() => void) | undefined
 
-  send = (f: () => void) => {
-    let now = new Date()
-
-    if (
-      this.lastSend === undefined ||
-      now.getTime() - this.lastSend.getTime() > this.rateLimitMs
-    ) {
-      f()
-      this.lastSend = now
-    }
+  send(callback: () => void) {
+    this.callback = callback
+    this.frame ??= requestAnimationFrame(this.flush)
   }
 
-  reset = () => {
-    this.lastSend = undefined
+  flush = () => {
+    if (this.frame !== null) cancelAnimationFrame(this.frame)
+    this.frame = null
+    const callback = this.callback
+    this.callback = undefined
+    callback?.()
+  }
+
+  reset() {
+    if (this.frame !== null) cancelAnimationFrame(this.frame)
+    this.frame = null
+    this.callback = undefined
   }
 }
 
 export class CameraControls {
   engineCommandManager: ConnectionManager
-  syncDirection: 'clientToEngine' | 'engineToClient' = 'engineToClient'
+  private _syncDirection: 'clientToEngine' | 'engineToClient' = 'engineToClient'
+  get syncDirection() {
+    return this._syncDirection
+  }
+  set syncDirection(value: 'clientToEngine' | 'engineToClient') {
+    if (value === this._syncDirection) return
+    this.cancelPendingUpdates()
+    this._syncDirection = value
+  }
   camera: PerspectiveCamera | OrthographicCamera
   target: Vector3
   domElement: HTMLCanvasElement
@@ -125,8 +130,11 @@ export class CameraControls {
   enableRotate = true
   enablePan = true
   enableZoom = true
-  moveSender: CameraRateLimiter = new CameraRateLimiter()
-  zoomSender: CameraRateLimiter = new CameraRateLimiter()
+  private readonly moveFrame = new CameraFrame()
+  private readonly zoomFrame = new CameraFrame()
+  private readonly hoverFrame = new CameraFrame()
+  private readonly engineCameraFrame = new CameraFrame()
+  private readonly reactCameraFrame = new CameraFrame()
   lastPerspectiveFov = 45
   pendingZoom: number | null = null
   pendingRotation: Vector2 | null = null
@@ -252,12 +260,27 @@ export class CameraControls {
     this.update(true)
   }
 
-  throttledEngCmd = throttle((cmd: EngineCommand) => {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.engineCommandManager.sendSceneCommand(cmd)
-  }, 1000 / 30)
+  private queueEngineInteraction(frame: CameraFrame, callback: () => void) {
+    const connection = this.engineCommandManager.connection
+    frame.send(() => {
+      if (
+        this.syncDirection === 'engineToClient' &&
+        this.engineCommandManager.connection === connection
+      ) {
+        callback()
+      }
+    })
+  }
 
-  throttledUpdateEngineCamera = throttle((threeValues: ThreeCamValues) => {
+  private queueHoverCommand(cmd: EngineCommand) {
+    this.queueEngineInteraction(this.hoverFrame, () => {
+      this.engineCommandManager.sendSceneCommand(cmd).catch(reportRejection)
+    })
+  }
+
+  updateEngineCamera = (threeValues: ThreeCamValues) => {
+    const connection = this.engineCommandManager.connection
+    const syncDirection = this.syncDirection
     const cmd: EngineCommand = {
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
@@ -269,9 +292,23 @@ export class CameraControls {
         ),
       },
     }
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.engineCommandManager.sendSceneCommand(cmd)
-  }, 1000 / 15)
+    this.engineCameraFrame.send(() => {
+      if (
+        this.syncDirection === syncDirection &&
+        this.engineCommandManager.connection === connection
+      ) {
+        this.engineCommandManager.sendSceneCommand(cmd).catch(reportRejection)
+      }
+    })
+  }
+
+  cancelPendingUpdates() {
+    this.moveFrame.reset()
+    this.zoomFrame.reset()
+    this.hoverFrame.reset()
+    this.engineCameraFrame.reset()
+    this.reactCameraFrame.reset()
+  }
 
   doMove = (
     interaction: CameraDragInteractionType,
@@ -407,27 +444,25 @@ export class CameraControls {
       this.onCameraChange()
     }
 
-    setTimeout(() => {
-      this.engineCommandManager.subscribeTo({
-        event: 'camera_drag_end',
-        callback: cb,
-      })
-      this.engineCommandManager.subscribeToUnreliable({
-        event: 'default_camera_zoom',
-        callback: cb,
-      })
-      this.engineCommandManager.subscribeTo({
-        event: 'default_camera_get_settings',
-        callback: cb,
-      })
-      this.engineCommandManager.subscribeTo({
-        event: 'zoom_to_fit',
-        callback: cb,
-      })
-      this.engineCommandManager.subscribeToUnreliable({
-        event: 'camera_drag_move',
-        callback: cb,
-      })
+    this.engineCommandManager.subscribeTo({
+      event: 'camera_drag_end',
+      callback: cb,
+    })
+    this.engineCommandManager.subscribeToUnreliable({
+      event: 'default_camera_zoom',
+      callback: cb,
+    })
+    this.engineCommandManager.subscribeTo({
+      event: 'default_camera_get_settings',
+      callback: cb,
+    })
+    this.engineCommandManager.subscribeTo({
+      event: 'zoom_to_fit',
+      callback: cb,
+    })
+    this.engineCommandManager.subscribeToUnreliable({
+      event: 'camera_drag_move',
+      callback: cb,
     })
   }
 
@@ -471,6 +506,7 @@ export class CameraControls {
   }
 
   onMouseDown = (event: PointerEvent) => {
+    this.hoverFrame.reset()
     this.domElement.setPointerCapture(event.pointerId)
     this.isDragging = true
     // Reset the wasDragging flag to false when starting a new drag
@@ -521,7 +557,7 @@ export class CameraControls {
       this.wasDragging = true
 
       if (this.syncDirection === 'engineToClient') {
-        this.moveSender.send(() => {
+        this.queueEngineInteraction(this.moveFrame, () => {
           this.doMove(interaction, [event.clientX, event.clientY])
         })
         return
@@ -577,7 +613,7 @@ export class CameraControls {
           videoElement,
           this.engineCommandManager.streamDimensions
         )
-        this.throttledEngCmd({
+        this.queueHoverCommand({
           type: 'modeling_cmd_req',
           cmd: {
             type: 'highlight_set_entity',
@@ -591,13 +627,16 @@ export class CameraControls {
 
   onMouseUp = (event: PointerEvent) => {
     if (event.pointerType === 'touch') {
-      // We support momentum flick gestures so we have to do these things after that completes
+      // Hammer owns touch gesture completion, including cancellation.
       return
     }
     this.onMouseUpInner(event)
   }
 
   onMouseUpInner = (event: PointerEvent) => {
+    // Deliver the final coalesced movement before ending the engine gesture.
+    this.moveFrame.flush()
+    this.zoomFrame.flush()
     this.domElement.releasePointerCapture(event.pointerId)
     this.isDragging = false
     this.handleEnd()
@@ -630,7 +669,7 @@ export class CameraControls {
 
     if (this.syncDirection === 'engineToClient') {
       if (interaction === 'zoom') {
-        this.zoomSender.send(() => {
+        this.queueEngineInteraction(this.zoomFrame, () => {
           this.doZoom(deltaY)
         })
       } else {
@@ -1309,6 +1348,7 @@ export class CameraControls {
       // indicates this, other than the amount of time between our request
       // and its response. Typically round-trip time is < 30ms. It seems safe
       // then to wait 1 magnitude of time before calling this request toasted.
+      // zds-performance-exception: network-deadline -- A disconnected engine must not block saving the camera before idle teardown.
       const timeoutId = setTimeout(reject, 300)
       ;(async () => {
         const cameraViewStateResponse =
@@ -1356,7 +1396,8 @@ export class CameraControls {
     this.onCameraChange()
 
     // A final reliable update must be acknowledged before handing control back
-    // to the engine; the interactive camera throttle is not a completion signal.
+    // to the engine; a queued interactive frame is not a completion signal.
+    this.engineCameraFrame.reset()
     await sendCameraCommand(this.engineCommandManager, {
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
@@ -1432,10 +1473,6 @@ export class CameraControls {
     this.reactCameraPropertiesCallback = cb
   }
 
-  deferReactUpdate = throttle((a: ReactCameraProperties) => {
-    this.reactCameraPropertiesCallback(a)
-  }, 200)
-
   onCameraChange = (forceUpdate = false) => {
     const distance = this.target.distanceTo(this.camera.position)
     if (this.camera.far / 2.1 < distance || this.camera.far / 1.9 > distance) {
@@ -1445,7 +1482,7 @@ export class CameraControls {
     }
 
     if (this.syncDirection === 'clientToEngine' || forceUpdate) {
-      this.throttledUpdateEngineCamera({
+      this.updateEngineCamera({
         quaternion: this.camera.quaternion,
         position: this.camera.position,
         zoom: this.camera.zoom,
@@ -1453,7 +1490,9 @@ export class CameraControls {
         target: this.target,
       })
     }
-    this.deferReactUpdate(this.reactCameraProperties)
+    this.reactCameraFrame.send(() => {
+      this.reactCameraPropertiesCallback(this.reactCameraProperties)
+    })
     this.cameraChange.dispatch()
   }
   getInteractionType = (
@@ -1502,17 +1541,6 @@ export class CameraControls {
     const velocityLimit = 0.5
     /** Amount of pixel delta of calculated zoom transform needed before we send to the engine */
     const normalizedScaleThreshold = 5
-    const velocityFlickDecay = 0.03
-    /** Refresh rate for flick orbit decay timer */
-    const decayRefreshRate = 16
-    const decayIntervals: ReturnType<typeof setInterval>[] = []
-    const clearIntervals = () => {
-      for (let i = decayIntervals.length - 1; i >= 0; i--) {
-        clearInterval(decayIntervals[i])
-        decayIntervals.pop()
-      }
-    }
-
     const hammertime = new Hammer(domElement, {
       recognizers: [
         [Hammer.Pan, { pointers: 1, direction: Hammer.DIRECTION_ALL }],
@@ -1534,11 +1562,6 @@ export class CameraControls {
     // https://github.com/KittyCAD/engine/issues/3528
     hammertime.get('pinch').recognizeWith(hammertime.get('doublepan'))
 
-    // Clear decay intervals on any interaction start
-    hammertime.on('panstart doublepanstart pinchstart', () => {
-      clearIntervals()
-    })
-
     // Orbit gesture is a 1-finger "pan"
     hammertime.on('pan', (ev) => {
       if (this.syncDirection === 'engineToClient' && ev.maxPointers === 1) {
@@ -1547,62 +1570,20 @@ export class CameraControls {
             this.getSettings?.().modeling.cameraOrbit.current !== 'spherical'
               ? 'rotatetrackball'
               : 'rotate'
-          this.moveSender.send(() => {
+          this.queueEngineInteraction(this.moveFrame, () => {
             this.doMove(orbitMode, [ev.center.x, ev.center.y])
           })
         }
       }
     })
-    // Fake flicking by sending decaying orbit events in the last direction of orbit
-    hammertime.on('panend', (ev) => {
-      /** HammerJS's `event.velocity` gives you `Math.max(ev.velocityX, ev.velocityY`)`, not the actual velocity. */
-      let velocity = Math.sqrt(ev.velocityY ** 2 + ev.velocityX ** 2)
-      const center = ev.center
-      const direction = ev.angle
-
-      if (
-        this.syncDirection === 'engineToClient' &&
-        ev.maxPointers === 1 &&
-        this.enableRotate &&
-        velocity > 0
-      ) {
-        const orbitMode =
-          this.getSettings?.().modeling.cameraOrbit.current !== 'spherical'
-            ? 'rotatetrackball'
-            : 'rotate'
-
-        const decayInterval = setInterval(() => {
-          const decayedVelocity = velocity - velocityFlickDecay
-          if (decayedVelocity <= 0) {
-            if (ev.srcEvent instanceof PointerEvent) {
-              this.onMouseUpInner(ev.srcEvent)
-            }
-            clearInterval(decayInterval)
-          } else {
-            velocity = decayedVelocity
-          }
-
-          // We have to multiply by the refresh rate, because `velocity` is in px/ms
-          // but we only call every `decayRefreshRate` ms.
-          center.x =
-            center.x +
-            Math.cos(degToRad(direction)) * velocity * decayRefreshRate
-          center.y =
-            center.y +
-            Math.sin(degToRad(direction)) * velocity * decayRefreshRate
-
-          this.moveSender.send(() => {
-            this.doMove(orbitMode, [center.x, center.y])
-          })
-        }, decayRefreshRate)
-        decayIntervals.push(decayInterval)
-      }
+    hammertime.on('panend pancancel', (ev) => {
+      if (ev.srcEvent instanceof PointerEvent) this.onMouseUpInner(ev.srcEvent)
     })
 
     // Pan gesture is a 2-finger gesture I named "doublepan"
     hammertime.on('doublepan', (ev) => {
       if (this.syncDirection === 'engineToClient' && this.enablePan) {
-        this.moveSender.send(() => {
+        this.queueEngineInteraction(this.moveFrame, () => {
           this.doMove('pan', [ev.center.x, ev.center.y])
         })
       }
@@ -1630,7 +1611,7 @@ export class CameraControls {
         isUnderVelocityLimit &&
         isOverNormalizedScaleLimit
       ) {
-        this.zoomSender.send(() => {
+        this.queueEngineInteraction(this.zoomFrame, () => {
           this.doZoom(normalizedScale)
         })
         lastScale = ev.scale

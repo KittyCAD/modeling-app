@@ -1,10 +1,19 @@
 import type { KclManager } from '@src/lang/KclManager'
 import { restartWasmModule } from '@src/lang/wasmUtils'
-import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
 
 let initialized = false
+
+interface WasmCrashRecoveryTarget {
+  engineCommandManager: Pick<
+    KclManager['engineCommandManager'],
+    'captureFailedExecutionCleanup'
+  >
+  executeAstCleanUp: KclManager['executeAstCleanUp']
+  wasmInstancePromise: KclManager['wasmInstancePromise']
+  rustContext: Pick<KclManager['rustContext'], 'replaceWasmInstance'>
+}
 
 /**
  * WASM/Rust runtime can panic and the original try/catch/finally blocks will not trigger
@@ -12,7 +21,9 @@ let initialized = false
  * the global/DOM level. This will have to interface with whatever controlflow that needs to be picked up
  * within the error branch in the typescript to cover the application state.
  */
-export const initializeWindowExceptionHandler = (kclManager: KclManager) => {
+export const initializeWindowExceptionHandler = (
+  kclManager: WasmCrashRecoveryTarget
+) => {
   if (window && !initialized) {
     window.addEventListener('error', (event) => {
       void (async () => {
@@ -34,20 +45,9 @@ export const initializeWindowExceptionHandler = (kclManager: KclManager) => {
             const newModulePromise = restartWasmModule()
             // Refresh kclManager singleton's reference to the current WASM module.
             kclManager.wasmInstancePromise = newModulePromise
-            await newModulePromise
-            /**
-             * If I do not cache bust, swapping between files when a rust runtime error happens
-             * it will cache the result of the crashed result and not re executing a new good file
-             * CacheResult::NoAction(false) => {
-             *  let outcome = old_state.to_exec_outcome(result_env).await;
-             *  return Ok(outcome);
-             * }
-             * ^-- this is the block of code that returns which prevents it from running a new execute
-             */
-            await kclManager.rustContext?.clearSceneAndBustCache(
-              jsAppSettings(kclManager.rustContext.settingsActor),
-              undefined
-            )
+            // A live context cannot survive a crashed module. Construct a new
+            // one and replay its current project, including unsaved edits.
+            await kclManager.rustContext.replaceWasmInstance(newModulePromise)
           } catch (e) {
             console.error('Failed to initialize wasm_lib')
             console.error(e)

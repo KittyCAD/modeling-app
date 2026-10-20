@@ -219,8 +219,8 @@ export class SceneInfra {
     this.modelingSend = send
   }
 
-  overlayTimeout = 0
-  callbacks: (() => SegmentOverlayPayload | null)[] = []
+  private overlayFrame: number | null = null
+  private pendingOverlayCallbacks: (() => SegmentOverlayPayload | null)[] = []
 
   _overlayCallbacks(callbacks: (() => SegmentOverlayPayload | null)[]) {
     const segmentOverlayPayload: SegmentOverlayPayload = {
@@ -241,19 +241,14 @@ export class SceneInfra {
     })
   }
 
-  overlayCallbacks(
-    callbacks: (() => SegmentOverlayPayload | null)[],
-    instant = false
-  ) {
-    if (instant) {
-      this._overlayCallbacks(callbacks)
-      return
-    }
-    this.callbacks = callbacks
-    if (this.overlayTimeout) clearTimeout(this.overlayTimeout)
-    this.overlayTimeout = setTimeout(() => {
-      this._overlayCallbacks(this.callbacks)
-    }, 100) as unknown as number
+  overlayCallbacks(callbacks: (() => SegmentOverlayPayload | null)[]) {
+    this.pendingOverlayCallbacks = callbacks
+    this.overlayFrame ??= requestAnimationFrame(() => {
+      this.overlayFrame = null
+      const pending = this.pendingOverlayCallbacks
+      this.pendingOverlayCallbacks = []
+      this._overlayCallbacks(pending)
+    })
   }
 
   updateOverlayDetails({
@@ -455,6 +450,12 @@ export class SceneInfra {
   }
 
   stop = () => {
+    this.camControls.cancelPendingUpdates()
+    if (this.overlayFrame !== null) {
+      cancelAnimationFrame(this.overlayFrame)
+      this.overlayFrame = null
+      this.pendingOverlayCallbacks = []
+    }
     if (this.animationFrameId !== -1) {
       cancelAnimationFrame(this.animationFrameId)
       this.animationFrameId = -1
