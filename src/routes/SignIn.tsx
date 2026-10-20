@@ -488,7 +488,7 @@ const SignIn = () => {
             </video>
             <div
               className={
-                'absolute bottom-0 left-0 right-0 transition translate-y-4 opacity-0 ' +
+                'absolute bottom-0 left-0 right-0 translate-y-4 opacity-0 ' +
                 'group-hover:translate-y-0 group-hover:opacity-100 ' +
                 'm-0 mt-8 flex gap-4 items-center px-3 py-1 ' +
                 '!border-transparent !text-lg !text-chalkboard-10 !bg-primary hover:hue-rotate-15'

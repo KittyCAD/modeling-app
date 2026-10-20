@@ -31,7 +31,6 @@ export interface TooltipProps extends React.HTMLProps<HTMLDivElement> {
   wrapperClassName?: string
   contentClassName?: string
   wrapperStyle?: React.CSSProperties
-  delay?: number
   hoverOnly?: boolean
   inert?: boolean
 }
@@ -109,7 +108,6 @@ export default function Tooltip({
   wrapperClassName: className,
   contentClassName,
   wrapperStyle = {},
-  delay = 0,
   hoverOnly = false,
   inert = true,
   ...rest
@@ -173,10 +171,7 @@ export default function Tooltip({
       } ${styles.tooltipWrapper} ${hoverOnly ? '' : styles.withFocus} ${
         styles[position]
       } ${className}`}
-      style={Object.assign(
-        { '--_delay': delay + 'ms' } as React.CSSProperties,
-        wrapperStyle
-      )}
+      style={wrapperStyle}
       {...rest}
     >
       <TooltipSurface className={contentClassName}>{children}</TooltipSurface>

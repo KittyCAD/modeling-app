@@ -1488,7 +1488,6 @@ const OperationItem = ({
       Tooltip={
         isModuleOwned ? undefined : (
           <Tooltip
-            delay={500}
             position="bottom-left"
             wrapperClassName="left-0 right-0"
             contentClassName="text-sm max-w-full"
@@ -1514,7 +1513,7 @@ const OperationItem = ({
                 `[data-module-branch="${referenceModuleId}"]`
               ) as HTMLElement | null
               if (branch) {
-                branch.scrollIntoView({ block: 'center', behavior: 'smooth' })
+                branch.scrollIntoView({ block: 'center', behavior: 'instant' })
                 // Brief highlight on the module heading row.
                 const row = branch.querySelector<HTMLElement>(
                   '[data-testid="feature-tree-operation-item"]'

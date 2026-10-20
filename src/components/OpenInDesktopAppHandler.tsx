@@ -1,4 +1,3 @@
-import { Transition } from '@headlessui/react'
 // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: desktop handoff query consumption (useSearchParams).
 import { useSearchParams } from 'react-router-dom'
 
@@ -66,22 +65,10 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
   }
 
   return hasAskToOpenParam ? (
-    <Transition
-      appear
-      show={true}
-      as="div"
-      className="fixed inset-0 grid p-4 place-content-center bg-chalkboard-10 dark:bg-chalkboard-110"
-    >
-      <Transition.Child
-        as="div"
+    <div className="fixed inset-0 grid p-4 place-content-center bg-chalkboard-10 dark:bg-chalkboard-110">
+      <div
         className={`max-w-3xl py-6 px-10 flex flex-col items-center gap-12
           mx-auto border rounded-lg shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100`}
-        enter="ease-out duration-300"
-        enterFrom="opacity-0 scale-95"
-        enterTo="opacity-100 scale-100"
-        leave="ease-in duration-200"
-        leaveFrom="opacity-100 scale-100"
-        leaveTo="opacity-0 scale-95"
         style={{ zIndex: 10 }}
       >
         <h1 className="text-2xl text-center ">
@@ -126,8 +113,8 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
             </ActionButton>
           </div>
         </div>
-      </Transition.Child>
-    </Transition>
+      </div>
+    </div>
   ) : (
     props.children
   )

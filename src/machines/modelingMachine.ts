@@ -41,7 +41,7 @@ import type {
   Point3d,
 } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Plane } from '@rust/kcl-lib/bindings/Plane'
-import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
+import { enterSketchModeAndSyncCamera } from '@src/clientSideScene/CameraControls'
 import { deleteSegmentsOrProfiles } from '@src/clientSideScene/deleteSegment'
 import {
   orthoScale,
@@ -316,7 +316,7 @@ async function enterSketchSolveFromSketchBlockArtifact({
 
   const id =
     planeData.type === 'extrudeFace' ? planeData.faceId : planeData.planeId
-  await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+  await enterSketchModeAndSyncCamera(engineCommandManager, id)
   kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
 
   const project = projectRef?.current
@@ -3110,7 +3110,7 @@ export const modelingMachine = setup({
           }
 
           const id = plane.type === 'extrudeFace' ? plane.faceId : plane.planeId
-          await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+          await enterSketchModeAndSyncCamera(engineCommandManager, id)
           kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
           return {
             sketchEntryNodePath: [],
@@ -3131,10 +3131,7 @@ export const modelingMachine = setup({
           kclManager.sceneInfra.camControls._setting_allowOrbitInSketchMode
         kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
 
-        await letEngineAnimateAndSyncCamAfter(
-          engineCommandManager,
-          plane.planeId
-        )
+        await enterSketchModeAndSyncCamera(engineCommandManager, plane.planeId)
 
         return {
           sketchEntryNodePath: [],
@@ -3425,7 +3422,7 @@ export const modelingMachine = setup({
 
         const id =
           result.type === 'extrudeFace' ? result.faceId : result.planeId
-        await letEngineAnimateAndSyncCamAfter(engineCommandManager, id)
+        await enterSketchModeAndSyncCamera(engineCommandManager, id)
 
         kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
         kclManager.updateCodeEditor(
@@ -3765,7 +3762,7 @@ export const modelingMachine = setup({
               kclManager.ast,
               planeCodeRef.range
             )
-            await letEngineAnimateAndSyncCamAfter(
+            await enterSketchModeAndSyncCamera(
               engineCommandManager,
               artifact.id
             )
@@ -3785,7 +3782,7 @@ export const modelingMachine = setup({
           await kclManager.sceneEntitiesManager.getSketchOrientationDetails(
             sketch.value
           )
-        await letEngineAnimateAndSyncCamAfter(
+        await enterSketchModeAndSyncCamera(
           engineCommandManager,
           info?.sketchDetails?.faceId || ''
         )

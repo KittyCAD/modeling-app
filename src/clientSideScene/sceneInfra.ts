@@ -1,4 +1,3 @@
-import * as TWEEN from '@tweenjs/tween.js'
 import { Object3D } from 'three'
 import type { Group, Intersection } from 'three'
 import {
@@ -424,7 +423,6 @@ export class SceneInfra {
 
   animate = () => {
     this.animationFrameId = requestAnimationFrame(this.animate)
-    TWEEN.update() // This will update all tweens during the animation loop
     if (!this.isFovAnimationInProgress) {
       this.camControls.update()
 

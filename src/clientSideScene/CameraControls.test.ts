@@ -1,8 +1,18 @@
-import { CameraControls } from '@src/clientSideScene/CameraControls'
+import type { WebSocketResponse } from '@kittycad/lib'
+import {
+  CameraControls,
+  enterSketchModeAndSyncCamera,
+} from '@src/clientSideScene/CameraControls'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { getDimensions } from '@src/lib/engineConnection/utils'
-import { OrthographicCamera, PerspectiveCamera } from 'three'
-import { describe, expect, it, vi } from 'vitest'
+import { promiseFactory } from '@src/lib/utils'
+import {
+  OrthographicCamera,
+  PerspectiveCamera,
+  Quaternion,
+  Vector3,
+} from 'three'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 function makeCanvas(width: number, height: number) {
   const canvas = document.createElement('canvas')
@@ -27,6 +37,136 @@ function makeConnectionManager(
 function unusedSettings(): never {
   throw new Error('Settings are not used by viewport projection updates')
 }
+
+function cameraAcknowledgement(
+  type: 'default_camera_look_at' | 'enable_sketch_mode'
+): WebSocketResponse {
+  return {
+    success: true,
+    resp: { type: 'modeling', data: { modeling_response: { type, data: {} } } },
+  }
+}
+
+const cameraSettingsResponse: WebSocketResponse = {
+  success: true,
+  resp: {
+    type: 'modeling',
+    data: {
+      modeling_response: {
+        type: 'default_camera_get_settings',
+        data: {
+          settings: {
+            center: { x: 0, y: 0, z: 0 },
+            pos: { x: 0, y: 0, z: 10 },
+            orientation: { x: 0, y: 0, z: 0, w: 1 },
+            up: { x: 0, y: 1, z: 0 },
+            ortho: false,
+          },
+        },
+      },
+    },
+  },
+}
+
+describe('immediate camera changes', () => {
+  afterEach(() => vi.useRealTimers())
+
+  it('enters sketch mode without motion or a fixed wait, then awaits camera synchronization', async () => {
+    vi.useFakeTimers()
+    const manager = makeConnectionManager({ width: 256, height: 256 })
+    const enabled = promiseFactory<WebSocketResponse>()
+    const synchronized = promiseFactory<WebSocketResponse>()
+    const send = vi
+      .spyOn(manager, 'sendSceneCommand')
+      .mockImplementationOnce(() => enabled.promise)
+      .mockImplementationOnce(() => synchronized.promise)
+    let completed = false
+    const entering = enterSketchModeAndSyncCamera(manager, 'plane-id').then(
+      () => {
+        completed = true
+      }
+    )
+    expect(send).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        cmd: {
+          type: 'enable_sketch_mode',
+          adjust_camera: true,
+          animated: false,
+          ortho: true,
+          entity_id: 'plane-id',
+        },
+      })
+    )
+    enabled.resolve(cameraAcknowledgement('enable_sketch_mode'))
+    await vi.advanceTimersByTimeAsync(0)
+    expect(send).toHaveBeenLastCalledWith(
+      expect.objectContaining({ cmd: { type: 'default_camera_get_settings' } })
+    )
+    expect(completed).toBe(false)
+    synchronized.resolve(cameraSettingsResponse)
+    await entering
+    expect(completed).toBe(true)
+  })
+
+  it('sets the final orientation immediately while preserving distance and awaiting the final engine update', async () => {
+    vi.useFakeTimers()
+    const manager = makeConnectionManager({ width: 256, height: 256 })
+    const controls = new CameraControls(
+      makeCanvas(256, 256),
+      manager,
+      unusedSettings
+    )
+    controls.syncDirection = 'clientToEngine'
+    controls.camera.position.set(0, 0, 10)
+    vi.spyOn(controls, 'throttledUpdateEngineCamera').mockImplementation(
+      () => {}
+    )
+    const updated = promiseFactory<WebSocketResponse>()
+    const send = vi
+      .spyOn(manager, 'sendSceneCommand')
+      .mockImplementationOnce(() => updated.promise)
+    const destination = new Quaternion().setFromAxisAngle(
+      new Vector3(1, 0, 0),
+      Math.PI / 2
+    )
+    const target = new Vector3(3, 4, 5)
+    const change = controls.setCameraToQuaternion(destination, target)
+
+    expect(controls.camera.quaternion.angleTo(destination)).toBeLessThan(1e-6)
+    expect(controls.target).toEqual(target)
+    expect(controls.camera.position.distanceTo(target)).toBeCloseTo(10)
+    expect(send).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        cmd: expect.objectContaining({ type: 'default_camera_look_at' }),
+      })
+    )
+    updated.resolve(cameraAcknowledgement('default_camera_look_at'))
+    await change
+    expect(send).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not treat a disconnected engine as a completed sketch camera change', async () => {
+    const manager = makeConnectionManager({ width: 256, height: 256 })
+    const send = vi.spyOn(manager, 'sendSceneCommand').mockResolvedValue(null)
+    await expect(
+      enterSketchModeAndSyncCamera(manager, 'plane-id')
+    ).rejects.toThrow('Camera command enable_sketch_mode was not acknowledged')
+    expect(send).toHaveBeenCalledTimes(1)
+  })
+
+  it('reports an unacknowledged camera command when the connection times out', async () => {
+    const manager = makeConnectionManager({ width: 256, height: 256 })
+    // The transport can resolve timeout strings despite its SDK response type.
+    Object.defineProperty(manager, 'sendSceneCommand', {
+      value: vi
+        .fn()
+        .mockResolvedValue('sendCommand rejected, you hit the timeout'),
+    })
+    await expect(
+      enterSketchModeAndSyncCamera(manager, 'plane-id')
+    ).rejects.toThrow('Camera command enable_sketch_mode was not acknowledged')
+  })
+})
 
 describe('CameraControls viewport projection', () => {
   it('uses the normalized displayed viewport instead of delayed stream dimensions', () => {

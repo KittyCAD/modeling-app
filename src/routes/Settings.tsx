@@ -1,6 +1,6 @@
-import { Dialog, Transition } from '@headlessui/react'
+import { Dialog } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
-import { Fragment, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 // eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: query-based tabs and hash-based scrolling (useLocation, useNavigate, useSearchParams).
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
@@ -120,7 +120,7 @@ export const Settings = () => {
         const elementID = decodeURIComponent(location.hash.slice(1))
         const element = document.getElementById(elementID)
         if (element) {
-          element.scrollIntoView({ block: 'center', behavior: 'smooth' })
+          element.scrollIntoView({ block: 'center', behavior: 'instant' })
           ;(
             element.querySelector('input, select, textarea') as HTMLInputElement
           )?.focus()
@@ -130,96 +130,73 @@ export const Settings = () => {
   }, [location.hash])
 
   return (
-    <Transition appear show={true} as={Fragment}>
-      <Dialog
-        as="div"
-        open={true}
-        onClose={close}
-        className="fixed inset-0 z-40 overflow-y-auto p-4 grid place-items-center"
+    <Dialog
+      as="div"
+      open={true}
+      onClose={close}
+      className="fixed inset-0 z-40 overflow-y-auto p-4 grid place-items-center"
+    >
+      <Dialog.Overlay className="fixed inset-0 bg-chalkboard-110/30 dark:bg-chalkboard-110/50" />
+      <Dialog.Panel
+        data-testid="settings-dialog-panel"
+        data-command-bar-host
+        className="rounded relative mx-auto bg-chalkboard-10 dark:bg-chalkboard-100 border dark:border-chalkboard-70 w-[90vw] h-[80vh] max-h-[calc(100vh-2rem)] shadow-lg flex flex-col gap-8"
       >
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-300"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-75"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <Dialog.Overlay className="fixed inset-0 bg-chalkboard-110/30 dark:bg-chalkboard-110/50" />
-        </Transition.Child>
-
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-75"
-          enterFrom="opacity-0 scale-95"
-          enterTo="opacity-100 scale-100"
-          leave="ease-in duration-200"
-          leaveFrom="opacity-100 scale-100"
-          leaveTo="opacity-0 scale-95"
-        >
-          <Dialog.Panel
-            data-testid="settings-dialog-panel"
-            data-command-bar-host
-            className="rounded relative mx-auto bg-chalkboard-10 dark:bg-chalkboard-100 border dark:border-chalkboard-70 w-[90vw] h-[80vh] max-h-[calc(100vh-2rem)] shadow-lg flex flex-col gap-8"
-          >
-            <div className="p-5 pb-0 flex justify-between items-center">
-              <h1 className="text-2xl font-bold">Settings</h1>
-              <div className="flex gap-4 items-start">
-                <SettingsSearchBar
-                  keybinding={settingsSearchKeybinding}
-                  hasOpenProject={hasOpenProject}
-                />
-                <button
-                  type="button"
-                  onClick={close}
-                  className="p-0 m-0 focus:ring-0 focus:outline-none border-none hover:bg-destroy-10 focus:bg-destroy-10 dark:hover:bg-destroy-80/50 dark:focus:bg-destroy-80/50"
-                  data-testid="settings-close-button"
-                >
-                  <CustomIcon name="close" className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
-            <SettingsTabs
-              value={searchParamTab}
-              onChange={(v) => setSearchParams((p) => ({ ...p, tab: v }))}
-              showProjectTab={isFileSettings}
+        <div className="p-5 pb-0 flex justify-between items-center">
+          <h1 className="text-2xl font-bold">Settings</h1>
+          <div className="flex gap-4 items-start">
+            <SettingsSearchBar
+              keybinding={settingsSearchKeybinding}
+              hasOpenProject={hasOpenProject}
             />
-            <div
-              className="flex-1 grid items-stretch pl-4 pr-5 pb-5 gap-2 overflow-hidden"
-              style={{
-                gridTemplateColumns:
-                  searchParamTab === 'user' || searchParamTab === 'project'
-                    ? 'auto 1fr'
-                    : '1fr',
-                gridTemplateRows: '1fr',
-              }}
+            <button
+              type="button"
+              onClick={close}
+              className="p-0 m-0 focus:ring-0 focus:outline-none border-none hover:bg-destroy-10 focus:bg-destroy-10 dark:hover:bg-destroy-80/50 dark:focus:bg-destroy-80/50"
+              data-testid="settings-close-button"
             >
-              {searchParamTab === 'user' || searchParamTab === 'project' ? (
-                <>
-                  <SettingsSectionsList
-                    searchParamTab={searchParamTab}
-                    scrollRef={scrollRef}
-                  />
-                  <AllSettingsFields
-                    searchParamTab={searchParamTab}
-                    isFileSettings={isFileSettings}
-                    ref={scrollRef}
-                  />
-                </>
-              ) : searchParamTab === 'keybindings' ? (
-                <AllKeybindingsFields ref={scrollRef} />
-              ) : searchParamTab === 'plugins' ? (
-                <PluginsList
-                  ref={scrollRef}
-                  registry={app.registry}
-                  plugins={app.registry.signal(pluginsValueSpec).value}
-                />
-              ) : null}
-            </div>
-          </Dialog.Panel>
-        </Transition.Child>
-      </Dialog>
-    </Transition>
+              <CustomIcon name="close" className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+        <SettingsTabs
+          value={searchParamTab}
+          onChange={(v) => setSearchParams((p) => ({ ...p, tab: v }))}
+          showProjectTab={isFileSettings}
+        />
+        <div
+          className="flex-1 grid items-stretch pl-4 pr-5 pb-5 gap-2 overflow-hidden"
+          style={{
+            gridTemplateColumns:
+              searchParamTab === 'user' || searchParamTab === 'project'
+                ? 'auto 1fr'
+                : '1fr',
+            gridTemplateRows: '1fr',
+          }}
+        >
+          {searchParamTab === 'user' || searchParamTab === 'project' ? (
+            <>
+              <SettingsSectionsList
+                searchParamTab={searchParamTab}
+                scrollRef={scrollRef}
+              />
+              <AllSettingsFields
+                searchParamTab={searchParamTab}
+                isFileSettings={isFileSettings}
+                ref={scrollRef}
+              />
+            </>
+          ) : searchParamTab === 'keybindings' ? (
+            <AllKeybindingsFields ref={scrollRef} />
+          ) : searchParamTab === 'plugins' ? (
+            <PluginsList
+              ref={scrollRef}
+              registry={app.registry}
+              plugins={app.registry.signal(pluginsValueSpec).value}
+            />
+          ) : null}
+        </div>
+      </Dialog.Panel>
+    </Dialog>
   )
 }

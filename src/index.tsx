@@ -1,5 +1,6 @@
 import { AppStreamProvider } from '@src/AppState'
 import { Router } from '@src/Router'
+import { AppToast } from '@src/components/AppToast'
 import ReactDOM from 'react-dom/client'
 import toast, { Toaster } from 'react-hot-toast'
 import { HotkeysProvider } from 'react-hotkeys-hook'
@@ -121,6 +122,7 @@ function mountAppToReact(app: App) {
           <Router />
           <Toaster
             position="bottom-center"
+            containerClassName="app-toaster"
             toastOptions={{
               style: {
                 borderRadius: '3px',
@@ -138,8 +140,10 @@ function mountAppToReact(app: App) {
                 duration: 1500,
               },
             }}
-          />
-          <ModalContainer />
+          >
+            {(toast) => <AppToast toast={toast} />}
+          </Toaster>
+          <ModalContainer enterTimeout={0} exitTimeout={0} />
         </AppStreamProvider>
       </HotkeysProvider>
     </AppContext.Provider>

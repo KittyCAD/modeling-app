@@ -393,7 +393,7 @@ export const FileExplorerRowElement = ({
       ref={rowElementRef}
       role="treeitem"
       data-testid="file-tree-item"
-      className={`h-5 flex flex-row items-center text-xs -outline-offset-1 ${outlineCSS} ${interactionCSS} ${isSelected ? 'bg-primary/10' : ''} ${externalHighlightCSS} transition-all duration-100`}
+      className={`h-5 flex flex-row items-center text-xs -outline-offset-1 ${outlineCSS} ${interactionCSS} ${isSelected ? 'bg-primary/10' : ''} ${externalHighlightCSS}`}
       data-index={row.domIndex}
       data-last-element={row.domIndex === row.domLength - 1}
       data-parity={row.domIndex % 2 === 0}

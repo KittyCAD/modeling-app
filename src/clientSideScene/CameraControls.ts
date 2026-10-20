@@ -4,9 +4,8 @@ import type {
   Point3d,
 } from '@kittycad/lib'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
-import { isArray, toSync } from '@src/lib/utils'
+import { isArray } from '@src/lib/utils'
 
-import * as TWEEN from '@tweenjs/tween.js'
 import Hammer from 'hammerjs'
 import type { Camera } from 'three'
 import { Matrix4 } from 'three'
@@ -38,7 +37,6 @@ import { reportRejection } from '@src/lib/trap'
 import { err, isErr } from '@src/lib/trap'
 import {
   getNormalisedCoordinates,
-  isReducedMotion,
   roundOff,
   throttle,
   uuidv4,
@@ -47,6 +45,7 @@ import { deg2Rad } from '@src/lib/utils2d'
 import { type ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import {
   getDimensions,
+  getResponseErrorMessage,
   type Subscription,
   type UnreliableSubscription,
 } from '@src/lib/engineConnection/utils'
@@ -216,10 +215,10 @@ export class CameraControls {
   }
 
   private handleStart = () => {
-    this._isCamMovingCallback(true, false)
+    this._isCamMovingCallback(true)
   }
   private handleEnd = () => {
-    this._isCamMovingCallback(false, false)
+    this._isCamMovingCallback(false)
   }
 
   setCam = (camProps: ReactCameraProperties) => {
@@ -432,9 +431,8 @@ export class CameraControls {
     })
   }
 
-  private _isCamMovingCallback: (isMoving: boolean, isTween: boolean) => void =
-    () => {}
-  setIsCamMovingCallback(cb: (isMoving: boolean, isTween: boolean) => void) {
+  private _isCamMovingCallback: (isMoving: boolean) => void = () => {}
+  setIsCamMovingCallback(cb: (isMoving: boolean) => void) {
     this._isCamMovingCallback = cb
   }
 
@@ -1336,88 +1334,45 @@ export class CameraControls {
     })
   }
 
-  async tweenCameraToQuaternion(
+  async setCameraToQuaternion(
     targetQuaternion: Quaternion,
-    targetPosition = new Vector3(),
-    duration = 500
+    targetPosition = new Vector3()
   ): Promise<void> {
     if (this.syncDirection === 'engineToClient')
       console.warn(
-        'tweenCameraToQuaternion not design to work with engineToClient syncDirection.'
+        'setCameraToQuaternion is not designed for engineToClient syncDirection.'
       )
-    await this._tweenCameraToQuaternion(
-      targetQuaternion,
-      targetPosition,
-      duration
-    )
-  }
-  _tweenCameraToQuaternion(
-    targetQuaternion: Quaternion,
-    targetPosition: Vector3,
-    duration = 500
-  ): Promise<void> {
-    return new Promise((resolve) => {
-      const camera = this.camera
-      this._isCamMovingCallback(true, true)
-      const initialQuaternion = camera.quaternion.clone()
-      const initialTarget = this.target.clone()
-      let tweenEnd = 1
-      const tempVec = new Vector3()
-      const initialDistance = initialTarget.distanceTo(camera.position.clone())
-      const tempQuaternion = new Quaternion()
-      const cameraAtTime = (animationProgress: number /* 0 - 1 */) => {
-        const currentQ = tempQuaternion.slerpQuaternions(
-          initialQuaternion,
-          targetQuaternion,
-          animationProgress
-        )
-        const up = new Vector3(0, 0, 1).applyQuaternion(currentQ)
-        this.camera.up.copy(up)
-        const currentTarget = tempVec.lerpVectors(
-          initialTarget,
-          targetPosition,
-          animationProgress
-        )
-        // This if would break ortho camera animation from Gizmo
-        // if (this.camera instanceof PerspectiveCamera)
-        // changing the camera position back when it's orthographic doesn't do anything
-        // and it messes up animating back to perspective later
+    const distance = this.target.distanceTo(this.camera.position)
+    this.camera.position
+      .set(0, 0, 1)
+      .applyQuaternion(targetQuaternion)
+      .multiplyScalar(distance)
+      .add(targetPosition)
+    this.camera.up.set(0, 1, 0).applyQuaternion(targetQuaternion).normalize()
+    this.camera.quaternion.copy(targetQuaternion)
+    this.target.copy(targetPosition)
+    this.camera.updateProjectionMatrix()
+    this.camera.updateMatrixWorld()
+    this.onCameraChange()
 
-        this.camera.position
-          .set(0, 0, 1)
-          .applyQuaternion(currentQ)
-          .multiplyScalar(initialDistance)
-          .add(currentTarget)
-
-        this.camera.up.set(0, 1, 0).applyQuaternion(currentQ).normalize()
-        this.camera.quaternion.copy(currentQ)
-        this.target.copy(currentTarget)
-        this.camera.updateProjectionMatrix()
-        this.update()
-        this.onCameraChange()
-      }
-
-      const onComplete = async () => {
-        if (isReducedMotion()) {
-          // Even if there is no animation we need to call cameraAtTime so camera values are updated
-          cameraAtTime(1)
-        }
-        this.enableRotate = false
-        this._isCamMovingCallback(false, true)
-        resolve()
-      }
-
-      if (isReducedMotion()) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        onComplete()
-      } else {
-        new TWEEN.Tween({ t: 0 })
-          .to({ t: tweenEnd }, duration)
-          .easing(TWEEN.Easing.Quadratic.InOut)
-          .onUpdate(({ t }) => cameraAtTime(t))
-          .onComplete(toSync(onComplete, reportRejection))
-          .start()
-      }
+    // A final reliable update must be acknowledged before handing control back
+    // to the engine; the interactive camera throttle is not a completion signal.
+    await sendCameraCommand(this.engineCommandManager, {
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_look_at',
+        ...convertThreeCamValuesToEngineCam(
+          {
+            position: this.camera.position,
+            quaternion: this.camera.quaternion,
+            zoom: this.camera.zoom,
+            isPerspective: this.isPerspective,
+            target: this.target,
+          },
+          this.perspectiveFovBeforeOrtho || this.lastPerspectiveFov || 45
+        ),
+      },
     })
   }
 
@@ -1780,33 +1735,29 @@ function _getInteractionType(
 }
 
 /**
- * Tells the engine to fire it's animation waits for it to finish and then requests camera settings
- * to ensure the client-side camera is synchronized with the engine's camera state.
+ * Enter sketch mode without camera animation, then synchronize the client camera
+ * from the acknowledged engine settings.
  *
  * @param engineCommandManager Our websocket singleton
  * @param entityId - The ID of face or sketchPlane.
  */
 
-export async function letEngineAnimateAndSyncCamAfter(
+export async function enterSketchModeAndSyncCamera(
   engineCommandManager: ConnectionManager,
   entityId: string
 ) {
-  await engineCommandManager.sendSceneCommand({
+  await sendCameraCommand(engineCommandManager, {
     type: 'modeling_cmd_req',
     cmd_id: uuidv4(),
     cmd: {
       type: 'enable_sketch_mode',
       adjust_camera: true,
-      animated: !isReducedMotion(),
+      animated: false,
       ortho: true,
       entity_id: entityId,
     },
   })
-  // wait 600ms (animation takes 500, + 100 for safety)
-  await new Promise((resolve) =>
-    setTimeout(resolve, isReducedMotion() ? 100 : 600)
-  )
-  await engineCommandManager.sendSceneCommand({
+  await sendCameraCommand(engineCommandManager, {
     // CameraControls subscribes to default_camera_get_settings response events
     // firing this at connection ensure the camera's are synced initially
     type: 'modeling_cmd_req',
@@ -1815,6 +1766,30 @@ export async function letEngineAnimateAndSyncCamAfter(
       type: 'default_camera_get_settings',
     },
   })
+}
+
+async function sendCameraCommand(
+  engineCommandManager: ConnectionManager,
+  command: Extract<EngineCommand, { type: 'modeling_cmd_req' }>
+): Promise<void> {
+  const response = await engineCommandManager.sendSceneCommand(command)
+  const singleResponse = isArray(response) ? response[0] : response
+  if (
+    !singleResponse ||
+    typeof singleResponse !== 'object' ||
+    !isModelingResponse(singleResponse) ||
+    !singleResponse.success ||
+    singleResponse.resp.data.modeling_response.type !== command.cmd.type
+  ) {
+    return Promise.reject(
+      new Error(
+        getResponseErrorMessage(
+          response,
+          `Camera command ${command.cmd.type} was not acknowledged`
+        )
+      )
+    )
+  }
 }
 
 function _lookAt(position: Vector3, target: Vector3, up: Vector3): Quaternion {

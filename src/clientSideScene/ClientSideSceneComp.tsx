@@ -54,7 +54,6 @@ import { cleanupSketchSolveGroup } from '@src/machines/sketchSolve/sketchSolveIm
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
-  const [isTween, setIsTween] = useState(false)
 
   const { state } = useModelingContext()
   const {
@@ -62,20 +61,14 @@ function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   } = useSingletons()
 
   useEffect(() => {
-    sceneInfra.camControls.setIsCamMovingCallback(
-      (isMoving: boolean, isTweenValue: boolean) => {
-        setIsCamMoving(isMoving)
-        setIsTween(isTweenValue)
-      }
-    )
+    sceneInfra.camControls.setIsCamMovingCallback((isMoving: boolean) => {
+      setIsCamMoving(isMoving)
+    })
   }, [sceneInfra.camControls])
 
   if (DEBUG_SHOW_BOTH_SCENES || !isCamMoving)
     return { hideClient: false, hideServer: false }
-  let hideServer = state.matches('Sketch') || state.matches('sketchSolveMode')
-  if (isTween) {
-    hideServer = false
-  }
+  const hideServer = state.matches('Sketch') || state.matches('sketchSolveMode')
 
   return { hideClient: !hideServer, hideServer }
 }
@@ -223,7 +216,7 @@ export const ClientSideScene = ({
         ref={containerRef}
         style={sceneStyle}
         data-testid="client-side-scene"
-        className={`absolute inset-0 h-full w-full transition-all duration-300 ${
+        className={`absolute inset-0 h-full w-full ${
           hideClient ? 'opacity-0' : 'opacity-100'
         } ${
           hideServer || shouldApplyStreamDimming

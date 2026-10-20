@@ -361,9 +361,25 @@ error, and 40,561.2 ms (40.561 s) with its engine error. The error guards passed
 Earlier density setup waits expired, and the default idle timer disconnected the
 engine during longer attempts. Those invalid attempts remain in
 `test-results/interaction-budget`; they are not latency results. Completed density
-runs use the idle-disabled fixture above. No animations have been removed. These
-local results do not establish CI calibration or independently built merge-base
-provenance.
+runs use the idle-disabled fixture above. This checkpoint predates animation
+removal. These local results do not establish CI calibration or independently
+built merge-base provenance.
+
+### Immediate interactions
+
+UI fades, transitions, smooth scrolling, tooltip reveal waits, and toast entrance
+and exit effects are removed. Camera orientation changes snap to their final
+pose. Sketch entry requests a nonanimated engine camera update and waits for real
+command acknowledgments and camera settings, not a fixed 600 ms sleep. Loading
+indicators and work debounces remain. Toast display lifetimes, dismissals, and
+loading-to-success updates still use the existing toast store.
+
+All 95 supported full-interaction cases were measured before and after with
+unchanged readiness checks and a 150 ms budget: 80 exceeded the budget before,
+56 after. Before values stay frozen; slow completed outcomes stay red, and
+interrupted or invalid captures are not latency observations. Both error-model
+profiles preserved their expected errors. These are local optimized/headed
+observations, not independently calibrated CI results.
 
 ## Discovery during functional tests
 
