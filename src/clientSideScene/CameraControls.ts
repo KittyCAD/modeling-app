@@ -1916,23 +1916,43 @@ export class CameraControls {
 
     // Orbit gesture is a 1-finger "pan"
     hammertime.on('pan', (ev) => {
-      if (
-        this.effectiveCameraMode === 'engineToClient' &&
-        ev.maxPointers === 1
-      ) {
-        if (this.enableRotate) {
-          const orbitMode =
-            this.getSettings?.().modeling.cameraOrbit.current !== 'spherical'
-              ? 'rotatetrackball'
-              : 'rotate'
-          this.moveSender.send(() => {
-            this.doMove(orbitMode, [ev.center.x, ev.center.y])
-          })
+      if (ev.maxPointers !== 1 || !this.enableRotate) return
+      const orbitMode =
+        this.getSettings?.().modeling.cameraOrbit.current !== 'spherical'
+          ? 'rotatetrackball'
+          : 'rotate'
+      if (this.effectiveCameraMode === 'engineToClient') {
+        this.moveSender.send(() => {
+          this.doMove(orbitMode, [ev.center.x, ev.center.y])
+        })
+      } else if (this.effectiveCameraMode === 'local') {
+        // Orbit like a mouse drag: onMouseDown recorded where the touch began.
+        this.mouseNewPosition.set(ev.center.x, ev.center.y)
+        const deltaMove = this.mouseNewPosition
+          .clone()
+          .sub(this.mouseDownPosition)
+        this.mouseDownPosition.copy(this.mouseNewPosition)
+        this.wasDragging = true
+        if (orbitMode === 'rotate') {
+          this.orbitLocalCamera(deltaMove)
+          this.update(true)
+        } else {
+          this.pendingRotation = (this.pendingRotation ?? new Vector2()).add(
+            deltaMove
+          )
+          this.update()
         }
       }
     })
     // Fake flicking by sending decaying orbit events in the last direction of orbit
     hammertime.on('panend', (ev) => {
+      // onMouseUp ignores touch, so end the drag here. Local mode has no flick.
+      if (this.effectiveCameraMode === 'local') {
+        if (ev.maxPointers === 1 && ev.srcEvent instanceof PointerEvent) {
+          this.onMouseUpInner(ev.srcEvent)
+        }
+        return
+      }
       /** HammerJS's `event.velocity` gives you `Math.max(ev.velocityX, ev.velocityY`)`, not the actual velocity. */
       let velocity = Math.sqrt(ev.velocityY ** 2 + ev.velocityX ** 2)
       const center = ev.center
