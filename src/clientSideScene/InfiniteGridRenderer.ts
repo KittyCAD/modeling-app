@@ -128,7 +128,7 @@ void main()
 		// These are single world-space lines, independent of the grid's spacing.
 		vec2 pixelWidth = max(fwidth(gridPoint.xy), vec2(1e-6));
 		vec2 distancePixels = abs(gridPoint.xy) / pixelWidth;
-		vec2 axes = 1.0 - smoothstep(vec2(0.5), vec2(1.5), distancePixels / uPixelRatio);
+		vec2 axes = 1.0 - smoothstep(vec2(0.0), vec2(1.0), distancePixels / uPixelRatio);
 		float xAlpha = axes.y * uXAxisColor.a;
 		float yAlpha = axes.x * uYAxisColor.a;
 		float axisAlpha = max(xAlpha, yAlpha);
@@ -186,8 +186,8 @@ export class InfiniteGridRenderer extends Mesh<
         uFadeDenseGrid: { value: options.fadeDenseGrid ?? false },
         uShowAxes: { value: options.showAxes ?? false },
         uPixelRatio: { value: 1 },
-        uXAxisColor: { value: [220 / 255, 2 / 255, 31 / 255, 0.9] },
-        uYAxisColor: { value: [22 / 255, 202 / 255, 51 / 255, 0.9] },
+        uXAxisColor: { value: [220 / 255, 2 / 255, 31 / 255, 0.4] },
+        uYAxisColor: { value: [22 / 255, 202 / 255, 51 / 255, 0.4] },
         uFadeStart: { value: 1 },
         uFadeEnd: { value: 2 },
         uGridLevelBlend: { value: 0 },
