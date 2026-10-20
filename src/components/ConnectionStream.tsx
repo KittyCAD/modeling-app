@@ -645,15 +645,14 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         !modelingMachineState.matches('sketchSolveMode') && (
           <InfiniteScaleGrid
             sceneInfra={sceneInfra}
-            majorGridSpacing={
-              settingsValues.modeling.majorGridSpacing.current
-            }
+            majorGridSpacing={settingsValues.modeling.majorGridSpacing.current}
             minorGridsPerMajor={
               settingsValues.modeling.minorGridsPerMajor.current
             }
             fixedSizeGrid={settingsValues.modeling.fixedSizeGrid.current}
             isLightTheme={
-              getResolvedTheme(settingsValues.app.theme.current) === Themes.Light
+              getResolvedTheme(settingsValues.app.theme.current) ===
+              Themes.Light
             }
           />
         )}
