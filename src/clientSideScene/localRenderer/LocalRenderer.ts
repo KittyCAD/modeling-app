@@ -463,6 +463,10 @@ export class LocalRenderer {
     }
 
     this.settings.enableSSAO = enableSSAO
+    // renderPreview() rebuilds the pipeline if SSAO is turned back on.
+    if (!enableSSAO) {
+      this.disposeAmbientOcclusionPipeline()
+    }
     this.invalidateBaseRender()
   }
 

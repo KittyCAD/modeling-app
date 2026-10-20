@@ -40,6 +40,13 @@ type RendererInternals = {
   syncSelectionFromEngine(): Promise<void>
   baseRenderDirty: boolean
   pointerOverCanvas: boolean
+  ambientOcclusionPipeline: {
+    pipeline: { dispose(): void }
+    scenePass: { dispose(): void }
+    aoPass: { dispose(): void }
+    denoisePass: { dispose(): void } | null
+    denoiseNoiseTexture: { dispose(): void } | null
+  } | null
 }
 
 // What initialize() creates, minus the GPU. Only the plane renderer is real.
@@ -403,6 +410,23 @@ describe('local GLB loading', () => {
     await vi.waitFor(() => expect(errorLog).toHaveBeenCalledOnce())
     expect(f.manager.rustContext.export).toHaveBeenCalledOnce()
     expect(f.onModelLoadSettled).toHaveBeenCalledTimes(2)
+    f.renderer.dispose()
+  })
+
+  it('frees the ambient occlusion pipeline when SSAO is turned off', () => {
+    const f = fixture()
+    f.renderer.setEnableSSAO(true)
+    const dispose = vi.fn()
+    f.state.ambientOcclusionPipeline = {
+      pipeline: { dispose },
+      scenePass: { dispose },
+      aoPass: { dispose },
+      denoisePass: null,
+      denoiseNoiseTexture: null,
+    }
+    f.renderer.setEnableSSAO(false)
+    expect(dispose).toHaveBeenCalledTimes(3)
+    expect(f.state.ambientOcclusionPipeline).toBeNull()
     f.renderer.dispose()
   })
 })
