@@ -13,7 +13,11 @@ export interface ScaleGridOptions {
 /** The engine's screen-space grid approach, rendered locally on the XY plane. */
 export class ScaleGridRenderer extends InfiniteGridRenderer {
   constructor() {
-    super()
+    super({ fadeDenseGrid: true, showAxes: true })
+    // Alpha-to-coverage quantizes low opacity into a few MSAA samples. Use
+    // blending for a continuous fade all the way to a transparent horizon.
+    this.material.transparent = true
+    this.material.alphaToCoverage = false
     // Keep sketch snapping's lookup of InfiniteGridRenderer scoped to sketches.
     this.name = 'ScaleGridRenderer'
   }
