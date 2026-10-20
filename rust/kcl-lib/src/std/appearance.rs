@@ -69,21 +69,25 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
     )?;
 
     let color: String = args.get_kw_arg("color", &RuntimeType::string(), exec_state)?;
+    let backface_color: Option<String> = args.get_kw_arg_opt("backfaceColor", &RuntimeType::string(), exec_state)?;
     let metalness: Option<TyF64> = args.get_kw_arg_opt("metalness", &RuntimeType::count(), exec_state)?;
     let roughness: Option<TyF64> = args.get_kw_arg_opt("roughness", &RuntimeType::count(), exec_state)?;
     let opacity: Option<TyF64> = args.get_kw_arg_opt("opacity", &RuntimeType::count(), exec_state)?;
 
-    // Make sure the color if set is valid.
-    if !HEX_REGEX.is_match(&color) {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            format!("Invalid hex color (`{color}`), try something like `#fff000`"),
-            vec![args.source_range],
-        )));
+    // Validate front and back colors using the same format.
+    for color in std::iter::once(&color).chain(backface_color.iter()) {
+        if !HEX_REGEX.is_match(color) {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!("Invalid hex color (`{color}`), try something like `#fff000`"),
+                vec![args.source_range],
+            )));
+        }
     }
 
     let result = inner_appearance(
         solids,
         color,
+        backface_color,
         metalness.map(|t| t.n),
         roughness.map(|t| t.n),
         opacity.map(|t| t.n),
@@ -94,9 +98,11 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
     Ok(result.into())
 }
 
+#[allow(clippy::too_many_arguments)]
 async fn inner_appearance(
     geometry: HasAppearance,
     color: String,
+    backface_color: Option<String>,
     metalness: Option<f64>,
     roughness: Option<f64>,
     opacity: Option<f64>,
@@ -180,6 +186,19 @@ async fn inner_appearance(
     };
     let color = Color::from_rgba(rgb.red, rgb.green, rgb.blue, opacity_param as f32);
 
+    let backface_color = backface_color
+        .map(|color| {
+            rgba_simple::RGB::<f32>::from_hex(&color)
+                .map(|rgb| Color::from_rgba(rgb.red, rgb.green, rgb.blue, opacity_param as f32))
+                .map_err(|err| {
+                    KclError::new_semantic(KclErrorDetails::new(
+                        format!("Invalid hex color (`{color}`): {err}"),
+                        vec![args.source_range],
+                    ))
+                })
+        })
+        .transpose()?;
+
     if needs_oit {
         // TODO: Emit a warning annotation if SSAO is disabled.
         exec_state
@@ -198,6 +217,7 @@ async fn inner_appearance(
                     mcmd::ObjectSetMaterialParamsPbr::builder()
                         .object_id(solid_id)
                         .color(color)
+                        .maybe_backface_color(backface_color)
                         .metalness(metalness.unwrap_or(DEFAULT_METALNESS) as f32 / 100.0)
                         .roughness(roughness.unwrap_or(DEFAULT_ROUGHNESS) as f32 / 100.0)
                         .ambient_occlusion(0.0)
@@ -218,6 +238,54 @@ mod tests {
     use kittycad_modeling_cmds::ModelingCmd;
 
     use crate::execution::parse_execute;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn appearance_backface_color() {
+        for (argument, expected) in [
+            ("", None),
+            (r##", backfaceColor = "#00FF80""##, Some((0.0, 1.0, 128.0 / 255.0))),
+        ] {
+            let code = format!(
+                r##"
+@settings(kclVersion = 3.0)
+profile = sketch(on = XY) {{
+    c = circle(center = [var 0mm, var 0mm], start = [var 10mm, var 0mm])
+}}
+body = extrude(region(segments = [profile.c]), length = 5mm)
+appearance(body, color = "#ff0000", opacity = 40{argument})
+"##
+            );
+            let result = parse_execute(&code).await.unwrap();
+            let commands = result.root_module_artifact_commands();
+            let materials = commands
+                .iter()
+                .filter_map(|command| match &command.command {
+                    ModelingCmd::ObjectSetMaterialParamsPbr(params) => Some(params),
+                    _ => None,
+                })
+                .collect::<Vec<_>>();
+            assert!(!materials.is_empty());
+            for params in materials {
+                assert_eq!(
+                    params.color,
+                    kittycad_modeling_cmds::shared::Color::from_rgba(1.0, 0.0, 0.0, 0.4)
+                );
+                assert_eq!(
+                    params.backface_color,
+                    expected.map(|(r, g, b)| kittycad_modeling_cmds::shared::Color::from_rgba(r, g, b, 0.4))
+                );
+            }
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn appearance_rejects_invalid_backface_color() {
+        for color in ["red", "#fff", "#gg0000", "#ff000000"] {
+            let code = format!(r##"appearance(XY, color = "#ff0000", backfaceColor = "{color}")"##);
+            let error = parse_execute(&code).await.unwrap_err();
+            assert!(error.to_string().contains(&format!("Invalid hex color (`{color}`)")));
+        }
+    }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn appearance_on_plane_uses_plane_set_color_only() {

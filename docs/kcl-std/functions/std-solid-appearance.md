@@ -11,6 +11,7 @@ Set the appearance of a solid, imported geometry, or plane. This does not work o
 appearance(
   @solids: [Solid; 1+] | ImportedGeometry | Plane,
   color: string,
+  backfaceColor?: string,
   metalness?: number(_),
   roughness?: number(_),
   opacity?: number(_),
@@ -26,6 +27,7 @@ For planes, only `color` is used.
 |----------|------|-------------|----------|
 | `solids` | [[`Solid`](/docs/kcl-std/types/std-types-Solid); 1+] or [`ImportedGeometry`](/docs/kcl-std/types/std-types-ImportedGeometry) or [`Plane`](/docs/kcl-std/types/std-types-Plane) | The solid(s), imported geometry, or plane whose appearance is being set. | Yes |
 | `color` | [`string`](/docs/kcl-std/types/std-types-string) | Color of the new material, a hex string like '#ff0000'. | Yes |
+| `backfaceColor` | [`string`](/docs/kcl-std/types/std-types-string) | Backface color of the new material, a hex string like '#ff0000'. Applies to solids and imported geometry. | No |
 | `metalness` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Metalness of the new material, a percentage like 95.7. | No |
 | `roughness` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Roughness of the new material, a percentage like 95.7. | No |
 | `opacity` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Opacity. Defaults to 100 (totally opaque). 0 would be totally transparent. | No |
