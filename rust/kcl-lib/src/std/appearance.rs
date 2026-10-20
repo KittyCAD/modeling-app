@@ -8,6 +8,7 @@ use kittycad_modeling_cmds::shared::Color;
 use kittycad_modeling_cmds::{self as kcmc};
 use regex::Regex;
 use rgba_simple::Hex;
+use rgba_simple::RGB;
 
 use super::args::TyF64;
 use crate::errors::KclError;
@@ -75,7 +76,8 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
     let opacity: Option<TyF64> = args.get_kw_arg_opt("opacity", &RuntimeType::count(), exec_state)?;
 
     // Validate front and back colors using the same format.
-    for color in std::iter::once(&color).chain(backface_color.iter()) {
+    let all_colors_iter = std::iter::once(&color).chain(backface_color.iter());
+    for color in all_colors_iter {
         if !HEX_REGEX.is_match(color) {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!("Invalid hex color (`{color}`), try something like `#fff000`"),
@@ -98,6 +100,15 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
     Ok(result.into())
 }
 
+fn to_hex_color(color: &str, args: &Args) -> Result<RGB<f32>, KclError> {
+    rgba_simple::RGB::<f32>::from_hex(color).map_err(|err| {
+        KclError::new_semantic(KclErrorDetails::new(
+            format!("Invalid hex color (`{color}`): {err}"),
+            vec![args.source_range],
+        ))
+    })
+}
+
 #[allow(clippy::too_many_arguments)]
 async fn inner_appearance(
     geometry: HasAppearance,
@@ -112,12 +123,8 @@ async fn inner_appearance(
     let mut geometry = geometry;
 
     // Set the material properties.
-    let rgb = rgba_simple::RGB::<f32>::from_hex(&color).map_err(|err| {
-        KclError::new_semantic(KclErrorDetails::new(
-            format!("Invalid hex color (`{color}`): {err}"),
-            vec![args.source_range],
-        ))
-    })?;
+    let rgb = to_hex_color(&color, &args)?;
+    let backface_color = backface_color.map(|s| to_hex_color(&s, &args)).transpose()?;
 
     let percent_range = (0.0)..=100.0;
     let zero_one_range = (0.0)..=1.0;
@@ -185,19 +192,7 @@ async fn inner_appearance(
         1.0
     };
     let color = Color::from_rgba(rgb.red, rgb.green, rgb.blue, opacity_param as f32);
-
-    let backface_color = backface_color
-        .map(|color| {
-            rgba_simple::RGB::<f32>::from_hex(&color)
-                .map(|rgb| Color::from_rgba(rgb.red, rgb.green, rgb.blue, opacity_param as f32))
-                .map_err(|err| {
-                    KclError::new_semantic(KclErrorDetails::new(
-                        format!("Invalid hex color (`{color}`): {err}"),
-                        vec![args.source_range],
-                    ))
-                })
-        })
-        .transpose()?;
+    let backface_color = backface_color.map(|rgb| Color::from_rgba(rgb.red, rgb.green, rgb.blue, opacity_param as f32));
 
     if needs_oit {
         // TODO: Emit a warning annotation if SSAO is disabled.
