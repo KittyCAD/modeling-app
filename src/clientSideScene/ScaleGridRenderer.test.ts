@@ -16,10 +16,16 @@ describe('ScaleGridRenderer', () => {
     expect(grid.material.uniforms.uFadeDenseGrid.value).toBe(true)
     expect(grid.material.uniforms.uShowAxes.value).toBe(true)
     expect(grid.material.uniforms.uXAxisColor.value).toEqual([
-      220 / 255, 2 / 255, 31 / 255, 0.9,
+      220 / 255,
+      2 / 255,
+      31 / 255,
+      0.9,
     ])
     expect(grid.material.uniforms.uYAxisColor.value).toEqual([
-      22 / 255, 202 / 255, 51 / 255, 0.9,
+      22 / 255,
+      202 / 255,
+      51 / 255,
+      0.9,
     ])
     expect(grid.material.transparent).toBe(true)
     expect(grid.material.alphaToCoverage).toBe(false)
