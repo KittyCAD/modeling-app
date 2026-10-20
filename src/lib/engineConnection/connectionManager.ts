@@ -597,8 +597,13 @@ export class ConnectionManager extends EventTarget {
         ? ''
         : `&kcl_version=${encodeURIComponent(kclVersion)}`
     if (geometryOnly) {
+      // No video either, but the engine frames camera moves such as zoom to
+      // fit for this size.
+      const resolution = validateStreamDimensions(this.streamDimensions)
+        ? ''
+        : `&video_res_width=${this.streamDimensions.width}&video_res_height=${this.streamDimensions.height}`
       return withKittycadWebSocketURL(
-        `?geometry_only=true&webrtc=false${versionQuery}`
+        `?geometry_only=true&webrtc=false${resolution}${versionQuery}`
       )
     }
     let additionalSettings = this.settings.enableSSAO ? '&post_effect=ssao' : ''
@@ -1285,7 +1290,14 @@ export class ConnectionManager extends EventTarget {
   }
 
   async handleResize({ width, height }: { width: number; height: number }) {
-    if (this.geometryOnly) return
+    if (this.geometryOnly) {
+      // There is no video to resize, but the local renderer maps pointer
+      // positions through these dimensions.
+      if (!validateStreamDimensions({ width, height })) {
+        this.streamDimensions = { width, height }
+      }
+      return
+    }
 
     if (!this.connection) {
       console.warn('unable to resize, connection is not found')

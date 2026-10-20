@@ -379,9 +379,8 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       videoRef,
       canvasRef,
       engineCommandManager,
-      enabled: !isLocalRendering,
     }),
-    [engineCommandManager, isLocalRendering]
+    [engineCommandManager]
   )
   useOnPageResize(onPageResizeParams)
 

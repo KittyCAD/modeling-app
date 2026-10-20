@@ -114,7 +114,7 @@ describe('ConnectionManager', () => {
       )
       expect(url.searchParams.has('post_effect')).toBe(!geometryOnly)
       expect(url.searchParams.has('show_grid')).toBe(!geometryOnly)
-      expect(url.searchParams.has('video_res_width')).toBe(!geometryOnly)
+      expect(url.searchParams.has('video_res_width')).toBe(true)
     }
     expect(manager.settings.enableSSAO).toBe(true)
   })
