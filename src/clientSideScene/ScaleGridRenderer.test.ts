@@ -72,13 +72,13 @@ describe('ScaleGridRenderer', () => {
       220 / 255,
       2 / 255,
       31 / 255,
-      0.9,
+      0.4,
     ])
     expect(grid.material.uniforms.uYAxisColor.value).toEqual([
       22 / 255,
       202 / 255,
       51 / 255,
-      0.9,
+      0.4,
     ])
     expect(grid.material.transparent).toBe(true)
     expect(grid.material.alphaToCoverage).toBe(false)
