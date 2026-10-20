@@ -174,7 +174,7 @@ export class CameraControls {
   }
 
   private _zoomFocus: Vector3 | null = null // the position under the mouse when zooming, in world space
-  private _lastWheelEvent: WheelEvent | null = null
+  private _zoomFocusPoint: ScreenPoint | null = null // where _zoomFocus is on screen
 
   // Converts a screen space coordinate to world space
   private screenToWorld(point: ScreenPoint, camera?: Camera): Vector3 {
@@ -810,7 +810,7 @@ export class CameraControls {
 
       // Record the world point under the mouse so we can keep it anchored during zoom
       this._zoomFocus = this.screenToWorld(event)
-      this._lastWheelEvent = event
+      this._zoomFocusPoint = event
     } else {
       // This case will get handled when we add pan and rotate using Apple trackpad.
       console.error(
@@ -1057,15 +1057,15 @@ export class CameraControls {
         this.camera.updateProjectionMatrix()
         // Keep mouse world point fixed during zoom (without this zooming is pivoted around the camera position,
         // regardless of current mouse position)
-        if (this._zoomFocus && this._lastWheelEvent) {
+        if (this._zoomFocus && this._zoomFocusPoint) {
           // The new focused point in world space after zooming
-          const newFocus = this.screenToWorld(this._lastWheelEvent)
+          const newFocus = this.screenToWorld(this._zoomFocusPoint)
           const diff = this._zoomFocus.clone().sub(newFocus)
           this.camera.position.add(diff)
           this.target.add(diff)
 
           this._zoomFocus = null
-          this._lastWheelEvent = null
+          this._zoomFocusPoint = null
         }
       }
       didChange = true
@@ -1929,7 +1929,8 @@ export class CameraControls {
     })
 
     // TODO: get the engine to coalesce simultaneous zoom/pan/orbit events,
-    // then we won't have to worry about jitter at all.
+    // then we won't have to worry about jitter at all. Local mode applies them
+    // together in one client update, so this only affects the engine stream.
     // https://github.com/KittyCAD/engine/issues/3528
     hammertime.get('pinch').recognizeWith(hammertime.get('doublepan'))
 
@@ -2031,27 +2032,45 @@ export class CameraControls {
     // A zoom should only occur if the gesture velocity is low and the scale delta is high
     let lastScale = 1
     hammertime.on('pinchmove', (ev) => {
-      const scaleDelta = lastScale - ev.scale
-      const isUnderVelocityLimit = ev.velocity < velocityLimit
-      // The faster you move the less you zoom
-      const velocityFactor =
-        Math.abs(
-          velocityLimit - Math.min(velocityLimit, Math.abs(ev.velocity))
-        ) * 0.5
-      const normalizedScale = Math.ceil(scaleDelta * 2000 * velocityFactor)
-      const isOverNormalizedScaleLimit =
-        Math.abs(normalizedScale) > normalizedScaleThreshold
-
-      if (
-        this.effectiveCameraMode === 'engineToClient' &&
-        this.enableZoom &&
-        isUnderVelocityLimit &&
-        isOverNormalizedScaleLimit
-      ) {
-        this.zoomSender.send(() => {
-          this.doZoom(normalizedScale)
-        })
+      // Local mode zooms by the change in finger spread since the last event.
+      if (this.effectiveCameraMode === 'local') {
+        if (this.enableZoom) {
+          const center = centerOfHammerInput(ev)
+          this.pendingZoom = lastScale / ev.scale
+          // Like the mouse wheel, orthographic zoom keeps the point under the
+          // fingers in place; perspective zooms toward the target.
+          if (this.camera instanceof OrthographicCamera) {
+            this._zoomFocus = this.screenToWorld(center)
+            this._zoomFocusPoint = center
+          }
+          this.update()
+          // A pan in this gesture must start from the zoomed camera.
+          this.setDragAnchor(center)
+        }
         lastScale = ev.scale
+      } else {
+        const scaleDelta = lastScale - ev.scale
+        const isUnderVelocityLimit = ev.velocity < velocityLimit
+        // The faster you move the less you zoom
+        const velocityFactor =
+          Math.abs(
+            velocityLimit - Math.min(velocityLimit, Math.abs(ev.velocity))
+          ) * 0.5
+        const normalizedScale = Math.ceil(scaleDelta * 2000 * velocityFactor)
+        const isOverNormalizedScaleLimit =
+          Math.abs(normalizedScale) > normalizedScaleThreshold
+
+        if (
+          this.effectiveCameraMode === 'engineToClient' &&
+          this.enableZoom &&
+          isUnderVelocityLimit &&
+          isOverNormalizedScaleLimit
+        ) {
+          this.zoomSender.send(() => {
+            this.doZoom(normalizedScale)
+          })
+          lastScale = ev.scale
+        }
       }
     })
     hammertime.on('pinchend pinchcancel', () => {
