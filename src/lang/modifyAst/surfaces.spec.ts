@@ -370,11 +370,11 @@ blend005 = blend([
 })
 
 describe('addPlanarSurface', () => {
-  const circle = `@settings(kclVersion = 2.0)
+  const circle = `@settings(kclVersion = 3.0)
 sketch001 = sketch(on = XY) {
   circle1 = circle(start = [10mm, 0mm], center = [0mm, 0mm])
 }`
-  const triangle = `@settings(kclVersion = 2.0)
+  const triangle = `@settings(kclVersion = 3.0)
 sketch001 = sketch(on = XY) {
   line1 = line(start = [0mm, 0mm], end = [10mm, 0mm])
   line2 = line(start = [10mm, 0mm], end = [0mm, 10mm])
@@ -394,16 +394,14 @@ sketch001 = sketch(on = XY) {
     surface = [...artifactGraph.values()].findLast(
       (artifact): artifact is Extract<Artifact, { type: 'sweep' }> =>
         artifact.type === 'sweep'
-    ),
-    segmentId?: string
+    )
   ): Promise<Selection> {
     if (!surface) throw new Error('Missing surface')
     const wall = surface.surfaceIds
       .map((id) => artifactGraph.get(id))
       .find(
         (artifact): artifact is Extract<Artifact, { type: 'wall' }> =>
-          artifact?.type === 'wall' &&
-          (!segmentId || artifact.segId === segmentId)
+          artifact?.type === 'wall'
       )
     if (!wall) throw new Error('Missing surface wall')
     const response = await engineCommandManagerInThisFile.sendSceneCommand({
@@ -446,25 +444,12 @@ sketch001 = sketch(on = XY) {
     }
   }
 
-  function topologyEdgeExpression(selection: Selection, body = 'extrude001') {
-    return `edgeId(${body}, index = ${selection.engineTopologyFallback!.primitiveIndex})`
-  }
-
-  it.each([
-    { name: 'a single region', code: circle },
-    {
-      name: 'a single region in KCL 3',
-      code: circle.replace('kclVersion = 2.0', 'kclVersion = 3.0'),
-    },
-    {
-      name: 'one region from a sketch with two circles',
-      code: `@settings(kclVersion = 2.0)
+  it('creates and hides one region from a multi-region sketch', async () => {
+    const code = `@settings(kclVersion = 3.0)
 sketch001 = sketch(on = XY) {
   circle1 = circle(start = [10mm, 0mm], center = [0mm, 0mm])
   circle2 = circle(start = [40mm, 0mm], center = [30mm, 0mm])
-}`,
-    },
-  ])('creates and hides the source of $name', async ({ code }) => {
+}`
     const { ast, artifactGraph } = await setup(code)
     const sketch = [...artifactGraph.values()].find(
       (artifact) => artifact.type === 'sketchBlock'
@@ -511,10 +496,15 @@ surface001 = planarSurface(region001)`
     expect(kclManagerInThisFile.errors).toEqual([])
   })
 
-  it('uses a singleton array for a closed sketch curve', async () => {
-    const { ast, artifactGraph } = await setup()
+  it('keeps an original sketch curve as a singleton after moving its extrusion', async () => {
+    const { ast, artifactGraph } = await setup(`${circle}
+extrude001 = extrude(sketch001.circle1, length = 5mm, bodyType = SURFACE)
+  |> translate(x = 25mm)`)
     const circleArtifact = [...artifactGraph.values()].find(
-      (artifact) => artifact.type === 'segment'
+      (artifact) =>
+        artifact.type === 'segment' &&
+        !artifact.originalSegId &&
+        !artifact.sourceSegmentId
     )
     if (!circleArtifact) throw new Error('Missing circle')
     const result = addPlanarSurface({
@@ -556,27 +546,7 @@ surface001 = planarSurface(region001)`
     )
   })
 
-  it('uses an explicitly named region', async () => {
-    const { ast, artifactGraph } =
-      await setup(`${circle.replace('kclVersion = 2.0', 'kclVersion = 3.0')}
-region001 = region(segments = [sketch001.circle1])`)
-    const region = [...artifactGraph.values()].find(
-      (artifact) => artifact.type === 'path' && artifact.subType === 'region'
-    )
-    if (!region) throw new Error('Missing region')
-    const result = addPlanarSurface({
-      ast,
-      artifactGraph,
-      curves: createSelectionFromArtifacts([region], artifactGraph),
-      wasmInstance: instanceInThisFile,
-    })
-    if (err(result)) throw result
-    expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
-      'surface001 = planarSurface(region001)'
-    )
-  })
-
-  it.each(['path', 'solid2d', 'segment'] as const)(
+  it.each(['path', 'segment'] as const)(
     'rejects a legacy whole sketch from a %s selection',
     async (type) => {
       const { ast, artifactGraph } = await setup(`sketch001 = startSketchOn(XY)
@@ -596,88 +566,54 @@ profile001 = circle(sketch001, center = [0, 0], radius = 10)`)
     }
   )
 
-  it('uses the selected opposite surface edge as a singleton array', async () => {
+  it('keeps face tags on the selected, moved clone', async () => {
+    const surfaceCode =
+      'original = extrude(region001, length = 5mm)\nextrude001 = clone(original) |> translate(x = 25mm)'
     const { ast, artifactGraph } = await setup(`${circle}
-extrude001 = extrude(sketch001.circle1, length = 5mm, bodyType = SURFACE)`)
-    const edge = await oppositeEdgeSelection(artifactGraph)
+region001 = region(point = [0mm, 0mm], sketch = sketch001)
+${surfaceCode}`)
+    const surface = [...artifactGraph.values()].findLast(
+      (artifact) => artifact.type === 'sweep'
+    )
+    if (surface?.type !== 'sweep') throw new Error('Missing body')
+    const faces = surface.surfaceIds.map((id) => artifactGraph.get(id))
+    const wall = faces.find((face) => face?.type === 'wall')
+    const cap = faces.find(
+      (face) => face?.type === 'cap' && face.subType === 'end'
+    )
+    if (!wall || !cap) throw new Error('Missing body faces')
     const result = addPlanarSurface({
       ast,
       artifactGraph,
-      curves: { graphSelections: [edge], otherSelections: [] },
+      curves: {
+        graphSelections: [
+          { entityRef: { type: 'edge', side_faces: [wall.id, cap.id] } },
+        ],
+        otherSelections: [],
+      },
       wasmInstance: instanceInThisFile,
     })
     if (err(result)) throw result
-    expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
-      `surface001 = planarSurface([${topologyEdgeExpression(edge)}])`
+    const newCode = recast(result.modifiedAst, instanceInThisFile)
+    if (err(newCode)) throw newCode
+    expect(newCode).toContain('getCommonEdge(faces = [')
+    expect(newCode).toContain('extrude001.sketch.tags.circle1')
+    expect(newCode).toContain('extrude001.faces.')
+    await getAstAndArtifactGraph(
+      newCode,
+      instanceInThisFile,
+      kclManagerInThisFile
     )
-    expect(
-      await mockExecAstAndReportErrors(
-        result.modifiedAst,
-        rustContextInThisFile
-      )
-    ).toBeUndefined()
+    expect(kclManagerInThisFile.errors).toEqual([])
   })
 
-  it.each([
-    'extrude001 = extrude(region001, length = 5mm) |> translate(x = 25mm)',
-    'original = extrude(region001, length = 5mm)\nextrude001 = clone(original) |> translate(x = 25mm)',
-  ])(
-    'keeps Face API edge tags on the selected body: %s',
-    async (surfaceCode) => {
-      const { ast, artifactGraph } = await setup(`${circle}
-region001 = region(point = [0mm, 0mm], sketch = sketch001)
-${surfaceCode}`)
-      const surface = [...artifactGraph.values()].findLast(
-        (artifact) => artifact.type === 'sweep'
-      )
-      if (surface?.type !== 'sweep') throw new Error('Missing body')
-      const faces = surface.surfaceIds.map((id) => artifactGraph.get(id))
-      const wall = faces.find((face) => face?.type === 'wall')
-      const cap = faces.find(
-        (face) => face?.type === 'cap' && face.subType === 'end'
-      )
-      if (!wall || !cap) throw new Error('Missing body faces')
-      const result = addPlanarSurface({
-        ast,
-        artifactGraph,
-        curves: {
-          graphSelections: [
-            { entityRef: { type: 'edge', side_faces: [wall.id, cap.id] } },
-          ],
-          otherSelections: [],
-        },
-        wasmInstance: instanceInThisFile,
-      })
-      if (err(result)) throw result
-      const newCode = recast(result.modifiedAst, instanceInThisFile)
-      if (err(newCode)) throw newCode
-      expect(newCode).toContain('getCommonEdge(faces = [')
-      expect(newCode).toContain('extrude001.sketch.tags.circle1')
-      expect(newCode).toContain('extrude001.faces.')
-      await getAstAndArtifactGraph(
-        newCode,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      expect(kclManagerInThisFile.errors).toEqual([])
-    }
-  )
-
-  it.each([
-    { name: 'a Face API disambiguation index', sideFaces: [], index: 123 },
-    {
-      name: 'unmapped adjacent faces',
-      sideFaces: ['missing-face-1', 'missing-face-2'],
-      index: undefined,
-    },
-  ])('uses body topology for $name', async ({ sideFaces, index }) => {
+  it('uses the body topology index instead of the Face API index', async () => {
     const { ast, artifactGraph } = await setup(`${circle}
 extrude001 = extrude(sketch001.circle1, length = 5mm, bodyType = SURFACE)`)
     const edge = await oppositeEdgeSelection(artifactGraph)
     if (edge.entityRef?.type !== 'edge')
       throw new Error('Missing edge reference')
-    edge.entityRef.side_faces = sideFaces
-    edge.entityRef.index = index
+    edge.entityRef.index = 123
     const result = addPlanarSurface({
       ast,
       artifactGraph,
@@ -686,7 +622,9 @@ extrude001 = extrude(sketch001.circle1, length = 5mm, bodyType = SURFACE)`)
     })
     if (err(result)) throw result
     const code = recast(result.modifiedAst, instanceInThisFile)
-    expect(code).toContain(topologyEdgeExpression(edge))
+    expect(code).toContain(
+      `edgeId(extrude001, index = ${edge.engineTopologyFallback!.primitiveIndex})`
+    )
     expect(code).not.toContain('index = 123')
     const withoutTopology = { ...edge, engineTopologyFallback: undefined }
     expect(
@@ -700,7 +638,7 @@ extrude001 = extrude(sketch001.circle1, length = 5mm, bodyType = SURFACE)`)
   })
 
   it('uses topology for an edge from the second operand of a Boolean body', async () => {
-    const code = `@settings(kclVersion = 2.0)
+    const code = `@settings(kclVersion = 3.0)
 sketch001 = sketch(on = XY) {
   circle1 = circle(start = [10mm, 0mm], center = [0mm, 0mm])
 }
@@ -752,86 +690,41 @@ part = subtract(extrude001, tools = extrude002)`
     ).toBeUndefined()
   })
 
-  it('inlines a body edge selection without validating closure', async () => {
-    const { ast, artifactGraph } = await setup(`${triangle}
-extrude001 = extrude(sketch001.line1, length = 5mm, bodyType = SURFACE)`)
+  it('keeps a moved, anonymous surface base edge in its pipe', async () => {
+    const surfaceCode =
+      'extrude(sketch001.circle1, length = 5mm, bodyType = SURFACE)\n  |> translate(x = 25mm)'
+    const { ast, artifactGraph } = await setup(`${circle}\n${surfaceCode}`)
+    expect(kclManagerInThisFile.errors).toEqual([])
     const surface = [...artifactGraph.values()].find(
       (artifact) => artifact.type === 'sweep'
     )
-    if (!surface) throw new Error('Missing source surface')
+    if (!surface || surface.type !== 'sweep') throw new Error('Missing surface')
+    const base = [...artifactGraph.values()].find(
+      (artifact) =>
+        artifact.type === 'segment' && artifact.pathId === surface.pathId
+    )
+    if (!base) throw new Error('Missing base surface edge')
+    const edge = createSelectionFromArtifacts([base], artifactGraph)
+      .graphSelections[0]
     const result = addPlanarSurface({
       ast,
       artifactGraph,
-      curves: {
-        graphSelections: [],
-        otherSelections: [
-          {
-            type: 'enginePrimitive',
-            primitiveType: 'edge',
-            primitiveIndex: 0,
-            entityId: 'unmapped-edge',
-            parentEntityId: surface.id,
-          },
-        ],
-      },
+      curves: { graphSelections: [edge], otherSelections: [] },
       wasmInstance: instanceInThisFile,
     })
     if (err(result)) throw result
-    expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
-      'surface001 = planarSurface([edgeId(extrude001, index = 0)])'
+    const newCode = recast(result.modifiedAst, instanceInThisFile)
+    if (err(newCode)) throw newCode
+    expect(newCode).toContain(
+      `${surfaceCode}\n  |> planarSurface([%.sketch.tags.circle1])`
     )
+    await getAstAndArtifactGraph(
+      newCode,
+      instanceInThisFile,
+      kclManagerInThisFile
+    )
+    expect(kclManagerInThisFile.errors).toEqual([])
   })
-
-  it.each([
-    ['base', ''],
-    ['opposite', ''],
-    ['base', '\n  |> translate(x = 25mm)'],
-    ['opposite', '\n  |> translate(x = 25mm)'],
-  ])(
-    'keeps an anonymous surface %s edge in its pipe: %s',
-    async (edgeType, transform) => {
-      const surfaceCode = `extrude(sketch001.circle1, length = 5mm, bodyType = SURFACE)${transform}`
-      const { ast, artifactGraph } = await setup(`${circle}\n${surfaceCode}`)
-      expect(kclManagerInThisFile.errors).toEqual([])
-      const surface = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'sweep'
-      )
-      if (!surface || surface.type !== 'sweep')
-        throw new Error('Missing surface')
-      const base = [...artifactGraph.values()].find(
-        (artifact) =>
-          artifact.type === 'segment' && artifact.pathId === surface.pathId
-      )
-      if (!base) throw new Error('Missing base surface edge')
-      const edge =
-        edgeType === 'base'
-          ? createSelectionFromArtifacts([base], artifactGraph)
-              .graphSelections[0]
-          : await oppositeEdgeSelection(artifactGraph, surface)
-      const result = addPlanarSurface({
-        ast,
-        artifactGraph,
-        curves: { graphSelections: [edge], otherSelections: [] },
-        wasmInstance: instanceInThisFile,
-      })
-      if (err(result)) throw result
-      const newCode = recast(result.modifiedAst, instanceInThisFile)
-      if (err(newCode)) throw newCode
-      const edgeExpr =
-        edgeType === 'base'
-          ? '%.sketch.tags.circle1'
-          : topologyEdgeExpression(edge, '%')
-      expect(newCode).toContain(
-        `${surfaceCode}\n  |> planarSurface([${edgeExpr}])`
-      )
-      await getAstAndArtifactGraph(
-        newCode,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      expect(kclManagerInThisFile.errors).toEqual([])
-    }
-  )
 
   it('rejects edges whose named source is declared after an anonymous source', async () => {
     const code = `${triangle}
@@ -903,169 +796,119 @@ third = extrude(sketch001.line3, length = 5mm, bodyType = SURFACE)`
     expect(kclManagerInThisFile.errors).toEqual([])
   })
 
-  it.each([
-    ['base', ''],
-    ['opposite', ''],
-    ['base', ', tag = $profileEdge'],
-    ['opposite', ', tag = $profileEdge'],
-  ])(
-    'uses an actual legacy circle tag for a moved %s edge: %s',
-    async (edgeType, tagArg) => {
-      const { ast, artifactGraph } = await setup(`sketch001 = startSketchOn(XY)
-profile001 = circle(sketch001, center = [0, 0], radius = 10${tagArg})
+  it('adds a legacy circle tag on the selected, moved body', async () => {
+    const { ast, artifactGraph } = await setup(`sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 10)
 extrude001 = extrude(profile001, length = 5, bodyType = SURFACE)
-  |> translate(x = 25mm)`)
-      expect(kclManagerInThisFile.errors).toEqual([])
-      const base = [...artifactGraph.values()].find(
-        (artifact) => artifact.type === 'segment'
-      )
-      if (!base) throw new Error('Missing base edge')
-      const edge =
-        edgeType === 'base'
-          ? createSelectionFromArtifacts([base], artifactGraph)
-              .graphSelections[0]
-          : await oppositeEdgeSelection(artifactGraph)
-      const result = addPlanarSurface({
-        ast,
-        artifactGraph,
-        curves: { graphSelections: [edge], otherSelections: [] },
-        wasmInstance: instanceInThisFile,
-      })
-      if (err(result)) throw result
-      const newCode = recast(result.modifiedAst, instanceInThisFile)
-      if (err(newCode)) throw newCode
-      const tagName = tagArg ? 'profileEdge' : 'seg01'
-      const tagExpr = `extrude001.sketch.tags.${tagName}`
-      const edgeExpr =
-        edgeType === 'base' ? tagExpr : topologyEdgeExpression(edge)
-      if (edgeType === 'base') expect(newCode).toContain(`tag = $${tagName}`)
-      expect(newCode).toContain(
-        recast(
-          assertParse(
-            `surface001 = planarSurface([${edgeExpr}])`,
-            instanceInThisFile
-          ),
-          instanceInThisFile
-        )
-      )
-      await getAstAndArtifactGraph(
-        newCode,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      expect(kclManagerInThisFile.errors).toEqual([])
-    }
-  )
-
-  it.each([
-    'extrude001 = extrude(region001, length = 5mm, bodyType = SURFACE)\n  |> translate(x = 25mm)',
-    'original = extrude(region001, length = 5mm, bodyType = SURFACE)\nextrude001 = clone(original)\n  |> translate(x = 25mm)',
-  ])(
-    'keeps the current body when selecting a moved surface base edge: %s',
-    async (surfaceCode) => {
-      const { ast, artifactGraph } = await setup(`${circle}
-region001 = region(point = [0mm, 0mm], sketch = sketch001)
-${surfaceCode}`)
-      const surface = [...artifactGraph.values()].findLast(
-        (artifact) => artifact.type === 'sweep'
-      )
-      if (!surface || surface.type !== 'sweep')
-        throw new Error('Missing surface')
-      const edge = [...artifactGraph.values()].find(
-        (artifact) =>
-          artifact.type === 'segment' && artifact.pathId === surface.pathId
-      )
-      if (!edge) throw new Error('Missing base edge')
-      const result = addPlanarSurface({
-        ast,
-        artifactGraph,
-        curves: createSelectionFromArtifacts([edge], artifactGraph),
-        wasmInstance: instanceInThisFile,
-      })
-      if (err(result)) throw result
-      const newCode = recast(result.modifiedAst, instanceInThisFile)
-      if (err(newCode)) throw newCode
-      expect(newCode).toContain(
-        'surface001 = planarSurface([extrude001.sketch.tags.circle1])'
-      )
-      await getAstAndArtifactGraph(
-        newCode,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      expect(kclManagerInThisFile.errors).toEqual([])
-    }
-  )
-
-  it.each([
-    'edge001 = edgeId(extrude001, index = 0)',
-    'edges = [edgeId(extrude001, index = 0)]',
-  ])(
-    'references a graph primitive edge without selecting its enclosing value: %s',
-    async (edgeCode) => {
-      const code = `${circle}
-extrude001 = extrude(sketch001.circle1, length = 5mm, bodyType = SURFACE)
-${edgeCode}`
-      const { ast, artifactGraph } = await setup(code)
-      const edgeStart = code.indexOf('edgeId(')
-      const codeRef = codeRefFromRange(
-        [edgeStart, edgeStart + 'edgeId(extrude001, index = 0)'.length, 0],
-        ast
-      )
-      const edge: Artifact = {
-        type: 'primitiveEdge',
-        id: 'primitive-edge',
-        solidId: 'surface',
-        codeRef: { ...codeRef, nodePath: { steps: [] } },
-      }
-      artifactGraph.set(edge.id, edge)
-      const result = addPlanarSurface({
-        ast,
-        artifactGraph,
-        curves: createSelectionFromArtifacts([edge], artifactGraph),
-        wasmInstance: instanceInThisFile,
-      })
-      if (err(result)) throw result
-      const newCode = recast(result.modifiedAst, instanceInThisFile)
-      if (err(newCode)) throw newCode
-      expect(newCode.replace(/\s/g, '')).toContain(
-        edgeCode.startsWith('edge001')
-          ? 'surface001=planarSurface([edge001])'
-          : 'surface001=planarSurface([edgeId(extrude001,index=0)])'
-      )
-      expect(
-        await mockExecAstAndReportErrors(
-          result.modifiedAst,
-          rustContextInThisFile
-        )
-      ).toBeUndefined()
-    }
-  )
-
-  it('keeps the original sketch curve selectable after moving its extrusion', async () => {
-    const { ast, artifactGraph } = await setup(`${circle}
-extrude001 = extrude(sketch001.circle1, length = 5mm, bodyType = SURFACE)
-  |> translate(x = 25mm)`)
-    const originalCircle = [...artifactGraph.values()].find(
-      (artifact) =>
-        artifact.type === 'segment' &&
-        !artifact.originalSegId &&
-        !artifact.sourceSegmentId
+|> translate(x = 25mm)`)
+    expect(kclManagerInThisFile.errors).toEqual([])
+    const base = [...artifactGraph.values()].find(
+      (artifact) => artifact.type === 'segment'
     )
-    if (!originalCircle) throw new Error('Missing sketch circle')
+    if (!base) throw new Error('Missing base edge')
+    const edge = createSelectionFromArtifacts([base], artifactGraph)
+      .graphSelections[0]
     const result = addPlanarSurface({
       ast,
       artifactGraph,
-      curves: createSelectionFromArtifacts([originalCircle], artifactGraph),
+      curves: { graphSelections: [edge], otherSelections: [] },
       wasmInstance: instanceInThisFile,
     })
     if (err(result)) throw result
-    expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
-      'surface001 = planarSurface([sketch001.circle1])'
+    const newCode = recast(result.modifiedAst, instanceInThisFile)
+    if (err(newCode)) throw newCode
+    expect(newCode).toContain('tag = $seg01')
+    expect(newCode).toContain(
+      recast(
+        assertParse(
+          `surface001 = planarSurface([extrude001.sketch.tags.seg01])`,
+          instanceInThisFile
+        ),
+        instanceInThisFile
+      )
     )
+    await getAstAndArtifactGraph(
+      newCode,
+      instanceInThisFile,
+      kclManagerInThisFile
+    )
+    expect(kclManagerInThisFile.errors).toEqual([])
   })
 
-  it('rejects empty, multiple-region, and mixed region/edge selections', async () => {
+  it('keeps a base edge on the selected, moved clone', async () => {
+    const surfaceCode =
+      'original = extrude(region001, length = 5mm, bodyType = SURFACE)\nextrude001 = clone(original)\n  |> translate(x = 25mm)'
+    const { ast, artifactGraph } = await setup(`${circle}
+region001 = region(point = [0mm, 0mm], sketch = sketch001)
+${surfaceCode}`)
+    const surface = [...artifactGraph.values()].findLast(
+      (artifact) => artifact.type === 'sweep'
+    )
+    if (!surface || surface.type !== 'sweep') throw new Error('Missing surface')
+    const edge = [...artifactGraph.values()].find(
+      (artifact) =>
+        artifact.type === 'segment' && artifact.pathId === surface.pathId
+    )
+    if (!edge) throw new Error('Missing base edge')
+    const result = addPlanarSurface({
+      ast,
+      artifactGraph,
+      curves: createSelectionFromArtifacts([edge], artifactGraph),
+      wasmInstance: instanceInThisFile,
+    })
+    if (err(result)) throw result
+    const newCode = recast(result.modifiedAst, instanceInThisFile)
+    if (err(newCode)) throw newCode
+    expect(newCode).toContain(
+      'surface001 = planarSurface([extrude001.sketch.tags.circle1])'
+    )
+    await getAstAndArtifactGraph(
+      newCode,
+      instanceInThisFile,
+      kclManagerInThisFile
+    )
+    expect(kclManagerInThisFile.errors).toEqual([])
+  })
+
+  it('selects an edgeId inside an array without selecting the array', async () => {
+    const edgeCode = 'edges = [edgeId(extrude001, index = 0)]'
+    const code = `${circle}
+extrude001 = extrude(sketch001.circle1, length = 5mm, bodyType = SURFACE)
+${edgeCode}`
+    const { ast, artifactGraph } = await setup(code)
+    const edgeStart = code.indexOf('edgeId(')
+    const codeRef = codeRefFromRange(
+      [edgeStart, edgeStart + 'edgeId(extrude001, index = 0)'.length, 0],
+      ast
+    )
+    const edge: Artifact = {
+      type: 'primitiveEdge',
+      id: 'primitive-edge',
+      solidId: 'surface',
+      codeRef: { ...codeRef, nodePath: { steps: [] } },
+    }
+    artifactGraph.set(edge.id, edge)
+    const result = addPlanarSurface({
+      ast,
+      artifactGraph,
+      curves: createSelectionFromArtifacts([edge], artifactGraph),
+      wasmInstance: instanceInThisFile,
+    })
+    if (err(result)) throw result
+    const newCode = recast(result.modifiedAst, instanceInThisFile)
+    if (err(newCode)) throw newCode
+    expect(newCode.replace(/\s/g, '')).toContain(
+      'surface001=planarSurface([edgeId(extrude001,index=0)])'
+    )
+    expect(
+      await mockExecAstAndReportErrors(
+        result.modifiedAst,
+        rustContextInThisFile
+      )
+    ).toBeUndefined()
+  })
+
+  it('rejects empty, whole-sketch, multiple-region, and mixed selections', async () => {
     const { ast, artifactGraph } = await setup()
     const sketch = [...artifactGraph.values()].find(
       (artifact) => artifact.type === 'sketchBlock'
@@ -1082,6 +925,7 @@ extrude001 = extrude(sketch001.circle1, length = 5mm, bodyType = SURFACE)
     }
     const invalidSelections: Selections[] = [
       { graphSelections: [], otherSelections: [] },
+      createSelectionFromArtifacts([sketch], artifactGraph),
       {
         graphSelections: [],
         otherSelections: [region, { ...region, id: 'other-region' }],

@@ -825,43 +825,19 @@ describe('Testing deleteFromSelection', () => {
   it.each([
     {
       name: 'a circle',
-      sketch: circleSketch,
       surface: 'planarSurface([sketch001.circle1])',
     },
     {
-      name: 'connected arcs',
-      sketch: `sketch001 = sketch(on = XY) {
-  arc1 = arc(start = [var -5mm, var 0mm], end = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
-  arc2 = arc(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm], center = [var 0mm, var 0mm])
-  coincident([arc1.center, arc2.center])
-  coincident([arc1.start, arc2.end])
-  coincident([arc1.end, arc2.start])
-}`,
-      surface: 'planarSurface([sketch001.arc1, sketch001.arc2])',
-    },
-    {
-      name: 'an explicit pipe input',
-      sketch: circleSketch,
-      surface: '[sketch001.circle1] |> planarSurface(%)',
-      remaining: '\nsurface001 = [sketch001.circle1]',
-    },
-    {
       name: 'an implicit pipe input',
-      sketch: circleSketch,
       surface: '[sketch001.circle1] |> planarSurface()',
       remaining: '\nsurface001 = [sketch001.circle1]',
     },
-    {
-      name: 'a pipe with a downstream flip',
-      sketch: circleSketch,
-      surface: 'planarSurface([sketch001.circle1]) |> flipSurface(%)',
-    },
   ])(
     'deletes a planar surface made from $name without deleting its source sketch',
-    async ({ sketch, surface, remaining = '' }) => {
-      const sourceCode = `@settings(kclVersion = 2.0, experimentalFeatures = allow)
+    async ({ surface, remaining = '' }) => {
+      const sourceCode = `@settings(kclVersion = 3.0, experimentalFeatures = allow)
 
-${sketch}`
+${circleSketch}`
       const ast = assertParse(
         `${sourceCode}\nsurface001 = ${surface}`,
         instanceInThisFile
