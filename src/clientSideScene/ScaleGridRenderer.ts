@@ -1,7 +1,7 @@
 import type { OrthographicCamera, PerspectiveCamera } from 'three'
+import { MathUtils } from 'three'
 
 import { InfiniteGridRenderer } from '@src/clientSideScene/InfiniteGridRenderer'
-import { getGridScaleFactor } from '@src/clientSideScene/gridUtils'
 
 export interface ScaleGridOptions {
   majorGridSpacing: number
@@ -36,15 +36,30 @@ export class ScaleGridRenderer extends InfiniteGridRenderer {
       Math.min(...viewportSize) / window.devicePixelRatio / pixelsPerBaseUnit
     this.material.uniforms.uFadeStart.value = viewportSpan * 0.35
     this.material.uniforms.uFadeEnd.value = viewportSpan * 0.9
-    const gridScaleFactor = getGridScaleFactor({
-      ...options,
-      pixelsPerBaseUnit,
-    })
+    const spacingPixels = options.majorGridSpacing * pixelsPerBaseUnit
+    const level =
+      !options.fixedSizeGrid && spacingPixels > 0
+        ? Math.log10(40 / spacingPixels)
+        : 0
+    const exponent = Math.floor(level)
+    const gridScaleFactor = options.fixedSizeGrid ? 1 : 10 ** exponent
     const color = options.isLightTheme ? 0.25 : 0.8
     this.update(camera, pixelsPerBaseUnit, gridScaleFactor, {
       ...options,
       majorColor: [color, color, color, 0.3],
       minorColor: [color, color, color, 0.15],
     })
+    const uniforms = this.material.uniforms
+    uniforms.uGridLevelBlend.value = options.fixedSizeGrid
+      ? 0
+      : MathUtils.smoothstep(level - exponent, 0, 1)
+    // Also fade fixed-size minor lines over a range of projected sizes.
+    const minorPixels = uniforms.uMinorSpacing.value * pixelsPerBaseUnit
+    uniforms.uMinorOpacity.value = MathUtils.smoothstep(minorPixels, 3, 12)
+    uniforms.uNextMinorOpacity.value = MathUtils.smoothstep(
+      minorPixels * 10,
+      3,
+      12
+    )
   }
 }
