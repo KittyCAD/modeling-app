@@ -100,6 +100,9 @@ for (const scenario of scenarios) {
           },
           testInfo
         ) => {
+          if (scenario.definition.timeoutMs !== undefined) {
+            test.setTimeout(120_000 + scenario.definition.timeoutMs)
+          }
           if (!tronApp) {
             throw new Error('Interaction budget scenarios require Electron')
           }
@@ -130,7 +133,14 @@ for (const scenario of scenarios) {
           let report: InteractionReport
           try {
             await scenario.act(fixtures)
-            await waitForSample(page, scenario.definition.id, 1)
+            await waitForSample(
+              page,
+              scenario.definition.id,
+              1,
+              scenario.definition.timeoutMs === undefined
+                ? undefined
+                : scenario.definition.timeoutMs + 5_000
+            )
             await scenario.verify?.(fixtures)
             if (before) await assertErrorModelPreserved(fixtures, before)
           } finally {

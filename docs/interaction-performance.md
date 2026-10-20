@@ -297,6 +297,11 @@ at the first resize event and ends when actual engine and delivered-video
 dimensions match. Initial model loading is excluded; execution and loading caused
 by the measured action are included. Missing Event Timing remains unknown.
 
+The density fixture disables idle disconnects before loading the model, so slow
+analysis does not tear down the engine midway through measurement. Initial
+analysis is outside capture; the changed density's completed results are inside.
+Its collection deadline is 90 seconds, but the passing budget remains 150 ms.
+
 The native backface color picker is unsupported rather than faked: Playwright's
 color-input fill dispatches untrusted input, and current fixtures cannot operate
 the native picker. Removed legacy workflows are not manufactured for measurement.
@@ -348,11 +353,17 @@ presented video frame:
 
 The error-profile runs preserved their expected errors and cached geometry, and
 both real-editor guard self-tests rejected accidentally successful execution.
-Large-model Physical Analysis remained on `Analyzing...` beyond its 30-second
-preparation wait, so that density case is an **unmeasured readiness failure**, not
-proof of a latency breach. Raw attempts, including invalid setup attempts, remain
-in `test-results/interaction-budget`. These local results do not establish CI
-calibration or independently built merge-base provenance.
+All 95 supported new action/profile combinations now have completed baseline
+observations: 80 exceed 150 ms and 15 are already below it. Density updates took
+40,029.0 ms (40.029 s) with the large model, 37,729.6 ms (37.730 s) with its syntax
+error, and 40,561.2 ms (40.561 s) with its engine error. The error guards passed.
+
+Earlier density setup waits expired, and the default idle timer disconnected the
+engine during longer attempts. Those invalid attempts remain in
+`test-results/interaction-budget`; they are not latency results. Completed density
+runs use the idle-disabled fixture above. No animations have been removed. These
+local results do not establish CI calibration or independently built merge-base
+provenance.
 
 ## Discovery during functional tests
 

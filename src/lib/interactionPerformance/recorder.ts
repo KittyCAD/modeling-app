@@ -350,7 +350,7 @@ export class InteractionRecorder {
         sample.outcomeMs = performance.now() - sample.startTime
         sample.status = 'complete'
         this.clearOutcome(sample.sequence)
-      } else if (elapsed >= OUTCOME_TIMEOUT_MS) {
+      } else if (elapsed >= (definition.timeoutMs ?? OUTCOME_TIMEOUT_MS)) {
         sample.status = 'timeout'
         this.clearOutcome(sample.sequence)
       }

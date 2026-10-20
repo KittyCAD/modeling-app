@@ -24,6 +24,8 @@ export interface InteractionDescription {
   testId: string
   budgetMs: number
   outcome: string
+  /** Collection deadline for slow real outcomes, never a latency allowance. */
+  timeoutMs?: number
 }
 
 export interface InteractionSnapshot {

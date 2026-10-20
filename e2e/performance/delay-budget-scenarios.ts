@@ -4,12 +4,13 @@ import type {
   BudgetFixtures,
   BudgetScenario,
 } from '@e2e/performance/budget-scenarios'
+import { attachOutcomeDiagnostics } from '@e2e/performance/capture'
 import { prepareIsolatedSolid } from '@e2e/performance/modeling-budget-scenarios'
 import type { PerformanceModelProfile } from '@e2e/performance/models'
 import { assertModelLoaded, modelCodeForProfile } from '@e2e/performance/models'
 import { prepareModeling } from '@e2e/performance/scenarios'
 import type { Page } from '@playwright/test'
-import { expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import { getDimensions } from '@src/lib/engineConnection/utils'
 import { delayInteractions } from '@src/lib/interactionPerformance/delayOutcomes'
 
@@ -159,11 +160,27 @@ export const delayBudgetScenarios: BudgetScenario[] = [
   {
     definition: delayInteractions.density,
     prepare: async (fixtures) => {
+      // Long analysis must finish on the loaded model, not an idle reconnect.
+      await fixtures.tronApp.cleanProjectDir({
+        app: { stream_idle_mode: 0 },
+      })
       await prepareModeling(fixtures)
       await fixtures.page.getByTestId('physical-analysis-status').click()
-      await expect(
-        fixtures.page.locator('button[title="Copy physical analysis"]')
-      ).toBeVisible({ timeout: 30_000 })
+      try {
+        await expect(
+          fixtures.page.locator('button[title="Copy physical analysis"]')
+        ).toBeVisible({ timeout: 90_000 })
+        await expect(
+          fixtures.page.getByTestId('physical-analysis-density')
+        ).not.toHaveValue('1000')
+      } catch (failure) {
+        await attachOutcomeDiagnostics(
+          fixtures.page,
+          test.info(),
+          'Initial physical analysis did not settle'
+        ).catch(() => {})
+        throw failure
+      }
     },
     act: async ({ page }) => {
       await page.getByTestId('physical-analysis-density').fill('1000')

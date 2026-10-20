@@ -31,7 +31,12 @@ export function readCapture() {
   return recorder.snapshot()
 }
 
-export async function waitForSample(page: Page, id: string, count: number) {
+export async function waitForSample(
+  page: Page,
+  id: string,
+  count: number,
+  timeoutMs = 35_000
+) {
   await page.waitForFunction(
     ({ id, count }) =>
       window.app.interactionPerformance
@@ -40,7 +45,7 @@ export async function waitForSample(page: Page, id: string, count: number) {
           (sample) => sample.id === id && sample.status === 'complete'
         ).length === count,
     { id, count },
-    { timeout: 35_000, polling: POLL_INTERVAL_MS }
+    { timeout: timeoutMs, polling: POLL_INTERVAL_MS }
   )
 }
 
@@ -110,6 +115,19 @@ export async function attachOutcomeDiagnostics(
       }
     }
     const editor = window.app.project?.executingEditor.value
+    const controls = editor?.sceneInfra.camControls
+    const videoElement = document.getElementById('video-stream')
+    const video = videoElement instanceof HTMLVideoElement ? videoElement : null
+    const playbackQuality = video?.getVideoPlaybackQuality()
+    const analysisPanel = document.querySelector(
+      '[data-testid="physical-analysis-draggable-panel"]'
+    )
+    const densityInput = analysisPanel?.querySelector(
+      '[data-testid="physical-analysis-density"]'
+    )
+    const pending = Object.entries(
+      editor?.engineCommandManager.pendingCommands ?? {}
+    )
     return {
       url: location.href,
       visibility: document.visibilityState,
@@ -128,18 +146,100 @@ export async function attachOutcomeDiagnostics(
           ),
         })
       ),
+      physicalAnalysis: analysisPanel
+        ? {
+            panel: describe(analysisPanel),
+            text:
+              analysisPanel instanceof HTMLElement
+                ? analysisPanel.innerText.slice(0, 6000)
+                : null,
+            density:
+              densityInput instanceof HTMLInputElement
+                ? densityInput.value
+                : null,
+          }
+        : null,
+      video: video
+        ? {
+            streamId:
+              video.srcObject instanceof MediaStream
+                ? video.srcObject.id
+                : null,
+            loaded: video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA,
+            readyState: video.readyState,
+            visible: video.checkVisibility({
+              checkOpacity: true,
+              checkVisibilityCSS: true,
+            }),
+            paused: video.paused,
+            ended: video.ended,
+            currentTime: video.currentTime,
+            videoWidth: video.videoWidth,
+            videoHeight: video.videoHeight,
+            playbackQuality: playbackQuality
+              ? {
+                  creationTime: playbackQuality.creationTime,
+                  totalVideoFrames: playbackQuality.totalVideoFrames,
+                  droppedVideoFrames: playbackQuality.droppedVideoFrames,
+                }
+              : null,
+          }
+        : null,
+      camera: controls
+        ? {
+            position: controls.camera.position.toArray(),
+            target: controls.target.toArray(),
+            quaternion: controls.camera.quaternion.toArray(),
+            direction: controls.camera.position
+              .clone()
+              .sub(controls.target)
+              .normalize()
+              .toArray(),
+            quaternionDirection: controls.camera.position
+              .clone()
+              .set(0, 0, 1)
+              .applyQuaternion(controls.camera.quaternion)
+              .toArray(),
+            syncDirection: controls.syncDirection,
+            enableRotate: controls.enableRotate,
+            enablePan: controls.enablePan,
+            isPerspective: controls.isPerspective,
+            isFovAnimationInProgress: controls.isFovAnimationInProgress,
+          }
+        : null,
       editor: editor
         ? {
             isExecuting: editor.isExecutingSignal.value,
+            hasErrors: editor.hasErrors(),
+            hasParseErrors: editor.hasParseErrors(),
+            diagnostics: editor.diagnostics.map(
+              ({ severity, from, to, message }) => ({
+                severity,
+                from,
+                to,
+                message,
+              })
+            ),
             hasEditsSinceLastExecution:
               editor.hasEditsSinceLastExecutionSignal.value,
             lastSuccessfulCodeMatchesCurrent:
               editor.lastSuccessfulCode === editor.code,
             artifactCount: editor.artifactGraph.size,
-            pendingCommandCount: Object.keys(
-              editor.engineCommandManager.pendingCommands
-            ).length,
+            pendingCommandCount: pending.length,
+            pendingCommands: pending.slice(-20).map(([id, request]) => ({
+              id,
+              type:
+                request.command.type === 'modeling_cmd_req'
+                  ? request.command.cmd.type
+                  : request.command.type,
+              isSceneCommand: request.isSceneCommand,
+            })),
             errorCount: editor.errors.length,
+            errors: editor.errors.map(({ kind, msg, sourceRange }) => ({
+              kind,
+              msg,
+              sourceRange,
+            })),
             importedModuleCount: Object.keys(editor.execState.filenames).length,
             largeProfile: editor.code.includes('import "large-model/main.kcl"'),
           }

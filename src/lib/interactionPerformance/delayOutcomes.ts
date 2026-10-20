@@ -37,6 +37,7 @@ export const delayInteractions = {
     id: 'zds.physicalAnalysis.density.update',
     testId: 'physical-analysis-density',
     budgetMs: 150,
+    timeoutMs: 90_000,
     outcome:
       'Physical analysis displays updated results for the changed density',
   },
