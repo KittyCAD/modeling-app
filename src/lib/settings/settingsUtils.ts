@@ -1385,7 +1385,13 @@ export function getSettingsFromActorContext(
 
 export function jsAppSettings(s: SettingsType | SettingsActorType) {
   const settings = 'send' in s ? getSettingsFromActorContext(s) : s
-  return settingsPayloadToConfiguration(getAllCurrentSettings(settings))
+  const current = getAllCurrentSettings(settings)
+  // Only the execution payload suppresses the engine grid. Persist the user's
+  // Show Scale Grid preference normally; the local viewport consumes it.
+  return settingsPayloadToConfiguration({
+    ...current,
+    modeling: { ...current.modeling, showScaleGrid: false },
+  })
 }
 
 /**
