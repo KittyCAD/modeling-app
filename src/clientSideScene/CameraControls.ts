@@ -455,9 +455,10 @@ export class CameraControls {
 
       this.camera.up.copy(newUp)
       this.camera.updateProjectionMatrix()
-      // TODO this code might need to be deleted once we support named views, etc.
-      // In local mode the client owns the projection and field of view and
-      // tells the engine, so only the pose is taken from the engine's replies.
+      // In local mode the client owns the projection and field of view and pushes
+      // them to the engine, so only the pose is taken from the engine's replies.
+      // Code that changes the projection applies it on the client, e.g.
+      // setCameraProjection() and setCameraView().
       const followsEngineProjection = this.effectiveCameraMode !== 'local'
       if (
         followsEngineProjection &&
@@ -1231,6 +1232,20 @@ export class CameraControls {
   }
 
   async setCameraView(view: CameraViewState): Promise<void> {
+    // In local mode the settings reply below only updates the pose, so take
+    // the projection and field of view from the view here.
+    // This can go away if the followsEngineProjection logic is updated
+    // to take the projection also.
+    if (this.effectiveCameraMode === 'local') {
+      this.lastPerspectiveFov = view.fov_y
+      if (this.camera instanceof PerspectiveCamera) {
+        this.camera.fov = view.fov_y
+      }
+      await this.setCameraProjection(
+        view.is_ortho ? 'orthographic' : 'perspective'
+      )
+    }
+
     await this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),

@@ -1,3 +1,4 @@
+import type { CameraViewState } from '@kittycad/lib'
 import {
   CameraControls,
   letEngineAnimateAndSyncCamAfter,
@@ -602,4 +603,36 @@ describe('hover queries', () => {
       expect(hoverQueriesSent(local, 'clientToEngine')).toHaveLength(0)
     }
   )
+})
+
+describe('local camera view restore', () => {
+  function setup() {
+    const manager = makeConnectionManager({ width: 1024, height: 768 })
+    const controls = new CameraControls(
+      makeCanvas(1024, 768),
+      manager,
+      unusedSettings
+    )
+    controls.localCameraMode = true
+    return controls
+  }
+
+  // Only the projection fields matter here; the pose comes back from the engine.
+  const view = (isOrtho: boolean) =>
+    ({ is_ortho: isOrtho, fov_y: 30 }) as CameraViewState
+
+  it('restores a perspective view onto an orthographic camera', async () => {
+    const controls = setup()
+    controls.useOrthographicCamera()
+    await controls.setCameraView(view(false))
+    expect(controls.camera).toBeInstanceOf(PerspectiveCamera)
+    expect((controls.camera as PerspectiveCamera).fov).toBe(30)
+  })
+
+  it('restores an orthographic view onto a perspective camera', async () => {
+    const controls = setup()
+    await controls.setCameraView(view(true))
+    expect(controls.camera).toBeInstanceOf(OrthographicCamera)
+    expect(controls.lastPerspectiveFov).toBe(30)
+  })
 })
