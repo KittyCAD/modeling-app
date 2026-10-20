@@ -105,6 +105,64 @@ async fn solid_ids(ctx: &ExecutorContext) -> Vec<uuid::Uuid> {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_cache_contract_anonymous_execution_cannot_replace_loaded_file() {
+    use std::sync::atomic::Ordering::Relaxed;
+
+    let project = tempfile::tempdir().unwrap();
+    let main = project.path().join("main.kcl");
+    tokio::fs::write(&main, BODY).await.unwrap();
+    let program = Program::parse_no_errs(BODY).unwrap();
+    let ctx = kcl_lib::test_server::new_context(true, Some(main), false, program.language_version().unwrap())
+        .await
+        .unwrap();
+    execute(&ctx, BODY).await;
+    assert!(execute(&ctx, BODY).await.from_cache);
+    let ids = solid_ids(&ctx).await;
+    assert_eq!(ids.len(), 1);
+    assert_volume(volume(&ctx).await, 5.0);
+
+    let anonymous = ExecutorContext::new_with_engine_and_fs(
+        ctx.engine.clone(),
+        ctx.fs.clone(),
+        ExecutorSettings {
+            current_file: None,
+            project_directory: None,
+            ..ctx.settings.clone()
+        },
+    )
+    .with_cache(ctx.cache.clone());
+    let commands = ctx.engine.stats().commands_batched.load(Relaxed);
+    let batches = ctx.engine.stats().batches_sent.load(Relaxed);
+    let result = anonymous.run_with_caching(program).await;
+    let anonymous_commands = ctx.engine.stats().commands_batched.load(Relaxed) - commands;
+    let anonymous_batches = ctx.engine.stats().batches_sent.load(Relaxed) - batches;
+    let original = execute(&ctx, BODY).await;
+    let retained_ids = solid_ids(&ctx).await;
+    let retained_volume = volume(&ctx).await;
+    ctx.close().await;
+
+    match result {
+        Err(error) => assert!(
+            matches!(error.error, KclError::Engine { details } if details.message ==
+                "Anonymous execution cannot replace a file-backed execution in the same engine session."),
+            "anonymous ownership loss must be rejected as an engine error"
+        ),
+        Ok(outcome) => panic!(
+            "anonymous execution unexpectedly succeeded: from_cache={}, {anonymous_commands} commands in {anonymous_batches} batches",
+            outcome.from_cache
+        ),
+    }
+    assert_eq!(anonymous_commands, 0, "reject before clearing or regenerating geometry");
+    assert_eq!(anonymous_batches, 0);
+    assert!(
+        original.from_cache,
+        "rejected anonymous execution must preserve the registered owner"
+    );
+    assert_eq!(retained_ids, ids);
+    assert_volume(retained_volume, 5.0);
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cache_contract_parse_and_preferences_preserve_real_geometry() {
     use std::sync::atomic::Ordering::Relaxed;
 

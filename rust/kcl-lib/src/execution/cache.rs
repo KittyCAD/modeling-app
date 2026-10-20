@@ -118,6 +118,18 @@ impl Cache {
             current_file: settings.current_file.clone(),
             project_directory: settings.project_directory.clone(),
         };
+        if owner.current_file.is_none()
+            && inner.owner.as_ref().is_some_and(|registered| {
+                registered.engine_session == owner.engine_session && registered.current_file.is_some()
+            })
+        {
+            // Missing file information is not a file switch. Reject before
+            // discarding the registered file's cache or changing its scene.
+            return Err(KclError::new_engine(KclErrorDetails::new(
+                "Anonymous execution cannot replace a file-backed execution in the same engine session.".to_owned(),
+                vec![SourceRange::default()],
+            )));
+        }
         let changed = inner.owner.as_ref() != Some(&owner);
         if changed {
             inner.old_ast = None;

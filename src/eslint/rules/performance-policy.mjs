@@ -2,6 +2,7 @@ export const guardrailRuleNames = new Set([
   'zds/no-artificial-delay',
   'zds/no-long-ui-animation',
   'zds/performance-exceptions',
+  'zds/no-wasm-runtime-construction',
 ])
 
 export const propertyName = (node) => {

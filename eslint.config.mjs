@@ -18,6 +18,7 @@ import interactionExpectations from './src/eslint/rules/interaction-expectations
 import noArtificialDelay from './src/eslint/rules/no-artificial-delay.mjs'
 import noLongUiAnimation from './src/eslint/rules/no-long-ui-animation.mjs'
 import performanceExceptions from './src/eslint/rules/performance-exceptions.mjs'
+import noWasmRuntimeConstruction from './src/eslint/rules/no-wasm-runtime-construction.mjs'
 import cssParser from './src/eslint/css-parser.mjs'
 import createPerformanceDirectivesProcessor from './src/eslint/performance-directives.mjs'
 
@@ -25,6 +26,7 @@ const performanceRules = {
   'zds/no-artificial-delay': 'error',
   'zds/no-long-ui-animation': 'error',
   'zds/performance-exceptions': 'error',
+  'zds/no-wasm-runtime-construction': 'error',
 }
 
 const zdsPlugin = {
@@ -38,6 +40,7 @@ const zdsPlugin = {
     'no-artificial-delay': noArtificialDelay,
     'no-long-ui-animation': noLongUiAnimation,
     'performance-exceptions': performanceExceptions,
+    'no-wasm-runtime-construction': noWasmRuntimeConstruction,
   },
 }
 
@@ -219,6 +222,7 @@ export default defineConfig([
       'zds/no-codemirror-printable-keymap-keystrokes': 'error',
       'zds/interaction-expectations': 'error',
       'zds/no-react-router-hooks': 'error',
+      'zds/no-wasm-runtime-construction': 'error',
     },
   },
   {
