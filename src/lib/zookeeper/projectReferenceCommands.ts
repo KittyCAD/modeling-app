@@ -264,7 +264,9 @@ export function createProjectReferenceCommands(deps: {
       token: apiToken,
     }
     const project = await getRemoteProject(config, entry.remoteProjectId)
-    const rawRevision = project.revision ?? project.updated_at
+    // updated_at is not a content revision; revisionless servers need a fresh
+    // archive on every page so the file hash can detect changes.
+    const rawRevision = project.revision
     const remoteRevision =
       rawRevision === undefined || rawRevision === null
         ? undefined
@@ -571,6 +573,10 @@ export function createProjectReferenceCommands(deps: {
 
   return {
     advertise(ws) {
+      if (activeSocket !== ws) {
+        // The server may retry the same request ID on a new connection.
+        pending.clear()
+      }
       activeSocket = ws
       if (enabled) {
         sendCatalog(ws, commands)
@@ -593,6 +599,9 @@ export function createProjectReferenceCommands(deps: {
       if (!request) {
         return false
       }
+      if (activeSocket && activeSocket !== ws) {
+        return true
+      }
       const key = `${request.request_id}:${request.catalog_revision}:${request.command_id}:${JSON.stringify(request.arguments)}`
       let task = pending.get(key)
       if (!task) {
@@ -604,7 +613,10 @@ export function createProjectReferenceCommands(deps: {
       }
       void task.then(
         (result) => {
-          if (ws.readyState !== WebSocket.OPEN) {
+          if (
+            ws.readyState !== WebSocket.OPEN ||
+            (activeSocket && activeSocket !== ws)
+          ) {
             return
           }
           if (!enabled || request.catalog_revision !== revision) {
@@ -630,7 +642,10 @@ export function createProjectReferenceCommands(deps: {
           )
         },
         (error: unknown) => {
-          if (ws.readyState !== WebSocket.OPEN) {
+          if (
+            ws.readyState !== WebSocket.OPEN ||
+            (activeSocket && activeSocket !== ws)
+          ) {
             return
           }
           ws.send(

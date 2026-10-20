@@ -48,6 +48,15 @@ const cloudProject: HomeProjectEntry = {
   readWriteAccess: true,
 }
 
+function makeSocket() {
+  const sent: Record<string, unknown>[] = []
+  const ws = {
+    readyState: WebSocket.OPEN,
+    send: (frame: string) => sent.push(JSON.parse(frame)),
+  } as unknown as WebSocket
+  return { sent, ws }
+}
+
 function fixture(
   options: {
     initialEntries?: HomeProjectEntry[]
@@ -100,11 +109,7 @@ function fixture(
     statReadOnly,
     writeFile: vi.fn(),
   } as unknown as FileOperationsRegistryService
-  const sent: Record<string, unknown>[] = []
-  const ws = {
-    readyState: WebSocket.OPEN,
-    send: (frame: string) => sent.push(JSON.parse(frame)),
-  } as unknown as WebSocket
+  const { sent, ws } = makeSocket()
   const commands = createProjectReferenceCommands({
     entries,
     fileOperations: options.fileOperations ?? fileOperations,
@@ -132,6 +137,7 @@ function fixture(
       expect(sent.some((frame) => frame.request_id === requestId)).toBe(true)
     })
     return sent.find((frame) => frame.request_id === requestId) as {
+      request_id: string
       status: string
       result?: Record<string, unknown>
       error?: string
@@ -221,6 +227,105 @@ describe('Zookeeper project reference commands', () => {
     expect(sent.find((frame) => frame.revision === 3)?.commands).toEqual([])
     finishRead(['main.kcl'])
     expect((await listing).error).toBe('The command catalog changed.')
+  })
+
+  it('rechecks library membership for a retried read after reconnect', async () => {
+    const { commands, entries, request, ws } = fixture()
+    commands.advertise(ws)
+    const found = await request('projects.search', { query: 'TRUCK' })
+    const projectId = (
+      found.result?.projects as Array<{ project_id: string }>
+    )[0].project_id
+    const args = { project_id: projectId, path: 'main.kcl' }
+    const first = await request('projects.read_file', args)
+    expect(first.result?.content).toBe('wheel = circle(10)')
+
+    entries.value = [cloudProject]
+    const next = makeSocket()
+    commands.advertise(next.ws)
+    commands.handleRequest(next.ws, {
+      client_command_request: {
+        request_id: first.request_id,
+        catalog_revision: 1,
+        command_id: 'projects.read_file',
+        arguments: args,
+      },
+    })
+    await vi.waitFor(() => {
+      expect(
+        next.sent.some((frame) => frame.request_id === first.request_id)
+      ).toBe(true)
+    })
+    expect(
+      next.sent.find((frame) => frame.request_id === first.request_id)
+    ).toMatchObject({
+      status: 'rejected',
+      error: 'Invalid project_id, path, or offset.',
+    })
+  })
+
+  it('ignores requests and in-flight results from an earlier socket', async () => {
+    const {
+      commands,
+      entries,
+      readDirectory,
+      request,
+      sent,
+      statReadOnly,
+      ws,
+    } = fixture()
+    commands.advertise(ws)
+    const found = await request('projects.search', { query: 'TRUCK' })
+    const projectId = (
+      found.result?.projects as Array<{ project_id: string }>
+    )[0].project_id
+    let finishRead!: (names: readonly string[]) => void
+    const pausedRead = new Promise<readonly string[]>((resolve) => {
+      finishRead = resolve
+    })
+    readDirectory.mockImplementationOnce(() => pausedRead)
+    const message = {
+      client_command_request: {
+        request_id: 'in-flight-read',
+        catalog_revision: 1,
+        command_id: 'projects.list_files',
+        arguments: { project_id: projectId },
+      },
+    }
+    commands.handleRequest(ws, message)
+    await vi.waitFor(() => expect(readDirectory).toHaveBeenCalledOnce())
+
+    const next = makeSocket()
+    commands.advertise(next.ws)
+    commands.handleRequest(ws, {
+      client_command_request: {
+        ...message.client_command_request,
+        request_id: 'late-old-socket',
+      },
+    })
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(readDirectory).toHaveBeenCalledOnce()
+    expect(sent.some((frame) => frame.request_id === 'late-old-socket')).toBe(
+      false
+    )
+
+    entries.value = [cloudProject]
+    commands.handleRequest(next.ws, message)
+    await vi.waitFor(() => {
+      expect(
+        next.sent.some((frame) => frame.request_id === 'in-flight-read')
+      ).toBe(true)
+    })
+    expect(
+      next.sent.find((frame) => frame.request_id === 'in-flight-read')?.status
+    ).toBe('rejected')
+
+    finishRead(['main.kcl'])
+    await vi.waitFor(() => expect(statReadOnly).toHaveBeenCalledOnce())
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(sent.some((frame) => frame.request_id === 'in-flight-read')).toBe(
+      false
+    )
   })
 
   it('finds projects beyond the first page of library results', async () => {
@@ -560,6 +665,49 @@ describe('Zookeeper project reference commands', () => {
       'File changed while reading. Start again from offset 0.'
     )
     expect(cloudMocks.download).toHaveBeenCalledTimes(2)
+  })
+
+  it('refreshes each cloud page when the server has no revision', async () => {
+    const { request } = fixture()
+    cloudMocks.get.mockResolvedValue({
+      id: 'cloud-123',
+      updated_at: '2026-10-19T12:00:00Z',
+    })
+    cloudMocks.download.mockResolvedValue(new ArrayBuffer(1))
+    cloudMocks.parse
+      .mockResolvedValueOnce([
+        {
+          relativePath: 'main.kcl',
+          data: new TextEncoder().encode('a'.repeat(8_001)),
+        },
+      ] satisfies ProjectArchiveFile[])
+      .mockResolvedValueOnce([
+        {
+          relativePath: 'main.kcl',
+          data: new TextEncoder().encode('b'.repeat(8_001)),
+        },
+      ] satisfies ProjectArchiveFile[])
+    const found = await request('projects.search', { query: 'TRUCK cloud' })
+    const projectId = (
+      found.result?.projects as Array<{ project_id: string }>
+    )[0].project_id
+    const first = await request('projects.read_file', {
+      project_id: projectId,
+      path: 'main.kcl',
+    })
+    const second = await request('projects.read_file', {
+      project_id: projectId,
+      path: 'main.kcl',
+      offset: first.result?.next_offset,
+      version: first.result?.version,
+    })
+
+    expect(second.error).toBe(
+      'File changed while reading. Start again from offset 0.'
+    )
+    expect(cloudMocks.get).toHaveBeenCalledTimes(2)
+    expect(cloudMocks.download).toHaveBeenCalledTimes(2)
+    expect(cloudMocks.parse).toHaveBeenCalledTimes(2)
   })
 
   it('reloads a cloud snapshot when the API token changes', async () => {
