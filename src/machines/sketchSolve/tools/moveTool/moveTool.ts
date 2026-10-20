@@ -2601,41 +2601,46 @@ export function setUpOnDragAndSelectionClickCallbacks({
     onMouseDownSelection: () => {
       setDraggedEntityId(null)
       const snapshot = self.getSnapshot()
-      const hoveredId = snapshot.context.hoveredId
-      if (!isObjectSelectionId(hoveredId)) {
-        // Only api objects can be dragged, ORIGIN cannot be.
+      const planeIntersectPoint = context.sceneInfra.getPlaneIntersectPoint()
+      if (!planeIntersectPoint?.twoD) {
         return false
       }
-
       const objects =
         snapshot.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects ??
         []
-      const hoveredObject = objects[hoveredId]
-      if (isConstraintWithDraggableLabel(hoveredObject)) {
+      // Mouse-down has the current pointer even if asynchronous move handling
+      // has not published its hover state yet.
+      const target = getClosestSelectionTarget(
+        [planeIntersectPoint.twoD.x, planeIntersectPoint.twoD.y],
+        getCurrentSketchObjectsById(objects, snapshot.context.sketchId),
+        context.sceneInfra
+      )
+      const targetId = target?.selectionId ?? null
+      if (!isObjectSelectionId(targetId)) {
+        // Only api objects can be dragged, ORIGIN cannot be.
+        return false
+      }
+      const targetObject = objects[targetId]
+      if (isConstraintWithDraggableLabel(targetObject)) {
         // Allow dragging the label of a constraint
-        const planeIntersectPoint = context.sceneInfra.getPlaneIntersectPoint()
-        if (!planeIntersectPoint?.twoD) {
-          return false
-        }
-
         const labelHitDistance = getClosestConstraintLabelHitDistance(
           [planeIntersectPoint.twoD.x, planeIntersectPoint.twoD.y],
-          hoveredId,
+          targetId,
           context.sceneInfra
         )
         if (labelHitDistance !== null) {
-          setDraggedEntityId(hoveredId)
+          setDraggedEntityId(targetId)
           return true
         }
         return false
       }
       // If it's a point which is already coincident with ORIGIN -> don't allow dragging
       const canDrag = !(
-        isPointSegment(hoveredObject) &&
-        hasCoincidentConstraintWithOrigin(hoveredId, objects)
+        isPointSegment(targetObject) &&
+        hasCoincidentConstraintWithOrigin(targetId, objects)
       )
       if (canDrag) {
-        setDraggedEntityId(hoveredId)
+        setDraggedEntityId(targetId)
       }
       return canDrag
     },

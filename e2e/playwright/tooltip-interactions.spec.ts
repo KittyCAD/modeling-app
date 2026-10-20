@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { readFile, mkdir, writeFile } from 'node:fs/promises'
+import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
 test.use({ mockApiRoutes: false })
@@ -34,7 +34,7 @@ test.describe(
   'Tooltip pointer ownership',
   { tag: ['@desktop', '@web'] },
   () => {
-    test.beforeEach(async ({ page, folderSetupFn, homePage, scene }) => {
+    test.beforeEach(async ({ page, fs, folderSetupFn, homePage, scene }) => {
       await page.setBodyDimensions({ width: 1200, height: 800 })
       const sample = await readFile(
         join(
@@ -54,9 +54,12 @@ test.describe(
       ).join('\n')
       const code = `@settings(kclVersion = 3.0)\n${sample}\n${scalarRows}\n`
       await folderSetupFn(async (directory) => {
-        const project = join(directory, 'tooltip-interactions')
-        await mkdir(project, { recursive: true })
-        await writeFile(join(project, 'main.kcl'), code)
+        const project = await fs.join(directory, 'tooltip-interactions')
+        await fs.mkdir(project, { recursive: true })
+        await fs.writeFile(
+          await fs.join(project, 'main.kcl'),
+          new TextEncoder().encode(code)
+        )
       })
       await homePage.openProject('tooltip-interactions')
       await scene.connectionEstablished()

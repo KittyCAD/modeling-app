@@ -486,8 +486,6 @@ export class ConnectionManager extends EventTarget {
       getInSequence: () => {
         return this.inSequence
       },
-      websocket: this.connection.websocket,
-      handleMessage,
       connection: this.connection,
       trackListener: this.trackListener.bind(this),
     })

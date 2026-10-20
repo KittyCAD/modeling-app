@@ -765,6 +765,17 @@ export class Connection extends EventTarget {
       type: 'websocket',
     })
     this.websocket.addEventListener('message', onWebSocketMessage)
+    // Commands can start before WebRTC is ready. Own their response listener
+    // with the socket so an early acknowledgement cannot be lost.
+    const handleMessage = this.handleMessage
+    if (handleMessage) {
+      this.trackListener('websocket-modeling-message', {
+        event: 'message',
+        callback: handleMessage,
+        type: 'websocket',
+      })
+      this.websocket.addEventListener('message', handleMessage)
+    }
     this.trackListener('websocket-close', {
       event: 'close',
       callback: metaClose,

@@ -18,6 +18,7 @@ import {
   type EngineDisconnectEventDetail,
 } from '@src/lib/engineConnection/utils'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import { createSettings } from '@src/lib/settings/initialSettings'
 import { promiseFactory } from '@src/lib/utils'
 import { Themes } from '@src/lib/theme'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -47,7 +48,7 @@ class ReconnectTestWebSocket extends EventTarget {
 function createConnectionManager() {
   return new ConnectionManager({
     settingsActor: {
-      getSnapshot: () => ({ context: {} }),
+      getSnapshot: () => ({ context: createSettings() }),
     } as unknown as SettingsActorType,
   })
 }
@@ -126,6 +127,113 @@ describe('ConnectionManager', () => {
     vi.unstubAllGlobals()
     reportClientError.mockClear()
     ReconnectTestWebSocket.instances = []
+  })
+
+  it('settles modeling responses before the WebRTC readiness handoff', async () => {
+    vi.useFakeTimers()
+    vi.stubGlobal('WebSocket', ReconnectTestWebSocket)
+    const manager = createConnectionManager()
+    const startup = startConnectionManager(manager, {
+      width: 256,
+      height: 256,
+    }).catch((error: unknown) => error)
+    const websocket = ReconnectTestWebSocket.instances[0]
+    if (!websocket) expect.fail(String(await startup))
+    const requestId = '00000000-0000-4000-8000-000000000001'
+    const response = manager
+      .sendModelingCommandFromWasm(
+        requestId,
+        '[0,0,0]',
+        JSON.stringify({
+          type: 'modeling_cmd_req',
+          cmd_id: requestId,
+          cmd: { type: 'begin_execution', enable_render: true },
+        }),
+        '{}'
+      )
+      .catch(() => undefined)
+
+    try {
+      expect(manager.connection?.connected).toBe(false)
+      expect(Object.keys(manager.pendingCommands)).toEqual([requestId])
+      websocket.dispatchEvent(
+        new MessageEvent('message', {
+          data: JSON.stringify({
+            success: true,
+            request_id: requestId,
+            resp: {
+              type: 'modeling',
+              data: { modeling_response: { type: 'empty' } },
+            },
+          }),
+        })
+      )
+
+      expect(Object.keys(manager.pendingCommands)).toEqual([])
+      expect(await response).toBeInstanceOf(Uint8Array)
+      expect(
+        manager.commandLogs.filter(({ type }) => type === 'receive-reliable')
+      ).toHaveLength(1)
+    } finally {
+      manager.tearDown({ route: 'user-requested', initiatedBy: 'client' })
+      await Promise.all([response, startup])
+    }
+  })
+
+  it('removes the early response listener before replacing its connection', async () => {
+    vi.useFakeTimers()
+    vi.stubGlobal('WebSocket', ReconnectTestWebSocket)
+    const manager = createConnectionManager()
+    const firstStartup = startConnectionManager(manager, {
+      width: 256,
+      height: 256,
+    }).catch((error: unknown) => error)
+    const retiredWebsocket = ReconnectTestWebSocket.instances[0]
+    if (!retiredWebsocket) expect.fail(String(await firstStartup))
+    manager.tearDown({ route: 'user-requested', initiatedBy: 'client' })
+    await firstStartup
+
+    const startup = startConnectionManager(manager, {
+      width: 256,
+      height: 256,
+    }).catch((error: unknown) => error)
+    const websocket = ReconnectTestWebSocket.instances[1]
+    if (!websocket) expect.fail(String(await startup))
+    const requestId = '00000000-0000-4000-8000-000000000002'
+    const response = manager
+      .sendModelingCommandFromWasm(
+        requestId,
+        '[0,0,0]',
+        JSON.stringify({
+          type: 'modeling_cmd_req',
+          cmd_id: requestId,
+          cmd: { type: 'begin_execution', enable_render: true },
+        }),
+        '{}'
+      )
+      .catch(() => undefined)
+    const payload = JSON.stringify({
+      success: true,
+      request_id: requestId,
+      resp: {
+        type: 'modeling',
+        data: { modeling_response: { type: 'empty' } },
+      },
+    })
+    try {
+      retiredWebsocket.dispatchEvent(
+        new MessageEvent('message', { data: payload })
+      )
+      expect(Object.keys(manager.pendingCommands)).toEqual([requestId])
+      expect(manager.responseMap[requestId]).toBeUndefined()
+
+      websocket.dispatchEvent(new MessageEvent('message', { data: payload }))
+      expect(Object.keys(manager.pendingCommands)).toEqual([])
+      expect(await response).toBeInstanceOf(Uint8Array)
+    } finally {
+      manager.tearDown({ route: 'user-requested', initiatedBy: 'client' })
+      await Promise.all([response, startup])
+    }
   })
 
   it.each(settingUpdates)(
