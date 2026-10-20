@@ -625,6 +625,62 @@ describe('KclManager sketch outcomes', () => {
 })
 
 describe('KclManager file switching', () => {
+  it('uses explicit code instead of cached editor contents when returning to a file', async () => {
+    const { app, kclManager } = createKclManagerTestHarness()
+    const open = (path: string, code: string) =>
+      KclManager.fromFile(
+        new File(path, kclManager.textFileIO),
+        kclManager.systemDeps,
+        kclManager,
+        code,
+        { shouldSyncRustOnOpen: false }
+      )
+    try {
+      await open('/tmp/first.kcl', 'first = 1')
+      await open('/tmp/second.kcl', 'second = 2')
+      await open('/tmp/first.kcl', 'replacement = 3')
+      expect(kclManager.code).toBe('replacement = 3')
+      expect(kclManager.editorView.state.doc.toString()).toBe('replacement = 3')
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it.each([
+    { reuseEditor: false, code: 'seeded = 42' },
+    { reuseEditor: true, code: 'seeded = 42' },
+    { reuseEditor: false, code: '' },
+    { reuseEditor: true, code: '' },
+  ])(
+    'opens explicit code "$code" when reusing an editor: $reuseEditor',
+    async ({ reuseEditor, code }) => {
+      const { app, kclManager } = createKclManagerTestHarness()
+      const read = vi
+        .spyOn(kclManager.textFileIO, 'read')
+        .mockResolvedValue('disk = 1')
+      const timestamp = vi
+        .spyOn(kclManager.textFileIO, 'modifiedAt')
+        .mockResolvedValue(1000)
+      let opened: KclManager | undefined
+      try {
+        opened = await KclManager.fromFile(
+          new File('/tmp/seeded.kcl', kclManager.textFileIO),
+          kclManager.systemDeps,
+          reuseEditor ? kclManager : undefined,
+          code,
+          { shouldSyncRustOnOpen: false }
+        )
+        expect(opened.code).toBe(code)
+        expect(opened.editorView.state.doc.toString()).toBe(code)
+        expect(read).not.toHaveBeenCalled()
+        expect(timestamp).toHaveBeenCalledWith('/tmp/seeded.kcl')
+      } finally {
+        opened?.close()
+        app.dispose()
+      }
+    }
+  )
+
   it('clears previous-file operations and artifacts while the next file executes', () => {
     const { kclManager } = createKclManagerTestHarness()
     const previousOperation = createLiveOperation('previousFileOperation', 0)

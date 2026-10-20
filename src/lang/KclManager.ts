@@ -1865,16 +1865,21 @@ export class KclManager extends File {
     file: File,
     systemDeps: ProjectSystemDeps,
     providedEditor?: KclManager,
-    _providedCode?: string,
+    providedCode?: string,
     options: FromFileOptions = { shouldSyncRustOnOpen: true }
   ) {
     if (providedEditor) {
       await providedEditor.flushWriteToFile({ suppressConflictToast: true })
       options.assertCurrent?.()
     }
-    // Reread disk even when the caller supplied text so its timestamp belongs
-    // to the bytes we actually opened.
-    const snapshot = await file.readWithTimestamp()
+    // Desktop tests can explicitly seed editor contents through persistCode.
+    const snapshot =
+      providedCode === undefined
+        ? await file.readWithTimestamp()
+        : {
+            code: providedCode,
+            modifiedAt: await file.textFileIO.modifiedAt(file.path),
+          }
     const diskCode = normalizeLineEndings(snapshot.code)
     options.assertCurrent?.()
     const recoverySnapshot = readRecoverySnapshot(file.path)
@@ -1922,6 +1927,8 @@ export class KclManager extends File {
     const savedEditorState = providedEditor.editorStatesByPath.get(file.path)
     const canRestoreEditorState =
       savedEditorState !== undefined &&
+      (providedCode === undefined ||
+        savedEditorState.doc.toString() === initialCode) &&
       providedEditor.editorDiskTimestampsByPath.get(file.path) ===
         snapshot.modifiedAt &&
       !(recoverySnapshot && recoverySnapshot.modifiedAt > snapshot.modifiedAt)

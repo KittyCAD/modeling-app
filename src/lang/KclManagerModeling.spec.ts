@@ -105,6 +105,7 @@ describe('editor-owned modeling actor', () => {
 
   it('invalidates initialization from an earlier lifetime even if the editor reopens', async () => {
     const { app, kclManager } = createKclManagerTestHarness()
+    vi.spyOn(kclManager.textFileIO, 'modifiedAt').mockResolvedValue(0)
     try {
       const instance = await app.wasmPromise
       let resolveWasm!: (instance: ModuleType) => void
@@ -161,6 +162,7 @@ describe('editor-owned modeling actor', () => {
 
   it('creates a fresh actor when the legacy editor is reopened after close', async () => {
     const { app, kclManager } = createKclManagerTestHarness()
+    vi.spyOn(kclManager.textFileIO, 'modifiedAt').mockResolvedValue(0)
     try {
       const first = await kclManager.modelingActorPromise
       kclManager.close()
