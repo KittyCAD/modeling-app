@@ -76,7 +76,7 @@ pub struct EngineManager {
     // from the original native connection type.
     pub transport: Arc<Box<dyn EngineTransport>>,
     responses: ResponseInformation,
-    pending_errors: Arc<RwLock<Vec<String>>>,
+    pending_errors: Arc<RwLock<Vec<KclError>>>,
     socket_health: Arc<RwLock<SocketHealth>>,
     ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>>,
 
