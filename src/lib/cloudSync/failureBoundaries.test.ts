@@ -237,7 +237,13 @@ describe('cloud sync failure boundaries', () => {
   it('preserves JSON archive support for limited reference reads', async () => {
     const archive = new TextEncoder().encode(
       JSON.stringify({
-        files: [{ relativePath: 'main.kcl', contents: 'cube = 1' }],
+        files: [
+          {
+            relativePath: 'main.kcl',
+            contents: 'cube = [1, 2] // "quoted"',
+            metadata: { labels: ['[', ',', ']'] },
+          },
+        ],
       })
     ).buffer
 
@@ -249,6 +255,9 @@ describe('cloud sync failure boundaries', () => {
       maxTotalBytes: 32 * 1024 * 1024,
     })
     expect(files.map((file) => file.relativePath)).toEqual(['main.kcl'])
+    expect(new TextDecoder().decode(files[0].data)).toBe(
+      'cube = [1, 2] // "quoted"'
+    )
   })
 
   it('rejects excessive unrelated JSON entries', async () => {
@@ -270,6 +279,53 @@ describe('cloud sync failure boundaries', () => {
         maxTotalBytes: 32 * 1024 * 1024,
       })
     ).rejects.toThrow('Too many archive entries.')
+  })
+
+  it('rejects a huge JSON files array before parsing it', async () => {
+    const archive = new TextEncoder().encode(
+      `{"files":[${'0,'.repeat(100_000).slice(0, -1)}]}`
+    ).buffer
+    const parse = vi.spyOn(JSON, 'parse')
+    try {
+      await expect(
+        parseProjectArchive(archive, {
+          includePath: (path) => path.endsWith('.kcl'),
+          maxArchiveEntries: 4_000,
+          maxFileBytes: 256 * 1024,
+          maxFiles: 2_000,
+          maxTotalBytes: 32 * 1024 * 1024,
+        })
+      ).rejects.toThrow('Too many archive entries.')
+      expect(parse).not.toHaveBeenCalled()
+    } finally {
+      parse.mockRestore()
+    }
+  })
+
+  it('bounds JSON metadata objects before parsing them', async () => {
+    const archive = new TextEncoder().encode(
+      JSON.stringify({
+        files: [],
+        metadata: Object.fromEntries(
+          Array.from({ length: 100 }, (_, index) => [`key${index}`, index])
+        ),
+      })
+    ).buffer
+    const parse = vi.spyOn(JSON, 'parse')
+    try {
+      await expect(
+        parseProjectArchive(archive, {
+          includePath: () => true,
+          maxArchiveEntries: 10,
+          maxFileBytes: 256 * 1024,
+          maxFiles: 2_000,
+          maxTotalBytes: 32 * 1024 * 1024,
+        })
+      ).rejects.toThrow('Archive JSON is too complex.')
+      expect(parse).not.toHaveBeenCalled()
+    } finally {
+      parse.mockRestore()
+    }
   })
 
   it('skips unrelated JSON contents before checking selected file sizes', async () => {

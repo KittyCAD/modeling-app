@@ -353,6 +353,92 @@ export type ProjectArchiveReadLimits = {
 
 class ProjectArchiveLimitError extends Error {}
 
+/** Reject large JSON arrays before JSON.parse allocates their entries. */
+function checkJsonEntryLimit(archive: ArrayBuffer, maxEntries: number): void {
+  const bytes = new Uint8Array(archive)
+  let offset =
+    bytes[0] === 0xef && bytes[1] === 0xbb && bytes[2] === 0xbf ? 3 : 0
+  while (
+    bytes[offset] === 0x20 ||
+    bytes[offset] === 0x09 ||
+    bytes[offset] === 0x0a ||
+    bytes[offset] === 0x0d
+  ) {
+    offset += 1
+  }
+  if (bytes[offset] !== 0x7b && bytes[offset] !== 0x5b) {
+    return
+  }
+
+  const containers: Array<{ kind: 'array' | 'object'; entries: number }> = []
+  let inString = false
+  let escaped = false
+  let structuralTokens = 0
+  // Bound metadata objects too, while allowing several fields per file.
+  const maxStructuralTokens = Math.max(8, maxEntries * 8)
+  const markStructure = () => {
+    structuralTokens += 1
+    if (structuralTokens > maxStructuralTokens) {
+      // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+      throw new ProjectArchiveLimitError('Archive JSON is too complex.')
+    }
+  }
+  const markArrayValue = () => {
+    const current = containers.at(-1)
+    if (current?.kind === 'array' && current.entries === 0) {
+      current.entries = 1
+      if (current.entries > maxEntries) {
+        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+        throw new ProjectArchiveLimitError('Too many archive entries.')
+      }
+    }
+  }
+  for (; offset < bytes.length; offset += 1) {
+    const byte = bytes[offset]
+    if (inString) {
+      if (escaped) {
+        escaped = false
+      } else if (byte === 0x5c) {
+        escaped = true
+      } else if (byte === 0x22) {
+        inString = false
+      }
+      continue
+    }
+    if (byte === 0x22) {
+      markArrayValue()
+      inString = true
+    } else if (byte === 0x5b || byte === 0x7b) {
+      markStructure()
+      markArrayValue()
+      containers.push({
+        kind: byte === 0x5b ? 'array' : 'object',
+        entries: 0,
+      })
+      if (containers.length > 128) {
+        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+        throw new ProjectArchiveLimitError('Archive JSON is too deeply nested.')
+      }
+    } else if (byte === 0x5d || byte === 0x7d) {
+      containers.pop()
+    } else if (byte === 0x2c) {
+      markStructure()
+      const current = containers.at(-1)
+      if (current?.kind === 'array' && ++current.entries > maxEntries) {
+        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+        throw new ProjectArchiveLimitError('Too many archive entries.')
+      }
+    } else if (
+      byte !== 0x20 &&
+      byte !== 0x09 &&
+      byte !== 0x0a &&
+      byte !== 0x0d
+    ) {
+      markArrayValue()
+    }
+  }
+}
+
 /** Count central-directory records before JSZip allocates an object per entry. */
 function checkZipEntryLimit(archive: ArrayBuffer, maxEntries: number): boolean {
   const view = new DataView(archive)
@@ -548,6 +634,9 @@ function parseJsonProjectArchive(
   archive: ArrayBuffer,
   limits?: ProjectArchiveReadLimits
 ) {
+  if (limits) {
+    checkJsonEntryLimit(archive, limits.maxArchiveEntries)
+  }
   let parsed: unknown
   try {
     const decoded = new TextDecoder().decode(new Uint8Array(archive))

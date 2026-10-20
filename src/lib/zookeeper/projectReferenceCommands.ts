@@ -1,6 +1,7 @@
 import type { ReadonlySignal } from '@preact/signals-core'
 import {
   downloadRemoteProjectArchive,
+  getRemoteProject,
   RemoteProjectArchiveLimitError,
 } from '@src/lib/cloudSync/cloudApi'
 import { parseProjectArchive } from '@src/lib/cloudSync/projectArchive'
@@ -171,6 +172,16 @@ export function createProjectReferenceCommands(deps: {
   let enabled = deps.enabled ?? true
   let revision = 1
   let activeSocket: WebSocket | undefined
+  // Continuation pages reuse one bounded snapshot while its cloud revision holds.
+  let cloudSnapshot:
+    | {
+        remoteProjectId: string
+        apiToken: string
+        revision: string
+        files: ProjectArchiveFile[]
+      }
+    | undefined
+  let cloudSnapshotGeneration = 0
 
   function sendCatalog(ws: WebSocket, advertisedCommands: readonly unknown[]) {
     ws.send(
@@ -237,7 +248,8 @@ export function createProjectReferenceCommands(deps: {
   }
 
   async function cloudFiles(
-    entry: HomeProjectEntry
+    entry: HomeProjectEntry,
+    useSnapshot: boolean
   ): Promise<ProjectArchiveFile[]> {
     if (!entry.remoteProjectId) {
       return Promise.reject(
@@ -246,10 +258,29 @@ export function createProjectReferenceCommands(deps: {
         )
       )
     }
+    const apiToken = deps.getApiToken()
     const config: CloudSyncConfig = {
       enabled: true,
-      token: deps.getApiToken(),
+      token: apiToken,
     }
+    const project = await getRemoteProject(config, entry.remoteProjectId)
+    const rawRevision = project.revision ?? project.updated_at
+    const remoteRevision =
+      rawRevision === undefined || rawRevision === null
+        ? undefined
+        : String(rawRevision)
+    if (
+      useSnapshot &&
+      remoteRevision !== undefined &&
+      cloudSnapshot?.remoteProjectId === entry.remoteProjectId &&
+      cloudSnapshot.apiToken === apiToken &&
+      apiToken === deps.getApiToken() &&
+      cloudSnapshot.revision === remoteRevision
+    ) {
+      return cloudSnapshot.files
+    }
+    cloudSnapshot = undefined
+    const generation = ++cloudSnapshotGeneration
     let archive: ArrayBuffer
     try {
       archive = await downloadRemoteProjectArchive(
@@ -264,13 +295,27 @@ export function createProjectReferenceCommands(deps: {
       return Promise.reject(error)
     }
     try {
-      return await parseProjectArchive(archive, {
+      const files = await parseProjectArchive(archive, {
         includePath: isReadableFile,
         maxArchiveEntries: MAX_FILES * 2,
         maxFileBytes: MAX_FILE_BYTES,
         maxFiles: MAX_FILES,
         maxTotalBytes: MAX_ARCHIVE_BYTES,
       })
+      if (
+        enabled &&
+        remoteRevision !== undefined &&
+        generation === cloudSnapshotGeneration &&
+        apiToken === deps.getApiToken()
+      ) {
+        cloudSnapshot = {
+          remoteProjectId: entry.remoteProjectId,
+          apiToken,
+          revision: remoteRevision,
+          files,
+        }
+      }
+      return files
     } catch {
       return Promise.reject(
         new ProjectReferenceCommandError(
@@ -344,11 +389,14 @@ export function createProjectReferenceCommands(deps: {
     return found.sort((a, b) => a.localeCompare(b))
   }
 
-  async function filesFor(entry: HomeProjectEntry): Promise<string[]> {
+  async function filesFor(
+    entry: HomeProjectEntry,
+    useSnapshot: boolean
+  ): Promise<string[]> {
     if (entry.localProjectPath) {
       return localFiles(entry.localProjectPath)
     }
-    return (await cloudFiles(entry))
+    return (await cloudFiles(entry, useSnapshot))
       .map((file) => file.relativePath)
       .filter(isReadableFile)
       .sort((a, b) => a.localeCompare(b))
@@ -362,7 +410,7 @@ export function createProjectReferenceCommands(deps: {
         new ProjectReferenceCommandError('Invalid project_id or offset.')
       )
     }
-    const files = await filesFor(entry)
+    const files = await filesFor(entry, offset > 0)
     const page: string[] = []
     let next = offset
     let pageBytes = 0
@@ -439,7 +487,7 @@ export function createProjectReferenceCommands(deps: {
       }
       bytes = await deps.fileOperations.readFile(absolute)
     } else {
-      const file = (await cloudFiles(entry)).find(
+      const file = (await cloudFiles(entry, offset > 0)).find(
         (candidate) => candidate.relativePath === path
       )
       if (!file) {
@@ -534,6 +582,8 @@ export function createProjectReferenceCommands(deps: {
       }
       enabled = nextEnabled
       revision += 1
+      cloudSnapshot = undefined
+      cloudSnapshotGeneration += 1
       if (activeSocket?.readyState === WebSocket.OPEN) {
         sendCatalog(activeSocket, enabled ? commands : [])
       }
