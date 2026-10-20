@@ -11,6 +11,21 @@ const options = {
 }
 
 describe('ScaleGridRenderer', () => {
+  it('keeps the fade at the same world distance when file units change', () => {
+    const camera = new OrthographicCamera(-50, 50, 50, -50, 0.1, 1000)
+    camera.position.set(0, 0, 100)
+    camera.lookAt(0, 0, 0)
+    const grid = new ScaleGridRenderer()
+    grid.updateScaleGrid(camera, [1000, 1000], 1, options)
+    const startMm = grid.material.uniforms.uFadeStart.value
+    const endMm = grid.material.uniforms.uFadeEnd.value
+    grid.updateScaleGrid(camera, [1000, 1000], 25.4, options)
+    expect(grid.material.uniforms.uFadeStart.value * 25.4).toBeCloseTo(startMm)
+    expect(grid.material.uniforms.uFadeEnd.value * 25.4).toBeCloseTo(endMm)
+    expect(endMm).toBeGreaterThan(startMm)
+    expect(startMm).toBeGreaterThan(0)
+  })
+
   it('fades dense cells smoothly and draws colored world axes', () => {
     const grid = new ScaleGridRenderer()
     expect(grid.material.uniforms.uFadeDenseGrid.value).toBe(true)
