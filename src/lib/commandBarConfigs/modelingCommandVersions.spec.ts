@@ -63,6 +63,26 @@ describe('modeling command KCL versions', () => {
     return result
   }
 
+  it('only offers Named View for a supported parsed KCL version', async () => {
+    const namedView = () =>
+      createMachineCommand<typeof modelingMachine, ModelingCommandSchema>({
+        groupId: 'modeling',
+        type: 'Named View',
+        state: actor.getSnapshot(),
+        actor,
+        send: vi.fn(),
+        commandBarConfig: modelingMachineCommandConfig,
+        defaultScopes: [MODE_MODELING_COMMAND_SCOPE],
+        showExperimentalCommands: true,
+      })
+
+    expect(namedView()).toBeNull()
+    await parseCode('@settings(kclVersion = 3.0)')
+    expect(namedView()).toMatchObject({ name: 'Named View' })
+    await parseCode('@settings(kclVersion = 3.0)\nx =')
+    expect(namedView()).toBeNull()
+  })
+
   it('hides unavailable fields without removing authored edit arguments', async () => {
     await parseCode('@settings(kclVersion = 3.0)')
     const send = vi.fn()

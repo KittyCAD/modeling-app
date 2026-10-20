@@ -14,6 +14,7 @@ import type { CommandBarContext } from '@src/machines/commandBarMachine'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import {
   modelingStdLibCommandArgs,
+  modelingStdLibCommandAvailable,
   modelingStdLibCommandStatus,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import {
@@ -640,6 +641,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
   'Named View': {
     icon: 'namedView',
     status: 'experimental',
+    available: (context) =>
+      modelingStdLibCommandAvailable('Named View', context),
     needsReview: true,
     reviewValidation: createModelingCodemodReviewValidation(
       modelingCommandCodemods['Named View']
