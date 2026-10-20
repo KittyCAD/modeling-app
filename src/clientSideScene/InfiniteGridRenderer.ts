@@ -43,6 +43,13 @@ uniform bool uShowAxes;
 uniform float uPixelRatio;
 uniform vec4 uXAxisColor;
 uniform vec4 uYAxisColor;
+uniform float uFadeStart;
+uniform float uFadeEnd;
+
+float perimeterBlend(vec2 point)
+{
+	return smoothstep(uFadeStart, uFadeEnd, length(point));
+}
 
 vec3 clipToGrid(float ndcZ)
 {
@@ -60,10 +67,10 @@ float gridCoverage(vec2 point, float spacing)
 	vec2 spacingPixels = 1.0 / derivative;
 	if (uFadeDenseGrid)
 	{
-		// Fade the entire layer when either side of a cell becomes crowded.
-		// Fading each line family separately leaves bright stripes at the horizon.
+		// Keep the central working area clear. Density only changes the falloff
+		// outside it, where fading both line families avoids horizon stripes.
 		float cellSpacing = min(spacingPixels.x, spacingPixels.y) / uPixelRatio;
-		coverage *= smoothstep(3.0, 12.0, cellSpacing);
+		coverage *= mix(1.0, smoothstep(3.0, 12.0, cellSpacing), perimeterBlend(point));
 	}
 	else
 	{
@@ -124,9 +131,11 @@ void main()
 
 	if (uFadeDenseGrid)
 	{
-		// Ray angle is evaluated per fragment, so distant cells fade before the
-		// camera itself reaches a grazing angle. This also fades the axes.
-		alpha *= smoothstep(0.035, 0.2, abs(normalize(rayDirection).z));
+		// Fade only the perimeter, including the axes. Grazing views steepen
+		// this outer falloff without dimming the central working area.
+		float perimeter = perimeterBlend(gridPoint.xy);
+		float angleFade = smoothstep(0.035, 0.2, abs(normalize(rayDirection).z));
+		alpha *= (1.0 - perimeter) * mix(1.0, angleFade, perimeter);
 	}
 	if (alpha <= 0.001)
 	{
@@ -168,6 +177,8 @@ export class InfiniteGridRenderer extends Mesh<
         uPixelRatio: { value: 1 },
         uXAxisColor: { value: [220 / 255, 2 / 255, 31 / 255, 0.9] },
         uYAxisColor: { value: [22 / 255, 202 / 255, 51 / 255, 0.9] },
+        uFadeStart: { value: 1 },
+        uFadeEnd: { value: 2 },
       },
       transparent: false,
       alphaToCoverage: true,
