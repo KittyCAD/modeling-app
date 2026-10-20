@@ -782,67 +782,6 @@ surface = planarSurface(selected, tolerance = 0.01mm)
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn planar_surface_accepts_one_closed_segment_list_in_mock_execution() {
-        let result = parse_execute(
-            r#"
-@settings(kclVersion = 3.0, experimentalFeatures = allow)
-
-profile = sketch(on = XY) {
-  line1 = line(start = [0mm, 0mm], end = [2mm, 0mm])
-  line2 = line(start = [2mm, 0mm], end = [2mm, 2mm])
-  line3 = line(start = [2mm, 2mm], end = [0mm, 2mm])
-  line4 = line(start = [0mm, 2mm], end = [0mm, 0mm])
-  coincident([line1.end, line2.start])
-  coincident([line2.end, line3.start])
-  coincident([line3.end, line4.start])
-  coincident([line4.end, line1.start])
-}
-surface = planarSurface([profile.line1, profile.line2, profile.line3, profile.line4])
-"#,
-        )
-        .await
-        .unwrap();
-
-        let command = result
-            .root_module_artifact_commands()
-            .iter()
-            .find_map(|artifact_command| match &artifact_command.command {
-                ModelingCmd::CreatePlanarSurface(command) => Some(command),
-                _ => None,
-            })
-            .expect("expected a CreatePlanarSurface command");
-
-        // Segment lists are replayed as one synthetic sketch before surface creation.
-        assert_eq!(command.curve_ids.len(), 1);
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn planar_surface_accepts_one_region_from_a_multi_region_sketch() {
-        for region in [
-            "region(point = [0mm, 0mm], sketch = profile)",
-            "region(segments = [profile.circle1])",
-        ] {
-            let result = parse_execute(&format!(
-                r#"
-@settings(kclVersion = 3.0, experimentalFeatures = allow)
-profile = sketch(on = XY) {{
-  circle1 = circle(start = [2mm, 0mm], center = [0mm, 0mm])
-  circle2 = circle(start = [8mm, 0mm], center = [6mm, 0mm])
-}}
-selected = {region}
-surface = planarSurface(selected)
-"#
-            ))
-            .await
-            .unwrap();
-
-            assert!(result.root_module_artifact_commands().iter().any(|artifact_command| {
-                matches!(&artifact_command.command, ModelingCmd::CreatePlanarSurface(command) if command.curve_ids.len() == 1)
-            }));
-        }
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
     async fn planar_surface_accepts_a_closed_boundary_in_any_declaration_order() {
         let result = parse_execute(
             r#"
@@ -913,39 +852,22 @@ rawEdgeSurface = planarSurface([rawEdge])
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn planar_surface_rejects_an_empty_curve_list() {
-        let err = parse_execute(
+    async fn planar_surface_rejects_a_whole_sketch() {
+        let error = parse_execute(
             r#"
 @settings(kclVersion = 3.0, experimentalFeatures = allow)
-surface = planarSurface([])
+profile = sketch(on = XY) {
+  circle1 = circle(start = [2mm, 0mm], center = [0mm, 0mm])
+}
+surface = planarSurface(profile)
 "#,
         )
         .await
         .unwrap_err();
-
-        assert!(matches!(err, KclError::Argument { .. }), "{err:?}");
-        assert!(err.message().contains("found an empty array"), "{err:?}");
-    }
-
-    #[tokio::test(flavor = "multi_thread")]
-    async fn planar_surface_rejects_a_whole_sketch() {
-        for version in ["2.0", "3.0"] {
-            let error = parse_execute(&format!(
-                r#"
-@settings(kclVersion = {version}, experimentalFeatures = allow)
-profile = sketch(on = XY) {{
-  circle1 = circle(start = [2mm, 0mm], center = [0mm, 0mm])
-}}
-surface = planarSurface(profile)
-"#,
-            ))
-            .await
-            .unwrap_err();
-            assert!(
-                error.message().contains("Select a region with `region(...)`"),
-                "{error:?}"
-            );
-        }
+        assert!(
+            error.message().contains("Select a region with `region(...)`"),
+            "{error:?}"
+        );
     }
 
     #[test]

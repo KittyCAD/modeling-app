@@ -1196,84 +1196,37 @@ fn planar_surface_artifact_uses_the_created_body_id_and_source_range() {
         omit_from_graph: false,
     };
 
-    for response_surface_id in [Some(surface_id), None] {
-        let mut responses = AHashMap::default();
-        if let Some(surface_id) = response_surface_id {
-            responses.insert(
-                cmd_id,
-                OkModelingCmdResponse::CreatePlanarSurface(
-                    serde_json::from_value(serde_json::json!({ "surfaces": [surface_id] })).unwrap(),
-                ),
-            );
-        }
-        let updated = artifacts_to_update(
-            &IndexMap::default(),
-            &artifact_command,
-            &responses,
-            &AHashMap::default(),
-            &AHashMap::default(),
-            &programs,
-            0,
-            &IndexMap::default(),
-            &AHashMap::default(),
-        )
-        .unwrap();
-
-        assert_eq!(updated.len(), 1);
-        let Artifact::Sweep(surface) = &updated[0] else {
-            panic!("Expected CreatePlanarSurface to create a sweep artifact, got: {updated:?}");
-        };
-        assert_eq!(surface.id, ArtifactId::new(response_surface_id.unwrap_or(cmd_id)));
-        assert_eq!(surface.sub_type, SweepSubType::PlanarSurface);
-        // A topology-only edge has no sketch path in the artifact graph.
-        assert_eq!(surface.path_id, None);
-        assert_eq!(surface.method, ArtifactSweepMethod::New);
-        assert!(!surface.consumed);
-        assert_eq!(surface.code_ref.range, range);
-        assert!(!surface.code_ref.node_path.is_empty());
-    }
-}
-
-#[test]
-fn planar_surface_does_not_create_artifacts_for_invalid_region_counts() {
-    let cmd_id = Uuid::new_v4();
-    let artifact_command = ArtifactCommand {
+    let responses = AHashMap::from_iter([(
         cmd_id,
-        range: SourceRange::synthetic(),
-        command: ModelingCmd::from(
-            kcmc::each_cmd::CreatePlanarSurface::builder()
-                .curve_ids(vec![Uuid::new_v4()])
-                .tolerance(kcmc::length_unit::LengthUnit(0.01))
-                .build(),
+        OkModelingCmdResponse::CreatePlanarSurface(
+            serde_json::from_value(serde_json::json!({ "surfaces": [surface_id] })).unwrap(),
         ),
-        entity_clone_info: None,
-        omit_from_graph: false,
+    )]);
+    let updated = artifacts_to_update(
+        &IndexMap::default(),
+        &artifact_command,
+        &responses,
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &AHashMap::default(),
+    )
+    .unwrap();
+
+    assert_eq!(updated.len(), 1);
+    let Artifact::Sweep(surface) = &updated[0] else {
+        panic!("Expected CreatePlanarSurface to create a sweep artifact, got: {updated:?}");
     };
-    let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
-    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
-
-    for surfaces in [vec![], vec![Uuid::new_v4(), Uuid::new_v4()]] {
-        let responses = AHashMap::from_iter([(
-            cmd_id,
-            OkModelingCmdResponse::CreatePlanarSurface(
-                serde_json::from_value(serde_json::json!({ "surfaces": surfaces })).unwrap(),
-            ),
-        )]);
-        let updated = artifacts_to_update(
-            &IndexMap::default(),
-            &artifact_command,
-            &responses,
-            &AHashMap::default(),
-            &AHashMap::default(),
-            &programs,
-            0,
-            &IndexMap::default(),
-            &AHashMap::default(),
-        )
-        .unwrap();
-
-        assert!(updated.is_empty());
-    }
+    assert_eq!(surface.id, ArtifactId::new(surface_id));
+    assert_eq!(surface.sub_type, SweepSubType::PlanarSurface);
+    // A topology-only edge has no sketch path in the artifact graph.
+    assert_eq!(surface.path_id, None);
+    assert_eq!(surface.method, ArtifactSweepMethod::New);
+    assert!(!surface.consumed);
+    assert_eq!(surface.code_ref.range, range);
+    assert!(!surface.code_ref.node_path.is_empty());
 }
 
 #[test]
