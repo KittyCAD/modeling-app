@@ -11,6 +11,44 @@ const options = {
 }
 
 describe('ScaleGridRenderer', () => {
+  it('fades fixed-size minor lines over a range of zoom levels', () => {
+    const camera = new OrthographicCamera(-50, 50, 50, -50, 0.1, 1000)
+    camera.position.set(0, 0, 100)
+    camera.lookAt(0, 0, 0)
+    const grid = new ScaleGridRenderer()
+    grid.updateScaleGrid(camera, [1000, 1000], 1, options)
+    expect(grid.material.uniforms.uMinorOpacity.value).toBe(0)
+    camera.zoom = 3
+    grid.updateScaleGrid(camera, [1000, 1000], 1, options)
+    expect(grid.material.uniforms.uMinorOpacity.value).toBeGreaterThan(0)
+    expect(grid.material.uniforms.uMinorOpacity.value).toBeLessThan(1)
+    camera.zoom = 5
+    grid.updateScaleGrid(camera, [1000, 1000], 1, options)
+    expect(grid.material.uniforms.uMinorOpacity.value).toBe(1)
+    expect(grid.material.uniforms.uMinorSpacing.value).toBe(0.25)
+  })
+
+  it('keeps shared grid lines visible across an adaptive scale boundary', () => {
+    const camera = new OrthographicCamera(-50, 50, 50, -50, 0.1, 1000)
+    camera.position.set(0, 0, 100)
+    camera.lookAt(0, 0, 0)
+    const grid = new ScaleGridRenderer()
+    const sharedLevelWeights = [3.9999, 4.0001].map((zoom) => {
+      camera.zoom = zoom
+      grid.updateScaleGrid(camera, [1000, 1000], 1, {
+        ...options,
+        fixedSizeGrid: false,
+      })
+      const uniforms = grid.material.uniforms
+      const spacing = uniforms.uMajorSpacing.value
+      return spacing === 1
+        ? 1 - uniforms.uGridLevelBlend.value
+        : uniforms.uGridLevelBlend.value
+    })
+    expect(sharedLevelWeights[0]).toBeCloseTo(1)
+    expect(sharedLevelWeights[1]).toBeCloseTo(1)
+  })
+
   it('keeps the fade at the same world distance when file units change', () => {
     const camera = new OrthographicCamera(-50, 50, 50, -50, 0.1, 1000)
     camera.position.set(0, 0, 100)
