@@ -290,7 +290,7 @@ export class LocalRenderer {
    * The engine's reference is the complete one: it can describe an edge
    * between two faces of a sweep, and it adds a face's parent body and index.
    * So the engine is asked once per entity and the answer is cached.
-   * Only click asks for this, hover doesn't need it (we just higlight the edge by its id).
+   * Only click asks for this, hover doesn't need it (we just highlight the edge by its id).
    */
   private async getEngineEntityReference(entityId: string) {
     const cached = this.engineEntityReferences.get(entityId)
