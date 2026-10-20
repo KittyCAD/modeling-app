@@ -3,7 +3,7 @@ import { DEFAULT_SKETCH_SOLVE_STREAM_DIMMING } from '@src/clientSideScene/Client
 import { ConnectionStream } from '@src/components/ConnectionStream'
 import { BodiesPane } from '@src/lib/featureTree/BodiesPane'
 import { DebugPane } from '@src/components/layout/areas/DebugPane'
-import { FeatureTreePane } from '@src/components/layout/areas/FeatureTreePane'
+import { FeatureTreePane } from '@src/lib/featureTree/FeatureTreePane'
 import { EditorPane } from '@src/components/layout/areas/EditorPane'
 import { KclNamedViewsPane } from '@src/components/layout/areas/KclNamedViewsPane'
 import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
