@@ -103,8 +103,14 @@ export class AuthenticatedApp {
     this.testInfo = testInfo
   }
 
-  async initialise(code = '', userFeatures: readonly Feature[] = []) {
-    await setup(this.context, this.page, this.testInfo, userFeatures)
+  async initialise(
+    code = '',
+    userFeatures: readonly Feature[] = [],
+    mockApiRoutes = true
+  ) {
+    await setup(this.context, this.page, this.testInfo, userFeatures, {
+      mockApiRoutes,
+    })
     const u = await getUtils(this.page)
 
     await this.page.addInitScript(async (code) => {
@@ -119,6 +125,8 @@ export class AuthenticatedApp {
     await this.page.setViewportSize(this.viewPortSize)
 
     await u.waitForAuthSkipAppStart()
+    if (!mockApiRoutes)
+      await new HomePageFixture(this.page).waitForAuthentication()
   }
   getInputFile = (fileName: string) => {
     return fsp.readFile(
@@ -244,7 +252,8 @@ export class ElectronZoo {
   async createInstanceIfMissing(
     testInfo: TestInfo,
     userFeatures: readonly Feature[] = [],
-    setupTimeout = 120_000
+    setupTimeout = 120_000,
+    mockApiRoutes = true
   ) {
     if (this.disposed) {
       throw new Error('Electron fixture has been disposed')
@@ -374,7 +383,9 @@ export class ElectronZoo {
       app.testProperty['TEST_SETTINGS_FILE_KEY'] = projectDirName
     }, this.projectDirName)
 
-    await setup(this.context, this.page, testInfo, userFeatures)
+    await setup(this.context, this.page, testInfo, userFeatures, {
+      mockApiRoutes,
+    })
 
     await this.cleanProjectDir({
       plugins: playwrightPluginSettings({
@@ -428,6 +439,8 @@ export class ElectronZoo {
 
     // Force a hard reload, destroying the stream and other state
     await this.page.reload()
+    if (!mockApiRoutes)
+      await new HomePageFixture(this.page).waitForAuthentication()
   }
 
   async cleanProjectDir(appSettings?: DeepPartial<Settings>) {
@@ -535,10 +548,12 @@ const fixturesForWeb = {
       page,
       context,
       userFeatures,
+      mockApiRoutes,
     }: {
       page: Page
       context: BrowserContext
       userFeatures: readonly Feature[]
+      mockApiRoutes: boolean
     },
     use: FnUse,
     testInfo: TestInfo
@@ -569,7 +584,7 @@ const fixturesForWeb = {
     }
 
     const webApp = new AuthenticatedApp(context, page, testInfo)
-    await webApp.initialise('', userFeatures)
+    await webApp.initialise('', userFeatures, mockApiRoutes)
 
     await use(page)
   },

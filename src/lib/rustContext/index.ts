@@ -388,40 +388,6 @@ export default class RustContext {
     }
   }
 
-  /**
-   * WARNING: NO ONE CAN CALL THIS FUNCTION WITHOUT FIRST ASKING @jessfraz.
-   *
-   * This manually discards the execution cache and resets the engine scene.
-   * Do not use it to work around file changes, settings changes, navigation,
-   * or stale results. Rust owns cache validity and dependency tracking. Fix
-   * incorrect invalidation in Rust and cover it with execution/I/O tests.
-   */
-  async clearSceneAndBustCache(
-    settings: DeepPartial<Configuration>,
-    path?: string
-  ): Promise<ExecState> {
-    const instance = await this._checkContextInstance()
-
-    try {
-      const result = await instance.bustCacheAndResetScene(
-        JSON.stringify(settings),
-        path
-      )
-
-      /* Set the default planes, safe to call after execute. */
-      const outcome = execStateFromRust(result)
-
-      this.setDefaultPlanes(outcome.defaultPlanes)
-
-      // Return the result.
-      return outcome
-    } catch (e: any) {
-      const err = errFromErrWithOutputs(e)
-      this.setDefaultPlanes(err.defaultPlanes)
-      return Promise.reject(err)
-    }
-  }
-
   getDefaultPlaneId(name: DefaultPlaneStr): string | Error {
     const key = defaultPlaneStrToKey(name)
     if (!this.defaultPlanes) {

@@ -4,10 +4,18 @@ import type { PerformanceOptions } from '@e2e/performance/test'
 process.env.TARGET = 'desktop'
 process.env.PLAYWRIGHT_INTERACTION_DISCOVERY = '0'
 
-/** Absolute fail-first checks, separate from the paired regression schedule. */
+/** Strict absolute checks, separate from the paired regression schedule. */
 export default defineConfig<PerformanceOptions>({
   testDir: './e2e/performance',
-  testMatch: ['budget.spec.ts', 'core-budget.spec.ts', 'error-profile.spec.ts'],
+  // New performance specs enter the absolute gate by default. Only the known
+  // paired workload/probes and browser-only cases run in their own configs.
+  testMatch: '**/*.spec.ts',
+  testIgnore: [
+    '**/comparison.spec.ts',
+    '**/command-palette.spec.ts',
+    '**/modeling.spec.ts',
+    '**/*browser-budget.spec.ts',
+  ],
   outputDir: './test-results/interaction-budget',
   fullyParallel: false,
   workers: 1,
@@ -30,6 +38,7 @@ export default defineConfig<PerformanceOptions>({
     ...devices['Desktop Chrome'],
     browserName: 'chromium',
     performanceVariant: 'candidate',
+    mockApiRoutes: false,
     viewport: { width: 1200, height: 800 },
     actionTimeout: 15_000,
     trace: 'off',

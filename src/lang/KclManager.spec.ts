@@ -1,5 +1,5 @@
 import { signal } from '@preact/signals-core'
-import { createProjectForTest } from '@src/unitTestUtils'
+import { createProjectForTest, loadWasm } from '@src/unitTestUtils'
 import type { Diagnostic } from '@codemirror/lint'
 import { EditorView } from '@codemirror/view'
 import type {
@@ -212,6 +212,14 @@ describe('KclManager line wrapping settings', () => {
   })
 })
 
+describe('KclManager runtime API', () => {
+  it('does not expose the test-only panic hook in normal builds', async () => {
+    const module = await loadWasm()
+    expect(module.Context).toBeTypeOf('function')
+    expect(Reflect.has(module, 'e2e_panic')).toBe(false)
+  })
+})
+
 describe('KclManager settings ownership', () => {
   function mockEngineSettings(kclManager: KclManager) {
     const engine = kclManager.engineCommandManager
@@ -225,9 +233,6 @@ describe('KclManager settings ownership', () => {
     const executeCode = vi
       .spyOn(kclManager, 'executeCode')
       .mockResolvedValue(undefined)
-    const clearScene = vi
-      .spyOn(kclManager.rustContext, 'clearSceneAndBustCache')
-      .mockResolvedValue(kclManager.execState)
     const sendSceneCommand = vi
       .spyOn(engine, 'sendSceneCommand')
       .mockResolvedValue(null)
@@ -241,7 +246,6 @@ describe('KclManager settings ownership', () => {
       setHighlightEdges,
       setDefaultSystemProperties,
       executeCode,
-      clearScene,
       sendSceneCommand,
     }
   }
@@ -306,7 +310,6 @@ describe('KclManager settings ownership', () => {
         )
         expect(mocks.executeCode).not.toHaveBeenCalled()
         expect(execute).not.toHaveBeenCalled()
-        expect(mocks.clearScene).not.toHaveBeenCalled()
         expect(kclManager.code).toBe(code)
         expect(kclManager.variables.cube).toEqual({ type: 'Module', value: 1 })
         expect(kclManager.engineSceneGenerationSignal.peek()).toBe(generation)
@@ -349,7 +352,6 @@ describe('KclManager settings ownership', () => {
         )
         expect(mocks.executeCode).not.toHaveBeenCalled()
         expect(execute).not.toHaveBeenCalled()
-        expect(mocks.clearScene).not.toHaveBeenCalled()
         expect(kclManager.code).toBe(code)
         mocks.sendSceneCommand.mockClear()
       }
@@ -418,7 +420,6 @@ describe('KclManager settings ownership', () => {
       )
       expect(execute).toHaveBeenCalledOnce()
       expect(mocks.executeCode).not.toHaveBeenCalled()
-      expect(mocks.clearScene).not.toHaveBeenCalled()
       expect(kclManager.code).toBe(code)
     } finally {
       app.dispose()
@@ -466,7 +467,6 @@ describe('KclManager settings ownership', () => {
       )
       expect(mocks.executeCode).not.toHaveBeenCalled()
       expect(execute).not.toHaveBeenCalled()
-      expect(mocks.clearScene).not.toHaveBeenCalled()
     } finally {
       app.dispose()
     }
@@ -638,7 +638,6 @@ describe('KclManager settings ownership', () => {
         }
         expect(mocks.executeCode).not.toHaveBeenCalled()
         expect(otherExecute).not.toHaveBeenCalled()
-        expect(mocks.clearScene).not.toHaveBeenCalled()
       } finally {
         other.close()
         app.dispose()
@@ -668,7 +667,6 @@ describe('KclManager settings ownership', () => {
         const current = setting.current
         setting.user = typeof current === 'boolean' ? !current : current + 1
         expect(grid).toHaveBeenCalledTimes(1)
-        expect(mocks.clearScene).not.toHaveBeenCalled()
         expect(mocks.executeCode).not.toHaveBeenCalled()
       } finally {
         app.dispose()
@@ -725,7 +723,6 @@ describe('KclManager settings ownership', () => {
         expect(mocks.setDefaultSystemProperties).not.toHaveBeenCalled()
         expect(mocks.setHighlightEdges).not.toHaveBeenCalled()
         expect(mocks.sendSceneCommand).not.toHaveBeenCalled()
-        expect(mocks.clearScene).not.toHaveBeenCalled()
         expect(mocks.executeCode).not.toHaveBeenCalled()
       } finally {
         app.dispose()
@@ -771,7 +768,6 @@ describe('KclManager settings ownership', () => {
         firstCommand.resolve(null)
         await flushPromises(12)
         expect(mocks.sendSceneCommand).toHaveBeenCalledTimes(1)
-        expect(mocks.clearScene).not.toHaveBeenCalled()
         expect(mocks.executeCode).not.toHaveBeenCalled()
       } finally {
         app.dispose()
@@ -805,7 +801,6 @@ describe('KclManager settings ownership', () => {
           },
         })
       )
-      expect(mocks.clearScene).not.toHaveBeenCalled()
       expect(mocks.executeCode).not.toHaveBeenCalled()
     } finally {
       app.dispose()

@@ -329,13 +329,14 @@ corresponding `interaction-browser-budget` directories. The browser configuratio
 serves the existing optimized renderer output rather than building it. Collection
 or setup failures are not proof of a latency breach. A currently fast interaction
 stays green; do not manufacture a failure to match an audit assumption. These
-diagnostic runs do not establish native CI calibration or an independently built
-merge-base comparison. The expanded model matrix still requires native calibration;
-the presence of tests or a successful build does not establish measured results.
-The existing native measurement jobs still have a 15-minute limit. Local
-four-profile setup times indicate that the expanded paired schedule needs a
-separate CI runtime-budget review alongside calibration before rollout; this
-audit does not change those workflows or claim the full schedule fits that limit.
+local runs do not establish native CI calibration or an independently built
+merge-base comparison. Automatic PR CI also runs the complete absolute-budget
+suite against the candidate's own optimized recorder and matching Wasm, with
+a 60-minute job limit. Every supported model profile is included, still-slow
+cases fail, and browser checks run even when native latency assertions fail.
+New native performance specs enter this gate by default; browser-budget specs
+run in the browser configuration. Raw measurements and failures are retained.
+The separate paired comparison jobs retain their existing 15-minute limit.
 
 ### Local fail-first checkpoint (2026-10-19)
 
@@ -424,9 +425,8 @@ components are checked by the normal ESLint command:
 - Animations and transitions must have statically known timing, finish within
   100 ms, and have zero start delay. Indeterminate activity indicators are the
   only duration exception; they cannot delay an interaction.
-- JavaScript must not call or alias the manual execution-cache reset. Rust owns
-  file, import, and engine-session cache validity. The emergency API requires
-  explicit approval from @jessfraz.
+- JavaScript and Wasm expose no manual execution-cache reset. Rust owns file,
+  import, and engine-session cache validity.
 - Inline ESLint directives cannot disable these guardrails, including blanket
   disables. Existing unrelated rule suppressions still work.
 
@@ -448,3 +448,23 @@ Static lint covers known APIs and common aliases, not arbitrary third-party
 runtime behavior. The end-to-end 150 ms usable-outcome measurements remain the
 backstop for slow work that contains no explicit wait. The existing before/after
 animation checkpoint above is historical, not a measurement of later cache fixes.
+
+## Cache lifecycle regressions
+
+The real-engine Rust cache contracts and Playwright lifecycle tests cover file
+identity, same-file parse errors, imported files, engine reconnection, and scene
+preferences without manual resets. The new Playwright cases disable the shared
+API-route mocks. Backface pixels remain a strict regression against the deployed
+engine until [engine#5348](https://github.com/KittyCAD/engine/pull/5348) is deployed.
+
+Genuine Wasm panic recovery uses a separate compile-time-only fault build:
+
+```sh
+bash scripts/build-wasm-fault-injection.sh
+npx playwright test --config=playwright.wasm-recovery.config.ts
+```
+
+Pass the approved development API credential to the test process, not the build.
+CI runs this case once on Ubuntu. The opt-in `e2e-fault-injection` feature and all
+generated artifacts stay separate from normal builds. Normal-build tests assert
+that the panic hook does not exist.

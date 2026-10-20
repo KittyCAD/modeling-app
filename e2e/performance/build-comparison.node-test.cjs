@@ -13,6 +13,7 @@ const {
   verifyApp,
   verifyPair,
   createWasmManifest,
+  verifyWasm,
 } = require('./build-comparison.cjs')
 
 function git(root, ...args) {
@@ -85,6 +86,19 @@ function artifacts(root) {
     wasmPack: 'test input',
   })
 }
+
+test('absolute checks verify the candidate Wasm without applying the paired base harness', (t) => {
+  const { root, base, candidate } = fixture(t)
+  artifacts(root)
+  assert.equal(verifyWasm(root, candidate).sourceCommit, candidate)
+  assert.throws(() => verifyWasm(root, base), /Application commit/)
+  write(
+    root,
+    'rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm',
+    Buffer.from([0, 97, 115, 109, 1])
+  )
+  assert.throws(() => verifyWasm(root, candidate), /Wasm artifacts/)
+})
 
 test('bootstrap is allowed only while the immutable base lacks the harness', (t) => {
   const { root, base, candidate } = fixture(t)

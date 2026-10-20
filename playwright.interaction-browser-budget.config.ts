@@ -7,7 +7,7 @@ process.env.VITE_ZOO_API_BASE_URL = 'https://api.dev.zoo.dev'
 
 export default defineConfig({
   testDir: './e2e/performance',
-  testMatch: 'browser-budget.spec.ts',
+  testMatch: '**/*browser-budget.spec.ts',
   outputDir: './test-results/interaction-browser-budget',
   fullyParallel: false,
   workers: 1,

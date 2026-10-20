@@ -137,3 +137,80 @@ jobs:
           zoo-api-token: ${{ secrets.ZOO_API_TOKEN }}
           tab-api-url: ${{ vars.TAB_API_URL }}
           tab-api-key: ${{ secrets.TAB_API_KEY }}
+
+  absolute-budget:
+    name: Interaction performance 150 ms budget
+    needs: [resolve, build-wasm]
+    if: ${{ !cancelled() }}
+    runs-on: namespace-profile-macos-8-cores;overrides.cache-tag=interaction-${{ github.run_id }}-${{ github.run_attempt }}-absolute
+    timeout-minutes: 60
+    steps:
+      - name: Require the candidate Wasm build
+        env:
+          PLAN_RESULT: ${{ needs.resolve.result }}
+          WASM_RESULT: ${{ needs.build-wasm.result }}
+        run: test "$PLAN_RESULT" = success && test "$WASM_RESULT" = success
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+          ref: ${{ needs.resolve.outputs.candidate_commit }}
+      - uses: actions/setup-node@v7.0.0
+        with:
+          node-version-file: .nvmrc
+          package-manager-cache: false
+      - run: npm ci
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-wasm-interaction-candidate
+          path: rust/kcl-wasm-lib/pkg
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-ts-rs-bindings-interaction-candidate
+          path: rust/kcl-lib/bindings
+      - name: Verify candidate Wasm provenance
+        run: node -e 'require("./e2e/performance/build-comparison.cjs").verifyWasm(process.cwd(), process.env.CANDIDATE_COMMIT)'
+        env:
+          CANDIDATE_COMMIT: ${{ needs.resolve.outputs.candidate_commit }}
+      # Paired builds intentionally use the base harness. Absolute checks need
+      # the candidate's complete recorder, including newly registered actions.
+      - name: Build candidate with its complete interaction recorder
+        id: candidate-build
+        run: |
+          cp rust/kcl-wasm-lib/pkg/kcl_wasm_lib_bg.wasm public/
+          npm run tronb:vite:prod
+        env:
+          VERCEL_GIT_COMMIT_SHA: ${{ needs.resolve.outputs.candidate_commit }}
+          VITE_ZOO_BASE_DOMAIN: dev.zoo.dev
+          VITE_INTERACTION_PERFORMANCE: "1"
+      - name: Install browser for absolute handoff checks
+        run: npm exec -- playwright install chrome
+      - name: Enforce every native interaction's 150 ms budget
+        run: env -u HEADLESS npm exec -- playwright test --config=playwright.interaction-budget.config.ts --headed --max-failures=0
+        env:
+          NODE_ENV: production
+          TARGET: desktop
+          VITE_ZOO_BASE_DOMAIN: dev.zoo.dev
+          VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
+          INTERACTION_CANDIDATE_APP_DIR: ${{ github.workspace }}
+      # Native latency debt must not prevent the browser case from running.
+      - name: Enforce every browser interaction's 150 ms budget
+        if: ${{ !cancelled() && steps.candidate-build.outcome == 'success' }}
+        run: env -u HEADLESS npm exec -- playwright test --config=playwright.interaction-browser-budget.config.ts --headed --max-failures=0
+        env:
+          NODE_ENV: production
+          TARGET: web
+          VITE_ZOO_BASE_DOMAIN: dev.zoo.dev
+          VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
+      - name: Preserve absolute measurements and failures
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: interaction-absolute-budget-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            test-results/interaction-budget/
+            test-results/interaction-browser-budget/
+            playwright-report/interaction-budget/
+            playwright-report/interaction-browser-budget/
+            rust/kcl-wasm-lib/pkg/interaction-wasm-manifest.json
+          if-no-files-found: error
+          retention-days: 30

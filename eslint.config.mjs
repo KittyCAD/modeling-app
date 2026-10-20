@@ -17,7 +17,6 @@ import noReactRouterHooks from './src/eslint/rules/no-react-router-hooks.mjs'
 import interactionExpectations from './src/eslint/rules/interaction-expectations.mjs'
 import noArtificialDelay from './src/eslint/rules/no-artificial-delay.mjs'
 import noLongUiAnimation from './src/eslint/rules/no-long-ui-animation.mjs'
-import noManualCacheReset from './src/eslint/rules/no-manual-cache-reset.mjs'
 import performanceExceptions from './src/eslint/rules/performance-exceptions.mjs'
 import cssParser from './src/eslint/css-parser.mjs'
 import createPerformanceDirectivesProcessor from './src/eslint/performance-directives.mjs'
@@ -25,7 +24,6 @@ import createPerformanceDirectivesProcessor from './src/eslint/performance-direc
 const performanceRules = {
   'zds/no-artificial-delay': 'error',
   'zds/no-long-ui-animation': 'error',
-  'zds/no-manual-cache-reset': 'error',
   'zds/performance-exceptions': 'error',
 }
 
@@ -39,7 +37,6 @@ const zdsPlugin = {
     'no-react-router-hooks': noReactRouterHooks,
     'no-artificial-delay': noArtificialDelay,
     'no-long-ui-animation': noLongUiAnimation,
-    'no-manual-cache-reset': noManualCacheReset,
     'performance-exceptions': performanceExceptions,
   },
 }

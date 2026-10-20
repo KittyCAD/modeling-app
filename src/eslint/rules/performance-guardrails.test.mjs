@@ -4,7 +4,6 @@ import { afterAll, describe, expect, it } from 'vitest'
 import cssParser from '../css-parser.mjs'
 import noArtificialDelay from './no-artificial-delay.mjs'
 import noLongUiAnimation from './no-long-ui-animation.mjs'
-import noManualCacheReset from './no-manual-cache-reset.mjs'
 import performanceExceptions from './performance-exceptions.mjs'
 import createPerformanceDirectivesProcessor from '../performance-directives.mjs'
 
@@ -120,53 +119,6 @@ tester.run('no-long-ui-animation', noLongUiAnimation, {
   ],
 })
 
-const wrapper = (warning, instance = 'await this._checkContextInstance()') => `
-class RustContext {
-  ${warning}
-  async clearSceneAndBustCache() {
-    const instance = ${instance}
-    return instance.bustCacheAndResetScene(settings, path)
-  }
-}
-`
-const warning =
-  '/** WARNING: NO ONE CAN CALL THIS FUNCTION WITHOUT FIRST ASKING @jessfraz. */'
-const wrapperPath = '/repo/src/lib/rustContext/index.ts'
-
-tester.run('no-manual-cache-reset', noManualCacheReset, {
-  valid: [
-    'const result = rust.execute(code)',
-    { filename: wrapperPath, code: wrapper(warning) },
-    'const spy = vi.spyOn(rust, "clearSceneAndBustCache")',
-  ],
-  invalid: [
-    ...[
-      'rust.clearSceneAndBustCache(settings)',
-      'rust?.["bustCacheAndResetScene"](settings)',
-      'const reset = rust.clearSceneAndBustCache',
-      'const { clearSceneAndBustCache: reset } = rust',
-      'const method = "clearSceneAndBustCache"; rust[method](settings)',
-      'const method = "bustCacheAndResetScene"; const { [method]: reset } = rust',
-      'clearSceneAndBustCache(settings)',
-    ].map((code) => ({ code, errors: [{ messageId: 'reset' }] })),
-    {
-      filename: wrapperPath,
-      code: wrapper(''),
-      errors: [{ messageId: 'reset' }],
-    },
-    {
-      filename: '/repo/src/other.ts',
-      code: wrapper(warning),
-      errors: [{ messageId: 'reset' }],
-    },
-    {
-      filename: wrapperPath,
-      code: wrapper(warning, 'other'),
-      errors: [{ messageId: 'reset' }],
-    },
-  ],
-})
-
 tester.run('performance-exceptions', performanceExceptions, {
   valid: [
     '// zds-performance-exception: connection-retry -- Retry a failed transport connection after releasing its resources.\nsetTimeout(reconnect, backoff)',
@@ -214,7 +166,6 @@ const directiveLint = new ESLint({
           rules: {
             'no-artificial-delay': noArtificialDelay,
             'no-long-ui-animation': noLongUiAnimation,
-            'no-manual-cache-reset': noManualCacheReset,
             'performance-exceptions': performanceExceptions,
           },
         },
@@ -223,7 +174,6 @@ const directiveLint = new ESLint({
         'no-console': 'error',
         'zds/no-artificial-delay': 'error',
         'zds/no-long-ui-animation': 'error',
-        'zds/no-manual-cache-reset': 'error',
         'zds/performance-exceptions': 'error',
       },
     },
@@ -233,7 +183,6 @@ const directiveLint = new ESLint({
 describe('native ESLint inline-suppression boundary', () => {
   it.each([
     '/* eslint-disable */\nsetTimeout(show, 500)',
-    '/* eslint-disable */\nrust.clearSceneAndBustCache(settings)',
     '/* eslint-disable zds/performance-exceptions, zds/no-artificial-delay */\nsetTimeout(show, 500)',
     '/* eslint zds/performance-exceptions: "off", zds/no-artificial-delay: "off" */\nsetTimeout(show, 500)',
     '// eslint-disable-next-line zds/no-artificial-delay\nsetTimeout(show, 500)',

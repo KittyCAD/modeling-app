@@ -1037,8 +1037,14 @@ export async function setup(
   page: Page,
   testInfo?: TestInfo,
   userFeatures: readonly Feature[] = [],
-  { cloudSyncEnabled = false }: { cloudSyncEnabled?: boolean } = {}
+  {
+    cloudSyncEnabled = false,
+    mockApiRoutes = true,
+  }: { cloudSyncEnabled?: boolean; mockApiRoutes?: boolean } = {}
 ) {
+  if (!mockApiRoutes && userFeatures.length > 0)
+    throw new Error('userFeatures requires mockApiRoutes to be enabled')
+
   const testProjectSettings =
     TEST_SETTINGS.project &&
     typeof TEST_SETTINGS.project === 'object' &&
@@ -1047,17 +1053,24 @@ export async function setup(
       : undefined
 
   await context.unroute('**/user/features')
-  await context.route('**/user/features', async (route) => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({
-        features: userFeatures.map((id) => ({ id })),
-      }),
+  if (mockApiRoutes) {
+    await context.route('**/user/features', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          features: userFeatures.map((id) => ({ id })),
+        }),
+      })
     })
-  })
-
-  await installSlowFsForPlaywright(page)
+    await installSlowFsForPlaywright(page)
+  } else {
+    // Electron reuses its context. Remove previous tests' API interceptions
+    // before any init script reloads the app for this live test.
+    await context.unroute('**/user/client-errors')
+    await page.unroute('**/user/features')
+    await page.unroute('**/user/client-errors')
+  }
 
   await page.addInitScript(
     async ({

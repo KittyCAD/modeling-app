@@ -2,11 +2,14 @@
 
 use kcl_lib::ExecOutcome;
 use kcl_lib::ExecutorContext;
+use kcl_lib::ExecutorSettings;
+use kcl_lib::KclError;
 use kcl_lib::Program;
 use kcl_lib::TypedPath;
 use kittycad_modeling_cmds::ModelingCmd;
 use kittycad_modeling_cmds::each_cmd as mcmd;
 use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
+use kittycad_modeling_cmds::shared::EntityType;
 use kittycad_modeling_cmds::units::UnitVolume;
 use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
 
@@ -74,6 +77,154 @@ pub(super) fn assert_volume(actual: f64, height: f64) {
         (actual - expected).abs() < expected * 0.001,
         "volume {actual}, expected {expected}"
     );
+}
+
+async fn solid_ids(ctx: &ExecutorContext) -> Vec<uuid::Uuid> {
+    let response = ctx
+        .engine
+        .send_modeling_cmd(
+            &ctx.engine_batch,
+            uuid::Uuid::new_v4(),
+            Default::default(),
+            &mcmd::SceneGetEntityIds::builder()
+                .filter(vec![EntityType::Solid3D])
+                .skip(0)
+                .take(100)
+                .build()
+                .into(),
+        )
+        .await
+        .unwrap();
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::SceneGetEntityIds(scene),
+    } = response
+    else {
+        panic!("expected actual engine solid IDs, received {response:?}");
+    };
+    scene.entity_ids.into_iter().flatten().collect()
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_cache_contract_parse_and_preferences_preserve_real_geometry() {
+    use std::sync::atomic::Ordering::Relaxed;
+
+    let project = tempfile::tempdir().unwrap();
+    let main = project.path().join("main.kcl");
+    tokio::fs::write(&main, BODY).await.unwrap();
+    let version = Program::parse_no_errs(BODY).unwrap().language_version().unwrap();
+    let mut ctx = kcl_lib::test_server::new_context(true, Some(main), false, version)
+        .await
+        .unwrap();
+    let original = execute(&ctx, BODY).await;
+    let ids = solid_ids(&ctx).await;
+    assert_eq!(ids.len(), 1);
+    let settings = ctx.settings.clone();
+    for settings in [
+        settings.clone(),
+        ExecutorSettings {
+            show_grid: !settings.show_grid,
+            ..settings.clone()
+        },
+        ExecutorSettings {
+            fixed_size_grid: !settings.fixed_size_grid,
+            ..settings.clone()
+        },
+        ExecutorSettings {
+            highlight_edges: !settings.highlight_edges,
+            ..settings.clone()
+        },
+        ExecutorSettings {
+            default_backface_color: Some("#123456".to_owned()),
+            ..settings.clone()
+        },
+    ] {
+        ctx.settings = settings;
+        let commands = ctx.engine.stats().commands_batched.load(Relaxed);
+        let batches = ctx.engine.stats().batches_sent.load(Relaxed);
+        for valid in [
+            BODY.to_owned(),
+            BODY.replace("height = 5mm", "height = 8mm"),
+            String::new(),
+        ] {
+            let parsed = ctx.parse_for_execution(&valid).await.unwrap();
+            assert!(parsed.program.is_some());
+            assert!(parsed.issues.iter().all(|issue| !issue.severity.is_err()));
+        }
+        let syntax = ctx
+            .parse_for_execution("@settings(kclVersion = 3.0)\nx = )")
+            .await
+            .unwrap();
+        assert!(syntax.issues.iter().any(|issue| issue.severity.is_err()));
+        let lexical = ctx
+            .parse_for_execution("@settings(kclVersion = 3.0)\nx = \"unterminated")
+            .await
+            .unwrap_err();
+        assert!(matches!(lexical.error, KclError::Lexical { .. }));
+        assert_eq!(ctx.engine.stats().commands_batched.load(Relaxed), commands);
+        assert_eq!(ctx.engine.stats().batches_sent.load(Relaxed), batches);
+        let cached = execute(&ctx, BODY).await;
+        assert!(cached.from_cache);
+        assert_eq!(cached.variables, original.variables);
+        assert_eq!(solid_ids(&ctx).await, ids);
+        assert_volume(volume(&ctx).await, 5.0);
+    }
+    ctx.close().await;
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_cache_contract_invalid_entry_clears_real_geometry_only_once() {
+    use std::sync::atomic::Ordering::Relaxed;
+
+    let project = tempfile::tempdir().unwrap();
+    let first = project.path().join("first.kcl");
+    let second = project.path().join("second.kcl");
+    let invalid = "@settings(kclVersion = 3.0)\nx = )";
+    tokio::fs::write(&first, BODY).await.unwrap();
+    tokio::fs::write(&second, invalid).await.unwrap();
+    let version = Program::parse_no_errs(BODY).unwrap().language_version().unwrap();
+    let mut ctx = kcl_lib::test_server::new_context(true, Some(first), false, version)
+        .await
+        .unwrap();
+    execute(&ctx, BODY).await;
+    let failing = format!("{BODY}\nbad = missing");
+    let error = ctx
+        .run_with_caching(Program::parse_no_errs(&failing).unwrap())
+        .await
+        .unwrap_err();
+    assert!(matches!(error.error, KclError::UndefinedValue { .. }));
+    let partial_ids = solid_ids(&ctx).await;
+    assert_eq!(partial_ids.len(), 1);
+    assert_volume(volume(&ctx).await, 5.0);
+    assert!(ctx.cache.read_old_memory_var("body").await.is_some());
+    let commands = ctx.engine.stats().commands_batched.load(Relaxed);
+    let parsed = ctx.parse_for_execution(invalid).await.unwrap();
+    assert!(parsed.issues.iter().any(|issue| issue.severity.is_err()));
+    assert_eq!(ctx.engine.stats().commands_batched.load(Relaxed), commands);
+    assert_eq!(solid_ids(&ctx).await, partial_ids);
+
+    ctx.settings.with_current_file(TypedPath(second.clone()));
+    let parsed = ctx.parse_for_execution(invalid).await.unwrap();
+    assert!(parsed.issues.iter().any(|issue| issue.severity.is_err()));
+    assert!(
+        solid_ids(&ctx).await.is_empty(),
+        "the other file must not display the first file's body"
+    );
+    assert!(ctx.cache.read_old_memory_var("body").await.is_none());
+    let mut retry = ctx.clone();
+    retry.settings.show_grid = !retry.settings.show_grid;
+    let commands = ctx.engine.stats().commands_batched.load(Relaxed);
+    let batches = ctx.engine.stats().batches_sent.load(Relaxed);
+    for _ in 0..2 {
+        let parsed = retry.parse_for_execution(invalid).await.unwrap();
+        assert!(parsed.issues.iter().any(|issue| issue.severity.is_err()));
+    }
+    assert_eq!(ctx.engine.stats().commands_batched.load(Relaxed), commands);
+    assert_eq!(ctx.engine.stats().batches_sent.load(Relaxed), batches);
+    assert!(ctx.run_with_caching(Program::empty()).await.unwrap().from_cache);
+    tokio::fs::write(&second, BODY).await.unwrap();
+    assert!(!execute(&ctx, BODY).await.from_cache);
+    assert_volume(volume(&ctx).await, 5.0);
+    ctx.close().await;
 }
 
 #[tokio::test(flavor = "multi_thread")]

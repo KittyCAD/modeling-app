@@ -30,7 +30,6 @@ function recoveryTarget() {
       replaceWasmInstance: vi
         .fn<(module: Promise<ModuleType>) => Promise<void>>()
         .mockResolvedValue(undefined),
-      clearSceneAndBustCache: vi.fn().mockResolvedValue(undefined),
     },
     wasmInstancePromise: Promise.resolve(wasmModule),
     finishFailedExecutions,
@@ -83,7 +82,6 @@ describe('window exception handler', () => {
       target.engineCommandManager.captureFailedExecutionCleanup
     ).toHaveBeenCalledOnce()
     expect(target.executeAstCleanUp).toHaveBeenCalledOnce()
-    expect(target.rustContext.clearSceneAndBustCache).not.toHaveBeenCalled()
     expect(target.finishFailedExecutions).not.toHaveBeenCalled()
     replay.resolve(undefined)
     await vi.waitFor(() =>
@@ -104,7 +102,6 @@ describe('window exception handler', () => {
     await vi.waitFor(() =>
       expect(target.finishFailedExecutions).toHaveBeenCalledOnce()
     )
-    expect(target.rustContext.clearSceneAndBustCache).not.toHaveBeenCalled()
   })
 
   it('keeps each recovery cleanup scoped while a newer restart finishes first', async () => {

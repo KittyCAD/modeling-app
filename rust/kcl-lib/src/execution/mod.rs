@@ -1545,8 +1545,11 @@ impl ExecutorContext {
         Ok(())
     }
 
+    /// WARNING: NO ONE CAN CALL THIS FUNCTION WITHOUT FIRST ASKING @jessfraz.
+    ///
     /// Clear the KCL-lib internal cache and clear the entire engine scene.
     /// Only executors sharing this session cache are affected.
+    /// Do not expose this escape hatch to JavaScript. Fix cache validity in Rust.
     pub async fn bust_cache_and_reset_scene(&self) -> Result<ExecOutcome, KclErrorWithOutputs> {
         self.cache.bust_cache().await;
 
@@ -5560,7 +5563,95 @@ solid7 = extrude(r7, length = width)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn cached_execution_contract_parse_and_graphics_settings_preserve_cache() {
+        use std::sync::atomic::Ordering::Relaxed;
+
+        let project = tempfile::tempdir().unwrap();
+        let mut settings = ExecutorSettings::default();
+        settings.with_current_file(crate::TypedPath(project.path().join("main.kcl")));
+        let mut ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), settings.clone());
+        let source = "@settings(kclVersion = 3.0)\nx = 2";
+        let program = crate::Program::parse_no_errs(source).unwrap();
+        ctx.run_with_caching(program.clone()).await.unwrap();
+
+        for (name, settings) in [
+            ("unchanged", settings.clone()),
+            (
+                "grid visibility",
+                ExecutorSettings {
+                    show_grid: !settings.show_grid,
+                    ..settings.clone()
+                },
+            ),
+            (
+                "grid size",
+                ExecutorSettings {
+                    fixed_size_grid: !settings.fixed_size_grid,
+                    ..settings.clone()
+                },
+            ),
+            (
+                "edges",
+                ExecutorSettings {
+                    highlight_edges: !settings.highlight_edges,
+                    ..settings.clone()
+                },
+            ),
+            (
+                "backfaces",
+                ExecutorSettings {
+                    default_backface_color: Some("#123456".to_owned()),
+                    ..settings.clone()
+                },
+            ),
+        ] {
+            ctx.settings = settings;
+            let commands = ctx.engine.stats().commands_batched.load(Relaxed);
+            let batches = ctx.engine.stats().batches_sent.load(Relaxed);
+            // Parsing an edit, empty buffer, or same-file error must not execute
+            // that source or discard the last usable execution.
+            for valid in [source, "@settings(kclVersion = 3.0)\nx = 7", ""] {
+                let parsed = ctx.parse_for_execution(valid).await.unwrap();
+                assert!(parsed.program.is_some(), "{name}: {valid:?}");
+                assert!(parsed.issues.iter().all(|issue| !issue.severity.is_err()));
+            }
+            let syntax = ctx
+                .parse_for_execution("@settings(kclVersion = 3.0)\nx = )")
+                .await
+                .unwrap();
+            assert!(syntax.issues.iter().any(|issue| issue.severity.is_err()));
+            let lexical = ctx
+                .parse_for_execution("@settings(kclVersion = 3.0)\nx = \"unterminated")
+                .await
+                .unwrap_err();
+            assert!(matches!(lexical.error, KclError::Lexical { .. }));
+
+            assert_eq!(ctx.engine.stats().commands_batched.load(Relaxed), commands, "{name}");
+            assert_eq!(ctx.engine.stats().batches_sent.load(Relaxed), batches, "{name}");
+            assert_eq!(ctx.cache.read_old_ast().await.unwrap().main.ast, program.ast, "{name}");
+            assert!(ctx.cache.read_old_memory_var("x").await.is_some(), "{name}");
+            let outcome = ctx.run_with_caching(program.clone()).await.unwrap();
+            assert!(outcome.from_cache, "{name} must preserve the execution cache");
+            assert_number_variable(&outcome.variables, "x", 2.0);
+        }
+        let mut probe = ctx.clone_with_fresh_execution_batch();
+        probe
+            .settings
+            .with_current_file(crate::TypedPath(project.path().join("other.kcl")));
+        let commands = ctx.engine.stats().commands_batched.load(Relaxed);
+        probe
+            .parse_for_execution("@settings(kclVersion = 3.0)\nx = 7")
+            .await
+            .unwrap();
+        assert_eq!(ctx.engine.stats().commands_batched.load(Relaxed), commands);
+        assert!(ctx.run_with_caching(program).await.unwrap().from_cache);
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn cached_execution_contract_syntax_error_preserves_only_its_own_file() {
+        use std::sync::atomic::Ordering::Relaxed;
+
         let project = tempfile::tempdir().unwrap();
         let first_path = crate::TypedPath(project.path().join("first.kcl"));
         let second_path = crate::TypedPath(project.path().join("second.kcl"));
@@ -5585,11 +5676,28 @@ solid7 = extrude(r7, length = width)
         assert!(ctx.cache.read_old_ast().await.is_none());
         assert!(ctx.cache.read_old_memory_var("x").await.is_some());
         ctx.settings.with_current_file(second_path);
+        let before_switch = ctx.engine.stats().commands_batched.load(Relaxed);
         assert_syntax_error(ctx.parse_for_execution(invalid).await);
+        let after_switch = ctx.engine.stats().commands_batched.load(Relaxed);
+        assert!(
+            after_switch > before_switch,
+            "the real file switch must clear the old scene"
+        );
         let empty = ctx.cache.read_old_ast().await.unwrap();
         assert_eq!(empty.settings.current_file, ctx.settings.current_file);
         assert!(empty.main.ast.body.is_empty());
         assert!(ctx.cache.read_old_memory_var("x").await.is_none());
+        // Retrying the invalid file through another handle, including a graphics
+        // preference change, must not clear or execute that empty scene again.
+        let mut same_file = ctx.clone_with_fresh_execution_batch();
+        same_file.settings.show_grid = !same_file.settings.show_grid;
+        let batches = ctx.engine.stats().batches_sent.load(Relaxed);
+        for _ in 0..2 {
+            assert_syntax_error(same_file.parse_for_execution(invalid).await);
+            assert_eq!(ctx.engine.stats().commands_batched.load(Relaxed), after_switch);
+            assert_eq!(ctx.engine.stats().batches_sent.load(Relaxed), batches);
+        }
+        assert!(ctx.run_with_caching(crate::Program::empty()).await.unwrap().from_cache);
         assert!(!ctx.run_with_caching(program).await.unwrap().from_cache);
         ctx.close().await;
     }

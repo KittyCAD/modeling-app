@@ -1,7 +1,6 @@
 export const guardrailRuleNames = new Set([
   'zds/no-artificial-delay',
   'zds/no-long-ui-animation',
-  'zds/no-manual-cache-reset',
   'zds/performance-exceptions',
 ])
 

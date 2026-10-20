@@ -11,6 +11,7 @@ export { expect }
 export interface PerformanceOptions {
   performanceVariant: ComparisonVariant
   modelProfile: PerformanceModelProfile
+  mockApiRoutes: boolean
 }
 
 const SETUP_TIMEOUT = 120_000
@@ -19,7 +20,11 @@ export const test = zooTest.extend<PerformanceOptions>({
   performanceVariant: ['candidate', { option: true }],
   modelProfile: ['small', { option: true }],
   tronApp: [
-    async ({ performanceVariant, userFeatures }, use, testInfo) => {
+    async (
+      { performanceVariant, userFeatures, mockApiRoutes },
+      use,
+      testInfo
+    ) => {
       const variable =
         performanceVariant === 'base'
           ? 'INTERACTION_BASE_APP_DIR'
@@ -68,7 +73,12 @@ export const test = zooTest.extend<PerformanceOptions>({
         // An explicit deadline unwinds setup so disposal also runs if window
         // creation hangs before Playwright can reach the fixture's use call.
         await Promise.race([
-          app.createInstanceIfMissing(testInfo, userFeatures, SETUP_TIMEOUT),
+          app.createInstanceIfMissing(
+            testInfo,
+            userFeatures,
+            SETUP_TIMEOUT,
+            mockApiRoutes
+          ),
           new Promise<never>((_, reject) => {
             timeoutId = setTimeout(() => {
               reject(

@@ -397,7 +397,6 @@ describe('project system', () => {
       const execute = vi
         .spyOn(first, 'executeCode')
         .mockResolvedValue(undefined)
-      const clear = vi.spyOn(first.rustContext, 'clearSceneAndBustCache')
       engine.connection = { connected: true } as typeof engine.connection
 
       project.executingPath = first.path
@@ -405,7 +404,6 @@ describe('project system', () => {
       expect(edges).not.toHaveBeenCalled()
       expect(backface).not.toHaveBeenCalled()
       expect(execute).not.toHaveBeenCalled()
-      expect(clear).not.toHaveBeenCalled()
 
       const setting = app.settings.get().modeling.highlightEdges
       setting.user = !setting.current
@@ -415,7 +413,6 @@ describe('project system', () => {
       )
       expect(edges.mock.calls[0]?.[1]?.()).toBe(true)
       expect(execute).not.toHaveBeenCalled()
-      expect(clear).not.toHaveBeenCalled()
       edges.mockClear()
 
       // A different editor still takes ownership and applies current values.
@@ -425,7 +422,6 @@ describe('project system', () => {
       expect(edges).toHaveBeenCalledTimes(1)
       expect(backface).toHaveBeenCalledTimes(1)
       expect(execute).not.toHaveBeenCalled()
-      expect(clear).not.toHaveBeenCalled()
       project.executingPath = second.path
       expect(theme).toHaveBeenCalledTimes(1)
       expect(edges).toHaveBeenCalledTimes(1)
@@ -460,7 +456,6 @@ describe('project system', () => {
       const singletonExecute = vi
         .spyOn(app.singletons.kclManager, 'executeCode')
         .mockResolvedValue(undefined)
-      const clear = vi.spyOn(app.rustContext, 'clearSceneAndBustCache')
       vi.spyOn(app.engineCommandManager, 'setTheme').mockResolvedValue(
         undefined
       )
@@ -508,7 +503,6 @@ describe('project system', () => {
       expect(firstExecute).not.toHaveBeenCalled()
       expect(secondExecute).not.toHaveBeenCalled()
       expect(singletonExecute).not.toHaveBeenCalled()
-      expect(clear).not.toHaveBeenCalled()
     } finally {
       app.dispose()
     }

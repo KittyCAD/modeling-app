@@ -503,4 +503,5 @@ module.exports = {
   verifyApp,
   verifyPair,
   createWasmManifest,
+  verifyWasm,
 }
