@@ -91,6 +91,17 @@ export type ReactCameraProperties =
 
 export type CameraSyncDirection = 'clientToEngine' | 'engineToClient'
 
+/** A point on screen, such as the center of a two-finger gesture. */
+type ScreenPoint = {
+  clientX: number
+  clientY: number
+  // MouseEvent, PointerEvent and WheelEvent have offsetX and offsetY, which
+  // avoid getBoundingClientRect() when the target is the canvas.
+  offsetX?: number
+  offsetY?: number
+  target?: EventTarget | null
+}
+
 class CameraRateLimiter {
   lastSend?: Date = undefined
   rateLimitMs: number = 16 //60 FPS
@@ -166,18 +177,19 @@ export class CameraControls {
   private _lastWheelEvent: WheelEvent | null = null
 
   // Converts a screen space coordinate to world space
-  private screenToWorld(
-    event: WheelEvent | PointerEvent,
-    camera?: Camera
-  ): Vector3 {
-    let x = event.offsetX
-    let y = event.offsetY
-    if (event.target !== this.domElement) {
+  private screenToWorld(point: ScreenPoint, camera?: Camera): Vector3 {
+    let x = point.offsetX
+    let y = point.offsetY
+    if (
+      point.target !== this.domElement ||
+      x === undefined ||
+      y === undefined
+    ) {
       // There are some divs over the canvas that change event.offsetX, so manually calculate it
       // We could just do this by default but the getBoundingClientRect() can be expensive
       const rect = this.domElement.getBoundingClientRect()
-      x = event.clientX - rect.left
-      y = event.clientY - rect.top
+      x = point.clientX - rect.left
+      y = point.clientY - rect.top
     }
 
     // Ideally we would have access to renderer drawing buffer size
@@ -584,9 +596,7 @@ export class CameraControls {
     this.isDragging = true
     // Reset the wasDragging flag to false when starting a new drag
     this.wasDragging = false
-    this.mouseDownPosition.set(event.clientX, event.clientY)
-    this.worldDownPosition = this.screenToWorld(event).clone()
-    this.cameraDown = this.camera.clone()
+    this.setDragAnchor(event)
     // Match engine camera drag: keep horizontal direction stable for the
     // duration of the drag, even while crossing a pole.
     this.orbitDragUpInverted =
@@ -612,6 +622,16 @@ export class CameraControls {
     }
   }
 
+  /**
+   * Anchors the drag at `point`: later moves are measured from its screen
+   * position, the world position under it and the current camera.
+   */
+  private setDragAnchor(point: ScreenPoint) {
+    this.mouseDownPosition.set(point.clientX, point.clientY)
+    this.worldDownPosition = this.screenToWorld(point).clone()
+    this.cameraDown = this.camera.clone()
+  }
+
   onMouseMove = (event: PointerEvent) => {
     if (event.pointerType === 'touch') {
       return
@@ -621,7 +641,7 @@ export class CameraControls {
     }
 
     if (this.isDragging) {
-      this.dragTo(event)
+      this.dragTo(event, this.getInteractionType(event))
     } else {
       /**
        * If we're not in sketch mode and not dragging, we can highlight entities
@@ -660,12 +680,14 @@ export class CameraControls {
   }
 
   /** Moves the camera for a drag that onMouseDown started, by mouse or touch. */
-  private dragTo(event: PointerEvent) {
-    this.mouseNewPosition.set(event.clientX, event.clientY)
+  private dragTo(
+    point: ScreenPoint,
+    interaction: CameraDragInteractionType | 'none'
+  ) {
+    this.mouseNewPosition.set(point.clientX, point.clientY)
     const deltaMove = this.mouseNewPosition.clone().sub(this.mouseDownPosition)
     this.mouseDownPosition.copy(this.mouseNewPosition)
 
-    const interaction = this.getInteractionType(event)
     if (interaction === 'none') {
       return
     }
@@ -676,7 +698,7 @@ export class CameraControls {
 
     if (this.effectiveCameraMode === 'engineToClient') {
       this.moveSender.send(() => {
-        this.doMove(interaction, [event.clientX, event.clientY])
+        this.doMove(interaction, [point.clientX, point.clientY])
       })
       return
     }
@@ -712,7 +734,7 @@ export class CameraControls {
         this.pendingPan.x += -deltaMove.x * panSpeed
         this.pendingPan.y += deltaMove.y * panSpeed
       } else {
-        const newPosition = this.screenToWorld(event, this.cameraDown)
+        const newPosition = this.screenToWorld(point, this.cameraDown)
         this.pendingPan = newPosition.sub(this.worldDownPosition)
       }
     }
@@ -1926,7 +1948,7 @@ export class CameraControls {
         this.effectiveCameraMode !== 'clientToEngine' &&
         ev.srcEvent instanceof PointerEvent
       ) {
-        this.dragTo(ev.srcEvent)
+        this.dragTo(ev.srcEvent, this.getInteractionType(ev.srcEvent))
       }
     })
     // Fake flicking by sending decaying orbit events in the last direction of orbit
@@ -1982,12 +2004,25 @@ export class CameraControls {
       }
     })
 
-    // Pan gesture is a 2-finger gesture I named "doublepan"
+    const centerOfHammerInput = (ev: HammerInput) => ({
+      clientX: ev.center.x,
+      clientY: ev.center.y,
+    })
+
+    // Pan gesture is a 2-finger gesture I named "doublepan". It follows the
+    // center between the fingers. onMouseDown anchored the drag where the
+    // second finger touched down, so re-anchor it at the center.
+    hammertime.on('doublepanstart', (ev) => {
+      this.setDragAnchor(centerOfHammerInput(ev))
+    })
     hammertime.on('doublepan', (ev) => {
-      if (this.effectiveCameraMode === 'engineToClient' && this.enablePan) {
-        this.moveSender.send(() => {
-          this.doMove('pan', [ev.center.x, ev.center.y])
-        })
+      // clientToEngine is sketch mode with the engine stream: no touch support yet.
+      if (this.effectiveCameraMode !== 'clientToEngine' && this.enablePan) {
+        const center = centerOfHammerInput(ev)
+        this.dragTo(center, 'pan')
+        // An orthographic pan uses the anchor's camera, so re-anchor after each
+        // move to account for a pinch changing the zoom meanwhile.
+        this.setDragAnchor(center)
       }
     })
 
