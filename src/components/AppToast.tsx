@@ -4,6 +4,8 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { Spinner } from '@src/components/Spinner'
 
 export function AppToast({ toast }: { toast: Toast }) {
+  if (!toast.visible) return null
+
   const iconType =
     toast.icon !== undefined
       ? 'custom'
@@ -33,8 +35,7 @@ export function AppToast({ toast }: { toast: Toast }) {
   return (
     <div
       className={`app-toast ${toast.className ?? ''}`}
-      style={{ ...toast.style, display: toast.visible ? 'flex' : 'none' }}
-      hidden={!toast.visible}
+      style={{ ...toast.style, display: 'flex' }}
       data-toast-id={toast.id}
       data-toast-type={toast.type}
       data-toast-visible={toast.visible}

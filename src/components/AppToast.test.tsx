@@ -41,22 +41,21 @@ describe('AppToast', () => {
     act(() => {
       vi.advanceTimersByTime(1)
     })
-    expect(screen.getByText('Saved')).not.toBeVisible()
+    expect(screen.queryByText('Saved')).not.toBeInTheDocument()
   })
 
-  it('hides a dismissed custom-icon toast before removing it from the store', () => {
+  it('removes dismissed content immediately without waiting for store cleanup', () => {
     renderToasts()
     let id = ''
     act(() => {
       id = toast('Reloaded', { icon: 'Folder' })
     })
     const message = screen.getByText('Reloaded')
-    const bar = message.closest('[data-toast-id]')
     expect(message).toBeVisible()
     expect(screen.getByText('Folder')).toBeVisible()
     act(() => toast.dismiss(id))
-    expect(bar).toHaveAttribute('data-toast-visible', 'false')
-    expect(message).not.toBeVisible()
+    expect(message).not.toBeInTheDocument()
+    expect(screen.queryByText('Folder')).not.toBeInTheDocument()
     act(() => {
       vi.runOnlyPendingTimers()
     })

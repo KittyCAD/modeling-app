@@ -1,13 +1,14 @@
 import type { ApiFile } from '@rust/kcl-lib/bindings/FrontendApi'
-import * as native from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import RustContext from '@src/lib/rustContext'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { getModule, type ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { settingsMachine } from '@src/machines/settingsMachine'
 import { describe, expect, it, vi } from 'vitest'
 import { Actor } from 'xstate'
 
-vi.mock('@rust/kcl-wasm-lib/pkg/kcl_wasm_lib', () => ({ Context: class {} }))
+vi.mock('@src/lib/wasm_lib_wrapper', () => ({
+  getModule: () => ({ Context: class {} }),
+}))
 vi.mock('@src/machines/settingsMachine', async () => {
   const { createMachine } = await import('xstate')
   return { settingsMachine: createMachine({}) }
@@ -19,7 +20,10 @@ vi.mock('@src/lang/wasm', () => ({
   execStateFromRust: vi.fn(),
 }))
 
-// Only the generated native boundary is mocked. The real JS owner allocates,
+const native = getModule()
+type NativeContextContract = InstanceType<ModuleType['Context']>
+
+// Only the source-owned Wasm boundary is mocked. The real JS owner allocates,
 // snapshots, replays, replaces, and disposes these native handles.
 function runtime(
   label: string,
@@ -27,17 +31,19 @@ function runtime(
 ) {
   const instances: NativeContext[] = []
   class NativeContext extends native.Context {
-    constructor(...args: ConstructorParameters<typeof native.Context>) {
+    constructor(...args: ConstructorParameters<ModuleType['Context']>) {
       super(...args)
       instances.push(this)
     }
     open_project = open
-    add_file = vi.fn<native.Context['add_file']>().mockResolvedValue(undefined)
+    add_file = vi
+      .fn<NativeContextContract['add_file']>()
+      .mockResolvedValue(undefined)
     update_file = vi
-      .fn<native.Context['update_file']>()
+      .fn<NativeContextContract['update_file']>()
       .mockResolvedValue(undefined)
     remove_file = vi
-      .fn<native.Context['remove_file']>()
+      .fn<NativeContextContract['remove_file']>()
       .mockResolvedValue(undefined)
     get_project = vi.fn(async () => ({ module: label }))
     free = vi.fn()
@@ -45,7 +51,7 @@ function runtime(
   return { module: { ...native, Context: NativeContext }, instances }
 }
 
-type ContextOpen = native.Context['open_project']
+type ContextOpen = NativeContextContract['open_project']
 const main: ApiFile = { id: 0, path: '/project/main.kcl', text: 'initial code' }
 const imported: ApiFile = {
   id: 1,

@@ -7,7 +7,7 @@ import {
 import { expect, test } from '@e2e/playwright/zoo-test'
 import type { Page } from '@playwright/test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
-import { uuidv4 } from '@src/lib/utils'
+import { isArray, uuidv4 } from '@src/lib/utils'
 import fsp from 'fs/promises'
 import { join } from 'path'
 
@@ -31,6 +31,79 @@ async function selectCompletionOption(page: Page, label: string) {
   }
 
   throw new Error(`Could not select autocomplete option "${label}"`)
+}
+
+const cacheModelCode = `@settings(defaultLengthUnit = mm, kclVersion = 3.0)
+radiusValue = 10mm
+height = 5mm
+profile = sketch(on = XY) {
+  perimeter = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([perimeter.center, ORIGIN])
+  radius(perimeter) == radiusValue
+  horizontal([perimeter.center, perimeter.start])
+}
+body = extrude(region(segments = [profile.perimeter]), length = height)
+`
+
+async function editorCacheReceipt(page: Page) {
+  const snapshot = await page.evaluate(async () => {
+    const editor = window.app.project?.executingEditor.value
+    if (!editor) throw new Error('No executing editor')
+    await editor.flushPendingEditorExecution()
+    if (editor.isExecuting || editor.hasErrors())
+      throw new Error('The final editor execution must succeed')
+    const body = editor.variables.body
+    if (body?.type !== 'Solid')
+      throw new Error('The executed model must contain a solid')
+    const response = await editor.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: crypto.randomUUID(),
+      cmd: {
+        type: 'scene_get_entity_ids',
+        filter: ['solid3d'],
+        skip: 0,
+        take: 100,
+      },
+    })
+    const logs = editor.engineCommandManager.commandLogs
+    return {
+      response,
+      code: editor.code,
+      lastSuccessfulCode: editor.lastSuccessfulCode,
+      fromCache: editor.execState.fromCache,
+      scalar: editor.variables.x,
+      bodyId: body.value.id,
+      artifacts: [...editor.artifactGraph.keys()].sort(),
+      executions: logs.filter((log) => log.type === 'execution-done').length,
+      commands: logs.flatMap((log) => {
+        // Rust sends directly through sendCommand; its acknowledged commands
+        // are logged here even when there is no corresponding SendScene log.
+        if (log.type === 'receive-reliable')
+          return log.cmd_type ? [log.cmd_type] : []
+        if (log.type !== 'send-scene' && log.type !== 'send-modeling') return []
+        if (log.data.type === 'modeling_cmd_req') return [log.data.cmd.type]
+        if (log.data.type === 'modeling_cmd_batch_req')
+          return log.data.requests.map((request) => request.cmd.type)
+        return []
+      }),
+    }
+  })
+  const { response, ...model } = snapshot
+  const reply = isArray(response) ? response[0] : response
+  if (
+    !reply ||
+    !reply.success ||
+    !('resp' in reply) ||
+    reply.resp.type !== 'modeling' ||
+    reply.resp.data.modeling_response.type !== 'scene_get_entity_ids'
+  )
+    throw new Error('The real engine must return its live solid IDs')
+  return {
+    ...model,
+    engineBodyIds: reply.resp.data.modeling_response.data.entity_ids
+      .flat()
+      .sort(),
+  }
 }
 
 test.describe('Editor tests', { tag: '@desktop' }, () => {
@@ -81,111 +154,56 @@ sketch001 = startSketchOn(XY)
     )
   })
 
-  test('ensure we use the cache, and do not re-execute', async ({
-    homePage,
-    page,
-  }) => {
-    const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+  test.describe('Cache reuse', () => {
+    test.use({ mockApiRoutes: false })
 
-    await homePage.goToModelingScene()
-    await u.waitForPageLoad()
+    for (const { title, editedCode, appendScalar } of [
+      {
+        title: 'ensure we use the cache, and do not re-execute',
+        editedCode: `${cacheModelCode}\n    \n`,
+        appendScalar: false,
+      },
+      {
+        title: 'ensure we use the cache, and do not clear on append',
+        editedCode: `${cacheModelCode}\nx = 1\n`,
+        appendScalar: true,
+      },
+    ]) {
+      test(title, async ({ homePage, page, scene, editor }) => {
+        await page.setBodyDimensions({ width: 1000, height: 500 })
+        await homePage.goToModelingScene()
+        await scene.settled()
+        await editor.replaceCode('', cacheModelCode)
+        const before = await editorCacheReceipt(page)
+        expect(before.code).toBe(cacheModelCode)
+        expect(before.lastSuccessfulCode).toBe(cacheModelCode)
+        expect(before.artifacts.length).toBeGreaterThan(0)
+        expect(before.engineBodyIds).toContain(before.bodyId)
 
-    await u.codeLocator.click()
-    await page.keyboard.type(`sketch001 = startSketchOn(XY)
-  |> startProfile(at = [-10, -10])
-  |> line(end = [20, 0])
-  |> line(end = [0, 20])
-  |> line(end = [-20, 0])
-  |> close()`)
-
-    // Ensure we execute the first time.
-    await u.openDebugPanel()
-    await expect
-      .poll(() =>
-        page.locator('[data-receive-command-type="set_kcl_version"]').count()
-      )
-      .toBe(2)
-    await expect
-      .poll(() => page.locator('[data-message-type="execution-done"]').count())
-      .toBe(2)
-
-    // Add whitespace to the end of the code.
-    await u.codeLocator.click()
-    await page.keyboard.press('ArrowUp')
-    await page.keyboard.press('ArrowUp')
-    await page.keyboard.press('ArrowUp')
-    await page.keyboard.press('ArrowUp')
-    await page.keyboard.press('Home')
-    await page.keyboard.type('    ')
-    await page.keyboard.press('Enter')
-    await page.keyboard.type('    ')
-
-    // Ensure we don't execute the second time.
-    await u.openDebugPanel()
-    // Make sure we didn't clear the scene.
-    await expect(
-      page.locator('[data-message-type="execution-done"]')
-    ).toHaveCount(3)
-    await expect(
-      page.locator('[data-receive-command-type="set_kcl_version"]')
-    ).toHaveCount(2)
-  })
-
-  test('ensure we use the cache, and do not clear on append', async ({
-    homePage,
-    page,
-    scene,
-    cmdBar,
-  }) => {
-    const u = await getUtils(page)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
-
-    await homePage.waitForAuthentication()
-    await homePage.goToModelingScene()
-    await scene.settled()
-
-    await u.codeLocator.click()
-    await page.keyboard.type(`sketch001 = startSketchOn(XY)
-  |> startProfile(at = [-10, -10])
-  |> line(end = [20, 0])
-  |> line(end = [0, 20])
-  |> line(end = [-20, 0])
-  |> close()`)
-
-    // Ensure we execute the first time.
-    await u.openDebugPanel()
-    await expect(
-      page.locator('[data-receive-command-type="set_kcl_version"]')
-    ).toHaveCount(2)
-    await expect(
-      page.locator('[data-message-type="execution-done"]')
-    ).toHaveCount(2)
-
-    // Add whitespace to the end of the code.
-    await u.codeLocator.click()
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('ArrowDown')
-    await page.keyboard.press('End')
-    await page.keyboard.press('Enter')
-    await page.keyboard.press('Enter')
-    await page.keyboard.type('x = 1')
-    await page.keyboard.press('Enter')
-
-    await u.openDebugPanel()
-    await expect(
-      page.locator('[data-message-type="execution-done"]')
-    ).toHaveCount(3)
-    await expect(
-      page.locator('[data-receive-command-type="set_kcl_version"]')
-    ).toHaveCount(2)
+        await page.evaluate(() => {
+          const editor = window.app.project?.executingEditor.value
+          if (!editor) throw new Error('No executing editor')
+          editor.engineCommandManager.clearCommandLogs()
+        })
+        // One native editor transaction isolates cache reuse from intermediate
+        // programs while typing, such as the undefined expression `x`.
+        await editor.replaceCode('', editedCode)
+        const after = await editorCacheReceipt(page)
+        expect(after.code).toBe(editedCode)
+        expect(after.lastSuccessfulCode).toBe(editedCode)
+        expect(after.executions).toBe(1)
+        expect(after.commands).not.toContain('set_kcl_version')
+        expect(after.commands).not.toContain('scene_clear_all')
+        expect(after.bodyId).toBe(before.bodyId)
+        expect(after.engineBodyIds).toEqual(before.engineBodyIds)
+        expect(after.artifacts).toEqual(before.artifacts)
+        if (appendScalar) {
+          expect(after.scalar).toMatchObject({ type: 'Number', value: 1 })
+        } else {
+          expect(after.fromCache).toBe(true)
+        }
+      })
+    }
   })
 
   test('if you click the format button it formats your code', async ({

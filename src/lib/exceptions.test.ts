@@ -1,4 +1,3 @@
-import * as wasmModule from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -7,12 +6,7 @@ const mocks = vi.hoisted(() => ({
   toastError: vi.fn(),
 }))
 
-// Recovery passes module identity through, but does not invoke Wasm.
-vi.mock('@rust/kcl-wasm-lib/pkg/kcl_wasm_lib', () => ({}))
 vi.mock('react-hot-toast', () => ({ default: { error: mocks.toastError } }))
-vi.mock('@src/lib/settings/settingsUtils', () => ({
-  jsAppSettings: vi.fn(() => ({})),
-}))
 vi.mock('@src/lang/wasmUtils', () => ({
   restartWasmModule: mocks.restartWasmModule,
 }))
@@ -31,7 +25,7 @@ function recoveryTarget() {
         .fn<(module: Promise<ModuleType>) => Promise<void>>()
         .mockResolvedValue(undefined),
     },
-    wasmInstancePromise: Promise.resolve(wasmModule),
+    wasmInstancePromise: Promise.withResolvers<ModuleType>().promise,
     finishFailedExecutions,
   }
 }
@@ -45,7 +39,9 @@ function crash() {
 describe('window exception handler', () => {
   beforeEach(() => {
     vi.resetModules()
-    mocks.restartWasmModule.mockReset().mockResolvedValue(wasmModule)
+    mocks.restartWasmModule
+      .mockReset()
+      .mockReturnValue(Promise.withResolvers<ModuleType>().promise)
     const addEventListener = window.addEventListener.bind(window)
     vi.spyOn(window, 'addEventListener').mockImplementation(
       (type, listener, options) => {
@@ -107,6 +103,8 @@ describe('window exception handler', () => {
   it('keeps each recovery cleanup scoped while a newer restart finishes first', async () => {
     const oldModule = Promise.withResolvers<ModuleType>()
     const nextModule = Promise.withResolvers<ModuleType>()
+    const oldReplay = Promise.withResolvers<undefined>()
+    const nextReplay = Promise.withResolvers<undefined>()
     mocks.restartWasmModule
       .mockReturnValueOnce(oldModule.promise)
       .mockReturnValueOnce(nextModule.promise)
@@ -116,22 +114,20 @@ describe('window exception handler', () => {
     target.engineCommandManager.captureFailedExecutionCleanup
       .mockReturnValueOnce(finishOld)
       .mockReturnValueOnce(finishNext)
-    target.rustContext.replaceWasmInstance.mockImplementation(
-      async (module) => {
-        await module
-      }
-    )
+    target.rustContext.replaceWasmInstance
+      .mockReturnValueOnce(oldReplay.promise)
+      .mockReturnValueOnce(nextReplay.promise)
     const { initializeWindowExceptionHandler } = await import(
       '@src/lib/exceptions'
     )
     initializeWindowExceptionHandler(target)
     crash()
     crash()
-    nextModule.resolve(wasmModule)
+    nextReplay.resolve(undefined)
     await vi.waitFor(() => expect(finishNext).toHaveBeenCalledOnce())
     expect(finishOld).not.toHaveBeenCalled()
     expect(target.wasmInstancePromise).toBe(nextModule.promise)
-    oldModule.resolve({ ...wasmModule })
+    oldReplay.resolve(undefined)
     await vi.waitFor(() => expect(finishOld).toHaveBeenCalledOnce())
     expect(target.wasmInstancePromise).toBe(nextModule.promise)
   })
