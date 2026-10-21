@@ -123,13 +123,8 @@ export function KclNamedViewsPane(props: AreaTypeComponentProps) {
   const actionsDisabled = cannotReachEngine || inSketchMode || isChangingSource
 
   const editView = (view: KclNamedView) => {
-    const artifact = execState.artifactGraph.get(view.artifact.id)
-    if (artifact?.type !== 'namedView') {
-      toast.error(`Could not find “${view.artifact.name}”.`)
-      return
-    }
     prepareNamedViewEditCommand({
-      artifact,
+      artifact: view.artifact,
       ast: kclManager.ast,
       code: kclManager.code,
       artifactGraph: execState.artifactGraph,

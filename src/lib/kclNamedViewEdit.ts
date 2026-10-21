@@ -8,9 +8,9 @@ import {
   retrieveSelectionsFromArtifactIds,
 } from '@src/lang/queryAst'
 import type {
-  Artifact,
   ArtifactGraph,
   CallExpressionKw,
+  KclNamedViewArtifact,
   Program,
 } from '@src/lang/wasm'
 import { ROOT_MODULE_ID } from '@src/lang/wasm'
@@ -24,8 +24,6 @@ import { activeViewSignal, moduleKeyOf } from '@src/lib/kclNamedViewActivation'
 import type RustContext from '@src/lib/rustContext'
 import { isErr } from '@src/lib/trap'
 import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
-
-type NamedViewArtifact = Extract<Artifact, { type: 'namedView' }>
 
 const submitNamedView = createModelingCodemodActor(
   modelingCommandCodemods['Named View']
@@ -76,7 +74,7 @@ export async function prepareNamedViewEditCommand({
   code,
   rustContext,
 }: {
-  artifact: NamedViewArtifact
+  artifact: KclNamedViewArtifact
   artifactGraph: ArtifactGraph
   ast: Node<Program>
   code: string
