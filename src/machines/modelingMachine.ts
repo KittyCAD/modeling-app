@@ -272,7 +272,6 @@ async function enterSketchSolveFromSketchBlockArtifact({
   kclManager,
   rustContext,
   engineCommandManager,
-  defaultUnit,
   projectRef,
   wasmInstance,
 }: {
@@ -280,7 +279,6 @@ async function enterSketchSolveFromSketchBlockArtifact({
   kclManager: KclManager
   rustContext: RustContext
   engineCommandManager: ConnectionManager
-  defaultUnit?: ModelingMachineContext['store']['defaultUnit']
   projectRef?: { current: Project | undefined }
   wasmInstance: ModuleType
 }): Promise<{
@@ -340,12 +338,7 @@ async function enterSketchSolveFromSketchBlockArtifact({
       0,
       0,
       0,
-      sketchBlockArtifact.sketchId,
-      {
-        settings: {
-          modeling: { base_unit: defaultUnit?.current ?? 'mm' },
-        },
-      }
+      sketchBlockArtifact.sketchId
     )
     if (!editSketchResult) {
       const errorMessage = 'Failed to edit sketch'
@@ -3168,7 +3161,6 @@ export const modelingMachine = setup({
               rustContext: RustContext
               engineCommandManager: ConnectionManager
               wasmInstance: ModuleType
-              defaultUnit?: ModelingMachineContext['store']['defaultUnit']
               projectRef?: { current: Project | undefined }
             }
           | undefined
@@ -3187,7 +3179,6 @@ export const modelingMachine = setup({
           rustContext,
           engineCommandManager,
           wasmInstance,
-          defaultUnit,
           projectRef,
         } = input
         await kclManager.flushPendingEditorExecution()
@@ -3341,7 +3332,6 @@ export const modelingMachine = setup({
             kclManager,
             rustContext,
             engineCommandManager,
-            defaultUnit,
             projectRef,
             wasmInstance,
           })
@@ -3413,12 +3403,7 @@ export const modelingMachine = setup({
             0, // projectId - using 0 as placeholder
             0, // fileId - using 0 as placeholder
             0, // version - using 0 as placeholder
-            sketchArgs,
-            {
-              settings: {
-                modeling: { base_unit: defaultUnit?.current ?? 'mm' },
-              },
-            }
+            sketchArgs
           )
         } catch (error) {
           await rustContext.hackSetProgram(
@@ -3464,7 +3449,6 @@ export const modelingMachine = setup({
               kclManager: KclManager
               rustContext: RustContext
               engineCommandManager: ConnectionManager
-              defaultUnit?: ModelingMachineContext['store']['defaultUnit']
               projectRef?: { current: Project | undefined }
             }
           | undefined
@@ -3483,7 +3467,6 @@ export const modelingMachine = setup({
           kclManager,
           rustContext,
           engineCommandManager,
-          defaultUnit,
           projectRef,
         } = input
         const wasmInstance = await kclManager.wasmInstancePromise
@@ -3501,7 +3484,6 @@ export const modelingMachine = setup({
           kclManager,
           rustContext,
           engineCommandManager,
-          defaultUnit,
           projectRef,
           wasmInstance,
         })
@@ -7660,7 +7642,6 @@ export const modelingMachine = setup({
             rustContext: context.rustContext,
             engineCommandManager: context.engineCommandManager,
             wasmInstance: context.wasmInstance,
-            defaultUnit: context.store.defaultUnit,
             projectRef: context.projectRef,
           }
         },
@@ -7677,7 +7658,6 @@ export const modelingMachine = setup({
               kclManager: context.kclManager,
               rustContext: context.rustContext,
               engineCommandManager: context.engineCommandManager,
-              defaultUnit: context.store.defaultUnit,
               projectRef: context.projectRef,
             }
           }
@@ -7700,7 +7680,6 @@ export const modelingMachine = setup({
                 kclManager: context.kclManager,
                 rustContext: context.rustContext,
                 engineCommandManager: context.engineCommandManager,
-                defaultUnit: context.store.defaultUnit,
                 projectRef: context.projectRef,
               }
             }

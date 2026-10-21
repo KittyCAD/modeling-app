@@ -1199,11 +1199,11 @@ struct CachedExecution {
     exec_state: Box<ExecState>,
     universe_info: Option<(Universe, UniverseMap)>,
     preserve_mem: PreserveMem,
-    graphics_application: GraphicsSettingsApplication,
+    scene_settings_application: SceneSettingsApplication,
 }
 
 #[derive(Clone, Copy)]
-enum GraphicsSettingsApplication {
+enum SceneSettingsApplication {
     Required,
     AlreadyApplied,
 }
@@ -1729,7 +1729,7 @@ impl ExecutorContext {
                 program,
                 &mut exec_state,
                 PreserveMem::Always,
-                GraphicsSettingsApplication::Required,
+                SceneSettingsApplication::Required,
             )
             .await?;
 
@@ -1846,7 +1846,7 @@ impl ExecutorContext {
             mut exec_state,
             universe_info,
             preserve_mem,
-            graphics_application,
+            scene_settings_application,
         } = *match prepared? {
             PreparedCachedExecution::Cached(outcome) => return Ok(*outcome),
             PreparedCachedExecution::Execute(execution) => execution,
@@ -1857,7 +1857,7 @@ impl ExecutorContext {
                 &mut exec_state,
                 universe_info,
                 preserve_mem,
-                graphics_application,
+                scene_settings_application,
             )
             .await;
         self.finish_cached_execution(original_program, exec_state, result).await
@@ -2035,10 +2035,10 @@ impl ExecutorContext {
             // A reset scene needs its preferences applied again after the
             // clear. A retained scene either matches the cached preferences or
             // successfully applied the changed preferences above.
-            let graphics_application = if planned.clear_scene {
-                GraphicsSettingsApplication::Required
+            let scene_settings_application = if planned.clear_scene {
+                SceneSettingsApplication::Required
             } else {
-                GraphicsSettingsApplication::AlreadyApplied
+                SceneSettingsApplication::AlreadyApplied
             };
             let PlannedCachedExecution {
                 program,
@@ -2083,7 +2083,7 @@ impl ExecutorContext {
                 exec_state: Box::new(exec_state),
                 universe_info,
                 preserve_mem,
-                graphics_application,
+                scene_settings_application,
             })))
         })
     }
@@ -2148,7 +2148,7 @@ impl ExecutorContext {
             exec_state,
             universe_info,
             preserve_mem,
-            GraphicsSettingsApplication::Required,
+            SceneSettingsApplication::Required,
         );
         if self.configure_engine_render {
             self.with_engine_execution(Box::pin(execution_fut)).await
@@ -2216,7 +2216,7 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         universe_info: Option<(Universe, UniverseMap)>,
         preserve_mem: PreserveMem,
-        graphics_application: GraphicsSettingsApplication,
+        scene_settings_application: SceneSettingsApplication,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         // Record the entry point's kclVersion before anything executes;
         // imported modules pre-execute on clones of this state below and must
@@ -2225,8 +2225,11 @@ impl ExecutorContext {
             .set_entry_point_kcl_version(program)
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
-        // Apply the physical tolerance before imported modules send geometry commands.
-        if let Some(cmd) = Self::default_tolerance_command(exec_state) {
+        // A retained scene already received the same version's tolerance.
+        // Initialize it again after a reset, before any imported geometry.
+        if let SceneSettingsApplication::Required = scene_settings_application
+            && let Some(cmd) = Self::default_tolerance_command(exec_state)
+        {
             self.send_execution_boundary(cmd)
                 .await
                 .map_err(KclErrorWithOutputs::no_outputs)?;
@@ -2240,7 +2243,7 @@ impl ExecutorContext {
             self.get_universe(program, exec_state).await?
         };
 
-        if let GraphicsSettingsApplication::Required = graphics_application {
+        if let SceneSettingsApplication::Required = scene_settings_application {
             self.apply_graphics_settings(program, exec_state).await?;
         }
 
@@ -2420,7 +2423,7 @@ impl ExecutorContext {
             program,
             exec_state,
             preserve_mem,
-            GraphicsSettingsApplication::AlreadyApplied,
+            SceneSettingsApplication::AlreadyApplied,
         )
         .await
         .map_err(|mut error| {
@@ -2548,7 +2551,7 @@ impl ExecutorContext {
         program: &crate::Program,
         exec_state: &mut ExecState,
         preserve_mem: PreserveMem,
-        graphics_application: GraphicsSettingsApplication,
+        scene_settings_application: SceneSettingsApplication,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         let _stats = crate::log::LogPerfStats::new("Interpretation");
 
@@ -2559,7 +2562,7 @@ impl ExecutorContext {
             .set_entry_point_kcl_version(program)
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
-        if let GraphicsSettingsApplication::Required = graphics_application {
+        if let SceneSettingsApplication::Required = scene_settings_application {
             self.apply_graphics_settings(program, exec_state).await?;
         }
 
@@ -5869,13 +5872,16 @@ solid7 = extrude(r7, length = width)
         use self::recording_transport::RecordingTransport;
 
         let requests = Arc::new(RwLock::new(Vec::new()));
-        let mut engine = EngineManager::new_mock();
-        engine.transport = Arc::new(Box::new(RecordingTransport {
-            inner: engine.transport.clone(),
-            requests: requests.clone(),
-        }));
+        let recording_engine = || {
+            let mut engine = EngineManager::new_mock();
+            engine.transport = Arc::new(Box::new(RecordingTransport {
+                inner: engine.transport.clone(),
+                requests: requests.clone(),
+            }));
+            Arc::new(engine)
+        };
         let mut ctx = ExecutorContext::new_with_engine(
-            Arc::new(engine),
+            recording_engine(),
             ExecutorSettings {
                 highlight_edges: true,
                 fixed_size_grid: true,
@@ -5891,13 +5897,27 @@ solid7 = extrude(r7, length = width)
             "@settings(kclVersion = 3.0, defaultLengthUnit = cm)",
         );
         let mut generation = 0;
-        for (source, highlight_edges, expected_applications, units) in [
-            (original, true, 1, UnitLength::Millimeters),
-            (appended.as_str(), true, 0, UnitLength::Millimeters),
-            (changed_preferences.as_str(), false, 1, UnitLength::Millimeters),
-            (changed_geometry.as_str(), false, 1, UnitLength::Millimeters),
-            (changed_units.as_str(), false, 1, UnitLength::Centimeters),
+        for (source, highlight_edges, expected_applications, expected_tolerances, units, replace_engine) in [
+            (original, true, 1, 1, UnitLength::Millimeters, false),
+            (appended.as_str(), true, 0, 0, UnitLength::Millimeters, false),
+            (
+                changed_preferences.as_str(),
+                false,
+                1,
+                0,
+                UnitLength::Millimeters,
+                false,
+            ),
+            (changed_geometry.as_str(), false, 1, 1, UnitLength::Millimeters, false),
+            (changed_units.as_str(), false, 1, 1, UnitLength::Centimeters, false),
+            (changed_units.as_str(), false, 1, 1, UnitLength::Centimeters, true),
         ] {
+            if replace_engine {
+                let cache = ctx.cache.clone();
+                let settings = ctx.settings.clone();
+                ctx.close().await;
+                ctx = ExecutorContext::new_with_engine(recording_engine(), settings).with_cache(cache);
+            }
             requests.write().await.clear();
             ctx.settings.highlight_edges = highlight_edges;
             let outcome = ctx
@@ -5951,6 +5971,24 @@ solid7 = extrude(r7, length = width)
                 .iter()
                 .position(|command| matches!(command, ModelingCmd::MakePlane(plane) if plane.origin.z.0 > 0.0))
                 .expect("the real execution must create the requested offset plane");
+            let tolerances: Vec<_> = commands
+                .iter()
+                .enumerate()
+                .filter_map(|(index, command)| match command {
+                    ModelingCmd::SetDefaultSystemProperties(properties) => {
+                        properties.tolerance.as_ref().map(|tolerance| (index, tolerance))
+                    }
+                    _ => None,
+                })
+                .collect();
+            assert_eq!(tolerances.len(), expected_tolerances, "{source}");
+            for (tolerance_index, tolerance) in tolerances {
+                assert_eq!(
+                    tolerance.point_point_2d_coincident.0,
+                    crate::std::solver::POINT_POINT_2D_COINCIDENT_EUCLIDEAN_TOLERANCE_MM
+                );
+                assert!(tolerance_index < geometry_index, "apply tolerance before geometry");
+            }
             if let Some((preference_index, _)) = preferences.first() {
                 assert!(
                     preference_index < &geometry_index,

@@ -35,6 +35,7 @@ async function sceneReceipt(page: Page) {
     const editor = window.app.project?.executingEditor.value
     if (!editor) throw new Error('No executing editor')
     const body = editor.variables.body
+    const settings = editor.rustContext.settingsActor.getSnapshot().context
     const response = await editor.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: crypto.randomUUID(),
@@ -54,6 +55,13 @@ async function sceneReceipt(page: Page) {
       bodyId: body?.type === 'Solid' ? body.value.id : null,
       sessionId: editor.engineCommandManager.engineSessionId,
       engineSceneGeneration: editor.engineSceneGenerationSignal.peek(),
+      preferences: {
+        enableSsao: settings.modeling.enableSSAO.current,
+        fixedSizeGrid: settings.modeling.fixedSizeGrid.current,
+        backfaceColor: settings.modeling.backfaceColor.current,
+        defaultUnit: settings.modeling.defaultUnit.current,
+      },
+      fileUnit: editor.fileSettings.defaultLengthUnit,
       commands: editor.engineCommandManager.commandLogs.flatMap((log) => {
         // Rust modeling commands are recorded on their real acknowledgements,
         // including the individual replies from a modeling batch.
@@ -299,7 +307,13 @@ test.describe('Rust-owned sketch cache lifecycle', { tag: '@desktop' }, () => {
     if (!tronApp) throwTronAppMissing()
     await tronApp.cleanProjectDir({
       ...TEST_SETTINGS,
-      modeling: { ...TEST_SETTINGS.modeling, show_scale_grid: false },
+      modeling: {
+        ...TEST_SETTINGS.modeling,
+        enable_ssao: false,
+        fixed_size_grid: false,
+        backface_color: '#123456',
+        show_scale_grid: false,
+      },
     })
     await folderSetupFn(async (directory) => {
       const project = path.join(directory, 'sketch-cache-lifecycle')
@@ -318,6 +332,14 @@ test.describe('Rust-owned sketch cache lifecycle', { tag: '@desktop' }, () => {
     const original = await originalSolidReceipt(page)
     expect(original.code).toBe(modelCode)
     expect(original.engineBodyIds).toContain(original.bodyId)
+    expect(original.preferences).toEqual({
+      enableSsao: false,
+      fixedSizeGrid: false,
+      backfaceColor: '#123456',
+      defaultUnit: 'in',
+    })
+    // The program's explicit millimeters win over the actor's inch default.
+    expect(original.fileUnit).toBe('mm')
     await toolbar.openFeatureTreePane()
 
     const expectRetainedSolid = async (baseline = original) => {
@@ -328,6 +350,12 @@ test.describe('Rust-owned sketch cache lifecycle', { tag: '@desktop' }, () => {
       expect(current.engineBodyIds).toContain(baseline.bodyId)
       expect(current.commands).not.toContain('set_kcl_version')
       expect(current.commands).not.toContain('scene_clear_all')
+      expect(current.commands).not.toContain('edge_lines_visible')
+      expect(current.commands).not.toContain('set_grid_scale')
+      expect(current.commands).not.toContain('set_grid_auto_scale')
+      expect(current.commands).not.toContain('set_default_system_properties')
+      expect(current.preferences).toEqual(original.preferences)
+      expect(current.fileUnit).toBe(original.fileUnit)
       return current
     }
 

@@ -38,10 +38,7 @@ import type { ConnectionManager } from '@src/lib/engineConnection/connectionMana
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import { defaultPlaneStrToKey } from '@src/lib/planes'
-import {
-  getSettingsFromActorContext,
-  jsAppSettings,
-} from '@src/lib/settings/settingsUtils'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { Signal as LegacySignal } from '@src/lib/signal'
 import { err, reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
@@ -488,8 +485,7 @@ export default class RustContext {
     project: ApiProjectId,
     file: ApiFileId,
     version: ApiVersion,
-    sketchArgs: SketchCtor,
-    settings: DeepPartial<Configuration>
+    sketchArgs: SketchCtor
   ): Promise<NewSketchResult> {
     const instance = await this._checkContextInstance()
 
@@ -504,7 +500,7 @@ export default class RustContext {
         JSON.stringify(file),
         JSON.stringify(version),
         JSON.stringify(sketchArgs),
-        JSON.stringify(settings)
+        JSON.stringify(jsAppSettings(this.settingsActor))
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
       if (checkpointId instanceof Error) {
@@ -527,8 +523,7 @@ export default class RustContext {
     project: ApiProjectId,
     file: ApiFileId,
     version: ApiVersion,
-    sketch: ApiObjectId,
-    settings: DeepPartial<Configuration>
+    sketch: ApiObjectId
   ): Promise<EditSketchResult> {
     const instance = await this._checkContextInstance()
 
@@ -541,7 +536,7 @@ export default class RustContext {
         JSON.stringify(file),
         JSON.stringify(version),
         JSON.stringify(sketch),
-        JSON.stringify(settings)
+        JSON.stringify(jsAppSettings(this.settingsActor))
       )
       const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
       if (checkpointId instanceof Error) {
@@ -568,7 +563,7 @@ export default class RustContext {
       const result: SceneGraphDelta = await instance.exit_sketch(
         JSON.stringify(version),
         JSON.stringify(sketch),
-        JSON.stringify(getSettingsFromActorContext(this.settingsActor))
+        JSON.stringify(jsAppSettings(this.settingsActor))
       )
       return result
     } catch (e: any) {

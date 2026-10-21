@@ -102,17 +102,28 @@ async fn lego_batches_are_between_begin_and_end_execution(use_cache: bool) {
         events: Arc::clone(&events),
     }));
 
-    let program = kcl_lib::Program::parse_no_errs(include_str!("inputs/lego.kcl")).unwrap();
+    let source = include_str!("inputs/lego.kcl");
+    let program = kcl_lib::Program::parse_no_errs(source).unwrap();
     if use_cache {
         ctx.bust_cache().await;
     }
-    assert!(record_lego_execution(&ctx, &events, &program, use_cache).await > 0);
+    let initial = record_lego_execution(&ctx, &events, &program, use_cache).await;
+    assert!(assert_execution_order(&initial) > 0);
     if use_cache {
         // A cache hit can still send setup batches when settings change.
         ctx.settings.show_grid = !ctx.settings.show_grid;
-        assert!(record_lego_execution(&ctx, &events, &program, true).await > 0);
-        // A subsequent unchanged execution must still finish its begin/end pair.
-        assert_eq!(record_lego_execution(&ctx, &events, &program, true).await, 0);
+        let changed_settings = record_lego_execution(&ctx, &events, &program, true).await;
+        assert!(assert_execution_order(&changed_settings) > 0);
+        // A genuine cache hit has no engine effects, including execution boundaries.
+        let unchanged = record_lego_execution(&ctx, &events, &program, true).await;
+        assert!(
+            unchanged.is_empty(),
+            "A cache hit must send no commands: {unchanged:#?}"
+        );
+
+        let taller_brick = kcl_lib::Program::parse_no_errs(&source.replace("height = 3.2", "height = 4.2")).unwrap();
+        let changed_geometry = record_lego_execution(&ctx, &events, &taller_brick, true).await;
+        assert!(assert_execution_order(&changed_geometry) > 0);
     }
     ctx.close().await;
 }
@@ -122,7 +133,7 @@ async fn record_lego_execution(
     events: &Mutex<Vec<TransportEvent>>,
     program: &kcl_lib::Program,
     use_cache: bool,
-) -> usize {
+) -> Vec<TransportEvent> {
     let result = if use_cache {
         ctx.run_with_caching(program.clone()).await.map(|_| ())
     } else {
@@ -135,8 +146,7 @@ async fn record_lego_execution(
     result.unwrap();
     assert!(batch_is_empty, "Execution left modeling commands queued");
 
-    let events = std::mem::take(&mut *events.lock().await);
-    assert_execution_order(&events)
+    std::mem::take(&mut *events.lock().await)
 }
 
 fn assert_execution_order(events: &[TransportEvent]) -> usize {
