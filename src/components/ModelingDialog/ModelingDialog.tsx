@@ -2,7 +2,6 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { Draggable } from '@kittycad/ui-components'
 import type { RefObject } from 'react'
 import { useEffect, useId, useRef, useState } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
 import decamelize from 'decamelize'
 import {
   CommandKclInput,
@@ -93,19 +92,6 @@ export default function ModelingDialog({
       !arg.dialog?.advanced &&
       !(arg.inputType === 'selection' && context.argumentsToSubmit.nodeToEdit)
   )?.name
-
-  useHotkeys(
-    'enter',
-    (event) => {
-      const input = selectionInputs.current.get(selection.activeName ?? '')
-      if (!input || input.disabled || event.defaultPrevented) return
-      if (event.target !== input && event.target !== document.body) return
-      event.preventDefault()
-      input.form?.requestSubmit()
-    },
-    { enabled: Boolean(selection.activeName) },
-    [selection.activeName]
-  )
 
   useEffect(() => {
     let cancelled = false
@@ -251,6 +237,7 @@ export default function ModelingDialog({
               autoFocus={name === firstFieldName}
               aria-label={`Select ${label}`}
               aria-pressed={selection.activeName === name}
+              data-modeling-dialog-selection={selection.activeName === name}
               disabled={Boolean(state.context.argumentsToSubmit.nodeToEdit)}
               title={
                 state.context.argumentsToSubmit.nodeToEdit

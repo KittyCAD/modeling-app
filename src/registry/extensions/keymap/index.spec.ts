@@ -15,6 +15,7 @@ import {
   GLOBAL_COMMAND_SCOPES,
   HOME_COMMAND_SCOPE,
   MODE_MODELING_COMMAND_SCOPE,
+  MODELING_DIALOG_FOCUSED_COMMAND_SCOPE,
   SETTINGS_COMMAND_SCOPE,
 } from '@src/registry/contracts/commands'
 import {
@@ -92,6 +93,48 @@ describe('keymap extension', () => {
   it('keeps the keymap scope ValueSpec as a command scope alias', () => {
     expect(keymapScopesValueSpec).toBe(commandScopesValueSpec)
     expect(keymapContract.keymapScopesValueSpec).toBe(commandScopesValueSpec)
+  })
+
+  it('submits modeling dialogs only from the active collector or scene focus', () => {
+    const registry = createRegistryWithKeymapItems([])
+    const keymap = registry.get(keymapService)
+    const form = document.createElement('form')
+    const selection = document.createElement('button')
+    selection.type = 'button'
+    selection.dataset.modelingDialogSelection = 'true'
+    const remove = document.createElement('button')
+    remove.type = 'button'
+    form.append(selection, remove)
+    document.body.append(form)
+    const requestSubmit = vi
+      .spyOn(form, 'requestSubmit')
+      .mockImplementation(() => {})
+
+    for (const target of [selection, document.body]) {
+      if (target === selection) selection.focus()
+      else selection.blur()
+      expect(
+        keymap.handleKeyDown(createKeyboardEventWithTarget('Enter', target), {
+          source: 'global',
+        })
+      ).toBe(true)
+      expect(keymap.getCurrentScopes()).toContain(
+        MODELING_DIALOG_FOCUSED_COMMAND_SCOPE
+      )
+    }
+    remove.focus()
+    expect(
+      keymap.handleKeyDown(createKeyboardEventWithTarget('Enter', remove), {
+        source: 'global',
+      })
+    ).toBe(false)
+    expect(keymap.getCurrentScopes()).not.toContain(
+      MODELING_DIALOG_FOCUSED_COMMAND_SCOPE
+    )
+    expect(requestSubmit).toHaveBeenCalledTimes(2)
+
+    form.remove()
+    registry[Symbol.dispose]()
   })
 
   it('keeps the Import command compatible with saved Insert shortcuts', () => {

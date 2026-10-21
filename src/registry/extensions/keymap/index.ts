@@ -24,6 +24,7 @@ import {
   GLOBAL_COMMAND_SCOPES,
   getEffectiveCommandScopeSet,
   isCommandAvailable,
+  MODELING_DIALOG_FOCUSED_COMMAND_SCOPE,
   SETTINGS_COMMAND_SCOPE,
 } from '@src/registry/contracts/commands'
 import { fileOperationsService } from '@src/registry/contracts/fileOperations'
@@ -96,6 +97,14 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
       },
     ],
     [
+      'zds.modelingDialog.submit',
+      {
+        scopes: [MODELING_DIALOG_FOCUSED_COMMAND_SCOPE],
+        run: () =>
+          getFocusedModelingDialogForm(document.activeElement)?.requestSubmit(),
+      },
+    ],
+    [
       'zds.settings.open',
       {
         scopes: GLOBAL_COMMAND_SCOPES,
@@ -136,11 +145,14 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
     CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
     CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
     EDITABLE_FOCUSED_COMMAND_SCOPE,
+    MODELING_DIALOG_FOCUSED_COMMAND_SCOPE,
   ])
 
   const syncFocusScopeFromEventTarget = (target: EventTarget | null) => {
     let nextFocusScope = CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE
-    if (isEventFromFormControl(target)) {
+    if (getFocusedModelingDialogForm(target)) {
+      nextFocusScope = MODELING_DIALOG_FOCUSED_COMMAND_SCOPE
+    } else if (isEventFromFormControl(target)) {
       nextFocusScope = EDITABLE_FOCUSED_COMMAND_SCOPE
     } else if (isEventFromCodeEditor(target)) {
       nextFocusScope = CODE_EDITOR_FOCUSED_KEYMAP_SCOPE
@@ -611,6 +623,18 @@ function isEventFromFormControl(target: EventTarget | null) {
     target instanceof HTMLTextAreaElement ||
     target instanceof HTMLSelectElement
   )
+}
+
+function getFocusedModelingDialogForm(target: EventTarget | null) {
+  const selection =
+    target === document.body
+      ? document.querySelector('[data-modeling-dialog-selection="true"]')
+      : target
+  return selection instanceof HTMLButtonElement &&
+    selection.dataset.modelingDialogSelection === 'true' &&
+    !selection.disabled
+    ? selection.form
+    : null
 }
 
 function shouldPreserveFocusScope(target: EventTarget | null) {
