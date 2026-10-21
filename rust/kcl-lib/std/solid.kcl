@@ -936,6 +936,27 @@ export fn shell(
 ): [Solid] {}
 
 
+/// Give a single planar or cylindrical surface face a uniform thickness, closing
+/// its boundaries to create a solid. Boundaries and holes are preserved.
+/// Positive thickness follows the surface normal; negative thickness reverses it.
+/// Joined surfaces and other curved surface types are not yet supported.
+/// Requires an engine with surface thickening support.
+/// ```kcl,sketchSolve
+/// @settings(defaultLengthUnit = mm, kclVersion = 3.0, experimentalFeatures = allow)
+/// profile = sketch(on = XY) {
+///   edge = line(start = [var 0mm, var 0mm], end = [var 20mm, var 0mm])
+/// }
+/// surface = extrude(profile.edge, length = 10mm, bodyType = SURFACE)
+/// plate = thicken(surface, thickness = 2mm)
+/// ```
+@(impl = std_rust, feature_tree = true, experimental = true)
+export fn thicken(
+  /// The single-face surface to thicken.
+  @surface: Solid,
+  /// Signed thickness measured along the surface normal.
+  thickness: number(Length),
+): Solid {}
+
 /// Make the inside of a 3D object hollow.
 ///
 /// Remove volume from a 3-dimensional shape such that a wall of the

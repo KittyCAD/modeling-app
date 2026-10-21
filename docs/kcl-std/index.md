@@ -165,6 +165,7 @@ layout: manual
   * [`shell`](/docs/kcl-std/functions/std-solid-shell)
   * [`split`](/docs/kcl-std/functions/std-solid-split)
   * [`subtract`](/docs/kcl-std/functions/std-solid-subtract)
+  * [`thicken`](/docs/kcl-std/functions/std-solid-thicken) Experimental
   * [`union`](/docs/kcl-std/functions/std-solid-union)
 * [**std::solver**](/docs/kcl-std/modules/std-solver)
   * [`solver::angle`](/docs/kcl-std/functions/std-solver-angle)

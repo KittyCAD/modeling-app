@@ -10498,6 +10498,45 @@ export default {
       }
     ]
   },
+  "thicken": {
+    "name": "thicken",
+    "preferredName": "thicken",
+    "qualName": "std::solid::thicken",
+    "moduleName": "solid",
+    "returnType": "Solid",
+    "addedIn": null,
+    "summary": "Give a single planar or cylindrical surface face a uniform thickness, closing its boundaries to create a solid. Boundaries and holes are preserved. Positive thickness follows the surface normal; negative thickness reverses it. Joined surfaces and other curved surface types are not yet supported. Requires an engine with surface thickening support.",
+    "deprecated": false,
+    "deprecatedSince": null,
+    "experimental": true,
+    "docHidden": false,
+    "args": [
+      {
+        "name": "surface",
+        "ty": "Solid",
+        "docs": "The single-face surface to thicken.",
+        "required": true,
+        "special": true,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      },
+      {
+        "name": "thickness",
+        "ty": "number(Length)",
+        "docs": "Signed thickness measured along the surface normal.",
+        "required": true,
+        "special": false,
+        "experimental": false,
+        "addedIn": null,
+        "deprecated": false,
+        "deprecatedSince": null,
+        "removedIn": null
+      }
+    ]
+  },
   "translate": {
     "name": "translate",
     "preferredName": "translate",

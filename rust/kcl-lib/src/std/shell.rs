@@ -5,6 +5,7 @@ use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kcmc::length_unit::LengthUnit;
 use kittycad_modeling_cmds as kcmc;
+use kittycad_modeling_cmds::shared::BodyType;
 
 use super::args::TyF64;
 use crate::errors::KclError;
@@ -17,6 +18,55 @@ use crate::execution::types::ArrayLen;
 use crate::execution::types::RuntimeType;
 use crate::std::Args;
 use crate::std::sketch::FaceTag;
+use crate::std::surfaces::query_body_type;
+
+/// Give a single surface face a uniform thickness using the existing shell command.
+pub async fn thicken(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let mut surface: Box<Solid> = args.get_unlabeled_kw_arg("surface", &RuntimeType::solid(), exec_state)?;
+    let thickness: TyF64 = args.get_kw_arg("thickness", &RuntimeType::length(), exec_state)?;
+    let distance = thickness.unwrap_to_mm();
+    if !distance.is_finite() || distance == 0.0 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Thickness must be a finite, nonzero length".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
+    exec_state
+        .flush_batch_for_solids(
+            ModelingCmdMeta::from_args(exec_state, &args),
+            std::slice::from_ref(surface.as_ref()),
+        )
+        .await?;
+    let body_type = if args.ctx.no_engine_commands().await {
+        surface.best_guess_body_type
+    } else {
+        Some(query_body_type(&surface, exec_state, &args).await?)
+    };
+    if body_type.is_some_and(|body_type| body_type != BodyType::Surface) {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Thicken requires a surface body".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args(exec_state, &args),
+            ModelingCmd::from(
+                mcmd::Solid3dShellFace::builder()
+                    .hollow(true)
+                    .face_ids(Vec::new())
+                    .object_id(surface.id)
+                    // Shell offsets inward; positive thickness follows the surface normal.
+                    .shell_thickness(LengthUnit(-distance))
+                    .build(),
+            ),
+        )
+        .await?;
+    surface.best_guess_body_type = Some(BodyType::Solid);
+    Ok(KclValue::Solid { value: surface })
+}
 
 /// Create a shell.
 pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -140,4 +190,43 @@ async fn inner_hollow(
         .await?;
 
     Ok(solid)
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::execution::MockConfig;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn thicken_mock_validates_inputs_and_marks_result_as_solid() {
+        let setup = r#"
+@settings(defaultLengthUnit = mm, kclVersion = 3.0, experimentalFeatures = allow)
+profile = sketch(on = XY) {
+  edge = line(start = [var 0mm, var 0mm], end = [var 20mm, var 0mm])
+}
+surface = extrude(profile.edge, length = 10mm, bodyType = SURFACE)
+"#;
+        for thickness in ["2mm", "-2mm", "0.1in"] {
+            let code = format!(
+                "{setup}\nbody = thicken(surface, thickness = {thickness})\nassertIs(isSolid(body))\nassertIs(!isSurface(body))"
+            );
+            let program = crate::Program::parse_no_errs(&code).unwrap();
+            let ctx = crate::ExecutorContext::new_mock(None).await;
+            let result = ctx.run_mock(&program, &MockConfig::default()).await;
+            ctx.close().await;
+            result.unwrap();
+        }
+        for (operation, message) in [
+            ("thicken(surface, thickness = 0mm)", "finite, nonzero"),
+            (
+                "body = thicken(surface, thickness = 2mm)\nthicken(body, thickness = 1mm)",
+                "requires a surface body",
+            ),
+        ] {
+            let program = crate::Program::parse_no_errs(&format!("{setup}\n{operation}")).unwrap();
+            let ctx = crate::ExecutorContext::new_mock(None).await;
+            let result = ctx.run_mock(&program, &MockConfig::default()).await;
+            ctx.close().await;
+            assert!(result.unwrap_err().to_string().contains(message));
+        }
+    }
 }
