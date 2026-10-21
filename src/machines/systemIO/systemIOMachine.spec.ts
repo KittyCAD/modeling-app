@@ -1,8 +1,10 @@
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { signal } from '@preact/signals-core'
 import { App } from '@src/lib/app'
 import { DEFAULT_PROJECT_NAME } from '@src/lib/constants'
-import fsZds from '@src/lib/fs-zds'
+import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
@@ -24,7 +26,7 @@ import {
   buildTheWorldAndNoEngineConnection,
   createTestWasmRegistryItem,
 } from '@src/unitTestUtils'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createActor, fromPromise, waitFor } from 'xstate'
 
 let appInstanceInThisFile: App = null!
@@ -133,6 +135,211 @@ describe('systemIOMachine - XState', () => {
           { name: 'bravo', path: '/projects/bravo', modified: 30 },
         ]).map((entry) => entry.name)
       ).toEqual(['bravo', 'charlie', 'alpha'])
+    })
+  })
+
+  describe('deferred onboarding file creation', () => {
+    let app: App
+    let root: string
+    let firstDirectory: string
+    let nextDirectory: string
+    let previousFs = { ...fsZds }
+    let accessStarted = deferred<undefined>()
+    let accessAllowed = deferred<undefined>()
+    let accessFinished = deferred<undefined>()
+    let hasStartedAccess = false
+    let restoreAccess = () => {}
+    let restoreGetPath = () => {}
+
+    beforeEach(async () => {
+      previousFs = { ...fsZds }
+      accessStarted = deferred<undefined>()
+      accessAllowed = deferred<undefined>()
+      accessFinished = deferred<undefined>()
+      hasStartedAccess = false
+      root = await mkdtemp(path.join(tmpdir(), 'zds-onboarding-system-io-'))
+      firstDirectory = path.join(root, 'first-projects')
+      nextDirectory = path.join(root, 'next-projects')
+      for (const directory of [firstDirectory, nextDirectory]) {
+        const project = path.join(directory, 'tutorial-project')
+        await mkdir(project, { recursive: true })
+        await writeFile(
+          path.join(project, 'main.kcl'),
+          '@settings(kclVersion = 3.0)\ninitial = 1\n'
+        )
+      }
+      await moduleFsViaModuleImport({
+        type: StorageName.NodeFS,
+        options: {},
+      })
+      const getPath = vi.spyOn(fsZds, 'getPath').mockResolvedValue(root)
+      restoreGetPath = () => getPath.mockRestore()
+      const actualAccess = fsZds.access
+      const access = vi
+        .spyOn(fsZds, 'access')
+        .mockImplementation(async (targetPath, mode) => {
+          if (targetPath !== firstDirectory) {
+            return actualAccess(targetPath, mode)
+          }
+          hasStartedAccess = true
+          accessStarted.resolve(undefined)
+          await accessAllowed.promise
+          try {
+            return await actualAccess(targetPath, mode)
+          } finally {
+            accessFinished.resolve(undefined)
+          }
+        })
+      restoreAccess = () => access.mockRestore()
+      app = App.fromProvided({
+        registryOverrides: [
+          createTestWasmRegistryItem(Promise.resolve(instanceInThisFile)),
+        ],
+      })
+      await waitFor(app.settings.actor, (state) => state.matches('idle'))
+    })
+
+    afterEach(async () => {
+      app?.systemIOActor.stop()
+      accessAllowed.resolve(undefined)
+      if (hasStartedAccess) await accessFinished.promise
+      await app?.disposeAsync()
+      restoreAccess()
+      restoreGetPath()
+      Object.assign(fsZds, previousFs)
+      await rm(root, { recursive: true, force: true })
+    })
+
+    async function beginDirectoryCheck() {
+      app.systemIOActor.send({
+        type: SystemIOMachineEvents.setProjectDirectoryPath,
+        data: { requestedProjectDirectoryPath: firstDirectory },
+      })
+      await accessStarted.promise
+      expect(app.systemIOActor.getSnapshot().value).toBe(
+        SystemIOMachineStates.checkingReadWrite
+      )
+    }
+
+    function requestFile(file = 'blank.kcl') {
+      app.systemIOActor.send({
+        type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToFile,
+        data: {
+          requestedProjectName: 'tutorial-project',
+          requestedFileNameWithExtension: file,
+          requestedSubRoute: '/onboarding/desktop/scene',
+          files: [
+            {
+              requestedProjectName: 'tutorial-project',
+              requestedFileName: file,
+              requestedCode: '',
+            },
+          ],
+          override: true,
+        },
+      })
+    }
+
+    it.each(['before', 'after', 'same-directory recheck'])(
+      'creates the blank file when folder refresh arrives %s the user intent',
+      async (order) => {
+        await beginDirectoryCheck()
+        if (order === 'before') {
+          app.systemIOActor.send({
+            type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+          })
+        }
+        requestFile()
+        if (order === 'same-directory recheck') {
+          app.systemIOActor.send({
+            type: SystemIOMachineEvents.setProjectDirectoryPath,
+            data: { requestedProjectDirectoryPath: firstDirectory },
+          })
+        }
+        if (order !== 'before') {
+          for (let index = 0; index < 3; index++) {
+            app.systemIOActor.send({
+              type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+            })
+          }
+        }
+        accessAllowed.resolve(undefined)
+        await waitFor(app.systemIOActor, (state) =>
+          state.matches(SystemIOMachineStates.idle)
+        )
+        await expect(
+          readFile(
+            path.join(firstDirectory, 'tutorial-project', 'blank.kcl'),
+            'utf8'
+          )
+        ).resolves.toBe('@settings(kclVersion = 3.0)\n')
+        expect(
+          app.systemIOActor.getSnapshot().context.requestedFileName
+        ).toMatchObject({
+          project: 'tutorial-project',
+          file: 'blank.kcl',
+          subRoute: '/onboarding/desktop/scene',
+        })
+      }
+    )
+
+    it('retains the latest user intent without replaying the superseded file write', async () => {
+      await beginDirectoryCheck()
+      requestFile()
+      requestFile('latest.kcl')
+      app.systemIOActor.send({
+        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+      })
+      accessAllowed.resolve(undefined)
+      await waitFor(app.systemIOActor, (state) =>
+        state.matches(SystemIOMachineStates.idle)
+      )
+      const project = path.join(firstDirectory, 'tutorial-project')
+      await expect(
+        readFile(path.join(project, 'latest.kcl'), 'utf8')
+      ).resolves.toBe('@settings(kclVersion = 3.0)\n')
+      await expect(
+        readFile(path.join(project, 'blank.kcl'))
+      ).rejects.toMatchObject({ code: 'ENOENT' })
+      expect(
+        app.systemIOActor.getSnapshot().context.requestedFileName.file
+      ).toBe('latest.kcl')
+    })
+
+    it('does not apply the old directory intent after switching project directories', async () => {
+      await beginDirectoryCheck()
+      requestFile()
+      app.systemIOActor.send({
+        type: SystemIOMachineEvents.setProjectDirectoryPath,
+        data: { requestedProjectDirectoryPath: nextDirectory },
+      })
+      await waitFor(app.systemIOActor, (state) =>
+        state.matches(SystemIOMachineStates.idle)
+      )
+      accessAllowed.resolve(undefined)
+      await accessFinished.promise
+      for (const directory of [firstDirectory, nextDirectory]) {
+        await expect(
+          readFile(path.join(directory, 'tutorial-project', 'blank.kcl'))
+        ).rejects.toMatchObject({ code: 'ENOENT' })
+      }
+      expect(
+        app.systemIOActor.getSnapshot().context.deferredSystemIOEvent
+      ).toBeUndefined()
+      expect(
+        app.systemIOActor.getSnapshot().context.requestedFileName.file
+      ).toBe(NO_PROJECT_DIRECTORY)
+    })
+
+    it('does not write a deferred file after its owning actor stops', async () => {
+      await beginDirectoryCheck()
+      requestFile()
+      app.systemIOActor.stop()
+      accessAllowed.resolve(undefined)
+      await accessFinished.promise
+      await expect(
+        readFile(path.join(firstDirectory, 'tutorial-project', 'blank.kcl'))
+      ).rejects.toMatchObject({ code: 'ENOENT' })
     })
   })
 
