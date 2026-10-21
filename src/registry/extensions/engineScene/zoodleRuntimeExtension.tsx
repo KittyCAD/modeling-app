@@ -6,6 +6,7 @@ import {
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import { ViewportAnnotationOverlay } from '@src/components/ViewportAnnotationOverlay'
+import { reportRejection } from '@src/lib/trap'
 import { clamp } from '@src/lib/utils'
 import {
   defineEngineSceneStreamClassName,
@@ -107,13 +108,15 @@ export function activateZoodleRuntimeExtension(
   registry: Pick<RegistryLike, 'reconfigure'>,
   session: ZoodleRuntimeExtensionSession
 ) {
-  registry.reconfigure(engineSceneRuntimeExtensionsSlot, [
+  const cleanup = registry.reconfigure(engineSceneRuntimeExtensionsSlot, [
     createZoodleRuntimeExtension(session),
   ])
+  void cleanup.catch(reportRejection)
 }
 
 export function deactivateZoodleRuntimeExtension(
   registry: Pick<RegistryLike, 'reconfigure'>
 ) {
-  registry.reconfigure(engineSceneRuntimeExtensionsSlot, [])
+  const cleanup = registry.reconfigure(engineSceneRuntimeExtensionsSlot, [])
+  void cleanup.catch(reportRejection)
 }

@@ -69,7 +69,7 @@ describe('Registry', () => {
     expect(container.get(registrySignal)).toEqual(['stable', 'a'])
     expect(calls).toHaveBeenCalledTimes(1)
 
-    container.reconfigure(slot, [
+    void container.reconfigure(slot, [
       defineRegistryItem({ provides: [provide(registrySignal, 'b')] }),
     ])
 
@@ -219,7 +219,7 @@ describe('Registry', () => {
     container.configure([slot.of(runtime)])
     expect(container.get(values)).toEqual(['mounted'])
 
-    const disposed = container.reconfigureAsync(slot, [])
+    const disposed = container.reconfigure(slot, [])
     expect(container.get(values)).toEqual([])
     expect(container.inspect().runtimeInstanceCount).toBe(0)
     await vi.waitFor(() => expect(events).toEqual(['dispose:start']))
@@ -253,7 +253,7 @@ describe('Registry', () => {
     container.configure([slot.of(immediate, asynchronous)])
     container.inspect()
 
-    const disposed = container.reconfigureAsync(slot, [])
+    const disposed = container.reconfigure(slot, [])
 
     expect(events).toEqual(['async:start', 'immediate'])
     release.resolve()

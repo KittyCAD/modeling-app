@@ -1,6 +1,7 @@
 import {
   type Signal as PreactSignal,
   type ReadonlySignal,
+  batch,
   computed,
   signal,
 } from '@preact/signals-core'
@@ -68,7 +69,7 @@ interface FlattenResult {
 interface RegistryGraphNode {
   readonly node: RegistryItemDefinition | RegistryItemFactory
   readonly path: string
-  readonly dependencies: RegistryGraphNode[]
+  readonly dependencies: Readonly<Record<string, readonly RegistryGraphNode[]>>
   readonly children: RegistryGraphNode[]
 }
 
@@ -131,7 +132,10 @@ export class Registry implements ValueSpecReader, ServiceReader {
       const serviceContributions: FlattenedServiceContribution[] = []
       const slots = new Map<symbol, readonly RegistryItem[]>()
       const runtimeKeys = new Set<RegistryItemKey>()
-      const seenItems = new Set<RegistryItemKey>()
+      // Track the winning subtree's tokens, including nodes reached through uses
+      // and slots. A provider elsewhere cannot mask an incorrect dependency pair.
+      const factoryTokens = new Map<RegistryItemKey, Set<symbol>>()
+      const itemTokens = new Map<RegistryItemKey, Set<symbol>>()
       let order = 0
 
       const ctx: RegistryItemContext = {
@@ -149,13 +153,31 @@ export class Registry implements ValueSpecReader, ServiceReader {
         slots
       )
 
-      const execute = (entry: RegistryGraphNode): void => {
+      const execute = (entry: RegistryGraphNode): ReadonlySet<symbol> => {
         const { node, path } = entry
         if (typeof node === 'function') {
           const key = node.itemKey ?? node
-          if (runtimeKeys.has(key)) return
-          for (const dependency of entry.dependencies) execute(dependency)
+          const existing = factoryTokens.get(key)
+          if (existing) return existing
+          const tokens = new Set<symbol>()
+          for (const [name, dependency] of Object.entries(
+            node.dependencies ?? {}
+          )) {
+            const provided = new Set(
+              (entry.dependencies[name] ?? []).flatMap((child) => [
+                ...execute(child),
+              ])
+            )
+            if (!provided.has(dependency.token.id)) {
+              throw new RegistryDependencyError(
+                `Factory ${String(node.itemKey ?? path)} dependency "${name}" ` +
+                  `does not provide token "${dependency.token.name}" from its registryItem.`
+              )
+            }
+            for (const token of provided) tokens.add(token)
+          }
           runtimeKeys.add(key)
+          factoryTokens.set(key, tokens)
           const runtime = this.ensureRuntimeInstance(key, node, ctx)
           // Returned items are only known after the callback. Normalize that
           // subtree too; already executed identities win before any child runs.
@@ -163,15 +185,18 @@ export class Registry implements ValueSpecReader, ServiceReader {
             [{ node: runtime.item, path: `${path}/factory` }],
             slots
           ))
-            execute(child)
-          return
+            for (const token of execute(child)) tokens.add(token)
+          return tokens
         }
 
         const itemKey = node.id ?? node
-        if (seenItems.has(itemKey)) return
-        seenItems.add(itemKey)
+        const existing = itemTokens.get(itemKey)
+        if (existing) return existing
+        const tokens = new Set<symbol>()
+        itemTokens.set(itemKey, tokens)
 
         for (const contribution of node.provides ?? []) {
+          tokens.add(contribution.valueSpec.id)
           contributions.push({
             valueSpec: contribution.valueSpec,
             value: contribution.value,
@@ -182,13 +207,16 @@ export class Registry implements ValueSpecReader, ServiceReader {
           })
         }
         for (const service of node.providesServices ?? []) {
+          tokens.add(service.service.id)
           serviceContributions.push({
             service: service.service,
             implementation: service.implementation,
             sourcePath: path,
           })
         }
-        for (const child of entry.children) execute(child)
+        for (const child of entry.children)
+          for (const token of execute(child)) tokens.add(token)
+        return tokens
       }
       for (const entry of graph) execute(entry)
 
@@ -226,8 +254,8 @@ export class Registry implements ValueSpecReader, ServiceReader {
     return this.latestReconciliation
   }
 
-  /** Replace the content of one slot while preserving unrelated runtime state. */
-  reconfigure(slot: Slot, items: readonly RegistryItem[]): void {
+  /** Commit a slot replacement immediately; reject on construction or cleanup failure. */
+  async reconfigure(slot: Slot, items: readonly RegistryItem[]): Promise<void> {
     if (this.flattenDepth > 0) {
       throw new ReconfigurationError(
         'Cannot reconfigure a slot while building the registry graph.'
@@ -240,22 +268,32 @@ export class Registry implements ValueSpecReader, ServiceReader {
       )
     }
 
-    let holder = this.slotContent.get(slot.id)
-    if (!holder) {
-      holder = signal(items)
+    return batch(() => {
+      // Establish the previous graph before staging a replacement. Observers
+      // must see either the committed graph or the restored graph, never a
+      // failed dependency check halfway through a slot change.
+      void this.flat.value
+      const previousSlots = new Map(this.slotContent)
+      const holder =
+        this.slotContent.get(slot.id) ?? signal<readonly RegistryItem[]>([])
+      const previousItems = holder.value
       this.slotContent.set(slot.id, holder)
-    }
-    holder.value = items
-  }
-
-  /** Replace one slot and await every runtime instance it unmounts. */
-  reconfigureAsync(slot: Slot, items: readonly RegistryItem[]): Promise<void> {
-    this.latestReconciliation = Promise.resolve()
-    this.reconfigure(slot, items)
-    // Flattening is otherwise lazy. Force this transition so inactive runtime
-    // instances begin disposal even when no value-spec or service is read next.
-    void this.flat.value
-    return this.latestReconciliation
+      this.latestReconciliation = Promise.resolve()
+      try {
+        holder.value = items
+        void this.flat.value
+      } catch (error) {
+        holder.value = previousItems
+        // Failed factories can introduce slots while expanding their subtrees.
+        this.slotContent.clear()
+        for (const [id, content] of previousSlots)
+          this.slotContent.set(id, content)
+        void this.flat.value
+        throw error
+      }
+      // Cleanup failures happen after commit and must not restore disposed items.
+      return this.latestReconciliation
+    })
   }
 
   /** Resolve a registry value spec or service as a live Preact signal. */
@@ -468,7 +506,7 @@ export class Registry implements ValueSpecReader, ServiceReader {
   }
 
   private sanitizeService<T extends object>(
-    service: Service<T>,
+    service: Service<unknown>,
     implementation: T
   ): T {
     // Unrelated slot changes must not invalidate consumers' service dependencies.
@@ -565,9 +603,11 @@ export class Registry implements ValueSpecReader, ServiceReader {
         const existing = factories.get(key)
         if (existing) return [existing]
         visitingFactories.set(key, path)
-        const dependencies = (node.dependencies ?? []).flatMap(
-          (dependency, index) =>
-            visit(dependency, `${path}/dependencies[${index}]`)
+        const dependencies = Object.fromEntries(
+          Object.entries(node.dependencies ?? {}).map(([name, dependency]) => [
+            name,
+            visit(dependency.registryItem, `${path}/dependencies.${name}`),
+          ])
         )
         visitingFactories.delete(key)
         const entry: RegistryGraphNode = {
@@ -585,7 +625,7 @@ export class Registry implements ValueSpecReader, ServiceReader {
       const entry: RegistryGraphNode = {
         node,
         path,
-        dependencies: [],
+        dependencies: {},
         children: [],
       }
       definitions.set(key, entry)

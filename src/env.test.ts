@@ -5,30 +5,39 @@ import env, {
   viteEnv,
   windowElectronProcessEnv,
 } from '@src/env'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 describe('@src/env', () => {
+  beforeEach(() => {
+    vi.stubEnv('NODE_ENV', 'test')
+    vi.stubEnv('VITE_ZOO_BASE_DOMAIN', 'dev.zoo.dev')
+    vi.stubEnv('VITE_ZOO_API_BASE_URL', undefined)
+    vi.stubEnv('VITE_KITTYCAD_WEBSOCKET_URL', undefined)
+    vi.stubEnv('VITE_ZOOKEEPER_WEBSOCKET_URL', undefined)
+    vi.stubEnv('VITE_MLEPHANT_WEBSOCKET_URL', undefined)
+    vi.stubEnv('VITE_ZOO_API_TOKEN', 'test-token')
+  })
+
+  afterEach(() => {
+    vi.unstubAllEnvs()
+    vi.unstubAllGlobals()
+  })
+
   describe('default export', () => {
     it('should run the process.env workflow', () => {
       // vite > node.js
       const expected = {
-        NODE_ENV: 'place-holder-since-it-will-be-set',
+        NODE_ENV: 'test',
         VITE_ZOO_BASE_DOMAIN: 'dev.zoo.dev',
         VITE_ZOO_API_BASE_URL: 'https://api.dev.zoo.dev',
         VITE_KITTYCAD_WEBSOCKET_URL:
           'wss://api.dev.zoo.dev/ws/modeling/commands',
         VITE_ZOOKEEPER_WEBSOCKET_URL: 'wss://api.dev.zoo.dev/ws/ml/copilot',
-        VITE_ZOO_API_TOKEN: 'redacted',
+        VITE_ZOO_API_TOKEN: 'test-token',
         VITE_ZOO_SITE_BASE_URL: 'https://dev.zoo.dev',
         VITE_ZOO_SITE_APP_URL: 'https://app.dev.zoo.dev',
       }
       const actual = env()
-      //@ts-ignore I do not want this token in our logs for any reason.
-      actual.VITE_ZOO_API_TOKEN = 'redacted'
-      //@ts-ignore I do not want this token in our logs for any reason.
-      // I need to mock the value other wise I'd have to delete the key from both
-      // actual and expected
-      actual.NODE_ENV = 'place-holder-since-it-will-be-set'
       expect(actual).toStrictEqual(expected)
     })
   })
