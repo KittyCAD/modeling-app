@@ -162,9 +162,10 @@ export class EdgeRenderer {
     this.setSegments(positions)
   }
 
-  // A new geometry on every rebuild: when setPositions replaced the attributes
-  // of a geometry it had drawn, three's WebGPU renderer kept the old vertex
-  // buffer bound with the new instance count.
+  // A new geometry on every rebuild, so the old one can be disposed and its GPU
+  // buffers freed now. Replacing attributes with setPositions would leave the old
+  // buffers until garbage collection: three only disposes a geometry's current
+  // attributes.
   private setSegments(positions: number[]) {
     const geometry = this.createGeometry(positions)
     this.lines.geometry.dispose()
