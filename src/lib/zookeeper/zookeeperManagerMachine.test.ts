@@ -5,6 +5,7 @@ import type {
   MlCopilotServerMessage,
 } from '@kittycad/lib'
 import { signal } from '@preact/signals-core'
+import { decode as msgpackDecode } from '@msgpack/msgpack'
 import {
   initializeClientErrorReporting,
   resetReportedClientErrorsForTests,
@@ -72,15 +73,18 @@ function stubClientErrorFetch() {
 }
 
 class TestSocket extends EventTarget {
-  sentPayloads: string[] = []
+  sentPayloads: (string | Uint8Array)[] = []
   readyState: number = WebSocket.CLOSED
 
-  send(payload: string) {
+  send(payload: string | Uint8Array) {
     this.sentPayloads.push(payload)
   }
 
   close = vi.fn()
 }
+
+const decodeTestPayload = (payload: string | Uint8Array) =>
+  typeof payload === 'string' ? JSON.parse(payload) : msgpackDecode(payload)
 
 class ControllableSetupWebSocket extends EventTarget {
   static CONNECTING = 0
@@ -204,6 +208,7 @@ describe('completed live edit retention', () => {
     await waitFor(actor, (state) => state.matches(ZookeeperManagerStates.Ready))
     return {
       actor,
+      ws,
       receive: (response: MlCopilotServerMessage) =>
         actor.send({
           type: ZookeeperManagerTransitions.ResponseReceive,
@@ -258,7 +263,8 @@ describe('completed live edit retention', () => {
   })
 
   it('preserves cleanup acknowledged while the next prompt is preparing', async () => {
-    const { actor, receive, applied, exchange } = await ready()
+    const { actor, ws, receive, applied, exchange } = await ready()
+    const bytes = new Uint8Array([0, 128, 255])
     const result = edit()
     const final = answer('First turn complete')
     receive(result)
@@ -286,6 +292,7 @@ describe('completed live edit retention', () => {
     actor.send({
       type: ZookeeperManagerTransitions.MessageSend,
       prompt: 'Next turn',
+      additionalFiles: [new File([bytes], 'reference.stl')],
       projectForPromptOutput: {
         name: 'demo',
         path: '/demo',
@@ -311,7 +318,7 @@ describe('completed live edit retention', () => {
 
     finishPreparation({
       body: { prompt: 'Next turn', project_name: 'demo' },
-      files: [],
+      files: [{ name: 'part.stl', data: new Blob([bytes]) }],
     })
     await waitFor(actor, (state) =>
       state.matches({
@@ -321,11 +328,23 @@ describe('completed live edit retention', () => {
       })
     )
     expect.soft(exchange()?.responses).toEqual([final])
+    const payload = ws.sentPayloads.at(-1)!
+    expect(payload).toBeInstanceOf(Uint8Array)
+    expect(decodeTestPayload(payload)).toMatchObject({
+      current_files: { 'part.stl': bytes },
+      additional_files: [{ name: 'reference.stl', data: bytes }],
+    })
     expect(actor.getSnapshot().context.conversation?.exchanges).toHaveLength(2)
     expect(
       actor.getSnapshot().context.conversation?.exchanges[1]
     ).toMatchObject({
-      request: { type: 'user', content: 'Next turn', project_name: 'demo' },
+      request: {
+        type: 'user',
+        content: 'Next turn',
+        project_name: 'demo',
+        current_files: { 'part.stl': expect.any(Uint8Array) },
+        additional_files: [{ data: expect.any(Uint8Array) }],
+      },
       responses: [],
     })
 
@@ -1382,11 +1401,12 @@ describe('zookeeperManagerMachine', () => {
         'zoo-project'
       )
       expect(ws.sentPayloads).toHaveLength(2)
-      expect(JSON.parse(ws.sentPayloads[0])).toStrictEqual({
+      expect(decodeTestPayload(ws.sentPayloads[0])).toStrictEqual({
         type: 'system',
         command: 'continue',
       })
-      expect(JSON.parse(ws.sentPayloads[1])).toStrictEqual({
+      expect(ws.sentPayloads[1]).toBeInstanceOf(Uint8Array)
+      expect(decodeTestPayload(ws.sentPayloads[1])).toStrictEqual({
         type: 'project_context',
         correlation_id: expect.stringMatching(
           /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
@@ -1394,8 +1414,8 @@ describe('zookeeperManagerMachine', () => {
         engine_api_call_id: 'engine-api-call-id',
         project_name: 'zoo-project',
         current_files: {
-          'main.kcl': Array.from(new TextEncoder().encode('cube()')),
-          'notes.txt': Array.from(new TextEncoder().encode('notes')),
+          'main.kcl': new TextEncoder().encode('cube()'),
+          'notes.txt': new TextEncoder().encode('notes'),
         },
         active_file: 'newFile.kcl',
       })
@@ -1895,7 +1915,7 @@ describe('zookeeperManagerMachine', () => {
       })
 
       expect(ws.sentPayloads).toHaveLength(1)
-      expect(JSON.parse(ws.sentPayloads[0])).toEqual({
+      expect(decodeTestPayload(ws.sentPayloads[0])).toEqual({
         type: 'fetch_attachments',
         prompt_id: attachmentRef.prompt_id,
         seq: attachmentRef.seq,
@@ -2010,7 +2030,7 @@ describe('zookeeperManagerMachine', () => {
         fetch()
         fetch()
         expect(ws.sentPayloads).toHaveLength(2)
-        expect(JSON.parse(ws.sentPayloads[1])).toEqual({
+        expect(decodeTestPayload(ws.sentPayloads[1])).toEqual({
           type: 'fetch_attachments',
           prompt_id: attachmentRef.prompt_id,
           seq: attachmentRef.seq,

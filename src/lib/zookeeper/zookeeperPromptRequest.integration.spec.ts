@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
+import { decode as msgpackDecode } from '@msgpack/msgpack'
 
 vi.mock('@src/routes/utils', () => ({
   APP_DOWNLOAD_PATH: 'design-studio/download/staging',
@@ -40,10 +41,10 @@ import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { createActor, fromPromise, waitFor } from 'xstate'
 
 class TestSocket extends EventTarget {
-  sentPayloads: string[] = []
+  sentPayloads: (string | Uint8Array)[] = []
   readyState: number = WebSocket.OPEN
 
-  send(payload: string) {
+  send(payload: string | Uint8Array) {
     this.sentPayloads.push(payload)
   }
 
@@ -196,7 +197,9 @@ describe('Zookeeper prompt selections from modelingMachine', () => {
 
     actor.stop()
 
-    return ws.sentPayloads.map((payload) => JSON.parse(payload))
+    return ws.sentPayloads.map((payload) =>
+      typeof payload === 'string' ? JSON.parse(payload) : msgpackDecode(payload)
+    )
   }
 
   function sourceRangeForSnippet(code: string, snippet: string): SourceRange {
