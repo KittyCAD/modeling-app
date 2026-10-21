@@ -31,7 +31,7 @@ import {
   getOperationTreeNodeKey,
   isOperationTreeBranch,
   type OperationTreeNode,
-} from '@src/lib/featureTreeOperationTree'
+} from '@src/lib/featureTree/featureTreeOperationTree'
 import {
   getOperationCalculatedDisplay,
   getOperationIcon,
@@ -49,13 +49,13 @@ import type { ComponentProps, ReactNode } from 'react'
 import { memo, use, useCallback, useMemo } from 'react'
 import toast from 'react-hot-toast'
 
-export { buildOperationTree } from '@src/lib/featureTreeOperationTree'
+export { buildOperationTree } from '@src/lib/featureTree/featureTreeOperationTree'
 
 import { Disclosure } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import { FeatureTreeMenu } from '@src/components/layout/areas/FeatureTreeMenu'
+import { FeatureTreeMenu } from '@src/lib/featureTree/FeatureTreeMenu'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
 import Tooltip from '@src/components/Tooltip'
