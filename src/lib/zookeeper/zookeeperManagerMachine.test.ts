@@ -73,18 +73,10 @@ function stubClientErrorFetch() {
 }
 
 class TestSocket extends EventTarget {
-  sentPayloads: (string | Uint8Array)[] = []
   readyState: number = WebSocket.CLOSED
-
-  send(payload: string | Uint8Array) {
-    this.sentPayloads.push(payload)
-  }
-
+  send = vi.fn()
   close = vi.fn()
 }
-
-const decodeTestPayload = (payload: string | Uint8Array) =>
-  typeof payload === 'string' ? JSON.parse(payload) : msgpackDecode(payload)
 
 class ControllableSetupWebSocket extends EventTarget {
   static CONNECTING = 0
@@ -328,9 +320,9 @@ describe('completed live edit retention', () => {
       })
     )
     expect.soft(exchange()?.responses).toEqual([final])
-    const payload = ws.sentPayloads.at(-1)!
+    const payload = ws.send.mock.lastCall?.[0]
     expect(payload).toBeInstanceOf(Uint8Array)
-    expect(decodeTestPayload(payload)).toMatchObject({
+    expect(msgpackDecode(payload)).toMatchObject({
       current_files: { 'part.stl': bytes },
       additional_files: [{ name: 'reference.stl', data: bytes }],
     })
@@ -1382,7 +1374,7 @@ describe('zookeeperManagerMachine', () => {
         state.matches(ZookeeperManagerStates.WaitForContinueCheck)
       )
 
-      expect(ws.sentPayloads).toHaveLength(0)
+      expect(ws.send).not.toHaveBeenCalled()
 
       actor.send({
         type: ZookeeperManagerStates.ContinueCheck,
@@ -1400,13 +1392,13 @@ describe('zookeeperManagerMachine', () => {
       expect(actor.getSnapshot().context.projectNameCurrentlyOpened).toBe(
         'zoo-project'
       )
-      expect(ws.sentPayloads).toHaveLength(2)
-      expect(decodeTestPayload(ws.sentPayloads[0])).toStrictEqual({
+      expect(ws.send).toHaveBeenCalledTimes(2)
+      expect(JSON.parse(ws.send.mock.calls[0][0])).toStrictEqual({
         type: 'system',
         command: 'continue',
       })
-      expect(ws.sentPayloads[1]).toBeInstanceOf(Uint8Array)
-      expect(decodeTestPayload(ws.sentPayloads[1])).toStrictEqual({
+      expect(ws.send.mock.calls[1][0]).toBeInstanceOf(Uint8Array)
+      expect(msgpackDecode(ws.send.mock.calls[1][0])).toStrictEqual({
         type: 'project_context',
         correlation_id: expect.stringMatching(
           /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
@@ -1898,7 +1890,7 @@ describe('zookeeperManagerMachine', () => {
       )
 
       // Only count attachment requests, not setup traffic.
-      ws.sentPayloads.length = 0
+      ws.send.mockClear()
       return { actor, ws }
     }
 
@@ -1914,8 +1906,8 @@ describe('zookeeperManagerMachine', () => {
         attachmentRef,
       })
 
-      expect(ws.sentPayloads).toHaveLength(1)
-      expect(decodeTestPayload(ws.sentPayloads[0])).toEqual({
+      expect(ws.send).toHaveBeenCalledTimes(1)
+      expect(JSON.parse(ws.send.mock.calls[0][0])).toEqual({
         type: 'fetch_attachments',
         prompt_id: attachmentRef.prompt_id,
         seq: attachmentRef.seq,
@@ -2029,8 +2021,8 @@ describe('zookeeperManagerMachine', () => {
         )
         fetch()
         fetch()
-        expect(ws.sentPayloads).toHaveLength(2)
-        expect(decodeTestPayload(ws.sentPayloads[1])).toEqual({
+        expect(ws.send).toHaveBeenCalledTimes(2)
+        expect(JSON.parse(ws.send.mock.calls[1][0])).toEqual({
           type: 'fetch_attachments',
           prompt_id: attachmentRef.prompt_id,
           seq: attachmentRef.seq,
@@ -2062,7 +2054,7 @@ describe('zookeeperManagerMachine', () => {
         expect(after.attachmentFetches[key]).toBe(before.attachmentFetches[key])
         expect(after.conversation).toBe(before.conversation)
         fetch()
-        expect(ws.sentPayloads).toHaveLength(2)
+        expect(ws.send).toHaveBeenCalledTimes(2)
       } finally {
         actor.stop()
       }
