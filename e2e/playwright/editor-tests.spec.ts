@@ -55,6 +55,9 @@ async function editorCacheReceipt(page: Page) {
     const body = editor.variables.body
     if (body?.type !== 'Solid')
       throw new Error('The executed model must contain a solid')
+    const generation = editor.execState.engineSceneGeneration
+    if (generation === null)
+      throw new Error('The executed model must have an engine scene generation')
     const response = await editor.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: crypto.randomUUID(),
@@ -70,7 +73,8 @@ async function editorCacheReceipt(page: Page) {
       response,
       code: editor.code,
       lastSuccessfulCode: editor.lastSuccessfulCode,
-      fromCache: editor.execState.fromCache,
+      engineSceneGeneration: generation,
+      publishedGeneration: editor.engineSceneGenerationSignal.peek(),
       scalar: editor.variables.x,
       bodyId: body.value.id,
       artifacts: [...editor.artifactGraph.keys()].sort(),
@@ -179,6 +183,7 @@ sketch001 = startSketchOn(XY)
         expect(before.lastSuccessfulCode).toBe(cacheModelCode)
         expect(before.artifacts.length).toBeGreaterThan(0)
         expect(before.engineBodyIds).toContain(before.bodyId)
+        expect(before.publishedGeneration).toBe(before.engineSceneGeneration)
 
         await page.evaluate(() => {
           const editor = window.app.project?.executingEditor.value
@@ -197,10 +202,14 @@ sketch001 = startSketchOn(XY)
         expect(after.bodyId).toBe(before.bodyId)
         expect(after.engineBodyIds).toEqual(before.engineBodyIds)
         expect(after.artifacts).toEqual(before.artifacts)
+        expect(after.publishedGeneration).toBe(after.engineSceneGeneration)
         if (appendScalar) {
           expect(after.scalar).toMatchObject({ type: 'Number', value: 1 })
+          expect(after.engineSceneGeneration).toBeGreaterThan(
+            before.engineSceneGeneration
+          )
         } else {
-          expect(after.fromCache).toBe(true)
+          expect(after.engineSceneGeneration).toBe(before.engineSceneGeneration)
         }
       })
     }

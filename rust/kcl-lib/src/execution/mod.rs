@@ -5562,14 +5562,18 @@ solid7 = extrude(r7, length = width)
         settings.with_current_file(first);
         let mut ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), settings);
         let program = crate::Program::parse_no_errs(source).unwrap();
-        ctx.run_with_caching(program.clone()).await.unwrap();
-        assert!(ctx.run_with_caching(program.clone()).await.unwrap().from_cache);
+        let first = ctx.run_with_caching(program.clone()).await.unwrap();
+        let cached = ctx.run_with_caching(program.clone()).await.unwrap();
+        assert_eq!(cached.engine_scene_generation, first.engine_scene_generation);
         ctx.settings.with_current_file(second);
-        assert!(
-            !ctx.run_with_caching(program.clone()).await.unwrap().from_cache,
+        let changed = ctx.run_with_caching(program.clone()).await.unwrap();
+        assert_eq!(
+            changed.engine_scene_generation,
+            first.engine_scene_generation + 1,
             "a different entry file needs its own execution metadata"
         );
-        assert!(ctx.run_with_caching(program).await.unwrap().from_cache);
+        let cached = ctx.run_with_caching(program).await.unwrap();
+        assert_eq!(cached.engine_scene_generation, changed.engine_scene_generation);
         ctx.close().await;
     }
 
@@ -5577,15 +5581,19 @@ solid7 = extrude(r7, length = width)
     async fn cached_execution_contract_replacement_engine_cannot_reuse_previous_scene() {
         let first = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
         let program = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 2").unwrap();
-        first.run_with_caching(program.clone()).await.unwrap();
-        assert!(first.run_with_caching(program.clone()).await.unwrap().from_cache);
+        let original = first.run_with_caching(program.clone()).await.unwrap();
+        let cached = first.run_with_caching(program.clone()).await.unwrap();
+        assert_eq!(cached.engine_scene_generation, original.engine_scene_generation);
         let replacement = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default())
             .with_cache(first.cache.clone());
-        assert!(
-            !replacement.run_with_caching(program.clone()).await.unwrap().from_cache,
+        let changed = replacement.run_with_caching(program.clone()).await.unwrap();
+        assert_eq!(
+            changed.engine_scene_generation,
+            original.engine_scene_generation + 1,
             "memoized scene IDs cannot belong to a replacement engine"
         );
-        assert!(replacement.run_with_caching(program).await.unwrap().from_cache);
+        let cached = replacement.run_with_caching(program).await.unwrap();
+        assert_eq!(cached.engine_scene_generation, changed.engine_scene_generation);
         first.close().await;
         replacement.close().await;
     }
@@ -5609,12 +5617,18 @@ solid7 = extrude(r7, length = width)
         let replacement = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default())
             .with_cache(first.cache.clone());
         let updated = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 7").unwrap();
-        replacement.run_with_caching(updated.clone()).await.unwrap();
+        let replacement_outcome = replacement.run_with_caching(updated.clone()).await.unwrap();
         // Complete every kind of old continuation after the replacement wins.
         stale.write_old_ast(old_ast).await;
         stale.write_old_memory(old_memory).await;
         stale.bust_cache().await;
         stale.clear_mem_cache().await;
+        stale.bump_engine_scene_generation().await;
+        assert_eq!(
+            replacement.cache.engine_scene_generation().await,
+            replacement_outcome.engine_scene_generation,
+            "a retired execution cannot advance the replacement scene's generation"
+        );
         assert!(stale.read_old_ast().await.is_none());
         assert!(stale.read_old_memory().await.is_none());
         let error = stale
@@ -5629,7 +5643,10 @@ solid7 = extrude(r7, length = width)
             matches!(error, KclError::Engine { details } if details.message == "Execution cache owner was superseded.")
         );
         let cached = replacement.run_with_caching(updated).await.unwrap();
-        assert!(cached.from_cache);
+        assert_eq!(
+            cached.engine_scene_generation,
+            replacement_outcome.engine_scene_generation
+        );
         assert_number_variable(&cached.variables, "x", 7.0);
         let mock = ExecutorContext::new_mock(None)
             .await
@@ -5659,7 +5676,7 @@ solid7 = extrude(r7, length = width)
         let mut ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), settings.clone());
         let source = "@settings(kclVersion = 3.0)\nx = 2";
         let program = crate::Program::parse_no_errs(source).unwrap();
-        ctx.run_with_caching(program.clone()).await.unwrap();
+        let original = ctx.run_with_caching(program.clone()).await.unwrap();
 
         for (name, settings) in [
             ("unchanged", settings.clone()),
@@ -5718,7 +5735,10 @@ solid7 = extrude(r7, length = width)
             assert_eq!(ctx.cache.read_old_ast().await.unwrap().main.ast, program.ast, "{name}");
             assert!(ctx.cache.read_old_memory_var("x").await.is_some(), "{name}");
             let outcome = ctx.run_with_caching(program.clone()).await.unwrap();
-            assert!(outcome.from_cache, "{name} must preserve the execution cache");
+            assert_eq!(
+                outcome.engine_scene_generation, original.engine_scene_generation,
+                "{name} must preserve the execution cache"
+            );
             assert_number_variable(&outcome.variables, "x", 2.0);
         }
         let mut probe = ctx.clone_with_fresh_execution_batch();
@@ -5731,7 +5751,8 @@ solid7 = extrude(r7, length = width)
             .await
             .unwrap();
         assert_eq!(ctx.engine.stats().commands_batched.load(Relaxed), commands);
-        assert!(ctx.run_with_caching(program).await.unwrap().from_cache);
+        let cached = ctx.run_with_caching(program).await.unwrap();
+        assert_eq!(cached.engine_scene_generation, original.engine_scene_generation);
         ctx.close().await;
     }
 
@@ -5746,16 +5767,17 @@ solid7 = extrude(r7, length = width)
         settings.with_current_file(first_path);
         let mut ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), settings);
         let program = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 2").unwrap();
-        ctx.run_with_caching(program.clone()).await.unwrap();
+        let original = ctx.run_with_caching(program.clone()).await.unwrap();
         let invalid = "@settings(kclVersion = 3.0)\nx = )";
         let assert_syntax_error = |parsed: Result<ParsedExecutionSource, KclErrorWithOutputs>| match parsed {
             Ok(parsed) => assert!(parsed.issues.iter().any(|issue| issue.severity.is_err())),
             Err(error) => assert!(matches!(error.error, KclError::Syntax { .. })),
         };
         assert_syntax_error(ctx.parse_for_execution(invalid).await);
-        assert!(ctx.run_with_caching(program.clone()).await.unwrap().from_cache);
+        let cached = ctx.run_with_caching(program.clone()).await.unwrap();
+        assert_eq!(cached.engine_scene_generation, original.engine_scene_generation);
         let runtime_error = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 2\nbad = missing").unwrap();
-        ctx.run_with_caching(runtime_error).await.unwrap_err();
+        let failed = ctx.run_with_caching(runtime_error).await.unwrap_err();
         assert!(ctx.cache.read_old_ast().await.is_none());
         assert!(ctx.cache.read_old_memory_var("x").await.is_some());
         assert_syntax_error(ctx.parse_for_execution(invalid).await);
@@ -5784,8 +5806,12 @@ solid7 = extrude(r7, length = width)
             assert_eq!(ctx.engine.stats().commands_batched.load(Relaxed), after_switch);
             assert_eq!(ctx.engine.stats().batches_sent.load(Relaxed), batches);
         }
-        assert!(ctx.run_with_caching(crate::Program::empty()).await.unwrap().from_cache);
-        assert!(!ctx.run_with_caching(program).await.unwrap().from_cache);
+        let switched_generation = ctx.cache.engine_scene_generation().await;
+        assert_eq!(switched_generation, failed.engine_scene_generation.unwrap() + 1);
+        let cached = ctx.run_with_caching(crate::Program::empty()).await.unwrap();
+        assert_eq!(cached.engine_scene_generation, switched_generation);
+        let repaired = ctx.run_with_caching(program).await.unwrap();
+        assert_eq!(repaired.engine_scene_generation, switched_generation + 1);
         ctx.close().await;
     }
 
@@ -5864,6 +5890,7 @@ solid7 = extrude(r7, length = width)
             "@settings(kclVersion = 3.0)",
             "@settings(kclVersion = 3.0, defaultLengthUnit = cm)",
         );
+        let mut generation = 0;
         for (source, highlight_edges, expected_applications, units) in [
             (original, true, 1, UnitLength::Millimeters),
             (appended.as_str(), true, 0, UnitLength::Millimeters),
@@ -5877,7 +5904,12 @@ solid7 = extrude(r7, length = width)
                 .run_with_caching(crate::Program::parse_no_errs(source).unwrap())
                 .await
                 .unwrap();
-            assert!(!outcome.from_cache, "each variant creates or changes geometry");
+            assert_eq!(
+                outcome.engine_scene_generation,
+                generation + 1,
+                "each variant creates or changes geometry"
+            );
+            generation = outcome.engine_scene_generation;
             assert!(outcome.variables.contains_key("planeA"));
             assert!(ctx.engine_batch.is_empty().await);
             let commands: Vec<_> = requests
@@ -5990,7 +6022,7 @@ solid7 = extrude(r7, length = width)
                 .run_with_caching(crate::Program::parse_no_errs(&source).unwrap())
                 .await
                 .unwrap();
-            assert!(outcome.from_cache);
+            assert_eq!(outcome.engine_scene_generation, original.engine_scene_generation);
             assert_eq!(outcome.variables, original.variables);
             assert_eq!(ctx.engine.stats().commands_batched.load(Relaxed), commands);
             assert_eq!(ctx.engine.stats().batches_sent.load(Relaxed), batches);
@@ -6028,7 +6060,7 @@ solid7 = extrude(r7, length = width)
                 .run_with_caching(crate::Program::parse_no_errs(&source).unwrap())
                 .await
                 .unwrap();
-            assert!(outcome.from_cache);
+            assert_eq!(outcome.engine_scene_generation, original.engine_scene_generation);
             assert_eq!(outcome.variables, original.variables);
             assert_eq!(ctx.engine.stats().commands_batched.load(Relaxed), commands);
             assert_eq!(ctx.engine.stats().batches_sent.load(Relaxed), batches);
@@ -6147,14 +6179,17 @@ solid7 = extrude(r7, length = width)
         settings.show_grid = false;
         let mut ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), settings);
         let program = crate::Program::parse_no_errs(source).unwrap();
-        ctx.run_with_caching(program.clone()).await.unwrap();
+        let original = ctx.run_with_caching(program.clone()).await.unwrap();
 
         // Andrew #9101: an unchanged imported module must not retain the first
         // applied preference and swallow a later on/off/on transition.
         for visible in [true, false, true] {
             ctx.settings.show_grid = visible;
             let outcome = ctx.run_with_caching(program.clone()).await.unwrap();
-            assert!(outcome.from_cache, "a grid preference must not rerun imported KCL");
+            assert_eq!(
+                outcome.engine_scene_generation, original.engine_scene_generation,
+                "a grid preference must not rerun imported KCL"
+            );
             assert_number_variable(&outcome.variables, "y", 3.0);
             assert!(
                 outcome.filenames.len() > 1,

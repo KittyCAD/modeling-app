@@ -186,7 +186,7 @@ async fn kcl_test_render_settings_existing_backfaces_change_color_without_execut
     // reuse the cache and must leave those same bodies and the final color live.
     ctx.settings.default_backface_color = Some("#0000ff".to_owned());
     let cached = execute(&ctx, BODY).await;
-    assert!(cached.from_cache);
+    assert_eq!(cached.engine_scene_generation, initial.engine_scene_generation);
     assert_eq!(body_id(&cached), body);
     assert_backface_color(&snapshot(&ctx).await, 2);
     assert_original_body(&ctx, body).await;
@@ -217,8 +217,9 @@ async fn kcl_test_render_settings_imported_body_grid_toggles_preserve_cached_exe
     );
     let body = body_id(&initial);
     assert_original_body(&ctx, body).await;
-    assert!(!initial.from_cache);
-    assert!(execute(&ctx, code).await.from_cache);
+    assert_eq!(initial.engine_scene_generation, 1);
+    let cached = execute(&ctx, code).await;
+    assert_eq!(cached.engine_scene_generation, initial.engine_scene_generation);
 
     // Andrew #9101: settings-only executions must keep the imported model's
     // live geometry and reuse its cache for every toggle, not only the first.
@@ -227,7 +228,10 @@ async fn kcl_test_render_settings_imported_body_grid_toggles_preserve_cached_exe
     for visible in [true, false, true] {
         ctx.settings.show_grid = visible;
         let cached = execute(&ctx, code).await;
-        assert!(cached.from_cache, "grid visibility must not reexecute imported KCL");
+        assert_eq!(
+            cached.engine_scene_generation, initial.engine_scene_generation,
+            "grid visibility must not reexecute imported KCL"
+        );
         assert_eq!(body_id(&cached), body);
         assert_eq!(cached.variables, initial.variables);
         assert!(

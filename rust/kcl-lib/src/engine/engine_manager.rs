@@ -1404,9 +1404,10 @@ mod tests {
                 "retired {name} execution reached replacement transport"
             );
 
-            ctx.run_with_caching(program.clone()).await.unwrap();
+            let replacement = ctx.run_with_caching(program.clone()).await.unwrap();
             assert!(requests.read().await.iter().any(|(epoch, _)| *epoch == 1));
-            assert!(ctx.run_with_caching(program).await.unwrap().from_cache);
+            let cached = ctx.run_with_caching(program).await.unwrap();
+            assert_eq!(cached.engine_scene_generation, replacement.engine_scene_generation);
             ctx.close().await;
         }
     }

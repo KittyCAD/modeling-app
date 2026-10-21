@@ -53,6 +53,7 @@ async function sceneReceipt(page: Page) {
       defaultPlanes: editor.rustContext.defaultPlanes,
       bodyId: body?.type === 'Solid' ? body.value.id : null,
       sessionId: editor.engineCommandManager.engineSessionId,
+      engineSceneGeneration: editor.engineSceneGenerationSignal.peek(),
       commands: editor.engineCommandManager.commandLogs.flatMap((log) => {
         // Rust modeling commands are recorded on their real acknowledgements,
         // including the individual replies from a modeling batch.
@@ -188,6 +189,7 @@ test.describe('Rust-owned sketch cache lifecycle', { tag: '@desktop' }, () => {
       await editor.flushPendingEditorExecution()
     })
     await waitForModeling(page)
+    const original = await originalSolidReceipt(page)
     // The deliberate invalid call and the valid control use exactly the same
     // AST/configuration as this legitimate, warmed public execution.
     const warm = await page.evaluate(async (executionSettings) => {
@@ -198,10 +200,9 @@ test.describe('Rust-owned sketch cache lifecycle', { tag: '@desktop' }, () => {
         executionSettings,
         editor.path
       )
-      return { fromCache: outcome.fromCache }
+      return { engineSceneGeneration: outcome.engineSceneGeneration }
     }, executionSettings)
-    expect(warm.fromCache).toBe(true)
-    const original = await originalSolidReceipt(page)
+    expect(warm.engineSceneGeneration).toBe(original.engineSceneGeneration)
     expect(original.code).toBe(modelCode)
     expect(original.defaultPlanes).not.toBeNull()
     expect(original.engineBodyIds).toContain(original.bodyId)
@@ -250,6 +251,7 @@ test.describe('Rust-owned sketch cache lifecycle', { tag: '@desktop' }, () => {
     expect(after.code).toBe(original.code)
     expect(after.lastSuccessfulCode).toBe(original.lastSuccessfulCode)
     expect(after.sessionId).toBe(original.sessionId)
+    expect(after.engineSceneGeneration).toBe(original.engineSceneGeneration)
     expect(after.bodyId).toBe(original.bodyId)
     expect(after.engineBodyIds).toEqual(original.engineBodyIds)
     expect(after.commands).not.toContain('set_kcl_version')
@@ -264,11 +266,11 @@ test.describe('Rust-owned sketch cache lifecycle', { tag: '@desktop' }, () => {
         editor.path
       )
       return {
-        fromCache: outcome.fromCache,
+        engineSceneGeneration: outcome.engineSceneGeneration,
         defaultPlanes: outcome.defaultPlanes,
       }
     }, executionSettings)
-    expect(valid.fromCache).toBe(true)
+    expect(valid.engineSceneGeneration).toBe(original.engineSceneGeneration)
     expect(valid.defaultPlanes).toEqual(original.defaultPlanes)
     const retained = await originalSolidReceipt(page)
     expect(retained.defaultPlanes).toEqual(original.defaultPlanes)
@@ -276,6 +278,7 @@ test.describe('Rust-owned sketch cache lifecycle', { tag: '@desktop' }, () => {
     expect(retained.code).toBe(original.code)
     expect(retained.lastSuccessfulCode).toBe(original.lastSuccessfulCode)
     expect(retained.sessionId).toBe(original.sessionId)
+    expect(retained.engineSceneGeneration).toBe(original.engineSceneGeneration)
     expect(retained.bodyId).toBe(original.bodyId)
     expect(retained.engineBodyIds).toEqual(original.engineBodyIds)
     expect(retained.commands).not.toContain('set_kcl_version')

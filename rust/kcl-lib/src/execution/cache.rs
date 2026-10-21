@@ -182,11 +182,14 @@ impl Cache {
 
     /// The number of runs that have changed the engine scene.
     pub(crate) async fn engine_scene_generation(&self) -> usize {
-        self.0.inner().read().await.engine_scene_generation
+        self.storage.inner().read().await.engine_scene_generation
     }
 
     pub(super) async fn bump_engine_scene_generation(&self) {
-        let mut inner = self.0.inner().write().await;
+        let mut inner = self.storage.inner().write().await;
+        if !self.owns(&inner) {
+            return;
+        }
         inner.engine_scene_generation = inner.engine_scene_generation.wrapping_add(1);
     }
 

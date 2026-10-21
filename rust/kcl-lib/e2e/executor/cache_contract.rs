@@ -115,8 +115,9 @@ async fn kcl_test_cache_contract_anonymous_execution_cannot_replace_loaded_file(
     let ctx = kcl_lib::test_server::new_context(true, Some(main), false, program.language_version().unwrap())
         .await
         .unwrap();
-    execute(&ctx, BODY).await;
-    assert!(execute(&ctx, BODY).await.from_cache);
+    let original = execute(&ctx, BODY).await;
+    let cached = execute(&ctx, BODY).await;
+    assert_eq!(cached.engine_scene_generation, original.engine_scene_generation);
     let ids = solid_ids(&ctx).await;
     assert_eq!(ids.len(), 1);
     assert_volume(volume(&ctx).await, 5.0);
@@ -136,7 +137,7 @@ async fn kcl_test_cache_contract_anonymous_execution_cannot_replace_loaded_file(
     let result = anonymous.run_with_caching(program).await;
     let anonymous_commands = ctx.engine.stats().commands_batched.load(Relaxed) - commands;
     let anonymous_batches = ctx.engine.stats().batches_sent.load(Relaxed) - batches;
-    let original = execute(&ctx, BODY).await;
+    let retained = execute(&ctx, BODY).await;
     let retained_ids = solid_ids(&ctx).await;
     let retained_volume = volume(&ctx).await;
     ctx.close().await;
@@ -148,14 +149,14 @@ async fn kcl_test_cache_contract_anonymous_execution_cannot_replace_loaded_file(
             "anonymous ownership loss must be rejected as an engine error"
         ),
         Ok(outcome) => panic!(
-            "anonymous execution unexpectedly succeeded: from_cache={}, {anonymous_commands} commands in {anonymous_batches} batches",
-            outcome.from_cache
+            "anonymous execution unexpectedly succeeded: generation={}, {anonymous_commands} commands in {anonymous_batches} batches",
+            outcome.engine_scene_generation
         ),
     }
     assert_eq!(anonymous_commands, 0, "reject before clearing or regenerating geometry");
     assert_eq!(anonymous_batches, 0);
-    assert!(
-        original.from_cache,
+    assert_eq!(
+        retained.engine_scene_generation, original.engine_scene_generation,
         "rejected anonymous execution must preserve the registered owner"
     );
     assert_eq!(retained_ids, ids);
@@ -190,7 +191,7 @@ async fn kcl_test_cache_contract_unchanged_programs_do_not_contact_engine() {
         for source in [code.to_owned(), format!("{code}\n// Unchanged geometry and imports")] {
             tokio::fs::write(&main, &source).await.unwrap();
             let outcome = execute(&ctx, &source).await;
-            assert!(outcome.from_cache);
+            assert_eq!(outcome.engine_scene_generation, original.engine_scene_generation);
             assert_eq!(outcome.variables, original.variables);
             assert_eq!(outcome.artifact_graph, original.artifact_graph);
             assert_eq!(ctx.engine.stats().commands_batched.load(Relaxed), commands);
@@ -204,12 +205,19 @@ async fn kcl_test_cache_contract_unchanged_programs_do_not_contact_engine() {
         let appended = format!("{code}\nextraPlane = offsetPlane(XY, offset = 20mm)");
         tokio::fs::write(&main, &appended).await.unwrap();
         let appended_outcome = execute(&ctx, &appended).await;
-        assert!(!appended_outcome.from_cache);
+        assert_eq!(
+            appended_outcome.engine_scene_generation,
+            original.engine_scene_generation + 1
+        );
         assert!(appended_outcome.variables.contains_key("extraPlane"));
         assert_eq!(solid_ids(&ctx).await, ids);
         assert_volume(volume(&ctx).await, 5.0);
         ctx.settings.highlight_edges = !ctx.settings.highlight_edges;
-        assert!(execute(&ctx, &appended).await.from_cache);
+        let updated_preferences = execute(&ctx, &appended).await;
+        assert_eq!(
+            updated_preferences.engine_scene_generation,
+            appended_outcome.engine_scene_generation
+        );
         assert_eq!(solid_ids(&ctx).await, ids);
         assert_volume(volume(&ctx).await, 5.0);
     }
@@ -275,7 +283,7 @@ async fn kcl_test_cache_contract_parse_and_preferences_preserve_real_geometry() 
         assert_eq!(ctx.engine.stats().commands_batched.load(Relaxed), commands);
         assert_eq!(ctx.engine.stats().batches_sent.load(Relaxed), batches);
         let cached = execute(&ctx, BODY).await;
-        assert!(cached.from_cache);
+        assert_eq!(cached.engine_scene_generation, original.engine_scene_generation);
         assert_eq!(cached.variables, original.variables);
         assert_eq!(solid_ids(&ctx).await, ids);
         assert_volume(volume(&ctx).await, 5.0);
@@ -332,9 +340,15 @@ async fn kcl_test_cache_contract_invalid_entry_clears_real_geometry_only_once() 
     }
     assert_eq!(ctx.engine.stats().commands_batched.load(Relaxed), commands);
     assert_eq!(ctx.engine.stats().batches_sent.load(Relaxed), batches);
-    assert!(ctx.run_with_caching(Program::empty()).await.unwrap().from_cache);
+    let cached = ctx.run_with_caching(Program::empty()).await.unwrap();
+    assert_eq!(
+        cached.engine_scene_generation,
+        error.engine_scene_generation.unwrap() + 1,
+        "only the actual invalid file switch changes the scene generation"
+    );
     tokio::fs::write(&second, BODY).await.unwrap();
-    assert!(!execute(&ctx, BODY).await.from_cache);
+    let repaired = execute(&ctx, BODY).await;
+    assert_eq!(repaired.engine_scene_generation, cached.engine_scene_generation + 1);
     assert_volume(volume(&ctx).await, 5.0);
     ctx.close().await;
 }
@@ -354,10 +368,10 @@ async fn kcl_test_cache_contract_changed_import_rebuilds_from_the_same_file() {
         .unwrap();
 
     let first = execute(&ctx, IMPORTING_BODY).await;
-    assert!(!first.from_cache);
+    assert_eq!(first.engine_scene_generation, 1);
     assert_volume(volume(&ctx).await, 5.0);
     let cached = execute(&ctx, IMPORTING_BODY).await;
-    assert!(cached.from_cache);
+    assert_eq!(cached.engine_scene_generation, first.engine_scene_generation);
     assert_eq!(first.variables, cached.variables);
 
     // Same path and unchanged entry point, different dependency bytes.
@@ -365,10 +379,10 @@ async fn kcl_test_cache_contract_changed_import_rebuilds_from_the_same_file() {
         .await
         .unwrap();
     let changed = execute(&ctx, IMPORTING_BODY).await;
-    assert!(!changed.from_cache);
+    assert_eq!(changed.engine_scene_generation, first.engine_scene_generation + 1);
     assert_volume(volume(&ctx).await, 12.0);
     let cached = execute(&ctx, IMPORTING_BODY).await;
-    assert!(cached.from_cache);
+    assert_eq!(cached.engine_scene_generation, changed.engine_scene_generation);
     assert_eq!(changed.variables, cached.variables);
     ctx.close().await;
 }
@@ -384,15 +398,19 @@ async fn kcl_test_cache_contract_same_source_in_another_file_has_new_ownership()
     let mut ctx = kcl_lib::test_server::new_context(true, Some(first_path), false, program.language_version().unwrap())
         .await
         .unwrap();
-    execute(&ctx, BODY).await;
-    assert!(execute(&ctx, BODY).await.from_cache);
+    let original = execute(&ctx, BODY).await;
+    let cached = execute(&ctx, BODY).await;
+    assert_eq!(cached.engine_scene_generation, original.engine_scene_generation);
     ctx.settings.with_current_file(TypedPath(second_path));
-    assert!(
-        !execute(&ctx, BODY).await.from_cache,
+    let changed = execute(&ctx, BODY).await;
+    assert_eq!(
+        changed.engine_scene_generation,
+        original.engine_scene_generation + 1,
         "a different entry-point file must not inherit the old file's cached execution metadata"
     );
     assert_volume(volume(&ctx).await, 5.0);
-    assert!(execute(&ctx, BODY).await.from_cache);
+    let cached = execute(&ctx, BODY).await;
+    assert_eq!(cached.engine_scene_generation, changed.engine_scene_generation);
     ctx.close().await;
 }
 
@@ -403,9 +421,10 @@ async fn kcl_test_cache_contract_replacement_engine_rebuilds_without_a_javascrip
     let first = kcl_lib::test_server::new_context(true, None, false, version)
         .await
         .unwrap();
-    execute(&first, BODY).await;
+    let original = execute(&first, BODY).await;
     assert_volume(volume(&first).await, 5.0);
-    assert!(execute(&first, BODY).await.from_cache);
+    let cached = execute(&first, BODY).await;
+    assert_eq!(cached.engine_scene_generation, original.engine_scene_generation);
     let cache = first.cache.clone();
     first.close().await;
 
@@ -415,11 +434,14 @@ async fn kcl_test_cache_contract_replacement_engine_rebuilds_without_a_javascrip
         .await
         .unwrap()
         .with_cache(cache);
-    assert!(
-        !execute(&replacement, BODY).await.from_cache,
+    let changed = execute(&replacement, BODY).await;
+    assert_eq!(
+        changed.engine_scene_generation,
+        original.engine_scene_generation + 1,
         "memoized IDs belong to the disconnected engine, not its replacement"
     );
     assert_volume(volume(&replacement).await, 5.0);
-    assert!(execute(&replacement, BODY).await.from_cache);
+    let cached = execute(&replacement, BODY).await;
+    assert_eq!(cached.engine_scene_generation, changed.engine_scene_generation);
     replacement.close().await;
 }
