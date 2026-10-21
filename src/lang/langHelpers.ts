@@ -106,6 +106,7 @@ function handleExecuteError(e: unknown): ExecutionResult {
     execState.variables = e.variables
     execState.operations = e.operations
     execState.artifactGraph = e.artifactGraph
+    execState.engineSceneGeneration = e.engineSceneGeneration
     return {
       errors: [e],
       logs: [],
