@@ -99,7 +99,8 @@ impl Cache {
     }
 
     pub(super) async fn bump_engine_scene_generation(&self) {
-        self.0.inner().write().await.engine_scene_generation += 1;
+        let mut inner = self.0.inner().write().await;
+        inner.engine_scene_generation = inner.engine_scene_generation.wrapping_add(1);
     }
 
     /// Invalidate live execution state while preserving usable sketch-mode memory.
