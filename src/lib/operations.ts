@@ -2535,6 +2535,12 @@ const prepareToEditGdtDistance: PrepareToEditCallback = async ({
   const graphSelections: Selections['graphSelections'] = []
   const fromArg = operation.labeledArgs?.['from']
   const toArg = operation.labeledArgs?.['to']
+  const targetArg = operation.labeledArgs?.['target']
+  if (targetArg?.sourceRange) {
+    graphSelections.push(
+      ...extractDistanceTargetSelections(artifactGraph, targetArg)
+    )
+  }
   if (fromArg?.sourceRange) {
     graphSelections.push(
       ...extractDistanceTargetSelections(artifactGraph, fromArg)
@@ -2584,6 +2590,12 @@ const prepareToEditGdtDistance: PrepareToEditCallback = async ({
 
   const argDefaultValues: ModelingCommandSchema['GDT Distance'] = {
     objects,
+    dimensionFunction:
+      operation.name === 'gdt::diameter'
+        ? 'diameter'
+        : operation.name === 'gdt::radius'
+          ? 'radius'
+          : 'distance',
     tolerance,
     precision,
     framePosition,
@@ -3286,6 +3298,16 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   },
   'gdt::distance': {
     label: 'Distance',
+    icon: 'dimension',
+    prepareToEdit: prepareToEditGdtDistance,
+  },
+  'gdt::diameter': {
+    label: 'Diameter',
+    icon: 'dimension',
+    prepareToEdit: prepareToEditGdtDistance,
+  },
+  'gdt::radius': {
+    label: 'Radius',
     icon: 'dimension',
     prepareToEdit: prepareToEditGdtDistance,
   },

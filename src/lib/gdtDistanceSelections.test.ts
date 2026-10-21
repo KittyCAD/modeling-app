@@ -4,6 +4,96 @@ import { resolveDistanceSelections } from '@src/lib/gdtDistanceSelections'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { describe, expect, it, vi } from 'vitest'
 
+describe('fillet boundary selections', () => {
+  it.each([false, true])(
+    'resolves the clicked boundary to current faces (wrapped=%s)',
+    async (wrapped) => {
+      const artifact = {
+        type: 'edgeCutEdge' as const,
+        id: 'legacy-boundary',
+        edgeCutId: 'fillet',
+        surfaceId: 'cap',
+      }
+      const selections: Selections = {
+        graphSelections: [{ artifact, engineEntityId: 'clicked-boundary' }],
+        otherSelections: [],
+      }
+      const sendSceneCommand = vi
+        .fn<ConnectionManager['sendSceneCommand']>()
+        .mockImplementation(async (command) => {
+          if (command.type !== 'modeling_cmd_req')
+            throw new Error('Unexpected command')
+          const cmd = command.cmd
+          const response = {
+            success: true,
+            resp: {
+              type: 'modeling',
+              data: {
+                modeling_response: {
+                  type: cmd.type,
+                  data:
+                    cmd.type === 'entity_get_parent_id'
+                      ? { entity_id: 'body' }
+                      : { faces: ['fillet-face', 'cap'] },
+                },
+              },
+            },
+          }
+          return (wrapped ? [response] : response) as Awaited<
+            ReturnType<ConnectionManager['sendSceneCommand']>
+          >
+        })
+      const graph: ArtifactGraph = new Map(
+        ['fillet-face', 'cap'].map((id) => [
+          id,
+          { type: 'cap', id } as Artifact,
+        ])
+      )
+      const result = await resolveDistanceSelections(selections, graph, {
+        sendSceneCommand,
+      } as unknown as ConnectionManager)
+      if (result instanceof Error) throw result
+      expect(result.selections.graphSelections[0]).toEqual({
+        artifact,
+        engineEntityId: 'clicked-boundary',
+        entityRef: { type: 'edge', side_faces: ['fillet-face', 'cap'] },
+      })
+      expect(selections.graphSelections[0].entityRef).toBeUndefined()
+      expect(sendSceneCommand).toHaveBeenCalledWith(
+        expect.objectContaining({
+          cmd: {
+            type: 'solid3d_get_all_edge_faces',
+            object_id: 'body',
+            edge_id: 'clicked-boundary',
+          },
+        })
+      )
+    }
+  )
+
+  it('rejects a boundary with unavailable topology rather than using the consumed edge', async () => {
+    const sendSceneCommand = vi.fn().mockResolvedValue(undefined)
+    const result = await resolveDistanceSelections(
+      {
+        graphSelections: [
+          {
+            artifact: {
+              type: 'edgeCutEdge',
+              id: 'boundary',
+              edgeCutId: 'fillet',
+              surfaceId: 'cap',
+            },
+          },
+        ],
+        otherSelections: [],
+      },
+      new Map(),
+      { sendSceneCommand } as unknown as ConnectionManager
+    )
+    expect(result).toBeInstanceOf(Error)
+  })
+})
+
 function engineWithFaces(wrapped: boolean) {
   const sendSceneCommand = vi.fn().mockImplementation(async ({ cmd }) => {
     const response = {

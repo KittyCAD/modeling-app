@@ -1542,3 +1542,70 @@ export fn profileSurface(
   /// Human-friendly name for this annotation in exports and model metadata. This is not displayed visually.
   annotationName?: string,
 ): [GdtAnnotation; 1+] {}
+
+/// Annotate the measured diameter of a circular edge or cylindrical face.
+/// The value is measured from the selected geometry each time the model executes.
+/// This is part of model-based definition (MBD).
+///
+/// ```kcl,no3d,sketchSolve
+/// @settings(kclVersion = 2.0)
+/// profile = sketch(on = XY) {
+///   rim = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+/// }
+/// solid = extrude(region(segments = [profile.rim]), length = 5mm, tagEnd = $top)
+/// gdt::diameter(target = solid.sketch.tags.rim, tolerance = 0.05mm, precision = 2, framePlane = XY)
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn diameter(
+  /// The circular edge or cylindrical face to annotate. Edges may use an adjacent-face specifier.
+  @(includeInSnippet = true)
+  target: Face | TaggedFace | Edge | any,
+  /// Optional dimensional tolerance. Omit it or use zero to hide the tolerance.
+  tolerance?: number(Length),
+  /// Decimal places to display, from 0 to 9. Defaults to 3.
+  precision?: number(Count),
+  /// Offset of the label from the leader in the display plane. Defaults to [20mm, 20mm].
+  framePosition?: Point2d,
+  /// Display plane. Defaults to XY; the annotation may lie in a parallel plane.
+  framePlane?: Plane,
+  /// Arrow scale. Must be greater than zero; defaults to 1.
+  leaderScale?: number(Count),
+  /// Model-space text height. Must be greater than zero; defaults to 10mm.
+  fontSize?: number(Length),
+  /// Human-friendly annotation name in exports and model metadata.
+  annotationName?: string,
+): GdtAnnotation {}
+
+/// Annotate the measured radius of a circular edge or cylindrical face.
+/// The value is measured from the selected geometry each time the model executes.
+/// This is part of model-based definition (MBD).
+///
+/// ```kcl,no3d,sketchSolve
+/// @settings(kclVersion = 2.0)
+/// profile = sketch(on = XY) {
+///   rim = arc(start = [var 10mm, var 0mm], end = [var -10mm, var 0mm], center = [var 0mm, var 0mm])
+///   closing = line(start = [var -10mm, var 0mm], end = [var 10mm, var 0mm])
+/// }
+/// solid = extrude(region(segments = [profile.rim, profile.closing]), length = 5mm, tagEnd = $top)
+/// gdt::radius(target = { sideFaces = [solid.sketch.tags.rim, solid.faces.top] }, tolerance = 0.05mm, precision = 2, framePlane = XY)
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn radius(
+  /// The circular edge or cylindrical face to annotate. Edges may use an adjacent-face specifier.
+  @(includeInSnippet = true)
+  target: Face | TaggedFace | Edge | any,
+  /// Optional dimensional tolerance. Omit it or use zero to hide the tolerance.
+  tolerance?: number(Length),
+  /// Decimal places to display, from 0 to 9. Defaults to 3.
+  precision?: number(Count),
+  /// Offset of the label from the leader in the display plane. Defaults to [20mm, 20mm].
+  framePosition?: Point2d,
+  /// Display plane. Defaults to XY; the annotation may lie in a parallel plane.
+  framePlane?: Plane,
+  /// Arrow scale. Must be greater than zero; defaults to 1.
+  leaderScale?: number(Count),
+  /// Model-space text height. Must be greater than zero; defaults to 10mm.
+  fontSize?: number(Length),
+  /// Human-friendly annotation name in exports and model metadata.
+  annotationName?: string,
+): GdtAnnotation {}

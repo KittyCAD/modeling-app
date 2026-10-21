@@ -962,7 +962,7 @@ export function buildToolbarConfig(
             }),
             modelingCommand('GDT Distance', {
               id: 'gdt-distance',
-              title: 'Distance',
+              title: 'Dimension',
             }),
             modelingCommand('GDT Annotation', {
               id: 'gdt-annotation',
