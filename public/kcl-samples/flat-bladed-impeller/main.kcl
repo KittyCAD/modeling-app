@@ -72,9 +72,9 @@ disk = sketch(on = diskPlane) {
 
   horizontal(diskRadiusGuide)
   distance([
-  diskRadiusGuide.start,
-  diskRadiusGuide.end
-]) == outerRadius
+    diskRadiusGuide.start,
+    diskRadiusGuide.end
+  ]) == outerRadius
 }
 
 region002 = region(segments = [disk.circle1])
@@ -92,9 +92,9 @@ hubCircle = sketch(on = faceOf(backPlate, face = END)) {
 
   horizontal(hubRadiusGuide)
   distance([
-  hubRadiusGuide.start,
-  hubRadiusGuide.end
-]) == hubOutsideDiameter / 2
+    hubRadiusGuide.start,
+    hubRadiusGuide.end
+  ]) == hubOutsideDiameter / 2
 }
 
 region003 = region(segments = [hubCircle.circle1])
@@ -112,9 +112,9 @@ boreCircle = sketch(on = faceOf(backPlate, face = START)) {
 
   horizontal(boreRadiusGuide)
   distance([
-  boreRadiusGuide.start,
-  boreRadiusGuide.end
-]) == boreDiameter / 2
+    boreRadiusGuide.start,
+    boreRadiusGuide.end
+  ]) == boreDiameter / 2
 }
 
 region004 = region(segments = [boreCircle.circle1])

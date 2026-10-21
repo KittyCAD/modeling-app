@@ -152,14 +152,11 @@ function BodyItem({
       return
     }
 
-    sendSelectionEvent(
-      {
-        sourceRange,
-        kclManager,
-        modelingSend,
-      },
-      true
-    )
+    sendSelectionEvent({
+      sourceRange,
+      kclManager,
+      modelingSend,
+    })
   }
   const handleDelete = () => {
     onSelect()
@@ -188,7 +185,6 @@ function BodyItem({
           <VisibilityToggle
             visible={hideOperation === undefined}
             onVisibilityChange={() => {
-              onSelect()
               if (hideOperation === undefined) {
                 onHide({
                   ast: kclManager.ast,

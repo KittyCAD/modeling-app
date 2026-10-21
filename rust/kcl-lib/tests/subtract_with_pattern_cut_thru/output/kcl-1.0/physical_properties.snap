@@ -18,12 +18,12 @@ description: Physical properties subtract_with_pattern_cut_thru.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 26856.169857637724
+    "value": 26856.169639358995
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 112.83961248883163
+    "value": 112.8396191537225
   }
 }

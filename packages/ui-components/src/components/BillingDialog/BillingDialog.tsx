@@ -58,7 +58,7 @@ const actionClassName =
 
 export function BillingDialog(props: BillingDialogProps) {
   const hasUnlimited = props.balance === Number.POSITIVE_INFINITY
-  const totalDue = props.userPaymentBalance?.total_due ?? 0
+  const totalDue = props.userPaymentBalance?.amount_due_after_credits ?? 0
   const hasTotalDue = Number(totalDue) > 0
   const totalDueString = Number(totalDue).toFixed(2)
   const refreshAt = props.userPaymentBalance?.monthly_api_credits_refresh_at

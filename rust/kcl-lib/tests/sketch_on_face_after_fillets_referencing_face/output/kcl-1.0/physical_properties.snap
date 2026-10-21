@@ -18,12 +18,12 @@ description: Physical properties sketch_on_face_after_fillets_referencing_face.k
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 252.75688288939335
+    "value": 252.75696079951615
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.06393164904069937
+    "value": 0.0639319065592429
   }
 }

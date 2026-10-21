@@ -944,7 +944,10 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                 }
                 let sketch_tags: Vec<_> = sketch.tags.values().cloned().collect();
                 let sketches_to_update: Vec<_> = exec_state.stack().find_keys_in_current_env(|v| match v {
-                    KclValue::Sketch { value: sk } => sk.original_id == sketch.original_id,
+                    KclValue::Sketch { value: sk } => match value.tag_update_source_artifact_id {
+                        Some(source) => sk.artifact_id == source,
+                        None => sk.original_id == sketch.original_id,
+                    },
                     _ => false,
                 })?;
 
@@ -1651,6 +1654,7 @@ mod test {
                 .collect::<IndexMap<_, _>>();
             let exec_ctxt = ExecutorContext {
                 engine: Arc::new(EngineManager::new_mock()),
+                cache: crate::Cache::default(),
                 engine_batch: crate::engine::EngineBatchContext::default(),
                 fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
                 settings: Default::default(),
@@ -1658,6 +1662,7 @@ mod test {
                 execution_callbacks: Default::default(),
                 executor_kind: crate::execution::machine::ExecutorKind::resolve(),
                 machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+                configure_engine_render: true,
             };
             let mut exec_state = ExecState::new(&exec_ctxt);
             exec_state.mod_local.stack = Stack::new_for_tests();
@@ -2084,6 +2089,40 @@ body = extrude(region1, length = 5mm)
             body.faces.is_empty(),
             "body faces should only be populated for tagged calls"
         );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn sketch_segment_extrude_exposes_its_generated_face() {
+        let program = r#"@settings(defaultLengthUnit = mm)
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [0, 0], end = [20, 0])
+  line2 = line(start = [20, 0], end = [20, 12])
+}
+surface001 = extrude(
+  sketch001.line1,
+  length = 10,
+  bodyType = SURFACE,
+  method = NEW,
+)
+generatedFace = surface001.faces.line1
+surface002 = extrude(
+  {
+    sideFaces = [surface001.faces.line1],
+    index = 2
+  },
+  length = 5,
+  bodyType = SURFACE,
+  method = NEW,
+)
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        let surface = get_var(&result, "surface001");
+        let KclValue::Solid { value: surface } = surface else {
+            panic!("expected `surface001` to be a solid");
+        };
+        assert!(surface.faces.contains_key("line1"));
+        assert_vars_are_tags(&result, &["generatedFace"]);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2820,6 +2859,7 @@ plane = startSketchOn(XY)
         .unwrap();
         let exec_ctxt = ExecutorContext {
             engine: Arc::new(EngineManager::new_mock()),
+            cache: crate::Cache::default(),
             engine_batch: crate::engine::EngineBatchContext::default(),
             fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
             settings: Default::default(),
@@ -2827,6 +2867,7 @@ plane = startSketchOn(XY)
             execution_callbacks: Default::default(),
             executor_kind: crate::execution::machine::ExecutorKind::resolve(),
             machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
+            configure_engine_render: true,
         };
         let mut exec_state = ExecState::new(&exec_ctxt);
         exec_state.set_deprecation_version_override(Some("2.0"));

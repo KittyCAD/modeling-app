@@ -11,14 +11,6 @@ import type {
 } from '@src/lang/wasm'
 
 /**
- * The name of the view a successful execution leaves behind.
- *
- * `RESERVED_DEFAULT_VIEW_NAME` in `rust/kcl-lib/src/execution/named_views.rs`
- * declares the same string. Changing one alone fails a test on each side.
- */
-export const KCL_DEFAULT_VIEW_NAME = 'Default View'
-
-/**
  * A KclNamedView is one `view::named` artifact and the module that declared it.
  *
  * The `NamedView` of `@rust/kcl-lib/bindings/NamedView` is a different feature:
@@ -64,7 +56,7 @@ export function listNamedViews({
  * The artifact kinds a view can show or hide.
  *
  * Adding a kind here without an arm in `isIndependentlyHideable` and
- * `engineIdForArtifact` fails to compile. `kclNamedViews.test.ts` compares the
+ * `engineIdForArtifact` fails lint. `kclNamedViews.test.ts` compares the
  * list against the types `except` accepts.
  */
 export const VISIBILITY_KINDS = [
@@ -112,10 +104,6 @@ function isIndependentlyHideable(artifact: VisibilityArtifact): boolean {
       return true
     case 'plane':
       return artifact.pathIds.length === 0
-    default: {
-      const _exhaustiveCheck: never = artifact
-      return _exhaustiveCheck
-    }
   }
 }
 
@@ -217,6 +205,8 @@ function engineIdForSweep(
     case 'revolve':
     case 'revolveAboutEdge':
     case 'sweep': {
+      if (!sweep.pathId) return sweep.id
+
       const basePath = artifactGraph.get(sweep.pathId)
       const pathPointsBack =
         basePath?.type === 'path' && basePath.sweepId === sweep.id
@@ -225,10 +215,6 @@ function engineIdForSweep(
     case 'loft':
     case 'blend':
       return sweep.id
-    default: {
-      const _exhaustiveCheck: never = sweep.subType
-      return _exhaustiveCheck
-    }
   }
 }
 
@@ -263,10 +249,6 @@ export function engineIdForArtifact({
       return artifact.id
     case 'pattern':
       return id
-    default: {
-      const _exhaustiveCheck: never = artifact
-      return _exhaustiveCheck
-    }
   }
 }
 

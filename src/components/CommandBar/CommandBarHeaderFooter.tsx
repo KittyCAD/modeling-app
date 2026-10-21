@@ -243,11 +243,11 @@ function CommandBarHeaderFooter({
                     <span data-testid="header-arg-value">
                       {argValue !== undefined ? (
                         project?.executingEditor.value &&
-                        (arg.inputType === 'selection' ||
-                          arg.inputType === 'selectionMixed') ? (
+                        arg.inputType === 'selection' ? (
                           getSelectionTypeDisplayText(
                             project.executingEditor.value.astSignal.value,
-                            argValue as Selections
+                            argValue as Selections,
+                            project.executingEditor.value.artifactGraph
                           )
                         ) : arg.inputType === 'kcl' &&
                           (argValue as KclCommandValue).valueCalculated ? (

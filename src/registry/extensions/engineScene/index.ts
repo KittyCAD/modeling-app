@@ -1,8 +1,4 @@
-import {
-  defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
-  provide,
-} from '@kittycad/registry'
+import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 import { computed } from '@preact/signals-core'
 import type { Command } from '@src/lib/commandTypes'
 import {
@@ -36,6 +32,7 @@ import { saveViewportScreenshot } from './saveViewportScreenshot'
 import {
   EngineSceneGizmoViewExtension,
   EngineSceneToolbarViewExtension,
+  EngineSceneModelingDialogViewExtension,
   SketchBackgroundOpacityViewExtension,
   SketchConstraintsToggleViewExtension,
 } from './viewExtensionControls'
@@ -225,6 +222,14 @@ const sketchConstraintsToggleViewExtension = defineEngineSceneViewExtension({
   shouldRegister: isSketchSolveMode,
 })
 
+const modelingDialogViewExtension = defineEngineSceneViewExtension({
+  id: 'engine-scene.modeling-dialog',
+  zone: 'overlay',
+  order: 0,
+  Component: EngineSceneModelingDialogViewExtension,
+  wrapperClassName: '!pointer-events-none',
+})
+
 const gizmoViewExtension = defineEngineSceneViewExtension({
   id: 'engine-scene.gizmo',
   zone: 'bottom-right',
@@ -263,14 +268,15 @@ const EngineSceneScreenshotStatusBarItem = () =>
 const engineSceneExtension = defineRegistryItemFactory((ctx) => {
   const executionService = ctx.services.signal(executingEditorService)
   const selectionStatusBarItem = computed(() => {
-    const selectionStatusLabel = executionService.value?.selectionStatusLabel
+    const selectionStatusLabel =
+      executionService.value?.selectionStatusLabel.value
     return nullableStatusBarItem(
-      selectionStatusLabel
+      selectionStatusLabel !== undefined
         ? {
             id: 'selection',
             component: () =>
               createElement(EngineSceneSelectionStatusBarItem, {
-                label: selectionStatusLabel.value,
+                label: selectionStatusLabel,
               }),
             order: 10,
             scopes: ['file'],
@@ -352,54 +358,52 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
   )
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'engine-scene-extension',
-      provides: [
-        provideCommand(
-          captureScreenshotCommand(() =>
-            saveViewportScreenshot(ctx.services.get(fileOperationsService))
-          )
-        ),
-        provideCommand(openMeasureToolCommand),
-        provideCommand(openPhysicalAnalysisToolCommand),
-        provideKeymapItem(openMeasureToolKeymapItem),
-        provideKeymapItem(openPhysicalAnalysisToolKeymapItem),
-        provide(statusBarGlobalItemsValueSpec, screenshotStatusBarItem),
-        provide(statusBarLocalItemsValueSpec, measurementStatusBarItem),
-        provide(statusBarLocalItemsValueSpec, physicalAnalysisStatusBarItem),
-        provide(statusBarLocalItemsValueSpec, selectionFilterStatusBarItem),
-        provide(statusBarLocalItemsValueSpec, selectionStatusBarItem),
-        provide(statusBarLocalItemsValueSpec, unitsStatusBarItem),
-        provide(
-          statusBarLocalItemsValueSpec,
-          experimentalFeaturesStatusBarItem
-        ),
-        provide(engineSceneStreamClassNamesValueSpec, defaultStreamClassName, {
-          key: defaultStreamClassName.id,
-        }),
-        provide(engineSceneViewExtensionsValueSpec, toolbarViewExtension, {
-          key: toolbarViewExtension.id,
-        }),
-        provide(
-          engineSceneViewExtensionsValueSpec,
-          sketchBackgroundOpacityViewExtension,
-          {
-            key: sketchBackgroundOpacityViewExtension.id,
-          }
-        ),
-        provide(
-          engineSceneViewExtensionsValueSpec,
-          sketchConstraintsToggleViewExtension,
-          {
-            key: sketchConstraintsToggleViewExtension.id,
-          }
-        ),
-        provide(engineSceneViewExtensionsValueSpec, gizmoViewExtension, {
-          key: gizmoViewExtension.id,
-        }),
-      ],
-      uses: [executionIndicator],
-    }),
+    id: 'engine-scene-extension',
+    provides: [
+      provideCommand(
+        captureScreenshotCommand(() =>
+          saveViewportScreenshot(ctx.services.get(fileOperationsService))
+        )
+      ),
+      provideCommand(openMeasureToolCommand),
+      provideCommand(openPhysicalAnalysisToolCommand),
+      provideKeymapItem(openMeasureToolKeymapItem),
+      provideKeymapItem(openPhysicalAnalysisToolKeymapItem),
+      provide(statusBarGlobalItemsValueSpec, screenshotStatusBarItem),
+      provide(statusBarLocalItemsValueSpec, measurementStatusBarItem),
+      provide(statusBarLocalItemsValueSpec, physicalAnalysisStatusBarItem),
+      provide(statusBarLocalItemsValueSpec, selectionFilterStatusBarItem),
+      provide(statusBarLocalItemsValueSpec, selectionStatusBarItem),
+      provide(statusBarLocalItemsValueSpec, unitsStatusBarItem),
+      provide(statusBarLocalItemsValueSpec, experimentalFeaturesStatusBarItem),
+      provide(engineSceneStreamClassNamesValueSpec, defaultStreamClassName, {
+        key: defaultStreamClassName.id,
+      }),
+      provide(engineSceneViewExtensionsValueSpec, toolbarViewExtension, {
+        key: toolbarViewExtension.id,
+      }),
+      provide(
+        engineSceneViewExtensionsValueSpec,
+        sketchBackgroundOpacityViewExtension,
+        {
+          key: sketchBackgroundOpacityViewExtension.id,
+        }
+      ),
+      provide(
+        engineSceneViewExtensionsValueSpec,
+        sketchConstraintsToggleViewExtension,
+        {
+          key: sketchConstraintsToggleViewExtension.id,
+        }
+      ),
+      provide(engineSceneViewExtensionsValueSpec, gizmoViewExtension, {
+        key: gizmoViewExtension.id,
+      }),
+      provide(engineSceneViewExtensionsValueSpec, modelingDialogViewExtension, {
+        key: modelingDialogViewExtension.id,
+      }),
+    ],
+    uses: [executionIndicator],
   }
 }, 'engine-scene-extension')
 

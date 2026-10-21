@@ -25,6 +25,7 @@ import { CopilotFixture } from '@e2e/playwright/fixtures/copilotFixture'
 import { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
 import { FsFixture } from '@e2e/playwright/fixtures/fsFixture'
 import { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
+import { ModelingDialogFixture } from '@e2e/playwright/fixtures/modelingDialogFixture'
 import { NativeMenuFixture } from '@e2e/playwright/fixtures/nativeMenuFixture'
 import { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { SignInPageFixture } from '@e2e/playwright/fixtures/signInPageFixture'
@@ -129,6 +130,7 @@ export class AuthenticatedApp {
 
 export interface Fixtures {
   cmdBar: CmdBarFixture
+  modelingDialog: ModelingDialogFixture
   editor: EditorFixture
   toolbar: ToolbarFixture
   scene: SceneFixture
@@ -584,6 +586,9 @@ interface IFormattedLog {
 const fixturesBasedOnProcessEnvPlatform = {
   cmdBar: async ({ page }: { page: Page }, use: FnUse) => {
     await use(new CmdBarFixture(page))
+  },
+  modelingDialog: async ({ page }: { page: Page }, use: FnUse) => {
+    await use(new ModelingDialogFixture(page))
   },
   editor: async ({ page }: { page: Page }, use: FnUse) => {
     await use(new EditorFixture(page))

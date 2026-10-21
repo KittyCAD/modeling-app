@@ -1,9 +1,4 @@
 import type { KclRuntimeFlags } from '@rust/kcl-lib/bindings/KclRuntimeFlags'
-import {
-  ENABLE_Z0006_LINT_FLAG,
-  KCL_CEK_EXECUTOR_FEATURE_FLAG,
-  KCL_NEW_LEXER_PARSER_FEATURE_FLAG,
-} from '@src/lib/constants'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
   type UserFeaturesSettleSource,
@@ -19,21 +14,11 @@ type SettleableRuntimeFlagUserFeatures = RuntimeFlagUserFeatures & {
 type RuntimeFlagWasmInstance = Pick<ModuleType, 'set_kcl_runtime_flags'>
 
 export function kclRuntimeFlagsFromUserFeatures(
-  userFeatures: RuntimeFlagUserFeatures
+  _userFeatures: RuntimeFlagUserFeatures
 ): KclRuntimeFlags {
   return {
-    enable_z0006_lint: userFeatures.has(ENABLE_Z0006_LINT_FLAG, false)
-      ? 'On'
-      : 'Off',
-    use_cek_executor: userFeatures.has(KCL_CEK_EXECUTOR_FEATURE_FLAG, false)
-      ? 'On'
-      : 'Off',
-    use_new_lexer_parser: userFeatures.has(
-      KCL_NEW_LEXER_PARSER_FEATURE_FLAG,
-      false
-    )
-      ? 'On'
-      : 'Off',
+    // The API does not expose a parser feature flag yet.
+    use_new_parser: 'Off',
   }
 }
 

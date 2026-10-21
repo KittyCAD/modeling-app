@@ -98,41 +98,41 @@ baseProfile = sketch(on = XY) {
   vertical(bottomRadiusGuide)
 
   distance([
-  outerRadiusGuide.start,
-  outerRadiusGuide.end
-]) == baseRadius
+    outerRadiusGuide.start,
+    outerRadiusGuide.end
+  ]) == baseRadius
   horizontalDistance([
-  rightCenterGuide.start,
-  rightCenterGuide.end
-]) == mountingHolePlacementRadius
+    rightCenterGuide.start,
+    rightCenterGuide.end
+  ]) == mountingHolePlacementRadius
   verticalDistance([
-  topCenterGuide.start,
-  topCenterGuide.end
-]) == mountingHolePlacementRadius
+    topCenterGuide.start,
+    topCenterGuide.end
+  ]) == mountingHolePlacementRadius
   horizontalDistance([
-  leftCenterGuide.start,
-  leftCenterGuide.end
-]) == -mountingHolePlacementRadius
+    leftCenterGuide.start,
+    leftCenterGuide.end
+  ]) == -mountingHolePlacementRadius
   verticalDistance([
-  bottomCenterGuide.start,
-  bottomCenterGuide.end
-]) == -mountingHolePlacementRadius
+    bottomCenterGuide.start,
+    bottomCenterGuide.end
+  ]) == -mountingHolePlacementRadius
   distance([
-  rightRadiusGuide.start,
-  rightRadiusGuide.end
-]) == mountingHoleRadius
+    rightRadiusGuide.start,
+    rightRadiusGuide.end
+  ]) == mountingHoleRadius
   distance([
-  topRadiusGuide.start,
-  topRadiusGuide.end
-]) == mountingHoleRadius
+    topRadiusGuide.start,
+    topRadiusGuide.end
+  ]) == mountingHoleRadius
   distance([
-  leftRadiusGuide.start,
-  leftRadiusGuide.end
-]) == mountingHoleRadius
+    leftRadiusGuide.start,
+    leftRadiusGuide.end
+  ]) == mountingHoleRadius
   distance([
-  bottomRadiusGuide.start,
-  bottomRadiusGuide.end
-]) == mountingHoleRadius
+    bottomRadiusGuide.start,
+    bottomRadiusGuide.end
+  ]) == mountingHoleRadius
 }
 
 baseRegion = region(segments = [baseProfile.outerCircle])

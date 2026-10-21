@@ -1,6 +1,7 @@
 import { Dialog, Popover, Transition } from '@headlessui/react'
 import { Fragment, useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: command-bar lifecycle follows pathname (useLocation).
 import { useLocation } from 'react-router-dom'
 
 import CommandBarArgument from '@src/components/CommandBar/CommandBarArgument'
@@ -12,6 +13,7 @@ import Loading from '@src/components/Loading'
 import Tooltip from '@src/components/Tooltip'
 import { useApp } from '@src/lib/boot'
 import type { Command, CommandArgument } from '@src/lib/commandTypes'
+import { isModelingDialogCommand } from '@src/lib/commandUtils'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
 import { interactions } from '@src/lib/interactionPerformance/definitions'
 import {
@@ -22,8 +24,6 @@ import {
   isCommandSearchable,
 } from '@src/registry/contracts/commands'
 import { isCommandVisibleInSearch } from '@src/components/CommandBar/commandSearchVisibility'
-
-export const COMMAND_PALETTE_HOTKEY = 'mod+k'
 
 export const CommandBar = () => {
   const { pathname } = useLocation()
@@ -87,12 +87,12 @@ export const CommandBar = () => {
   }, [pathname])
 
   // Close the command bar when navigating
-  // but importantly not when the query parameters change
-  // biome-ignore lint/correctness/useExhaustiveDependencies: this intentionally reacts only to path changes.
+  // but importantly not when the query parameters change.
+  // Do not close when a command is selected (e.g. edit flow from feature tree)
+  // so that programmatic "Find and select command" is not immediately closed.
   useEffect(() => {
-    if (commandBarState.matches('Closed')) {
-      return
-    }
+    if (commandBarState.matches('Closed')) return
+    if (commandBarState.context.selectedCommand) return
     cmd.send({ type: 'Close' })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [pathname])
@@ -162,23 +162,29 @@ export const CommandBar = () => {
     }
   }
 
+  if (isModelingDialogCommand(selectedCommand)) return null
+
   const commandBar = (
     <Transition.Root
-      show={isCommandBarOpen || false}
+      show={!commandBarState.matches('Closed') || false}
       afterLeave={() => {
-        if (selectedCommand?.onCancel) {
-          selectedCommand.onCancel()
-        }
+        if (selectedCommand?.onCancel) selectedCommand.onCancel()
         cmd.send({ type: 'Clear' })
       }}
       as={Fragment}
     >
       <WrapperComponent
-        open={isCommandBarOpen || isArgumentThatShouldBeHardToDismiss}
+        open={
+          !commandBarState.matches('Closed') ||
+          isArgumentThatShouldBeHardToDismiss
+        }
         onClose={() => {
           cmd.send({ type: 'Close' })
         }}
-        className={`fixed inset-0 z-50 overflow-y-auto pb-4 pt-1 ${isArgumentThatShouldBeHardToDismiss ? 'pointer-events-none' : ''}`}
+        className={
+          'fixed inset-0 z-50 overflow-y-auto pb-4 pt-1 ' +
+          (isArgumentThatShouldBeHardToDismiss ? 'pointer-events-none' : '')
+        }
         data-testid="command-bar-wrapper"
       >
         <Transition.Child

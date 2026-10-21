@@ -1455,18 +1455,24 @@ async def mock_execute_code(code: builtins.str) -> zooExecOutcome:
     Mock execute the kcl code.
     """
 
-async def new_kcl_session(path: builtins.str, *, mock: builtins.bool = ..., highlight_edges: typing.Optional[builtins.bool] = None, video_res_width: typing.Optional[builtins.int] = None, video_res_height: typing.Optional[builtins.int] = None) -> KclSession:
+async def new_kcl_session(path: builtins.str, *, mock: builtins.bool = ..., geometry_only: builtins.bool = ..., highlight_edges: typing.Optional[builtins.bool] = None, video_res_width: typing.Optional[builtins.int] = None, video_res_height: typing.Optional[builtins.int] = None, token: typing.Optional[builtins.str] = None, base_url: typing.Optional[builtins.str] = None) -> KclSession:
     r"""
     Execute this KCL project.
     Return an executed KCL project with its connection still available.
     You can call follow-up methods, like exporting or snapshotting or measuring, on the returned session.
+    `geometry_only` uses the CPU engine pool without initializing rendering.
+    `token` and `base_url` override the client environment settings for this session.
+    Omitted values retain the client's existing environment defaults.
     """
 
-async def new_kcl_session_code(code: builtins.str, *, mock: builtins.bool = ..., highlight_edges: typing.Optional[builtins.bool] = None, video_res_width: typing.Optional[builtins.int] = None, video_res_height: typing.Optional[builtins.int] = None) -> KclSession:
+async def new_kcl_session_code(code: builtins.str, *, mock: builtins.bool = ..., geometry_only: builtins.bool = ..., highlight_edges: typing.Optional[builtins.bool] = None, video_res_width: typing.Optional[builtins.int] = None, video_res_height: typing.Optional[builtins.int] = None, token: typing.Optional[builtins.str] = None, base_url: typing.Optional[builtins.str] = None) -> KclSession:
     r"""
     Execute this KCL source code string.
     Return an executed KCL project with its connection still available.
     You can call follow-up methods, like exporting or snapshotting or measuring, on the returned session.
+    `geometry_only` uses the CPU engine pool without initializing rendering.
+    `token` and `base_url` override the client environment settings for this session.
+    Omitted values retain the client's existing environment defaults.
     """
 
 async def parse(path: builtins.str) -> builtins.bool:

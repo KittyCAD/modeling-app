@@ -1,6 +1,7 @@
 //! Standard library clone.
 
 use std::collections::HashMap;
+use std::collections::HashSet;
 
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
@@ -20,6 +21,7 @@ use crate::execution::GeometryWithImportedGeometry;
 use crate::execution::KclValue;
 use crate::execution::Metadata;
 use crate::execution::ModelingCmdMeta;
+use crate::execution::NewBodyKind;
 use crate::execution::Sketch;
 use crate::execution::Solid;
 use crate::execution::SolidCreator;
@@ -119,7 +121,7 @@ async fn inner_clone(
                 });
                 new_solid.id = new_id;
                 new_solid.value_id = new_id;
-                new_solid.become_new_body(new_id, result_artifact_id);
+                new_solid.become_new_body(new_id, result_artifact_id, NewBodyKind::IndependentCopy);
                 if let Some(sketch) = new_solid.sketch_mut() {
                     sketch.original_id = new_id;
                 }
@@ -225,6 +227,37 @@ pub(super) async fn fix_tags_and_references(
                 BeingExtruded::Sketch,
             )
             .await?;
+
+            if !old_face_tag_names.is_empty() {
+                // Preserve tagged faces when edge cuts leave the extrusion query empty.
+                // Untagged solids keep the existing reconstruction behavior.
+                let mut seen_ids = new_solid
+                    .value
+                    .iter()
+                    .map(|surface| surface.get_id())
+                    .collect::<HashSet<_>>();
+                for surface in solid.value.iter().filter(|surface| surface.get_tag().is_some()) {
+                    let (Some(id), Some(face_id)) = (
+                        entity_id_map.get(&surface.get_id()).copied(),
+                        entity_id_map.get(&surface.face_id()).copied(),
+                    ) else {
+                        continue;
+                    };
+                    if !seen_ids.insert(id) {
+                        continue;
+                    }
+                    if solid.start_cap_id == Some(surface.face_id()) {
+                        new_solid.start_cap_id.get_or_insert(face_id);
+                    }
+                    if solid.end_cap_id == Some(surface.face_id()) {
+                        new_solid.end_cap_id.get_or_insert(face_id);
+                    }
+                    let mut surface = surface.clone();
+                    surface.set_id(id);
+                    surface.set_face_id(face_id);
+                    new_solid.value.push(surface);
+                }
+            }
 
             if let Some((face_id, solid_id)) = face_creator {
                 let rebuilt_sketch = new_solid.sketch().cloned().ok_or_else(|| {
@@ -524,10 +557,111 @@ mod tests {
     use crate::execution::EdgeCutViewExt;
     use crate::execution::ExecOutcome;
     use crate::execution::ExtrudeSurfaceViewExt;
+    use crate::execution::Geometry;
     use crate::execution::KclValue;
     use crate::execution::PathViewExt;
     use crate::execution::Solid;
     use crate::execution::SolidViewExt;
+    use crate::execution::parse_execute;
+
+    async fn assert_mock_clone_preserves_source_region_tags(body_expression: &str) {
+        let code = format!(
+            r#"@settings(kclVersion = 3.0)
+lower = sketch(on = XY) {{
+  edge = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+}}
+upper = sketch(on = offsetPlane(XY, offset = 10mm)) {{
+  edge = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}}
+lowerRegion = region(segments = [lower.edge])
+upperRegion = region(segments = [upper.edge])
+body = {body_expression}
+beforeClone = lowerRegion.tags.edge
+copied = clone(body)
+afterClone = lowerRegion.tags.edge
+"#
+        );
+        let result = parse_execute(&code).await.expect("mock clone executes");
+        let KclValue::Solid { value: body } = result.variable("body") else {
+            panic!("body is not a solid");
+        };
+        let KclValue::Solid { value: copied } = result.variable("copied") else {
+            panic!("copied is not a solid");
+        };
+        assert_ne!(body.id, copied.id);
+
+        for name in ["beforeClone", "afterClone"] {
+            let KclValue::TagIdentifier(tag) = result.variable(name) else {
+                panic!("{name} is not a tag");
+            };
+            let info = tag.get_cur_info().expect("region tag has geometry info");
+            assert!(info.surface.is_some(), "{name} should still identify a face");
+            let Geometry::Solid(tagged_body) = &info.geometry else {
+                panic!("{name} is not a solid face tag");
+            };
+            assert_eq!(
+                tagged_body.id, body.id,
+                "{name} should identify the source body, not its independent clone"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn clone_does_not_retarget_extruded_region_tags_in_mock_execution() {
+        assert_mock_clone_preserves_source_region_tags("extrude(lowerRegion, length = 10mm)").await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn clone_does_not_retarget_loft_region_tags_in_mock_execution() {
+        assert_mock_clone_preserves_source_region_tags("loft([lowerRegion, upperRegion])").await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_clone_chamfered_cap_tags() {
+        for version in ["2.0", "3.0"] {
+            let code = r#"@settings(kclVersion = VERSION, experimentalFeatures = allow)
+profile = sketch(on = XZ) {
+  bottom = line(start = [-4mm, -4mm], end = [4mm, -4mm])
+  right = line(start = [4mm, -4mm], end = [4mm, 4mm])
+  top = line(start = [4mm, 4mm], end = [-4mm, 4mm])
+  left = line(start = [-4mm, 4mm], end = [-4mm, -4mm])
+}
+profileRegion = region(segments = [profile.bottom, profile.right, profile.top, profile.left])
+blank = extrude(profileRegion, length = 4mm, symmetric = true, tagStart = $startCap, tagEnd = $endCap)
+source = chamfer(blank, length = 0.25mm, edges = [
+  {sideFaces = [profileRegion.tags.right, blank.faces.startCap]},
+  {sideFaces = [profileRegion.tags.right, blank.faces.endCap]},
+  {sideFaces = [profileRegion.tags.left, blank.faces.startCap]},
+  {sideFaces = [profileRegion.tags.left, blank.faces.endCap]}
+])
+cloned = clone(source)
+startFace = cloned.faces.startCap
+endFace = cloned.faces.endCap
+clonedAgain = clone(cloned)
+result = chamfer(clonedAgain, length = 0.1mm, edges = [
+  {sideFaces = [clonedAgain.sketch.tags.top, clonedAgain.faces.startCap]},
+  {sideFaces = [clonedAgain.sketch.tags.top, clonedAgain.faces.endCap]}
+])
+"#
+            .replace("VERSION", version);
+            let program = crate::Program::parse_no_errs(&code).unwrap();
+            let ctx = crate::test_server::new_context(true, None, true, program.language_version().unwrap())
+                .await
+                .unwrap();
+            let outcome = ctx.run_with_caching(program).await;
+            ctx.close().await;
+            let outcome = outcome.unwrap_or_else(|error| panic!("KCL {version}: {}", error.error));
+            let source = runtime_solid(&outcome, "source");
+            for name in ["cloned", "clonedAgain"] {
+                let cloned = runtime_solid(&outcome, name);
+                assert_eq!(cloned.faces.len(), 2);
+                assert_ne!(source.start_cap_id, cloned.start_cap_id);
+                assert_ne!(source.end_cap_id, cloned.end_cap_id);
+                assert!(cloned.start_cap_id.is_some());
+                assert!(cloned.end_cap_id.is_some());
+            }
+        }
+    }
 
     fn runtime_solid<'a>(outcome: &'a ExecOutcome, name: &str) -> &'a Solid {
         let value = outcome
@@ -1326,7 +1460,7 @@ clonedCopy = clone(patternCopy)
         assert!(matches!(
             result.artifact_graph.get(&cloned_copy.artifact_id),
             Some(Artifact::Sweep(sweep))
-                if sweep.path_id == cloned_copy.id.into()
+                if sweep.path_id == Some(cloned_copy.id.into())
         ));
         assert!(matches!(
             result.artifact_graph.get(&cloned_copy.id.into()),

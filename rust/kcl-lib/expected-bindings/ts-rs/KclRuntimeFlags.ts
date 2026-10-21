@@ -7,5 +7,11 @@ import type { RuntimeFlag } from "./RuntimeFlag";
  * Fields missing from a deserialized payload become [`RuntimeFlag::Unset`],
  * so a sender built before a flag existed falls back to Rust-side defaults
  * instead of failing to parse.
+ *
+ * `use_new_parser` is a placeholder while the new parser is being implemented:
+ *
+ * - It has no corresponding Admin portal flag yet.
+ * - It defaults to [`RuntimeFlag::Off`] when omitted.
+ * - The current parser does not read it.
  */
-export type KclRuntimeFlags = { enable_z0006_lint: RuntimeFlag, use_cek_executor: RuntimeFlag, use_new_lexer_parser: RuntimeFlag, };
+export type KclRuntimeFlags = { use_new_parser: RuntimeFlag, };

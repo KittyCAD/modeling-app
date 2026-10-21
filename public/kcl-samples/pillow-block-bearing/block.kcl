@@ -27,11 +27,31 @@ plateBody = extrude(region001, length = stockThickness)
   |> appearance(color = "#1e62eb")
   |> fillet(
        radius = boltDiameter * 1 / 3,
-       tags = [
-         getNextAdjacentEdge(region001.tags.line2),
-         getNextAdjacentEdge(region001.tags.line1),
-         getNextAdjacentEdge(region001.tags.line3),
-         getNextAdjacentEdge(region001.tags.line4)
+       edges = [
+         {
+           sideFaces = [
+             region001.tags.line2,
+             region001.tags.line1
+           ]
+         },
+         {
+           sideFaces = [
+             region001.tags.line4,
+             region001.tags.line1
+           ]
+         },
+         {
+           sideFaces = [
+             region001.tags.line2,
+             region001.tags.line3
+           ]
+         },
+         {
+           sideFaces = [
+             region001.tags.line4,
+             region001.tags.line3
+           ]
+         }
        ],
      )
 

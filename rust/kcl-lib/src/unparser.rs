@@ -54,7 +54,7 @@ use crate::parsing::deprecation;
 #[allow(dead_code)]
 pub fn fmt(input: &str) -> Result<String, KclError> {
     let program = crate::parsing::parse_str(input, ModuleId::default()).parse_errs_as_err()?;
-    Ok(program.recast_top(&Default::default(), 0))
+    Ok(program.ast.recast_top(&Default::default(), 0))
 }
 
 impl Program {
@@ -338,18 +338,28 @@ pub(crate) enum ExprContext {
     PipeCallArg,
     /// Being used as an argument to a call expression.
     CallArg,
+    /// An inline operator operand whose continuation lines retain the enclosing pipe offset.
+    OperatorOperand {
+        in_pipe: bool,
+    },
     Other,
 }
 
 impl ExprContext {
     fn in_pipe(self) -> bool {
-        matches!(self, ExprContext::Pipe | ExprContext::PipeCallArg)
+        matches!(
+            self,
+            ExprContext::Pipe | ExprContext::PipeCallArg | ExprContext::OperatorOperand { in_pipe: true }
+        )
     }
 
     fn needs_leading_indent(self) -> bool {
         !matches!(
             self,
-            ExprContext::PipeHead | ExprContext::CallArg | ExprContext::PipeCallArg
+            ExprContext::PipeHead
+                | ExprContext::CallArg
+                | ExprContext::PipeCallArg
+                | ExprContext::OperatorOperand { .. }
         )
     }
 
@@ -458,6 +468,10 @@ impl BinaryPart {
         indentation_level: usize,
         ctxt: ExprContext,
     ) {
+        let operand_ctxt = match ctxt {
+            ExprContext::OperatorOperand { .. } => ctxt,
+            _ => ExprContext::Other,
+        };
         match &self {
             BinaryPart::Literal(literal) => {
                 literal.recast(buf);
@@ -470,7 +484,7 @@ impl BinaryPart {
                 binary_expression.recast(buf, options, indentation_level, ctxt)
             }
             BinaryPart::CallExpressionKw(call_expression) => {
-                call_expression.recast(buf, options, indentation_level, ExprContext::Other)
+                call_expression.recast(buf, options, indentation_level, operand_ctxt)
             }
             BinaryPart::UnaryExpression(unary_expression) => {
                 unary_expression.recast(buf, options, indentation_level, ctxt)
@@ -481,8 +495,8 @@ impl BinaryPart {
             BinaryPart::ArrayExpression(e) => e.recast(buf, options, indentation_level, ctxt),
             BinaryPart::ArrayRangeExpression(e) => e.recast(buf, options, indentation_level, ctxt),
             BinaryPart::ObjectExpression(e) => e.recast(buf, options, indentation_level, ctxt),
-            BinaryPart::IfExpression(e) => e.recast(buf, options, indentation_level, ExprContext::Other),
-            BinaryPart::AscribedExpression(e) => e.recast(buf, options, indentation_level, ExprContext::Other),
+            BinaryPart::IfExpression(e) => e.recast(buf, options, indentation_level, operand_ctxt),
+            BinaryPart::AscribedExpression(e) => e.recast(buf, options, indentation_level, operand_ctxt),
             BinaryPart::SketchVar(e) => e.recast(buf),
         }
     }
@@ -541,7 +555,9 @@ fn recast_call(
     let name = callee;
 
     if let Some(suggestion) = deprecation(&name.name.inner.name, DeprecationKind::Function) {
-        options.write_indentation(buf, smart_indent_level);
+        if ctxt.needs_leading_indent() {
+            options.write_indentation(buf, smart_indent_level);
+        }
         return write!(buf, "{suggestion}").no_fail();
     }
 
@@ -1132,7 +1148,7 @@ impl MemberExpression {
 }
 
 impl BinaryExpression {
-    fn recast(&self, buf: &mut String, options: &FormatOptions, _indentation_level: usize, ctxt: ExprContext) {
+    fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) {
         let maybe_wrap_it = |a: String, doit: bool| -> String { if doit { format!("({a})") } else { a } };
 
         // It would be better to always preserve the user's parentheses but since we've dropped that
@@ -1160,10 +1176,13 @@ impl BinaryExpression {
             _ => false,
         };
 
+        let operand_ctxt = ExprContext::OperatorOperand {
+            in_pipe: ctxt.in_pipe(),
+        };
         let mut left = String::new();
-        self.left.recast(&mut left, options, 0, ctxt);
+        self.left.recast(&mut left, options, indentation_level, operand_ctxt);
         let mut right = String::new();
-        self.right.recast(&mut right, options, 0, ctxt);
+        self.right.recast(&mut right, options, indentation_level, operand_ctxt);
         write!(
             buf,
             "{} {} {}",
@@ -1176,7 +1195,10 @@ impl BinaryExpression {
 }
 
 impl UnaryExpression {
-    fn recast(&self, buf: &mut String, options: &FormatOptions, _indentation_level: usize, ctxt: ExprContext) {
+    fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize, ctxt: ExprContext) {
+        let operand_ctxt = ExprContext::OperatorOperand {
+            in_pipe: ctxt.in_pipe(),
+        };
         match self.argument {
             BinaryPart::Literal(_)
             | BinaryPart::Name(_)
@@ -1188,12 +1210,12 @@ impl UnaryExpression {
             | BinaryPart::AscribedExpression(_)
             | BinaryPart::CallExpressionKw(_) => {
                 write!(buf, "{}", self.operator).no_fail();
-                self.argument.recast(buf, options, 0, ctxt)
+                self.argument.recast(buf, options, indentation_level, operand_ctxt)
             }
             BinaryPart::BinaryExpression(_) | BinaryPart::UnaryExpression(_) | BinaryPart::SketchVar(_) => {
                 write!(buf, "{}", self.operator).no_fail();
                 buf.push('(');
-                self.argument.recast(buf, options, 0, ctxt);
+                self.argument.recast(buf, options, indentation_level, operand_ctxt);
                 buf.push(')');
             }
         }
@@ -1242,7 +1264,8 @@ impl IfExpression {
             .into_iter()
             .enumerate()
             .map(|(idx, (ind, line))| {
-                let indentation = if ctxt.in_pipe() && idx == 0 {
+                let indentation = if idx == 0 && (ctxt.in_pipe() || matches!(ctxt, ExprContext::OperatorOperand { .. }))
+                {
                     String::new()
                 } else {
                     options.get_indentation(indentation_level + ind)
@@ -1916,6 +1939,37 @@ sketch(
         let program = crate::parsing::top_level_parse(input).unwrap();
         let output = program.recast_top(&Default::default(), 0);
         assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_recast_angle_dimension_constraint_indentation() {
+        let input = r#"@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var 0mm, var 127mm], end = [var 146.65mm, var 127mm])
+  line2 = line(start = [var 146.65mm, var 127mm], end = [var 0mm, var -127mm])
+  angleDimension(
+  lines = [line1, line2],
+  sector = 2,
+  inverse = true,
+  labelPosition = [137.6mm, 121.05mm],
+) == 60deg
+}
+"#;
+        let expected = r#"@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var 0mm, var 127mm], end = [var 146.65mm, var 127mm])
+  line2 = line(start = [var 146.65mm, var 127mm], end = [var 0mm, var -127mm])
+  angleDimension(
+    lines = [line1, line2],
+    sector = 2,
+    inverse = true,
+    labelPosition = [137.6mm, 121.05mm],
+  ) == 60deg
+}
+"#;
+        assert_recast(input, expected);
     }
 
     #[test]
@@ -3961,6 +4015,194 @@ fn foo() {
     }
 
     #[test]
+    fn recast_binary_call_operands_across_operators_and_versions() {
+        for version in ["1.0", "2.0", "\"3.0-preview\""] {
+            for operator in ["+", "-", "*", "/", "%", "^", "==", "!=", ">", ">=", "<", "<=", "&", "|"] {
+                let input = format!(
+                    "@settings(kclVersion = {version})\n\nfn example() {{\n  x = f(a = 1, b = 2, c = 3, d = 4) {operator} g(a = 1, b = 2, c = 3, d = 4)\n}}\n"
+                );
+                let expected = format!(
+                    r#"@settings(kclVersion = {version})
+
+fn example() {{
+  x = f(
+    a = 1,
+    b = 2,
+    c = 3,
+    d = 4,
+  ) {operator} g(
+    a = 1,
+    b = 2,
+    c = 3,
+    d = 4,
+  )
+}}
+"#
+                );
+                assert_recast(&input, &expected);
+            }
+        }
+    }
+
+    #[test]
+    fn recast_binary_operands_in_nested_contexts() {
+        let code = r#"@settings(kclVersion = 2.0)
+
+fn example() {
+  fn inner() {
+    f(
+      // argument
+      a = 1,
+    ) == 10
+    x = outer(
+      value = (f(
+        a = 1,
+        b = 2,
+        c = 3,
+        d = 4,
+      ) + 10) * 20,
+      other = [
+        10 == f(
+          a = 1,
+          b = 2,
+          c = 3,
+          d = 4,
+        )
+      ],
+      third = {
+        value = f(
+          a = 1,
+          b = 2,
+          c = 3,
+          d = 4,
+        ) == 10
+      },
+    )
+    bounds = [base + 1 ..< end]
+    return 10 == f(
+      a = 1,
+      b = 2,
+      c = 3,
+      d = 4,
+    )
+  }
+}
+"#;
+        assert_recast(code, code);
+    }
+
+    #[test]
+    fn recast_binary_operands_with_member_and_type_wrappers() {
+        let code = r#"@settings(kclVersion = 2.0)
+
+fn example() {
+  member = f(
+    // argument
+    a = 1,
+  ).result == 10
+  ascribed = f(
+    // argument
+    a = 1,
+  ): number == 10
+  wrapped = (f(
+    // argument
+    a = 1,
+  ) + 1): number == 10
+}
+"#;
+        assert_recast(code, code);
+    }
+
+    #[test]
+    fn recast_deprecated_calls_as_binary_operands() {
+        let input = "@settings(kclVersion = 2.0)\n\nfn example() {\n  x = pi() + tau()\n  y = f(a = pi() + 1)\n}\n";
+        let expected = "@settings(kclVersion = 2.0)\n\nfn example() {\n  x = PI + TAU\n  y = f(a = PI + 1)\n}\n";
+        assert_recast(input, expected);
+    }
+
+    #[test]
+    fn recast_binary_operands_in_conditionals_and_annotations() {
+        let code = r#"@settings(kclVersion = 2.0)
+
+fn example() {
+  @meta(value = f(
+      // argument
+      a = 1,
+    ) == 10)
+
+  x = if f(
+    // argument
+    a = 1,
+  ) == 10 {
+    1
+  } else {
+    2
+  } + if other {
+    3
+  } else {
+    4
+  }
+}
+"#;
+        assert_recast(code, code);
+    }
+
+    #[test]
+    fn recast_binary_operands_in_pipelines() {
+        let code = r#"@settings(kclVersion = 2.0)
+
+fn example() {
+  x = f(
+    a = 1,
+    b = 2,
+    c = 3,
+    d = 4,
+  ) == 10
+    |> g(%)
+  y = seed
+    |> outer(
+         value = 10 == f(
+           a = 1,
+           b = 2,
+           c = 3,
+           d = 4,
+         ),
+         other = 1,
+       )
+}
+"#;
+        assert_recast(code, code);
+    }
+
+    #[test]
+    fn recast_binary_operands_with_custom_indentation() {
+        let input =
+            "@settings(kclVersion = 2.0)\n\nfn example() {\n  x = f(a = 1, b = 2, c = 3, d = 4) == g(a = 1)\n}\n";
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        for (options, expected) in [
+            (
+                FormatOptions {
+                    tab_size: 4,
+                    ..Default::default()
+                },
+                "@settings(kclVersion = 2.0)\n\nfn example() {\n    x = f(\n        a = 1,\n        b = 2,\n        c = 3,\n        d = 4,\n    ) == g(a = 1)\n}\n",
+            ),
+            (
+                FormatOptions {
+                    use_tabs: true,
+                    ..Default::default()
+                },
+                "@settings(kclVersion = 2.0)\n\nfn example() {\n\tx = f(\n\t\ta = 1,\n\t\tb = 2,\n\t\tc = 3,\n\t\td = 4,\n\t) == g(a = 1)\n}\n",
+            ),
+        ] {
+            let output = program.recast_top(&options, 0);
+            assert_eq!(output, expected);
+            let reparsed = crate::parsing::top_level_parse(&output).unwrap();
+            assert_eq!(reparsed.recast_top(&options, 0), output);
+        }
+    }
+
+    #[test]
     fn indented_assignment() {
         let code = "\
 fn foo() {
@@ -3984,6 +4226,169 @@ fn foo() {
         let recasted = ast.recast_top(&FormatOptions::new(), 0);
         let expected = code;
         assert_eq!(recasted, expected);
+    }
+
+    #[test]
+    fn recast_unary_call_operands_across_operators_and_versions() {
+        for version in ["1.0", "2.0", "\"3.0-preview\""] {
+            for operator in ["-", "+", "!"] {
+                let input = format!(
+                    "@settings(kclVersion = {version})\n\nfn example() {{\n  x = {operator}f(a = 1, b = 2, c = 3, d = 4)\n  y = {operator}g(a = 1)\n}}\n"
+                );
+                let expected = format!(
+                    r#"@settings(kclVersion = {version})
+
+fn example() {{
+  x = {operator}f(
+    a = 1,
+    b = 2,
+    c = 3,
+    d = 4,
+  )
+  y = {operator}g(a = 1)
+}}
+"#
+                );
+                assert_recast(&input, &expected);
+            }
+        }
+    }
+
+    #[test]
+    fn recast_nested_unary_operands() {
+        let code = r#"@settings(kclVersion = 2.0)
+
+fn example() {
+  nested = -(-f(
+    // This comment precedes the argument.
+    a = 1,
+  ))
+  binary = -(f(
+    // This comment precedes the argument.
+    a = 1,
+  ) + 2)
+  member = -f(
+    // This comment precedes the argument.
+    a = 1,
+  ).result
+  ascribed = (-f(
+    // This comment precedes the argument.
+    a = 1,
+  )): number
+  constant = -PI
+}
+"#;
+        assert_recast(code, code);
+        assert_recast(
+            "@settings(kclVersion = 2.0)\n\nfn example() {\n  x = -pi()\n}\n",
+            "@settings(kclVersion = 2.0)\n\nfn example() {\n  x = -PI\n}\n",
+        );
+    }
+
+    #[test]
+    fn recast_unary_operands_in_nested_contexts() {
+        let code = r#"@settings(kclVersion = 2.0)
+
+fn example() {
+  fn inner() {
+    -f(
+      // This comment precedes the argument.
+      a = 1,
+    )
+    x = outer(
+      value = 10 + -f(
+        // This comment precedes the argument.
+        a = 1,
+      ),
+      other = [
+        -f(
+          // This comment precedes the argument.
+          a = 1,
+        )
+      ],
+      third = {
+        value = -f(
+          // This comment precedes the argument.
+          a = 1,
+        )
+      },
+    )
+    return -f(
+      // This comment precedes the argument.
+      a = 1,
+    )
+  }
+}
+"#;
+        assert_recast(code, code);
+    }
+
+    #[test]
+    fn recast_unary_operands_in_conditionals() {
+        let code = r#"@settings(kclVersion = 2.0)
+
+fn example() {
+  x = -if !f(
+    // This comment precedes the argument.
+    a = 1,
+  ) {
+    1
+  } else {
+    2
+  }
+}
+"#;
+        assert_recast(code, code);
+    }
+
+    #[test]
+    fn recast_unary_operands_in_pipelines() {
+        let code = r#"@settings(kclVersion = 2.0)
+
+fn example() {
+  x = -f(
+    // This comment precedes the argument.
+    a = 1,
+  )
+    |> g(%)
+  y = seed
+    |> outer(
+         value = -f(
+           // This comment precedes the argument.
+           a = 1,
+         ),
+         other = 1,
+       )
+}
+"#;
+        assert_recast(code, code);
+    }
+
+    #[test]
+    fn recast_unary_operands_with_custom_indentation() {
+        let input = "@settings(kclVersion = 2.0)\n\nfn example() {\n  x = -f(a = 1, b = 2, c = 3, d = 4)\n}\n";
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        for (options, expected) in [
+            (
+                FormatOptions {
+                    tab_size: 4,
+                    ..Default::default()
+                },
+                "@settings(kclVersion = 2.0)\n\nfn example() {\n    x = -f(\n        a = 1,\n        b = 2,\n        c = 3,\n        d = 4,\n    )\n}\n",
+            ),
+            (
+                FormatOptions {
+                    use_tabs: true,
+                    ..Default::default()
+                },
+                "@settings(kclVersion = 2.0)\n\nfn example() {\n\tx = -f(\n\t\ta = 1,\n\t\tb = 2,\n\t\tc = 3,\n\t\td = 4,\n\t)\n}\n",
+            ),
+        ] {
+            let output = program.recast_top(&options, 0);
+            assert_eq!(output, expected);
+            let reparsed = crate::parsing::top_level_parse(&output).unwrap();
+            assert_eq!(reparsed.recast_top(&options, 0), output);
+        }
     }
 
     #[test]

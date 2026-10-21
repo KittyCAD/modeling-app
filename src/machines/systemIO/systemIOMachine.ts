@@ -8,6 +8,7 @@ import type { Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { reportSystemIOMachineError } from '@src/machines/systemIO/reporting'
 import type {
+  BulkFileWriteProgress,
   RequestedKCLFile,
   RequestedKCLFileDelete,
   RequestedProjectFile,
@@ -156,6 +157,7 @@ export const systemIOMachine = setup({
       | {
           type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile
           data: {
+            orderedId?: number
             files: RequestedKCLFile[]
             filesToDelete?: RequestedKCLFileDelete[]
             requestedProjectName: string
@@ -164,6 +166,7 @@ export const systemIOMachine = setup({
             override?: boolean
             requestedSubRoute?: string
             onFileSystemError?: () => void
+            onFileWriteProgress?: (progress: BulkFileWriteProgress) => void
             onFileSystemSuccess?: () => void
             onSuccess?: () => void
           }
@@ -713,6 +716,7 @@ export const systemIOMachine = setup({
         }: {
           input: {
             context: SystemIOContext
+            orderedId?: number
             files: RequestedKCLFile[]
             filesToDelete?: RequestedKCLFileDelete[]
             requestedProjectName: string
@@ -721,6 +725,7 @@ export const systemIOMachine = setup({
             override?: boolean
             requestedSubRoute?: string
             onFileSystemError?: () => void
+            onFileWriteProgress?: (progress: BulkFileWriteProgress) => void
             onFileSystemSuccess?: () => void
             onSuccess?: () => void
           }
@@ -1758,6 +1763,7 @@ export const systemIOMachine = setup({
           )
           return {
             context,
+            orderedId: event.data.orderedId,
             files: event.data.files,
             filesToDelete: event.data.filesToDelete,
             requestedProjectName: event.data.requestedProjectName,
@@ -1767,6 +1773,7 @@ export const systemIOMachine = setup({
               event.data.requestedFileNameWithExtension,
             requestedSubRoute: event.data.requestedSubRoute,
             onFileSystemError: event.data.onFileSystemError,
+            onFileWriteProgress: event.data.onFileWriteProgress,
             onFileSystemSuccess: event.data.onFileSystemSuccess,
             onSuccess: event.data.onSuccess,
           }

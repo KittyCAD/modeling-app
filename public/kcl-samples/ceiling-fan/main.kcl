@@ -143,23 +143,23 @@ bladeProfile = sketch(on = bladePlane) {
   verticalDistance([bladeAxisSpan.start, bladeAxisSpan.end]) == bladeSpanLength - bladeTipRadius
   verticalDistance([bladeAxisTip.start, bladeAxisTip.end]) == bladeTipRadius
   horizontalDistance([
-  rootGuideRight.start,
-  rootGuideRight.end
-]) == bladeRootHalfWidth
+    rootGuideRight.start,
+    rootGuideRight.end
+  ]) == bladeRootHalfWidth
   horizontalDistance([rootGuideLeft.start, rootGuideLeft.end]) == bladeRootHalfWidth
   horizontalDistance([
-  neckGuideRight.start,
-  neckGuideRight.end
-]) == bladeNeckHalfWidth
+    neckGuideRight.start,
+    neckGuideRight.end
+  ]) == bladeNeckHalfWidth
   horizontalDistance([neckGuideLeft.start, neckGuideLeft.end]) == bladeNeckHalfWidth
   horizontalDistance([
-  tipCenterGuideRight.start,
-  tipCenterGuideRight.end
-]) == bladeTipFlatHalfWidth
+    tipCenterGuideRight.start,
+    tipCenterGuideRight.end
+  ]) == bladeTipFlatHalfWidth
   horizontalDistance([
-  tipCenterGuideLeft.start,
-  tipCenterGuideLeft.end
-]) == bladeTipFlatHalfWidth
+    tipCenterGuideLeft.start,
+    tipCenterGuideLeft.end
+  ]) == bladeTipFlatHalfWidth
 }
 
 // Step 2: extrude the solved blade blank.
@@ -199,9 +199,9 @@ voidProfile = sketch(on = YZ) {
   vertical(outerEdge)
   tangent([bottomEdge, innerArc])
   verticalDistance([
-  baseOffsetGuide.start,
-  baseOffsetGuide.end
-]) == voidCutoutBottomOffset
+    baseOffsetGuide.start,
+    baseOffsetGuide.end
+  ]) == voidCutoutBottomOffset
 
   verticalDistance([arcRiseGuide.start, arcRiseGuide.end]) == voidCutoutHeight
   horizontalDistance([topEdge.start, topEdge.end]) == voidCutoutLength

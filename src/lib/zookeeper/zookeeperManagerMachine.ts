@@ -626,6 +626,7 @@ function getWebSocketReadyStateLabel(
       return 'CLOSING'
     case WebSocket.CLOSED:
       return 'CLOSED'
+    case undefined:
     default:
       return undefined
   }

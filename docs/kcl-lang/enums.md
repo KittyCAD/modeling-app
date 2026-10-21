@@ -10,12 +10,12 @@ type that accepts far more than those few choices: a string, where a misspelling
 accepted silently, or a number, whose meaning depends on context and has to be
 remembered.
 
-Enum declarations require KCL 3.0-preview or later.
+Enum declarations require KCL 3.0 or later.
 
 ## Declaring an enum
 
 ```kcl
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 type Fit { | Loose | Normal | Press }
 ```
@@ -30,7 +30,7 @@ The `|` is what marks the braces as a list of variants, so an enum with no varia
 keeps `|` on its own:
 
 ```kcl
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 type Nothing { | }
 ```
@@ -40,7 +40,7 @@ variants there is no value to write, so nothing can ever have the type `Nothing`
 [Asking for a variant](#using-a-variant) of it fails, whatever name you ask for:
 
 ```kcl,norun
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 type Nothing { | }
 
@@ -61,7 +61,7 @@ Four more rules follow from a declaration naming an enum type. First, the name i
 and not a value, so it cannot be used on its own:
 
 ```kcl,norun
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 type Fit { | Loose | Normal | Press }
 
@@ -73,7 +73,7 @@ chosen = Fit
 Second, a name can only be declared once in a file, whatever variants follow it:
 
 ```kcl,norun
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 type Fit { | Loose | Normal | Press }
 
@@ -86,7 +86,7 @@ Third, a declaration belongs at the top level, so it cannot sit inside a functio
 a block:
 
 ```kcl,norun
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 fn pick() {
   // Error:
@@ -102,7 +102,7 @@ chosen = pick()
 Fourth, the variants of one enum must have different names:
 
 ```kcl,norun
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 // Error:
 //   Duplicate variant `Loose` in enum `Fit`.
@@ -115,7 +115,7 @@ Once an enum is declared, its variants can be used like any other KCL value, suc
 a string or a number. Write the enum name, then `::`, then the variant:
 
 ```kcl
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 type Fit { | Loose | Normal | Press }
 
@@ -128,7 +128,7 @@ The name after `::` must be one of the variants in the declaration. Anything els
 fails, and the error lists the variants that do exist:
 
 ```kcl,norun
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 type Fit { | Loose | Normal | Press }
 
@@ -145,7 +145,7 @@ For example, this function works out the clearance between a hole and a shaft, t
 returns the fit it implies:
 
 ```kcl
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 type Fit { | Loose | Normal | Press }
 
@@ -174,7 +174,7 @@ Comparison is how you act on a variant. There is no matching construct in KCL, s
 `==` and `!=`, usually inside an `if`, do all the work:
 
 ```kcl
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 type Fit { | Loose | Normal | Press }
 
@@ -197,7 +197,7 @@ Both enums below declare a variant called `Loose`, and each compares fine agains
 itself:
 
 ```kcl
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 type Fit { | Loose | Normal | Press }
 type Tolerance { | Loose | Tight }
@@ -210,7 +210,7 @@ Comparing one against the other is an error — a shared variant name does not m
 enums the same type:
 
 ```kcl,norun
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 type Fit { | Loose | Normal | Press }
 type Tolerance { | Loose | Tight }
@@ -224,7 +224,7 @@ Comparing a variant with a value of another kind is an error for the same reason
 comparison below fails on its own; evaluation stops at the first one:
 
 ```kcl,norun
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 type Fit { | Loose | Normal | Press }
 
@@ -251,7 +251,7 @@ own. `fail` never returns a value, so it can sit in a branch of a function that
 otherwise returns a variant:
 
 ```kcl
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 type View { | Front | Top | Right | Isometric }
 
@@ -286,7 +286,7 @@ For example, in the code below `startView` is never assigned and execution stops
 that point:
 
 ```kcl,norun
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 type View { | Front | Top | Right | Isometric }
 
@@ -312,7 +312,7 @@ needs the angles those views stand for: an
 elevation above the horizon. The function below maps one to the other:
 
 ```kcl
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 type View { | Front | Top | Right | Isometric }
 
@@ -347,7 +347,7 @@ It is often useful to get the text of a variant's name. Write `: string` after a
 variant to convert it:
 
 ```kcl
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 type Fit { | Loose | Normal | Press }
 
@@ -365,7 +365,7 @@ An enum is a type, so a function can declare a parameter of that type. KCL then
 accepts only variants of that enum as the argument at each call:
 
 ```kcl
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 type Fit { | Loose | Normal | Press }
 
@@ -381,7 +381,7 @@ wants and the value it was given. Each call below fails on its own; evaluation s
 at the first one:
 
 ```kcl,norun
-@settings(kclVersion = "3.0-preview")
+@settings(kclVersion = 3.0)
 
 type Fit { | Loose | Normal | Press }
 type Tolerance { | Loose | Tight }

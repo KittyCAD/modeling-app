@@ -5,6 +5,7 @@ use std::sync::atomic::Ordering::Relaxed;
 use anyhow::Result;
 pub use engine_transport::EngineTransport;
 use indexmap::IndexMap;
+use kcmc::KclVersion;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kcmc::shared::Color;
@@ -75,7 +76,7 @@ pub struct EngineManager {
     // from the original native connection type.
     pub transport: Arc<Box<dyn EngineTransport>>,
     responses: ResponseInformation,
-    pending_errors: Arc<RwLock<Vec<String>>>,
+    pending_errors: Arc<RwLock<Vec<KclError>>>,
     socket_health: Arc<RwLock<SocketHealth>>,
     ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>>,
 
@@ -222,18 +223,29 @@ impl EngineManager {
         batch_context: &EngineBatchContext,
         id_generator: &mut IdGenerator,
         source_range: SourceRange,
+        kcl_version: Option<KclVersion>,
         geometry_only: bool,
     ) -> Result<(), crate::errors::KclError> {
         // Clear any batched commands leftover from previous scenes.
         self.clear_queues(batch_context).await;
 
-        self.batch_modeling_cmd(
-            batch_context,
-            id_generator.next_uuid(),
-            source_range,
-            &ModelingCmd::SceneClearAll(mcmd::SceneClearAll::default()),
-        )
-        .await?;
+        if let Some(kcl_version) = kcl_version {
+            self.batch_modeling_cmd(
+                batch_context,
+                id_generator.next_uuid(),
+                source_range,
+                &ModelingCmd::SetKclVersion(mcmd::SetKclVersion::builder().kcl_version(kcl_version).build()),
+            )
+            .await?;
+        } else {
+            self.batch_modeling_cmd(
+                batch_context,
+                id_generator.next_uuid(),
+                source_range,
+                &ModelingCmd::SceneClearAll(mcmd::SceneClearAll::default()),
+            )
+            .await?;
+        }
 
         // Flush the batch queue, so clear is run right away.
         // Otherwise the hooks below won't work.
@@ -354,7 +366,7 @@ impl EngineManager {
         Ok(())
     }
 
-    /// Re-run the command to apply the settings.
+    /// Apply graphics settings, if the engine is not CPU-only (geometry-only) mode.
     pub async fn reapply_settings(
         &self,
         batch_context: &EngineBatchContext,
@@ -366,6 +378,19 @@ impl EngineManager {
         if settings.geometry_only {
             return Ok(());
         }
+        self.apply_graphics_settings(batch_context, settings, source_range, id_generator, grid_scale_unit)
+            .await
+    }
+
+    /// Unconditionally apply graphics settings.
+    pub async fn apply_graphics_settings(
+        &self,
+        batch_context: &EngineBatchContext,
+        settings: &crate::ExecutorSettings,
+        source_range: SourceRange,
+        id_generator: &mut IdGenerator,
+        grid_scale_unit: GridScaleBehavior,
+    ) -> Result<(), crate::errors::KclError> {
         // Set the edge visibility.
         self.set_edge_visibility(batch_context, settings.highlight_edges, source_range, id_generator)
             .await?;

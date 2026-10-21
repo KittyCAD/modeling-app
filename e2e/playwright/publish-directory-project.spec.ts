@@ -284,13 +284,18 @@ test.describe('Aquarium publication', { tag: ['@desktop'] }, () => {
       .toContain(encodeURIComponent(movedMainFile))
 
     await expect.poll(() => apiCalls.creates.length).toBe(1)
-    await expect.poll(() => apiCalls.updates.length).toBeGreaterThanOrEqual(1)
-    expect(
-      apiCalls.updates.some(({ postData }) =>
-        postData.includes('A project published from a directory library.')
+    await expect
+      .poll(
+        () =>
+          apiCalls.updates.some(({ postData }) =>
+            postData.includes('A project published from a directory library.')
+          ),
+        { timeout: FLOW_TIMEOUT }
       )
-    ).toBe(true)
-    expect(apiCalls.publishes).toEqual([remoteProjectId])
+      .toBe(true)
+    await expect
+      .poll(() => apiCalls.publishes, { timeout: FLOW_TIMEOUT })
+      .toEqual([remoteProjectId])
     expect(await pathExists(sourceProjectPath)).toBe(false)
     expect(await pathExists(movedMainFile)).toBe(true)
 
@@ -381,12 +386,24 @@ async function readCloudSyncState(page: Page) {
 }
 
 async function clearCloudSyncState(page: Page) {
-  await page.evaluate(
-    () =>
-      new Promise<void>((resolve, reject) => {
-        const request = indexedDB.deleteDatabase('zds-opfs-cloud-sync')
-        request.onerror = () => reject(request.error)
-        request.onsuccess = () => resolve()
-      })
-  )
+  await expect
+    .poll(
+      async () => {
+        try {
+          await page.evaluate(
+            () =>
+              new Promise<void>((resolve, reject) => {
+                const request = indexedDB.deleteDatabase('zds-opfs-cloud-sync')
+                request.onerror = () => reject(request.error)
+                request.onsuccess = () => resolve()
+              })
+          )
+          return true
+        } catch {
+          return false
+        }
+      },
+      { timeout: FLOW_TIMEOUT }
+    )
+    .toBe(true)
 }

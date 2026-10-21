@@ -516,6 +516,8 @@ export function classifyConstraintSelection(
         return { selectionId, kind: 'arc', object }
       case 'Circle':
         return { selectionId, kind: 'circle', object }
+      case 'ControlPointSpline':
+        break
     }
   }
 

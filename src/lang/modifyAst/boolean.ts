@@ -50,6 +50,20 @@ function booleanInputKey(expr: Expr, pathIfPipe?: PathToNode): string {
       return `PipeSubstitution:${
         pathIfPipe ? stringifyPathToNode(pathIfPipe) : ''
       }`
+    case 'BinaryExpression':
+    case 'CallExpressionKw':
+    case 'ArrayExpression':
+    case 'ObjectExpression':
+    case 'FunctionExpression':
+    case 'PipeExpression':
+    case 'UnaryExpression':
+    case 'SketchBlock':
+    case 'TagDeclarator':
+    case 'ArrayRangeExpression':
+    case 'IfExpression':
+    case 'LabelledExpression':
+    case 'AscribedExpression':
+    case 'SketchVar':
     default:
       return JSON.stringify(expr)
   }
@@ -387,7 +401,8 @@ export function addSplit({
   const hasTools = Boolean(
     !mNodeToEdit &&
       tools &&
-      (tools.graphSelections.length > 0 || tools.otherSelections.length > 0)
+      ((tools.graphSelections?.length ?? 0) > 0 ||
+        (tools.otherSelections?.length ?? 0) > 0)
   )
   const selectionGroups: BooleanSelectionGroup[] = [
     { selections: targets, ...vars },

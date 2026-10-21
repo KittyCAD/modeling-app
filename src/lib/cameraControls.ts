@@ -61,6 +61,7 @@ export function mouseControlsToCameraSystem(
     // @ts-ignore: TS2678
     case 'autocad':
       return 'AutoCAD'
+    case undefined:
     default:
       return undefined
   }

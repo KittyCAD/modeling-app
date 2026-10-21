@@ -46,13 +46,13 @@ gaugeProfileSketch = sketch(on = XY) {
   vertical(lowerRightOuterEdge)
 
   horizontalDistance([
-  bottomOuterEdge.end,
-  bottomOuterEdge.start
-]) == gaugeDepth
+    bottomOuterEdge.end,
+    bottomOuterEdge.start
+  ]) == gaugeDepth
   verticalDistance([
-  lowerRightOuterEdge.end,
-  lowerRightOuterEdge.start
-]) == lowerCutoutStartY
+    lowerRightOuterEdge.end,
+    lowerRightOuterEdge.start
+  ]) == lowerCutoutStartY
 
   // Angled cutout profile.
   cutoutAngledEdge = line(start = [var 1.5in, var 0.19in], end = [var 0.5in, var 0.37in])
@@ -89,18 +89,18 @@ gaugeProfileSketch = sketch(on = XY) {
   horizontal(cutoutAngleReferenceEdge)
   vertical(cutoutLeftVerticalEdge)
   angleDimension(
-  lines = [
-    cutoutAngleReferenceEdge,
-    cutoutAngledEdge
-  ],
-  sector = 1,
-) == cutoutAngle
+    lines = [
+      cutoutAngleReferenceEdge,
+      cutoutAngledEdge
+    ],
+    sector = 1,
+  ) == cutoutAngle
 
   horizontalDistance([cutoutTopEdge.start, cutoutTopEdge.end]) == cutoutDepth
   verticalDistance([
-  rightCutoutConstructionEdge.end,
-  rightCutoutConstructionEdge.start
-]) == cutoutWidth
+    rightCutoutConstructionEdge.end,
+    rightCutoutConstructionEdge.start
+  ]) == cutoutWidth
   verticalDistance([leftOuterEdge.start, leftOuterEdge.end]) == gaugeWidth
   coincident([
     rightCutoutConstructionEdge.end,

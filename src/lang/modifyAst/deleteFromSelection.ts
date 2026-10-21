@@ -16,6 +16,7 @@ import {
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
+  type ResolvedGraphSelection,
   expandCap,
   expandPlane,
   expandWall,
@@ -88,7 +89,7 @@ function deleteUnusedPlaneOfInput(
 
 export async function deleteFromSelection(
   ast: Node<Program>,
-  selection: Selection,
+  selection: ResolvedGraphSelection,
   variables: VariableMap,
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType,
@@ -202,9 +203,21 @@ export async function deleteFromSelection(
   }
 
   // Below is all AST-based deletion logic
+  if (selection.artifact?.type === 'edgeCut') {
+    return deleteEdgeTreatment(astClone, selection, wasmInstance)
+  }
+
+  const selectedAstNode = getNodeFromPath<
+    VariableDeclarator | CallExpressionKw
+  >(ast, selection.codeRef.pathToNode, wasmInstance, [
+    'VariableDeclarator',
+    'CallExpressionKw',
+  ])
+  if (err(selectedAstNode)) return selectedAstNode
+
   const varDec = getNodeFromPath<VariableDeclarator | CallExpressionKw>(
     ast,
-    selection?.codeRef?.pathToNode,
+    selection.codeRef.pathToNode,
     wasmInstance,
     'VariableDeclarator'
   )
@@ -213,17 +226,20 @@ export async function deleteFromSelection(
     varDec.node.type === 'VariableDeclarator' ? varDec.node : null
   const varDecNodeInit = varDecNode?.init ?? null
   const selectedCallExpression =
-    varDecNodeInit?.type === 'CallExpressionKw'
-      ? varDecNodeInit
-      : varDec.node.type === 'CallExpressionKw'
-        ? varDec.node
-        : null
+    selectedAstNode.node.type === 'CallExpressionKw'
+      ? selectedAstNode.node
+      : varDecNodeInit?.type === 'CallExpressionKw'
+        ? varDecNodeInit
+        : varDec.node.type === 'CallExpressionKw'
+          ? varDec.node
+          : null
   const selectedCallName = selectedCallExpression?.callee.name.name ?? null
   const isSweepLikePathSelection =
     selection.artifact?.type === 'path' &&
     selectedCallName !== null &&
     ['extrude', 'revolve', 'sweep', 'loft', 'blend'].includes(selectedCallName)
-
+  const isSelectedCallExpression =
+    selectedAstNode.node.type === 'CallExpressionKw'
   if (varDecNodeInit?.type === 'PipeExpression') {
     const pipeBodyIndex = selection.codeRef.pathToNode.findIndex(
       ([key, kind]) => key === 'body' && kind === 'PipeExpression'
@@ -271,6 +287,7 @@ export async function deleteFromSelection(
   }
 
   if (
+    isSelectedCallExpression ||
     ((selection?.artifact?.type === 'wall' ||
       selection?.artifact?.type === 'cap') &&
       varDecNodeInit?.type === 'PipeExpression') ||
@@ -288,6 +305,7 @@ export async function deleteFromSelection(
     let extrudeNameToDelete = ''
     let pathToNode: PathToNode | null = null
     if (
+      !isSelectedCallExpression &&
       selection.artifact &&
       selection.artifact.type !== 'sweep' &&
       selection.artifact.type !== 'plane' &&
@@ -332,8 +350,8 @@ export async function deleteFromSelection(
       if (!pathToNode) return new Error('Could not find extrude variable')
     } else {
       pathToNode = selection.codeRef.pathToNode
-      if (varDecNode) {
-        extrudeNameToDelete = varDecNode.id.name
+      if (varDec.node.type === 'VariableDeclarator') {
+        extrudeNameToDelete = varDec.node.id.name
       } else if (varDec.node.type === 'CallExpressionKw') {
         const callExp = getNodeFromPath<CallExpressionKw>(
           astClone,
@@ -532,8 +550,6 @@ export async function deleteFromSelection(
     }
     // await prom
     return astClone
-  } else if (selection.artifact?.type === 'edgeCut') {
-    return deleteEdgeTreatment(astClone, selection, wasmInstance)
   } else if (varDecNodeInit?.type === 'PipeExpression') {
     const pipeBody = varDecNodeInit.body
     const doNotDeleteProfileIfItHasBeenExtruded = !(

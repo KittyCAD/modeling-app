@@ -4,6 +4,7 @@ import type { PlaneName } from '@rust/kcl-lib/bindings/PlaneName'
 import { type ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import {
   findOperationArtifact,
@@ -42,7 +43,6 @@ import {
   stdLibMap,
 } from '@src/lib/operations'
 import { defaultPlaneNameToKcl } from '@src/lib/planes'
-import { getSelectedDefaultPlane, selectSketchPlane } from '@src/lib/selections'
 import { err, isErr, reportRejection } from '@src/lib/trap'
 import { isArray, isOverlap, stripQuotes, uuidv4 } from '@src/lib/utils'
 import type { ComponentProps, ReactNode } from 'react'
@@ -93,6 +93,7 @@ import {
   keymapService,
 } from '@src/registry/contracts/keymap'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: feature-tree file opening (useNavigate).
 import { useNavigate } from 'react-router-dom'
 
 type Singletons = ReturnType<typeof useSingletons>
@@ -107,10 +108,6 @@ type SystemDeps = Pick<Singletons, 'kclManager'> & {
   rustContext: RustContext
 }
 
-// Keep automatic edit-time migration disabled until all feature-tree and
-// point-click edit flows support the new edge specifier syntax. Until then,
-// expose Z0006 only as an explicit lint action.
-//
 // IMPORTANT: Edit after auto-fix is only correct if auto-fix doesn't change the
 // operations. The migration can change the KCL, and we need to choose the
 // correct operation to edit.
@@ -118,7 +115,6 @@ type SystemDeps = Pick<Singletons, 'kclManager'> & {
 // may fail since operations don't have an identity that persists across
 // executions. Currently, we don't change the operations in an auto-fix, but
 // this seems brittle.
-const ENABLE_Z0006_AUTO_FIX_BEFORE_FEATURE_TREE_EDIT = false
 const UNRENDERED_EXECUTE_HOTKEY = 'mod+s'
 
 const Z0006_AUTO_FIX_BEFORE_EDIT_OPERATION_NAMES = new Set([
@@ -234,7 +230,7 @@ export const FeatureTreePaneContents = memo(() => {
   const selectOperation = useCallback(
     (sourceRange: SourceRange) => {
       sendSelectionEvent({
-        sourceRange: sourceRangeToUtf16(sourceRange, kclManager.code),
+        sourceRange,
         kclManager,
         modelingSend,
       })
@@ -927,7 +923,6 @@ async function prepareFeatureTreeEditCommand({
 
   let operationToEdit: Operation | undefined = operation
   if (
-    ENABLE_Z0006_AUTO_FIX_BEFORE_FEATURE_TREE_EDIT &&
     operation.type === 'StdLibCall' &&
     supportsZ0006AutoFixBeforeFeatureTreeEdit(operation)
   ) {
@@ -1616,9 +1611,13 @@ const DefaultPlanes = ({
   const { rustContext, sceneInfra, kclManager } = systemDeps
   const { state: modelingState, send } = useModelingContext()
   const sketchNoFace = modelingState.matches('Sketch no face')
-  const selectedDefaultPlaneId = getSelectedDefaultPlane(
-    modelingState.context.selectionRanges
-  )?.id
+  const selectedDefaultPlaneId =
+    modelingState.context.selectionRanges.otherSelections.find(
+      (selection) =>
+        typeof selection === 'object' &&
+        'id' in selection &&
+        'name' in selection
+    )?.id
 
   const onClickPlane = useCallback(
     (planeId: string) => {

@@ -1,8 +1,4 @@
-import {
-  defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
-  provide,
-} from '@kittycad/registry'
+import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 import {
   computed,
   effect,
@@ -12,7 +8,8 @@ import {
 import { useSignals } from '@preact/signals-react/runtime'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { Spinner } from '@src/components/Spinner'
-import type { KclManager, ZDSProject } from '@src/lang/KclManager'
+import type { KclManager } from '@src/lang/KclManager'
+import type { ZDSProject } from '@src/lib/projectSession'
 import type { BillingRegistryService } from '@src/lib/billing'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import { AreaType, type AreaTypeComponentProps } from '@src/lib/layout/types'
@@ -454,10 +451,8 @@ export const zookeeperRuntimeRegistryItem = defineRegistryItemFactory((ctx) => {
   })
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'zookeeper.runtime',
-      provides: [provide(layoutAreaLibraryValueSpec, areaLibrary)],
-      dispose: () => runtime.dispose(),
-    }),
+    id: 'zookeeper.runtime',
+    provides: [provide(layoutAreaLibraryValueSpec, areaLibrary)],
+    dispose: () => runtime.dispose(),
   }
 }, 'zookeeper.runtime')

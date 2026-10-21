@@ -1,7 +1,6 @@
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
   provideService,
 } from '@kittycad/registry'
 import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
@@ -14,16 +13,13 @@ export const createFileOperationsExtension = (backing: IZooDesignStudioFS) =>
     const fileOperations = createFileOperationsRuntime(backing)
 
     return {
-      model: fileOperations,
-      item: defineRuntimeRegistryItem({
-        id: 'file-operations-extension',
-        providesServices: [
-          provideService(fileOperationsService, fileOperations.operations),
-        ],
-        // The registry owns the mounted node; the Effect runtime owns and
-        // finalizes every scoped resource used by that node.
-        dispose: () => fileOperations.dispose(),
-      }),
+      id: 'file-operations-extension',
+      providesServices: [
+        provideService(fileOperationsService, fileOperations.operations),
+      ],
+      // The registry owns the mounted node; the Effect runtime owns and
+      // finalizes every scoped resource used by that node.
+      dispose: () => fileOperations.dispose(),
     }
   }, 'file-operations-extension')
 

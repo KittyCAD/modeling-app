@@ -18,12 +18,12 @@ description: Physical properties pattern_vase.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 24195722.99418781
+    "value": 24195722.84046695
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 115163.23934065616
+    "value": 115163.24877849688
   }
 }

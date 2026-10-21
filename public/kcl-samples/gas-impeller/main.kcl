@@ -45,9 +45,9 @@ hubAndBladeEnvelopeSketch = sketch(on = YZ) {
   coincident([shaftRadiusGuide.end, baseFloor.end])
   horizontal(shaftRadiusGuide)
   horizontalDistance([
-  shaftRadiusGuide.start,
-  shaftRadiusGuide.end
-]) == shaftBoreDiameter / 2
+    shaftRadiusGuide.start,
+    shaftRadiusGuide.end
+  ]) == shaftBoreDiameter / 2
   verticalDistance([shaftWall.start, shaftWall.end]) == impellerHeight
   horizontalDistance([hubTopLand.start, hubTopLand.end]) == shaftBoreDiameter / 3
 
@@ -157,9 +157,9 @@ hubAndBladeEnvelopeSketch = sketch(on = YZ) {
   vertical(bladeEnvelopeTipCenterlineGuide)
   horizontal(bladeEnvelopeTipRadiusGuide)
   horizontalDistance([
-  shaftRadiusGuide.start,
-  baseFloor.start
-]) == impellerDiameter / 2
+    shaftRadiusGuide.start,
+    baseFloor.start
+  ]) == impellerDiameter / 2
 
   hubShoulderRadiusGuide = line(start = [var 7.33mm, var 59mm], end = [var 7.33mm, var 60mm])
   coincident([
@@ -171,9 +171,9 @@ hubAndBladeEnvelopeSketch = sketch(on = YZ) {
     hubShoulderBlendArc.end
   ])
   verticalDistance([
-  hubShoulderRadiusGuide.end,
-  hubShoulderRadiusGuide.start
-]) == -1
+    hubShoulderRadiusGuide.end,
+    hubShoulderRadiusGuide.start
+  ]) == -1
 }
 
 // Revolved bodies from the shared sketch
@@ -237,17 +237,17 @@ bladeCutterSketch = sketch(on = XY) {
   vertical(bladeCutterOuterEdge)
   vertical(bladeCutterInnerEdge)
   horizontalDistance([
-  bladeCutterInnerRadiusGuide.start,
-  bladeCutterInnerRadiusGuide.end
-]) == shaftBoreDiameter / 2
+    bladeCutterInnerRadiusGuide.start,
+    bladeCutterInnerRadiusGuide.end
+  ]) == shaftBoreDiameter / 2
   horizontalDistance([
-  bladeCutterBottomEdge.start,
-  bladeCutterBottomEdge.end
-]) == impellerDiameter / 2
+    bladeCutterBottomEdge.start,
+    bladeCutterBottomEdge.end
+  ]) == impellerDiameter / 2
   verticalDistance([
-  bladeCutterOuterEdge.start,
-  bladeCutterOuterEdge.end
-]) == bladeSectionThickness
+    bladeCutterOuterEdge.start,
+    bladeCutterOuterEdge.end
+  ]) == bladeSectionThickness
 }
 
 // Blade cutter solid

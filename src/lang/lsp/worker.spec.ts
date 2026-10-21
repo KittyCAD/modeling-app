@@ -1,9 +1,10 @@
-import {
-  KCL_CEK_EXECUTOR_FEATURE_FLAG,
-  KCL_NEW_LEXER_PARSER_FEATURE_FLAG,
-} from '@src/lib/constants'
-import { kclRuntimeFlagsFromUserFeatures } from '@src/lib/kclRuntimeFlags'
+import type { KclRuntimeFlags } from '@rust/kcl-lib/bindings/KclRuntimeFlags'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+
+type TestRuntimeFlags = KclRuntimeFlags & {
+  use_new_parser: 'Off'
+  test_flag: 'Off' | 'On'
+}
 
 const originalOnmessage = globalThis.onmessage
 
@@ -64,47 +65,50 @@ describe('KCL LSP worker initialization', () => {
     vi.unstubAllGlobals()
   })
 
-  it('installs runtime flags before starting the LSP', async () => {
-    mocks.order.length = 0
-    vi.clearAllMocks()
-    vi.stubGlobal(
-      'fetch',
-      vi.fn(async () => ({
-        arrayBuffer: async () => new ArrayBuffer(0),
-      }))
-    )
-    await import('@src/lang/lsp/worker')
-    const workerGlobal = globalThis as typeof globalThis & {
-      onmessage: (event: MessageEvent) => void
-    }
-    const kclRuntimeFlags = kclRuntimeFlagsFromUserFeatures({
-      has: (featureFlagId, defaultValue) =>
-        featureFlagId === KCL_CEK_EXECUTOR_FEATURE_FLAG
-          ? true
-          : featureFlagId === KCL_NEW_LEXER_PARSER_FEATURE_FLAG
-            ? false
-            : defaultValue,
-    })
+  it.each(['On', 'Off'] as const)(
+    'installs the payload with the test flag %s before starting the LSP',
+    async (testFlag) => {
+      // Reload the worker so each case installs its own message handler.
+      vi.resetModules()
+      mocks.order.length = 0
+      vi.clearAllMocks()
+      vi.stubGlobal(
+        'fetch',
+        vi.fn(async () => ({
+          arrayBuffer: async () => new ArrayBuffer(0),
+        }))
+      )
+      await import('@src/lang/lsp/worker')
+      const workerGlobal = globalThis as typeof globalThis & {
+        onmessage: (event: MessageEvent) => void
+      }
+      const kclRuntimeFlags: TestRuntimeFlags = {
+        use_new_parser: 'Off',
+        test_flag: testFlag,
+      }
 
-    workerGlobal.onmessage(
-      new MessageEvent('message', {
-        data: {
-          worker: 'kcl',
-          eventType: 'init',
-          eventData: {
-            wasmUrl: '/kcl.wasm',
-            token: 'token',
-            apiBaseUrl: 'https://api.example.com',
-            kclRuntimeFlags,
+      workerGlobal.onmessage(
+        new MessageEvent('message', {
+          data: {
+            worker: 'kcl',
+            eventType: 'init',
+            eventData: {
+              wasmUrl: '/kcl.wasm',
+              token: 'token',
+              apiBaseUrl: 'https://api.example.com',
+              kclRuntimeFlags,
+            },
           },
-        },
-      })
-    )
+        })
+      )
 
-    await vi.waitFor(() => {
-      expect(mocks.run).toHaveBeenCalledTimes(1)
-    })
-    expect(mocks.order).toEqual(['wasm-init', 'set-flags', 'lsp-run'])
-    expect(mocks.setFlags).toHaveBeenCalledWith(JSON.stringify(kclRuntimeFlags))
-  })
+      await vi.waitFor(() => {
+        expect(mocks.run).toHaveBeenCalledTimes(1)
+      })
+      expect(mocks.order).toEqual(['wasm-init', 'set-flags', 'lsp-run'])
+      expect(mocks.setFlags).toHaveBeenCalledWith(
+        JSON.stringify(kclRuntimeFlags)
+      )
+    }
+  )
 })

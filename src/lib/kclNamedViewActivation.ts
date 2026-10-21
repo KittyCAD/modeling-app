@@ -6,7 +6,6 @@ import toast from 'react-hot-toast'
 import type { KclManager } from '@src/lang/KclManager'
 import type { KclNamedView } from '@src/lang/std/kclNamedViews'
 import {
-  KCL_DEFAULT_VIEW_NAME,
   engineIdsForVisibility,
   getViewUniverse,
   listNamedViews,
@@ -15,22 +14,16 @@ import {
 } from '@src/lang/std/kclNamedViews'
 import type { ExecState } from '@src/lang/wasm'
 import { getAllOperations } from '@src/lang/wasm'
-import { NAMED_VIEWS_UI_FEATURE_FLAG } from '@src/lib/constants'
 import { applyNamedViewCamera } from '@src/lib/kclNamedViewCamera'
 import { hiddenArtifactIdsFromOperations } from '@src/lib/operations'
 import { err, reportRejection } from '@src/lib/trap'
+import { getKclDefaultViewName } from '@src/lib/wasm_lib_wrapper'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { StateFrom } from 'xstate'
 
 export type ActivationTarget =
   | { kind: 'kclDefault' } // `kclDefault` is computed, so it carries no artifact.
   | { kind: 'declared'; view: KclNamedView }
-
-export function hasNamedViewsUi(): boolean {
-  return (
-    window.app?.userFeatures.has(NAMED_VIEWS_UI_FEATURE_FLAG, false) ?? false
-  )
-}
 
 export function isSketchSessionOpen(
   state: StateFrom<typeof modelingMachine> | null | undefined
@@ -94,7 +87,7 @@ export async function activateNamedView({
   target: ActivationTarget
   kclManager: KclManager
 }): Promise<void> {
-  if (!hasNamedViewsUi() || !kclManager.engineCommandManager.isReady) {
+  if (!kclManager.engineCommandManager.isReady) {
     return
   }
 
@@ -187,15 +180,17 @@ function installReapplyEffect(kclManager: KclManager): void {
     return
   }
 
-  let lastSeenGeneration = kclManager.engineSceneGenerationSignal.peek()
+  let lastAppliedGeneration = kclManager.engineSceneGenerationSignal.peek()
 
   stopReapplyEffect = effect(() => {
     const generation = kclManager.engineSceneGenerationSignal.value
-    if (generation === lastSeenGeneration) {
+    // reapplyActiveView does nothing while a sketch is open, so wait for it to close.
+    const sketchOpen = isSketchSessionOpen(kclManager.modelingStateSignal.value)
+    if (generation === lastAppliedGeneration || sketchOpen) {
       return
     }
 
-    lastSeenGeneration = generation
+    lastAppliedGeneration = generation
     reapplyActiveView(kclManager).catch(reportRejection)
   })
 }
@@ -221,7 +216,8 @@ async function reapplyActiveView(kclManager: KclManager): Promise<void> {
 }
 
 export async function reapplyActiveViewAfterReconnect(
-  kclManager: KclManager
+  kclManager: KclManager,
+  { restoreCamera = true }: { restoreCamera?: boolean } = {}
 ): Promise<boolean> {
   const context = reapplyContext(kclManager)
   if (context === null) {
@@ -231,7 +227,12 @@ export async function reapplyActiveViewAfterReconnect(
   const { active, execState, view } = context
 
   if (view === undefined) {
-    return fallBackToKclDefault({ active, execState, kclManager })
+    return fallBackToKclDefault({
+      active,
+      execState,
+      kclManager,
+      restoreCamera,
+    })
   }
 
   await applyVisibility({
@@ -239,6 +240,9 @@ export async function reapplyActiveViewAfterReconnect(
     execState,
     kclManager,
   })
+  if (!restoreCamera) {
+    return false
+  }
   await applyNamedViewCamera({
     camera: view.artifact.camera,
     sceneInfra: kclManager.sceneInfra,
@@ -257,7 +261,6 @@ function reapplyContext(kclManager: KclManager): {
 
   if (
     active === null ||
-    !hasNamedViewsUi() ||
     !kclManager.engineCommandManager.isReady ||
     kclManager.errors.length > 0 ||
     isSketchSessionOpen(kclManager.modelingState)
@@ -293,21 +296,25 @@ async function fallBackToKclDefault({
   active,
   execState,
   kclManager,
+  restoreCamera = true,
 }: {
   active: ActiveView
   execState: ExecState
   kclManager: KclManager
+  restoreCamera?: boolean
 }): Promise<boolean> {
   await applyVisibility({
     target: { kind: 'kclDefault' },
     execState,
     kclManager,
   })
-  const restored = await restorePreActivationCamera(kclManager)
+  const restored = restoreCamera
+    ? await restorePreActivationCamera(kclManager)
+    : false
   activeViewSignal.value = null
 
   toast.error(
-    `The view "${active.name}" is no longer in this program. Showing ${KCL_DEFAULT_VIEW_NAME}.`
+    `The view "${active.name}" is no longer in this program. Showing ${getKclDefaultViewName()}.`
   )
 
   return restored

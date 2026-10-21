@@ -32,6 +32,24 @@ dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
 export const token =
   process.env.VITE_ZOO_API_TOKEN || process.env.VITE_KITTYCAD_API_TOKEN || ''
 
+export async function expectRenderedDiagnosticText(
+  diagnostic: Locator,
+  text: string,
+  options?: { timeout?: number }
+) {
+  await expect(diagnostic).toBeVisible(options)
+  await expect
+    .poll(
+      async () =>
+        (await diagnostic.innerText())
+          .replace(/\r\n?/g, '\n')
+          .replace(/\n{2,}/g, '\n\n')
+          .trim(),
+      options
+    )
+    .toBe(text)
+}
+
 /** A string version of a RegExp to get a number that may include a decimal point */
 export const NUMBER_REGEXP = '((-)?\\d+(\\.\\d+)?)'
 
@@ -107,10 +125,10 @@ async function waitForPageLoad(page: Page) {
   })
 }
 
-async function waitForHomeLoad(page: Page) {
-  await expect(page.getByTestId('home-section')).toBeVisible({
-    timeout: 20_000,
-  })
+async function waitForAppLoad(page: Page) {
+  const home = page.getByTestId('home-section')
+  const modelingScene = page.getByRole('button', { name: 'Start Sketch' })
+  await expect(home.or(modelingScene)).toBeVisible({ timeout: 20_000 })
 }
 
 export async function waitForWebKitBillingToSettle(page: Page) {
@@ -151,6 +169,12 @@ export async function sendCustomCmd(page: Page, cmd: EngineCommand) {
   await expect(page.getByTestId('custom-cmd-input')).toHaveValue(json)
   await page.getByTestId('custom-cmd-send-button').scrollIntoViewIfNeeded()
   await page.getByTestId('custom-cmd-send-button').click()
+}
+
+export async function sendSceneCommand(page: Page, cmd: EngineCommand) {
+  await page.evaluate(async (cmd) => {
+    await window.engineCommandManager.sendSceneCommand(cmd)
+  }, cmd)
 }
 
 async function clearCommandLogs(page: Page) {
@@ -423,12 +447,12 @@ async function waitForAuthAndLsp(page: Page) {
     if (token) {
       // Vercel is external to Playwright, so the token is provided in the URL
       await page.goto(`/?${VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM}=${token}`)
-      await waitForHomeLoad(page)
+      await waitForAppLoad(page)
     }
   }
 
   await page.goto('/')
-  await waitForHomeLoad(page)
+  await waitForAppLoad(page)
   return waitForLspPromise
 }
 
@@ -1383,20 +1407,15 @@ export async function doAndWaitForImageDiff(
         return actualDiffCount > diffCount
       }
 
-      // run isImageDiff every 50ms until it returns true or 5 seconds have passed (100 times)
-      let count = 0
-      const interval = setInterval(() => {
-        ;(async () => {
-          count++
-          if (await isImageDiff()) {
-            clearInterval(interval)
-            resolve(true)
-          } else if (count > 100) {
-            clearInterval(interval)
-            resolve(false)
-          }
-        })().catch(reportRejection)
-      }, 50)
+      // Run sequentially so slow screenshots do not overlap and starve Electron.
+      for (let count = 0; count <= 100; count++) {
+        if (await isImageDiff()) {
+          resolve(true)
+          return
+        }
+        await new Promise((resolve) => setTimeout(resolve, 50))
+      }
+      resolve(false)
     })().catch(reportRejection)
   })
 }

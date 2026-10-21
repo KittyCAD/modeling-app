@@ -1,4 +1,5 @@
 use indexmap::IndexMap;
+use kcl_error::ModuleId;
 use kcl_error::SourceRange;
 use parse_display::Display;
 use parse_display::FromStr;
@@ -304,7 +305,8 @@ pub struct Segment {
 pub struct Sweep {
     pub id: ArtifactId,
     pub sub_type: SweepSubType,
-    pub path_id: ArtifactId,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub path_id: Option<ArtifactId>,
     pub surface_ids: Vec<ArtifactId>,
     pub edge_ids: Vec<ArtifactId>,
     pub code_ref: CodeRef,
@@ -520,7 +522,12 @@ pub enum SweepEdgeSubType {
 pub struct EdgeCut {
     pub id: ArtifactId,
     pub sub_type: EdgeCutSubType,
-    pub consumed_edge_id: ArtifactId,
+    /// Index of the source selector in an `edges` argument, when this edge cut
+    /// was created from an edge-reference command.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source_selector_index: Option<usize>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub consumed_edge_id: Option<ArtifactId>,
     pub edge_ids: Vec<ArtifactId>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub surface_id: Option<ArtifactId>,
@@ -596,6 +603,10 @@ pub struct NamedViewArtifact {
     /// The display name the author gave the view. Required, and unique among
     /// the views declared by the same module.
     pub name: String,
+    /// Defining module id -- the module that calls `view::named`.
+    // TODO: Expose this field when TypeScript adopts the Rust named-view resolver.
+    #[ts(skip)]
+    pub declaring_module_id: ModuleId,
     pub camera: ArtifactCameraView,
     /// Whether objects start visible or hidden, which decides which of the two
     /// lists below can act.
