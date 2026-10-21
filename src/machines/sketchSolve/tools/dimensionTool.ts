@@ -592,17 +592,19 @@ export function buildDimensionDistanceConstraint(
       distanceContext.point1.point,
       distanceContext.point0.point
     )
-    distance = roundOff(
+    const signedDistance =
       type === 'HorizontalDistance'
         ? delta[0]
         : type === 'VerticalDistance'
           ? delta[1]
           : length2d(delta)
-    )
-    constraintSegments = [
-      toConstraintSegment(distanceContext.point0.id),
-      toConstraintSegment(distanceContext.point1.id),
-    ]
+    distance = roundOff(Math.abs(signedDistance))
+    const point0 = toConstraintSegment(distanceContext.point0.id)
+    const point1 = toConstraintSegment(distanceContext.point1.id)
+    // HorizontalDistance and VerticalDistance are signed (second - first).
+    // Order the points so the distance is positive regardless of click order.
+    constraintSegments =
+      signedDistance < 0 ? [point1, point0] : [point0, point1]
   }
 
   return {

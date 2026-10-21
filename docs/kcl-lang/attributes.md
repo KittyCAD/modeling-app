@@ -19,7 +19,16 @@ Named and unnamed attributes may take a parenthesized list of arguments (like a 
 
 ## Named attributes
 
-The `@settings` attribute affects the current file and accepts the following arguments: `defaultLengthUnit`, `defaultAngleUnit`, and `kclVersion`. See [settings](/docs/kcl-lang/settings) for details.
+The `@settings` attribute accepts the following arguments in KCL 3.0:
+
+- `defaultLengthUnit`: the file's default length unit.
+- `experimentalFeatures`: the file's policy for experimental features.
+- `kclVersion`: the language version; the entry point selects it for the whole program.
+
+See [settings](/docs/kcl-lang/settings) for details.
+
+> **NOTE** `defaultAngleUnit` has been removed in KCL 3.0. Use explicit angle suffixes,
+such as `180deg` or `3.14rad`, instead.
 
 The `@no_std` attribute affects the current file, takes no arguments, and causes the standard library to not be implicitly available. It can still be used by being explicitly imported.
 

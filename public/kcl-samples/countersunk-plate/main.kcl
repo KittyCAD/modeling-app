@@ -108,9 +108,9 @@ plateSketch = sketch(on = XY) {
   horizontal(rightSpacingGuide)
   equalLength([leftSpacingGuide, rightSpacingGuide])
   horizontalDistance([
-  leftSpacingGuide.start,
-  rightSpacingGuide.end
-]) == boltSpacing
+    leftSpacingGuide.start,
+    rightSpacingGuide.end
+  ]) == boltSpacing
 
   radius(leftEndArc) == endLobeRadius
   radius(rightEndArc) == endLobeRadius

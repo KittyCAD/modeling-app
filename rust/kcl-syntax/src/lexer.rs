@@ -4,6 +4,7 @@ use std::ops::Range;
 
 use logos::Logos;
 
+use crate::keywords::keyword_kind;
 use crate::syntax_kind::SyntaxKind;
 
 /// Lossless tokenization of a KCL source string.
@@ -101,10 +102,8 @@ impl<'a> Token<'a> {
 enum RawTokenKind {
     #[regex(r"[ \t\n\r]+")]
     Whitespace,
-    // A closed string may span newlines (KCL supports multiline strings), matching
-    // the legacy tokeniser: content is any char except the quote or backslash, or a
-    // backslash-escape of any char including a newline. Note the UnterminatedString
-    // patterns below deliberately still stop at a line boundary for recovery.
+    // - Closed strings may span line boundaries.
+    // - Unterminated strings recover at the next line boundary.
     #[regex(r#""([^"\\]|\\[\s\S])*""#)]
     #[regex(r#"'([^'\\]|\\[\s\S])*'"#)]
     String,
@@ -220,7 +219,7 @@ pub fn lex(source: &str) -> LexedSource<'_> {
             Ok(RawTokenKind::DoublePeriodLessThan) => SyntaxKind::DoublePeriodLessThan,
             Ok(RawTokenKind::DoublePeriod) => SyntaxKind::DoublePeriod,
             Ok(RawTokenKind::DoubleColon) => SyntaxKind::DoubleColon,
-            Ok(RawTokenKind::Word) => keyword_or_word(text),
+            Ok(RawTokenKind::Word) => keyword_kind(text).unwrap_or(SyntaxKind::Word),
             Ok(RawTokenKind::GtEq) => SyntaxKind::GtEq,
             Ok(RawTokenKind::LtEq) => SyntaxKind::LtEq,
             Ok(RawTokenKind::EqEq) => SyntaxKind::EqEq,
@@ -262,42 +261,6 @@ pub fn lex(source: &str) -> LexedSource<'_> {
     }
 
     LexedSource { source, tokens }
-}
-
-fn keyword_or_word(text: &str) -> SyntaxKind {
-    match text {
-        "if" => SyntaxKind::IfKw,
-        "else" => SyntaxKind::ElseKw,
-        "for" => SyntaxKind::ForKw,
-        "while" => SyntaxKind::WhileKw,
-        "return" => SyntaxKind::ReturnKw,
-        "break" => SyntaxKind::BreakKw,
-        "continue" => SyntaxKind::ContinueKw,
-        "fn" => SyntaxKind::FnKw,
-        "let" => SyntaxKind::LetKw,
-        "mut" => SyntaxKind::MutKw,
-        "as" => SyntaxKind::AsKw,
-        "loop" => SyntaxKind::LoopKw,
-        "true" => SyntaxKind::TrueKw,
-        "false" => SyntaxKind::FalseKw,
-        "nil" => SyntaxKind::NilKw,
-        "and" => SyntaxKind::AndKw,
-        "or" => SyntaxKind::OrKw,
-        "not" => SyntaxKind::NotKw,
-        "var" => SyntaxKind::VarKw,
-        "const" => SyntaxKind::ConstKw,
-        "import" => SyntaxKind::ImportKw,
-        "use" => SyntaxKind::UseKw,
-        "export" => SyntaxKind::ExportKw,
-        "type" => SyntaxKind::TypeKw,
-        "interface" => SyntaxKind::InterfaceKw,
-        "new" => SyntaxKind::NewKw,
-        "self" => SyntaxKind::SelfKw,
-        "record" => SyntaxKind::RecordKw,
-        "struct" => SyntaxKind::StructKw,
-        "object" => SyntaxKind::ObjectKw,
-        _ => SyntaxKind::Word,
-    }
 }
 
 fn block_comment(lexer: &mut logos::Lexer<'_, RawTokenKind>) {

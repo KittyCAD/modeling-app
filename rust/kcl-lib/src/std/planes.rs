@@ -1,5 +1,6 @@
 //! Standard library plane helpers.
 
+use kcl_api::SourceRef;
 use kcl_api::UnitLength;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
@@ -22,7 +23,6 @@ use crate::execution::Plane;
 use crate::execution::PlaneInfo;
 use crate::execution::PlaneKind;
 use crate::execution::types::RuntimeType;
-use crate::front::SourceRef;
 use crate::std::Args;
 use crate::std::faces::FaceSpecifier;
 
@@ -167,9 +167,9 @@ pub(crate) async fn inner_plane_of(
     let plane_info = plane_info.make_right_handed();
 
     let plane_object_id = exec_state.next_object_id();
-    let plane_object = crate::front::Object {
+    let plane_object = kcl_api::Object {
         id: plane_object_id,
-        kind: crate::front::ObjectKind::Plane(crate::front::Plane::Object(plane_object_id)),
+        kind: kcl_api::ObjectKind::Plane(kcl_api::Plane::Object(plane_object_id)),
         label: Default::default(),
         comments: Default::default(),
         artifact_id: ArtifactId::new(plane_id),
@@ -206,7 +206,7 @@ async fn inner_offset_plane(
     let mut info = PlaneInfo::try_from(plane)?;
 
     let normal = info.x_axis.axes_cross_product(&info.y_axis);
-    info.origin += normal * offset.to_length_units(info.origin.units.unwrap_or(UnitLength::Millimeters));
+    info.origin += normal * offset.unwrap_to_length_units(info.origin.units.unwrap_or(UnitLength::Millimeters));
 
     let id = exec_state.next_uuid();
     let mut plane = Plane {
@@ -233,9 +233,9 @@ async fn make_offset_plane_in_engine(
     args: &Args,
 ) -> Result<(), KclError> {
     let plane_object_id = exec_state.next_object_id();
-    let plane_object = crate::front::Object {
+    let plane_object = kcl_api::Object {
         id: plane_object_id,
-        kind: crate::front::ObjectKind::Plane(crate::front::Plane::Object(plane_object_id)),
+        kind: kcl_api::ObjectKind::Plane(kcl_api::Plane::Object(plane_object_id)),
         label: Default::default(),
         comments: Default::default(),
         artifact_id: plane.artifact_id,

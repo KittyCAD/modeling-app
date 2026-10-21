@@ -18,12 +18,12 @@ description: Physical properties hex-nut.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 718.7226708254002
+    "value": 718.7224470328601
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 0.7719561595139387
+    "value": 0.7719556606537262
   }
 }

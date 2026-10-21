@@ -52,9 +52,9 @@ handleProfile = sketch(on = YZ) {
   tangent([returnEdge, heelArc])
   equalLength([base, topFace])
   distance([
-  arcCenterGuide.start,
-  arcCenterGuide.end
-]) == stockThickness + bendRadius
+    arcCenterGuide.start,
+    arcCenterGuide.end
+  ]) == stockThickness + bendRadius
   radius(frontBend) == bendRadius
   horizontalDistance([base.start, base.end]) == handleLength
   verticalDistance([frontFace.start, frontFace.end]) == stockThickness
@@ -151,8 +151,10 @@ hide(stem01Sketch)
 stem01 = extrude(stem01Region, length = bitLength, tagEnd = $capEnd004)
   |> chamfer(
        length = bitSize01 / 3,
-       tags = [
-         getCommonEdge(faces = [stem01Region.tags.circle1, capEnd004])
+       edges = [
+         {
+           sideFaces = [stem01Region.tags.circle1, capEnd004]
+         }
        ],
      )
 
@@ -206,13 +208,13 @@ grip01Sketch = sketch(on = offsetPlane(XZ, offset = firstBitAxisOffset + 16)) {
   horizontal(innerRadiusGuide)
   distance([centerGuide.start, centerGuide.end]) == firstBitAxisY
   horizontalDistance([
-  outerRadiusGuide.start,
-  outerRadiusGuide.end
-]) == gripOuterRadius
+    outerRadiusGuide.start,
+    outerRadiusGuide.end
+  ]) == gripOuterRadius
   horizontalDistance([
-  innerRadiusGuide.start,
-  innerRadiusGuide.end
-]) == bitSize01
+    innerRadiusGuide.start,
+    innerRadiusGuide.end
+  ]) == bitSize01
 }
 grip01Region = region(segments = [grip01Sketch.outerCircle])
 hide(grip01Sketch)
@@ -225,15 +227,19 @@ grip01 = extrude(
 )
   |> fillet(
        radius = 1,
-       tags = [
-         getCommonEdge(faces = [
-           grip01Region.tags.outerCircle,
-           capEnd005
-         ]),
-         getCommonEdge(faces = [
-           grip01Region.tags.outerCircle,
-           capStart003
-         ])
+       edges = [
+         {
+           sideFaces = [
+             grip01Region.tags.outerCircle,
+             capEnd005
+           ]
+         },
+         {
+           sideFaces = [
+             grip01Region.tags.outerCircle,
+             capStart003
+           ]
+         }
        ],
      )
   |> appearance(color = "#af7b23")
@@ -273,8 +279,10 @@ hide(stem02Sketch)
 stem02 = extrude(stem02Region, length = bitLength, tagEnd = $capEnd003)
   |> chamfer(
        length = bitSize02 / 3,
-       tags = [
-         getCommonEdge(faces = [stem02Region.tags.circle1, capEnd003])
+       edges = [
+         {
+           sideFaces = [stem02Region.tags.circle1, capEnd003]
+         }
        ],
      )
 
@@ -328,13 +336,13 @@ grip02Sketch = sketch(on = offsetPlane(XY, offset = -3)) {
   horizontal(innerRadiusGuide)
   distance([centerGuide.start, centerGuide.end]) == handleLength
   horizontalDistance([
-  outerRadiusGuide.start,
-  outerRadiusGuide.end
-]) == gripOuterRadius
+    outerRadiusGuide.start,
+    outerRadiusGuide.end
+  ]) == gripOuterRadius
   horizontalDistance([
-  innerRadiusGuide.start,
-  innerRadiusGuide.end
-]) == bitSize02
+    innerRadiusGuide.start,
+    innerRadiusGuide.end
+  ]) == bitSize02
 }
 grip02Region = region(segments = [grip02Sketch.outerCircle])
 hide(grip02Sketch)
@@ -347,15 +355,19 @@ grip02 = extrude(
 )
   |> fillet(
        radius = 1,
-       tags = [
-         getCommonEdge(faces = [
-           grip02Region.tags.outerCircle,
-           capStart002
-         ]),
-         getCommonEdge(faces = [
-           grip02Region.tags.outerCircle,
-           capEnd002
-         ])
+       edges = [
+         {
+           sideFaces = [
+             grip02Region.tags.outerCircle,
+             capStart002
+           ]
+         },
+         {
+           sideFaces = [
+             grip02Region.tags.outerCircle,
+             capEnd002
+           ]
+         }
        ],
      )
   |> appearance(color = "#23af93")

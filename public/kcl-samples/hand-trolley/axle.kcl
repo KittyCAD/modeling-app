@@ -34,11 +34,19 @@ grate = extrude(
 )
   |> fillet(
        radius = 1,
-       tags = [
-         getCommonEdge(faces = [region001.tags.line5, capStart001]),
-         getCommonEdge(faces = [region001.tags.line1, capEnd001]),
-         getCommonEdge(faces = [region001.tags.line5, capEnd001]),
-         getCommonEdge(faces = [region001.tags.line1, capStart001])
+       edges = [
+         {
+           sideFaces = [region001.tags.line5, capStart001]
+         },
+         {
+           sideFaces = [region001.tags.line1, capEnd001]
+         },
+         {
+           sideFaces = [region001.tags.line5, capEnd001]
+         },
+         {
+           sideFaces = [region001.tags.line1, capStart001]
+         }
        ],
      )
 

@@ -1,6 +1,6 @@
 /// Named views: cameras and visibility sets defined in KCL.
 ///
-/// This module requires KCL 3.0-preview or later.
+/// This module requires KCL 3.0 or later.
 ///
 /// A named view pairs a camera with a set of visible objects, so consumers
 /// such as the modeling app and STEP export can reproduce it. Build a camera by
@@ -98,7 +98,7 @@ export type NamedView
 /// resolve. A `target` is a point, so its coordinates may be negative.
 ///
 /// ```kcl,norun
-/// @settings(kclVersion = "3.0-preview")
+/// @settings(kclVersion = 3.0)
 ///
 /// isoView = view::oriented(view::Orientation::Isometric)
 ///
@@ -154,7 +154,7 @@ export fn oriented(
 /// resolve. A `target` is a point, so its coordinates may be negative.
 ///
 /// ```kcl,norun
-/// @settings(kclVersion = "3.0-preview")
+/// @settings(kclVersion = 3.0)
 ///
 /// overheadView = view::directed([0, 1, -2])
 ///
@@ -259,7 +259,7 @@ export fn directed(
 /// original `planeOf()` result remains unsupported.
 ///
 /// ```kcl,norun
-/// @settings(kclVersion = "3.0-preview")
+/// @settings(kclVersion = 3.0)
 ///
 /// // Two bodies to look at: a plate, and a boss standing on it. Declaring a
 /// // view never changes what a program builds, so this part is ordinary KCL.

@@ -13,6 +13,7 @@ const overdueBalance = {
   stable_api_credits_remaining: 0,
   stable_api_credits_remaining_monetary_value: 0,
   total_due: 14.75,
+  amount_due_after_credits: 14.75,
   updated_at: '2026-01-02T21:57:20.048Z',
 } satisfies CustomerBalance
 
@@ -37,7 +38,7 @@ const meta = {
     allowance: 20,
     userPaymentBalance: {
       ...overdueBalance,
-      total_due: 0,
+      amount_due_after_credits: 0,
       monthly_api_credits_refresh_at: new Date(
         Date.now() + 3.5 * 86_400_000
       ).toISOString(),

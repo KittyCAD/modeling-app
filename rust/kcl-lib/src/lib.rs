@@ -57,6 +57,8 @@ macro_rules! eprint {
 static ALLOC: dhat::Alloc = dhat::Alloc;
 
 pub mod collections;
+#[cfg(test)]
+mod csg_test_fixtures;
 mod docs;
 mod engine;
 mod errors;
@@ -70,6 +72,7 @@ pub mod lint;
 mod log;
 mod lsp_types;
 mod modules;
+pub mod named_views;
 mod parsing;
 mod project;
 mod runtime_flags;
@@ -118,7 +121,7 @@ pub mod lsp_support {
         pub use crate::execution::MockConfig;
 
         pub mod cache {
-            pub use crate::execution::cache::read_old_memory_var;
+            pub use crate::execution::cache::Cache;
         }
 
         pub mod typed_path {
@@ -149,7 +152,6 @@ pub mod lsp_support {
         }
 
         pub mod token {
-            pub use crate::parsing::token::LexerMode;
             pub use crate::parsing::token::RESERVED_WORDS;
             pub use crate::parsing::token::TokenStream;
             pub use crate::parsing::token::lex;
@@ -176,6 +178,7 @@ pub use errors::KclErrorWithOutputs;
 pub use errors::Report;
 pub use errors::ReportWithOutputs;
 pub use errors::render_compilation_issue_miette;
+pub use execution::Cache;
 pub use execution::ConstraintKind;
 pub use execution::EdgeRefactorMeta;
 pub use execution::EnvironmentRef;
@@ -195,8 +198,7 @@ pub use execution::RefactorMetadata;
 pub use execution::SegmentDragAnchor;
 pub use execution::SketchConstraintReport;
 pub use execution::SketchConstraintStatus;
-pub use execution::bust_cache;
-pub use execution::clear_mem_cache;
+pub use execution::kcl_value::is_kcl_version_available;
 pub use execution::typed_path::TypedPath;
 pub use fs::FileSystem;
 pub use fs::FileSystemHandle;
@@ -275,42 +277,70 @@ pub mod pretty {
     pub use crate::fmt::format_number_literal;
     pub use crate::fmt::format_number_value;
     pub use crate::fmt::human_display_number;
-    pub use crate::parsing::token::NumericSuffix;
 }
 
 pub mod front {
+    pub use crate::frontend::EditConstraintOptions;
+    pub use crate::frontend::EditDistanceConstraintLabelPositionOptions;
+    pub use crate::frontend::EditSegmentsOptions;
+    pub use crate::frontend::FrontendState;
     pub use crate::frontend::MAX_SKETCH_CHECKPOINTS;
+    pub use crate::frontend::SetProgramOutcome;
+    pub use crate::frontend::api::EditSketchOutcome;
+    pub use crate::frontend::api::Error;
+    pub use crate::frontend::api::File;
+    pub use crate::frontend::api::FileId;
+    pub use crate::frontend::api::LifecycleApi;
+    pub use crate::frontend::api::NewSketchOutcome;
+    pub use crate::frontend::api::NumberExt;
+    pub use crate::frontend::api::ObjectKindExt;
+    pub use crate::frontend::api::ProjectId;
+    pub use crate::frontend::api::RestoreSketchCheckpointOutcome;
+    pub use crate::frontend::api::Result;
+    pub use crate::frontend::api::SceneGraph;
+    pub use crate::frontend::api::SceneGraphDelta;
+    pub use crate::frontend::api::Settings;
+    pub use crate::frontend::api::SketchCheckpointId;
+    pub use crate::frontend::api::SketchMutationOutcome;
+    pub use crate::frontend::api::SourceDelta;
+    pub use crate::frontend::api::Version;
     pub(crate) use crate::frontend::modify::find_defined_names;
     pub(crate) use crate::frontend::modify::next_free_name_using_max;
+    pub use crate::frontend::sketch::ArcExt;
+    pub use crate::frontend::sketch::CircleExt;
+    pub use crate::frontend::sketch::CoincidentExt;
+    pub use crate::frontend::sketch::ConstraintLabelPositionEdit;
+    pub use crate::frontend::sketch::ControlPointSplineExt;
+    pub use crate::frontend::sketch::DistanceExt;
     pub use crate::frontend::sketch::ExecResult;
-    pub use crate::frontend::{
-        EditConstraintOptions,
-        EditDistanceConstraintLabelPositionOptions,
-        EditSegmentsOptions,
-        FrontendState,
-        SetProgramOutcome,
-        api::{
-            Cap, CapKind, EditSketchOutcome, Error, Expr, Face, File, FileId, LifecycleApi, NewSketchOutcome, Number,
-            Object, ObjectId, ObjectKind, Plane, ProjectId, RestoreSketchCheckpointOutcome, Result, SceneGraph,
-            SceneGraphDelta, Settings, SketchCheckpointId, SketchMutationOutcome, SourceDelta, SourceRef, Version,
-            Wall,
-        },
-        sketch::{
-            Angle, Arc, ArcCtor, ArcDirection, Circle, CircleCtor, Coincident, Constraint, ConstraintLabelPositionEdit,
-            ControlPointSpline, ControlPointSplineCtor, Distance, EqualRadius, ExistingSegmentCtor, Fixed, FixedPoint,
-            Freedom, Horizontal, Line, LineCtor, LinesEqualLength, Midpoint, NewSegmentInfo, Parallel, Perpendicular,
-            Point, Point2d, PointCtor, Segment, SegmentCtor, Sketch, SketchApi, SketchCtor, StartOrEnd, Symmetric,
-            Tangent, Vertical,
-        },
-        // Re-export trim module items
-        trim::{
-            ArcPoint, AttachToEndpoint, CoincidentData, ConstraintToMigrate, Coords2d, EndpointChanged, LineEndpoint,
-            TrimDirection, TrimItem, TrimOperation, TrimTermination, TrimTerminations, execute_trim_loop_with_context,
-            get_next_trim_spawn, get_position_coords_for_line, get_position_coords_from_arc, is_point_on_line_segment,
-            line_segment_intersection, perpendicular_distance_to_segment, project_point_onto_arc,
-            project_point_onto_segment,
-        },
-    };
+    pub use crate::frontend::sketch::ExistingSegmentCtor;
+    pub use crate::frontend::sketch::LineExt;
+    pub use crate::frontend::sketch::NewSegmentInfo;
+    pub use crate::frontend::sketch::PointExt;
+    pub use crate::frontend::sketch::SegmentExt;
+    pub use crate::frontend::sketch::SketchApi;
+    pub use crate::frontend::sketch::StartOrEnd;
+    pub use crate::frontend::trim::ArcPoint;
+    pub use crate::frontend::trim::AttachToEndpoint;
+    pub use crate::frontend::trim::CoincidentData;
+    pub use crate::frontend::trim::ConstraintToMigrate;
+    pub use crate::frontend::trim::Coords2d;
+    pub use crate::frontend::trim::EndpointChanged;
+    pub use crate::frontend::trim::LineEndpoint;
+    pub use crate::frontend::trim::TrimDirection;
+    pub use crate::frontend::trim::TrimItem;
+    pub use crate::frontend::trim::TrimOperation;
+    pub use crate::frontend::trim::TrimTermination;
+    pub use crate::frontend::trim::TrimTerminations;
+    pub use crate::frontend::trim::execute_trim_loop_with_context;
+    pub use crate::frontend::trim::get_next_trim_spawn;
+    pub use crate::frontend::trim::get_position_coords_for_line;
+    pub use crate::frontend::trim::get_position_coords_from_arc;
+    pub use crate::frontend::trim::is_point_on_line_segment;
+    pub use crate::frontend::trim::line_segment_intersection;
+    pub use crate::frontend::trim::perpendicular_distance_to_segment;
+    pub use crate::frontend::trim::project_point_onto_arc;
+    pub use crate::frontend::trim::project_point_onto_segment;
 }
 
 use serde::Deserialize;
@@ -339,8 +369,9 @@ lazy_static::lazy_static! {
     };
 }
 
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize)]
 pub struct Program {
+    pub kcl_version: KclVersion,
     #[serde(flatten)]
     pub ast: parsing::ast::types::Node<parsing::ast::types::Program>,
     // The ui doesn't need to know about this.
@@ -350,14 +381,40 @@ pub struct Program {
     pub original_file_contents: String,
 }
 
+impl<'de> Deserialize<'de> for Program {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        #[derive(Deserialize)]
+        struct ProgramHelper {
+            #[serde(flatten)]
+            ast: parsing::ast::types::Node<parsing::ast::types::Program>,
+        }
+
+        let program = ProgramHelper::deserialize(deserializer)?;
+        // TypeScript ASTs can omit this field or set it incorrectly. Use our
+        // version resolution so annotations and the default are interpreted
+        // consistently and correctly.
+        let kcl_version = execution::computed_kcl_version(&program.ast);
+
+        Ok(Self {
+            kcl_version,
+            ast: program.ast,
+            original_file_contents: String::new(),
+        })
+    }
+}
+
 impl Program {
     pub fn parse(input: &str) -> Result<(Option<Program>, Vec<CompilationIssue>), KclError> {
         let module_id = ModuleId::default();
-        let (ast, errs) = parsing::parse_str(input, module_id).0?;
+        let (program, errs) = parsing::parse_str(input, module_id).0?;
 
         Ok((
-            ast.map(|ast| Program {
-                ast,
+            program.map(|program| Program {
+                kcl_version: program.kcl_version,
+                ast: program.ast,
                 original_file_contents: input.to_string(),
             }),
             errs,
@@ -366,10 +423,11 @@ impl Program {
 
     pub fn parse_no_errs(input: &str) -> Result<Program, KclError> {
         let module_id = ModuleId::default();
-        let ast = parsing::parse_str(input, module_id).parse_errs_as_err()?;
+        let program = parsing::parse_str(input, module_id).parse_errs_as_err()?;
 
         Ok(Program {
-            ast,
+            kcl_version: program.kcl_version,
+            ast: program.ast,
             original_file_contents: input.to_string(),
         })
     }
@@ -395,13 +453,15 @@ impl Program {
         length_units: Option<kittycad_modeling_cmds::units::UnitLength>,
     ) -> Result<Self, KclError> {
         Ok(Self {
+            kcl_version: self.kcl_version,
             ast: self.ast.change_default_units(length_units)?,
             original_file_contents: self.original_file_contents.clone(),
         })
     }
 
-    pub fn change_kcl_version(&self, kcl_version: Option<String>) -> Result<Self, KclError> {
+    pub fn change_kcl_version(&self, kcl_version: Option<KclVersion>) -> Result<Self, KclError> {
         Ok(Self {
+            kcl_version: kcl_version.unwrap_or_default(),
             ast: self.ast.change_kcl_version(kcl_version)?,
             original_file_contents: self.original_file_contents.clone(),
         })
@@ -409,6 +469,7 @@ impl Program {
 
     pub fn change_experimental_features(&self, warning_level: Option<WarningLevel>) -> Result<Self, KclError> {
         Ok(Self {
+            kcl_version: self.kcl_version,
             ast: self.ast.change_experimental_features(warning_level)?,
             original_file_contents: self.original_file_contents.clone(),
         })
@@ -420,10 +481,6 @@ impl Program {
 
     pub fn lint_all(&self) -> Result<Vec<lint::Discovered>, anyhow::Error> {
         self.ast.lint_all()
-    }
-
-    pub fn lint_all_with_options(&self, options: lint::LintOptions) -> Result<Vec<lint::Discovered>, anyhow::Error> {
-        self.ast.lint_all_with_options(options)
     }
 
     pub fn lint<'a>(&'a self, rule: impl lint::Rule<'a>) -> Result<Vec<lint::Discovered>, anyhow::Error> {
@@ -458,6 +515,7 @@ impl Program {
     /// Create an empty program.
     pub fn empty() -> Self {
         Self {
+            kcl_version: KclVersion::default(),
             ast: parsing::ast::types::Node::no_src(parsing::ast::types::Program::default()),
             original_file_contents: String::new(),
         }
@@ -498,11 +556,77 @@ mod test {
     use super::*;
 
     #[test]
+    fn program_deserializes_ast_without_kcl_version() {
+        for code in [
+            "",
+            "x = 1\n",
+            "@settings(defaultLengthUnit = mm)\nx = 1\n",
+            "@settings(kclVersion = 1.0)\nx = 1\n",
+            "@settings(kclVersion = 2.0)\nx = 1\n",
+            "@settings(kclVersion = 3.0)\nx = 1\n",
+            "@settings(kclVersion = \"3.0\")\nx = 1\n",
+            "@settings(kclVersion = \"3.0-preview\")\nx = 1\n",
+            "@settings(kclVersion = \"3-preview\")\nx = 1\n",
+            "@settings(kclVersion = 2.0)\n@settings(kclVersion = \"3.0-preview\")\nx = 1\n",
+            "@settings(kclVersion = \"3.0-preview\")\n@settings(kclVersion = 2.0)\nx = 1\n",
+            "@settings(kclVersion = 2.0)\n@settings(defaultLengthUnit = in)\nx = 1\n",
+            "@settings(kclVersion = 99.0)\nx = 1\n",
+        ] {
+            let parsed = Program::parse_no_errs(code).unwrap();
+            // TypeScript consumers construct ASTs without the wrapper's version field.
+            let json = serde_json::to_value(&parsed.ast).unwrap();
+            let deserialized: Program = serde_json::from_str(&json.to_string()).unwrap();
+
+            assert_eq!(deserialized.kcl_version, parsed.kcl_version, "{code}");
+            assert_eq!(deserialized.recast(), parsed.recast(), "{code}");
+        }
+    }
+
+    #[test]
+    fn program_deserialization_recomputes_kcl_version() {
+        for (code, supplied_version, expected_version) in [
+            ("x = 1\n", KclVersion::V2, KclVersion::V1),
+            (
+                "@settings(kclVersion = 2.0)\nx = 1\n",
+                KclVersion::V3Preview,
+                KclVersion::V2,
+            ),
+            (
+                "@settings(kclVersion = \"3.0-preview\")\nx = 1\n",
+                KclVersion::V2,
+                KclVersion::V3Preview,
+            ),
+            (
+                "@settings(kclVersion = 3.0)\nx = 1\n",
+                KclVersion::V3Preview,
+                KclVersion::V3,
+            ),
+            (
+                "@settings(kclVersion = \"3.0-preview\")\nx = 1\n",
+                KclVersion::V3,
+                KclVersion::V3Preview,
+            ),
+        ] {
+            let mut program = Program::parse_no_errs(code).unwrap();
+            program.kcl_version = supplied_version;
+
+            let json = serde_json::to_value(&program).unwrap();
+            let deserialized: Program = serde_json::from_str(&json.to_string()).unwrap();
+
+            assert_eq!(deserialized.kcl_version, expected_version, "{code}");
+            assert_eq!(deserialized.recast(), program.recast(), "{code}");
+            assert!(deserialized.original_file_contents.is_empty());
+        }
+    }
+
+    #[test]
     fn entry_point_language_version() {
         for (code, expected) in [
             ("", KclVersion::V1),
             ("@settings(defaultLengthUnit = mm)", KclVersion::V1),
             ("@settings(kclVersion = 2.0)", KclVersion::V2),
+            ("@settings(kclVersion = 3.0)", KclVersion::V3),
+            ("@settings(kclVersion = \"3.0\")", KclVersion::V3),
             ("@settings(kclVersion = \"3.0-preview\")", KclVersion::V3Preview),
         ] {
             assert_eq!(

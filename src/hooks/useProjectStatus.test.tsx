@@ -1,44 +1,47 @@
+import { Client } from '@kittycad/lib'
 import { useProjectStatuses } from '@src/hooks/useProjectStatus'
 import { renderHook, waitFor } from '@testing-library/react'
-import { beforeEach, describe, expect, test, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
-const mockState = vi.hoisted(() => ({
-  client: { mocked: true },
-  createKCClient: vi.fn(),
-  listProjects: vi.fn(),
-}))
-
-vi.mock('@kittycad/lib', () => ({
-  projects: {
-    get_project: vi.fn(),
-    list_projects: mockState.listProjects,
-  },
-}))
+const fetchMock = vi.hoisted(() => vi.fn<typeof fetch>())
 
 vi.mock('@src/lib/kcClient', () => ({
-  createKCClient: mockState.createKCClient,
+  createKCClient: (token?: string) =>
+    new Client({
+      token,
+      baseUrl: 'https://api.example.test',
+      fetch: fetchMock,
+    }),
 }))
 
-describe('useProjectStatuses', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
-    mockState.createKCClient.mockReturnValue(mockState.client)
-    mockState.listProjects.mockResolvedValue([])
+function respond(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
   })
+}
 
+beforeEach(() => {
+  fetchMock.mockReset()
+  fetchMock.mockResolvedValue(respond([]))
+})
+
+describe('useProjectStatuses', () => {
   test('fetches once and maps publication details by remote project ID', async () => {
-    mockState.listProjects.mockResolvedValue([
-      {
-        id: 'project-pending',
-        publication_status: 'pending_review',
-        publication: { feedback: null },
-      },
-      {
-        id: 'project-changes-requested',
-        publication_status: 'changes_requested',
-        publication: { feedback: 'Add another view.' },
-      },
-    ])
+    fetchMock.mockResolvedValue(
+      respond([
+        {
+          id: 'project-pending',
+          publication_status: 'pending_review',
+          publication: { feedback: null },
+        },
+        {
+          id: 'project-changes-requested',
+          publication_status: 'changes_requested',
+          publication: { feedback: 'Add another view.' },
+        },
+      ])
+    )
 
     const { result } = renderHook(() =>
       useProjectStatuses(
@@ -60,11 +63,13 @@ describe('useProjectStatuses', () => {
       publicationStatus: 'changes_requested',
       feedback: 'Add another view.',
     })
-    expect(mockState.createKCClient).toHaveBeenCalledWith('token-123')
-    expect(mockState.listProjects).toHaveBeenCalledTimes(1)
-    expect(mockState.listProjects).toHaveBeenCalledWith({
-      client: mockState.client,
-    })
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://api.example.test/user/projects',
+      expect.objectContaining({
+        headers: expect.objectContaining({ Authorization: 'Bearer token-123' }),
+      })
+    )
   })
 
   test.each([
@@ -80,30 +85,34 @@ describe('useProjectStatuses', () => {
     )
 
     expect(result.current.size).toBe(0)
-    expect(mockState.listProjects).not.toHaveBeenCalled()
+    expect(fetchMock).not.toHaveBeenCalled()
   })
 
   test('refetches when the set of linked Home projects changes', async () => {
-    mockState.listProjects
-      .mockResolvedValueOnce([
-        {
-          id: 'project-a',
-          publication_status: 'pending_review',
-          publication: { feedback: null },
-        },
-      ])
-      .mockResolvedValueOnce([
-        {
-          id: 'project-a',
-          publication_status: 'pending_review',
-          publication: { feedback: null },
-        },
-        {
-          id: 'project-b',
-          publication_status: 'published',
-          publication: { feedback: null },
-        },
-      ])
+    fetchMock
+      .mockResolvedValueOnce(
+        respond([
+          {
+            id: 'project-a',
+            publication_status: 'pending_review',
+            publication: { feedback: null },
+          },
+        ])
+      )
+      .mockResolvedValueOnce(
+        respond([
+          {
+            id: 'project-a',
+            publication_status: 'pending_review',
+            publication: { feedback: null },
+          },
+          {
+            id: 'project-b',
+            publication_status: 'published',
+            publication: { feedback: null },
+          },
+        ])
+      )
 
     const { result, rerender } = renderHook(
       ({ homeProjects }) => useProjectStatuses(homeProjects, 'token-123'),
@@ -132,9 +141,77 @@ describe('useProjectStatuses', () => {
         'published'
       )
     )
-    expect(mockState.listProjects).toHaveBeenCalledTimes(2)
+    expect(fetchMock).toHaveBeenCalledTimes(2)
 
     rerender({ homeProjects: [] })
     await waitFor(() => expect(result.current.size).toBe(0))
   })
+})
+
+afterEach(() => {
+  vi.restoreAllMocks()
+})
+
+test('includes statuses on later pages without publishing a partial list', async () => {
+  let finishSecondPage: ((response: Response) => void) | undefined
+  fetchMock
+    .mockResolvedValueOnce(
+      respond({
+        items: [{ id: 'first', publication_status: 'published' }],
+        next_page: 'second+/=',
+      })
+    )
+    .mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finishSecondPage = resolve
+        })
+    )
+  const { result } = renderHook(() =>
+    useProjectStatuses([{ remoteProjectId: 'last' }], 'token-123')
+  )
+  await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2))
+  expect(result.current.size).toBe(0)
+  finishSecondPage?.(
+    respond({
+      items: [
+        {
+          id: 'last',
+          publication_status: 'changes_requested',
+          publication: { feedback: 'Update the thumbnail.' },
+        },
+      ],
+      next_page: null,
+    })
+  )
+  await waitFor(() =>
+    expect(result.current.get('last')).toEqual({
+      publicationStatus: 'changes_requested',
+      feedback: 'Update the thumbnail.',
+    })
+  )
+  expect(result.current.size).toBe(2)
+  expect(fetchMock).toHaveBeenLastCalledWith(
+    'https://api.example.test/user/projects?page_token=second%2B%2F%3D',
+    expect.objectContaining({
+      headers: expect.objectContaining({ Authorization: 'Bearer token-123' }),
+    })
+  )
+})
+
+test('does not publish first-page statuses when a later page fails', async () => {
+  vi.spyOn(console, 'error').mockImplementation(() => {})
+  fetchMock
+    .mockResolvedValueOnce(
+      respond({
+        items: [{ id: 'first', publication_status: 'published' }],
+        next_page: 'second',
+      })
+    )
+    .mockResolvedValueOnce(respond({ message: 'temporarily unavailable' }, 503))
+  const { result } = renderHook(() =>
+    useProjectStatuses([{ remoteProjectId: 'first' }], 'token-123')
+  )
+  await waitFor(() => expect(console.error).toHaveBeenCalled())
+  expect(result.current.size).toBe(0)
 })

@@ -35,7 +35,7 @@ operation::facing(
 ### Examples
 
 ```kcl
-@settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm, kclVersion = 3.0, experimentalFeatures = allow)
 
 stockLength = 100mm
 stockWidth = 60mm

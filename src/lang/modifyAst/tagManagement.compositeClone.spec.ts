@@ -57,10 +57,10 @@ clonedComposite = clone(source)`
   }
   const selectedPath: Extract<Artifact, { type: 'path' }> = {
     type: 'path',
-    id: selectedSweep.pathId,
+    id: selectedSweep.pathId!,
     subType: 'sketch',
     planeId: 'plane',
-    segIds: [],
+    segIds: ['cloned-segment'],
     consumed: true,
     sweepId: selectedSweep.id,
     trajectorySweepId: null,
@@ -76,14 +76,20 @@ clonedComposite = clone(source)`
     toolIds: [],
     codeRef: cloneCodeRef,
   }
-  const selectedEdge: Extract<Artifact, { type: 'sweepEdge' }> = {
-    type: 'sweepEdge',
-    id: 'cloned-edge',
-    subType: 'opposite',
-    segId: 'cloned-segment',
-    cmdId: 'clone-command',
-    sweepId: selectedSweep.id,
+  const sourceSegment: Extract<Artifact, { type: 'segment' }> = {
+    type: 'segment',
+    id: 'source-segment',
+    pathId: 'source-path',
+    edgeIds: [],
     commonSurfaceIds: [],
+    codeRef: sourceCodeRef,
+  }
+  const selectedSegment: Extract<Artifact, { type: 'segment' }> = {
+    ...sourceSegment,
+    id: 'cloned-segment',
+    pathId: selectedPath.id,
+    sourceSegmentId: sourceSegment.id,
+    codeRef: cloneCodeRef,
   }
   const artifacts: Artifact[] = [
     sourceSweep,
@@ -91,7 +97,8 @@ clonedComposite = clone(source)`
     siblingSweep,
     selectedPath,
     clonedComposite,
-    selectedEdge,
+    sourceSegment,
+    selectedSegment,
   ]
   const artifactGraph: ArtifactGraph = new Map(
     artifacts.map((artifact) => [artifact.id, artifact])
@@ -100,7 +107,7 @@ clonedComposite = clone(source)`
   try {
     const context = resolveEdgeSelectionContext(
       ast,
-      { artifact: selectedEdge, codeRef: cloneCodeRef },
+      { artifact: selectedSegment, codeRef: cloneCodeRef },
       artifactGraph,
       instance
     )

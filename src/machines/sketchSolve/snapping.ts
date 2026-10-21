@@ -166,6 +166,7 @@ export function getConstraintsForSnapTarget(
       ]
     case GRID_TARGET:
       return []
+    case undefined:
     default:
       return []
   }

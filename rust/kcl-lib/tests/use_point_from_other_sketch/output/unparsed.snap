@@ -26,9 +26,9 @@ sketch2 = sketch(on = XY) {
     horizontalDistancePoint
   ])
   horizontalDistance([
-  sketch1.reference,
-  horizontalDistancePoint
-]) == 7mm
+    sketch1.reference,
+    horizontalDistancePoint
+  ]) == 7mm
 
   verticalDistancePoint = point(at = [var 10mm, var 29mm])
   vertical([
@@ -36,9 +36,9 @@ sketch2 = sketch(on = XY) {
     sketch1.reference
   ])
   verticalDistance([
-  sketch1.reference,
-  verticalDistancePoint
-]) == 9mm
+    sketch1.reference,
+    verticalDistancePoint
+  ]) == 9mm
 
   midpointLine = line(start = [var 0mm, var 0mm], end = [var 20mm, var 40mm])
   midpoint(midpointLine, point = sketch1.reference)

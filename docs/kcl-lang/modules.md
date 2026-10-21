@@ -7,11 +7,21 @@ layout: manual
 `KCL` allows splitting code up into multiple files.  Each file is somewhat
 isolated from other files as a separate module.
 
+In KCL 3.0, the entry point selects the language version for the whole project.
+For imported KCL files:
+
+- An explicit `kclVersion` must match the entry point's version.
+- A file without `kclVersion` inherits the entry point's version.
+
+See [Migrating to KCL 3.0](/docs/kcl-lang/migrating-to-kcl-3) for updating an
+existing project.
+
 When you define a function, you can use `export` before it to make it available
 to other modules.
 
 ```kcl
 // util.kcl
+@settings(kclVersion = 3.0)
 export fn increment(@x) {
   return x + 1
 }
@@ -20,8 +30,9 @@ export fn increment(@x) {
 Other files in the project can now import functions that have been exported.
 This makes them available to use in another file.
 
-```norun
+```kcl,norun
 // main.kcl
+@settings(kclVersion = 3.0)
 import increment from "util.kcl"
 
 answer = increment(41)
@@ -34,6 +45,7 @@ Multiple functions can be exported in a file.
 
 ```kcl
 // util.kcl
+@settings(kclVersion = 3.0)
 export fn increment(@x) {
   return x + 1
 }
@@ -45,13 +57,17 @@ export fn decrement(@x) {
 
 When importing, you can import multiple functions at once.
 
-```norun
+```kcl,norun
+@settings(kclVersion = 3.0)
+
 import increment, decrement from "util.kcl"
 ```
 
 Imported symbols can be renamed for convenience or to avoid name collisions.
 
-```norun
+```kcl,norun
+@settings(kclVersion = 3.0)
+
 import increment as inc, decrement as dec from "util.kcl"
 ```
 
@@ -64,14 +80,16 @@ a project with a circular import.
 For example, this project has a circular import because `main.kcl` imports
 `wheel.kcl`, which imports `main.kcl`:
 
-```norun
+```kcl,norun
 // main.kcl
+@settings(kclVersion = 3.0)
 import makeWheel from "wheel.kcl"
 
 export wheelDiameter = 20mm
 wheel = makeWheel()
 
 // wheel.kcl
+@settings(kclVersion = 3.0)
 import wheelDiameter from "main.kcl"
 
 export fn makeWheel() {
@@ -87,11 +105,13 @@ To break a cycle, move shared values and functions into a dependency-only file
 that does not import its consumers. Both of the original files can then import
 the shared dependency:
 
-```norun
+```kcl,norun
 // parameters.kcl
+@settings(kclVersion = 3.0)
 export wheelDiameter = 20mm
 
 // wheel.kcl
+@settings(kclVersion = 3.0)
 import wheelDiameter from "parameters.kcl"
 
 export fn makeWheel() {
@@ -99,6 +119,7 @@ export fn makeWheel() {
 }
 
 // main.kcl
+@settings(kclVersion = 3.0)
 import wheelDiameter from "parameters.kcl"
 import makeWheel from "wheel.kcl"
 
@@ -128,14 +149,17 @@ subdirectory and export it to the parent directory?
 
 You can re-export items that are imported by using `export import`.
 
-```no-run
+```kcl,norun
 // part/public.kcl
+@settings(kclVersion = 3.0)
 export size = 5mm
 
 // part/main.kcl
+@settings(kclVersion = 3.0)
 export import size from "public.kcl"
 
 // main.kcl
+@settings(kclVersion = 3.0)
 import size from "part/main.kcl"
 ```
 
@@ -218,7 +242,7 @@ Under the hood, the Design Studio runs **every module in parallel** where it can
 
 If you shoe‑horn everything into `main.kcl`, each statement runs sequentially:
 
-```norun
+```kcl,norun
 import "big.step" as gizmo  // blocks main while reading
 
 gizmo |> translate(x=50)    // blocks again while waiting for render
@@ -226,11 +250,13 @@ gizmo |> translate(x=50)    // blocks again while waiting for render
 
 Split `gizmo` into its own file and the read/render can overlap whatever else `main.kcl` is doing.
 
-```norun
+```kcl,norun
 // gizmo.kcl                   (worker A)
+@settings(kclVersion = 3.0)
 import "big.step"
 
 // main.kcl                    (worker B)
+@settings(kclVersion = 3.0)
 import "gizmo.kcl" as gizmo   // non‑blocking
 
 // ... other setup ...
@@ -242,7 +268,7 @@ gizmo |> translate(x=50)      // only blocks here
 
 Defining a function inside a module is instantaneous – we just record the byte‑code. The heavy lifting happens when the function is **called**. So:
 
-```norun
+```kcl,norun
 // util.kcl
 export fn makeBolt(size) {
   /* … expensive CAD … */
@@ -253,10 +279,10 @@ If `main.kcl` waits until the very end to call `makeBolt`, *none* of that work w
 
 **Better:** call it early or move the invocation into another module.
 
-```norun
+```kcl,norun
 // bolt_instance.kcl
 import makeBolt from "util.kcl"
-bolt = makeBolt(5)  // executed in parallel
+bolt = makeBolt(size = 5mm)
 bolt
 ```
 
@@ -269,7 +295,7 @@ Now `main.kcl` can `import "bolt_instance.kcl" as bolt` and get the result that 
 You can also import the whole module. This is useful if you want to use the
 result of a module as a variable, like a part.
 
-```norun
+```kcl,norun
 import "cube.kcl"
 cube
   |> translate(x=10)
@@ -290,7 +316,7 @@ by whatever imports it.
 
 So for example, this is allowed:
 
-```norun
+```kcl,norun
 ... a bunch of code to create cube and cube2 ...
 
 myUnion = union([cube, cube2])
@@ -298,7 +324,7 @@ myUnion = union([cube, cube2])
 
 You can also do this:
 
-```norun
+```kcl,norun
 ... a bunch of code to create cube and cube2 ...
 
 union([cube, cube2])
@@ -308,7 +334,7 @@ Either way, the last line will return the union of the two objects.
 
 Or what you could do instead is:
 
-```norun
+```kcl,norun
 ... a bunch of code to create cube and cube2 ...
 
 myUnion = union([cube, cube2])
@@ -346,7 +372,7 @@ it will only be rendered once.
 If you want to have multiple instances of the same object, you can use the
 [`clone`](/docs/kcl-std/functions/std-clone) function. This will render a new instance of the object in memory.
 
-```norun
+```kcl,norun
 import cube from "cube.kcl"
 
 cube  

@@ -191,9 +191,9 @@ async fn execute_and_observe_open(
         .graph
         .values()
         .filter_map(|artifact| match artifact {
-            Artifact::Sweep(sweep) => Some(SweepIds {
+            Artifact::Sweep(sweep) => sweep.path_id.map(|path_id| SweepIds {
                 sweep_id: sweep.id,
-                path_id: sweep.path_id,
+                path_id,
             }),
             _ => None,
         })

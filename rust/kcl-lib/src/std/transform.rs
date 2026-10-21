@@ -236,9 +236,9 @@ async fn inner_translate(
     };
 
     let translation = shared::Point3d {
-        x: LengthUnit(x.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
-        y: LengthUnit(y.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
-        z: LengthUnit(z.as_ref().map(|t| t.to_mm()).unwrap_or_default()),
+        x: LengthUnit(x.as_ref().map(|t| t.unwrap_to_mm()).unwrap_or_default()),
+        y: LengthUnit(y.as_ref().map(|t| t.unwrap_to_mm()).unwrap_or_default()),
+        z: LengthUnit(z.as_ref().map(|t| t.unwrap_to_mm()).unwrap_or_default()),
     };
     let mut objects = objects.clone();
     for object_id in objects.ids(&args.ctx).await? {
@@ -348,7 +348,8 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         // Don't adjust axis units since the axis must be normalized and only the direction
         // should be significant, not the magnitude.
         axis.map(|a| [a[0].n, a[1].n, a[2].n]),
-        origin.map(|a| [a[0].n, a[1].n, a[2].n]),
+        // The origin is a point in space, so the engine needs it in mm.
+        origin.map(|a| [a[0].unwrap_to_mm(), a[1].unwrap_to_mm(), a[2].unwrap_to_mm()]),
         angle.map(|t| t.n),
         global,
         exec_state,
@@ -524,6 +525,7 @@ async fn delete_inner(mut objects: HideableGeometry, exec_state: &mut ExecState,
 mod tests {
     use kittycad_modeling_cmds::ModelingCmd;
     use kittycad_modeling_cmds::shared::ComponentTransform;
+    use kittycad_modeling_cmds::shared::OriginType;
     use pretty_assertions::assert_eq;
 
     use crate::errors::Severity;
@@ -558,7 +560,13 @@ sweepSketch = startSketchOn(XY)
     )"#;
 
     async fn rotate_transform(arguments: &str) -> ComponentTransform {
-        let ast = format!("{PIPE}\n    |> rotate({arguments})");
+        rotate_transform_with_settings("", arguments).await
+    }
+
+    /// Like `rotate_transform`, but with `settings` (e.g. `@settings(...)`) at
+    /// the top of the file.
+    async fn rotate_transform_with_settings(settings: &str, arguments: &str) -> ComponentTransform {
+        let ast = format!("{settings}{PIPE}\n    |> rotate({arguments})");
         let result = parse_execute(&ast).await.unwrap();
 
         result
@@ -630,6 +638,44 @@ sweepSketch = startSketchOn(XY)
                 .expect("expected an axis-angle rotation transform");
 
             assert_eq!(rotation.property.w, expected, "input angle: {input}");
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_rotate_converts_custom_axis_origin_to_mm() {
+        // https://github.com/KittyCAD/modeling-app/issues/14208
+        // The axis `origin` is a point in space, so like `translate` it must
+        // reach the engine in mm. The axis `direction` only gives a direction,
+        // so it is sent as written.
+        let mm_file = "@settings(defaultLengthUnit = mm)\n";
+        let in_file = "@settings(defaultLengthUnit = in)\n";
+        for (settings, origin, expected) in [
+            (mm_file, "[1in, 2in, -3in]", [25.4, 50.8, -76.2]),
+            (mm_file, "[1cm, 2, 0]", [10.0, 2.0, 0.0]),
+            (mm_file, "[25.4, 50.8, -76.2]", [25.4, 50.8, -76.2]),
+            (in_file, "[1, 2, -3]", [25.4, 50.8, -76.2]),
+            (in_file, "[25.4mm, 50.8mm, -76.2mm]", [25.4, 50.8, -76.2]),
+        ] {
+            let arguments = format!("axis = {{ direction = [0, 0, 2], origin = {origin} }}, angle = 90deg");
+            let transform = rotate_transform_with_settings(settings, &arguments).await;
+            let rotation = transform
+                .rotate_angle_axis
+                .expect("expected an axis-angle rotation transform");
+
+            let OriginType::Custom { origin: actual } = rotation.origin else {
+                panic!("expected a custom origin, got {:?}", rotation.origin);
+            };
+            for (actual, expected) in [actual.x, actual.y, actual.z].into_iter().zip(expected) {
+                assert!(
+                    (actual - expected).abs() < 1e-9,
+                    "{settings}origin = {origin}: expected {expected:?} mm, got {actual:?}"
+                );
+            }
+            assert_eq!(
+                [rotation.property.x, rotation.property.y, rotation.property.z],
+                [0.0, 0.0, 2.0],
+                "{settings}origin = {origin}"
+            );
         }
     }
 

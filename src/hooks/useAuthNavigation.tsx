@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: authentication query forwarding and redirects (useLocation, useNavigate, useSearchParams).
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import { useApp } from '@src/lib/boot'

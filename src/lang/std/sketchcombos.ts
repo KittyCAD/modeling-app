@@ -245,6 +245,22 @@ function createCallWrapper(
         case 'xLineTo':
         case 'yLineTo':
           return createLabeledArg(ARG_END_ABSOLUTE, val)
+        case 'angledLine':
+        case 'angledLineThatIntersects':
+        case 'arc':
+        case 'circle':
+        case 'circleThreePoint':
+        case 'line':
+        case 'startProfile':
+        case 'tangentialArc':
+        case 'lineTo':
+        case 'angledLineOfXLength':
+        case 'angledLineOfYLength':
+        case 'angledLineToX':
+        case 'angledLineToY':
+        case 'tangentialArcTo':
+        case 'arcTo':
+          break
       }
     })()
     if (arg !== undefined) {
@@ -1829,27 +1845,30 @@ export function getTransformInfos(
   constraintType: ConstraintType,
   wasmInstance: ModuleType
 ): TransformInfo[] {
-  const nodes = selectionRanges.graphSelections.map(({ codeRef }) =>
-    getNodeFromPath<Expr>(ast, codeRef.pathToNode, wasmInstance, [
-      'CallExpressionKw',
-    ])
+  const nodes = selectionRanges.graphSelections.map(
+    ({ codeRef }: { codeRef?: { pathToNode: PathToNode } }) =>
+      getNodeFromPath<Expr>(ast, codeRef?.pathToNode ?? [], wasmInstance, [
+        'CallExpressionKw',
+      ])
   )
 
   try {
-    const theTransforms = nodes.map((nodeMeta) => {
-      if (err(nodeMeta)) {
-        console.error(nodeMeta)
+    const theTransforms = nodes.map(
+      (nodeMeta: ReturnType<typeof getNodeFromPath<Expr>>) => {
+        if (err(nodeMeta)) {
+          console.error(nodeMeta)
+          return false
+        }
+
+        const node = nodeMeta.node
+
+        if (node?.type === 'CallExpressionKw') {
+          return getTransformInfoKw(node, constraintType)
+        }
+
         return false
       }
-
-      const node = nodeMeta.node
-
-      if (node?.type === 'CallExpressionKw') {
-        return getTransformInfoKw(node, constraintType)
-      }
-
-      return false
-    }) as TransformInfo[]
+    ) as TransformInfo[]
     return theTransforms
   } catch (error) {
     console.log('error', error)
@@ -1862,25 +1881,28 @@ export function getRemoveConstraintsTransforms(
   ast: Program,
   wasmInstance: ModuleType
 ): TransformInfo[] | Error {
-  const nodes = selectionRanges.graphSelections.map(({ codeRef }) =>
-    getNodeFromPath<Expr>(ast, codeRef.pathToNode, wasmInstance)
+  const nodes = selectionRanges.graphSelections.map(
+    ({ codeRef }: { codeRef?: { pathToNode: PathToNode } }) =>
+      getNodeFromPath<Expr>(ast, codeRef?.pathToNode ?? [], wasmInstance)
   )
 
-  const theTransforms = nodes.map((nodeMeta) => {
-    // Typescript is not smart enough to know node will never be Error
-    // here, but we'll place a condition anyway
-    if (err(nodeMeta)) {
-      console.error(nodeMeta)
+  const theTransforms = nodes.map(
+    (nodeMeta: ReturnType<typeof getNodeFromPath<Expr>>) => {
+      // Typescript is not smart enough to know node will never be Error
+      // here, but we'll place a condition anyway
+      if (err(nodeMeta)) {
+        console.error(nodeMeta)
+        return false
+      }
+
+      const node = nodeMeta.node
+      if (node?.type === 'CallExpressionKw') {
+        return getRemoveConstraintsTransform(node)
+      }
+
       return false
     }
-
-    const node = nodeMeta.node
-    if (node?.type === 'CallExpressionKw') {
-      return getRemoveConstraintsTransform(node)
-    }
-
-    return false
-  }) as TransformInfo[]
+  ) as TransformInfo[]
   return theTransforms
 }
 
@@ -1916,9 +1938,13 @@ export function transformSecondarySketchLinesTagFirst({
   // We need to sort the selections by their start position
   // so that we can process them in dependency order and not write invalid KCL.
   const sortedCodeBasedSelections = selectionRanges.graphSelections.toSorted(
-    (a, b) => a?.codeRef?.range[0] - b?.codeRef?.range[0]
+    (
+      a: { codeRef?: { range?: [number, number, number] } },
+      b: { codeRef?: { range?: [number, number, number] } }
+    ) => (a?.codeRef?.range?.[0] ?? 0) - (b?.codeRef?.range?.[0] ?? 0)
   )
-  const primarySelection = sortedCodeBasedSelections[0]?.codeRef?.range
+  const primarySelection: SourceRange = sortedCodeBasedSelections[0]?.codeRef
+    ?.range ?? [0, 0, 0]
   const secondarySelections = sortedCodeBasedSelections.slice(1)
 
   const _tag = giveSketchFnCallTag(
@@ -2090,8 +2116,6 @@ export function transformAstSketchLines({
           break
         case undefined:
           break
-        default:
-          const _exhaustiveCheck: never = a?.argPosition
       }
     })
 
@@ -2194,19 +2218,27 @@ export function transformAstSketchLines({
     }
   }
 
-  if ('graphSelections' in selectionRanges) {
+  if (
+    'graphSelections' in selectionRanges &&
+    isArray(selectionRanges.graphSelections)
+  ) {
     // If the processing of any of the selections failed, return the first error
     const maybeProcessErrors = selectionRanges.graphSelections
-      .map(({ codeRef }, index) => {
-        return processSelection(
-          getNodePathFromSourceRange(node, codeRef.range),
-          index
-        )
-      })
+      .map(
+        (
+          { codeRef }: { codeRef?: { range: [number, number, number] } },
+          index: number
+        ) => {
+          return processSelection(
+            getNodePathFromSourceRange(node, codeRef?.range ?? [0, 0, 0]),
+            index
+          )
+        }
+      )
       .filter(err)
 
     if (maybeProcessErrors.length) return maybeProcessErrors[0]
-  } else {
+  } else if (isArray(selectionRanges)) {
     const maybeProcessErrors = selectionRanges.map(processSelection).filter(err)
     if (maybeProcessErrors.length) return maybeProcessErrors[0]
   }
@@ -2360,7 +2392,6 @@ export function isExprBinaryPart(expr: Expr): expr is BinaryPart {
     case 'SketchBlock':
       return false
     default:
-      const _exhaustiveCheck: never = expr
       return false // unreachable
   }
 }

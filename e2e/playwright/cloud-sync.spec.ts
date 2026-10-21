@@ -90,7 +90,7 @@ test(
 
     const editor = new EditorFixture(page)
     await editor.openPane()
-    const initialCode = '@settings(kclVersion = "3.0-preview")\n'
+    const initialCode = '@settings(kclVersion = 3.0)\n'
     const queuedCode = `${initialCode}queuedCloudEdit = 42\n`
     await editor.expectEditor.toContain(initialCode.trimEnd())
     await editor.replaceCodeByTyping(initialCode, queuedCode)
@@ -709,8 +709,14 @@ test(
           'Remote only project',
         ])
       )
-    await expect.poll(() => apiCalls.creates.length).toBeGreaterThanOrEqual(1)
-    await expect.poll(() => staleUpdateCalls().length).toBeGreaterThanOrEqual(1)
+    await expect
+      .poll(() => apiCalls.creates.length, { timeout: CLOUD_SYNC_E2E_TIMEOUT })
+      .toBeGreaterThanOrEqual(1)
+    await expect
+      .poll(() => staleUpdateCalls().length, {
+        timeout: CLOUD_SYNC_E2E_TIMEOUT,
+      })
+      .toBeGreaterThanOrEqual(1)
     await expect
       .poll(
         () =>

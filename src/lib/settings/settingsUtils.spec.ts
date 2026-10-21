@@ -23,7 +23,8 @@ import {
 } from '@src/lib/projectLibraries'
 import { projectLibrariesSettingsContribution } from '@src/lib/projectLibraries/settings/setting'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
-import { createSettings, type Setting } from '@src/lib/settings/initialSettings'
+import { createSettings } from '@src/lib/settings/initialSettings'
+import type { Setting } from '@src/lib/settings/Setting'
 import {
   clearSettingsAtLevel,
   configurationToSettingsPayload,

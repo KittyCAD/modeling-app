@@ -46,10 +46,46 @@ const cases: AppFolderNameFromBuildCase[] = [
     expected: 'dev.zoo.modeling-app-local',
   },
   {
-    name: 'preserves the package name on Linux',
+    name: 'preserves the production package name on Linux',
+    input: {
+      packageName: 'zoo-modeling-app',
+      packageVersion: '1.2.3',
+      platform: 'linux',
+    },
+    expected: 'zoo-modeling-app',
+  },
+  {
+    name: 'uses a separate folder for unversioned Linux debug builds',
+    input: {
+      packageName: 'zoo-modeling-app',
+      packageVersion: '0.0.0',
+      platform: 'linux',
+    },
+    expected: 'zoo-modeling-app-local',
+  },
+  {
+    name: 'uses a separate folder for Linux dev builds',
+    input: {
+      packageName: 'zoo-modeling-app',
+      packageVersion: 'dev',
+      platform: 'linux',
+    },
+    expected: 'zoo-modeling-app-local',
+  },
+  {
+    name: 'preserves the staging package name on Linux',
     input: {
       packageName: 'zoo-modeling-app-staging',
       packageVersion: '1.2.3',
+      platform: 'linux',
+    },
+    expected: 'zoo-modeling-app-staging',
+  },
+  {
+    name: 'preserves the staging folder for unversioned Linux builds',
+    input: {
+      packageName: 'zoo-modeling-app-staging',
+      packageVersion: '0.0.0',
       platform: 'linux',
     },
     expected: 'zoo-modeling-app-staging',

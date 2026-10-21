@@ -367,6 +367,7 @@ async fn inner_blend(edges: Vec<BoundedEdge>, exec_state: &mut ExecState, args: 
         id,
         value_id: id,
         topology_id: id,
+        tag_update_source_artifact_id: None,
         pattern_source_artifact_id: None,
         best_guess_body_type: Some(BodyType::Surface),
         artifact_id: id.into(),
@@ -420,7 +421,10 @@ async fn inner_join(
             .await?;
 
         let body_ids = selection.iter().map(|body| body.id).collect();
-        let tolerance = tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM);
+        let tolerance = tolerance
+            .as_ref()
+            .map(|t| t.unwrap_to_mm())
+            .unwrap_or(DEFAULT_TOLERANCE_MM);
         let cmd = mcmd::Solid3dMultiJoin::builder()
             .object_ids(body_ids)
             .tolerance(LengthUnit(tolerance))
@@ -437,6 +441,7 @@ async fn inner_join(
             id: body_out_id,
             value_id: body_out_id,
             topology_id: body_out_id,
+            tag_update_source_artifact_id: None,
             pattern_source_artifact_id: None,
             best_guess_body_type: None,
             artifact_id: body_out_id.into(),

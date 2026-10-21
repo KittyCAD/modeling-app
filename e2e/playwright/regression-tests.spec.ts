@@ -1,23 +1,17 @@
-import path from 'path'
 import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
-import type { Page } from '@playwright/test'
-import fs from 'fs'
-import * as fsp from 'fs/promises'
-
 import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from '@e2e/playwright/storageStates'
 import type { TestColor } from '@e2e/playwright/test-utils'
 import {
-  NUMBER_REGEXP,
-  TEST_COLORS,
   executorInputPath,
   getUtils,
+  TEST_COLORS,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import { LEGACY_SKETCH_MODE_FEATURE_FLAG } from '@src/lib/constants'
+import type { Page } from '@playwright/test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
-
-// Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
-test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
+import fs from 'fs'
+import * as fsp from 'fs/promises'
+import path from 'path'
 
 const bracket = fs.readFileSync(
   path.resolve('public', 'kcl-samples', 'bracket', 'main.kcl'),
@@ -412,83 +406,85 @@ extrude002 = extrude(profile002, length = 150)`
     }
   )
   // We updated this test such that you can have multiple exports going at once.
-  test('ensure you CAN export while an export is already going', async ({
-    page,
-    homePage,
-    cmdBar,
-  }) => {
-    const u = await getUtils(page)
-    await test.step('Set up the code and durations', async () => {
-      await page.addInitScript(
-        async ({ code }) => {
-          localStorage.setItem('persistCode', code)
-          ;(window as any).playwrightSkipFilePicker = true
-        },
-        {
-          code: bracket,
-        }
-      )
+  test(
+    'ensure you CAN export while an export is already going',
+    { tag: '@skipLocalEngine' },
+    async ({ page, homePage, cmdBar }) => {
+      const u = await getUtils(page)
+      await test.step('Set up the code and durations', async () => {
+        await page.addInitScript(
+          async ({ code }) => {
+            localStorage.setItem('persistCode', code)
+            ;(window as any).playwrightSkipFilePicker = true
+          },
+          {
+            code: bracket,
+          }
+        )
 
-      await page.setBodyDimensions({ width: 1000, height: 500 })
+        await page.setBodyDimensions({ width: 1000, height: 500 })
 
-      await homePage.goToModelingScene()
-      await u.waitForPageLoad()
+        await homePage.goToModelingScene()
+        await u.waitForPageLoad()
 
-      // wait for execution done
-      await u.openDebugPanel()
-      await u.expectCmdLog('[data-message-type="execution-done"]')
-      await u.closeDebugPanel()
+        // wait for execution done
+        await u.openDebugPanel()
+        await u.expectCmdLog('[data-message-type="execution-done"]')
+        await u.closeDebugPanel()
 
-      // expect zero errors in guter
-      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
-    })
+        // expect zero errors in guter
+        await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+      })
 
-    const errorToastMessage = page.getByText(`Error while exporting`)
-    const exportingToastMessage = page.getByText(`Exporting...`)
-    const engineErrorToastMessage = page.getByText(`Nothing to export`)
-    const alreadyExportingToastMessage = page.getByText(`Already exporting`)
-    const successToastMessage = page.getByText(`Exported successfully`)
+      const errorToastMessage = page.getByText(`Error while exporting`)
+      const exportingToastMessage = page.getByText(`Exporting...`)
+      const engineErrorToastMessage = page.getByText(`Nothing to export`)
+      const alreadyExportingToastMessage = page.getByText(`Already exporting`)
+      const successToastMessage = page.getByText(`Exported successfully`)
 
-    await test.step('second export', async () => {
-      await clickExportButton(page, cmdBar)
+      await test.step('second export', async () => {
+        await clickExportButton(page, cmdBar)
 
-      await expect(exportingToastMessage).toBeVisible()
+        await expect(exportingToastMessage).toBeVisible()
 
-      await clickExportButton(page, cmdBar)
+        await clickExportButton(page, cmdBar)
 
-      await test.step('The first export still succeeds', async () => {
+        await test.step('The first export still succeeds', async () => {
+          await Promise.all([
+            expect(exportingToastMessage).toHaveCount(0, { timeout: 15_000 }),
+            expect(errorToastMessage).not.toBeVisible(),
+            expect(engineErrorToastMessage).not.toBeVisible(),
+            // Overlapping exports can each retain a success notification.
+            expect(successToastMessage.first()).toBeVisible({
+              timeout: 15_000,
+            }),
+            expect(alreadyExportingToastMessage).not.toBeVisible({
+              timeout: 15_000,
+            }),
+          ])
+        })
+      })
+
+      await test.step('Successful, unblocked export', async () => {
+        const previousSuccessToastCount = await successToastMessage.count()
+
+        // Try exporting again.
+        await clickExportButton(page, cmdBar)
+
+        // Expect it to succeed.
         await Promise.all([
           expect(exportingToastMessage).toHaveCount(0, { timeout: 15_000 }),
           expect(errorToastMessage).not.toBeVisible(),
           expect(engineErrorToastMessage).not.toBeVisible(),
-          // Overlapping exports can each retain a success notification.
-          expect(successToastMessage.first()).toBeVisible({ timeout: 15_000 }),
-          expect(alreadyExportingToastMessage).not.toBeVisible({
-            timeout: 15_000,
-          }),
+          expect(alreadyExportingToastMessage).not.toBeVisible(),
         ])
+
+        await expect
+          .poll(() => successToastMessage.count(), { timeout: 15_000 })
+          .toBeGreaterThan(previousSuccessToastCount)
       })
-    })
-
-    await test.step('Successful, unblocked export', async () => {
-      const previousSuccessToastCount = await successToastMessage.count()
-
-      // Try exporting again.
-      await clickExportButton(page, cmdBar)
-
-      // Expect it to succeed.
-      await Promise.all([
-        expect(exportingToastMessage).toHaveCount(0, { timeout: 15_000 }),
-        expect(errorToastMessage).not.toBeVisible(),
-        expect(engineErrorToastMessage).not.toBeVisible(),
-        expect(alreadyExportingToastMessage).not.toBeVisible(),
-      ])
-
-      await expect
-        .poll(() => successToastMessage.count(), { timeout: 15_000 })
-        .toBeGreaterThan(previousSuccessToastCount)
-    })
-  })
+    }
+  )
 
   test(`Network health indicator only appears in modeling view`, async ({
     page,
@@ -648,7 +644,7 @@ extrude002 = extrude(profile002, length = 150)`
       // The animation typically takes around 500ms, so we'll check for a second
       await toolbar.expectToolbarMode.not.toBe('modeling')
 
-      // After animation completes, we should see the sketching toolbar
+      // After animation completes, we should see the sketching toolbar.
       await toolbar.expectToolbarMode.toBe('sketchSolve')
     })
   })
@@ -706,130 +702,6 @@ plane002 = offsetPlane(XZ, offset = -2 * x)`
       await page.getByTestId('custom-cmd-send-button').click()
     }
   )
-
-  test('scale other than default works with sketch mode', async ({
-    page,
-    homePage,
-    toolbar,
-    editor,
-    scene,
-  }) => {
-    await test.step('Load the washer code', async () => {
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `@settings(defaultLengthUnit = in)
-
-innerDiameter = 0.203
-outerDiameter = 0.438
-thicknessMax = 0.038
-thicknessMin = 0.024
-washerSketch = startSketchOn(XY)
-  |> circle(center = [0, 0], radius = outerDiameter / 2)
-
-washer = extrude(washerSketch, length = thicknessMax)
-faceSketch = startSketchOn(washer, face = END)
-faceProfile001 = circle(faceSketch, center = [0, 0], radius = 0.01)`
-        )
-      })
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
-    })
-    const [circleCenterClick] = scene.makeMouseHelpers(650, 300)
-    const [circleRadiusClick] = scene.makeMouseHelpers(800, 320)
-
-    await page.waitForTimeout(100)
-    await test.step('Enter the seeded washer-face sketch', async () => {
-      // Helper to verify that use of legacy sketch mode is logged
-      const legacySketchClientError = page.waitForRequest(
-        (request) => {
-          if (request.method() !== 'POST') return false
-          if (!request.url().includes('/user/client-errors')) return false
-          try {
-            return request.postDataJSON()?.code === 'legacy_sketch_mode'
-          } catch {
-            return false
-          }
-        },
-        { timeout: 15_000 }
-      )
-      // Handle the request wait even if entering sketch mode fails.
-      await Promise.all([
-        legacySketchClientError,
-        (async () => {
-          await toolbar.editSketch(1)
-          await toolbar.expectToolbarMode.toBe('sketching')
-        })(),
-      ])
-    })
-
-    await test.step('Draw a circle and verify code', async () => {
-      // select circle tool
-      await expect
-        .poll(async () => {
-          await toolbar.circleBtn.click()
-          return toolbar.circleBtn.getAttribute('aria-pressed')
-        })
-        .toBe('true')
-      await page.waitForTimeout(100)
-      await circleCenterClick()
-      // Just verify that the radius is the correct order of magnitude
-      // this number will be very different if the scale is not set correctly for inches
-      await editor.expectEditor.toContain(
-        /circle\(faceSketch, center = \[0\.0\d+, -0\.0\d+\]/
-      )
-      await circleRadiusClick()
-
-      // Just verify that the radius is the correct order of magnitude
-      await editor.expectEditor.toContain(
-        new RegExp(
-          `circle\\(faceSketch, center = \\[${NUMBER_REGEXP}, ${NUMBER_REGEXP}\\], radius = 0\\.\\d+`
-        )
-      )
-    })
-
-    await test.step('Exit sketch mode', async () => {
-      await toolbar.exitSketch()
-      await toolbar.expectToolbarMode.toBe('modeling')
-
-      await toolbar.selectUnit('Yards')
-      await editor.expectEditor.toContain('@settings(defaultLengthUnit = yd)')
-    })
-  })
-
-  test('Exiting existing sketch without editing should not delete it', async ({
-    page,
-    editor,
-    homePage,
-    toolbar,
-    scene,
-    cmdBar,
-    folderSetupFn,
-  }) => {
-    await folderSetupFn(async (dir) => {
-      const testDir = path.join(dir, 'test')
-      await fsp.mkdir(testDir, { recursive: true })
-      await fsp.writeFile(
-        path.join(testDir, 'main.kcl'),
-        `s1 = startSketchOn(XY)
-  |> startProfile(at = [0, 25])
-  |> xLine(endAbsolute = -15 + 1.5)
-s2 = startSketchOn(XY)
-  |> startProfile(at = [25, 0])
-  |> yLine(endAbsolute = -15 + 1.5)`,
-        'utf-8'
-      )
-    })
-
-    await homePage.openProject('test')
-    await scene.settled()
-    await toolbar.waitForFeatureTreeToBeBuilt()
-    await toolbar.editSketch(1)
-    await page.waitForTimeout(1000) // Just hang out for a second
-    await toolbar.exitSketch()
-
-    await editor.expectEditor.toContain('s2 = startSketchOn(XY)')
-  })
 
   test('Interrupting a long-executing file with navigation executes the new file', async ({
     page,

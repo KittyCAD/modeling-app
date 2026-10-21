@@ -3,7 +3,7 @@
 // Categories: Electronics & Computing; 3D Printable
 
 // Set units
-@settings(defaultLengthUnit = mm)
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
 
 // Define parameters
 plateLength = 121
@@ -144,11 +144,19 @@ bodyCut = subtract(body, tools = holeCutters)
 // Fillet the exterior edges
 bodyFinal = fillet(
   bodyCut,
-  tags = [
-    getCommonEdge(faces = [bodyRegion.tags.line4, capStart001]),
-    getCommonEdge(faces = [bodyRegion.tags.line4, capEnd001]),
-    getCommonEdge(faces = [bodyRegion.tags.line2, capStart001]),
-    getCommonEdge(faces = [bodyRegion.tags.line2, capEnd001])
-  ],
   radius = filletRadius,
+  edges = [
+    {
+      sideFaces = [bodyRegion.tags.line3, capStart001]
+    },
+    {
+      sideFaces = [bodyRegion.tags.line3, capEnd001]
+    },
+    {
+      sideFaces = [bodyRegion.tags.line6, capStart001]
+    },
+    {
+      sideFaces = [bodyRegion.tags.line6, capEnd001]
+    }
+  ],
 )

@@ -38,6 +38,12 @@ issues: Array<CompilationIssue>,
  */
 filenames: { [key in ModuleId]: ModulePath }, 
 /**
+ * The engine scene generation when this outcome was produced: the number of
+ * runs so far that changed the engine scene. Runs answered from the cache
+ * and mock runs leave it unchanged.
+ */
+engineSceneGeneration: number, 
+/**
  * The default planes.
  */
 defaultPlanes: DefaultPlanes | null, };

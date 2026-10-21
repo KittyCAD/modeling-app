@@ -18,6 +18,7 @@ import { getPlaneExprFromSelection } from '@src/lang/modifyAst/faces'
 import { getAxisExpression } from '@src/lang/modifyAst/geometry'
 import {
   getVariableExprsFromSelection,
+  resolveToCodeRef,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import type {
@@ -391,6 +392,7 @@ export function addAppearance({
   artifactGraph,
   objects,
   color,
+  backfaceColor,
   wasmInstance,
   metalness,
   roughness,
@@ -401,6 +403,7 @@ export function addAppearance({
   artifactGraph: ArtifactGraph
   objects: Selections
   color: string
+  backfaceColor?: string
   wasmInstance: ModuleType
   metalness?: KclCommandValue
   roughness?: KclCommandValue
@@ -427,6 +430,15 @@ export function addAppearance({
   const colorExpr = [
     createLabeledArg('color', createLiteral(color, wasmInstance)),
   ]
+  const backfaceColorExpr = backfaceColor
+    ? [
+        createLabeledArg(
+          'backfaceColor',
+          createLiteral(backfaceColor, wasmInstance)
+        ),
+      ]
+    : []
+
   const metalnessExpr = metalness
     ? [createLabeledArg('metalness', valueOrVariable(metalness))]
     : []
@@ -440,7 +452,13 @@ export function addAppearance({
   const call = createCallExpressionStdLibKw(
     modelingStdLibCommandName('Appearance'),
     objectsExpr,
-    [...colorExpr, ...metalnessExpr, ...roughnessExpr, ...opacityExpr]
+    [
+      ...colorExpr,
+      ...backfaceColorExpr,
+      ...metalnessExpr,
+      ...roughnessExpr,
+      ...opacityExpr,
+    ]
   )
 
   if (metalness && 'variableName' in metalness && metalness.variableName) {
@@ -496,10 +514,13 @@ function addObjectTransform({
   const modifiedAst = structuredClone(ast)
 
   // 2. Prepare unlabeled arguments
-  // Map the selection into a list of kcl expressions to be passed as unlabelled argument
-  const artifact = objects.graphSelections[0].artifact
+  const firstResolved =
+    objects.graphSelections[0] != null
+      ? resolveToCodeRef(objects.graphSelections[0], artifactGraph)
+      : null
   const lastChildLookup =
-    artifact?.type !== 'helix' && artifact?.type !== 'sketchBlock'
+    firstResolved?.artifact?.type !== 'helix' &&
+    firstResolved?.artifact?.type !== 'sketchBlock'
   const vars = getVariableExprsFromSelection(
     objects,
     artifactGraph,
@@ -619,6 +640,7 @@ export function addMirror3D({
 
     const isEdgeSelection = across.graphSelections.some(
       (selection) =>
+        selection.entityRef?.type === 'edge' ||
         selection.artifact?.type === 'segment' ||
         selection.artifact?.type === 'sweepEdge' ||
         selection.artifact?.type === 'edgeCutEdge'

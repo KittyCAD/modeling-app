@@ -39,6 +39,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
     "type": "TagIdentifier",
     "value": "capEnd001"
   },
+  "edgeForSurface": {
+    "type": "TagIdentifier",
+    "value": "line2"
+  },
   "extrude001": {
     "type": "Solid",
     "value": {
@@ -53,10 +57,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 85,
-            "end": 90,
+            "commentStart": 123,
+            "end": 128,
             "moduleId": 0,
-            "start": 85,
+            "start": 123,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -67,10 +71,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 160,
-            "end": 165,
+            "commentStart": 198,
+            "end": 203,
             "moduleId": 0,
-            "start": 160,
+            "start": 198,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -81,10 +85,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 237,
-            "end": 242,
+            "commentStart": 275,
+            "end": 280,
             "moduleId": 0,
-            "start": 237,
+            "start": 275,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -95,10 +99,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 316,
-            "end": 321,
+            "commentStart": 354,
+            "end": 359,
             "moduleId": 0,
-            "start": 316,
+            "start": 354,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -109,10 +113,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 836,
-            "end": 846,
+            "commentStart": 874,
+            "end": 884,
             "moduleId": 0,
-            "start": 836,
+            "start": 874,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -140,10 +144,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 85,
-              "end": 90,
+              "commentStart": 123,
+              "end": 128,
               "moduleId": 0,
-              "start": 85,
+              "start": 123,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -164,10 +168,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 160,
-              "end": 165,
+              "commentStart": 198,
+              "end": 203,
               "moduleId": 0,
-              "start": 160,
+              "start": 198,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -188,10 +192,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
               2.5
             ],
             "tag": {
-              "commentStart": 237,
-              "end": 242,
+              "commentStart": 275,
+              "end": 280,
               "moduleId": 0,
-              "start": 237,
+              "start": 275,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -212,10 +216,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
               2.5
             ],
             "tag": {
-              "commentStart": 316,
-              "end": 321,
+              "commentStart": 354,
+              "end": 359,
               "moduleId": 0,
-              "start": 316,
+              "start": 354,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -321,10 +325,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 85,
-            "end": 90,
+            "commentStart": 123,
+            "end": 128,
             "moduleId": 0,
-            "start": 85,
+            "start": 123,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -335,10 +339,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 160,
-            "end": 165,
+            "commentStart": 198,
+            "end": 203,
             "moduleId": 0,
-            "start": 160,
+            "start": 198,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -349,10 +353,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 237,
-            "end": 242,
+            "commentStart": 275,
+            "end": 280,
             "moduleId": 0,
-            "start": 237,
+            "start": 275,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -363,10 +367,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 316,
-            "end": 321,
+            "commentStart": 354,
+            "end": 359,
             "moduleId": 0,
-            "start": 316,
+            "start": 354,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -377,10 +381,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 836,
-            "end": 846,
+            "commentStart": 874,
+            "end": 884,
             "moduleId": 0,
-            "start": 836,
+            "start": 874,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
@@ -408,10 +412,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 85,
-              "end": 90,
+              "commentStart": 123,
+              "end": 128,
               "moduleId": 0,
-              "start": 85,
+              "start": 123,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -432,10 +436,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
               0.0
             ],
             "tag": {
-              "commentStart": 160,
-              "end": 165,
+              "commentStart": 198,
+              "end": 203,
               "moduleId": 0,
-              "start": 160,
+              "start": 198,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -456,10 +460,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
               2.5
             ],
             "tag": {
-              "commentStart": 237,
-              "end": 242,
+              "commentStart": 275,
+              "end": 280,
               "moduleId": 0,
-              "start": 237,
+              "start": 275,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -480,10 +484,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
               2.5
             ],
             "tag": {
-              "commentStart": 316,
-              "end": 321,
+              "commentStart": 354,
+              "end": 359,
               "moduleId": 0,
-              "start": 316,
+              "start": 354,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -609,10 +613,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 85,
-            "end": 90,
+            "commentStart": 123,
+            "end": 128,
             "moduleId": 0,
-            "start": 85,
+            "start": 123,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -633,10 +637,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 160,
-            "end": 165,
+            "commentStart": 198,
+            "end": 203,
             "moduleId": 0,
-            "start": 160,
+            "start": 198,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -657,10 +661,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
             2.5
           ],
           "tag": {
-            "commentStart": 237,
-            "end": 242,
+            "commentStart": 275,
+            "end": 280,
             "moduleId": 0,
-            "start": 237,
+            "start": 275,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -681,10 +685,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
             2.5
           ],
           "tag": {
-            "commentStart": 316,
-            "end": 321,
+            "commentStart": 354,
+            "end": 359,
             "moduleId": 0,
-            "start": 316,
+            "start": 354,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -799,10 +803,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 85,
-            "end": 90,
+            "commentStart": 123,
+            "end": 128,
             "moduleId": 0,
-            "start": 85,
+            "start": 123,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -823,10 +827,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
             0.0
           ],
           "tag": {
-            "commentStart": 160,
-            "end": 165,
+            "commentStart": 198,
+            "end": 203,
             "moduleId": 0,
-            "start": 160,
+            "start": 198,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -847,10 +851,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
             2.5
           ],
           "tag": {
-            "commentStart": 237,
-            "end": 242,
+            "commentStart": 275,
+            "end": 280,
             "moduleId": 0,
-            "start": 237,
+            "start": 275,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -871,10 +875,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
             2.5
           ],
           "tag": {
-            "commentStart": 316,
-            "end": 321,
+            "commentStart": 354,
+            "end": 359,
             "moduleId": 0,
-            "start": 316,
+            "start": 354,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1495,10 +1499,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 85,
-                    "end": 90,
+                    "commentStart": 123,
+                    "end": 128,
                     "moduleId": 0,
-                    "start": 85,
+                    "start": 123,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1519,10 +1523,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
                     0.0
                   ],
                   "tag": {
-                    "commentStart": 160,
-                    "end": 165,
+                    "commentStart": 198,
+                    "end": 203,
                     "moduleId": 0,
-                    "start": 160,
+                    "start": 198,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -1543,10 +1547,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
                     2.5
                   ],
                   "tag": {
-                    "commentStart": 237,
-                    "end": 242,
+                    "commentStart": 275,
+                    "end": 280,
                     "moduleId": 0,
-                    "start": 237,
+                    "start": 275,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -1567,10 +1571,10 @@ description: Variables in memory after executing error_large_fillet_radius.kcl
                     2.5
                   ],
                   "tag": {
-                    "commentStart": 316,
-                    "end": 321,
+                    "commentStart": 354,
+                    "end": 359,
                     "moduleId": 0,
-                    "start": 316,
+                    "start": 354,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },

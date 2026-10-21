@@ -37,9 +37,9 @@ import {
 import type { ResolvedExtensionSettings } from '@src/lib/settings/extensionSettings'
 import {
   createSettings,
-  Setting,
   type SettingsType,
 } from '@src/lib/settings/initialSettings'
+import { Setting } from '@src/lib/settings/Setting'
 import type {
   SaveSettingsPayload,
   SettingsLevel,

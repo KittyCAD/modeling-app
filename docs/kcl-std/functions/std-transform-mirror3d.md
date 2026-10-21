@@ -32,7 +32,7 @@ mirror3d(
 
 ```kcl
 // Simple mirror3d example, showing mirroring across named axes.
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 sketch001 = sketch(on = XY) {
   line3 = line(start = [var -4.59mm, var -5.11mm], end = [var -5mm, var 3.51mm])
@@ -66,7 +66,7 @@ mirror3d([mySolid, mySolid2], across = XY)
 
 ```kcl
 // Similar mirror example, but showing mirroring across an arbitrary plane.
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 sketch001 = sketch(on = XY) {
   line3 = line(start = [var -4.59mm, var -5.11mm], end = [var -5mm, var 3.51mm])
@@ -104,7 +104,7 @@ shape2 = mirror3d([shape1], across = customPlane)
 
 ```kcl
 // Example of mirroring across segments.
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 sketch001 = sketch(on = XY) {
   line3 = line(start = [var -4.59mm, var -5.11mm], end = [var -5mm, var 3.51mm])
@@ -138,7 +138,7 @@ shape2 = mirror3d([shape1], across = sketch001.axisLine)
 
 ```kcl
 // Mirror geometry across the edge of some other geometry.
-@settings(kclVersion = 2.0)
+@settings(kclVersion = 3.0)
 
 // Sketch the solid to mirror.
 sketch001 = sketch(on = XY) {
@@ -169,10 +169,15 @@ sketch002 = sketch(on = XY) {
 }
 hidden002 = hide(sketch002)
 region002 = region(segments = [sketch002.line1, sketch002.line2])
-extrude001 = extrude(region002, length = 1)
+extrude001 = extrude(region002, length = 1, tagEnd = $capEnd001)
 
 // Do the mirroring, across an edge of some solid.
-shape2 = mirror3d([shape1], across = getOppositeEdge(extrude001.sketch.tags.line1))
+shape2 = mirror3d(
+  [shape1],
+  across = {
+    sideFaces = [region002.tags.line1, capEnd001]
+  },
+)
 
 ```
 

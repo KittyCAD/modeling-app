@@ -110,7 +110,6 @@ use crate::SourceRange;
 use crate::docs::kcl_doc::ArgData;
 use crate::docs::kcl_doc::ModData;
 use crate::exec::KclValue;
-use crate::execution::cache;
 use crate::lsp::LspSuggestion;
 use crate::lsp::ToLspRange;
 use crate::lsp::backend::Backend as _;
@@ -121,11 +120,9 @@ use crate::lsp::util::IntoDiagnostic;
 use crate::parsing::PIPE_OPERATOR;
 use crate::parsing::ast::types::Expr;
 use crate::parsing::ast::types::VariableKind;
-use crate::parsing::token::LexerMode;
 use crate::parsing::token::RESERVED_WORDS;
 use crate::parsing::token::TokenStream;
 use crate::parsing::token::adapter;
-use crate::parsing::token::lex;
 
 pub mod custom_notifications;
 mod hover;
@@ -470,7 +467,10 @@ impl crate::lsp::backend::Backend for Backend {
 
     async fn inner_on_change(&self, params: TextDocumentItem, force: bool) {
         if force {
-            crate::bust_cache().await;
+            let cache = self.executor_ctx().await.as_ref().map(|ctx| ctx.cache.clone());
+            if let Some(cache) = cache {
+                cache.bust_cache().await;
+            }
         }
 
         let filename = params.uri.to_string();
@@ -478,27 +478,10 @@ impl crate::lsp::backend::Backend for Backend {
 
         // Lets update the tokens.
         let module_id = ModuleId::default();
-        // Mode-aware lex. The old lexer keeps its exact bail-on-error behavior.
-        // The new lexer always yields a token stream so semantic highlighting
-        // survives a lexical error; any lexical error is carried in `lex_error`
-        // and reported below, after semantic tokens are computed.
-        let (tokens, lex_error) = match LexerMode::resolve() {
-            LexerMode::Old => match lex(&params.text, module_id) {
-                Ok(tokens) => (tokens, None),
-                Err(err) => {
-                    self.add_to_diagnostics(&params, &[err], Replaces::All).await;
-                    self.token_map.remove(&filename);
-                    self.remove_from_ast_maps(&filename);
-                    self.semantic_tokens_map.remove(&filename);
-                    return;
-                }
-            },
-            LexerMode::New => {
-                let result = adapter::lex_with_diagnostics(&params.text, module_id);
-                let lex_error = result.to_lexical_error();
-                (result.tokens, lex_error)
-            }
-        };
+        // Preserve tokens for semantic highlighting when lexing reports an error.
+        let result = adapter::lex_with_diagnostics(&params.text, module_id);
+        let lex_error = result.to_lexical_error();
+        let tokens = result.tokens;
 
         // Get the previous tokens.
         let tokens_changed = match self.token_map.get(&filename) {
@@ -521,10 +504,7 @@ impl crate::lsp::backend::Backend for Backend {
             self.update_semantic_tokens(&tokens, &params).await;
         }
 
-        // With the new lexer a lexical error is surfaced as a diagnostic, but the
-        // token stream and semantic tokens (computed above) are retained so the
-        // editor keeps highlighting. No AST is produced (mirrors the parse-error
-        // path below).
+        // Report lexical errors without producing an AST.
         if let Some(err) = lex_error {
             self.add_to_diagnostics(&params, &[err], Replaces::All).await;
             self.remove_from_ast_maps(&filename);
@@ -533,7 +513,7 @@ impl crate::lsp::backend::Backend for Backend {
 
         // Lets update the ast.
 
-        let (ast, errs) = match crate::parsing::parse_tokens(tokens.clone()).0 {
+        let (program, errs) = match crate::parsing::parse_tokens(tokens.clone()).0 {
             Ok(result) => result,
             Err(err) => {
                 self.add_to_diagnostics(&params, &[err], Replaces::All).await;
@@ -549,7 +529,7 @@ impl crate::lsp::backend::Backend for Backend {
             return;
         }
 
-        let Some(mut ast) = ast else {
+        let Some(mut program) = program else {
             self.remove_from_ast_maps(&filename);
             return;
         };
@@ -557,11 +537,12 @@ impl crate::lsp::backend::Backend for Backend {
         // Here we will want to store the digest and compare, but for now
         // we're doing this in a non-load-bearing capacity so we can remove
         // this if it backfires and only hork the LSP.
-        ast.compute_digest();
+        program.ast.compute_digest();
 
         // Save it as a program.
         let ast = crate::Program {
-            ast,
+            kcl_version: program.kcl_version,
+            ast: program.ast,
             original_file_contents: params.text.clone(),
         };
 
@@ -1026,21 +1007,21 @@ impl Backend {
         // I don't know if we need to do this again since it should be updated in the context.
         // But I figure better safe than sorry since this will write back out to the file.
         let module_id = ModuleId::default();
-        let Ok(mut ast) = crate::parsing::parse_str(current_code, module_id).parse_errs_as_err() else {
+        let Ok(mut program) = crate::parsing::parse_str(current_code, module_id).parse_errs_as_err() else {
             return Ok(None);
         };
 
         // Let's convert the position to a character index.
         let pos = position_to_char_index(params.position, current_code);
         // Now let's perform the rename on the ast.
-        if !ast.rename_symbol(new_name, pos) {
+        if !program.ast.rename_symbol(new_name, pos) {
             // Nothing was renamed, e.g. the position is on a symbol we can't
             // rename yet, like a local in a function body or an if-expression
             // arm. Refuse instead of producing an edit that only reformats.
             return Ok(None);
         }
         // Now recast it.
-        let recast = ast.recast_top(&Default::default(), 0);
+        let recast = program.ast.recast_top(&Default::default(), 0);
 
         Ok(Some((current_code.to_string(), recast)))
     }
@@ -1195,7 +1176,7 @@ impl LanguageServer for Backend {
 
         match hover {
             Hover::Function { name, range } => {
-                let (sig, docs) = if let Some(Some(result)) = with_cached_var(&name, |value| {
+                let (sig, docs) = if let Some(Some(result)) = with_cached_var(self, &name, |value| {
                     match value {
                         // User-defined function
                         KclValue::Function { value, .. } if !value.is_std() => {
@@ -1312,7 +1293,7 @@ impl LanguageServer for Backend {
                 }),
                 range: Some(range),
             })),
-            Hover::Variable { name, ty: None, range } => Ok(with_cached_var(&name, |value| {
+            Hover::Variable { name, ty: None, range } => Ok(with_cached_var(self, &name, |value| {
                 let mut text: String = format!("```\n{name}");
                 if let Some(ty) = value.principal_type() {
                     text.push_str(&format!(": {}", ty.human_friendly_type()));
@@ -1640,11 +1621,11 @@ impl LanguageServer for Backend {
         // I don't know if we need to do this again since it should be updated in the context.
         // But I figure better safe than sorry since this will write back out to the file.
         let module_id = ModuleId::default();
-        let Ok(ast) = crate::parsing::parse_str(current_code, module_id).parse_errs_as_err() else {
+        let Ok(program) = crate::parsing::parse_str(current_code, module_id).parse_errs_as_err() else {
             return Ok(None);
         };
         // Now recast it.
-        let recast = ast.recast_top(
+        let recast = program.ast.recast_top(
             &crate::parsing::ast::types::FormatOptions {
                 tab_size: params.options.tab_size as usize,
                 insert_final_newline: params.options.insert_final_newline.unwrap_or(false),
@@ -1939,7 +1920,7 @@ fn get_signatures_from_stdlib_in_context(
 /// Get KCL keywords
 pub fn get_keywords() -> HashMap<String, CompletionItem> {
     RESERVED_WORDS
-        .keys()
+        .iter()
         .map(|k| (k.to_string(), keyword_to_completion(k.to_string())))
         .collect()
 }
@@ -2043,8 +2024,9 @@ fn position_to_char_index(position: Position, code: &str) -> usize {
     std::cmp::min(char_position, end_of_file)
 }
 
-async fn with_cached_var<T>(name: &str, f: impl Fn(&KclValue) -> T) -> Option<T> {
-    let value = cache::read_old_memory_var(name).await?;
+async fn with_cached_var<T>(backend: &Backend, name: &str, f: impl Fn(&KclValue) -> T) -> Option<T> {
+    let cache = backend.executor_ctx().await.as_ref()?.cache.clone();
+    let value = cache.read_old_memory_var(name).await?;
     Some(f(&value))
 }
 
@@ -2053,6 +2035,34 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
+
+    #[tokio::test]
+    async fn cached_variables_are_scoped_to_the_backend_session() {
+        let a = crate::lsp::test_util::kcl_lsp_server_mock_execution().await.unwrap();
+        let b = crate::lsp::test_util::kcl_lsp_server_mock_execution().await.unwrap();
+        let ctx_a = a.executor_ctx().await.as_ref().unwrap().clone();
+        let ctx_b = b.executor_ctx().await.as_ref().unwrap().clone();
+        for (ctx, source) in [
+            (&ctx_a, "@settings(kclVersion = 3.0)\nx = 2"),
+            (&ctx_b, "@settings(kclVersion = 3.0)\nx = 7"),
+        ] {
+            ctx.run_mock(
+                &Program::parse_no_errs(source).unwrap(),
+                &kcl_lib::MockConfig::default(),
+            )
+            .await
+            .unwrap();
+        }
+        assert_ne!(
+            with_cached_var(&a, "x", KclValue::value_str).await,
+            with_cached_var(&b, "x", KclValue::value_str).await,
+        );
+        ctx_a.cache.clear_mem_cache().await;
+        assert!(with_cached_var(&a, "x", |_| ()).await.is_none());
+        assert!(with_cached_var(&b, "x", |_| ()).await.is_some());
+        ctx_a.close().await;
+        ctx_b.close().await;
+    }
 
     #[test]
     fn test_position_to_char_index_first_line() {

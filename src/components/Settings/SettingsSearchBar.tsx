@@ -5,6 +5,7 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { getKeybindingRows } from '@src/components/Settings/keybindingRows'
 import Fuse from 'fuse.js'
 import { useCallback, useMemo, useRef, useState } from 'react'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: settings search publishes tab and hash (useNavigate).
 import { useNavigate } from 'react-router-dom'
 
 import { CustomIcon } from '@src/components/CustomIcon'

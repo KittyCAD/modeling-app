@@ -5,7 +5,7 @@ import {
   type ProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
 import type { ExtensionSettingsContribution } from '@src/lib/settings/extensionSettings'
-import { Setting } from '@src/lib/settings/initialSettings'
+import { Setting } from '@src/lib/settings/Setting'
 import { Suspense, lazy } from 'react'
 
 const ProjectLibrariesSetting = lazy(() =>

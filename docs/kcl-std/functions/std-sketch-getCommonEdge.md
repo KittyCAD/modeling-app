@@ -27,7 +27,7 @@ getCommonEdge(faces: [TaggedFace; 2]): Edge
 ### Examples
 
 ```kcl
-@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+@settings(defaultLengthUnit = mm, kclVersion = 3.0)
 
 scale = 20mm
 partSketch = sketch(on = XY) {
@@ -45,10 +45,7 @@ part001 = extrude(partRegion, length = scale, tagEnd = $end0)
   |> chamfer(length = 10mm, tags = [getOppositeEdge(partRegion.tags.line0)], tag = $chamfer0)
 
 // Select the edge shared by the chamfer and the extrusion's end face.
-commonEdge = getCommonEdge(faces = [
-  part001.faces.chamfer0,
-  part001.faces.end0
-])
+commonEdge = { sideFaces = [chamfer0, end0] }
 
 ```
 

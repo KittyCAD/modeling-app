@@ -1,21 +1,37 @@
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
   provideService,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
-import type { ZDSProject } from '@src/lang/KclManager'
+import type { ZDSProject } from '@src/lib/projectSession'
+import {
+  createTextFileIO,
+  type TextFileIO,
+} from '@src/lib/projectSession/textFileIO'
+import { fileOperationsService } from '@src/registry/contracts/fileOperations'
 import {
   projectSession,
   type ProjectSessionService,
 } from '@src/registry/contracts/projectSession'
 
-export const projectSessionExtension = defineRegistryItemFactory(() => {
+export const projectSessionExtension = defineRegistryItemFactory((ctx) => {
   const project = signal<ZDSProject | undefined>(undefined)
   const currentProjectLibraryId = signal<string | undefined>(undefined)
+  let textFileIO: TextFileIO | undefined
+  const electron = window.electron
 
   const serviceImpl: ProjectSessionService = {
+    get textFileIO() {
+      return (textFileIO ??= createTextFileIO(
+        ctx.services.get(fileOperationsService),
+        {
+          watch: (path, key, onEvent) =>
+            electron?.watchFileOn(path, key, onEvent),
+          unwatch: (path, key) => electron?.watchFileOff(path, key),
+        }
+      ))
+    },
     project,
     currentProjectLibraryId,
     getProject: () => project.value,
@@ -32,10 +48,8 @@ export const projectSessionExtension = defineRegistryItemFactory(() => {
   }
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'project-session-extension',
-      providesServices: [provideService(projectSession, serviceImpl)],
-    }),
+    id: 'project-session-extension',
+    providesServices: [provideService(projectSession, serviceImpl)],
   }
 }, 'project-session-extension')
 

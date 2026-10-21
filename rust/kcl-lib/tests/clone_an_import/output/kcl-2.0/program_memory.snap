@@ -11,7 +11,36 @@ description: Variables in memory after executing clone_an_import.kcl
       "originalId": "[uuid]",
       "topologyId": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [],
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 61,
+            "end": 68,
+            "moduleId": 1,
+            "start": 61,
+            "type": "TagDeclarator",
+            "value": "circle1"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 215,
+            "end": 222,
+            "moduleId": 1,
+            "start": 215,
+            "type": "TagDeclarator",
+            "value": "circle2"
+          },
+          "type": "extrudeArc"
+        }
+      ],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -140,8 +169,8 @@ description: Variables in memory after executing clone_an_import.kcl
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": null,
-      "endCapId": null,
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }
@@ -168,7 +197,36 @@ description: Variables in memory after executing clone_an_import.kcl
       "originalId": "[uuid]",
       "topologyId": "[uuid]",
       "artifactId": "[uuid]",
-      "value": [],
+      "value": [
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 61,
+            "end": 68,
+            "moduleId": 2,
+            "start": 61,
+            "type": "TagDeclarator",
+            "value": "circle1"
+          },
+          "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 215,
+            "end": 222,
+            "moduleId": 2,
+            "start": 215,
+            "type": "TagDeclarator",
+            "value": "circle2"
+          },
+          "type": "extrudeArc"
+        }
+      ],
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -297,8 +355,8 @@ description: Variables in memory after executing clone_an_import.kcl
         "units": "mm",
         "isClosed": "explicitly"
       },
-      "startCapId": null,
-      "endCapId": null,
+      "startCapId": "[uuid]",
+      "endCapId": "[uuid]",
       "units": "mm",
       "sectional": false
     }

@@ -1,6 +1,7 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { Fragment, useEffect, useRef } from 'react'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: query-based tabs and hash-based scrolling (useLocation, useNavigate, useSearchParams).
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 import { pluginsValueSpec } from '@kittycad/registry'
