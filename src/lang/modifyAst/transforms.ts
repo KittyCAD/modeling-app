@@ -392,6 +392,7 @@ export function addAppearance({
   artifactGraph,
   objects,
   color,
+  backfaceColor,
   wasmInstance,
   metalness,
   roughness,
@@ -402,6 +403,7 @@ export function addAppearance({
   artifactGraph: ArtifactGraph
   objects: Selections
   color: string
+  backfaceColor?: string
   wasmInstance: ModuleType
   metalness?: KclCommandValue
   roughness?: KclCommandValue
@@ -428,6 +430,15 @@ export function addAppearance({
   const colorExpr = [
     createLabeledArg('color', createLiteral(color, wasmInstance)),
   ]
+  const backfaceColorExpr = backfaceColor
+    ? [
+        createLabeledArg(
+          'backfaceColor',
+          createLiteral(backfaceColor, wasmInstance)
+        ),
+      ]
+    : []
+
   const metalnessExpr = metalness
     ? [createLabeledArg('metalness', valueOrVariable(metalness))]
     : []
@@ -441,7 +452,13 @@ export function addAppearance({
   const call = createCallExpressionStdLibKw(
     modelingStdLibCommandName('Appearance'),
     objectsExpr,
-    [...colorExpr, ...metalnessExpr, ...roughnessExpr, ...opacityExpr]
+    [
+      ...colorExpr,
+      ...backfaceColorExpr,
+      ...metalnessExpr,
+      ...roughnessExpr,
+      ...opacityExpr,
+    ]
   )
 
   if (metalness && 'variableName' in metalness && metalness.variableName) {
