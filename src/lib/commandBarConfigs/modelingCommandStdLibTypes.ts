@@ -60,7 +60,7 @@ type PointAndClickStdLibCommandArg<
 // Maps KCL types to TS types, with a fallback to Selections
 type StdLibCommandArgValue<Arg extends { readonly ty: string | null }> =
   Arg['ty'] extends 'bool'
-    ? boolean
+    ? boolean | KclCommandValue
     : Arg['ty'] extends 'string' | 'TagDecl'
       ? string
       : Arg['ty'] extends

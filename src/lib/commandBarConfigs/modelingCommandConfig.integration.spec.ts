@@ -80,6 +80,29 @@ function bodyTypeRequiredForCommand(
     : bodyTypeArg.required
 }
 
+it('allows boolean parameter bindings on every modeling boolean field', () => {
+  for (const config of Object.values(modelingMachineCommandConfig)) {
+    for (const command of isArray(config) ? config : [config]) {
+      if (!command) continue
+      const args: Record<
+        string,
+        CommandArgumentConfig<unknown, ModelingMachineContext>
+      > = command.args ?? {}
+      for (const arg of Object.values(args)) {
+        if (arg.inputType !== 'boolean') continue
+        expect(arg.allowVariables).toBe(true)
+        expect(
+          arg.valueSummary?.({
+            valueAst: {},
+            valueText: 'enabled',
+            valueCalculated: 'false',
+          })
+        ).toBe('enabled (Off)')
+      }
+    }
+  }
+})
+
 describe('GDT Datum Default Name', () => {
   it('should work with command bar when datum A already exists', async () => {
     // Test command bar integration with existing datum

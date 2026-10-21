@@ -8,6 +8,32 @@ import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { describe, expect, it } from 'vitest'
 
 describe('KCL expression calculations', () => {
+  it.each([
+    ['true', 'true'],
+    ['false', 'false'],
+    ['1 < 2', 'true'],
+    ['1 > 2', 'false'],
+  ])(
+    'calculates boolean expression %s when allowed',
+    async (value, expected) => {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      const actual = await stringToKclExpression(value, rustContext, {
+        allowBooleans: true,
+      })
+      expect(actual).toMatchObject({
+        valueText: value,
+        valueCalculated: expected,
+        valueAst: expect.objectContaining({ type: expect.any(String) }),
+      })
+    }
+  )
+
+  it.each(['true', 'false'])('rejects boolean %s by default', async (value) => {
+    const { rustContext } = await buildTheWorldAndNoEngineConnection()
+    const actual = await getCalculatedKclExpressionValue(value, rustContext)
+    expect(actual).toMatchObject({ valueAsString: 'NAN' })
+  })
+
   it('calculates a simple expression without units', async () => {
     const { rustContext } = await buildTheWorldAndNoEngineConnection()
     const actual = await getCalculatedKclExpressionValue('1 + 2', rustContext)

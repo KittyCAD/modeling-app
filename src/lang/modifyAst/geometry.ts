@@ -3,7 +3,6 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   createCallExpressionStdLibKw,
   createLabeledArg,
-  createLiteral,
   createLocalName,
 } from '@src/lang/create'
 import {
@@ -23,6 +22,7 @@ import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/tagManagem
 import {
   getVariableExprsFromSelection,
   resolveToCodeRef,
+  booleanOrExpression,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -68,7 +68,7 @@ export function addHelix({
   angleStart: KclCommandValue
   radius?: KclCommandValue
   length?: KclCommandValue
-  ccw?: boolean
+  ccw?: boolean | KclCommandValue
   nodeToEdit?: PathToNode
 }):
   | {
@@ -124,7 +124,7 @@ export function addHelix({
   // Optional args
   const ccwExpr =
     ccw !== undefined
-      ? [createLabeledArg('ccw', createLiteral(ccw, wasmInstance))]
+      ? [createLabeledArg('ccw', booleanOrExpression(ccw, wasmInstance))]
       : []
   const radiusExpr = radius
     ? [createLabeledArg('radius', valueOrVariable(radius))]

@@ -8,6 +8,7 @@ import type {
 } from '@src/lib/commandTypes'
 import {
   getCommandArgumentKclValuesOnly,
+  isKclCommandValue,
   isModelingDialogCommand,
 } from '@src/lib/commandUtils'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -563,6 +564,8 @@ export const commandBarMachine = setup({
               typeof argValue !== typeof resolvedDefaultValue &&
               !(
                 argConfig.inputType === 'kcl' ||
+                (argConfig.inputType === 'boolean' &&
+                  argConfig.allowVariables) ||
                 argConfig.inputType === 'vector3d' ||
                 argConfig.inputType === 'vector2d' ||
                 argConfig.skip
@@ -571,6 +574,16 @@ export const commandBarMachine = setup({
               argConfig.inputType === 'kcl' &&
               isRequired &&
               !(argValue as Partial<KclCommandValue> | undefined)?.valueAst
+            const hasInvalidBooleanValue =
+              argConfig.inputType === 'boolean' &&
+              argValue !== undefined &&
+              typeof argValue !== 'boolean' &&
+              !(
+                argConfig.allowVariables &&
+                isKclCommandValue(argValue) &&
+                (argValue.valueCalculated === 'true' ||
+                  argValue.valueCalculated === 'false')
+              )
             const hasInvalidOptionsValue =
               isRequired &&
               'options' in argConfig &&
@@ -597,6 +610,7 @@ export const commandBarMachine = setup({
             if (
               hasMismatchedDefaultValueType ||
               hasInvalidKclValue ||
+              hasInvalidBooleanValue ||
               hasInvalidOptionsValue
             ) {
               return Promise.reject({

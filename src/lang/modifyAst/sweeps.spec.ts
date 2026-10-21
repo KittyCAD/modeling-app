@@ -1522,6 +1522,8 @@ profile002 = startProfile(sketch002, at = [0, 0])
           kclManagerInThisFile
         )
       const result = addSweep({
+        translateProfileToPath: false,
+        orientProfilePerpendicular: false,
         ast,
         artifactGraph,
         sketches,
@@ -1564,6 +1566,8 @@ profile002 = startProfile(sketch002, at = [0, 0])
       const path = createSelectionFromArtifacts([pathArtifact!], artifactGraph)
 
       const result = addSweep({
+        translateProfileToPath: false,
+        orientProfilePerpendicular: false,
         ast,
         artifactGraph,
         sketches,
@@ -1616,6 +1620,8 @@ profile001 = startProfile(sketch001, at = [0, 0])
       )
       const path = createSelectionFromArtifacts([pathArtifact!], artifactGraph)
       const result = addSweep({
+        translateProfileToPath: false,
+        orientProfilePerpendicular: false,
         ast,
         artifactGraph,
         sketches,
@@ -1676,6 +1682,8 @@ sketch002 = sketch(on = XZ) {
         artifactGraph
       )
       const result = addSweep({
+        translateProfileToPath: false,
+        orientProfilePerpendicular: false,
         ast,
         artifactGraph,
         sketches,
@@ -1736,6 +1744,8 @@ region001 = region(point = [2.3783mm, -2.5082mm], sketch = sketch001)`
       const path = createSelectionFromArtifacts(pathArtifacts, artifactGraph)
 
       const result = addSweep({
+        translateProfileToPath: false,
+        orientProfilePerpendicular: false,
         ast,
         artifactGraph,
         sketches,
@@ -1807,6 +1817,8 @@ sweep001 = sweep(region001, path = profile001, sectional = true)`
           kclManagerInThisFile
         )
       const result = addSweep({
+        translateProfileToPath: false,
+        orientProfilePerpendicular: false,
         ast,
         artifactGraph,
         sketches,
@@ -1852,6 +1864,8 @@ s2 = sketch(on = XZ) {
         artifactGraph
       )
       const result = addSweep({
+        translateProfileToPath: false,
+        orientProfilePerpendicular: false,
         ast,
         artifactGraph,
         sketches: segment,
@@ -1882,6 +1896,8 @@ s2 = sketch(on = XZ) {
       const sectional = true
       const relativeTo = 'SKETCH_PLANE'
       const result = addSweep({
+        translateProfileToPath: false,
+        orientProfilePerpendicular: false,
         ast,
         artifactGraph,
         sketches,
@@ -1980,6 +1996,8 @@ profile003 = startProfile(sketch002, at = [0, 0])
         artifactGraph
       )
       const result = addSweep({
+        translateProfileToPath: false,
+        orientProfilePerpendicular: false,
         ast,
         artifactGraph,
         sketches,
@@ -2030,7 +2048,7 @@ profile002 = startProfile(sketch002, at = [0, 0])
       }
     }
 
-    it('forces version 2 when no version is provided', async () => {
+    it('omits unset booleans on creation and defaults to version 2', async () => {
       const { ast, artifactGraph, sketches, path, instance } =
         await setupSweep()
       const result = addSweep({
@@ -2042,13 +2060,10 @@ profile002 = startProfile(sketch002, at = [0, 0])
       })
       if (err(result)) throw result
 
-      expect(recast(result.modifiedAst, instance)).toContain(`sweep001 = sweep(
-  profile001,
-  path = profile002,
-  version = 2,
-  translateProfileToPath = false,
-  orientProfilePerpendicular = false,
-)`)
+      const newCode = recast(result.modifiedAst, instance)
+      expect(newCode).toContain('version = 2')
+      expect(newCode).not.toContain('translateProfileToPath')
+      expect(newCode).not.toContain('orientProfilePerpendicular')
     })
 
     it('preserves an explicit version', async () => {
@@ -2056,6 +2071,8 @@ profile002 = startProfile(sketch002, at = [0, 0])
         await setupSweep()
       const version = await getKclCommandValue('1', instance, rustContext)
       const result = addSweep({
+        translateProfileToPath: false,
+        orientProfilePerpendicular: false,
         ast,
         artifactGraph,
         sketches,

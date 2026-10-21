@@ -250,6 +250,7 @@ export type CommandArgumentConfig<
     }
   | {
       inputType: 'kcl'
+      allowBooleans?: boolean
       allowArrays?: boolean
       allowStringArrays?: boolean
       allowUncalculated?: boolean
@@ -299,6 +300,7 @@ export type CommandArgumentConfig<
     }
   | {
       inputType: 'boolean'
+      allowVariables?: boolean
       defaultValue?:
         | OutputType
         | ((
@@ -434,6 +436,7 @@ export type CommandArgument<
   | {
       inputType: 'kcl'
       allowArrays?: boolean
+      allowBooleans?: boolean
       allowStringArrays?: boolean
       allowUncalculated?: boolean
       inputToKclValue?: (value: string) => string
@@ -491,6 +494,7 @@ export type CommandArgument<
     }
   | {
       inputType: 'boolean'
+      allowVariables?: boolean
       defaultValue?:
         | OutputType
         | ((

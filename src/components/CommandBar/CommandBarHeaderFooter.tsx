@@ -264,7 +264,11 @@ function CommandBarHeaderFooter({
                         ) : arg.inputType === 'vector2d' ? (
                           (argValue as KclCommandValue).valueCalculated
                         ) : arg.inputType === 'boolean' ? (
-                          String(argValue)
+                          arg.valueSummary ? (
+                            arg.valueSummary(argValue)
+                          ) : (
+                            String(argValue)
+                          )
                         ) : arg.inputType === 'text' &&
                           !arg.valueSummary &&
                           typeof argValue === 'string' ? (

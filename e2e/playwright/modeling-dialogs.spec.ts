@@ -10,6 +10,72 @@ region001 = region(segments = [sketch001.circle1])`
 test.describe('Modeling dialogs', { tag: '@web' }, () => {
   test.use({ userFeatures: ['modeling_dialogs'] })
 
+  test('Creates a boolean parameter and preserves its feature binding through edits', async ({
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+    modelingDialog,
+  }) => {
+    await homePage.goToModelingScene()
+    await scene.settled()
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', profileCode)
+    )
+
+    await cmdBar.cmdBarOpenBtn.click()
+    await cmdBar.chooseCommand('create parameter')
+    await modelingDialog.input('Variable name').fill('enabled')
+    await modelingDialog.input(/^value$/i).fill('false')
+    await expect(modelingDialog.submitButton).toBeEnabled()
+    await scene.waitForExecutionDoneAfter(() =>
+      modelingDialog.submitButton.click()
+    )
+    await editor.expectEditor.toContain('enabled = false')
+
+    await editor.selectText('region(')
+    await toolbar.extrudeButton.click()
+    const symmetric = modelingDialog.options(/^symmetric$/i)
+    await symmetric.fill('enabled')
+    await page
+      .getByRole('option', { name: 'enabled (Off)', exact: true })
+      .click()
+    await scene.waitForExecutionDoneAfter(() =>
+      modelingDialog.submitButton.click()
+    )
+    await editor.expectEditor.toContain('symmetric = enabled')
+
+    await (await toolbar.getFeatureTreeOperation('enabled', 0)).dblclick()
+    const editValue = cmdBar.argumentInput.locator('[contenteditable]')
+    await expect(editValue).toHaveText('false')
+    await editValue.fill('true')
+    await expect(page.locator('#arg-form')).toHaveAttribute(
+      'data-can-submit',
+      'true'
+    )
+    await cmdBar.progressCmdBar()
+    await scene.waitForExecutionDoneAfter(() => cmdBar.progressCmdBar())
+    await editor.expectEditor.toContain('enabled = true')
+
+    await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
+    await expect(symmetric).toHaveValue('enabled (On)')
+    await modelingDialog.input(/^length$/i).fill('8mm')
+    await scene.waitForExecutionDoneAfter(() =>
+      modelingDialog.submitButton.click()
+    )
+    await editor.expectEditor.toContain('symmetric = enabled')
+
+    await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
+    await symmetric.fill('Use default')
+    await page.getByRole('option', { name: 'Use default', exact: true }).click()
+    await scene.waitForExecutionDoneAfter(() =>
+      modelingDialog.submitButton.click()
+    )
+    await editor.expectEditor.not.toContain('symmetric =')
+  })
+
   test('Preserves an Extrude draft while hiding an obstruction', async ({
     page,
     homePage,

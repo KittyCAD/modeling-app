@@ -13,7 +13,7 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
-import { valueOrVariable } from '@src/lang/queryAst'
+import { booleanOrExpression, valueOrVariable } from '@src/lang/queryAst'
 import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
 import { modelingStdLibCommandName } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
@@ -44,8 +44,8 @@ export function addPatternCircular3D({
   center: KclCommandValue // Point3d [x, y, z]
   wasmInstance: ModuleType
   arcDegrees?: KclCommandValue
-  rotateDuplicates?: boolean
-  useOriginal?: boolean
+  rotateDuplicates?: boolean | KclCommandValue
+  useOriginal?: boolean | KclCommandValue
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   // Clone the ast and nodeToEdit so we can freely edit them
@@ -123,7 +123,7 @@ export function addPatternCircular3D({
       ? [
           createLabeledArg(
             'rotateDuplicates',
-            createLiteral(rotateDuplicates, wasmInstance)
+            booleanOrExpression(rotateDuplicates, wasmInstance)
           ),
         ]
       : []
@@ -132,7 +132,7 @@ export function addPatternCircular3D({
       ? [
           createLabeledArg(
             'useOriginal',
-            createLiteral(useOriginal, wasmInstance)
+            booleanOrExpression(useOriginal, wasmInstance)
           ),
         ]
       : []
@@ -213,7 +213,7 @@ export function addPatternLinear3D({
   distance: KclCommandValue // number(Length)
   axis: KclCommandValue | string // Can be named axis (X, Y, Z) or array [x, y, z]
   wasmInstance: ModuleType
-  useOriginal?: boolean
+  useOriginal?: boolean | KclCommandValue
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   // Clone the ast and nodeToEdit so we can freely edit them
@@ -266,7 +266,7 @@ export function addPatternLinear3D({
       ? [
           createLabeledArg(
             'useOriginal',
-            createLiteral(useOriginal, wasmInstance)
+            booleanOrExpression(useOriginal, wasmInstance)
           ),
         ]
       : []

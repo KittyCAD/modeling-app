@@ -133,6 +133,7 @@ function CommandArgOptionInput({
       }}
     >
       <Combobox
+        by="name"
         value={selectedOption}
         onChange={handleSelectOption}
         name="options"

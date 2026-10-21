@@ -4,7 +4,6 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   createCallExpressionStdLibKw,
   createLabeledArg,
-  createLiteral,
 } from '@src/lang/create'
 import {
   createVariableExpressionsArray,
@@ -14,6 +13,7 @@ import {
 import {
   getVariableExprsFromSelection,
   stringifyPathToNode,
+  booleanOrExpression,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
@@ -369,8 +369,8 @@ export function addSplit({
   artifactGraph: ArtifactGraph
   targets: Selections
   tools?: Selections
-  merge?: boolean
-  keepTools?: boolean
+  merge?: boolean | KclCommandValue
+  keepTools?: boolean | KclCommandValue
   nodeToEdit?: PathToNode
   wasmInstance: ModuleType
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
@@ -454,12 +454,15 @@ export function addSplit({
 
   if (merge !== undefined) {
     labeledArgs.push(
-      createLabeledArg('merge', createLiteral(merge, wasmInstance))
+      createLabeledArg('merge', booleanOrExpression(merge, wasmInstance))
     )
   }
   if ((hasTools || mNodeToEdit) && keepTools !== undefined) {
     labeledArgs.push(
-      createLabeledArg('keepTools', createLiteral(keepTools, wasmInstance))
+      createLabeledArg(
+        'keepTools',
+        booleanOrExpression(keepTools, wasmInstance)
+      )
     )
   }
 

@@ -22,7 +22,7 @@ export interface CommandWithDisabledState {
 }
 
 export function isModelingDialogCommand(command: Command | undefined): boolean {
-  return command?.groupId === 'modeling' && command.useModelingDialog === true
+  return command?.useModelingDialog === true
 }
 
 export const commandKey = (command: Command) =>

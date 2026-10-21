@@ -50,6 +50,7 @@ interface KclCommandConfig {
   kclManager: KclManager
   systemIOActor: SystemIOActor
   wasmInstance: ModuleType
+  modelingDialogsEnabled?: boolean
   projectData: IndexLoaderData
   settings: {
     defaultUnit: UnitLength
@@ -340,9 +341,11 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       groupId: 'code',
       icon: 'make-variable',
       needsReview: false,
+      useModelingDialog: commandProps.modelingDialogsEnabled,
       args: {
         value: {
           inputType: 'kcl',
+          allowBooleans: true,
           required: true,
           createVariable: 'force',
           variableName: 'myParameter',
@@ -427,7 +430,8 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
               commandProps.kclManager.execState.operations
             ).flatMap((op) => {
               if (op.type !== 'VariableDeclaration') return []
-              if (op.value.type !== 'Number') return []
+              if (op.value.type !== 'Number' && op.value.type !== 'Bool')
+                return []
               const value = pathToNodeFromRustNodePath(op.nodePath).slice(0, -1)
               return { name: op.name, value }
             })
@@ -435,6 +439,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
         },
         value: {
           inputType: 'kcl',
+          allowBooleans: true,
           required: true,
           defaultValue(commandBarContext) {
             const nodeToEdit = commandBarContext.argumentsToSubmit.nodeToEdit

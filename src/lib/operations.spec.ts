@@ -568,7 +568,7 @@ describe('operations.test.ts', () => {
 
   describe('tangent chain edit flow', () => {
     it.each(['fillet', 'chamfer'])(
-      'restores evaluated booleans for %s',
+      'preserves boolean references and their evaluated values for %s',
       async (name) => {
         const { rustContext } = await buildTheWorldAndNoEngineConnection()
         const dimension = name === 'fillet' ? 'radius' : 'length'
@@ -594,7 +594,11 @@ describe('operations.test.ts', () => {
           if (isErr(result)) throw result
           if (result.type !== 'Find and select command')
             throw new Error('Expected edit flow')
-          expect(result.data.argDefaultValues?.tangentChain).toBe(value)
+          expect(result.data.argDefaultValues?.tangentChain).toMatchObject({
+            valueText: 'chain',
+            valueCalculated: String(value),
+            valueAst: { type: 'Name' },
+          })
         }
       }
     )

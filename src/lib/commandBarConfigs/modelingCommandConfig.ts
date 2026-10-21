@@ -749,10 +749,23 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         translateProfileToPath: {
           inputType: 'boolean',
           required: false,
+          // Keep the recommended creation defaults visible and clearable.
+          prepopulate: true,
+          defaultValue: ({
+            argumentsToSubmit,
+          }: {
+            argumentsToSubmit: Record<string, unknown>
+          }) => (argumentsToSubmit.nodeToEdit ? undefined : false),
         },
         orientProfilePerpendicular: {
           inputType: 'boolean',
           required: false,
+          prepopulate: true,
+          defaultValue: ({
+            argumentsToSubmit,
+          }: {
+            argumentsToSubmit: Record<string, unknown>
+          }) => (argumentsToSubmit.nodeToEdit ? undefined : false),
         },
         bodyType: {
           inputType: 'options',

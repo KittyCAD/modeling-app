@@ -36,6 +36,7 @@ import {
   getVariableNameFromNodePath,
   isCallExprWithName,
   resolveToCodeRef,
+  booleanOrExpression,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import {
@@ -97,7 +98,7 @@ export function addExtrude({
   wasmInstance: ModuleType
   length?: KclCommandValue
   to?: Selections
-  symmetric?: boolean
+  symmetric?: boolean | KclCommandValue
   direction?: Selections
   bidirectionalLength?: KclCommandValue
   tagStart?: string
@@ -107,7 +108,7 @@ export function addExtrude({
   twistAngleStep?: KclCommandValue
   twistCenter?: KclCommandValue
   method?: KclPreludeExtrudeMethod
-  hideSeams?: boolean
+  hideSeams?: boolean | KclCommandValue
   bodyType?: KclPreludeBodyType
   nodeToEdit?: PathToNode
 }):
@@ -268,7 +269,12 @@ export function addExtrude({
   }
   const symmetricExpr =
     symmetric !== undefined
-      ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
+      ? [
+          createLabeledArg(
+            'symmetric',
+            booleanOrExpression(symmetric, wasmInstance)
+          ),
+        ]
       : []
   let directionExpr: LabeledArg[] = []
   if (direction && !mNodeToEdit) {
@@ -323,7 +329,12 @@ export function addExtrude({
     : []
   const hideSeamsExpr =
     hideSeams !== undefined
-      ? [createLabeledArg('hideSeams', createLiteral(hideSeams, wasmInstance))]
+      ? [
+          createLabeledArg(
+            'hideSeams',
+            booleanOrExpression(hideSeams, wasmInstance)
+          ),
+        ]
       : []
   const bodyTypeExpr = bodyType
     ? [createLabeledArg('bodyType', createLocalName(bodyType))]
@@ -434,11 +445,11 @@ export function addSweep({
   sketches: Selections
   path: Selections
   wasmInstance: ModuleType
-  sectional?: boolean
+  sectional?: boolean | KclCommandValue
   tolerance?: KclCommandValue
   relativeTo?: SweepRelativeTo
-  translateProfileToPath?: boolean
-  orientProfilePerpendicular?: boolean
+  translateProfileToPath?: boolean | KclCommandValue
+  orientProfilePerpendicular?: boolean | KclCommandValue
   tagStart?: string
   tagEnd?: string
   bodyType?: KclPreludeBodyType
@@ -544,7 +555,12 @@ export function addSweep({
   // Extra labeled args expressions
   const sectionalExpr =
     sectional !== undefined
-      ? [createLabeledArg('sectional', createLiteral(sectional, wasmInstance))]
+      ? [
+          createLabeledArg(
+            'sectional',
+            booleanOrExpression(sectional, wasmInstance)
+          ),
+        ]
       : []
   const toleranceExpr = tolerance
     ? [createLabeledArg('tolerance', valueOrVariable(tolerance))]
@@ -555,41 +571,24 @@ export function addSweep({
     relativeTo && isEditing
       ? [createLabeledArg('relativeTo', createName([SWEEP_MODULE], relativeTo))]
       : []
-  // New sweep calls should explicitly use the current recommended behavior:
-  // version = 2 (where supported), translateProfileToPath = false, and orientProfilePerpendicular = false.
-  // When editing, omit missing args so old sweep code is not silently upgraded.
   const translateProfileToPathExpr =
     translateProfileToPath !== undefined
       ? [
           createLabeledArg(
             'translateProfileToPath',
-            createLiteral(translateProfileToPath, wasmInstance)
+            booleanOrExpression(translateProfileToPath, wasmInstance)
           ),
         ]
-      : isEditing
-        ? []
-        : [
-            createLabeledArg(
-              'translateProfileToPath',
-              createLiteral(false, wasmInstance)
-            ),
-          ]
+      : []
   const orientProfilePerpendicularExpr =
     orientProfilePerpendicular !== undefined
       ? [
           createLabeledArg(
             'orientProfilePerpendicular',
-            createLiteral(orientProfilePerpendicular, wasmInstance)
+            booleanOrExpression(orientProfilePerpendicular, wasmInstance)
           ),
         ]
-      : isEditing
-        ? []
-        : [
-            createLabeledArg(
-              'orientProfilePerpendicular',
-              createLiteral(false, wasmInstance)
-            ),
-          ]
+      : []
   const tagStartExpr = tagStart
     ? [createLabeledArg('tagStart', createTagDeclarator(tagStart))]
     : []
@@ -678,7 +677,7 @@ export function addLoft({
   sketches: Selections
   wasmInstance: ModuleType
   vDegree?: KclCommandValue
-  bezApproximateRational?: boolean
+  bezApproximateRational?: boolean | KclCommandValue
   baseCurveIndex?: KclCommandValue
   tolerance?: KclCommandValue
   tagStart?: string
@@ -744,7 +743,7 @@ export function addLoft({
       ? [
           createLabeledArg(
             'bezApproximateRational',
-            createLiteral(bezApproximateRational, wasmInstance)
+            booleanOrExpression(bezApproximateRational, wasmInstance)
           ),
         ]
       : []
@@ -839,7 +838,7 @@ export function addRevolve({
   axis?: string
   edge?: Selections
   tolerance?: KclCommandValue
-  symmetric?: boolean
+  symmetric?: boolean | KclCommandValue
   bidirectionalAngle?: KclCommandValue
   tagStart?: string
   tagEnd?: string
@@ -916,7 +915,12 @@ export function addRevolve({
   // Extra labeled args expressions
   const symmetricExpr =
     symmetric !== undefined
-      ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
+      ? [
+          createLabeledArg(
+            'symmetric',
+            booleanOrExpression(symmetric, wasmInstance)
+          ),
+        ]
       : []
   const toleranceExpr = tolerance
     ? [createLabeledArg('tolerance', valueOrVariable(tolerance))]

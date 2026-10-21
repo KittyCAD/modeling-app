@@ -5,6 +5,7 @@ import {
 } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
 
 import type { CommandArgumentConfig } from '@src/lib/commandTypes'
+import { booleanValueSummary } from '@src/lib/booleanInput'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import { isKclVersionAvailable } from '@src/lib/kclVersionRange'
 import type { KclVersion } from '@rust/kcl-lib/bindings/KclVersion'
@@ -130,6 +131,10 @@ const stdLibArgBaseConfig = (
 ) => ({
   inputType: stdLibArgInputType(arg.ty),
   required: arg.required,
+  ...(arg.ty === 'bool' && {
+    allowVariables: true,
+    valueSummary: booleanValueSummary,
+  }),
   ...((arg.addedIn || arg.removedIn) && {
     available: (context: ModelingMachineContext) =>
       isKclVersionAvailable(
@@ -253,7 +258,13 @@ export const modelingCommandStdLibDriftConfig = {
   Sweep: {
     stdLibName: 'sweep',
     editFlow: true,
-    flowArgOrder: ['sketches', 'path', 'bodyType'],
+    flowArgOrder: [
+      'sketches',
+      'path',
+      'bodyType',
+      'translateProfileToPath',
+      'orientProfilePerpendicular',
+    ],
     deprecatedStdLibArgs: ['relativeTo'],
   },
   Loft: {
