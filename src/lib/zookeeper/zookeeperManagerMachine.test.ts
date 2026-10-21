@@ -93,6 +93,7 @@ class ControllableSetupWebSocket extends EventTarget {
   readonly url: string
   readonly sentPayloads: string[] = []
   binaryType: BinaryType = 'blob'
+  bufferedAmount = 0
   readyState = ControllableSetupWebSocket.CONNECTING
 
   constructor(url: string) {
@@ -1222,6 +1223,99 @@ describe('zookeeperManagerMachine', () => {
         expect(actor.getSnapshot().context.setupFailed).toBe(true)
         expect(fetchMock).toHaveBeenCalledTimes(1)
         expect(reports).toHaveLength(1)
+      } finally {
+        actor.stop()
+        vi.useRealTimers()
+      }
+    })
+
+    it('keeps the socket open while a large upload progresses, then resumes heartbeat timeouts', async () => {
+      vi.useFakeTimers()
+      vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+      const actor = createActor(zookeeperManagerMachine, {
+        input: { apiToken: 'token' },
+      }).start()
+
+      try {
+        actor.send({
+          type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+          refParentSend: vi.fn(),
+        })
+        const socket = ControllableSetupWebSocket.instances[0]
+        socket.open()
+        await vi.waitFor(() => {
+          expect(socket.sentPayloads).toContain(
+            JSON.stringify({ type: 'list_modes' })
+          )
+        })
+        socket.receive({
+          conversation_id: { conversation_id: 'conversation-id' },
+        })
+        await waitFor(actor, (state) =>
+          state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+        )
+
+        socket.bufferedAmount = 64 * 1024 * 1024
+        for (let interval = 0; interval < 12; interval += 1) {
+          await vi.advanceTimersByTimeAsync(ZOOKEEPER_HEARTBEAT_INTERVAL_MS)
+          expect(socket.close).not.toHaveBeenCalled()
+          socket.bufferedAmount -= 1024 * 1024
+        }
+        expect(socket.sentPayloads).not.toContain(
+          JSON.stringify({ type: 'ping' })
+        )
+
+        socket.bufferedAmount = 0
+        await vi.advanceTimersByTimeAsync(ZOOKEEPER_HEARTBEAT_INTERVAL_MS)
+        expect(socket.sentPayloads).toContain(JSON.stringify({ type: 'ping' }))
+        expect(socket.close).not.toHaveBeenCalled()
+        await vi.advanceTimersByTimeAsync(
+          ZOOKEEPER_HEARTBEAT_TIMEOUT_MS + ZOOKEEPER_HEARTBEAT_INTERVAL_MS
+        )
+        expect(actor.getSnapshot().context.closeReason).toBe(
+          'Zookeeper connection timed out.'
+        )
+        expect(socket.close).toHaveBeenCalledOnce()
+      } finally {
+        actor.stop()
+        vi.useRealTimers()
+      }
+    })
+
+    it('times out a large upload when its send buffer stops draining', async () => {
+      vi.useFakeTimers()
+      vi.stubGlobal('WebSocket', ControllableSetupWebSocket)
+      const actor = createActor(zookeeperManagerMachine, {
+        input: { apiToken: 'token' },
+      }).start()
+
+      try {
+        actor.send({
+          type: ZookeeperManagerTransitions.CacheSetupAndConnect,
+          refParentSend: vi.fn(),
+        })
+        const socket = ControllableSetupWebSocket.instances[0]
+        socket.open()
+        await vi.waitFor(() => {
+          expect(socket.sentPayloads).toContain(
+            JSON.stringify({ type: 'list_modes' })
+          )
+        })
+        socket.receive({
+          conversation_id: { conversation_id: 'conversation-id' },
+        })
+        await waitFor(actor, (state) =>
+          state.matches(ZookeeperManagerStates.WaitForContinueCheck)
+        )
+
+        socket.bufferedAmount = 64 * 1024 * 1024
+        await vi.advanceTimersByTimeAsync(
+          ZOOKEEPER_HEARTBEAT_TIMEOUT_MS + 2 * ZOOKEEPER_HEARTBEAT_INTERVAL_MS
+        )
+        expect(actor.getSnapshot().context.closeReason).toBe(
+          'Zookeeper connection timed out.'
+        )
+        expect(socket.close).toHaveBeenCalledOnce()
       } finally {
         actor.stop()
         vi.useRealTimers()
