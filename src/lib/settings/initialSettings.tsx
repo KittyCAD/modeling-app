@@ -146,8 +146,16 @@ function createCoreSettings() {
         validate: (v) =>
           typeof v === 'string' && (v.length > 0 || !isDesktop()),
       }),
+      /**
+       * @deprecated Named views live in KCL (`view::named()`) from KCL 3.0 on.
+       * Views stored here are moved into `main.kcl` when a KCL 3.0 project
+       * opens (see `migrateProjectTomlNamedViews`), and only files older than
+       * KCL 3.0 still write here. Remove once those are gone.
+       */
       namedViews: new Setting<{ [key in string]: NamedView }>({
         defaultValue: {},
+        description:
+          'Deprecated: named views are stored in KCL with view::named(). Views saved here move into main.kcl when a KCL 3.0 project opens.',
         validate: (_v) => true,
         hideOnLevel: 'user',
       }),

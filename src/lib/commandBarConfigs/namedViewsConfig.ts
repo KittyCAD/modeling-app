@@ -4,18 +4,31 @@ import type {
   Point4d,
   WorldCoordinateSystem,
 } from '@kittycad/lib'
-import { isModelingResponse } from '@src/lib/kcSdkGuards'
-import { isArray } from '@src/lib/utils'
 import toast from 'react-hot-toast'
 
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 
+import type { KclManager } from '@src/lang/KclManager'
+import { programUsesKclV3 } from '@src/lang/kclLanguageVersion'
+import { updateModelingState } from '@src/lang/modelingWorkflows'
+import {
+  addNamedViews,
+  directedCameraFromNamedView,
+} from '@src/lang/modifyAst/namedViews'
+import type { KclNamedView } from '@src/lang/std/kclNamedViews'
+import { listNamedViews } from '@src/lang/std/kclNamedViews'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
-import type { SettingsType } from '@src/lib/settings/initialSettings'
-import { err, reportRejection } from '@src/lib/trap'
+import { EXECUTION_TYPE_REAL } from '@src/lib/constants'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import {
+  activateNamedView,
+  hasNamedViewsUi,
+} from '@src/lib/kclNamedViewActivation'
+import { applyNamedViewCamera } from '@src/lib/kclNamedViewCamera'
+import { sendDeleteCommand } from '@src/lib/featureTree'
+import { err, isErr, reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { MODE_MODELING_COMMAND_SCOPE } from '@src/registry/contracts/commands'
 
 function isWorldCoordinateSystemType(x: string): x is WorldCoordinateSystem {
@@ -70,7 +83,7 @@ function namedViewToCameraViewState(
   return cameraViewState
 }
 
-function cameraViewStateToNamedView(
+export function cameraViewStateToNamedView(
   name: string,
   cameraViewState: CameraViewState
 ): NamedView | Error {
@@ -96,19 +109,148 @@ function cameraViewStateToNamedView(
   return requestedView
 }
 
+/**
+ * Whether named views of the open file live in KCL. They do from KCL 3.0 on,
+ * where `view::named()` exists. Older files keep using the deprecated
+ * `project.toml` setting until they are upgraded.
+ */
+export async function usesKclNamedViews(
+  kclManager: KclManager
+): Promise<boolean> {
+  const wasmInstance = await kclManager.wasmInstancePromise
+  return programUsesKclV3(kclManager.ast, wasmInstance)
+}
+
+/** Every view the last execution produced, in every module. */
+function executedViews(kclManager: KclManager): KclNamedView[] {
+  return listNamedViews({
+    artifactGraph: kclManager.execState.artifactGraph,
+    filenames: kclManager.execState.filenames,
+  })
+}
+
+/** Views the open file declares itself, which are the ones it can delete. */
+function viewsDeclaredInOpenFile(kclManager: KclManager): KclNamedView[] {
+  // The open file is the root module, whose id is always 0.
+  return executedViews(kclManager).filter((view) => view.moduleId === 0)
+}
+
+function kclViewOptions(views: KclNamedView[]): CommandArgumentOption<any>[] {
+  return views.map((view) => ({
+    name: view.artifact.name,
+    isCurrent: false,
+    value: view.artifact.id,
+  }))
+}
+
+function legacyViewOptions(
+  settingsActor: SettingsActorType
+): CommandArgumentOption<any>[] {
+  const namedViews = settingsActor.getSnapshot().context.app.namedViews.current
+  const options: CommandArgumentOption<any>[] = []
+  Object.entries(namedViews).forEach(([key, view]) => {
+    if (view) {
+      options.push({ name: view.name, isCurrent: false, value: key })
+    }
+  })
+  return options
+}
+
+/**
+ * Moves the engine camera to a named view saved in the project settings and
+ * syncs the client side camera and projection setting with it.
+ *
+ * @deprecated Only for files older than KCL 3.0. Newer files store named views
+ * in KCL.
+ */
+async function loadLegacyNamedView({
+  view,
+  engineCommandManager,
+  settingsActor,
+}: {
+  view: NamedView
+  engineCommandManager: ConnectionManager
+  settingsActor: SettingsActorType
+}): Promise<void> {
+  const cameraViewState = namedViewToCameraViewState(view)
+
+  if (err(cameraViewState)) {
+    toast.error(`Unable to load named view ${view.name}.`)
+    return
+  }
+
+  // Only send the specific camera information, the NamedView itself
+  // is not directly compatible with the engine API
+  await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_set_view',
+      view: {
+        ...cameraViewState,
+      },
+    },
+  })
+
+  const isPerspective = !view.is_ortho
+
+  // Update the GUI for orthographic and projection
+  settingsActor.send({
+    type: 'set.modeling.cameraProjection',
+    data: {
+      level: 'user',
+      value: isPerspective ? 'perspective' : 'orthographic',
+    },
+  })
+
+  // Update the camera by triggering the callback workflow to get the camera settings
+  // Setting the view won't update the client side camera.
+  // Asking for the default camera settings after setting the view will internally sync the camera
+  await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'default_camera_get_settings',
+    },
+  })
+
+  // We do not have the promise of the engine command for ensuring the camera projection has been completed.
+  toast.success(`Named view ${view.name} loaded.`)
+}
+
+/**
+ * Moves the camera to a KCL named view. With the Views pane enabled this is
+ * the same activation the pane performs, visibility included; without it, only
+ * the camera moves.
+ */
+async function loadKclNamedView(
+  kclManager: KclManager,
+  view: KclNamedView
+): Promise<void> {
+  if (hasNamedViewsUi()) {
+    await activateNamedView({
+      target: { kind: 'declared', view },
+      kclManager,
+    })
+  } else {
+    await applyNamedViewCamera({
+      camera: view.artifact.camera,
+      sceneInfra: kclManager.sceneInfra,
+      engineCommandManager: kclManager.engineCommandManager,
+    })
+  }
+  toast.success(`Named view ${view.artifact.name} loaded.`)
+}
+
 export function createNamedViewsCommand(
-  engineCommandManager: ConnectionManager,
+  kclManager: KclManager,
   settingsActor: SettingsActorType
 ) {
-  const getSettings = (): SettingsType => {
-    const { currentProject: _, ...settings } =
-      settingsActor.getSnapshot().context
-    return settings
-  }
-  // Creates a command to be registered in the command bar.
-  // The createNamedViewsCommand will prompt the user for a name and then
-  // hit the engine for the camera properties and write them back to disk
-  // in project.toml.
+  const engineCommandManager = kclManager.engineCommandManager
+
+  // Prompts for a name, reads the camera from the engine, and appends a
+  // `view::named()` call to the open file. Files older than KCL 3.0 store the
+  // view in project.toml instead.
   const createNamedViewCommand: Command = {
     scopes: [MODE_MODELING_COMMAND_SCOPE],
     name: 'Create named view',
@@ -124,61 +266,63 @@ export function createNamedViewsCommand(
           return toast.error('Unable to create named view, missing name.')
         }
 
-        // Retrieve camera view state from the engine
-        const cameraGetViewResponse =
-          await engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: { type: 'default_camera_get_view' },
-          })
-
-        const r = isArray(cameraGetViewResponse)
-          ? cameraGetViewResponse[0]
-          : cameraGetViewResponse
-
-        if (!r) {
+        const view = await kclManager.sceneInfra.camControls.getCameraView()
+        if (err(view)) {
           return toast.error('Unable to create named view, websocket failure.')
         }
 
-        const rr = r
-        if (isModelingResponse(rr)) {
-          if (rr.success) {
-            if (
-              rr.resp.data.modeling_response.type === 'default_camera_get_view'
-            ) {
-              const view = rr.resp.data.modeling_response.data
-              const requestedView = cameraViewStateToNamedView(
-                data.name,
-                view.view
-              )
-              if (err(requestedView)) {
-                toast.error('Unable to create named view.')
-                return
-              }
-              // Retrieve application state for namedViews
-              const namedViews = {
-                ...settingsActor.getSnapshot().context.app.namedViews.current,
-              }
-
-              // Create and set namedViews application state
-              const uniqueUuidV4 = uuidv4()
-              const requestedNamedViews = {
-                ...namedViews,
-                [uniqueUuidV4]: requestedView,
-              }
-              settingsActor.send({
-                type: `set.app.namedViews`,
-                data: {
-                  level: 'project',
-                  value: requestedNamedViews,
-                  toastCallback: () => {
-                    toast.success(`Named view ${requestedView.name} created.`)
-                  },
-                },
-              })
-            }
-          }
+        const requestedView = cameraViewStateToNamedView(data.name, view)
+        if (err(requestedView)) {
+          toast.error('Unable to create named view.')
+          return
         }
+
+        if (await usesKclNamedViews(kclManager)) {
+          const result = addNamedViews({
+            ast: kclManager.ast,
+            views: [
+              {
+                name: requestedView.name,
+                camera: directedCameraFromNamedView(requestedView),
+              },
+            ],
+            wasmInstance: await kclManager.wasmInstancePromise,
+          })
+          if (err(result)) {
+            toast.error('Unable to create named view.')
+            return
+          }
+          try {
+            await updateModelingState(
+              result.modifiedAst,
+              EXECUTION_TYPE_REAL,
+              kclManager,
+              { focusPath: [result.pathToNode] }
+            )
+          } catch (e) {
+            toast.error(
+              `Unable to create named view: ${isErr(e) ? e.message : String(e)}`
+            )
+            return
+          }
+          toast.success(`Named view ${result.names[0]} created.`)
+          return
+        }
+
+        const namedViews = {
+          ...settingsActor.getSnapshot().context.app.namedViews.current,
+          [uuidv4()]: requestedView,
+        }
+        settingsActor.send({
+          type: `set.app.namedViews`,
+          data: {
+            level: 'project',
+            value: namedViews,
+            toastCallback: () => {
+              toast.success(`Named view ${requestedView.name} created.`)
+            },
+          },
+        })
       }
       invokeAndForgetCreateNamedView().catch(reportRejection)
     },
@@ -190,34 +334,54 @@ export function createNamedViewsCommand(
     },
   }
 
-  // Given a named view selection from the command bar, this will
-  // find it in the setting state, remove it from the array and
-  // rewrite the project.toml settings to disk to delete the named view
+  // Removes the `view::named()` call of the chosen view from the open file,
+  // or, for files older than KCL 3.0, the view from project.toml.
   const deleteNamedViewCommand: Command = {
     scopes: [MODE_MODELING_COMMAND_SCOPE],
     name: 'Delete named view',
     displayName: `Delete named view`,
-    description: 'Deletes the named view from settings',
+    description: 'Deletes a named view of this file',
     groupId: 'namedViews',
     icon: 'settings',
     needsReview: false,
     onSubmit: (data) => {
-      if (!data) {
-        return toast.error('Unable to delete named view, missing name.')
-      }
-      const idToDelete = data.name
+      const invokeAndForgetDeleteNamedView = async () => {
+        if (!data) {
+          return toast.error('Unable to delete named view, missing name.')
+        }
+        const idToDelete = data.name
 
-      // Retrieve application state for namedViews
+        const kclView = viewsDeclaredInOpenFile(kclManager).find(
+          (view) => view.artifact.id === idToDelete
+        )
+        if (kclView) {
+          // The same deletion the Feature Tree performs for this view.
+          try {
+            await sendDeleteCommand({
+              artifact: kclManager.artifactGraph.get(kclView.artifact.id),
+              targetSourceRange: kclView.artifact.codeRef.range,
+              systemDeps: {
+                kclManager,
+                rustContext: kclManager.rustContext,
+                sceneEntitiesManager: kclManager.sceneEntitiesManager,
+              },
+            })
+          } catch (e) {
+            toast.error(isErr(e) ? e.message : String(e))
+            return
+          }
+          toast.success(`Named view ${kclView.artifact.name} removed.`)
+          return
+        }
 
-      const namedViews = {
-        ...settingsActor.getSnapshot().context.app.namedViews.current,
-      }
+        const namedViews = {
+          ...settingsActor.getSnapshot().context.app.namedViews.current,
+        }
+        const { [idToDelete]: viewToDelete, ...rest } = namedViews
+        if (!viewToDelete) {
+          return toast.error(`Unable to delete, could not find the named view.`)
+        }
 
-      const { [idToDelete]: viewToDelete, ...rest } = namedViews
-
-      // Find the named view in the array
-      if (idToDelete && viewToDelete) {
-        // Update global state with the new computed state
         settingsActor.send({
           type: `set.app.namedViews`,
           data: {
@@ -228,36 +392,23 @@ export function createNamedViewsCommand(
             },
           },
         })
-      } else {
-        toast.error(`Unable to delete, could not find the named view.`)
       }
+      invokeAndForgetDeleteNamedView().catch(reportRejection)
     },
     args: {
       name: {
         required: true,
         inputType: 'options',
-        options: (_commandBar, _machineContext) => {
-          const settings = getSettings()
-          const namedViews = {
-            ...settings.app.namedViews.current,
-          }
-          const options: CommandArgumentOption<any>[] = []
-          Object.entries(namedViews).forEach(([key, view]) => {
-            if (view) {
-              options.push({
-                name: view.name,
-                isCurrent: false,
-                value: key,
-              })
-            }
-          })
-          return options
-        },
+        options: () => [
+          ...kclViewOptions(viewsDeclaredInOpenFile(kclManager)),
+          ...legacyViewOptions(settingsActor),
+        ],
       },
     },
   }
 
-  // Read the named view from settings state and pass that camera information to the engine command to set the view of the engine camera
+  // Moves the camera to the chosen view: any view the last execution produced,
+  // or a view still stored in project.toml by a file older than KCL 3.0.
   const loadNamedViewCommand: Command = {
     scopes: [MODE_MODELING_COMMAND_SCOPE],
     name: 'Load named view',
@@ -271,64 +422,29 @@ export function createNamedViewsCommand(
         if (!data) {
           return toast.error('Unable to load named view.')
         }
-
-        // Retrieve application state for namedViews
-        const namedViews = {
-          ...settingsActor.getSnapshot().context.app.namedViews.current,
-        }
-
         const idToLoad = data.name
-        const viewToLoad = namedViews[idToLoad]
-        if (viewToLoad) {
-          // Split into the name and the engine data
-          const { name, version, ...engineViewData } = viewToLoad
-          const cameraViewState = namedViewToCameraViewState(viewToLoad)
 
-          if (err(cameraViewState)) {
-            toast.error(`Unable to load named view ${data.name}.`)
-            return
-          }
-
-          // Only send the specific camera information, the NamedView itself
-          // is not directly compatible with the engine API
-          await engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'default_camera_set_view',
-              view: {
-                ...cameraViewState,
-              },
-            },
-          })
-
-          const isPerspective = !engineViewData.is_ortho
-
-          // Update the GUI for orthographic and projection
-          settingsActor.send({
-            type: 'set.modeling.cameraProjection',
-            data: {
-              level: 'user',
-              value: isPerspective ? 'perspective' : 'orthographic',
-            },
-          })
-
-          // Update the camera by triggering the callback workflow to get the camera settings
-          // Setting the view won't update the client side camera.
-          // Asking for the default camera settings after setting the view will internally sync the camera
-          await engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: {
-              type: 'default_camera_get_settings',
-            },
-          })
-
-          // We do not have the promise of the engine command for ensuring the camera projection has been completed.
-          toast.success(`Named view ${name} loaded.`)
-        } else {
-          toast.error(`Unable to load named view, could not find named view.`)
+        const kclView = executedViews(kclManager).find(
+          (view) => view.artifact.id === idToLoad
+        )
+        if (kclView) {
+          await loadKclNamedView(kclManager, kclView)
+          return
         }
+
+        const legacyView =
+          settingsActor.getSnapshot().context.app.namedViews.current[idToLoad]
+        if (!legacyView) {
+          return toast.error(
+            `Unable to load named view, could not find named view.`
+          )
+        }
+
+        await loadLegacyNamedView({
+          view: legacyView,
+          engineCommandManager,
+          settingsActor,
+        })
       }
       invokeAndForgetLoadNamedView().catch(reportRejection)
     },
@@ -336,23 +452,10 @@ export function createNamedViewsCommand(
       name: {
         required: true,
         inputType: 'options',
-        options: () => {
-          const settings = getSettings()
-          const namedViews = {
-            ...settings.app.namedViews.current,
-          }
-          const options: CommandArgumentOption<any>[] = []
-          Object.entries(namedViews).forEach(([key, view]) => {
-            if (view) {
-              options.push({
-                name: view.name,
-                isCurrent: false,
-                value: key,
-              })
-            }
-          })
-          return options
-        },
+        options: () => [
+          ...kclViewOptions(executedViews(kclManager)),
+          ...legacyViewOptions(settingsActor),
+        ],
       },
     },
   }
