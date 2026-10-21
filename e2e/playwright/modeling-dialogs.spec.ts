@@ -10,6 +10,47 @@ region001 = region(segments = [sketch001.circle1])`
 test.describe('Modeling dialogs', { tag: '@web' }, () => {
   test.use({ userFeatures: ['modeling_dialogs'] })
 
+  for (const focus of ['selection box', 'scene']) {
+    test(`Submits with Enter from the active ${focus}`, async ({
+      page,
+      homePage,
+      scene,
+      editor,
+      toolbar,
+      modelingDialog,
+    }) => {
+      const code = `@settings(kclVersion = 3.0)
+sketch001 = sketch(on = XZ) {
+  circle1 = circle(start = [var 20mm, var 0mm], center = [var 0mm, var 0mm])
+}`
+      await homePage.goToModelingScene()
+      await scene.settled()
+      await scene.waitForExecutionDoneAfter(() => editor.replaceCode('', code))
+      await scene.moveCameraTo({ x: 0, y: -100, z: 0 })
+      await toolbar.extrudeButton.click()
+      const profiles = modelingDialog.selection('Profiles')
+      await expect(profiles).toBeFocused()
+      await expect(modelingDialog.submitButton).toBeDisabled()
+      await page.keyboard.press('Enter')
+      await expect(modelingDialog.locator).toBeVisible()
+
+      const [selectProfile] = scene.makeMouseHelpers(0.38, 0.5, {
+        format: 'ratio',
+      })
+      await selectProfile()
+      await expect(profiles).toContainText(/1 region/i)
+      await expect(profiles).toHaveAttribute('aria-pressed', 'true')
+      await expect(modelingDialog.submitButton).toBeEnabled()
+      if (focus === 'selection box') await profiles.click()
+      else await expect(profiles).not.toBeFocused()
+      await scene.waitForExecutionDoneAfter(async () => {
+        await page.keyboard.press('Enter')
+        await expect(modelingDialog.locator).not.toBeAttached()
+      })
+      await editor.expectEditor.toContain('extrude(region001, length = 5)')
+    })
+  }
+
   test('Preserves an Extrude draft while hiding an obstruction', async ({
     page,
     homePage,
