@@ -181,163 +181,176 @@ export default function ModelingDialog({
       </div>
     )
     const machineContext = arg.machineActor?.getSnapshot().context
-    if (arg.inputType === 'kcl')
-      return (
-        <CommandKclInput
-          key={name}
-          kclManager={kclManager}
-          settings={settings}
-          wasmPromise={wasmPromise}
-          commandScopes={commandScopes}
-          name={name}
-          arg={arg}
-          label={label}
-          labelAction={help}
-          description={description}
-          placeholder={required ? undefined : 'Use defaults'}
-          isRequired={required}
-          inline={false}
-          autoFocus={name === firstFieldName}
-          value={getKclInputValue(arg, value)}
-          submittedValue={state.context.argumentsToSubmit[name]}
-          nodeToEdit={state.context.argumentsToSubmit.nodeToEdit}
-          variableName={
-            typeof arg.variableName === 'function'
-              ? arg.variableName(context, machineContext)
-              : arg.variableName
-          }
-          selectionRanges={selection.selectionRanges}
-          onChange={(change) => save(name, change.value)}
-          onValidationChange={(next) =>
-            setValidity((previous) => {
-              const canSubmit = next.canSubmit && !next.isChecking
-              return previous[name] === canSubmit
-                ? previous
-                : { ...previous, [name]: canSubmit }
-            })
-          }
-        />
-      )
-    if (arg.inputType === 'selection')
-      return (
-        <div key={name} className="flex flex-col gap-1">
-          {fieldLabel}
-          <div
-            role="group"
-            aria-label={`${label} selections`}
-            className={`rounded-sm border ${selection.activeName === name ? 'border-primary' : 'border-chalkboard-30 dark:border-chalkboard-70'}`}
-          >
-            <button
+    switch (arg.inputType) {
+      case 'kcl':
+        return (
+          <CommandKclInput
+            key={name}
+            kclManager={kclManager}
+            settings={settings}
+            wasmPromise={wasmPromise}
+            commandScopes={commandScopes}
+            name={name}
+            arg={arg}
+            label={label}
+            labelAction={help}
+            description={description}
+            placeholder={required ? undefined : 'Use defaults'}
+            isRequired={required}
+            inline={false}
+            autoFocus={name === firstFieldName}
+            value={getKclInputValue(arg, value)}
+            submittedValue={state.context.argumentsToSubmit[name]}
+            nodeToEdit={state.context.argumentsToSubmit.nodeToEdit}
+            variableName={
+              typeof arg.variableName === 'function'
+                ? arg.variableName(context, machineContext)
+                : arg.variableName
+            }
+            selectionRanges={selection.selectionRanges}
+            onChange={(change) => save(name, change.value)}
+            onValidationChange={(next) =>
+              setValidity((previous) => {
+                const canSubmit = next.canSubmit && !next.isChecking
+                return previous[name] === canSubmit
+                  ? previous
+                  : { ...previous, [name]: canSubmit }
+              })
+            }
+          />
+        )
+      case 'selection':
+        return (
+          <div key={name} className="flex flex-col gap-1">
+            {fieldLabel}
+            <div
+              role="group"
+              aria-label={`${label} selections`}
+              className={`rounded-sm border ${selection.activeName === name ? 'border-primary' : 'border-chalkboard-30 dark:border-chalkboard-70'}`}
+            >
+              <button
+                id={fieldId}
+                type="button"
+                ref={(button) => {
+                  if (button) selectionInputs.current.set(name, button)
+                  else selectionInputs.current.delete(name)
+                }}
+                autoFocus={name === firstFieldName}
+                aria-label={`Select ${label}`}
+                aria-pressed={selection.activeName === name}
+                data-modeling-dialog-selection={selection.activeName === name}
+                disabled={Boolean(state.context.argumentsToSubmit.nodeToEdit)}
+                title={
+                  state.context.argumentsToSubmit.nodeToEdit
+                    ? "Selection edits aren't supported yet."
+                    : undefined
+                }
+                className="m-0 w-full rounded-sm border-0 bg-transparent px-2 py-1 text-left text-[10px] focus-visible:ring-1 focus-visible:ring-primary aria-pressed:text-primary"
+                onClick={() => selection.select(name, arg)}
+              >
+                {isSelections(value) && hasValue(value)
+                  ? getSelectionTypeDisplayText(
+                      kclManager.astSignal.value,
+                      value,
+                      kclManager.artifactGraph
+                    )
+                  : 'Select in the scene'}
+              </button>
+              {isSelections(value) && hasValue(value) && (
+                <div className="max-h-32 overflow-auto">
+                  <DialogSelectionList
+                    kclManager={kclManager}
+                    wasmPromise={wasmPromise}
+                    selectionRanges={value}
+                    onChange={
+                      state.context.argumentsToSubmit.nodeToEdit
+                        ? undefined
+                        : (next) => {
+                            selection.update(name, next)
+                            selectionInputs.current.get(name)?.focus()
+                          }
+                    }
+                  />
+                </div>
+              )}
+            </div>
+            {description}
+          </div>
+        )
+      case 'boolean':
+      case 'options': {
+        const choices =
+          arg.inputType === 'boolean'
+            ? [
+                { name: 'On', value: true },
+                { name: 'Off', value: false },
+              ]
+            : typeof arg.options === 'function'
+              ? arg.options(context, machineContext)
+              : arg.options
+        const index = choices.findIndex((choice) => choice.value === value)
+        return (
+          <div key={name} className="flex flex-col gap-1">
+            {fieldLabel}
+            <select
               id={fieldId}
-              type="button"
-              ref={(button) => {
-                if (button) selectionInputs.current.set(name, button)
-                else selectionInputs.current.delete(name)
-              }}
               autoFocus={name === firstFieldName}
-              aria-label={`Select ${label}`}
-              aria-pressed={selection.activeName === name}
-              data-modeling-dialog-selection={selection.activeName === name}
-              disabled={Boolean(state.context.argumentsToSubmit.nodeToEdit)}
-              title={
-                state.context.argumentsToSubmit.nodeToEdit
-                  ? "Selection edits aren't supported yet."
+              className="rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs dark:border-chalkboard-70"
+              value={index < 0 ? '' : String(index)}
+              onChange={(event) =>
+                save(
+                  name,
+                  event.target.value === ''
+                    ? undefined
+                    : choices[Number(event.target.value)]?.value
+                )
+              }
+            >
+              <option value="" disabled={required}>
+                {required ? 'Select an option' : 'Optional'}
+              </option>
+              {choices.map((choice, index) => (
+                <option
+                  key={choice.name}
+                  value={index}
+                  disabled={'disabled' in choice && choice.disabled}
+                >
+                  {choice.name}
+                </option>
+              ))}
+            </select>
+            {description}
+          </div>
+        )
+      }
+      case 'string':
+      case 'number':
+      case 'text':
+      case 'vector3d':
+      case 'path':
+      case 'vector2d':
+      case 'color':
+      case 'tagDeclarator':
+        return (
+          <div key={name} className="flex flex-col gap-1">
+            {fieldLabel}
+            <input
+              id={fieldId}
+              type={arg.inputType === 'color' ? 'color' : 'text'}
+              autoFocus={name === firstFieldName}
+              className={`rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs dark:border-chalkboard-70 ${arg.inputType === 'color' ? 'h-8 w-full cursor-pointer' : ''}`}
+              placeholder={
+                !required && arg.inputType === 'tagDeclarator'
+                  ? 'None'
                   : undefined
               }
-              className="m-0 w-full rounded-sm border-0 bg-transparent px-2 py-1 text-left text-[10px] focus-visible:ring-1 focus-visible:ring-primary aria-pressed:text-primary"
-              onClick={() => selection.select(name, arg)}
-            >
-              {isSelections(value) && hasValue(value)
-                ? getSelectionTypeDisplayText(
-                    kclManager.astSignal.value,
-                    value,
-                    kclManager.artifactGraph
-                  )
-                : 'Select in the scene'}
-            </button>
-            {isSelections(value) && hasValue(value) && (
-              <div className="max-h-32 overflow-auto">
-                <DialogSelectionList
-                  kclManager={kclManager}
-                  wasmPromise={wasmPromise}
-                  selectionRanges={value}
-                  onChange={
-                    state.context.argumentsToSubmit.nodeToEdit
-                      ? undefined
-                      : (next) => {
-                          selection.update(name, next)
-                          selectionInputs.current.get(name)?.focus()
-                        }
-                  }
-                />
-              </div>
-            )}
+              value={fieldText(value)}
+              onChange={(event) => save(name, event.target.value)}
+            />
+            {description}
           </div>
-          {description}
-        </div>
-      )
-    if (arg.inputType === 'options' || arg.inputType === 'boolean') {
-      const choices =
-        arg.inputType === 'boolean'
-          ? [
-              { name: 'On', value: true },
-              { name: 'Off', value: false },
-            ]
-          : typeof arg.options === 'function'
-            ? arg.options(context, machineContext)
-            : arg.options
-      const index = choices.findIndex((choice) => choice.value === value)
-      return (
-        <div key={name} className="flex flex-col gap-1">
-          {fieldLabel}
-          <select
-            id={fieldId}
-            autoFocus={name === firstFieldName}
-            className="rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs dark:border-chalkboard-70"
-            value={index < 0 ? '' : String(index)}
-            onChange={(event) =>
-              save(
-                name,
-                event.target.value === ''
-                  ? undefined
-                  : choices[Number(event.target.value)]?.value
-              )
-            }
-          >
-            <option value="" disabled={required}>
-              {required ? 'Select an option' : 'Optional'}
-            </option>
-            {choices.map((choice, index) => (
-              <option
-                key={choice.name}
-                value={index}
-                disabled={'disabled' in choice && choice.disabled}
-              >
-                {choice.name}
-              </option>
-            ))}
-          </select>
-          {description}
-        </div>
-      )
+        )
     }
-    return (
-      <div key={name} className="flex flex-col gap-1">
-        {fieldLabel}
-        <input
-          id={fieldId}
-          type="text"
-          autoFocus={name === firstFieldName}
-          className="rounded-sm border border-chalkboard-30 bg-transparent px-2 py-1 text-xs dark:border-chalkboard-70"
-          placeholder={
-            !required && arg.inputType === 'tagDeclarator' ? 'None' : undefined
-          }
-          value={fieldText(value)}
-          onChange={(event) => save(name, event.target.value)}
-        />
-        {description}
-      </div>
-    )
   }
 
   if (!command) return null
