@@ -43,6 +43,7 @@ export interface ZookeeperSessionControllerDependencies {
   billing: BillingRegistryService
   conversationStore: ZookeeperConversationStore
   fileOperations: FileOperationsRegistryService
+  includePersonalCloud?: () => boolean
   libraryProjects?: ReadonlySignal<readonly HomeProjectEntry[]>
   kclManager: KclManager
   project: ReadonlySignal<ZDSProject | undefined>
@@ -141,6 +142,7 @@ class SessionController implements ZookeeperSessionController {
           entries: deps.libraryProjects,
           fileOperations: deps.fileOperations,
           getApiToken: () => this.apiToken,
+          includePersonalCloud: deps.includePersonalCloud,
         })
       : undefined
     this.actor = this.clientCommands

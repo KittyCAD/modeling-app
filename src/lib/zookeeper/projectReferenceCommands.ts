@@ -2,6 +2,7 @@ import type { ReadonlySignal } from '@preact/signals-core'
 import {
   downloadRemoteProjectArchive,
   getRemoteProject,
+  listRemoteProjects,
   RemoteProjectArchiveLimitError,
 } from '@src/lib/cloudSync/cloudApi'
 import { parseProjectArchive } from '@src/lib/cloudSync/projectArchive'
@@ -11,6 +12,7 @@ import type {
 } from '@src/lib/cloudSync/types'
 import fsZds from '@src/lib/fs-zds'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
+import { PERSONAL_CLOUD_PROJECT_LIBRARY_ID } from '@src/lib/projectLibraries'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/pathUtils'
 import { isRecord } from '@src/lib/utils'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
@@ -163,11 +165,15 @@ export function createProjectReferenceCommands(deps: {
   entries: ReadonlySignal<readonly HomeProjectEntry[]>
   fileOperations: FileOperationsRegistryService
   getApiToken: () => string
+  includePersonalCloud?: () => boolean
 }): ProjectReferenceCommandTransport {
   const projectIds = new Map<string, string>()
   const projectKeys = new Map<string, string>()
+  const remoteEntries = new Map<string, HomeProjectEntry>()
   const pending = new Map<string, Promise<unknown>>()
   const revision = 1
+  let remoteCatalogToken: string | undefined
+  let pendingToken = deps.getApiToken()
   let activeSocket: WebSocket | undefined
   // Continuation pages reuse one bounded snapshot while its cloud revision holds.
   let cloudSnapshot:
@@ -196,12 +202,19 @@ export function createProjectReferenceCommands(deps: {
       return undefined
     }
     const key = projectKeys.get(projectId)
-    return key
-      ? deps.entries.value.find((entry) => entry.id === key)
-      : undefined
+    if (!key) {
+      return undefined
+    }
+    return (
+      deps.entries.value.find((entry) => entry.id === key) ??
+      (deps.includePersonalCloud?.() &&
+      remoteCatalogToken === deps.getApiToken()
+        ? remoteEntries.get(key)
+        : undefined)
+    )
   }
 
-  function search(args: Record<string, unknown>) {
+  async function search(args: Record<string, unknown>) {
     const offset = positiveOffset(args.offset)
     if (
       typeof args.query !== 'string' ||
@@ -213,7 +226,70 @@ export function createProjectReferenceCommands(deps: {
       )
     }
     const query = args.query.trim().toLocaleLowerCase()
-    const matches = deps.entries.value
+    const apiToken = deps.getApiToken()
+    if (remoteCatalogToken !== apiToken) {
+      remoteEntries.clear()
+    }
+    let entries = deps.entries.value
+    let cloudEntries: HomeProjectEntry[] = []
+    if (deps.includePersonalCloud?.()) {
+      // Home's remote index can still be loading when Zookeeper starts in an
+      // editor. Read the existing cloud API instead of declaring a partial
+      // in-memory Home list complete.
+      const remoteProjects = await listRemoteProjects({
+        enabled: true,
+        token: apiToken,
+      }).catch(() =>
+        Promise.reject(
+          new ProjectReferenceCommandError(
+            'Could not list Personal Cloud projects. Try again.'
+          )
+        )
+      )
+      if (apiToken !== deps.getApiToken() || !deps.includePersonalCloud?.()) {
+        return Promise.reject(
+          new ProjectReferenceCommandError(
+            'Personal Cloud changed. Search again.'
+          )
+        )
+      }
+      entries = deps.entries.value
+      remoteCatalogToken = apiToken
+      const homeCloudIds = new Set(
+        entries
+          .filter((entry) =>
+            entry.libraryIds?.includes(PERSONAL_CLOUD_PROJECT_LIBRARY_ID)
+          )
+          .map((entry) => entry.remoteProjectId)
+      )
+      remoteEntries.clear()
+      cloudEntries = remoteProjects
+        .filter(
+          (project) =>
+            project.access?.scope !== 'organization' &&
+            !homeCloudIds.has(project.id)
+        )
+        .map((project) => {
+          const entry: HomeProjectEntry = {
+            id: `personal-cloud-remote:${project.id}`,
+            source: 'remote',
+            status: 'cloud-only',
+            libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
+            name:
+              typeof project.title === 'string' && project.title.trim()
+                ? project.title
+                : project.id,
+            remoteProjectId: project.id,
+            readWriteAccess: true,
+          }
+          remoteEntries.set(entry.id, entry)
+          return entry
+        })
+    } else {
+      remoteEntries.clear()
+      remoteCatalogToken = undefined
+    }
+    const matches = [...entries, ...cloudEntries]
       .filter(
         (entry) =>
           Boolean(entry.localProjectPath || entry.remoteProjectId) &&
@@ -261,6 +337,16 @@ export function createProjectReferenceCommands(deps: {
       token: apiToken,
     }
     const project = await getRemoteProject(config, entry.remoteProjectId)
+    if (
+      apiToken !== deps.getApiToken() ||
+      (remoteEntries.has(entry.id) && project.access?.scope === 'organization')
+    ) {
+      return Promise.reject(
+        new ProjectReferenceCommandError(
+          'Project is unavailable in this library.'
+        )
+      )
+    }
     // updated_at is not a content revision; revisionless servers need a fresh
     // archive on every page so the file hash can detect changes.
     const rawRevision = project.revision
@@ -301,6 +387,11 @@ export function createProjectReferenceCommands(deps: {
         maxFiles: MAX_FILES,
         maxTotalBytes: MAX_ARCHIVE_BYTES,
       })
+      if (apiToken !== deps.getApiToken()) {
+        return Promise.reject(
+          new ProjectReferenceCommandError('The account changed. Search again.')
+        )
+      }
       if (
         remoteRevision !== undefined &&
         generation === cloudSnapshotGeneration &&
@@ -584,6 +675,11 @@ export function createProjectReferenceCommands(deps: {
       if (activeSocket && activeSocket !== ws) {
         return true
       }
+      const apiToken = deps.getApiToken()
+      if (pendingToken !== apiToken) {
+        pending.clear()
+        pendingToken = apiToken
+      }
       const key = `${request.request_id}:${request.catalog_revision}:${request.command_id}:${JSON.stringify(request.arguments)}`
       let task = pending.get(key)
       if (!task) {
@@ -599,6 +695,18 @@ export function createProjectReferenceCommands(deps: {
             ws.readyState !== WebSocket.OPEN ||
             (activeSocket && activeSocket !== ws)
           ) {
+            return
+          }
+          if (apiToken !== deps.getApiToken()) {
+            ws.send(
+              JSON.stringify({
+                type: 'client_command_response',
+                request_id: request.request_id,
+                catalog_revision: request.catalog_revision,
+                status: 'rejected',
+                error: 'The account changed. Search again.',
+              })
+            )
             return
           }
           if (request.catalog_revision !== revision) {

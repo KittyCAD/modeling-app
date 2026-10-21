@@ -7,6 +7,7 @@ import type { ProjectArchiveFile } from '@src/lib/cloudSync/types'
 import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import nodeFileSystem from '@src/lib/fs-zds/nodefs'
+import { PERSONAL_CLOUD_PROJECT_LIBRARY_ID } from '@src/lib/projectLibraries'
 import { createProjectReferenceCommands } from '@src/lib/zookeeper/projectReferenceCommands'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import type { HomeProjectEntry } from '@src/registry/contracts/homeProjects'
@@ -15,12 +16,14 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 const cloudMocks = vi.hoisted(() => ({
   download: vi.fn(),
   get: vi.fn(),
+  list: vi.fn(),
   parse: vi.fn(),
 }))
 
 vi.mock('@src/lib/cloudSync/cloudApi', () => ({
   downloadRemoteProjectArchive: cloudMocks.download,
   getRemoteProject: cloudMocks.get,
+  listRemoteProjects: cloudMocks.list,
   RemoteProjectArchiveLimitError: class RemoteProjectArchiveLimitError extends Error {
     constructor() {
       super('Project archive is too large to reference.')
@@ -62,6 +65,7 @@ function fixture(
     initialEntries?: HomeProjectEntry[]
     fileOperations?: FileOperationsRegistryService
     getApiToken?: () => string
+    includePersonalCloud?: () => boolean
   } = {}
 ) {
   const entries = signal<readonly HomeProjectEntry[]>(
@@ -113,6 +117,7 @@ function fixture(
     entries,
     fileOperations: options.fileOperations ?? fileOperations,
     getApiToken: options.getApiToken ?? (() => 'token'),
+    includePersonalCloud: options.includePersonalCloud,
   })
   let nextRequest = 0
   async function request(
@@ -163,6 +168,7 @@ describe('Zookeeper project reference commands', () => {
 
   beforeEach(() => {
     cloudMocks.download.mockReset()
+    cloudMocks.list.mockReset()
     cloudMocks.get.mockReset().mockResolvedValue({
       id: 'cloud-123',
       revision: 'revision-1',
@@ -193,6 +199,135 @@ describe('Zookeeper project reference commands', () => {
     ])
     expect(JSON.stringify(projects)).not.toContain('/private/library')
     expect(JSON.stringify(projects)).not.toContain('cloud-123')
+  })
+
+  it('finds Personal Cloud projects before the Home remote index loads', async () => {
+    cloudMocks.list.mockResolvedValue([
+      { id: 'cloud-123', title: 'TRUCK cloud' },
+      { id: 'cloud-456', title: 'propeller' },
+      {
+        id: 'org-789',
+        title: 'organization design',
+        access: { scope: 'organization' },
+      },
+    ])
+    const { request } = fixture({
+      initialEntries: [localProject],
+      includePersonalCloud: () => true,
+    })
+
+    const response = await request('projects.search', { query: '' })
+    expect(response.status).toBe('succeeded')
+    expect(response.result?.projects).toEqual([
+      expect.objectContaining({ name: 'TRUCK', source: 'local' }),
+      expect.objectContaining({ name: 'TRUCK cloud', source: 'cloud' }),
+      expect.objectContaining({ name: 'propeller', source: 'cloud' }),
+    ])
+    expect(response.result?.next_offset).toBeNull()
+    expect(cloudMocks.list).toHaveBeenCalledWith({
+      enabled: true,
+      token: 'token',
+    })
+  })
+
+  it('does not repeat a Personal Cloud project already loaded by Home', async () => {
+    cloudMocks.list.mockResolvedValue([
+      { id: 'cloud-123', title: 'TRUCK cloud' },
+      { id: 'cloud-456', title: 'propeller' },
+    ])
+    const { request } = fixture({
+      initialEntries: [
+        localProject,
+        {
+          ...cloudProject,
+          libraryIds: [PERSONAL_CLOUD_PROJECT_LIBRARY_ID],
+        },
+      ],
+      includePersonalCloud: () => true,
+    })
+
+    const response = await request('projects.search', { query: '' })
+    expect(
+      (response.result?.projects as Array<{ name: string }>).map(
+        ({ name }) => name
+      )
+    ).toEqual(['TRUCK', 'TRUCK cloud', 'propeller'])
+  })
+
+  it('reads an API-discovered cloud project without materializing it', async () => {
+    cloudMocks.list.mockResolvedValue([{ id: 'cloud-456', title: 'propeller' }])
+    cloudMocks.get.mockResolvedValue({
+      id: 'cloud-456',
+      revision: 'revision-1',
+    })
+    cloudMocks.download.mockResolvedValue(new ArrayBuffer(1))
+    cloudMocks.parse.mockResolvedValue([
+      {
+        relativePath: 'main.kcl',
+        data: new TextEncoder().encode('blade = circle(12)'),
+      },
+    ] satisfies ProjectArchiveFile[])
+    let apiToken = 'token'
+    const { request, readFile } = fixture({
+      initialEntries: [localProject],
+      getApiToken: () => apiToken,
+      includePersonalCloud: () => true,
+    })
+    const found = await request('projects.search', { query: 'propeller' })
+    const projectId = (
+      found.result?.projects as Array<{ project_id: string }>
+    )[0].project_id
+    const listing = await request('projects.list_files', {
+      project_id: projectId,
+    })
+    expect(listing.result?.files).toEqual(['main.kcl'])
+    const read = await request('projects.read_file', {
+      project_id: projectId,
+      path: 'main.kcl',
+    })
+    expect(read.result?.content).toBe('blade = circle(12)')
+    expect(readFile).not.toHaveBeenCalled()
+
+    apiToken = 'different-account'
+    const staleRead = await request('projects.read_file', {
+      project_id: projectId,
+      path: 'main.kcl',
+    })
+    expect(staleRead.status).toBe('rejected')
+  })
+
+  it('rejects an API-discovered project that moves outside Personal Cloud', async () => {
+    cloudMocks.list.mockResolvedValue([{ id: 'cloud-456', title: 'propeller' }])
+    cloudMocks.get.mockResolvedValue({
+      id: 'cloud-456',
+      access: { scope: 'organization' },
+    })
+    const { request } = fixture({
+      initialEntries: [localProject],
+      includePersonalCloud: () => true,
+    })
+    const found = await request('projects.search', { query: 'propeller' })
+    const projectId = (
+      found.result?.projects as Array<{ project_id: string }>
+    )[0].project_id
+    const listing = await request('projects.list_files', {
+      project_id: projectId,
+    })
+    expect(listing.status).toBe('rejected')
+    expect(cloudMocks.download).not.toHaveBeenCalled()
+  })
+
+  it('does not claim a complete catalog when the cloud index request fails', async () => {
+    cloudMocks.list.mockRejectedValue(new Error('network error'))
+    const { request } = fixture({
+      initialEntries: [localProject],
+      includePersonalCloud: () => true,
+    })
+    const response = await request('projects.search', { query: '' })
+    expect(response.status).toBe('rejected')
+    expect(response.error).toBe(
+      'Could not list Personal Cloud projects. Try again.'
+    )
   })
 
   it('rejects requests for another catalog revision', async () => {
