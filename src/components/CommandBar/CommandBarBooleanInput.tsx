@@ -27,7 +27,6 @@ export function CommandBarBooleanInput({
   const { context } = commands.useState()
   const options = getBooleanOptions({
     required: evaluateCommandArgumentFlags(arg, context).isRequired,
-    allowVariables: true,
     currentValue: context.argumentsToSubmit[arg.name],
     ast: kclManager.astSignal.value,
     variables: kclManager.variablesSignal.value,

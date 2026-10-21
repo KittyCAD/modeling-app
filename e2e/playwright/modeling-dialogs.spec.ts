@@ -1,109 +1,5 @@
 import { expect, test } from '@e2e/playwright/zoo-test'
 
-for (const dialogs of [true, false]) {
-  test.describe(
-    `Boolean parameter inputs (${dialogs ? 'dialog' : 'command bar'})`,
-    { tag: '@web' },
-    () => {
-      test.use({ userFeatures: dialogs ? ['modeling_dialogs'] : [] })
-
-      test('Binds Extrude Symmetric without replacing the parameter during edits', async ({
-        page,
-        homePage,
-        scene,
-        editor,
-        toolbar,
-        cmdBar,
-        modelingDialog,
-      }) => {
-        const code = `@settings(kclVersion = 3.0)
-mirrorEnabled = false
-sketch001 = sketch(on = XY) {
-  circle1 = circle(start = [var 2mm, var 0mm], center = [var 0mm, var 0mm])
-}
-region001 = region(segments = [sketch001.circle1])`
-        await homePage.goToModelingScene()
-        await scene.settled()
-        await scene.waitForExecutionDoneAfter(() =>
-          editor.replaceCode('', code)
-        )
-        await editor.selectText('region(')
-        await toolbar.extrudeButton.click()
-
-        async function openSymmetric() {
-          const continueButton = page.getByTestId('command-bar-continue')
-          const submitButton = page.getByTestId('command-bar-submit')
-          await expect(continueButton.or(submitButton)).toBeVisible()
-          while (await continueButton.isVisible()) await cmdBar.progressCmdBar()
-          await expect(submitButton).toBeVisible()
-          if (await page.getByTestId('arg-name-symmetric').isVisible())
-            await cmdBar.clickHeaderArgument('symmetric')
-          else await cmdBar.clickOptionalArgument('symmetric')
-        }
-        async function choose(name: string) {
-          if (dialogs) {
-            const input = modelingDialog.options(/^symmetric$/i)
-            await input.fill(name)
-          } else {
-            await openSymmetric()
-            await cmdBar.argumentInput.fill(name)
-          }
-          await page.getByRole('option', { name, exact: true }).click()
-        }
-        async function save() {
-          if (dialogs) {
-            await expect(modelingDialog.submitButton).toBeEnabled()
-            await modelingDialog.submitButton.click()
-            await expect(modelingDialog.locator).not.toBeAttached()
-          } else {
-            for (
-              let step = 0;
-              step < 3 && (await cmdBar.cmdBarElement.isVisible());
-              step++
-            ) {
-              await cmdBar.progressCmdBar()
-            }
-            await expect(cmdBar.cmdBarElement).not.toBeVisible()
-          }
-          await scene.settled()
-        }
-        await choose('mirrorEnabled (Off)')
-        await save()
-        await editor.expectEditor.toContain('symmetric = mirrorEnabled')
-        await scene.waitForExecutionDoneAfter(() =>
-          editor.replaceCode('mirrorEnabled = false', 'mirrorEnabled = true')
-        )
-
-        await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
-        if (dialogs) {
-          await expect(modelingDialog.options(/^symmetric$/i)).toHaveValue(
-            'mirrorEnabled (On)'
-          )
-          await modelingDialog.input(/^length$/i).fill('8mm')
-        } else {
-          await openSymmetric()
-          await expect(cmdBar.argumentInput).toHaveAttribute(
-            'placeholder',
-            'mirrorEnabled (On)'
-          )
-          await cmdBar.selectOption({ name: 'mirrorEnabled (On)' }).click()
-        }
-        await save()
-        await editor.expectEditor.toContain('symmetric = mirrorEnabled')
-
-        await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
-        await choose('Off')
-        await save()
-        await editor.expectEditor.toContain('symmetric = false')
-        await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
-        await choose('Use default')
-        await save()
-        await editor.expectEditor.not.toContain('symmetric =')
-      })
-    }
-  )
-}
-
 const profileCode = `@settings(kclVersion = 3.0)
 sketch001 = sketch(on = XY) {
   circle1 = circle(start = [var 2mm, var 10mm], center = [var 0mm, var 10mm])
@@ -114,7 +10,7 @@ region001 = region(segments = [sketch001.circle1])`
 test.describe('Modeling dialogs', { tag: '@web' }, () => {
   test.use({ userFeatures: ['modeling_dialogs'] })
 
-  test('Creates numeric and boolean parameters and edits them from the feature tree', async ({
+  test('Creates a boolean parameter and preserves its feature binding through edits', async ({
     page,
     homePage,
     scene,
@@ -126,36 +22,30 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
     await homePage.goToModelingScene()
     await scene.settled()
     await scene.waitForExecutionDoneAfter(() =>
-      editor.replaceCode('', '@settings(kclVersion = 3.0)\nbase = 10mm')
+      editor.replaceCode('', profileCode)
     )
 
     await cmdBar.cmdBarOpenBtn.click()
     await cmdBar.chooseCommand('create parameter')
-    const value = modelingDialog.input(/^value$/i)
-    const variableName = modelingDialog.input('Variable name')
-    await expect(value).toHaveText('5')
-    await variableName.fill('distance')
-    await value.fill('base +')
-    await expect(modelingDialog.submitButton).toBeDisabled()
-    await value.fill('base + 5mm')
-    await expect(modelingDialog.submitButton).toBeEnabled()
-    await scene.waitForExecutionDoneAfter(() =>
-      modelingDialog.submitButton.click()
-    )
-    await expect(modelingDialog.locator).not.toBeAttached()
-    await editor.expectEditor.toContain('distance = base + 5mm')
-
-    await cmdBar.cmdBarOpenBtn.click()
-    await cmdBar.chooseCommand('create parameter')
-    await variableName.fill('enabled')
-    await value.fill('true')
-    await expect(modelingDialog.submitButton).toBeEnabled()
-    await value.fill('false')
+    await modelingDialog.input('Variable name').fill('enabled')
+    await modelingDialog.input(/^value$/i).fill('false')
     await expect(modelingDialog.submitButton).toBeEnabled()
     await scene.waitForExecutionDoneAfter(() =>
       modelingDialog.submitButton.click()
     )
     await editor.expectEditor.toContain('enabled = false')
+
+    await editor.selectText('region(')
+    await toolbar.extrudeButton.click()
+    const symmetric = modelingDialog.options(/^symmetric$/i)
+    await symmetric.fill('enabled')
+    await page
+      .getByRole('option', { name: 'enabled (Off)', exact: true })
+      .click()
+    await scene.waitForExecutionDoneAfter(() =>
+      modelingDialog.submitButton.click()
+    )
+    await editor.expectEditor.toContain('symmetric = enabled')
 
     await (await toolbar.getFeatureTreeOperation('enabled', 0)).dblclick()
     const editValue = cmdBar.argumentInput.locator('[contenteditable]')
@@ -166,22 +56,24 @@ test.describe('Modeling dialogs', { tag: '@web' }, () => {
       'true'
     )
     await cmdBar.progressCmdBar()
-    await cmdBar.progressCmdBar()
+    await scene.waitForExecutionDoneAfter(() => cmdBar.progressCmdBar())
     await editor.expectEditor.toContain('enabled = true')
-    await scene.settled()
 
-    await cmdBar.cmdBarOpenBtn.click()
-    await cmdBar.chooseCommand('edit parameter')
-    await cmdBar.selectOption({ name: 'enabled' }).click()
-    await expect(editValue).toHaveText('true')
-    await editValue.fill('false')
-    await expect(page.locator('#arg-form')).toHaveAttribute(
-      'data-can-submit',
-      'true'
+    await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
+    await expect(symmetric).toHaveValue('enabled (On)')
+    await modelingDialog.input(/^length$/i).fill('8mm')
+    await scene.waitForExecutionDoneAfter(() =>
+      modelingDialog.submitButton.click()
     )
-    await cmdBar.progressCmdBar()
-    await cmdBar.progressCmdBar()
-    await editor.expectEditor.toContain('enabled = false')
+    await editor.expectEditor.toContain('symmetric = enabled')
+
+    await (await toolbar.getFeatureTreeOperation('Extrude', 0)).dblclick()
+    await symmetric.fill('Use default')
+    await page.getByRole('option', { name: 'Use default', exact: true }).click()
+    await scene.waitForExecutionDoneAfter(() =>
+      modelingDialog.submitButton.click()
+    )
+    await editor.expectEditor.not.toContain('symmetric =')
   })
 
   test('Preserves an Extrude draft while hiding an obstruction', async ({

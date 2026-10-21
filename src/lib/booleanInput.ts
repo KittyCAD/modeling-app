@@ -25,7 +25,6 @@ export function booleanValueSummary(value: unknown): string {
 
 export function getBooleanOptions({
   required,
-  allowVariables,
   currentValue,
   ast,
   variables,
@@ -33,7 +32,6 @@ export function getBooleanOptions({
   wasmInstance,
 }: {
   required: boolean
-  allowVariables?: boolean
   currentValue: unknown
   ast: Node<Program>
   variables: VariableMap
@@ -45,7 +43,6 @@ export function getBooleanOptions({
     { name: 'On', value: true },
     { name: 'Off', value: false },
   ]
-  if (!allowVariables) return options
 
   const target = isPathToNode(nodeToEdit)
     ? getNodeFromPath<Node<VariableDeclaration>>(

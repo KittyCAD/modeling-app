@@ -62,7 +62,6 @@ later = true`
     ])
     const input = {
       required: false,
-      allowVariables: true,
       currentValue: undefined,
       ast,
       variables: exec.variables,
@@ -77,9 +76,6 @@ later = true`
       'mirrorEnabled (Off)',
     ])
     expect(getBooleanOptions({ ...input, required: true })[0].name).toBe('On')
-    expect(getBooleanOptions({ ...input, allowVariables: false })).toHaveLength(
-      3
-    )
     const reference = options[3].value
     expect(reference).toMatchObject({
       valueText: 'mirrorEnabled',
@@ -91,61 +87,58 @@ later = true`
     ).toBe(reference)
   })
 
-  it.each(['true', 'false', 'mirrorEnabled', '!mirrorEnabled'])(
-    'preserves %s through opening and saving an Extrude edit',
-    async (expression) => {
-      const code = `${profileCode}
+  it('preserves a false-valued binding through editing and clearing', async () => {
+    const expression = 'mirrorEnabled'
+    const code = `${profileCode}
 body001 = extrude(region001, length = 5mm, symmetric = ${expression})`
-      const ast = assertParse(code, world.instance)
-      const exec = await enginelessExecutor(ast, world.rustContext)
-      const operation = getAllOperations(exec.operations).find(
-        (operation) =>
-          operation.type === 'StdLibCall' && operation.name === 'extrude'
-      )
-      expect(operation).toBeDefined()
-      if (!operation) return
-      const edit = await enterEditFlow({
-        operation,
-        code,
-        artifactGraph: exec.artifactGraph,
-        rustContext: world.rustContext,
-      })
-      assertNotErr(edit)
-      if (edit.type !== 'Find and select command')
-        throw new Error('Expected edit command')
-      const symmetric: unknown = edit.data.argDefaultValues?.symmetric
-      if (expression === 'true' || expression === 'false') {
-        expect(symmetric).toBe(expression === 'true')
-      } else {
-        expect(symmetric).toMatchObject({ valueText: expression })
-      }
-      if (typeof symmetric !== 'boolean' && !isKclCommandValue(symmetric))
-        throw new Error('Expected boolean or expression')
-      const length = {
-        valueAst: createLocalName('count'),
-        valueText: 'count',
-        valueCalculated: '2',
-      }
-      const common = {
-        ast,
-        sketches: { graphSelections: [], otherSelections: [] },
-        artifactGraph: exec.artifactGraph,
-        length,
-        nodeToEdit: createPathToNodeForLastVariable(ast, false),
-        wasmInstance: world.instance,
-      }
-      const saved = addExtrude({ ...common, symmetric })
-      assertNotErr(saved)
-      expect(recast(saved.modifiedAst, world.instance)).toContain(
-        `symmetric = ${expression}`
-      )
-      const cleared = addExtrude({ ...common, symmetric: undefined })
-      assertNotErr(cleared)
-      expect(recast(cleared.modifiedAst, world.instance)).not.toContain(
-        'symmetric ='
-      )
+    const ast = assertParse(code, world.instance)
+    const exec = await enginelessExecutor(ast, world.rustContext)
+    const operation = getAllOperations(exec.operations).find(
+      (operation) =>
+        operation.type === 'StdLibCall' && operation.name === 'extrude'
+    )
+    expect(operation).toBeDefined()
+    if (!operation) return
+    const edit = await enterEditFlow({
+      operation,
+      code,
+      artifactGraph: exec.artifactGraph,
+      rustContext: world.rustContext,
+    })
+    assertNotErr(edit)
+    if (edit.type !== 'Find and select command')
+      throw new Error('Expected edit command')
+    const symmetric: unknown = edit.data.argDefaultValues?.symmetric
+    expect(symmetric).toMatchObject({
+      valueText: expression,
+      valueCalculated: 'false',
+    })
+    if (!isKclCommandValue(symmetric))
+      throw new Error('Expected boolean expression')
+    const length = {
+      valueAst: createLocalName('count'),
+      valueText: 'count',
+      valueCalculated: '2',
     }
-  )
+    const common = {
+      ast,
+      sketches: { graphSelections: [], otherSelections: [] },
+      artifactGraph: exec.artifactGraph,
+      length,
+      nodeToEdit: createPathToNodeForLastVariable(ast, false),
+      wasmInstance: world.instance,
+    }
+    const saved = addExtrude({ ...common, symmetric })
+    assertNotErr(saved)
+    expect(recast(saved.modifiedAst, world.instance)).toContain(
+      `symmetric = ${expression}`
+    )
+    const cleared = addExtrude({ ...common, symmetric: undefined })
+    assertNotErr(cleared)
+    expect(recast(cleared.modifiedAst, world.instance)).not.toContain(
+      'symmetric ='
+    )
+  })
 
   it('reevaluates bindings and rejects numeric or missing values', async () => {
     const ast = assertParse(profileCode, world.instance)

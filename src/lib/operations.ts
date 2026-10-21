@@ -57,6 +57,7 @@ import type {
   HelixModes,
   ModelingCommandSchema,
 } from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import { STD_LIB_COMMANDS } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
 import {
   EXECUTION_TYPE_REAL,
@@ -539,14 +540,6 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
         : axisEdgeSelection.edge
   }
 
-  const symmetric = await extractBooleanArgument(
-    code,
-    operation,
-    'symmetric',
-    rustContext
-  )
-  if (isErr(symmetric)) return { reason: symmetric.message }
-
   // bidirectionalLength argument from a string to a KCL expression
   let bidirectionalLength: KclCommandValue | undefined
   if (
@@ -664,14 +657,6 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
     }
   }
 
-  const hideSeams = await extractBooleanArgument(
-    code,
-    operation,
-    'hideSeams',
-    rustContext
-  )
-  if (isErr(hideSeams)) return { reason: hideSeams.message }
-
   // bodyType argument from a string
   let bodyType: KclPreludeBodyType | undefined
   if ('bodyType' in operation.labeledArgs && operation.labeledArgs.bodyType) {
@@ -688,7 +673,6 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
     length,
     to,
     direction,
-    symmetric,
     bidirectionalLength,
     tagStart,
     tagEnd,
@@ -697,7 +681,6 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
     twistAngleStep,
     twistCenter,
     method,
-    hideSeams,
     bodyType,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
@@ -746,15 +729,6 @@ const prepareToEditLoft: PrepareToEditCallback = async ({
 
     vDegree = result
   }
-
-  const bezApproximateRational = await extractBooleanArgument(
-    code,
-    operation,
-    'bezApproximateRational',
-    rustContext
-  )
-  if (isErr(bezApproximateRational))
-    return { reason: bezApproximateRational.message }
 
   // baseCurveIndex argument from a string to a KCL expression
   let baseCurveIndex: KclCommandValue | undefined
@@ -813,7 +787,6 @@ const prepareToEditLoft: PrepareToEditCallback = async ({
   const argDefaultValues: ModelingCommandSchema['Loft'] = {
     sketches,
     vDegree,
-    bezApproximateRational,
     baseCurveIndex,
     tolerance,
     tagStart,
@@ -895,19 +868,10 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
   )
   const version = 'error' in versionResult ? undefined : versionResult
 
-  const tangentChain = await extractBooleanArgument(
-    code,
-    operation,
-    'tangentChain',
-    rustContext
-  )
-  if (isErr(tangentChain)) return { reason: tangentChain.message }
-
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
   const argDefaultValues: ModelingCommandSchema['Fillet'] = {
-    tangentChain,
     selection,
     radius,
     tolerance,
@@ -980,19 +944,10 @@ const prepareToEditChamfer: PrepareToEditCallback = async ({
 
   const tag = extractStringArgument(code, operation, 'tag')
 
-  const tangentChain = await extractBooleanArgument(
-    code,
-    operation,
-    'tangentChain',
-    rustContext
-  )
-  if (isErr(tangentChain)) return { reason: tangentChain.message }
-
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
   const argDefaultValues: ModelingCommandSchema['Chamfer'] = {
-    tangentChain,
     selection,
     length,
     secondLength,
@@ -1468,15 +1423,6 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
       )
     : emptySelections()
 
-  // optional arguments
-  const sectional = await extractBooleanArgument(
-    code,
-    operation,
-    'sectional',
-    rustContext
-  )
-  if (isErr(sectional)) return { reason: sectional.message }
-
   const toleranceResult = await extractOptionalKclArgument(
     code,
     operation,
@@ -1487,24 +1433,6 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
     return { reason: toleranceResult.error }
   }
   const tolerance = toleranceResult
-
-  const translateProfileToPath = await extractBooleanArgument(
-    code,
-    operation,
-    'translateProfileToPath',
-    rustContext
-  )
-  if (isErr(translateProfileToPath))
-    return { reason: translateProfileToPath.message }
-
-  const orientProfilePerpendicular = await extractBooleanArgument(
-    code,
-    operation,
-    'orientProfilePerpendicular',
-    rustContext
-  )
-  if (isErr(orientProfilePerpendicular))
-    return { reason: orientProfilePerpendicular.message }
 
   let relativeTo: SweepRelativeTo | undefined
   if (
@@ -1564,11 +1492,8 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
   const argDefaultValues: ModelingCommandSchema['Sweep'] = {
     sketches,
     path,
-    sectional,
     tolerance,
     relativeTo,
-    translateProfileToPath,
-    orientProfilePerpendicular,
     tagStart,
     tagEnd,
     bodyType,
@@ -1706,10 +1631,6 @@ const prepareToEditHelix: PrepareToEditCallback = async ({
     length = r
   }
 
-  // counterClockWise boolean arg (optional)
-  const ccw = await extractBooleanArgument(code, operation, 'ccw', rustContext)
-  if (isErr(ccw)) return { reason: ccw.message }
-
   // Assemble the default argument values for the Offset Plane command,
   // with `nodeToEdit` set, which will let the Offset Plane actor know
   // to edit the node that corresponds to the StdLibCall.
@@ -1722,7 +1643,6 @@ const prepareToEditHelix: PrepareToEditCallback = async ({
     angleStart,
     radius,
     length,
-    ccw,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
 
@@ -1823,14 +1743,6 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
   }
   const tolerance = toleranceResult
 
-  const symmetric = await extractBooleanArgument(
-    code,
-    operation,
-    'symmetric',
-    rustContext
-  )
-  if (isErr(symmetric)) return { reason: symmetric.message }
-
   // bidirectionalLength argument from a string to a KCL expression
   let bidirectionalAngle: KclCommandValue | undefined
   if (
@@ -1884,7 +1796,6 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     edge,
     angle,
     tolerance,
-    symmetric,
     bidirectionalAngle,
     tagStart,
     tagEnd,
@@ -1975,22 +1886,6 @@ const prepareToEditPatternCircular3d: PrepareToEditCallback = async ({
     arcDegrees = result
   }
 
-  const rotateDuplicates = await extractBooleanArgument(
-    code,
-    operation,
-    'rotateDuplicates',
-    rustContext
-  )
-  if (isErr(rotateDuplicates)) return { reason: rotateDuplicates.message }
-
-  const useOriginal = await extractBooleanArgument(
-    code,
-    operation,
-    'useOriginal',
-    rustContext
-  )
-  if (isErr(useOriginal)) return { reason: useOriginal.message }
-
   // 6. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
@@ -2000,8 +1895,6 @@ const prepareToEditPatternCircular3d: PrepareToEditCallback = async ({
     axis: axisString,
     center,
     arcDegrees,
-    rotateDuplicates,
-    useOriginal,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
@@ -2069,14 +1962,6 @@ const prepareToEditPatternLinear3d: PrepareToEditCallback = async ({
   }
   const axisString = axisResult
 
-  const useOriginal = await extractBooleanArgument(
-    code,
-    operation,
-    'useOriginal',
-    rustContext
-  )
-  if (isErr(useOriginal)) return { reason: useOriginal.message }
-
   // 6. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
@@ -2085,7 +1970,6 @@ const prepareToEditPatternLinear3d: PrepareToEditCallback = async ({
     instances,
     distance,
     axis: axisString,
-    useOriginal,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
@@ -3147,7 +3031,6 @@ const prepareToEditSplit: PrepareToEditCallback = async ({
   operation,
   artifactGraph,
   code,
-  rustContext,
 }) => {
   const baseCommand = {
     name: 'Boolean Split',
@@ -3167,27 +3050,9 @@ const prepareToEditSplit: PrepareToEditCallback = async ({
     )
   }
 
-  const merge = await extractBooleanArgument(
-    code,
-    operation,
-    'merge',
-    rustContext
-  )
-  if (isErr(merge)) return { reason: merge.message }
-
-  const keepTools = await extractBooleanArgument(
-    code,
-    operation,
-    'keepTools',
-    rustContext
-  )
-  if (isErr(keepTools)) return { reason: keepTools.message }
-
   const argDefaultValues: ModelingCommandSchema['Boolean Split'] = {
     targets,
     tools,
-    merge,
-    keepTools,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
@@ -3874,9 +3739,25 @@ export async function enterEditFlow({
       if ('reason' in eventPayload) {
         return new Error(eventPayload.reason)
       }
+      // Boolean fields have the same edit behavior across modeling commands.
+      const argDefaultValues = { ...eventPayload.argDefaultValues }
+      const definition = Object.entries(STD_LIB_COMMANDS).find(
+        ([name]) => name === operation.name
+      )?.[1]
+      for (const arg of definition?.args ?? []) {
+        if (arg.ty !== 'bool') continue
+        const value = await extractBooleanArgument(
+          code,
+          operation,
+          arg.name,
+          rustContext
+        )
+        if (isErr(value)) return value
+        argDefaultValues[arg.name] = value
+      }
       return {
         type: 'Find and select command',
-        data: eventPayload,
+        data: { ...eventPayload, argDefaultValues },
       }
     } else {
       return 'reason' in stdLibInfo.prepareToEdit
@@ -3966,14 +3847,6 @@ async function prepareToEditTranslate({
   }
   const xyz = xyzResult
 
-  const global = await extractBooleanArgument(
-    code,
-    operation,
-    'global',
-    rustContext
-  )
-  if (isErr(global)) return { reason: global.message }
-
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
@@ -3982,7 +3855,6 @@ async function prepareToEditTranslate({
     x,
     y,
     z,
-    global,
     xyz,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
@@ -4038,13 +3910,6 @@ async function prepareToEditScale({
     if ('error' in res) return { reason: res.error }
     factor = res
   }
-  const global = await extractBooleanArgument(
-    code,
-    operation,
-    'global',
-    rustContext
-  )
-  if (isErr(global)) return { reason: global.message }
 
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
@@ -4055,7 +3920,6 @@ async function prepareToEditScale({
     y,
     z,
     factor,
-    global,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
@@ -4138,14 +4002,6 @@ async function prepareToEditRotate({
   }
   const angle = angleResult
 
-  const global = await extractBooleanArgument(
-    code,
-    operation,
-    'global',
-    rustContext
-  )
-  if (isErr(global)) return { reason: global.message }
-
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
@@ -4156,7 +4012,6 @@ async function prepareToEditRotate({
     yaw,
     axis,
     angle,
-    global,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {

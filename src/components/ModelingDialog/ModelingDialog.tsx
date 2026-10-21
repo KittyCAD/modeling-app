@@ -287,7 +287,6 @@ export default function ModelingDialog({
             value={value}
             options={getBooleanOptions({
               required,
-              allowVariables: true,
               currentValue: value,
               ast: kclManager.astSignal.value,
               variables: kclManager.variablesSignal.value,
