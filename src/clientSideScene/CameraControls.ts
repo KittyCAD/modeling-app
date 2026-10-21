@@ -139,6 +139,7 @@ export class CameraControls {
   private readonly hoverFrame = new CameraFrame()
   private readonly engineCameraFrame = new CameraFrame()
   private readonly reactCameraFrame = new CameraFrame()
+  private cameraWriteVersion = 0
   lastPerspectiveFov = 45
   pendingZoom: number | null = null
   pendingRotation: Vector2 | null = null
@@ -283,6 +284,7 @@ export class CameraControls {
   }
 
   updateEngineCamera = (threeValues: ThreeCamValues) => {
+    this.cameraWriteVersion += 1
     const connection = this.engineCommandManager.connection
     const syncDirection = this.syncDirection
     const cmd: EngineCommand = {
@@ -756,18 +758,18 @@ export class CameraControls {
   private createPerspectiveCamera = () => {
     const { z_near, z_far } = calculateNearFarFromFOV(this.lastPerspectiveFov)
     const previousCamUp = this.camera.up.clone()
-    this.camera = new PerspectiveCamera(
+    const camera = new PerspectiveCamera(
       this.lastPerspectiveFov,
       this.normalizedViewportAspect(),
       z_near,
       z_far
     )
-    this.camera.up.copy(previousCamUp)
-    this.camera.layers.enable(SKETCH_LAYER)
+    camera.up.copy(previousCamUp)
+    camera.layers.enable(SKETCH_LAYER)
     if (DEBUG_SHOW_INTERSECTION_PLANE)
-      this.camera.layers.enable(INTERSECTION_PLANE_LAYER)
+      camera.layers.enable(INTERSECTION_PLANE_LAYER)
 
-    return this.camera
+    return camera
   }
   private _usePerspectiveCamera = () => {
     const { x: px, y: py, z: pz } = this.camera.position
@@ -828,29 +830,7 @@ export class CameraControls {
       return
     }
     this.lastPerspectiveFov = newFov
-
-    // Calculate the direction vector from the camera towards the controls target
-    const direction = new Vector3()
-      .subVectors(this.target, this.camera.position)
-      .normalize()
-
-    // Calculate the distance to the controls target before changing the FOV
-    const distanceBefore = this.camera.position.distanceTo(this.target)
-
-    // Calculate the scale factor for the new FOV compared to the old one
-    // This needs to be calculated before updating the camera's FOV
-    const oldFov = this.camera.fov
-    const scaleFactor = viewHeightFactor(oldFov) / viewHeightFactor(newFov)
-
-    this.camera.fov = newFov
-    this.camera.updateProjectionMatrix()
-
-    const distanceAfter = distanceBefore * scaleFactor
-
-    const newPosition = this.target
-      .clone()
-      .add(direction.multiplyScalar(-distanceAfter))
-    this.camera.position.copy(newPosition)
+    dollyZoomCamera(this.camera, this.target, newFov)
 
     this.onCameraChange()
     // Publish local camera state, but send only the final reliable command.
@@ -863,7 +843,7 @@ export class CameraControls {
         ...convertThreeCamValuesToEngineCam(
           {
             isPerspective: true,
-            position: newPosition,
+            position: this.camera.position,
             quaternion: this.camera.quaternion,
             zoom: this.camera.zoom,
             target: this.target,
@@ -1401,21 +1381,89 @@ export class CameraControls {
     })
   }
 
-  snapToPerspectiveBeforeHandingBackControlToEngine = async (
-    targetCamUp = new Vector3(0, 0, 1)
-  ) => {
+  disableSketchMode() {
+    return sendCameraCommand(this.engineCommandManager, {
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: { type: 'sketch_mode_disable' },
+    })
+  }
+
+  snapToPerspectiveBeforeHandingBackControlToEngine = async () => {
     if (this.syncDirection === 'engineToClient') {
       console.warn(
         'animate To Perspective not design to work with engineToClient syncDirection.'
       )
     }
+    const connection = this.engineCommandManager.connection
+    const isCurrentOwner = () =>
+      this.engineCommandManager.connection === connection &&
+      this.syncDirection === 'clientToEngine'
+    const ownershipError = new Error(
+      'Camera ownership changed while exiting sketch mode'
+    )
+    const flushInput = () => {
+      this.moveFrame.flush()
+      this.zoomFrame.flush()
+      this.engineCameraFrame.flush()
+    }
+    flushInput()
+    let synchronizedVersion = this.cameraWriteVersion
+    const drainInput = async () => {
+      if (!isCurrentOwner()) return Promise.reject(ownershipError)
+      flushInput()
+      // An authoritative response must not discard a newer queued gesture.
+      // Read back after its reliable write, including one sent by an earlier RAF.
+      while (synchronizedVersion !== this.cameraWriteVersion) {
+        synchronizedVersion = this.cameraWriteVersion
+        await sendCameraCommand(this.engineCommandManager, {
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: { type: 'default_camera_get_settings' },
+        })
+        if (!isCurrentOwner()) return Promise.reject(ownershipError)
+        flushInput()
+      }
+    }
     this.isFovAnimationInProgress = true
     try {
-      // Change the client projection without sending intermediate engine views.
-      // The combined command applies the final position and FOV atomically.
-      this._usePerspectiveCamera()
-      this.camera.up.copy(targetCamUp)
-      await this.dollyZoom(this.perspectiveFovBeforeOrtho)
+      const camera = this.createPerspectiveCamera()
+      camera.position.copy(this.camera.position)
+      camera.quaternion.copy(this.camera.quaternion)
+      const target = this.target.clone()
+      const fov = this.perspectiveFovBeforeOrtho
+      dollyZoomCamera(camera, target, fov)
+      await sendCameraCommands(this.engineCommandManager, [
+        { cmd_id: uuidv4(), cmd: { type: 'sketch_mode_disable' } },
+        {
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'default_camera_perspective_settings',
+            ...convertThreeCamValuesToEngineCam(
+              {
+                position: camera.position,
+                quaternion: camera.quaternion,
+                zoom: camera.zoom,
+                isPerspective: true,
+                target,
+              },
+              fov
+            ),
+            fov_y: fov,
+          },
+        },
+        { cmd_id: uuidv4(), cmd: { type: 'default_camera_get_settings' } },
+      ])
+      await drainInput()
+      if (this.camera instanceof PerspectiveCamera)
+        this.lastPerspectiveFov = this.camera.fov
+    } catch (failure) {
+      try {
+        await drainInput()
+      } catch {
+        // Preserve the original exit failure if its connection also retired.
+      }
+      return Promise.reject(failure)
     } finally {
       this.isFovAnimationInProgress = false
     }
@@ -1650,6 +1698,21 @@ const viewHeightFactor = (fov: number) => {
   return Math.tan(deg2Rad(fov / 2))
 }
 
+function dollyZoomCamera(
+  camera: PerspectiveCamera,
+  target: Vector3,
+  newFov: number
+) {
+  const direction = target.clone().sub(camera.position).normalize()
+  const distance = camera.position.distanceTo(target)
+  const scale = viewHeightFactor(camera.fov) / viewHeightFactor(newFov)
+  camera.fov = newFov
+  camera.updateProjectionMatrix()
+  camera.position.copy(
+    target.clone().add(direction.multiplyScalar(-distance * scale))
+  )
+}
+
 function convertThreeCamValuesToEngineCam(
   { target, position, quaternion, zoom, isPerspective }: ThreeCamValues,
   perspectiveFovY = 45
@@ -1730,8 +1793,15 @@ export async function enterSketchModeAndSyncCamera(
       cmd: { type: 'default_camera_get_settings' },
     },
   ]
+  await sendCameraCommands(engineCommandManager, requests)
+}
+
+async function sendCameraCommands(
+  engineCommandManager: ConnectionManager,
+  requests: ModelingCmdReq[]
+) {
   // The engine executes the batch in order and stops on the first failure.
-  // Both acknowledgements and the subscribed camera update arrive in one trip.
+  // The acknowledgements and subscribed camera update arrive in one trip.
   const response = await engineCommandManager
     .sendSceneCommand(
       {

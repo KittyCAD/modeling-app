@@ -65,6 +65,7 @@ const cameraSettingsResponse = {
             orientation: { x: 0, y: 0, z: 0, w: 1 },
             up: { x: 0, y: 1, z: 0 },
             ortho: false,
+            fov_y: 45,
           },
         },
       },
@@ -77,11 +78,18 @@ function cameraBatchAcknowledgement(command: EngineCommand) {
     expect.fail('Expected a camera batch')
   const responses: Record<string, BatchResponse> = {}
   for (const { cmd_id, cmd } of command.requests) {
+    if (
+      cmd.type !== 'enable_sketch_mode' &&
+      cmd.type !== 'sketch_mode_disable' &&
+      cmd.type !== 'default_camera_perspective_settings' &&
+      cmd.type !== 'default_camera_get_settings'
+    )
+      expect.fail('Unexpected camera command')
     responses[cmd_id] = {
       response:
-        cmd.type === 'enable_sketch_mode'
-          ? { type: 'enable_sketch_mode', data: {} }
-          : cameraSettingsResponse.resp.data.modeling_response,
+        cmd.type === 'default_camera_get_settings'
+          ? cameraSettingsResponse.resp.data.modeling_response
+          : { type: cmd.type, data: {} },
     }
   }
   return {
@@ -89,6 +97,25 @@ function cameraBatchAcknowledgement(command: EngineCommand) {
     request_id: command.batch_id,
     resp: { type: 'modeling_batch', data: { responses } },
   } satisfies WebSocketResponse
+}
+
+function makeSketchCamera() {
+  const manager = makeConnectionManager({ width: 256, height: 256 })
+  const subscriptions = vi.spyOn(manager, 'subscribeTo')
+  const controls = new CameraControls(
+    makeCanvas(256, 256),
+    manager,
+    unusedSettings
+  )
+  controls.camera = new OrthographicCamera(-10, 10, 10, -10)
+  controls.camera.position.set(0, -10, 10)
+  controls.syncDirection = 'clientToEngine'
+  const settingsSubscription = subscriptions.mock.calls.find(
+    ([{ event }]) => event === 'default_camera_get_settings'
+  )?.[0]
+  if (!settingsSubscription)
+    expect.fail('Missing authoritative camera subscription')
+  return { manager, controls, settingsSubscription }
 }
 
 describe('immediate camera changes', () => {
@@ -222,9 +249,10 @@ describe('immediate camera changes', () => {
     expect(send).toHaveBeenCalledTimes(1)
   })
 
-  it('restores perspective with one acknowledged final camera update', async () => {
+  it('disables sketch mode and restores authoritative perspective in one acknowledged batch', async () => {
     vi.useFakeTimers()
     const manager = makeConnectionManager({ width: 256, height: 256 })
+    const subscriptions = vi.spyOn(manager, 'subscribeTo')
     const controls = new CameraControls(
       makeCanvas(256, 256),
       manager,
@@ -248,22 +276,59 @@ describe('immediate camera changes', () => {
 
     expect(send).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
-        cmd: expect.objectContaining({
-          type: 'default_camera_perspective_settings',
-          fov_y: 45,
-        }),
+        type: 'modeling_cmd_batch_req',
+        responses: true,
+        requests: [
+          { cmd_id: expect.any(String), cmd: { type: 'sketch_mode_disable' } },
+          {
+            cmd_id: expect.any(String),
+            cmd: expect.objectContaining({
+              type: 'default_camera_perspective_settings',
+              fov_y: 45,
+            }),
+          },
+          {
+            cmd_id: expect.any(String),
+            cmd: { type: 'default_camera_get_settings' },
+          },
+        ],
       }),
       true
     )
-    expect(controls.camera).toBeInstanceOf(PerspectiveCamera)
-    expect(controls.camera.up).toEqual(new Vector3(0, 0, 1))
+    expect(controls.camera).toBeInstanceOf(OrthographicCamera)
+    const batch = send.mock.calls[0][0]
+    if (batch.type !== 'modeling_cmd_batch_req')
+      expect.fail('Expected exit batch')
+    const perspective = batch.requests.find(
+      ({ cmd }) => cmd.type === 'default_camera_perspective_settings'
+    )?.cmd
+    if (perspective?.type !== 'default_camera_perspective_settings')
+      expect.fail('Expected final perspective settings')
+    const finalDistance = new Vector3(
+      perspective.vantage.x,
+      perspective.vantage.y,
+      perspective.vantage.z
+    ).distanceTo(controls.target)
+    expect(2 * finalDistance * Math.tan(Math.PI / 8)).toBeCloseTo(
+      2 *
+        controls.camera.position.distanceTo(controls.target) *
+        Math.tan(Math.PI / 12)
+    )
     expect(controls.isFovAnimationInProgress).toBe(true)
     expect(completed).toBe(false)
-    acknowledged.resolve(
-      cameraAcknowledgement('default_camera_perspective_settings')
-    )
+    const subscription = subscriptions.mock.calls.find(
+      ([{ event }]) => event === 'default_camera_get_settings'
+    )?.[0]
+    if (!subscription)
+      expect.fail('The camera must subscribe to engine settings')
+    // The real manager dispatches successful subscribed replies before it
+    // resumes the awaiting camera helper.
+    subscription.callback(cameraSettingsResponse.resp.data.modeling_response)
+    acknowledged.resolve(cameraBatchAcknowledgement(send.mock.calls[0][0]))
     await restoring
     expect(completed).toBe(true)
+    expect(controls.camera).toBeInstanceOf(PerspectiveCamera)
+    expect(controls.camera.position).toEqual(new Vector3(0, 0, 10))
     expect(controls.isFovAnimationInProgress).toBe(false)
     await vi.advanceTimersByTimeAsync(100)
     expect(send).toHaveBeenCalledTimes(1)
@@ -285,6 +350,149 @@ describe('immediate camera changes', () => {
     ).rejects.toThrow('Engine disconnected')
     expect(controls.isFovAnimationInProgress).toBe(false)
   })
+
+  it('requires the disable acknowledgement for an orthographic exit', async () => {
+    const { manager, controls } = makeSketchCamera()
+    vi.spyOn(manager, 'sendSceneCommand').mockResolvedValue(null)
+    await expect(controls.disableSketchMode()).rejects.toThrow(
+      'Camera command sketch_mode_disable was not acknowledged'
+    )
+  })
+
+  it.each([
+    'sketch_mode_disable',
+    'default_camera_perspective_settings',
+    'default_camera_get_settings',
+  ])('does not publish perspective after %s fails', async (type) => {
+    const { manager, controls } = makeSketchCamera()
+    const original = controls.camera
+    const changed = vi.fn()
+    controls.cameraChange.add(changed)
+    vi.spyOn(manager, 'sendSceneCommand').mockImplementation(
+      async (command) => {
+        const reply = cameraBatchAcknowledgement(command)
+        if (command.type !== 'modeling_cmd_batch_req')
+          expect.fail('Expected batch')
+        const index = command.requests.findIndex(({ cmd }) => cmd.type === type)
+        const request = command.requests[index]
+        if (!request) expect.fail('Missing exit command')
+        reply.resp.data.responses[request.cmd_id] = {
+          errors: [{ error_code: 'bad_request', message: `${type} failed` }],
+        }
+        for (const skipped of command.requests.slice(index + 1))
+          delete reply.resp.data.responses[skipped.cmd_id]
+        return reply
+      }
+    )
+    await expect(
+      controls.snapToPerspectiveBeforeHandingBackControlToEngine()
+    ).rejects.toThrow(`${type} failed`)
+    expect(controls.camera).toBe(original)
+    expect(changed).not.toHaveBeenCalled()
+    expect(controls.isFovAnimationInProgress).toBe(false)
+  })
+
+  it('rejects a retired connection without publishing its exit result', async () => {
+    const { manager, controls } = makeSketchCamera()
+    Object.defineProperty(manager, 'connection', {
+      value: {},
+      configurable: true,
+    })
+    const original = controls.camera
+    const acknowledged = promiseFactory<WebSocketResponse>()
+    const send = vi
+      .spyOn(manager, 'sendSceneCommand')
+      .mockReturnValue(acknowledged.promise)
+    const restoring =
+      controls.snapToPerspectiveBeforeHandingBackControlToEngine()
+    const rejected = expect(restoring).rejects.toThrow(
+      'Camera ownership changed'
+    )
+    Object.defineProperty(manager, 'connection', {
+      value: {},
+      configurable: true,
+    })
+    acknowledged.resolve(cameraBatchAcknowledgement(send.mock.calls[0][0]))
+    await rejected
+    expect(controls.camera).toBe(original)
+    expect(controls.isFovAnimationInProgress).toBe(false)
+  })
+
+  it.each([
+    { alreadySent: false, failed: false },
+    { alreadySent: true, failed: false },
+    { alreadySent: false, failed: true },
+  ])(
+    'drains newer input (already sent: $alreadySent, exit failed: $failed)',
+    async ({ alreadySent, failed }) => {
+      vi.useFakeTimers()
+      const { manager, controls, settingsSubscription } = makeSketchCamera()
+      const acknowledged = Promise.withResolvers<WebSocketResponse>()
+      const send = vi
+        .spyOn(manager, 'sendSceneCommand')
+        .mockImplementation(async (command) => {
+          if (command.type === 'modeling_cmd_batch_req')
+            return acknowledged.promise
+          if (command.type !== 'modeling_cmd_req')
+            expect.fail('Expected camera command')
+          if (command.cmd.type === 'default_camera_look_at') {
+            expect(command.cmd.center).toMatchObject({ x: 4, y: 5, z: 6 })
+            return cameraAcknowledgement('default_camera_look_at')
+          }
+          if (command.cmd.type !== 'default_camera_get_settings')
+            expect.fail('Expected readback after user input')
+          const response = {
+            ...cameraSettingsResponse.resp.data.modeling_response,
+            data: {
+              settings: {
+                ...cameraSettingsResponse.resp.data.modeling_response.data
+                  .settings,
+                ortho: failed,
+                fov_y: 55,
+                pos: { x: 9, y: 10, z: 11 },
+                center: { x: 4, y: 5, z: 6 },
+              },
+            },
+          }
+          settingsSubscription.callback(response)
+          return {
+            success: true,
+            resp: { type: 'modeling', data: { modeling_response: response } },
+          }
+        })
+      const restoring =
+        controls.snapToPerspectiveBeforeHandingBackControlToEngine()
+      const result = failed
+        ? expect(restoring).rejects.toThrow('Perspective failed')
+        : expect(restoring).resolves.toBeUndefined()
+      controls.camera.position.set(1, 2, 3)
+      controls.target.set(4, 5, 6)
+      controls.onCameraChange()
+      if (alreadySent) await vi.advanceTimersByTimeAsync(20)
+      if (failed) acknowledged.reject(new Error('Perspective failed'))
+      else {
+        settingsSubscription.callback(
+          cameraSettingsResponse.resp.data.modeling_response
+        )
+        acknowledged.resolve(cameraBatchAcknowledgement(send.mock.calls[0][0]))
+      }
+      await result
+      controls.syncDirection = 'engineToClient'
+      await vi.advanceTimersByTimeAsync(20)
+      expect(
+        send.mock.calls.map(([command]) =>
+          command.type === 'modeling_cmd_req' ? command.cmd.type : command.type
+        )
+      ).toEqual([
+        'modeling_cmd_batch_req',
+        'default_camera_look_at',
+        'default_camera_get_settings',
+      ])
+      expect(controls.camera.position).toEqual(new Vector3(9, 10, 11))
+      expect(controls.target).toEqual(new Vector3(4, 5, 6))
+      if (!failed) expect(controls.lastPerspectiveFov).toBe(55)
+    }
+  )
 
   it('does not treat a disconnected engine as a completed sketch camera change', async () => {
     const manager = makeConnectionManager({ width: 256, height: 256 })

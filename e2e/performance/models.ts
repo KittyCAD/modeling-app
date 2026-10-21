@@ -2,7 +2,7 @@ import { readdir, readFile } from 'node:fs/promises'
 import path from 'node:path'
 import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
 import type { Page } from '@playwright/test'
-import { expect } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
 export type ErrorModelProfile = 'large-syntax-error' | 'large-engine-error'
 export type PerformanceModelProfile = 'small' | 'large' | ErrorModelProfile
@@ -83,26 +83,71 @@ export async function appendProfileError({
       artifactCount: editor.artifactGraph.size,
     }
   })
-  expect(previous.artifactCount).toBeGreaterThan(0)
-  expect(previous.code).toBe(previous.lastSuccessfulCode)
-  await page
-    .locator('#code-pane .cm-content')
-    .fill(`${previous.code.trimEnd()}\n${errorTail(modelProfile)}`)
-  await page.waitForFunction(() => {
-    const editor = window.app.project?.executingEditor.value
-    return Boolean(
-      editor &&
-        (editor.hasErrors() || editor.lastSuccessfulCode === editor.code) &&
-        !editor.isExecutingSignal.value &&
-        Object.keys(editor.engineCommandManager.pendingCommands).length === 0
-    )
-  })
-  const receipt = await assertModelLoaded({ page, modelProfile })
-  expect(receipt.lastSuccessfulCode).toBe(previous.lastSuccessfulCode)
-  if (modelProfile === 'large-syntax-error') {
-    expect(receipt.artifactCount).toBe(previous.artifactCount)
+  const requestedCode = `${previous.code.trimEnd()}\n${errorTail(modelProfile)}`
+  try {
+    expect(previous.artifactCount).toBeGreaterThan(0)
+    expect(previous.code).toBe(previous.lastSuccessfulCode)
+    await page.locator('#code-pane .cm-content').fill(requestedCode)
+    await page.waitForFunction((requestedCode) => {
+      const editor = window.app.project?.executingEditor.value
+      return Boolean(
+        editor &&
+          editor.code === requestedCode &&
+          (editor.hasErrors() || editor.lastSuccessfulCode === requestedCode) &&
+          !editor.isExecutingSignal.value &&
+          Object.keys(editor.engineCommandManager.pendingCommands).length === 0
+      )
+    }, requestedCode)
+    const receipt = await assertModelLoaded({ page, modelProfile })
+    expect(receipt.code).toBe(requestedCode)
+    expect(receipt.lastSuccessfulCode).toBe(previous.lastSuccessfulCode)
+    if (modelProfile === 'large-syntax-error') {
+      expect(receipt.artifactCount).toBe(previous.artifactCount)
+    }
+    return receipt
+  } catch (error) {
+    try {
+      const actual = await page.evaluate(() => {
+        const editor = window.app.project?.executingEditor.value
+        if (!editor) return { editorMissing: true }
+        return {
+          code: editor.code,
+          lastSuccessfulCode: editor.lastSuccessfulCode,
+          hasErrors: editor.hasErrors(),
+          hasParseErrors: editor.hasParseErrors(),
+          diagnostics: editor.diagnostics.map(
+            ({ severity, from, to, message }) => ({
+              severity,
+              from,
+              to,
+              message,
+            })
+          ),
+          errors: editor.errors.map(({ kind, msg, sourceRange }) => ({
+            kind,
+            msg,
+            sourceRange,
+          })),
+          isExecuting: editor.isExecutingSignal.value,
+          hasEditsSinceLastExecution:
+            editor.hasEditsSinceLastExecutionSignal.value,
+          pendingCommandCount: Object.keys(
+            editor.engineCommandManager.pendingCommands
+          ).length,
+        }
+      })
+      await test.info().attach('error-profile-preparation-failure', {
+        body: JSON.stringify({ modelProfile, requestedCode, actual }, null, 2),
+        contentType: 'application/json',
+      })
+    } catch (diagnosticError) {
+      test.info().annotations.push({
+        type: 'error-profile-diagnostics-unavailable',
+        description: String(diagnosticError),
+      })
+    }
+    throw error
   }
-  return receipt
 }
 
 export async function assertModelLoaded(
@@ -279,6 +324,7 @@ export async function assertModelLoaded(
   }
   return {
     profile: modelProfile,
+    code: evidence.code,
     source:
       modelProfile !== 'small' ? largeModelSource : 'named_views_hide_extrude',
     artifactCount: evidence.artifactCount,
@@ -303,6 +349,7 @@ export async function assertErrorModelPreserved(
 ) {
   if (!isErrorProfile(fixtures.modelProfile)) return
   const after = await assertModelLoaded(fixtures)
+  expect(after.code).toBe(before.code)
   expect(after.lastSuccessfulCode).toBe(before.lastSuccessfulCode)
   expect(after.artifactCount).toBe(before.artifactCount)
 }

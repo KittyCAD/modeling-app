@@ -962,6 +962,41 @@ describe('ConnectionManager', () => {
     expect(send).not.toHaveBeenCalled()
   })
 
+  it.each(['replaced', 'retired'])(
+    'does not resize a %s connection after waiting for readiness',
+    async (transition) => {
+      const manager = createConnectionManager()
+      const makeConnection = () =>
+        new Connection({
+          url: 'ws://localhost/modeling-test',
+          token: 'test-token',
+          handleOnDataChannelMessage: vi.fn(),
+          recordShutdownTrigger: manager.recordShutdownTrigger.bind(manager),
+          tearDownManager: manager.tearDown.bind(manager),
+          onReconnectRequested: vi.fn(),
+          rejectPendingCommand: vi.fn(),
+          handleMessage: vi.fn(),
+          getCloudProjectId: () => undefined,
+        })
+      const connection = makeConnection()
+      const replacement = makeConnection()
+      const ready = promiseFactory<boolean>()
+      connection.deferredConnection = ready
+      manager.connection = connection
+      const send = vi.spyOn(connection, 'send')
+      const replacementSend = vi.spyOn(replacement, 'send')
+
+      const resize = manager.handleResize({ width: 512, height: 512 })
+      manager.connection = transition === 'replaced' ? replacement : undefined
+      ready.resolve(true)
+
+      await expect(resize).resolves.toBeUndefined()
+      expect(manager.streamDimensions).toEqual({ width: 256, height: 256 })
+      expect(send).not.toHaveBeenCalled()
+      expect(replacementSend).not.toHaveBeenCalled()
+    }
+  )
+
   it('reports a locally initiated shutdown before clearing connection state', () => {
     const manager = createConnectionManager()
     addConnectedState(manager)

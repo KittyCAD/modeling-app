@@ -38,7 +38,11 @@ test(
 
     await continueButton.click()
     await expect(page).toHaveURL(continuedUrl.toString())
-    await expect(page.getByTestId('home-section')).toBeVisible()
+    // Continuing cold-loads the full app. Use its normal bootstrap deadline,
+    // without a fixture that could accept and click another handoff chooser.
+    await expect(page.getByTestId('home-section')).toBeVisible({
+      timeout: 20_000,
+    })
     await expect(continueButton).toHaveCount(0)
     await expect
       .poll(() =>
@@ -107,7 +111,9 @@ test(
   async ({ context, page }, testInfo) => {
     await setup(context, page, testInfo, [], { mockApiRoutes: false })
     await page.goto('/home?retained=ordinary#home')
-    await expect(page.getByTestId('home-section')).toBeVisible()
+    await expect(page.getByTestId('home-section')).toBeVisible({
+      timeout: 20_000,
+    })
     await expect(page.getByTestId('continue-to-web-app-button')).toHaveCount(0)
     await expect(page).toHaveURL(/\/home\?retained=ordinary#home$/)
     await expect

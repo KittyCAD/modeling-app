@@ -21,7 +21,7 @@ test(
       (error: unknown) => ({ error })
     )
     await page.waitForFunction(() => {
-      const editor = window.app.project?.executingEditor.value
+      const editor = window.app?.project?.executingEditor.value
       return (
         editor?.isExecutingSignal.value &&
         editor.engineCommandManager.connection?.websocket?.readyState ===
@@ -30,7 +30,7 @@ test(
     })
     await page.evaluate(() => {
       const socket =
-        window.app.project?.executingEditor.value?.engineCommandManager
+        window.app?.project?.executingEditor.value?.engineCommandManager
           .connection?.websocket
       if (socket?.readyState !== WebSocket.OPEN) {
         throw new Error('The initial execution needs a real open engine socket')

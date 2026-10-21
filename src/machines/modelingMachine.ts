@@ -2158,21 +2158,19 @@ export const modelingMachine = setup({
       async (args: { input: { context: ModelingMachineContext } }) => {
         const context = args.input.context
         const { store, engineCommandManager, kclManager } = context
+        const camControls = kclManager.sceneInfra.camControls
+        let cameraRestored = false
         try {
-          // When cancelling the sketch mode we should disable sketch mode within the engine.
-          await engineCommandManager.sendSceneCommand({
-            type: 'modeling_cmd_req',
-            cmd_id: uuidv4(),
-            cmd: { type: 'sketch_mode_disable' },
-          })
-
-          kclManager.sceneInfra.camControls.syncDirection = 'clientToEngine'
+          camControls.syncDirection = 'clientToEngine'
 
           if (store.cameraProjection?.current === 'perspective') {
-            await kclManager.sceneInfra.camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+            await camControls.snapToPerspectiveBeforeHandingBackControlToEngine()
+          } else {
+            await camControls.disableSketchMode()
           }
 
-          kclManager.sceneInfra.camControls.syncDirection = 'engineToClient'
+          cameraRestored = true
+          camControls.syncDirection = 'engineToClient'
 
           // TODO: Re-evaluate if this pause/play logic is needed.
           // TODO: Do I need this video element?
@@ -2194,12 +2192,11 @@ export const modelingMachine = setup({
             })
             .catch(reportRejection)
         } finally {
-          const camControls = kclManager.sceneInfra.camControls
           kclManager.sceneEntitiesManager.tearDownSketch({ removeAxis: false })
           kclManager.sceneEntitiesManager.removeSketchGrid()
-          camControls.enablePan = true
-          camControls.enableRotate = true
-          camControls.syncDirection = 'engineToClient'
+          camControls.enablePan = cameraRestored
+          camControls.enableRotate = cameraRestored
+          if (cameraRestored) camControls.syncDirection = 'engineToClient'
           kclManager.sceneEntitiesManager.resetOverlays()
           kclManager.sceneInfra.stop()
         }
@@ -6461,9 +6458,17 @@ export const modelingMachine = setup({
               actions: ['reset sketch metadata'],
             },
             onError: {
-              target: '#Modeling.idle',
-              actions: ['reset sketch metadata'],
+              target: 'exitFailed',
+              actions: ['toastError'],
             },
+          },
+        },
+        exitFailed: {
+          // Keep the real exit action available without claiming the model or
+          // camera is ready. Repeating it retries the failed engine handoff.
+          on: {
+            'Exit sketch': 'exiting',
+            Cancel: 'exiting',
           },
         },
       },
