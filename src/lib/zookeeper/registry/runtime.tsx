@@ -1,4 +1,3 @@
-import type { Feature } from '@kittycad/lib'
 import { defineRegistryItemFactory, provide } from '@kittycad/registry'
 import {
   computed,
@@ -50,10 +49,6 @@ import {
   type SystemIORegistryService,
   systemIOService,
 } from '@src/registry/contracts/systemIO'
-import {
-  type UserFeaturesRegistryService,
-  userFeaturesService,
-} from '@src/registry/contracts/userFeatures'
 import { lazy, Suspense } from 'react'
 import env, { getEnvironmentNameFromEnv } from '@src/env'
 
@@ -74,7 +69,6 @@ type ZookeeperRuntimeServices = {
   projectSession: ReadonlySignal<ProjectSessionService | undefined>
   settings: ReadonlySignal<SettingsRegistryService | undefined>
   systemIO: ReadonlySignal<SystemIORegistryService | undefined>
-  userFeatures?: ReadonlySignal<UserFeaturesRegistryService | undefined>
 }
 
 type ZookeeperSessionControllerModule = {
@@ -85,7 +79,6 @@ type ZookeeperSessionControllerModule = {
 
 type ZookeeperActivation = {
   apiToken: string
-  clientCommandsEnabled: boolean
   controller?: ZookeeperSessionController
   kclManager: KclManager
   project: ReadonlySignal<ZDSProject | undefined>
@@ -97,8 +90,6 @@ const loadZookeeperSessionController = () =>
   import('@src/lib/zookeeper/registry/controller')
 
 const CONTROLLER_LOAD_RETRY_DELAY_MS = 1_000
-const CLIENT_COMMANDS_FEATURE = 'zookeeper_client_commands' as Feature
-
 const pendingSessionDisposals = new Map<string, Promise<void>>()
 const pendingEditorDisposals = new WeakMap<KclManager, Promise<void>>()
 
@@ -251,9 +242,6 @@ export function createZookeeperRuntime(
       kclManager.path === executingFile?.path
     const apiToken = auth?.token.value ?? ''
     const isLoggedIn = auth?.isLoggedIn.value ?? false
-    const clientCommandsEnabled =
-      services.userFeatures?.value?.has(CLIENT_COMMANDS_FEATURE, false) ?? false
-
     if (
       activation &&
       (activation.projectPath !== projectPath ||
@@ -273,12 +261,6 @@ export function createZookeeperRuntime(
       if (!isLoggedIn) {
         deactivate()
         return
-      }
-      if (currentActivation.clientCommandsEnabled !== clientCommandsEnabled) {
-        currentActivation.clientCommandsEnabled = clientCommandsEnabled
-        currentActivation.controller?.updateClientCommandsEnabled(
-          clientCommandsEnabled
-        )
       }
       if (currentActivation.apiToken !== apiToken) {
         currentActivation.apiToken = apiToken
@@ -307,7 +289,6 @@ export function createZookeeperRuntime(
 
     const next: ZookeeperActivation = {
       apiToken,
-      clientCommandsEnabled,
       kclManager,
       project: currentZdsProject,
       projectId,
@@ -323,7 +304,6 @@ export function createZookeeperRuntime(
         const controller = createZookeeperSessionController({
           apiToken: next.apiToken,
           billing,
-          clientCommandsEnabled: next.clientCommandsEnabled,
           conversationStore: makeProjectZookeeperConversationStore(
             fileOperations,
             next.projectPath,
@@ -445,7 +425,6 @@ export const zookeeperRuntimeRegistryItem = defineRegistryItemFactory((ctx) => {
     projectSession: ctx.services.signal(projectSession),
     settings: ctx.services.signal(settingsService),
     systemIO: ctx.services.signal(systemIOService),
-    userFeatures: ctx.services.signal(userFeaturesService),
   })
 
   const PaneOutlet = (props: AreaTypeComponentProps) => (

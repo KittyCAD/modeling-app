@@ -42,7 +42,6 @@ export interface ZookeeperSessionControllerDependencies {
   apiToken: string
   billing: BillingRegistryService
   conversationStore: ZookeeperConversationStore
-  clientCommandsEnabled: boolean
   fileOperations: FileOperationsRegistryService
   libraryProjects?: ReadonlySignal<readonly HomeProjectEntry[]>
   kclManager: KclManager
@@ -80,7 +79,6 @@ export interface ZookeeperSessionController {
   ): void
   steer(id: string): void
   updateAuthToken(apiToken: string): void
-  updateClientCommandsEnabled(enabled: boolean): void
 }
 
 type ZookeeperSnapshot = SnapshotFrom<ZookeeperManagerActor>
@@ -143,7 +141,6 @@ class SessionController implements ZookeeperSessionController {
           entries: deps.libraryProjects,
           fileOperations: deps.fileOperations,
           getApiToken: () => this.apiToken,
-          enabled: deps.clientCommandsEnabled,
         })
       : undefined
     this.actor = this.clientCommands
@@ -238,13 +235,6 @@ class SessionController implements ZookeeperSessionController {
       type: ZookeeperManagerTransitions.AuthTokenChanged,
       apiToken,
     })
-  }
-
-  updateClientCommandsEnabled(enabled: boolean) {
-    if (!this.active) {
-      return
-    }
-    this.clientCommands?.setEnabled(enabled)
   }
 
   sendOrQueue(

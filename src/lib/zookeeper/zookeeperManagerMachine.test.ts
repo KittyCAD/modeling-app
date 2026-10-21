@@ -740,7 +740,6 @@ describe('zookeeperManagerMachine', () => {
       const actor = createZookeeperManagerActor('token', {
         advertise,
         handleRequest,
-        setEnabled: vi.fn(),
       })
       actor.send({
         type: ZookeeperManagerTransitions.CacheSetupAndConnect,

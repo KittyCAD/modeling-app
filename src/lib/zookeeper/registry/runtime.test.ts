@@ -13,7 +13,6 @@ import type { AuthRegistryService } from '@src/registry/contracts/auth'
 import type { ProjectSessionService } from '@src/registry/contracts/projectSession'
 import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 import type { SystemIORegistryService } from '@src/registry/contracts/systemIO'
-import type { UserFeaturesRegistryService } from '@src/registry/contracts/userFeatures'
 import { describe, expect, it, vi } from 'vitest'
 
 const projectId = '24d8709c-8d07-4855-9357-f20d7d35a499'
@@ -121,15 +120,13 @@ function createController(
 ) {
   const dispose = vi.fn(() => disposal)
   const updateAuthToken = vi.fn()
-  const updateClientCommandsEnabled = vi.fn()
   const controller = {
     dispose,
     projectPath,
     updateAuthToken,
-    updateClientCommandsEnabled,
   } as unknown as ZookeeperSessionController
 
-  return { controller, dispose, updateAuthToken, updateClientCommandsEnabled }
+  return { controller, dispose, updateAuthToken }
 }
 
 function createControllerLoader(
@@ -154,17 +151,13 @@ function createControllerLoader(
 }
 
 describe('Zookeeper runtime', () => {
-  it('updates library commands without stopping the active session', async () => {
+  it('provides library projects to the session without a feature service', async () => {
     const { services } = createServices()
-    const enabled = signal(false)
     const libraryProjects = signal([])
-    const userFeatures = signal({
-      has: () => enabled.value,
-    } as unknown as UserFeaturesRegistryService)
-    const { controllers, createZookeeperSessionController, loadController } =
+    const { createZookeeperSessionController, loadController } =
       createControllerLoader()
     const runtime = createZookeeperRuntime(
-      { ...services, libraryProjects, userFeatures },
+      { ...services, libraryProjects },
       loadController
     )
 
@@ -172,59 +165,7 @@ describe('Zookeeper runtime', () => {
       expect(createZookeeperSessionController).toHaveBeenCalledOnce()
     })
     expect(createZookeeperSessionController.mock.calls[0]?.[0]).toEqual(
-      expect.objectContaining({
-        clientCommandsEnabled: false,
-        libraryProjects,
-      })
-    )
-
-    enabled.value = true
-    await vi.waitFor(() => {
-      expect(controllers[0]?.updateClientCommandsEnabled).toHaveBeenCalledWith(
-        true
-      )
-    })
-    expect(createZookeeperSessionController).toHaveBeenCalledOnce()
-    expect(controllers[0]?.dispose).not.toHaveBeenCalled()
-
-    enabled.value = false
-    await vi.waitFor(() => {
-      expect(controllers[0]?.updateClientCommandsEnabled).toHaveBeenCalledWith(
-        false
-      )
-    })
-    expect(createZookeeperSessionController).toHaveBeenCalledOnce()
-    expect(controllers[0]?.dispose).not.toHaveBeenCalled()
-
-    await runtime.dispose()
-  })
-
-  it('uses the latest feature value when controller loading finishes', async () => {
-    const { services } = createServices()
-    const enabled = signal(false)
-    const libraryProjects = signal([])
-    const userFeatures = signal({
-      has: () => enabled.value,
-    } as unknown as UserFeaturesRegistryService)
-    const loadGate = deferred<undefined>()
-    const { createZookeeperSessionController } = createControllerLoader()
-    const loadController = vi.fn(async () => {
-      await loadGate.promise
-      return { createZookeeperSessionController }
-    })
-    const runtime = createZookeeperRuntime(
-      { ...services, libraryProjects, userFeatures },
-      loadController
-    )
-
-    await vi.waitFor(() => expect(loadController).toHaveBeenCalledOnce())
-    enabled.value = true
-    loadGate.resolve(undefined)
-    await vi.waitFor(() => {
-      expect(createZookeeperSessionController).toHaveBeenCalledOnce()
-    })
-    expect(createZookeeperSessionController).toHaveBeenCalledWith(
-      expect.objectContaining({ clientCommandsEnabled: true })
+      expect.objectContaining({ libraryProjects })
     )
 
     await runtime.dispose()

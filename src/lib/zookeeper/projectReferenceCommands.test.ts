@@ -61,7 +61,6 @@ function fixture(
   options: {
     initialEntries?: HomeProjectEntry[]
     fileOperations?: FileOperationsRegistryService
-    enabled?: boolean
     getApiToken?: () => string
   } = {}
 ) {
@@ -114,7 +113,6 @@ function fixture(
     entries,
     fileOperations: options.fileOperations ?? fileOperations,
     getApiToken: options.getApiToken ?? (() => 'token'),
-    enabled: options.enabled,
   })
   let nextRequest = 0
   async function request(
@@ -197,36 +195,16 @@ describe('Zookeeper project reference commands', () => {
     expect(JSON.stringify(projects)).not.toContain('cloud-123')
   })
 
-  it('updates the live catalog without returning results from a disabled revision', async () => {
-    const { commands, readDirectory, request, sent, ws } = fixture({
-      enabled: false,
-    })
+  it('rejects requests for another catalog revision', async () => {
+    const { commands, request, sent, ws } = fixture()
     commands.advertise(ws)
-    expect(sent).toHaveLength(0)
-
-    commands.setEnabled(true)
     expect(sent[0]).toMatchObject({
       type: 'update_client_command_schema',
-      revision: 2,
+      revision: 1,
     })
-    expect((sent[0].commands as unknown[]).length).toBe(3)
-
-    const found = await request('projects.search', { query: 'TRUCK' }, 2)
-    const projectId = (
-      found.result?.projects as Array<{ project_id: string }>
-    )[0].project_id
-    let finishRead!: (names: readonly string[]) => void
-    const pausedRead = new Promise<readonly string[]>((resolve) => {
-      finishRead = resolve
-    })
-    readDirectory.mockImplementationOnce(() => pausedRead)
-    const listing = request('projects.list_files', { project_id: projectId }, 2)
-    await vi.waitFor(() => expect(readDirectory).toHaveBeenCalledOnce())
-
-    commands.setEnabled(false)
-    expect(sent.find((frame) => frame.revision === 3)?.commands).toEqual([])
-    finishRead(['main.kcl'])
-    expect((await listing).error).toBe('The command catalog changed.')
+    const response = await request('projects.search', { query: 'TRUCK' }, 2)
+    expect(response.status).toBe('rejected')
+    expect(response.error).toBe('The command catalog changed.')
   })
 
   it('rechecks library membership for a retried read after reconnect', async () => {
@@ -752,49 +730,6 @@ describe('Zookeeper project reference commands', () => {
       'cloud-123',
       32 * 1024 * 1024
     )
-  })
-
-  it('discards a cloud snapshot when client commands are disabled', async () => {
-    const { commands, request } = fixture()
-    cloudMocks.download.mockResolvedValue(new ArrayBuffer(1))
-    cloudMocks.parse
-      .mockResolvedValueOnce([
-        {
-          relativePath: 'main.kcl',
-          data: new TextEncoder().encode('a'.repeat(8_001)),
-        },
-      ] satisfies ProjectArchiveFile[])
-      .mockResolvedValueOnce([
-        {
-          relativePath: 'main.kcl',
-          data: new TextEncoder().encode('b'.repeat(8_001)),
-        },
-      ] satisfies ProjectArchiveFile[])
-    const found = await request('projects.search', { query: 'TRUCK cloud' })
-    const projectId = (
-      found.result?.projects as Array<{ project_id: string }>
-    )[0].project_id
-    const first = await request('projects.read_file', {
-      project_id: projectId,
-      path: 'main.kcl',
-    })
-    commands.setEnabled(false)
-    commands.setEnabled(true)
-    const second = await request(
-      'projects.read_file',
-      {
-        project_id: projectId,
-        path: 'main.kcl',
-        offset: first.result?.next_offset,
-        version: first.result?.version,
-      },
-      3
-    )
-
-    expect(second.error).toBe(
-      'File changed while reading. Start again from offset 0.'
-    )
-    expect(cloudMocks.download).toHaveBeenCalledTimes(2)
   })
 
   it('reports an oversized cloud archive without exposing request details', async () => {
