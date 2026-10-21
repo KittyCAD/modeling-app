@@ -1,4 +1,5 @@
-import type { WebSocketResponse } from '@kittycad/lib'
+import type { BatchResponse, WebSocketResponse } from '@kittycad/lib'
+import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import {
   CameraControls,
   enterSketchModeAndSyncCamera,
@@ -39,7 +40,10 @@ function unusedSettings(): never {
 }
 
 function cameraAcknowledgement(
-  type: 'default_camera_look_at' | 'enable_sketch_mode'
+  type:
+    | 'default_camera_look_at'
+    | 'default_camera_perspective_settings'
+    | 'enable_sketch_mode'
 ): WebSocketResponse {
   return {
     success: true,
@@ -47,7 +51,7 @@ function cameraAcknowledgement(
   }
 }
 
-const cameraSettingsResponse: WebSocketResponse = {
+const cameraSettingsResponse = {
   success: true,
   resp: {
     type: 'modeling',
@@ -66,6 +70,25 @@ const cameraSettingsResponse: WebSocketResponse = {
       },
     },
   },
+} satisfies WebSocketResponse
+
+function cameraBatchAcknowledgement(command: EngineCommand) {
+  if (command.type !== 'modeling_cmd_batch_req')
+    expect.fail('Expected a camera batch')
+  const responses: Record<string, BatchResponse> = {}
+  for (const { cmd_id, cmd } of command.requests) {
+    responses[cmd_id] = {
+      response:
+        cmd.type === 'enable_sketch_mode'
+          ? { type: 'enable_sketch_mode', data: {} }
+          : cameraSettingsResponse.resp.data.modeling_response,
+    }
+  }
+  return {
+    success: true,
+    request_id: command.batch_id,
+    resp: { type: 'modeling_batch', data: { responses } },
+  } satisfies WebSocketResponse
 }
 
 describe('immediate camera changes', () => {
@@ -74,12 +97,10 @@ describe('immediate camera changes', () => {
   it('enters sketch mode without motion or a fixed wait, then awaits camera synchronization', async () => {
     vi.useFakeTimers()
     const manager = makeConnectionManager({ width: 256, height: 256 })
-    const enabled = promiseFactory<WebSocketResponse>()
     const synchronized = promiseFactory<WebSocketResponse>()
     const send = vi
       .spyOn(manager, 'sendSceneCommand')
-      .mockImplementationOnce(() => enabled.promise)
-      .mockImplementationOnce(() => synchronized.promise)
+      .mockReturnValue(synchronized.promise)
     let completed = false
     const entering = enterSketchModeAndSyncCamera(manager, 'plane-id').then(
       () => {
@@ -88,25 +109,82 @@ describe('immediate camera changes', () => {
     )
     expect(send).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
-        cmd: {
-          type: 'enable_sketch_mode',
-          adjust_camera: true,
-          animated: false,
-          ortho: true,
-          entity_id: 'plane-id',
-        },
-      })
-    )
-    enabled.resolve(cameraAcknowledgement('enable_sketch_mode'))
-    await vi.advanceTimersByTimeAsync(0)
-    expect(send).toHaveBeenLastCalledWith(
-      expect.objectContaining({ cmd: { type: 'default_camera_get_settings' } })
+        type: 'modeling_cmd_batch_req',
+        responses: true,
+        requests: [
+          {
+            cmd_id: expect.any(String),
+            cmd: {
+              type: 'enable_sketch_mode',
+              adjust_camera: true,
+              animated: false,
+              ortho: true,
+              entity_id: 'plane-id',
+            },
+          },
+          {
+            cmd_id: expect.any(String),
+            cmd: { type: 'default_camera_get_settings' },
+          },
+        ],
+      }),
+      true
     )
     expect(completed).toBe(false)
-    synchronized.resolve(cameraSettingsResponse)
+    synchronized.resolve(cameraBatchAcknowledgement(send.mock.calls[0][0]))
     await entering
     expect(completed).toBe(true)
   })
+
+  it.each(['enable_sketch_mode', 'default_camera_get_settings'])(
+    'surfaces the exact batch failure for %s',
+    async (type) => {
+      const manager = makeConnectionManager({ width: 256, height: 256 })
+      vi.spyOn(manager, 'sendSceneCommand').mockImplementation(
+        async (command) => {
+          const reply = cameraBatchAcknowledgement(command)
+          if (command.type !== 'modeling_cmd_batch_req')
+            expect.fail('Expected a batch')
+          const request = command.requests.find(({ cmd }) => cmd.type === type)
+          if (!request) expect.fail('Expected the camera command')
+          reply.resp.data.responses[request.cmd_id] = {
+            errors: [{ error_code: 'bad_request', message: `${type} failed` }],
+          }
+          return reply
+        }
+      )
+      await expect(
+        enterSketchModeAndSyncCamera(manager, 'plane-id')
+      ).rejects.toThrow(`${type} failed`)
+    }
+  )
+
+  it.each(['missing', 'mismatched'])(
+    'rejects a %s get-settings result instead of completing sketch entry',
+    async (failure) => {
+      const manager = makeConnectionManager({ width: 256, height: 256 })
+      vi.spyOn(manager, 'sendSceneCommand').mockImplementation(
+        async (command) => {
+          const reply = cameraBatchAcknowledgement(command)
+          if (command.type !== 'modeling_cmd_batch_req')
+            expect.fail('Expected a batch')
+          const request = command.requests[1]
+          if (failure === 'missing')
+            delete reply.resp.data.responses[request.cmd_id]
+          else
+            reply.resp.data.responses[request.cmd_id] = {
+              response: { type: 'enable_sketch_mode', data: {} },
+            }
+          return reply
+        }
+      )
+      await expect(
+        enterSketchModeAndSyncCamera(manager, 'plane-id')
+      ).rejects.toThrow(
+        'Camera command default_camera_get_settings was not acknowledged'
+      )
+    }
+  )
 
   it('sets the final orientation immediately while preserving distance and awaiting the final engine update', async () => {
     vi.useFakeTimers()
@@ -136,11 +214,76 @@ describe('immediate camera changes', () => {
     expect(send).toHaveBeenCalledExactlyOnceWith(
       expect.objectContaining({
         cmd: expect.objectContaining({ type: 'default_camera_look_at' }),
-      })
+      }),
+      true
     )
     updated.resolve(cameraAcknowledgement('default_camera_look_at'))
     await change
     expect(send).toHaveBeenCalledTimes(1)
+  })
+
+  it('restores perspective with one acknowledged final camera update', async () => {
+    vi.useFakeTimers()
+    const manager = makeConnectionManager({ width: 256, height: 256 })
+    const controls = new CameraControls(
+      makeCanvas(256, 256),
+      manager,
+      unusedSettings
+    )
+    controls.camera = new OrthographicCamera(-10, 10, 10, -10)
+    controls.camera.position.set(0, -10, 10)
+    controls.syncDirection = 'clientToEngine'
+    controls.lastPerspectiveFov = 30
+    controls.perspectiveFovBeforeOrtho = 45
+    const acknowledged = promiseFactory<WebSocketResponse>()
+    const send = vi
+      .spyOn(manager, 'sendSceneCommand')
+      .mockReturnValue(acknowledged.promise)
+    let completed = false
+    const restoring = controls
+      .snapToPerspectiveBeforeHandingBackControlToEngine()
+      .then(() => {
+        completed = true
+      })
+
+    expect(send).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        cmd: expect.objectContaining({
+          type: 'default_camera_perspective_settings',
+          fov_y: 45,
+        }),
+      }),
+      true
+    )
+    expect(controls.camera).toBeInstanceOf(PerspectiveCamera)
+    expect(controls.camera.up).toEqual(new Vector3(0, 0, 1))
+    expect(controls.isFovAnimationInProgress).toBe(true)
+    expect(completed).toBe(false)
+    acknowledged.resolve(
+      cameraAcknowledgement('default_camera_perspective_settings')
+    )
+    await restoring
+    expect(completed).toBe(true)
+    expect(controls.isFovAnimationInProgress).toBe(false)
+    await vi.advanceTimersByTimeAsync(100)
+    expect(send).toHaveBeenCalledTimes(1)
+  })
+
+  it('cleans up perspective restoration when the final camera update fails', async () => {
+    const manager = makeConnectionManager({ width: 256, height: 256 })
+    const controls = new CameraControls(
+      makeCanvas(256, 256),
+      manager,
+      unusedSettings
+    )
+    controls.syncDirection = 'clientToEngine'
+    vi.spyOn(manager, 'sendSceneCommand').mockRejectedValue(
+      new Error('Engine disconnected')
+    )
+    await expect(
+      controls.snapToPerspectiveBeforeHandingBackControlToEngine()
+    ).rejects.toThrow('Engine disconnected')
+    expect(controls.isFovAnimationInProgress).toBe(false)
   })
 
   it('does not treat a disconnected engine as a completed sketch camera change', async () => {
@@ -168,6 +311,103 @@ describe('immediate camera changes', () => {
 
 describe('camera frame ownership', () => {
   afterEach(() => vi.useRealTimers())
+
+  it.each([true, false])(
+    'applies an authoritative ortho=%s response locally without echoing commands',
+    async (ortho) => {
+      vi.useFakeTimers()
+      const manager = makeConnectionManager({ width: 256, height: 256 })
+      const subscriptions = vi.spyOn(manager, 'subscribeTo')
+      const controls = new CameraControls(
+        makeCanvas(256, 256),
+        manager,
+        unusedSettings
+      )
+      controls.camera = ortho
+        ? new PerspectiveCamera()
+        : new OrthographicCamera()
+      controls.syncDirection = 'clientToEngine'
+      const subscription = subscriptions.mock.calls.find(
+        ([{ event }]) => event === 'default_camera_get_settings'
+      )?.[0]
+      if (!subscription)
+        expect.fail('The real camera must subscribe to settings')
+      const send = vi.spyOn(manager, 'sendSceneCommand').mockClear()
+      const changed = vi.fn()
+      const reactChanged = vi.fn()
+      controls.cameraChange.add(changed)
+      controls.setReactCameraPropertiesCallback(reactChanged)
+      subscription.callback({
+        type: 'default_camera_get_settings',
+        data: {
+          settings: {
+            ...cameraSettingsResponse.resp.data.modeling_response.data.settings,
+            ortho,
+          },
+        },
+      })
+      await vi.advanceTimersByTimeAsync(20)
+      expect(controls.camera).toBeInstanceOf(
+        ortho ? OrthographicCamera : PerspectiveCamera
+      )
+      expect(controls.camera.position).toEqual(new Vector3(0, 0, 10))
+      expect(send).not.toHaveBeenCalled()
+      expect(changed).toHaveBeenCalledOnce()
+      expect(reactChanged).toHaveBeenCalledOnce()
+    }
+  )
+
+  it('retains a client camera write already queued when an engine response arrives', async () => {
+    vi.useFakeTimers()
+    const manager = makeConnectionManager({ width: 256, height: 256 })
+    const subscriptions = vi.spyOn(manager, 'subscribeTo')
+    const controls = new CameraControls(
+      makeCanvas(256, 256),
+      manager,
+      unusedSettings
+    )
+    controls.syncDirection = 'clientToEngine'
+    controls.camera.position.set(1, 2, 3)
+    controls.target.set(4, 5, 6)
+    controls.onCameraChange()
+    const subscription = subscriptions.mock.calls.find(
+      ([{ event }]) => event === 'default_camera_get_settings'
+    )?.[0]
+    if (!subscription) expect.fail('The real camera must subscribe to settings')
+    const send = vi.spyOn(manager, 'sendSceneCommand').mockClear()
+    subscription.callback(cameraSettingsResponse.resp.data.modeling_response)
+    await vi.advanceTimersByTimeAsync(20)
+    expect(send).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({
+        cmd: expect.objectContaining({
+          type: 'default_camera_look_at',
+          vantage: { x: 1, y: 2, z: 3 },
+          center: { x: 4, y: 5, z: 6 },
+        }),
+      })
+    )
+  })
+
+  it('still sends explicitly requested client projection changes', async () => {
+    vi.useFakeTimers()
+    const manager = makeConnectionManager({ width: 256, height: 256 })
+    const controls = new CameraControls(
+      makeCanvas(256, 256),
+      manager,
+      unusedSettings
+    )
+    const send = vi.spyOn(manager, 'sendSceneCommand').mockClear()
+    await controls.setCameraProjection('orthographic')
+    await controls.setCameraProjection('perspective')
+    expect(
+      send.mock.calls.map(([command]) =>
+        command.type === 'modeling_cmd_req' ? command.cmd.type : command.type
+      )
+    ).toEqual([
+      'default_camera_set_orthographic',
+      'default_camera_set_perspective',
+    ])
+  })
 
   it('sends the latest rapid camera change on the next frame without a trailing timer', () => {
     vi.useFakeTimers()

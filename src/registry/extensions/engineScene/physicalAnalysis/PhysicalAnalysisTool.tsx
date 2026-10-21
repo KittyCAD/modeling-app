@@ -13,11 +13,17 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 import Tooltip from '@src/components/Tooltip'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import type { KclManager } from '@src/lang/KclManager'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import {
   getModelingData,
   getResponseErrorMessage,
 } from '@src/lib/engineConnection/utils'
+import {
+  type ActiveView,
+  activeViewSignal,
+} from '@src/lib/kclNamedViewActivation'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import {
@@ -77,6 +83,19 @@ interface PhysicalAnalysisResult {
   centerOfMassUnit: UnitLength
 }
 
+interface MeasuredModel {
+  editor: KclManager
+  path: string
+  projectPath: string | undefined
+  connection: ConnectionManager['connection']
+  sceneGeneration: number
+  activeView: ActiveView | null
+  fileLengthUnit: UnitLength
+  densityUnit: UnitDensity
+  materialDensity: number
+  result: PhysicalAnalysisResult
+}
+
 function getNumberField(data: unknown, key: string): number | null {
   if (typeof data !== 'object' || data === null || !(key in data)) {
     return null
@@ -107,7 +126,7 @@ function getPoint3dField(data: unknown, key: string): Point3d | null {
 
 /**
  * An empty `entity_ids` tells the engine to use the default scene, so this
- * always reports on the whole model rather than the current selection.
+ * always reports on the visible model rather than the current selection.
  */
 async function requestPhysicalAnalysis({
   sendModelingCommand,
@@ -335,14 +354,23 @@ export function PhysicalAnalysisTool() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const latestRequestKey = useRef<string | null>(null)
   const analysisQueue = useRef<Promise<void>>(Promise.resolve())
+  const measuredModel = useRef<MeasuredModel | null>(null)
 
   const isIdle = state.matches('idle')
   const signals = useSignals(1)
   let isExecuting: boolean
   let preferences: PhysicalAnalysisPreferences
   let fileLengthUnit: UnitLength
+  let path: string
+  let projectPath: string | undefined
+  let sceneGeneration: number
+  let activeView: ActiveView | null
   try {
     isExecuting = kclManager.isExecutingSignal.value
+    sceneGeneration = kclManager.engineSceneGenerationSignal.value
+    activeView = activeViewSignal.value
+    path = kclManager.path
+    projectPath = kclManager.systemDeps.project.value?.path
     preferences = physicalAnalysisService.preferences.value
     fileLengthUnit =
       kclManager.fileSettings.defaultLengthUnit ??
@@ -352,6 +380,7 @@ export function PhysicalAnalysisTool() {
     // End render tracking before immediate input writes can notify subscribers.
     signals.f()
   }
+  const connection = engineCommandManager.connection
 
   // A null preference means "follow the file", so untouched dropdowns re-seed
   // when the file's unit changes while explicit choices stay pinned.
@@ -391,27 +420,65 @@ export function PhysicalAnalysisTool() {
   useEffect(() => {
     latestRequestKey.current = null
     if (!isIdle) {
+      measuredModel.current = null
       return
     }
 
-    // Any change to a unit, the density, or the model makes the numbers on
-    // screen stale, so drop them rather than showing values that no longer
-    // match the controls above them.
-    setResult(null)
     setErrorMessage(null)
 
     if (isExecuting) {
       // Wait for the new geometry before asking the engine to measure it.
+      measuredModel.current = null
+      setResult(null)
       setStatus('analyzing')
       return
     }
 
+    const ownsModel = () =>
+      kclManager.path === path &&
+      kclManager.systemDeps.project.peek()?.path === projectPath &&
+      engineCommandManager.connection === connection &&
+      activeViewSignal.peek() === activeView &&
+      kclManager.engineSceneGenerationSignal.peek() === sceneGeneration &&
+      !kclManager.isExecutingSignal.peek()
+    const measured = measuredModel.current
+    if (
+      measured &&
+      measured.editor === kclManager &&
+      measured.path === path &&
+      measured.projectPath === projectPath &&
+      measured.connection === connection &&
+      measured.sceneGeneration === sceneGeneration &&
+      measured.activeView === activeView &&
+      measured.fileLengthUnit === fileLengthUnit &&
+      measured.densityUnit === densityUnit &&
+      measured.result.centerOfMassUnit === lengthUnit &&
+      measured.result.surfaceAreaUnit === areaUnit &&
+      measured.result.volumeUnit === volumeUnit &&
+      measured.result.massUnit === massUnit &&
+      ownsModel()
+    ) {
+      // Uniform density changes only mass. Scale the original measurement,
+      // not the previous displayed value, to avoid cumulative rounding.
+      setResult({
+        ...measured.result,
+        mass:
+          measured.result.mass * (materialDensity / measured.materialDensity),
+      })
+      setStatus('idle')
+      return
+    }
+
+    // A different model or unit needs fresh engine measurements. Never retain
+    // measurements from an execution, import, file switch, or retired session.
+    measuredModel.current = null
+    setResult(null)
     const requestKey = `${lengthUnit}:${areaUnit}:${volumeUnit}:${massUnit}:${densityUnit}:${materialDensity}:${uuidv4()}`
     latestRequestKey.current = requestKey
     setStatus('analyzing')
     let cancelled = false
     const isCurrent = () =>
-      !cancelled && latestRequestKey.current === requestKey
+      !cancelled && latestRequestKey.current === requestKey && ownsModel()
 
     // Start immediately when idle. While an engine analysis is in flight,
     // retain only the latest requested inputs instead of overlapping queries.
@@ -432,6 +499,18 @@ export function PhysicalAnalysisTool() {
           setResult(null)
           setErrorMessage(analysisResult.message)
         } else {
+          measuredModel.current = {
+            editor: kclManager,
+            path,
+            projectPath,
+            connection,
+            sceneGeneration,
+            activeView,
+            fileLengthUnit,
+            densityUnit,
+            materialDensity,
+            result: analysisResult,
+          }
           setResult(analysisResult)
         }
       } catch (error) {
@@ -453,13 +532,21 @@ export function PhysicalAnalysisTool() {
       }
     }
   }, [
+    activeView,
     areaUnit,
+    connection,
     densityUnit,
+    engineCommandManager,
+    fileLengthUnit,
     isExecuting,
     isIdle,
+    kclManager,
     lengthUnit,
     massUnit,
     materialDensity,
+    path,
+    projectPath,
+    sceneGeneration,
     sendModelingCommand,
     volumeUnit,
   ])

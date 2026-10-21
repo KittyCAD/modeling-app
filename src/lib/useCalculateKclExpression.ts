@@ -73,14 +73,14 @@ export function useCalculateKclExpression({
     element.focus()
     element.setSelectionRange(0, element.value.length)
   }, [])
-  const [availableVarInfo, setAvailableVarInfo] = useState<
-    ReturnType<typeof findAllPreviousVariables>
-  >({
-    variables: [],
-    insertIndex: 0,
-    bodyPath: [],
-  })
   const wasmInstance = use(rustContext.wasmInstancePromise)
+  // Calculate against the actual scope on the first render, rather than
+  // evaluating once with an empty scope and again after an effect fills it.
+  const availableVarInfo = useMemo(
+    () =>
+      findAllPreviousVariables(ast, variables, endingSourceRange, wasmInstance),
+    [ast, variables, endingSourceRange, wasmInstance]
+  )
   const [insertIndex, setInsertIndex] = useState(0)
   const [valueNode, setValueNode] = useState<Expr | null>(null)
   const [calcResult, setCalcResult] = useState('NAN')
@@ -111,18 +111,6 @@ export function useCalculateKclExpression({
       setIsNewVariableNameUnique(true)
     }
   }, [variables, newVariableName])
-
-  useEffect(() => {
-    if (!variables) return
-    const varInfo = findAllPreviousVariables(
-      ast,
-      variables,
-      endingSourceRange,
-      wasmInstance
-    )
-    setAvailableVarInfo(varInfo)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [ast, variables, endingSourceRange])
 
   const calculationInput = useMemo(
     () => ({ value, availableVarInfo, code, rustContext, options, ast }),

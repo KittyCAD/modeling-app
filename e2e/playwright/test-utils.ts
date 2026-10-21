@@ -18,7 +18,6 @@ import {
   TOKEN_PERSIST_KEY,
   VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM,
 } from '@src/lib/constants'
-import { reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import dotenv from 'dotenv'
@@ -1393,45 +1392,29 @@ export async function doAndWaitForImageDiff(
   fn: () => Promise<unknown>,
   diffCount = 200
 ) {
-  return new Promise<boolean>((resolve) => {
-    ;(async () => {
-      await pageOrLocator.screenshot({
-        path: './e2e/playwright/temp1.png',
-        fullPage: true,
-      })
-      await fn()
-      const isImageDiff = async () => {
-        await pageOrLocator.screenshot({
-          path: './e2e/playwright/temp2.png',
-          fullPage: true,
-        })
-        const screenshot1 = PNG.sync.read(
-          await fsp.readFile('./e2e/playwright/temp1.png')
-        )
-        const screenshot2 = PNG.sync.read(
-          await fsp.readFile('./e2e/playwright/temp2.png')
-        )
-        const actualDiffCount = pixelMatch(
-          screenshot1.data,
-          screenshot2.data,
-          null,
-          screenshot1.width,
-          screenshot2.height
-        )
-        return actualDiffCount > diffCount
-      }
+  // Keep frames local: concurrent test workers must not overwrite each other's
+  // PNGs. Let screenshot, action, and comparison errors reject the caller.
+  const screenshot1 = PNG.sync.read(
+    await pageOrLocator.screenshot({ fullPage: true })
+  )
+  await fn()
 
-      // Run sequentially so slow screenshots do not overlap and starve Electron.
-      for (let count = 0; count <= 100; count++) {
-        if (await isImageDiff()) {
-          resolve(true)
-          return
-        }
-        await new Promise((resolve) => setTimeout(resolve, 50))
-      }
-      resolve(false)
-    })().catch(reportRejection)
-  })
+  // Run sequentially so slow screenshots do not overlap and starve Electron.
+  for (let count = 0; count <= 100; count++) {
+    const screenshot2 = PNG.sync.read(
+      await pageOrLocator.screenshot({ fullPage: true })
+    )
+    const actualDiffCount = pixelMatch(
+      screenshot1.data,
+      screenshot2.data,
+      null,
+      screenshot1.width,
+      screenshot1.height
+    )
+    if (actualDiffCount > diffCount) return true
+    await new Promise((resolve) => setTimeout(resolve, 50))
+  }
+  return false
 }
 
 export async function openAndClearDebugPanel(page: Page) {

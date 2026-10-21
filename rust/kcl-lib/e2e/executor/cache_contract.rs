@@ -163,6 +163,60 @@ async fn kcl_test_cache_contract_anonymous_execution_cannot_replace_loaded_file(
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_cache_contract_unchanged_programs_do_not_contact_engine() {
+    use std::sync::atomic::Ordering::Relaxed;
+
+    let project = tempfile::tempdir().unwrap();
+    let main = project.path().join("main.kcl");
+    tokio::fs::write(&main, BODY).await.unwrap();
+    tokio::fs::write(
+        project.path().join("dimensions.kcl"),
+        "@settings(kclVersion = 3.0)\nexport height = 5mm",
+    )
+    .await
+    .unwrap();
+    let version = Program::parse_no_errs(BODY).unwrap().language_version().unwrap();
+    let mut ctx = kcl_lib::test_server::new_context(true, Some(main.clone()), false, version)
+        .await
+        .unwrap();
+    for code in [BODY, IMPORTING_BODY] {
+        tokio::fs::write(&main, code).await.unwrap();
+        let original = execute(&ctx, code).await;
+        let ids = solid_ids(&ctx).await;
+        assert_eq!(ids.len(), 1);
+        assert_volume(volume(&ctx).await, 5.0);
+        let commands = ctx.engine.stats().commands_batched.load(Relaxed);
+        let batches = ctx.engine.stats().batches_sent.load(Relaxed);
+        for source in [code.to_owned(), format!("{code}\n// Unchanged geometry and imports")] {
+            tokio::fs::write(&main, &source).await.unwrap();
+            let outcome = execute(&ctx, &source).await;
+            assert!(outcome.from_cache);
+            assert_eq!(outcome.variables, original.variables);
+            assert_eq!(outcome.artifact_graph, original.artifact_graph);
+            assert_eq!(ctx.engine.stats().commands_batched.load(Relaxed), commands);
+            assert_eq!(ctx.engine.stats().batches_sent.load(Relaxed), batches);
+        }
+        assert_eq!(solid_ids(&ctx).await, ids);
+        assert_volume(volume(&ctx).await, 5.0);
+
+        // Appending geometry retains the existing body's IDs. A subsequent
+        // preference change still applies without rebuilding that body.
+        let appended = format!("{code}\nextraPlane = offsetPlane(XY, offset = 20mm)");
+        tokio::fs::write(&main, &appended).await.unwrap();
+        let appended_outcome = execute(&ctx, &appended).await;
+        assert!(!appended_outcome.from_cache);
+        assert!(appended_outcome.variables.contains_key("extraPlane"));
+        assert_eq!(solid_ids(&ctx).await, ids);
+        assert_volume(volume(&ctx).await, 5.0);
+        ctx.settings.highlight_edges = !ctx.settings.highlight_edges;
+        assert!(execute(&ctx, &appended).await.from_cache);
+        assert_eq!(solid_ids(&ctx).await, ids);
+        assert_volume(volume(&ctx).await, 5.0);
+    }
+    ctx.close().await;
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cache_contract_parse_and_preferences_preserve_real_geometry() {
     use std::sync::atomic::Ordering::Relaxed;
 

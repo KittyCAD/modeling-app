@@ -6,6 +6,7 @@ vi.mock('@src/lib/clientErrors', async (importOriginal) => {
 })
 
 import type * as ClientErrorsModule from '@src/lib/clientErrors'
+import type { WebSocketRequest, WebSocketResponse } from '@kittycad/lib'
 import {
   EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
   PENDING_COMMAND_TIMEOUT,
@@ -120,6 +121,57 @@ function startConnectionManager(
   })
 }
 
+function sceneCameraBatch(
+  responses = true
+): Extract<WebSocketRequest, { type: 'modeling_cmd_batch_req' }> {
+  return {
+    type: 'modeling_cmd_batch_req',
+    batch_id: 'scene-batch',
+    responses,
+    requests: [
+      {
+        cmd_id: 'enable',
+        cmd: {
+          type: 'enable_sketch_mode',
+          entity_id: 'plane',
+          animated: false,
+          ortho: true,
+          adjust_camera: true,
+        },
+      },
+      { cmd_id: 'settings', cmd: { type: 'default_camera_get_settings' } },
+    ],
+  }
+}
+
+const sceneCameraBatchResponse = {
+  success: true,
+  request_id: 'scene-batch',
+  resp: {
+    type: 'modeling_batch',
+    data: {
+      responses: {
+        // Deliberately reversed: callbacks must follow requests, not map order.
+        settings: {
+          response: {
+            type: 'default_camera_get_settings',
+            data: {
+              settings: {
+                center: { x: 0, y: 0, z: 0 },
+                pos: { x: 0, y: 0, z: 10 },
+                up: { x: 0, y: 1, z: 0 },
+                orientation: { x: 0, y: 0, z: 0, w: 1 },
+                ortho: true,
+              },
+            },
+          },
+        },
+        enable: { response: { type: 'enable_sketch_mode', data: {} } },
+      },
+    },
+  },
+} satisfies WebSocketResponse
+
 describe('ConnectionManager', () => {
   afterEach(() => {
     vi.useRealTimers()
@@ -127,6 +179,92 @@ describe('ConnectionManager', () => {
     vi.unstubAllGlobals()
     reportClientError.mockClear()
     ReconnectTestWebSocket.instances = []
+  })
+
+  it('awaits a scene batch and delivers subscriptions once in request order before completion', async () => {
+    vi.useFakeTimers()
+    const manager = createConnectionManager()
+    const connection = addConnectedState(manager)
+    connection.send = vi.fn()
+    const order: string[] = []
+    manager.subscribeTo({
+      event: 'enable_sketch_mode',
+      callback: () => order.push('enable'),
+    })
+    manager.subscribeTo({
+      event: 'default_camera_get_settings',
+      callback: () => order.push('settings'),
+    })
+    const result = manager
+      .sendSceneCommand(sceneCameraBatch())
+      .then((response) => {
+        order.push('complete')
+        return response
+      })
+    expect(Object.keys(manager.pendingCommands)).toEqual(['scene-batch'])
+    expect(manager.pendingCommands['scene-batch'].isSceneCommand).toBe(true)
+    expect(order).toEqual([])
+    const receive = manager.createMessageHandler()
+    const event = new MessageEvent('message', {
+      data: JSON.stringify(sceneCameraBatchResponse),
+    })
+    receive(event)
+    expect(order).toEqual(['enable', 'settings'])
+    expect(await result).toEqual(sceneCameraBatchResponse)
+    expect(order).toEqual(['enable', 'settings', 'complete'])
+    receive(event)
+    expect(order).toEqual(['enable', 'settings', 'complete'])
+    expect(
+      manager.commandLogs.filter(({ type }) => type === 'receive-reliable')
+    ).toHaveLength(2)
+    expect(manager.pendingCommands).toEqual({})
+  })
+
+  it('keeps responses:false scene batches fire-and-forget without pending work', async () => {
+    const manager = createConnectionManager()
+    const connection = addConnectedState(manager)
+    const send = vi.fn()
+    connection.send = send
+    const batch = sceneCameraBatch(false)
+    expect(await manager.sendSceneCommand(batch)).toBeNull()
+    expect(send).toHaveBeenCalledExactlyOnceWith(batch)
+    expect(manager.pendingCommands).toEqual({})
+  })
+
+  it('rejects a retired scene batch and ignores its late acknowledgement after replacement', async () => {
+    vi.useFakeTimers()
+    const manager = createConnectionManager()
+    addConnectedState(manager).send = vi.fn()
+    const callback = vi.fn()
+    manager.subscribeTo({ event: 'default_camera_get_settings', callback })
+    const receive = manager.createMessageHandler()
+    const retired = manager.sendSceneCommand(sceneCameraBatch())
+    const rejected = expect(retired).rejects.toMatchObject([
+      { errors: [{ error_code: 'connection_problem' }] },
+    ])
+    manager.tearDown({ route: 'user-requested', initiatedBy: 'client' })
+    await rejected
+    addConnectedState(manager).send = vi.fn()
+    const currentBatch = { ...sceneCameraBatch(), batch_id: 'new-scene-batch' }
+    const current = manager.sendSceneCommand(currentBatch)
+    receive(
+      new MessageEvent('message', {
+        data: JSON.stringify(sceneCameraBatchResponse),
+      })
+    )
+    expect(callback).not.toHaveBeenCalled()
+    expect(Object.keys(manager.pendingCommands)).toEqual(['new-scene-batch'])
+    receive(
+      new MessageEvent('message', {
+        data: JSON.stringify({
+          ...sceneCameraBatchResponse,
+          request_id: currentBatch.batch_id,
+        }),
+      })
+    )
+    await current
+    expect(callback).toHaveBeenCalledOnce()
+    expect(manager.pendingCommands).toEqual({})
   })
 
   it('settles modeling responses before the WebRTC readiness handoff', async () => {

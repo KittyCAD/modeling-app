@@ -1178,12 +1178,37 @@ enum PreparedCachedExecution {
     Execute(Box<CachedExecution>),
 }
 
+enum CachedExecutionPlan {
+    Reuse {
+        state: Box<GlobalState>,
+        reapply_settings: bool,
+    },
+    Execute(Box<PlannedCachedExecution>),
+}
+
+struct PlannedCachedExecution {
+    program: crate::Program,
+    cached_state: Option<GlobalState>,
+    clear_scene: bool,
+    reapply_settings: bool,
+    import_check_info: Option<(Universe, UniverseMap, ExecState)>,
+}
+
 struct CachedExecution {
     program: crate::Program,
     exec_state: Box<ExecState>,
     universe_info: Option<(Universe, UniverseMap)>,
     preserve_mem: PreserveMem,
+    graphics_application: GraphicsSettingsApplication,
 }
+
+#[derive(Clone, Copy)]
+enum GraphicsSettingsApplication {
+    Required,
+    AlreadyApplied,
+}
+
+type ImportedModuleResult = (ModuleId, Result<ModuleRepr, KclError>);
 
 impl ExecutorContext {
     /// Use an existing cache for another handle to the same session, or for
@@ -1699,7 +1724,14 @@ impl ExecutorContext {
             .push_new_env_for_scope()
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
-        let (main_ref, _) = self.inner_run(program, &mut exec_state, PreserveMem::Always).await?;
+        let (main_ref, _) = self
+            .inner_run(
+                program,
+                &mut exec_state,
+                PreserveMem::Always,
+                GraphicsSettingsApplication::Required,
+            )
+            .await?;
 
         Ok((exec_state, main_ref))
     }
@@ -1763,12 +1795,7 @@ impl ExecutorContext {
             .map_err(KclErrorWithOutputs::no_outputs)?;
         let mut ctx = self.clone().with_cache(cache);
         ctx.engine_batch = batch;
-        let exec_fut = ctx.run_with_caching_inner(program);
-        let result = if ctx.configure_engine_render {
-            ctx.with_engine_execution(Box::pin(exec_fut)).await
-        } else {
-            exec_fut.await
-        };
+        let result = ctx.run_with_caching_inner(program).await;
         match result {
             Ok(outcome) => Ok(outcome),
             Err(mut err) => {
@@ -1780,8 +1807,35 @@ impl ExecutorContext {
     }
 
     async fn run_with_caching_inner(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
-        let original_program = program.clone();
-        let prepared = self.prepare_cached_execution(program).await;
+        let plan = self.plan_cached_execution(&program).await?;
+        // Import reads can yield to a reconnect. A cache hit must not publish
+        // retired scene IDs just because it no longer sends engine commands.
+        self.engine
+            .validate_session(&self.engine_batch, SourceRange::default())
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+        if let CachedExecutionPlan::Reuse {
+            state,
+            reapply_settings: false,
+        } = plan
+        {
+            return self.reuse_cached_execution(*state).await;
+        }
+
+        let exec_fut = self.execute_cached_plan(program, plan);
+        if self.configure_engine_render {
+            self.with_engine_execution(Box::pin(exec_fut)).await
+        } else {
+            exec_fut.await
+        }
+    }
+
+    async fn execute_cached_plan(
+        &self,
+        program: crate::Program,
+        plan: CachedExecutionPlan,
+    ) -> Result<ExecOutcome, KclErrorWithOutputs> {
+        let original_program = program;
+        let prepared = self.prepare_cached_execution(&original_program, plan).await;
         if !matches!(prepared, Ok(PreparedCachedExecution::Cached(_))) {
             // Anything but a cache hit may have changed the engine scene, even
             // if it went on to fail.
@@ -1792,12 +1846,19 @@ impl ExecutorContext {
             mut exec_state,
             universe_info,
             preserve_mem,
+            graphics_application,
         } = *match prepared? {
             PreparedCachedExecution::Cached(outcome) => return Ok(*outcome),
             PreparedCachedExecution::Execute(execution) => execution,
         };
         let result = self
-            .run_concurrent_inner(&program, &mut exec_state, universe_info, preserve_mem)
+            .run_concurrent_inner(
+                &program,
+                &mut exec_state,
+                universe_info,
+                preserve_mem,
+                graphics_application,
+            )
             .await;
         self.finish_cached_execution(original_program, exec_state, result).await
     }
@@ -1805,242 +1866,224 @@ impl ExecutorContext {
     // Construct each phase's future here, rather than in run_with_caching,
     // so the coordinator does not reserve stack for its large temporaries.
     #[inline(never)]
-    fn prepare_cached_execution(
-        &self,
-        program: crate::Program,
-    ) -> BoxFuture<'_, Result<PreparedCachedExecution, KclErrorWithOutputs>> {
+    fn plan_cached_execution<'a>(
+        &'a self,
+        program: &'a crate::Program,
+    ) -> BoxFuture<'a, Result<CachedExecutionPlan, KclErrorWithOutputs>> {
+        Box::pin(async move {
+            let Some(cached_state) = self.cache.read_old_ast().await else {
+                return Ok(CachedExecutionPlan::Execute(Box::new(PlannedCachedExecution {
+                    program: program.clone(),
+                    cached_state: None,
+                    clear_scene: true,
+                    reapply_settings: false,
+                    import_check_info: None,
+                })));
+            };
+            let old = CacheInformation {
+                ast: &cached_state.main.ast,
+                settings: &cached_state.settings,
+                kcl_version: cached_state.kcl_version,
+            };
+            let new = CacheInformation {
+                ast: &program.ast,
+                settings: &self.settings,
+                kcl_version: program.kcl_version,
+            };
+            let (clear_scene, reapply_settings, changed_program, import_check_info) =
+                match cache::get_changed_program(old, new).await {
+                    CacheResult::NoAction(reapply_settings) => {
+                        return Ok(CachedExecutionPlan::Reuse {
+                            state: Box::new(cached_state),
+                            reapply_settings,
+                        });
+                    }
+                    CacheResult::ReExecute {
+                        clear_scene,
+                        reapply_settings,
+                        program,
+                    } => (clear_scene, reapply_settings, program, None),
+                    CacheResult::CheckImportsOnly { reapply_settings, ast } => {
+                        // Opening the universe reads and parses imports; only
+                        // executing it sends modeling commands.
+                        let mut new_exec_state = ExecState::new(self);
+                        let (new_universe, new_universe_map) = self.get_universe(program, &mut new_exec_state).await?;
+                        let imports_changed = new_universe.values().any(|value| {
+                            let id = value.1;
+                            match (
+                                cached_state.exec_state.get_source(id),
+                                new_exec_state.global.get_source(id),
+                            ) {
+                                (Some(s0), Some(s1)) => s0.source != s1.source,
+                                _ => false,
+                            }
+                        });
+                        if !imports_changed {
+                            return Ok(CachedExecutionPlan::Reuse {
+                                state: Box::new(cached_state),
+                                reapply_settings,
+                            });
+                        }
+                        (
+                            true,
+                            reapply_settings,
+                            ast,
+                            Some((new_universe, new_universe_map, new_exec_state)),
+                        )
+                    }
+                };
+            Ok(CachedExecutionPlan::Execute(Box::new(PlannedCachedExecution {
+                program: crate::Program {
+                    kcl_version: program.kcl_version,
+                    ast: changed_program,
+                    original_file_contents: program.original_file_contents.clone(),
+                },
+                cached_state: Some(cached_state),
+                clear_scene,
+                reapply_settings,
+                import_check_info,
+            })))
+        })
+    }
+
+    async fn reuse_cached_execution(&self, state: GlobalState) -> Result<ExecOutcome, KclErrorWithOutputs> {
+        let memory = state.mock_memory_state().map_err(KclErrorWithOutputs::no_outputs)?;
+        let outcome = state
+            .into_exec_outcome(self)
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+        self.engine
+            .validate_session(&self.engine_batch, SourceRange::default())
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+        self.cache.write_old_memory(memory).await;
+        self.engine
+            .validate_session(&self.engine_batch, SourceRange::default())
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+        Ok(outcome)
+    }
+
+    #[inline(never)]
+    fn prepare_cached_execution<'a>(
+        &'a self,
+        program: &'a crate::Program,
+        plan: CachedExecutionPlan,
+    ) -> BoxFuture<'a, Result<PreparedCachedExecution, KclErrorWithOutputs>> {
         Box::pin(async move {
             let grid_scale = if self.settings.fixed_size_grid {
                 GridScaleBehavior::Fixed(program.meta_settings().ok().flatten().map(|s| s.default_length_units))
             } else {
                 GridScaleBehavior::ScaleWithZoom
             };
-
-            let (program, exec_state, universe_info, preserve_mem) = match self.cache.read_old_ast().await {
-                Some(mut cached_state) => {
-                    let old = CacheInformation {
-                        ast: &cached_state.main.ast,
-                        settings: &cached_state.settings,
-                        kcl_version: cached_state.kcl_version,
-                    };
-                    let new = CacheInformation {
-                        ast: &program.ast,
-                        settings: &self.settings,
-                        kcl_version: program.kcl_version,
-                    };
-
-                    // Get the program that actually changed from the old and new information.
-                    let (clear_scene, program, import_check_info) = match cache::get_changed_program(old, new).await {
-                        CacheResult::ReExecute {
-                            clear_scene,
-                            reapply_settings,
-                            program: changed_program,
-                        } => {
-                            if reapply_settings
-                                && self
-                                    .engine
-                                    .reapply_settings(
-                                        &self.engine_batch,
-                                        &self.settings,
-                                        Default::default(),
-                                        &mut cached_state.main.exec_state.id_generator,
-                                        grid_scale,
-                                    )
-                                    .await
-                                    .is_err()
-                            {
-                                (true, program, None)
-                            } else {
-                                (
-                                    clear_scene,
-                                    crate::Program {
-                                        kcl_version: program.kcl_version,
-                                        ast: changed_program,
-                                        original_file_contents: program.original_file_contents,
-                                    },
-                                    None,
-                                )
-                            }
-                        }
-                        CacheResult::CheckImportsOnly {
-                            reapply_settings,
-                            ast: changed_program,
-                        } => {
-                            let mut reapply_failed = false;
-                            if reapply_settings {
-                                if self
-                                    .engine
-                                    .reapply_settings(
-                                        &self.engine_batch,
-                                        &self.settings,
-                                        Default::default(),
-                                        &mut cached_state.main.exec_state.id_generator,
-                                        grid_scale,
-                                    )
-                                    .await
-                                    .is_ok()
-                                {
-                                    self.cache
-                                        .write_old_ast(GlobalState::with_settings(
-                                            cached_state.clone(),
-                                            self.settings.clone(),
-                                        ))
-                                        .await;
-                                } else {
-                                    reapply_failed = true;
-                                }
-                            }
-
-                            if reapply_failed {
-                                (true, program, None)
-                            } else {
-                                // We need to check our imports to see if they changed.
-                                let mut new_exec_state = ExecState::new(self);
-                                let (new_universe, new_universe_map) =
-                                    self.get_universe(&program, &mut new_exec_state).await?;
-
-                                let clear_scene = new_universe.values().any(|value| {
-                                    let id = value.1;
-                                    match (
-                                        cached_state.exec_state.get_source(id),
-                                        new_exec_state.global.get_source(id),
-                                    ) {
-                                        (Some(s0), Some(s1)) => s0.source != s1.source,
-                                        _ => false,
-                                    }
-                                });
-
-                                if !clear_scene {
-                                    // Return early we don't need to clear the scene.
-                                    self.cache
-                                        .write_old_memory(
-                                            cached_state
-                                                .mock_memory_state()
-                                                .map_err(KclErrorWithOutputs::no_outputs)?,
-                                        )
-                                        .await;
-                                    return cached_state
-                                        .into_exec_outcome(self)
-                                        .await
-                                        .map(|outcome| PreparedCachedExecution::Cached(Box::new(outcome)))
-                                        .map_err(KclErrorWithOutputs::no_outputs);
-                                }
-
-                                (
-                                    true,
-                                    crate::Program {
-                                        kcl_version: program.kcl_version,
-                                        ast: changed_program,
-                                        original_file_contents: program.original_file_contents,
-                                    },
-                                    Some((new_universe, new_universe_map, new_exec_state)),
-                                )
-                            }
-                        }
-                        CacheResult::NoAction(true) => {
-                            if self
-                                .engine
-                                .reapply_settings(
-                                    &self.engine_batch,
-                                    &self.settings,
-                                    Default::default(),
-                                    &mut cached_state.main.exec_state.id_generator,
-                                    grid_scale,
-                                )
-                                .await
-                                .is_ok()
-                            {
-                                // We need to update the old ast state with the new settings!!
-                                self.cache
-                                    .write_old_ast(GlobalState::with_settings(
-                                        cached_state.clone(),
-                                        self.settings.clone(),
-                                    ))
-                                    .await;
-
-                                self.cache
-                                    .write_old_memory(
-                                        cached_state
-                                            .mock_memory_state()
-                                            .map_err(KclErrorWithOutputs::no_outputs)?,
-                                    )
-                                    .await;
-                                return cached_state
-                                    .into_exec_outcome(self)
-                                    .await
-                                    .map(|outcome| PreparedCachedExecution::Cached(Box::new(outcome)))
-                                    .map_err(KclErrorWithOutputs::no_outputs);
-                            }
-                            (true, program, None)
-                        }
-                        CacheResult::NoAction(false) => {
-                            self.cache
-                                .write_old_memory(
-                                    cached_state
-                                        .mock_memory_state()
-                                        .map_err(KclErrorWithOutputs::no_outputs)?,
-                                )
-                                .await;
-                            return cached_state
-                                .into_exec_outcome(self)
-                                .await
-                                .map(|outcome| PreparedCachedExecution::Cached(Box::new(outcome)))
-                                .map_err(KclErrorWithOutputs::no_outputs);
-                        }
-                    };
-
-                    let (exec_state, universe_info, preserve_mem) = match import_check_info {
-                        Some((new_universe, new_universe_map, mut new_exec_state)) => {
-                            // Clear the scene if the imports changed.
-                            self.send_clear_scene(Some(program.kcl_version), &mut new_exec_state, Default::default())
-                                .await
-                                .map_err(KclErrorWithOutputs::no_outputs)?;
-
-                            (
-                                new_exec_state,
-                                Some((new_universe, new_universe_map)),
-                                PreserveMem::Normal,
+            let planned = match plan {
+                CachedExecutionPlan::Reuse {
+                    mut state,
+                    reapply_settings,
+                } => {
+                    if reapply_settings
+                        && self
+                            .engine
+                            .reapply_settings(
+                                &self.engine_batch,
+                                &self.settings,
+                                Default::default(),
+                                &mut state.main.exec_state.id_generator,
+                                grid_scale,
                             )
+                            .await
+                            .is_err()
+                    {
+                        PlannedCachedExecution {
+                            program: program.clone(),
+                            cached_state: Some(*state),
+                            clear_scene: true,
+                            reapply_settings: false,
+                            import_check_info: None,
                         }
-                        None if clear_scene => {
-                            // Pop the execution state, since we are starting fresh.
-                            let mut exec_state = cached_state.reconstitute_exec_state(self);
-                            exec_state.reset(self);
-
-                            self.send_clear_scene(Some(program.kcl_version), &mut exec_state, Default::default())
-                                .await
-                                .map_err(KclErrorWithOutputs::no_outputs)?;
-
-                            (exec_state, None, PreserveMem::Normal)
-                        }
-                        None => {
-                            let mut exec_state = cached_state.reconstitute_exec_state(self);
-                            exec_state
-                                .mut_stack()
-                                .restore_env(cached_state.main.result_env)
-                                .map_err(KclErrorWithOutputs::no_outputs)?;
-
-                            (exec_state, None, PreserveMem::Always)
-                        }
-                    };
-
-                    (program, exec_state, universe_info, preserve_mem)
+                    } else {
+                        self.cache
+                            .write_old_ast(GlobalState::with_settings((*state).clone(), self.settings.clone()))
+                            .await;
+                        return self
+                            .reuse_cached_execution(*state)
+                            .await
+                            .map(|outcome| PreparedCachedExecution::Cached(Box::new(outcome)));
+                    }
                 }
-                None => {
+                CachedExecutionPlan::Execute(mut planned) => {
+                    if let Some(state) = &mut planned.cached_state
+                        && !planned.clear_scene
+                        && planned.reapply_settings
+                        && self
+                            .engine
+                            .reapply_settings(
+                                &self.engine_batch,
+                                &self.settings,
+                                Default::default(),
+                                &mut state.main.exec_state.id_generator,
+                                grid_scale,
+                            )
+                            .await
+                            .is_err()
+                    {
+                        planned.program = program.clone();
+                        planned.clear_scene = true;
+                        planned.import_check_info = None;
+                    }
+                    *planned
+                }
+            };
+            // A reset scene needs its preferences applied again after the
+            // clear. A retained scene either matches the cached preferences or
+            // successfully applied the changed preferences above.
+            let graphics_application = if planned.clear_scene {
+                GraphicsSettingsApplication::Required
+            } else {
+                GraphicsSettingsApplication::AlreadyApplied
+            };
+            let PlannedCachedExecution {
+                program,
+                cached_state,
+                clear_scene,
+                import_check_info,
+                ..
+            } = planned;
+            let (exec_state, universe_info, preserve_mem) = match (cached_state, import_check_info) {
+                (_, Some((universe, universe_map, mut exec_state))) => {
+                    self.send_clear_scene(Some(program.kcl_version), &mut exec_state, Default::default())
+                        .await
+                        .map_err(KclErrorWithOutputs::no_outputs)?;
+                    (exec_state, Some((universe, universe_map)), PreserveMem::Normal)
+                }
+                (Some(state), None) => {
+                    let mut exec_state = state.reconstitute_exec_state(self);
+                    if clear_scene {
+                        exec_state.reset(self);
+                        self.send_clear_scene(Some(program.kcl_version), &mut exec_state, Default::default())
+                            .await
+                            .map_err(KclErrorWithOutputs::no_outputs)?;
+                        (exec_state, None, PreserveMem::Normal)
+                    } else {
+                        exec_state
+                            .mut_stack()
+                            .restore_env(state.main.result_env)
+                            .map_err(KclErrorWithOutputs::no_outputs)?;
+                        (exec_state, None, PreserveMem::Always)
+                    }
+                }
+                (None, None) => {
                     let mut exec_state = ExecState::new(self);
                     self.send_clear_scene(Some(program.kcl_version), &mut exec_state, Default::default())
                         .await
                         .map_err(KclErrorWithOutputs::no_outputs)?;
-
-                    (program, exec_state, None, PreserveMem::Normal)
+                    (exec_state, None, PreserveMem::Normal)
                 }
             };
-
             Ok(PreparedCachedExecution::Execute(Box::new(CachedExecution {
                 program,
                 exec_state: Box::new(exec_state),
                 universe_info,
                 preserve_mem,
+                graphics_application,
             })))
         })
     }
@@ -2100,7 +2143,13 @@ impl ExecutorContext {
         universe_info: Option<(Universe, UniverseMap)>,
         preserve_mem: PreserveMem,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
-        let execution_fut = self.run_concurrent_inner(program, exec_state, universe_info, preserve_mem);
+        let execution_fut = self.run_concurrent_inner(
+            program,
+            exec_state,
+            universe_info,
+            preserve_mem,
+            GraphicsSettingsApplication::Required,
+        );
         if self.configure_engine_render {
             self.with_engine_execution(Box::pin(execution_fut)).await
         } else {
@@ -2167,6 +2216,7 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         universe_info: Option<(Universe, UniverseMap)>,
         preserve_mem: PreserveMem,
+        graphics_application: GraphicsSettingsApplication,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         // Record the entry point's kclVersion before anything executes;
         // imported modules pre-execute on clones of this state below and must
@@ -2189,6 +2239,10 @@ impl ExecutorContext {
         } else {
             self.get_universe(program, exec_state).await?
         };
+
+        if let GraphicsSettingsApplication::Required = graphics_application {
+            self.apply_graphics_settings(program, exec_state).await?;
+        }
 
         // Push ModuleInstance ops for the root module's direct imports before
         // child modules execute. This lets the live feature tree show module
@@ -2240,11 +2294,7 @@ impl ExecutorContext {
             #[cfg(not(target_arch = "wasm32"))]
             let mut set = tokio::task::JoinSet::new();
 
-            #[allow(clippy::type_complexity)]
-            let (results_tx, mut results_rx): (
-                tokio::sync::mpsc::Sender<(ModuleId, ModulePath, Result<ModuleRepr, KclError>)>,
-                tokio::sync::mpsc::Receiver<_>,
-            ) = tokio::sync::mpsc::channel(1);
+            let (results_tx, results_rx) = tokio::sync::mpsc::channel::<ImportedModuleResult>(1);
 
             for module in modules {
                 let Some((import_stmt, module_id, module_path, repr)) = universe.get(&module) else {
@@ -2324,10 +2374,7 @@ impl ExecutorContext {
                         )
                         .await;
 
-                        results_tx
-                            .send((module_id, module_path, result))
-                            .await
-                            .unwrap_or_default();
+                        results_tx.send((module_id, result)).await.unwrap_or_default();
                     });
                 }
                 #[cfg(not(target_arch = "wasm32"))]
@@ -2346,45 +2393,14 @@ impl ExecutorContext {
                         )
                         .await;
 
-                        results_tx
-                            .send((module_id, module_path, result))
-                            .await
-                            .unwrap_or_default();
+                        results_tx.send((module_id, result)).await.unwrap_or_default();
                     });
                 }
             }
 
             drop(results_tx);
 
-            while let Some((module_id, _, result)) = results_rx.recv().await {
-                match result {
-                    Ok(new_repr) => {
-                        let mut repr = exec_state.global.module_infos[&module_id].take_repr();
-
-                        match &mut repr {
-                            ModuleRepr::Kcl(_, cache) => {
-                                let ModuleRepr::Kcl(_, session_data) = new_repr else {
-                                    unreachable!();
-                                };
-                                *cache = session_data;
-                            }
-                            ModuleRepr::Foreign(_, cache) => {
-                                let ModuleRepr::Foreign(_, session_data) = new_repr else {
-                                    unreachable!();
-                                };
-                                *cache = session_data;
-                            }
-                            ModuleRepr::Dummy | ModuleRepr::Root => unreachable!(),
-                        }
-
-                        exec_state.global.module_infos[&module_id].restore_repr(repr);
-                    }
-                    Err(e) => {
-                        let e = import_graph::add_import_backtrace(e, module_id, &universe);
-                        return Err(exec_state.error_with_outputs(e, None, default_planes));
-                    }
-                }
-            }
+            Self::settle_import_stage(results_rx, exec_state, &universe, &default_planes).await?;
         }
 
         // The early-pushed ModuleInstance operations have already served their
@@ -2400,24 +2416,74 @@ impl ExecutorContext {
             .root_module_artifacts
             .extend(std::mem::take(&mut exec_state.mod_local.artifacts));
 
-        self.inner_run(program, exec_state, preserve_mem)
-            .await
-            .map_err(|mut error| {
-                // Engine rejections of async commands (e.g. foreign imports)
-                // surface after module execution, so they miss the import
-                // frames the eager loop attaches. Without a top-level range
-                // the frontend cannot anchor the error in the root file;
-                // rebuild the ancestry from the outermost range's module.
-                let source_ranges = error.error.source_ranges();
-                if !source_ranges.is_empty()
-                    && !source_ranges.iter().any(|range| range.module_id().is_top_level())
-                    && let Some(outermost) = source_ranges.last()
-                {
-                    error.error =
-                        import_graph::add_import_backtrace_from(error.error.clone(), outermost.module_id(), &universe);
+        self.inner_run(
+            program,
+            exec_state,
+            preserve_mem,
+            GraphicsSettingsApplication::AlreadyApplied,
+        )
+        .await
+        .map_err(|mut error| {
+            // Engine rejections of async commands (e.g. foreign imports)
+            // surface after module execution, so they miss the import
+            // frames the eager loop attaches. Without a top-level range
+            // the frontend cannot anchor the error in the root file;
+            // rebuild the ancestry from the outermost range's module.
+            let source_ranges = error.error.source_ranges();
+            if !source_ranges.is_empty()
+                && !source_ranges.iter().any(|range| range.module_id().is_top_level())
+                && let Some(outermost) = source_ranges.last()
+            {
+                error.error =
+                    import_graph::add_import_backtrace_from(error.error.clone(), outermost.module_id(), &universe);
+            }
+            error
+        })
+    }
+
+    async fn settle_import_stage(
+        mut results_rx: tokio::sync::mpsc::Receiver<ImportedModuleResult>,
+        exec_state: &mut ExecState,
+        universe: &Universe,
+        default_planes: &Option<DefaultPlanes>,
+    ) -> Result<(), KclErrorWithOutputs> {
+        let mut first_error = None;
+        while let Some((module_id, result)) = results_rx.recv().await {
+            match result {
+                Ok(new_repr) => {
+                    let mut repr = exec_state.global.module_infos[&module_id].take_repr();
+
+                    match &mut repr {
+                        ModuleRepr::Kcl(_, cache) => {
+                            let ModuleRepr::Kcl(_, session_data) = new_repr else {
+                                unreachable!();
+                            };
+                            *cache = session_data;
+                        }
+                        ModuleRepr::Foreign(_, cache) => {
+                            let ModuleRepr::Foreign(_, session_data) = new_repr else {
+                                unreachable!();
+                            };
+                            *cache = session_data;
+                        }
+                        ModuleRepr::Dummy | ModuleRepr::Root => unreachable!(),
+                    }
+
+                    exec_state.global.module_infos[&module_id].restore_repr(repr);
                 }
-                error
-            })
+                Err(e) => {
+                    if first_error.is_none() {
+                        first_error = Some(import_graph::add_import_backtrace(e, module_id, universe));
+                    }
+                }
+            }
+        }
+        // Wasm's spawned siblings are not cancelled by dropping a join handle.
+        // Drain their results before ending execution or clearing its scene.
+        if let Some(error) = first_error {
+            return Err(exec_state.error_with_outputs(error, None, default_planes.clone()));
+        }
+        Ok(())
     }
 
     /// Get the universe & universe map of the program.
@@ -2451,24 +2517,11 @@ impl ExecutorContext {
         Ok((universe, root_imports))
     }
 
-    /// Perform the execution of a program.  Accept all possible parameters and
-    /// output everything.
-    async fn inner_run(
+    async fn apply_graphics_settings(
         &self,
         program: &crate::Program,
         exec_state: &mut ExecState,
-        preserve_mem: PreserveMem,
-    ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
-        let _stats = crate::log::LogPerfStats::new("Interpretation");
-
-        // Record the entry point's kclVersion. Mock execution reaches here
-        // without going through run_concurrent; on the engine path this
-        // re-assigns the same value, which is harmless.
-        exec_state
-            .set_entry_point_kcl_version(program)
-            .map_err(KclErrorWithOutputs::no_outputs)?;
-
-        // Re-apply the settings, in case the cache was busted.
+    ) -> Result<(), KclErrorWithOutputs> {
         let grid_scale = if self.settings.fixed_size_grid {
             GridScaleBehavior::Fixed(program.meta_settings().ok().flatten().map(|s| s.default_length_units))
         } else {
@@ -2484,6 +2537,31 @@ impl ExecutorContext {
             )
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
+
+        Ok(())
+    }
+
+    /// Perform the execution of a program.  Accept all possible parameters and
+    /// output everything.
+    async fn inner_run(
+        &self,
+        program: &crate::Program,
+        exec_state: &mut ExecState,
+        preserve_mem: PreserveMem,
+        graphics_application: GraphicsSettingsApplication,
+    ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
+        let _stats = crate::log::LogPerfStats::new("Interpretation");
+
+        // Record the entry point's kclVersion. Mock execution reaches here
+        // without going through run_concurrent; on the engine path this
+        // re-assigns the same value, which is harmless.
+        exec_state
+            .set_entry_point_kcl_version(program)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+
+        if let GraphicsSettingsApplication::Required = graphics_application {
+            self.apply_graphics_settings(program, exec_state).await?;
+        }
 
         let default_planes = self.engine.get_default_planes().read().await.clone();
         let result = self
@@ -2999,8 +3077,7 @@ mod tests {
     }
 
     #[cfg(not(target_arch = "wasm32"))]
-    #[tokio::test]
-    async fn scene_reset_sends_entrypoint_kcl_version() {
+    mod recording_transport {
         use std::collections::HashMap;
 
         use kcmc::websocket::WebSocketRequest;
@@ -3008,12 +3085,13 @@ mod tests {
         use tokio::sync::RwLock;
         use uuid::Uuid;
 
+        use super::*;
         use crate::engine::engine_manager::EngineTransport;
         use crate::engine::engine_manager::TransportCloseError;
 
-        struct RecordingTransport {
-            inner: Arc<Box<dyn EngineTransport>>,
-            requests: Arc<RwLock<Vec<WebSocketRequest>>>,
+        pub(super) struct RecordingTransport {
+            pub(super) inner: Arc<Box<dyn EngineTransport>>,
+            pub(super) requests: Arc<RwLock<Vec<WebSocketRequest>>>,
         }
 
         #[async_trait::async_trait]
@@ -3048,6 +3126,15 @@ mod tests {
                 self.inner.close().await
             }
         }
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    #[tokio::test]
+    async fn scene_reset_sends_entrypoint_kcl_version() {
+        use kcmc::websocket::WebSocketRequest;
+        use tokio::sync::RwLock;
+
+        use self::recording_transport::RecordingTransport;
 
         for (source, expected) in [
             ("", "1.0"),
@@ -5744,6 +5831,210 @@ solid7 = extrude(r7, length = width)
         assert_number_variable(&outcome.variables, "y", 3.0);
         ctx.close().await;
         mock.close().await;
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn cached_execution_applies_graphics_once_only_when_required() {
+        use kcmc::units::UnitLength;
+        use kcmc::websocket::WebSocketRequest;
+        use tokio::sync::RwLock;
+
+        use self::recording_transport::RecordingTransport;
+
+        let requests = Arc::new(RwLock::new(Vec::new()));
+        let mut engine = EngineManager::new_mock();
+        engine.transport = Arc::new(Box::new(RecordingTransport {
+            inner: engine.transport.clone(),
+            requests: requests.clone(),
+        }));
+        let mut ctx = ExecutorContext::new_with_engine(
+            Arc::new(engine),
+            ExecutorSettings {
+                highlight_edges: true,
+                fixed_size_grid: true,
+                ..Default::default()
+            },
+        );
+        let original = "@settings(kclVersion = 3.0)\nplaneA = offsetPlane(XY, offset = 10mm)";
+        let appended = format!("{original}\nplaneB = offsetPlane(XY, offset = 20mm)");
+        let changed_preferences = format!("{appended}\nplaneC = offsetPlane(XY, offset = 30mm)");
+        let changed_geometry = changed_preferences.replace("offset = 10mm", "offset = 15mm");
+        let changed_units = changed_geometry.replace(
+            "@settings(kclVersion = 3.0)",
+            "@settings(kclVersion = 3.0, defaultLengthUnit = cm)",
+        );
+        for (source, highlight_edges, expected_applications, units) in [
+            (original, true, 1, UnitLength::Millimeters),
+            (appended.as_str(), true, 0, UnitLength::Millimeters),
+            (changed_preferences.as_str(), false, 1, UnitLength::Millimeters),
+            (changed_geometry.as_str(), false, 1, UnitLength::Millimeters),
+            (changed_units.as_str(), false, 1, UnitLength::Centimeters),
+        ] {
+            requests.write().await.clear();
+            ctx.settings.highlight_edges = highlight_edges;
+            let outcome = ctx
+                .run_with_caching(crate::Program::parse_no_errs(source).unwrap())
+                .await
+                .unwrap();
+            assert!(!outcome.from_cache, "each variant creates or changes geometry");
+            assert!(outcome.variables.contains_key("planeA"));
+            assert!(ctx.engine_batch.is_empty().await);
+            let commands: Vec<_> = requests
+                .read()
+                .await
+                .iter()
+                .flat_map(|request| match request {
+                    WebSocketRequest::ModelingCmdReq(request) => vec![request.cmd.clone()],
+                    WebSocketRequest::ModelingCmdBatchReq(batch) => {
+                        batch.requests.iter().map(|request| request.cmd.clone()).collect()
+                    }
+                    _ => vec![],
+                })
+                .collect();
+            let preferences: Vec<_> = commands
+                .iter()
+                .enumerate()
+                .filter_map(|(index, command)| match command {
+                    ModelingCmd::EdgeLinesVisible(preference) => Some((index, preference)),
+                    _ => None,
+                })
+                .collect();
+            assert_eq!(preferences.len(), expected_applications, "{source}");
+            assert!(
+                preferences
+                    .iter()
+                    .all(|(_, preference)| preference.hidden == !highlight_edges)
+            );
+            let grid_scales: Vec<_> = commands
+                .iter()
+                .filter_map(|command| match command {
+                    ModelingCmd::SetGridScale(scale) => Some(scale),
+                    _ => None,
+                })
+                .collect();
+            assert_eq!(grid_scales.len(), expected_applications);
+            assert!(grid_scales.iter().all(|scale| scale.units == units));
+            let geometry_index = commands
+                .iter()
+                .position(|command| matches!(command, ModelingCmd::MakePlane(plane) if plane.origin.z.0 > 0.0))
+                .expect("the real execution must create the requested offset plane");
+            if let Some((preference_index, _)) = preferences.first() {
+                assert!(
+                    preference_index < &geometry_index,
+                    "apply settings before user geometry"
+                );
+            }
+        }
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn failed_import_stage_waits_for_its_pending_sibling() {
+        let ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
+        let mut exec_state = ExecState::new(&ctx);
+        let root_range = SourceRange::new(0, 10, ModuleId::default());
+        let imported_range = SourceRange::new(20, 30, ModuleId::from_usize(1));
+        let first_error = KclError::new_engine(KclErrorDetails::new(
+            "first import failed".to_owned(),
+            vec![imported_range],
+        ))
+        .add_import_location("bad.kcl", root_range);
+        let (sender, receiver) = tokio::sync::mpsc::channel(1);
+        sender
+            .send((ModuleId::from_usize(1), Err(first_error.clone())))
+            .await
+            .unwrap();
+        let universe = Universe::default();
+        let default_planes = None;
+        let settling = ExecutorContext::settle_import_stage(receiver, &mut exec_state, &universe, &default_planes);
+        tokio::pin!(settling);
+        assert!(
+            futures::poll!(settling.as_mut()).is_pending(),
+            "the execution cannot end while a sibling still owns its sender"
+        );
+
+        sender
+            .send((
+                ModuleId::from_usize(2),
+                Err(KclError::new_semantic(KclErrorDetails::new(
+                    "later sibling failed".to_owned(),
+                    vec![SourceRange::new(40, 50, ModuleId::from_usize(2))],
+                ))),
+            ))
+            .await
+            .unwrap();
+        drop(sender);
+        let result = settling.await.unwrap_err();
+        assert_eq!(
+            result.error, first_error,
+            "preserve the first kind, ranges, and import backtrace"
+        );
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn cached_execution_noop_has_no_engine_boundaries() {
+        use std::sync::atomic::Ordering::Relaxed;
+
+        let ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
+        let code = "@settings(kclVersion = 3.0)\nx = 2";
+        let original = ctx
+            .run_with_caching(crate::Program::parse_no_errs(code).unwrap())
+            .await
+            .unwrap();
+        let commands = ctx.engine.stats().commands_batched.load(Relaxed);
+        let batches = ctx.engine.stats().batches_sent.load(Relaxed);
+        for source in [code.to_owned(), format!("{code}\n// No geometry or settings changed")] {
+            let outcome = ctx
+                .run_with_caching(crate::Program::parse_no_errs(&source).unwrap())
+                .await
+                .unwrap();
+            assert!(outcome.from_cache);
+            assert_eq!(outcome.variables, original.variables);
+            assert_eq!(ctx.engine.stats().commands_batched.load(Relaxed), commands);
+            assert_eq!(ctx.engine.stats().batches_sent.load(Relaxed), batches);
+            assert!(ctx.engine_batch.is_empty().await);
+        }
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn cached_execution_noop_import_check_has_no_engine_boundaries() {
+        use std::sync::atomic::Ordering::Relaxed;
+
+        let project = tempfile::tempdir().unwrap();
+        let main = project.path().join("main.kcl");
+        let code = "@settings(kclVersion = 3.0)\nimport x from 'values.kcl'\ny = x + 1";
+        tokio::fs::write(&main, code).await.unwrap();
+        tokio::fs::write(
+            project.path().join("values.kcl"),
+            "@settings(kclVersion = 3.0)\nexport x = 2",
+        )
+        .await
+        .unwrap();
+        let mut settings = ExecutorSettings::default();
+        settings.with_current_file(crate::TypedPath(main));
+        let ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), settings);
+        let original = ctx
+            .run_with_caching(crate::Program::parse_no_errs(code).unwrap())
+            .await
+            .unwrap();
+        assert_number_variable(&original.variables, "y", 3.0);
+        let commands = ctx.engine.stats().commands_batched.load(Relaxed);
+        let batches = ctx.engine.stats().batches_sent.load(Relaxed);
+        for source in [code.to_owned(), format!("{code}\n// Imports are still unchanged")] {
+            let outcome = ctx
+                .run_with_caching(crate::Program::parse_no_errs(&source).unwrap())
+                .await
+                .unwrap();
+            assert!(outcome.from_cache);
+            assert_eq!(outcome.variables, original.variables);
+            assert_eq!(ctx.engine.stats().commands_batched.load(Relaxed), commands);
+            assert_eq!(ctx.engine.stats().batches_sent.load(Relaxed), batches);
+            assert!(ctx.engine_batch.is_empty().await);
+        }
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]

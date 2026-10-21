@@ -92,7 +92,10 @@ export async function prepareModeling(
   await page.setBodyDimensions({ width: 1200, height: 800 })
   const loadStartedAt = Date.now()
   await homePage.openProject(projectName)
+  // The socket can be ready before the initial execution or its automatic
+  // reconnect finishes. Wait for usable modeling tools before validating it.
   await scene.connectionEstablished()
+  await expect(scene.startEditSketchBtn).toBeEnabled({ timeout: 90_000 })
   const successfulLoad = await assertModelLoaded({
     page,
     modelProfile: isErrorProfile(modelProfile) ? 'large' : modelProfile,

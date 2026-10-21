@@ -1,6 +1,7 @@
 import { resolveValue } from 'react-hot-toast'
 import type { Toast } from 'react-hot-toast'
-import { CustomIcon } from '@src/components/CustomIcon'
+import { cloneElement } from 'react'
+import { checkmarkIcon, closeIcon } from '@src/components/commonIcons'
 import { Spinner } from '@src/components/Spinner'
 
 export function AppToast({ toast }: { toast: Toast }) {
@@ -20,16 +21,15 @@ export function AppToast({ toast }: { toast: Toast }) {
     ) : toast.type === 'loading' ? (
       <Spinner className="h-5 w-5" />
     ) : toast.type === 'success' || toast.type === 'error' ? (
-      <CustomIcon
-        name={toast.type === 'success' ? 'checkmark' : 'close'}
-        className="h-5 w-5 rounded-full"
-        style={{
+      cloneElement(toast.type === 'success' ? checkmarkIcon : closeIcon, {
+        className: 'h-5 w-5 rounded-full',
+        style: {
           backgroundColor:
             toast.iconTheme?.primary ??
             (toast.type === 'success' ? '#61d345' : '#ff4b4b'),
           color: toast.iconTheme?.secondary ?? '#fff',
-        }}
-      />
+        },
+      })
     ) : null
 
   return (

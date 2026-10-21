@@ -28,6 +28,73 @@ const toolbarTooltip = (page: Page) =>
 const tooltipDescription = (page: Page) => toolbarTooltip(page).locator('p')
 const hoverPoints = new WeakMap<Page, { x: number; y: number }>()
 
+async function readDensityResult(page: Page) {
+  const result = await page
+    .locator('button[title="Copy physical analysis"]')
+    .evaluate((panel) => {
+      const quantity = (label: string) => {
+        const row = [...panel.children].find(
+          (child) => child.firstElementChild?.textContent?.trim() === label
+        )
+        const value = row?.lastElementChild
+        if (!value) throw new Error(`Physical analysis has no ${label} value`)
+        return value
+      }
+      const mass = quantity('Mass')
+      const massText = [...mass.childNodes]
+        .filter((node) => node instanceof Text)
+        .map((node) => node.textContent)
+        .join('')
+        .trim()
+      const unit = mass.querySelector('span')?.textContent?.trim()
+      if (!unit) throw new Error('Physical analysis has no mass unit')
+
+      // Match the locale used by the displayed value. Scientific notation is
+      // produced by Number.toExponential, independently of the browser locale.
+      let numericText = massText
+      if (!massText.includes('e')) {
+        const parts = new Intl.NumberFormat().formatToParts(12345.6)
+        const group = parts.find((part) => part.type === 'group')?.value
+        const decimal = parts.find((part) => part.type === 'decimal')?.value
+        if (group) numericText = numericText.replaceAll(group, '')
+        if (decimal) numericText = numericText.replace(decimal, '.')
+      }
+      const value = Number(numericText)
+      if (!Number.isFinite(value)) {
+        throw new Error(`Physical analysis mass is not numeric: ${massText}`)
+      }
+      const exponent = numericText.split('e')[1]
+      // formatDistance rounds ordinary values to four decimal places and
+      // scientific values to four significant figures. No engine tolerance.
+      const rounding =
+        exponent === undefined ? 0.00005 : 0.5 * 10 ** (Number(exponent) - 3)
+      return {
+        mass: value,
+        massUnit: unit,
+        rounding,
+        unchanged: {
+          volume: quantity('Volume').textContent,
+          surfaceArea: quantity('Surface area').textContent,
+          centerOfMass: quantity('CoM').textContent,
+        },
+      }
+    })
+  return {
+    ...result,
+    density: Number(
+      await page.getByTestId('physical-analysis-density').inputValue()
+    ),
+    densityUnit: await page
+      .getByTestId('physical-analysis-density-unit')
+      .inputValue(),
+  }
+}
+
+const densityResults = new WeakMap<
+  Page,
+  Awaited<ReturnType<typeof readDensityResult>>
+>()
+
 async function waitForSuccessfulCode(page: Page, code: string) {
   await page.waitForFunction((expected) => {
     const editor = window.app.project?.executingEditor.value
@@ -164,15 +231,42 @@ export const delayBudgetScenarios: BudgetScenario[] = [
       await fixtures.tronApp.cleanProjectDir({
         app: { stream_idle_mode: 0 },
       })
-      await prepareModeling(fixtures)
+      await prepareModeling(fixtures, {
+        code: `@settings(defaultLengthUnit = mm)\n${await readFile(modelPath, 'utf8')}`,
+      })
       await fixtures.page.getByTestId('physical-analysis-status').click()
       try {
+        const densityUnit = fixtures.page.getByTestId(
+          'physical-analysis-density-unit'
+        )
+        const massUnit = fixtures.page.getByTestId(
+          'physical-analysis-mass-unit'
+        )
+        if ((await densityUnit.inputValue()) !== 'kg:m3') {
+          await densityUnit.selectOption('kg:m3')
+        }
+        if ((await massUnit.inputValue()) !== 'g') {
+          await massUnit.selectOption('g')
+        }
+        await expect(densityUnit).toHaveValue('kg:m3')
+        await expect(massUnit).toHaveValue('g')
         await expect(
           fixtures.page.locator('button[title="Copy physical analysis"]')
         ).toBeVisible({ timeout: 90_000 })
         await expect(
+          fixtures.page
+            .getByTestId('physical-analysis-draggable-panel')
+            .getByText('Analyzing...', { exact: true })
+        ).toHaveCount(0)
+        await expect(
           fixtures.page.getByTestId('physical-analysis-density')
         ).not.toHaveValue('1000')
+        const result = await readDensityResult(fixtures.page)
+        expect(result.densityUnit).toBe('kg:m3')
+        expect(result.massUnit).toBe('g')
+        expect(result.mass).toBeGreaterThan(0)
+        expect(result.density).toBeGreaterThan(0)
+        densityResults.set(fixtures.page, result)
       } catch (failure) {
         await attachOutcomeDiagnostics(
           fixtures.page,
@@ -185,10 +279,35 @@ export const delayBudgetScenarios: BudgetScenario[] = [
     act: async ({ page }) => {
       await page.getByTestId('physical-analysis-density').fill('1000')
     },
-    verify: async ({ page }) => {
+    verify: async ({ page, modelProfile }) => {
       await expect(
         page.locator('button[title="Copy physical analysis"]')
       ).toBeVisible()
+      const original = densityResults.get(page)
+      if (!original)
+        throw new Error('The initial density result was not measured')
+      const result = await readDensityResult(page)
+      expect(result.density).toBe(1000)
+      expect(result.densityUnit).toBe(original.densityUnit)
+      expect(result.massUnit).toBe(original.massUnit)
+      expect(result.unchanged).toEqual(original.unchanged)
+      const ratio = result.density / original.density
+      const expectedMass = original.mass * ratio
+      const displayRounding =
+        original.rounding * ratio +
+        result.rounding +
+        Math.abs(expectedMass) * Number.EPSILON * 4
+      expect(Math.abs(result.mass - expectedMass)).toBeLessThanOrEqual(
+        displayRounding
+      )
+      if (modelProfile === 'small') {
+        // The visible 10mm cube is 1g at 1000kg/m3; the second cube is hidden
+        // and the engine's default-scene analysis excludes hidden solids.
+        expect(result.densityUnit).toBe('kg:m3')
+        expect(result.massUnit).toBe('g')
+        expect(result.mass).toBeCloseTo(1, 4)
+      }
+      densityResults.delete(page)
     },
   },
   {

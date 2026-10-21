@@ -342,6 +342,9 @@ export class SceneInfra {
 
     // RENDERER
     this.renderer = new WebGLRenderer({ antialias: true, alpha: true }) // Enable transparency
+    // Shader log queries synchronize with the GPU. Keep diagnostics in dev,
+    // without blocking the first production sketch frame on debug readbacks.
+    this.renderer.debug.checkShaderErrors = import.meta.env.DEV
     this.renderer.setClearColor(0x000000, 0) // Set clear color to black with 0 alpha (fully transparent)
 
     // LABEL RENDERER

@@ -1,9 +1,13 @@
 import type {
   CameraDragInteractionType,
   CameraViewState,
+  ModelingCmdReq,
   Point3d,
 } from '@kittycad/lib'
-import { isModelingResponse } from '@src/lib/kcSdkGuards'
+import {
+  isModelingBatchResponse,
+  isModelingResponse,
+} from '@src/lib/kcSdkGuards'
 import { isArray } from '@src/lib/utils'
 
 import Hammer from 'hammerjs'
@@ -426,11 +430,10 @@ export class CameraControls {
       this.camera.up.copy(newUp)
       this.camera.updateProjectionMatrix()
       if (this.camera instanceof PerspectiveCamera && camSettings.ortho) {
-        this.useOrthographicCamera()
+        this.useClientOrthographicCamera()
       }
       if (this.camera instanceof OrthographicCamera && !camSettings.ortho) {
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        this.usePerspectiveCamera()
+        this._usePerspectiveCamera()
       }
       if (this.camera instanceof PerspectiveCamera && camSettings.fov_y) {
         this.camera.fov = camSettings.fov_y
@@ -441,7 +444,10 @@ export class CameraControls {
         this.camera.zoom = ORTHOGRAPHIC_CAMERA_SIZE / height
         this.camera.updateProjectionMatrix()
       }
-      this.onCameraChange()
+      // This is authoritative engine state, not a new client camera gesture.
+      // Notify local views without echoing projection or look-at commands.
+      this.updateCameraClippingPlanes()
+      this.notifyCameraSubscribers()
     }
 
     this.engineCommandManager.subscribeTo({
@@ -704,8 +710,8 @@ export class CameraControls {
     this.handleEnd()
   }
 
-  useOrthographicCamera = () => {
-    if (this.camera instanceof OrthographicCamera) return
+  private useClientOrthographicCamera = () => {
+    if (this.camera instanceof OrthographicCamera) return false
     const { x: px, y: py, z: pz } = this.camera.position
     const { x: qx, y: qy, z: qz, w: qw } = this.camera.quaternion
     const oldCamUp = this.camera.up.clone()
@@ -732,6 +738,11 @@ export class CameraControls {
 
     this.camera.quaternion.set(qx, qy, qz, qw)
     this.camera.updateProjectionMatrix()
+    return true
+  }
+
+  useOrthographicCamera = () => {
+    if (!this.useClientOrthographicCamera()) return
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
@@ -811,7 +822,7 @@ export class CameraControls {
     return this.camera
   }
 
-  dollyZoom = async (newFov: number, splitEngineCalls = false) => {
+  dollyZoom = async (newFov: number) => {
     if (!(this.camera instanceof PerspectiveCamera)) {
       console.warn('Dolly zoom is only applicable to perspective cameras.')
       return
@@ -841,54 +852,27 @@ export class CameraControls {
       .add(direction.multiplyScalar(-distanceAfter))
     this.camera.position.copy(newPosition)
 
-    if (splitEngineCalls) {
-      await this.engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_look_at',
-          ...convertThreeCamValuesToEngineCam(
-            {
-              isPerspective: true,
-              position: newPosition,
-              quaternion: this.camera.quaternion,
-              zoom: this.camera.zoom,
-              target: this.target,
-            },
-            this.perspectiveFovBeforeOrtho || this.lastPerspectiveFov || 45
-          ),
-        },
-      })
-      await this.engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_set_perspective',
-          parameters: {
-            fov_y: newFov,
+    this.onCameraChange()
+    // Publish local camera state, but send only the final reliable command.
+    this.engineCameraFrame.reset()
+    await sendCameraCommand(this.engineCommandManager, {
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_perspective_settings',
+        ...convertThreeCamValuesToEngineCam(
+          {
+            isPerspective: true,
+            position: newPosition,
+            quaternion: this.camera.quaternion,
+            zoom: this.camera.zoom,
+            target: this.target,
           },
-        },
-      })
-    } else {
-      await this.engineCommandManager.sendSceneCommand({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_perspective_settings',
-          ...convertThreeCamValuesToEngineCam(
-            {
-              isPerspective: true,
-              position: newPosition,
-              quaternion: this.camera.quaternion,
-              zoom: this.camera.zoom,
-              target: this.target,
-            },
-            this.perspectiveFovBeforeOrtho || this.lastPerspectiveFov || 45
-          ),
-          fov_y: newFov,
-        },
-      })
-    }
+          this.perspectiveFovBeforeOrtho || this.lastPerspectiveFov || 45
+        ),
+        fov_y: newFov,
+      },
+    })
   }
 
   update = (forceUpdate = false) => {
@@ -1426,19 +1410,15 @@ export class CameraControls {
       )
     }
     this.isFovAnimationInProgress = true
-    const targetFov = this.perspectiveFovBeforeOrtho // Target FOV for perspective
-    const initialCameraUp = this.camera.up.clone()
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    this.usePerspectiveCamera()
-    const tempVec = new Vector3()
-
-    const currentFov =
-      this.lastPerspectiveFov + (targetFov - this.lastPerspectiveFov)
-    const currentUp = tempVec.lerpVectors(initialCameraUp, targetCamUp, 1)
-    this.camera.up.copy(currentUp)
-    await this.dollyZoom(currentFov, true)
-
-    this.isFovAnimationInProgress = false
+    try {
+      // Change the client projection without sending intermediate engine views.
+      // The combined command applies the final position and FOV atomically.
+      this._usePerspectiveCamera()
+      this.camera.up.copy(targetCamUp)
+      await this.dollyZoom(this.perspectiveFovBeforeOrtho)
+    } finally {
+      this.isFovAnimationInProgress = false
+    }
   }
 
   get reactCameraProperties(): ReactCameraProperties {
@@ -1473,14 +1453,24 @@ export class CameraControls {
     this.reactCameraPropertiesCallback = cb
   }
 
-  onCameraChange = (forceUpdate = false) => {
+  private updateCameraClippingPlanes = () => {
     const distance = this.target.distanceTo(this.camera.position)
     if (this.camera.far / 2.1 < distance || this.camera.far / 1.9 > distance) {
       this.camera.far = distance * 2
       this.camera.near = distance / 10
       this.camera.updateProjectionMatrix()
     }
+  }
 
+  private notifyCameraSubscribers = () => {
+    this.reactCameraFrame.send(() => {
+      this.reactCameraPropertiesCallback(this.reactCameraProperties)
+    })
+    this.cameraChange.dispatch()
+  }
+
+  onCameraChange = (forceUpdate = false) => {
+    this.updateCameraClippingPlanes()
     if (this.syncDirection === 'clientToEngine' || forceUpdate) {
       this.updateEngineCamera({
         quaternion: this.camera.quaternion,
@@ -1490,10 +1480,7 @@ export class CameraControls {
         target: this.target,
       })
     }
-    this.reactCameraFrame.send(() => {
-      this.reactCameraPropertiesCallback(this.reactCameraProperties)
-    })
-    this.cameraChange.dispatch()
+    this.notifyCameraSubscribers()
   }
   getInteractionType = (
     event: PointerEvent | WheelEvent | MouseEvent
@@ -1676,9 +1663,9 @@ function convertThreeCamValuesToEngineCam(
   const upVector = new Vector3(0, 1, 0).applyEuler(euler).normalize()
   if (isPerspective) {
     return {
-      center: target,
+      center: target.clone(),
       up: upVector,
-      vantage: position,
+      vantage: position.clone(),
     }
   }
 
@@ -1690,7 +1677,7 @@ function convertThreeCamValuesToEngineCam(
   const vantage = target.clone().add(viewDir.multiplyScalar(eyeOffset))
 
   return {
-    center: target,
+    center: target.clone(),
     up: upVector,
     vantage,
   }
@@ -1727,33 +1714,78 @@ export async function enterSketchModeAndSyncCamera(
   engineCommandManager: ConnectionManager,
   entityId: string
 ) {
-  await sendCameraCommand(engineCommandManager, {
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'enable_sketch_mode',
-      adjust_camera: true,
-      animated: false,
-      ortho: true,
-      entity_id: entityId,
+  const requests: ModelingCmdReq[] = [
+    {
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'enable_sketch_mode',
+        adjust_camera: true,
+        animated: false,
+        ortho: true,
+        entity_id: entityId,
+      },
     },
-  })
-  await sendCameraCommand(engineCommandManager, {
-    // CameraControls subscribes to default_camera_get_settings response events
-    // firing this at connection ensure the camera's are synced initially
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'default_camera_get_settings',
+    {
+      cmd_id: uuidv4(),
+      cmd: { type: 'default_camera_get_settings' },
     },
-  })
+  ]
+  // The engine executes the batch in order and stops on the first failure.
+  // Both acknowledgements and the subscribed camera update arrive in one trip.
+  const response = await engineCommandManager
+    .sendSceneCommand(
+      {
+        type: 'modeling_cmd_batch_req',
+        batch_id: uuidv4(),
+        requests,
+        responses: true,
+      },
+      true
+    )
+    .catch((failure: unknown) =>
+      Promise.reject(
+        new Error(
+          getResponseErrorMessage(
+            failure,
+            'Sketch camera batch was not acknowledged'
+          )
+        )
+      )
+    )
+  const singleResponse = isArray(response) ? response[0] : response
+  const responses =
+    singleResponse &&
+    typeof singleResponse === 'object' &&
+    isModelingBatchResponse(singleResponse) &&
+    singleResponse.success
+      ? singleResponse.resp.data.responses
+      : undefined
+  for (const request of requests) {
+    const result = responses?.[request.cmd_id]
+    if (
+      !result ||
+      !('response' in result) ||
+      result.response.type !== request.cmd.type
+    ) {
+      return Promise.reject(
+        new Error(
+          getResponseErrorMessage(
+            result && 'errors' in result ? [result] : response,
+            `Camera command ${request.cmd.type} was not acknowledged`
+          )
+        )
+      )
+    }
+  }
 }
 
 async function sendCameraCommand(
   engineCommandManager: ConnectionManager,
   command: Extract<EngineCommand, { type: 'modeling_cmd_req' }>
 ): Promise<void> {
-  const response = await engineCommandManager.sendSceneCommand(command)
+  // Final camera changes must use the acknowledged websocket path. Interactive
+  // perspective updates otherwise use the unreliable channel and return null.
+  const response = await engineCommandManager.sendSceneCommand(command, true)
   const singleResponse = isArray(response) ? response[0] : response
   if (
     !singleResponse ||

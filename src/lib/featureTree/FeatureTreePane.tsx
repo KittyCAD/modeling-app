@@ -70,6 +70,7 @@ import { browserSaveFile } from '@src/lib/browserSaveFile'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { exportSketchToDxf } from '@src/lib/exportDxf'
 import {
+  type FeatureTreeVisibilityState,
   prepareEditCommand,
   resolveFeatureTreeVisibility,
   sendDeleteCommand,
@@ -987,7 +988,9 @@ const OperationItem = ({
   const ast = kclManager.hasParseErrors() ? kclManager.lastGoodAst : liveAst
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const name = getOperationLabel(item)
+  // Imported rows cannot select text in the active file.
   const sourceRange =
+    !isModuleOwned &&
     'sourceRange' in item &&
     sourceRangeToUtf16(sourceRangeFromRust(item.sourceRange), kclManager.code)
   const isLiveLatest = liveLatestOperationKey === getOperationKey(item)
@@ -1464,11 +1467,14 @@ const OperationItem = ({
 
   const enabled = (!sketchNoFace || isOffsetPlane(item)) && !isStaleReference
 
-  const visibilityState = resolveFeatureTreeVisibility({
-    item,
-    operations: visibilityOperations,
-    artifactGraph: kclManager.artifactGraph,
-  })
+  // Imported rows never show an active-file visibility toggle.
+  const visibilityState: FeatureTreeVisibilityState = isModuleOwned
+    ? { canToggleVisibility: false }
+    : resolveFeatureTreeVisibility({
+        item,
+        operations: visibilityOperations,
+        artifactGraph: kclManager.artifactGraph,
+      })
 
   return (
     <OperationItemWrapper

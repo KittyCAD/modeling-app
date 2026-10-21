@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { signal } from '@preact/signals-core'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const useModelingContext = vi.hoisted(() => vi.fn())
@@ -27,6 +28,7 @@ vi.mock('@kittycad/ui-components', () => ({
 }))
 
 import { measurementToolService } from '../measurementToolService'
+import { activeViewSignal } from '@src/lib/kclNamedViewActivation'
 import {
   PhysicalAnalysisDraggablePanel,
   PhysicalAnalysisTool,
@@ -43,85 +45,83 @@ function modelingResponse(type: string, data: unknown) {
 
 function setupModelingContext(defaultLengthUnit: string | undefined) {
   const sentCommands: Record<string, unknown>[] = []
-  const sendSceneCommand = vi.fn((request: SceneCommand) => {
-    const cmd = request.cmd
-    sentCommands.push(cmd)
-    switch (cmd.type) {
-      case 'volume':
-        return Promise.resolve(modelingResponse('volume', { volume: 1000 }))
-      case 'surface_area':
-        return Promise.resolve(
-          modelingResponse('surface_area', { surface_area: 600 })
-        )
-      case 'center_of_mass':
-        return Promise.resolve(
-          modelingResponse('center_of_mass', {
-            center_of_mass: { x: 1, y: 2, z: 3 },
-          })
-        )
-      case 'mass':
-        return Promise.resolve(modelingResponse('mass', { mass: 7.85 }))
-      default:
-        return Promise.resolve(null)
+  const sendSceneCommand = vi.fn(
+    (
+      request: SceneCommand
+    ): Promise<ReturnType<typeof modelingResponse> | null> => {
+      const cmd = request.cmd
+      sentCommands.push(cmd)
+      switch (cmd.type) {
+        case 'volume':
+          return Promise.resolve(modelingResponse('volume', { volume: 1000 }))
+        case 'surface_area':
+          return Promise.resolve(
+            modelingResponse('surface_area', { surface_area: 600 })
+          )
+        case 'center_of_mass':
+          return Promise.resolve(
+            modelingResponse('center_of_mass', {
+              center_of_mass: { x: 1, y: 2, z: 3 },
+            })
+          )
+        case 'mass':
+          return Promise.resolve(modelingResponse('mass', { mass: 7.85 }))
+        default:
+          return Promise.resolve(null)
+      }
     }
-  })
+  )
 
-  useModelingContext.mockReturnValue({
-    state: {
-      matches: (value: string) => value === 'idle',
-      context: {
-        engineCommandManager: { sendSceneCommand },
-        kclManager: {
-          fileSettings: { defaultLengthUnit },
-          isExecutingSignal: { value: false },
-        },
-        store: {},
-      },
+  const path = signal('/project/main.kcl')
+  const project = signal({ path: '/project' })
+  const kclManager = {
+    fileSettings: { defaultLengthUnit },
+    isExecutingSignal: signal(false),
+    engineSceneGenerationSignal: signal(1),
+    systemDeps: { project },
+    get path() {
+      return path.value
     },
-  })
+  }
+  const engineCommandManager = {
+    sendSceneCommand,
+    connection: { id: 'first-session' },
+  }
+  const state = {
+    matches: (value: string) => value === 'idle',
+    context: {
+      engineCommandManager,
+      kclManager,
+      store: {},
+    },
+  }
+  useModelingContext.mockReturnValue({ state })
 
-  return { sentCommands, sendSceneCommand }
+  return {
+    sentCommands,
+    sendSceneCommand,
+    engineCommandManager,
+    kclManager,
+    path,
+    project,
+    state,
+  }
 }
 
 function setupDeferredModelingContext(defaultLengthUnit: string) {
+  const fixture = setupModelingContext(defaultLengthUnit)
   let release: (() => void) | undefined
   const gate = new Promise<void>((resolve) => {
     release = resolve
   })
 
-  const sendSceneCommand = vi.fn((request: SceneCommand) => {
-    const cmd = request.cmd
-    return gate.then(() => {
-      switch (cmd.type) {
-        case 'volume':
-          return modelingResponse('volume', { volume: 1000 })
-        case 'surface_area':
-          return modelingResponse('surface_area', { surface_area: 600 })
-        case 'center_of_mass':
-          return modelingResponse('center_of_mass', {
-            center_of_mass: { x: 1, y: 2, z: 3 },
-          })
-        default:
-          return modelingResponse('mass', { mass: 7.85 })
-      }
-    })
-  })
+  const send = fixture.sendSceneCommand.getMockImplementation()
+  if (!send) expect.fail('The engine fixture must provide responses')
+  fixture.sendSceneCommand.mockImplementation((request) =>
+    gate.then(() => send(request))
+  )
 
-  useModelingContext.mockReturnValue({
-    state: {
-      matches: (value: string) => value === 'idle',
-      context: {
-        engineCommandManager: { sendSceneCommand },
-        kclManager: {
-          fileSettings: { defaultLengthUnit },
-          isExecutingSignal: { value: false },
-        },
-        store: {},
-      },
-    },
-  })
-
-  return { release: () => release?.(), sendSceneCommand }
+  return { ...fixture, release: () => release?.() }
 }
 
 describe('physical analysis tool', () => {
@@ -131,6 +131,155 @@ describe('physical analysis tool', () => {
     physicalAnalysisService.reloadPreferences()
     physicalAnalysisService.close()
     measurementToolService.close()
+    activeViewSignal.value = null
+  })
+
+  it('updates uniform-density mass from the measured model without repeating kernel queries', async () => {
+    const { sendSceneCommand } = setupModelingContext('mm')
+    render(<PhysicalAnalysisTool />)
+    await waitFor(() => expect(screen.getByText('7.85')).toBeInTheDocument())
+    expect(sendSceneCommand).toHaveBeenCalledTimes(4)
+
+    const density = screen.getByTestId('physical-analysis-density')
+    for (const [value, mass] of [
+      ['1000', '1'],
+      ['2000', '2'],
+      ['1250', '1.25'],
+    ]) {
+      fireEvent.change(density, { target: { value } })
+      await waitFor(() =>
+        expect(screen.queryByText('Analyzing...')).not.toBeInTheDocument()
+      )
+      expect(sendSceneCommand).toHaveBeenCalledTimes(4)
+      expect(screen.getByText(mass)).toBeInTheDocument()
+      expect(screen.getByText('1,000')).toBeInTheDocument()
+      expect(screen.getByText('600')).toBeInTheDocument()
+      expect(screen.getByText('1, 2, 3')).toBeInTheDocument()
+    }
+  })
+
+  it.each([
+    {
+      name: 'model/import execution generation',
+      change: (fixture: ReturnType<typeof setupModelingContext>) => {
+        fixture.kclManager.engineSceneGenerationSignal.value += 1
+      },
+    },
+    {
+      name: 'file',
+      change: (fixture: ReturnType<typeof setupModelingContext>) => {
+        fixture.path.value = '/project/other.kcl'
+      },
+    },
+    {
+      name: 'project',
+      change: (fixture: ReturnType<typeof setupModelingContext>) => {
+        fixture.project.value = { path: '/other-project' }
+      },
+    },
+    {
+      name: 'engine connection',
+      change: (fixture: ReturnType<typeof setupModelingContext>) => {
+        fixture.engineCommandManager.connection = { id: 'replacement-session' }
+      },
+    },
+    {
+      name: 'editor',
+      change: (fixture: ReturnType<typeof setupModelingContext>) => {
+        fixture.state.context.kclManager = { ...fixture.kclManager }
+      },
+    },
+    {
+      name: 'completed named-view visibility',
+      change: () => {
+        activeViewSignal.value = { name: 'Other body', moduleKey: 'Main' }
+      },
+    },
+  ])(
+    'remeasures after a $name change before reusing density results',
+    async ({ change }) => {
+      const fixture = setupModelingContext('mm')
+      const { rerender } = render(<PhysicalAnalysisTool />)
+      await waitFor(() => expect(screen.getByText('7.85')).toBeInTheDocument())
+      act(() => change(fixture))
+      rerender(<PhysicalAnalysisTool />)
+      await waitFor(() =>
+        expect(fixture.sendSceneCommand).toHaveBeenCalledTimes(8)
+      )
+      await waitFor(() => expect(screen.getByText('7.85')).toBeInTheDocument())
+
+      fireEvent.change(screen.getByTestId('physical-analysis-density'), {
+        target: { value: '1000' },
+      })
+      await waitFor(() => expect(screen.getByText('1')).toBeInTheDocument())
+      expect(fixture.sendSceneCommand).toHaveBeenCalledTimes(8)
+    }
+  )
+
+  it('drops measurements while executing even before the scene generation advances', async () => {
+    const fixture = setupModelingContext('mm')
+    render(<PhysicalAnalysisTool />)
+    await waitFor(() => expect(screen.getByText('7.85')).toBeInTheDocument())
+    act(() => {
+      fixture.kclManager.isExecutingSignal.value = true
+    })
+    expect(screen.queryByText('7.85')).not.toBeInTheDocument()
+    expect(fixture.sendSceneCommand).toHaveBeenCalledTimes(4)
+    act(() => {
+      fixture.kclManager.isExecutingSignal.value = false
+    })
+    await waitFor(() =>
+      expect(fixture.sendSceneCommand).toHaveBeenCalledTimes(8)
+    )
+    await waitFor(() => expect(screen.getByText('7.85')).toBeInTheDocument())
+  })
+
+  it('remeasures rather than scaling measurements expressed in different units', async () => {
+    const { sendSceneCommand } = setupModelingContext('mm')
+    render(<PhysicalAnalysisTool />)
+    await waitFor(() => expect(screen.getByText('7.85')).toBeInTheDocument())
+    fireEvent.change(screen.getByTestId('physical-analysis-volume-unit'), {
+      target: { value: 'l' },
+    })
+    await waitFor(() => expect(sendSceneCommand).toHaveBeenCalledTimes(8))
+    expect(sendSceneCommand.mock.calls[4][0].cmd).toMatchObject({
+      type: 'volume',
+      output_unit: 'l',
+    })
+    await waitFor(() => expect(screen.getByText('7.85')).toBeInTheDocument())
+    fireEvent.change(screen.getByTestId('physical-analysis-density-unit'), {
+      target: { value: 'lb:ft3' },
+    })
+    await waitFor(() => expect(sendSceneCommand).toHaveBeenCalledTimes(12))
+    expect(sendSceneCommand.mock.calls[11][0].cmd).toMatchObject({
+      type: 'mass',
+      material_density_unit: 'lb:ft3',
+    })
+  })
+
+  it('discards old-session replies and drains them before measuring the replacement', async () => {
+    const fixture = setupDeferredModelingContext('mm')
+    const { rerender } = render(<PhysicalAnalysisTool />)
+    await waitFor(() =>
+      expect(fixture.sendSceneCommand).toHaveBeenCalledTimes(4)
+    )
+    const send = fixture.sendSceneCommand.getMockImplementation()
+    if (!send) expect.fail('The engine fixture must provide responses')
+    const current = Promise.withResolvers<undefined>()
+    fixture.sendSceneCommand.mockImplementation((request) =>
+      current.promise.then(() => send(request))
+    )
+    fixture.engineCommandManager.connection = { id: 'replacement-session' }
+    rerender(<PhysicalAnalysisTool />)
+    expect(fixture.sendSceneCommand).toHaveBeenCalledTimes(4)
+    await act(async () => fixture.release())
+    await waitFor(() =>
+      expect(fixture.sendSceneCommand).toHaveBeenCalledTimes(8)
+    )
+    expect(screen.queryByText('1,000')).not.toBeInTheDocument()
+    expect(screen.getByText('Analyzing...')).toBeInTheDocument()
+    await act(async () => current.resolve(undefined))
+    await waitFor(() => expect(screen.getByText('7.85')).toBeInTheDocument())
   })
 
   it('applies density immediately, serializes requests, and publishes only the latest result', async () => {
