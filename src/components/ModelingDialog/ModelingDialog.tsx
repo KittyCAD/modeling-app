@@ -99,12 +99,7 @@ export default function ModelingDialog({
     (event) => {
       const input = selectionInputs.current.get(selection.activeName ?? '')
       if (!input || input.disabled || event.defaultPrevented) return
-      if (
-        event.target !== input &&
-        event.target !== document.body &&
-        !(event.target instanceof Element && event.target.closest('#stream'))
-      )
-        return
+      if (event.target !== input && event.target !== document.body) return
       event.preventDefault()
       input.form?.requestSubmit()
     },
