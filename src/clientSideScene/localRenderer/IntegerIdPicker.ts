@@ -170,9 +170,7 @@ export class IntegerIdPicker {
       uint(0),
       uniform(idBeforeFirstTarget, 'uint').add(selectionIndex)
     )
-    material.outputNode = this.idOutput(
-      varying(selectionId) as unknown as Node<'uint'>
-    )
+    material.outputNode = this.idOutput(varying(selectionId))
     const object = new LineSegments2(source.geometry, material)
     object.frustumCulled = false
     object.renderOrder = 2
