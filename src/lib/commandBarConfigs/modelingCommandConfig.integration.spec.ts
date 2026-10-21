@@ -30,6 +30,7 @@ import {
 } from '@src/lib/constants'
 import {
   canSubmitSelectionArg,
+  getSelectionCountByType,
   type ResolvedSelectionType,
 } from '@src/lib/selections'
 import { isArray } from '@src/lib/utils'
@@ -112,10 +113,42 @@ describe('GDT tolerance defaults', () => {
     expect(framePlane.defaultValue).toBeUndefined()
     expect(command.args?.objects).toMatchObject({
       selectionTypes: expect.arrayContaining([
+        'edgeCutEdge',
         'enginePrimitiveEdge',
         'enginePrimitiveFace',
       ]),
     })
+  })
+  it('accepts an inline fillet boundary as a dimension target', async () => {
+    const { instance } = await buildTheWorldAndNoEngineConnection()
+    const command = modelingMachineCommandConfig['GDT Distance']
+    if (!command || isArray(command))
+      throw new Error('Expected dimension command')
+    const objects = command.args?.objects
+    if (!objects || objects.inputType !== 'selection')
+      throw new Error('Expected dimension selection')
+    const counts = getSelectionCountByType(assertParse('', instance), {
+      graphSelections: [
+        {
+          artifact: {
+            type: 'edgeCutEdge',
+            id: 'boundary',
+            edgeCutId: 'fillet',
+            surfaceId: 'cap',
+          },
+        },
+      ],
+      otherSelections: [],
+    })
+    expect(counts).toEqual(new Map([['edgeCutEdge', 1]]))
+    expect(
+      canSubmitSelectionArg(counts, {
+        inputType: 'selection',
+        selectionTypes: objects.selectionTypes,
+        multiple: objects.multiple,
+        required: true,
+      })
+    ).toBe(true)
   })
   it('accepts two engine primitive edges as distance targets', () => {
     const command = modelingMachineCommandConfig['GDT Distance']

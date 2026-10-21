@@ -1983,6 +1983,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
               'edgeCut',
               'segment',
               'sweepEdge',
+              'edgeCutEdge',
               'enginePrimitiveEdge',
               'enginePrimitiveFace',
             ],

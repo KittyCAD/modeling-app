@@ -22,6 +22,58 @@ export async function resolveDistanceSelections(
   }
   const faces: DistanceFaceSelections = new Map()
   try {
+    // Fillet/chamfer boundary artifacts do not carry commonSurfaceIds.
+    // Resolve the current boundary, rather than the edge consumed by the cut.
+    for (const [index, selection] of normalized.graphSelections.entries()) {
+      if (
+        selection.entityRef?.type === 'edge' ||
+        selection.artifact?.type !== 'edgeCutEdge'
+      )
+        continue
+      const edgeId = selection.engineEntityId ?? selection.artifact.id
+      const parent = unwrapSceneCommandResponse(
+        await engine.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: { type: 'entity_get_parent_id', entity_id: edgeId },
+        })
+      )
+      if (
+        !isModelingResponse(parent) ||
+        parent.resp.data.modeling_response.type !== 'entity_get_parent_id'
+      )
+        return new Error(
+          'Could not resolve the body of the selected fillet edge.'
+        )
+      const adjacent = unwrapSceneCommandResponse(
+        await engine.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd_id: uuidv4(),
+          cmd: {
+            type: 'solid3d_get_all_edge_faces',
+            object_id: parent.resp.data.modeling_response.data.entity_id,
+            edge_id: edgeId,
+          },
+        })
+      )
+      if (
+        !isModelingResponse(adjacent) ||
+        adjacent.resp.data.modeling_response.type !==
+          'solid3d_get_all_edge_faces' ||
+        !adjacent.resp.data.modeling_response.data.faces.length
+      )
+        return new Error(
+          'Could not resolve the adjacent faces of the selected fillet edge.'
+        )
+      normalized.graphSelections[index] = {
+        ...selection,
+        engineEntityId: edgeId,
+        entityRef: {
+          type: 'edge',
+          side_faces: adjacent.resp.data.modeling_response.data.faces,
+        },
+      }
+    }
     for (const selection of selections.otherSelections) {
       if (
         typeof selection !== 'object' ||
