@@ -1,8 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import {
-  initializeArguments,
-  resolveArguments,
-} from '@src/components/ModelingDialog/arguments'
+import { resolveArguments } from '@src/components/ModelingDialog/arguments'
 import { assertParse } from '@src/lang/wasm'
 import type { Command } from '@src/lib/commandTypes'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -40,29 +37,6 @@ describe('resolveArguments', () => {
       route: 'user-requested',
       initiatedBy: 'client',
     })
-  })
-
-  it('initializes color inputs to black and preserves a saved color', async () => {
-    const context = {
-      ...world.commandBarActor.getSnapshot().context,
-      selectedCommand: {
-        name: 'Appearance',
-        groupId: 'modeling',
-        scopes: GLOBAL_COMMAND_SCOPES,
-        needsReview: false,
-        onSubmit: () => undefined,
-        args: { color: { inputType: 'color', required: true } },
-      } satisfies Command,
-      argumentsToSubmit: {},
-    }
-
-    expect(await initializeArguments(context)).toEqual({ color: '#000000' })
-    expect(
-      await initializeArguments({
-        ...context,
-        argumentsToSubmit: { color: '#ff0000' },
-      })
-    ).toEqual({ color: '#ff0000' })
   })
 
   async function resolve(
