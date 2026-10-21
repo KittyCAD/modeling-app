@@ -62,7 +62,10 @@ import {
   RenderPipeline,
   WebGPURenderer,
 } from 'three/webgpu'
-import { type KITTYCAD_GLTF } from '@src/clientSideScene/localRenderer/KITTYCAD_GLTF'
+import type {
+  KITTYCAD_GLTF,
+  KITTYCAD_GLTF_BREP,
+} from '@src/clientSideScene/localRenderer/KITTYCAD_GLTF'
 
 const ENGINE_MILLIMETERS_TO_GLTF_METERS = 1 / 1000
 
@@ -1053,7 +1056,6 @@ export class LocalRenderer {
     }
     this.rebuildSelectionTargets()
     try {
-      // Like viewer2: one whole-scene binary glTF export, without UUID extras.
       const files = await this.kclManager.rustContext.export(
         {
           type: 'gltf',
@@ -1078,12 +1080,16 @@ export class LocalRenderer {
         bytes.buffer,
         ''
       )) as KITTYCAD_GLTF
+      fillEmptyBrepArrays(gltf)
+
       if (!isCurrent()) {
+        // This is an outdated load, a new one is in progress already.
         disposeObject3D(gltf.scene)
         return
       }
 
       this.clearModel()
+      
       assignFaceUuids(gltf)
       this.currentModel = gltf.scene
       const { gpu } = this
@@ -1190,6 +1196,25 @@ function convertEngineWorldVectorToGltfWorld(
   scale = 1
 ): Vector3 {
   return new Vector3(vector.x * scale, vector.z * scale, -vector.y * scale)
+}
+
+/** The engine omits empty B-rep arrays, e.g. solids in a sketch-only model. */
+function fillEmptyBrepArrays(gltf: KITTYCAD_GLTF) {
+  const extensions = gltf.userData.gltfExtensions
+  const brep: Partial<KITTYCAD_GLTF_BREP> | undefined =
+    extensions?.KITTYCAD_boundary_representation
+  if (!extensions || !brep) return
+  extensions.KITTYCAD_boundary_representation = {
+    solids: [],
+    shells: [],
+    faces: [],
+    loops: [],
+    edges: [],
+    vertices: [],
+    surfaces: [],
+    curves3D: [],
+    ...brep,
+  }
 }
 
 /** Attach B-rep face IDs to the corresponding glTF primitive meshes. */

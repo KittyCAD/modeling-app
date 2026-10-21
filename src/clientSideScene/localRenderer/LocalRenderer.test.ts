@@ -452,19 +452,11 @@ function triangleGlb(): ModelingAppFile {
   const vertices = new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0])
   const json = JSON.stringify({
     asset: { version: '2.0' },
-    // Engine exports carry this; here it describes no faces or edges.
+    // Engine exports carry this; here it describes no faces or edges. Like the
+    // engine, it omits every empty array except curves3D.
     extensionsUsed: ['KITTYCAD_boundary_representation'],
     extensions: {
-      KITTYCAD_boundary_representation: {
-        solids: [],
-        shells: [],
-        faces: [],
-        loops: [],
-        edges: [],
-        vertices: [],
-        surfaces: [],
-        curves3D: [],
-      },
+      KITTYCAD_boundary_representation: { curves3D: [] },
     },
     scene: 0,
     scenes: [{ nodes: [0] }],
