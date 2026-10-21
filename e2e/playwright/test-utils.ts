@@ -125,10 +125,22 @@ async function waitForPageLoad(page: Page) {
   })
 }
 
-async function waitForAppLoad(page: Page) {
+export async function waitForAppLoad(page: Page) {
   const home = page.getByTestId('home-section')
   const modelingScene = page.getByRole('button', { name: 'Start Sketch' })
+  const continueInBrowser = page.getByTestId('continue-to-web-app-button')
+  await expect(home.or(modelingScene).or(continueInBrowser)).toBeVisible({
+    timeout: 20_000,
+  })
+  if (await continueInBrowser.isVisible()) await continueInBrowser.click()
   await expect(home.or(modelingScene)).toBeVisible({ timeout: 20_000 })
+  // A completed document navigation does not await the deferred app bootstrap
+  // or its settings I/O. Fixture callers need the current, loaded actor.
+  await page.waitForFunction(
+    () => window.app?.settings.actor.getSnapshot().matches('idle'),
+    undefined,
+    { timeout: 20_000 }
+  )
 }
 
 export async function waitForWebKitBillingToSettle(page: Page) {
@@ -409,20 +421,7 @@ export const getMovementUtils = (opts: any) => {
   return { toSU, toU, click00r }
 }
 
-async function waitForAuthAndLsp(page: Page) {
-  const waitForLspPromise = page.waitForEvent('console', {
-    predicate: async (message: any) => {
-      // it would be better to wait for a message that the kcl lsp has started by looking for the message  message.text().includes('[lsp] [window/logMessage]')
-      // but that doesn't seem to make it to the console for macos/safari :(
-      if (message.text().includes('start kcl lsp')) {
-        await new Promise((resolve) => setTimeout(resolve, 200))
-        return true
-      }
-      return false
-    },
-    timeout: 45_000,
-  })
-
+async function waitForAuth(page: Page) {
   if (process.env.VERCEL_BASE_URL) {
     // set bypass secret for the page's requests based on the hostname
     let secret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET
@@ -453,7 +452,6 @@ async function waitForAuthAndLsp(page: Page) {
 
   await page.goto('/')
   await waitForAppLoad(page)
-  return waitForLspPromise
 }
 
 /**
@@ -504,7 +502,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
   }
 
   const util = {
-    waitForAuthSkipAppStart: () => waitForAuthAndLsp(page),
+    waitForAuth: () => waitForAuth(page),
     waitForPageLoad: () => waitForPageLoad(page),
     removeCurrentCode: () => removeCurrentCode(page),
     sendCustomCmd: (cmd: EngineCommand) => sendCustomCmd(page, cmd),
@@ -1393,7 +1391,7 @@ export async function doAndWaitForImageDiff(
   diffCount = 200
 ) {
   // Keep frames local: concurrent test workers must not overwrite each other's
-  // PNGs. Let screenshot, action, and comparison errors reject the caller.
+  // images. Let screenshot, action, and comparison errors reject the caller.
   const screenshot1 = PNG.sync.read(
     await pageOrLocator.screenshot({ fullPage: true })
   )

@@ -6,6 +6,13 @@ const useModelingContext = vi.hoisted(() => vi.fn())
 
 vi.mock('@src/hooks/useModelingContext', () => ({ useModelingContext }))
 
+// Analysis observes the active view, not its WASM-backed activation commands.
+// Both the component and tests share this real signal without loading them.
+vi.mock('@src/lib/kclNamedViewActivation', async () => {
+  const { signal } = await import('@preact/signals-core')
+  return { activeViewSignal: signal<ActiveView | null>(null) }
+})
+
 // CopyTextButton reaches for the clipboard API, which happy-dom does not
 // provide; the wrapper is irrelevant to the engine wiring under test.
 vi.mock('@kittycad/ui-components', () => ({
@@ -28,7 +35,10 @@ vi.mock('@kittycad/ui-components', () => ({
 }))
 
 import { measurementToolService } from '../measurementToolService'
-import { activeViewSignal } from '@src/lib/kclNamedViewActivation'
+import {
+  type ActiveView,
+  activeViewSignal,
+} from '@src/lib/kclNamedViewActivation'
 import {
   PhysicalAnalysisDraggablePanel,
   PhysicalAnalysisTool,

@@ -2400,7 +2400,7 @@ export class KclManager extends File {
       this.endLiveOperationUpdates()
       this.ast = structuredClone(ast)
       // updateArtifactGraph relies on updated executeState/variables
-      await this.updateArtifactGraph(execState.artifactGraph)
+      this.updateArtifactGraph(execState.artifactGraph)
       // Failed runs report their generation too. It is null only when no run
       // reached the engine, which leaves the scene as it was.
       if (execState.engineSceneGeneration !== null) {

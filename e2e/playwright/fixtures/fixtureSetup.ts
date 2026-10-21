@@ -42,6 +42,7 @@ import {
   getUtils,
   settingsToToml,
   setup,
+  waitForAppLoad,
 } from '@e2e/playwright/test-utils'
 import type { ILog } from '@src/lib/debugger'
 import { isArray } from '@src/lib/utils'
@@ -124,7 +125,7 @@ export class AuthenticatedApp {
 
     await this.page.setViewportSize(this.viewPortSize)
 
-    await u.waitForAuthSkipAppStart()
+    await u.waitForAuth()
     if (!mockApiRoutes)
       await new HomePageFixture(this.page).waitForAuthentication()
   }
@@ -201,6 +202,11 @@ export class ElectronZoo {
   // Help remote end by signaling we're done with the connection.
   // If it takes longer than 10s to stop, just resolve.
   async makeAvailableAgain() {
+    // A test may end immediately after a native reload. Resolve the current
+    // document's real owner before asking it to release its engine session.
+    await this.page.waitForFunction(() =>
+      Boolean(window.app?.engineCommandManager)
+    )
     await this.page.evaluate(async () => {
       return new Promise((resolve) => {
         if (
@@ -439,6 +445,7 @@ export class ElectronZoo {
 
     // Force a hard reload, destroying the stream and other state
     await this.page.reload()
+    await waitForAppLoad(this.page)
     if (!mockApiRoutes)
       await new HomePageFixture(this.page).waitForAuthentication()
   }
@@ -499,6 +506,7 @@ export class ElectronZoo {
     })
     await fsp.writeFile(tempSettingsFilePath, settingsOverridesToml)
     await this.page.reload()
+    await waitForAppLoad(this.page)
   }
 
   private async stopSettingsWrites() {
@@ -650,6 +658,7 @@ const fixturesBasedOnProcessEnvPlatform = {
       ret = async function (fn: (dir: string) => Promise<void>) {
         return fn(projectDirPath)
           .then(() => page.reload())
+          .then(() => waitForAppLoad(page))
           .then(() => ({
             dir: projectDirPath,
           }))
@@ -659,6 +668,7 @@ const fixturesBasedOnProcessEnvPlatform = {
       ret = async function (fn: (dir: string) => Promise<void>) {
         return fn(projectDirName)
           .then(() => page.reload())
+          .then(() => waitForAppLoad(page))
           .then(() => ({
             dir: projectDirName,
           }))
