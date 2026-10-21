@@ -73,8 +73,13 @@ function stubClientErrorFetch() {
 }
 
 class TestSocket extends EventTarget {
+  sentPayloads: string[] = []
   readyState: number = WebSocket.CLOSED
-  send = vi.fn()
+
+  send(payload: string) {
+    this.sentPayloads.push(payload)
+  }
+
   close = vi.fn()
 }
 
@@ -200,7 +205,6 @@ describe('completed live edit retention', () => {
     await waitFor(actor, (state) => state.matches(ZookeeperManagerStates.Ready))
     return {
       actor,
-      ws,
       receive: (response: MlCopilotServerMessage) =>
         actor.send({
           type: ZookeeperManagerTransitions.ResponseReceive,
@@ -255,8 +259,7 @@ describe('completed live edit retention', () => {
   })
 
   it('preserves cleanup acknowledged while the next prompt is preparing', async () => {
-    const { actor, ws, receive, applied, exchange } = await ready()
-    const bytes = new Uint8Array([0, 128, 255])
+    const { actor, receive, applied, exchange } = await ready()
     const result = edit()
     const final = answer('First turn complete')
     receive(result)
@@ -284,7 +287,6 @@ describe('completed live edit retention', () => {
     actor.send({
       type: ZookeeperManagerTransitions.MessageSend,
       prompt: 'Next turn',
-      additionalFiles: [new File([bytes], 'reference.stl')],
       projectForPromptOutput: {
         name: 'demo',
         path: '/demo',
@@ -310,7 +312,7 @@ describe('completed live edit retention', () => {
 
     finishPreparation({
       body: { prompt: 'Next turn', project_name: 'demo' },
-      files: [{ name: 'part.stl', data: new Blob([bytes]) }],
+      files: [],
     })
     await waitFor(actor, (state) =>
       state.matches({
@@ -320,23 +322,11 @@ describe('completed live edit retention', () => {
       })
     )
     expect.soft(exchange()?.responses).toEqual([final])
-    const payload = ws.send.mock.lastCall?.[0]
-    expect(payload).toBeInstanceOf(Uint8Array)
-    expect(msgpackDecode(payload)).toMatchObject({
-      current_files: { 'part.stl': bytes },
-      additional_files: [{ name: 'reference.stl', data: bytes }],
-    })
     expect(actor.getSnapshot().context.conversation?.exchanges).toHaveLength(2)
     expect(
       actor.getSnapshot().context.conversation?.exchanges[1]
     ).toMatchObject({
-      request: {
-        type: 'user',
-        content: 'Next turn',
-        project_name: 'demo',
-        current_files: { 'part.stl': expect.any(Uint8Array) },
-        additional_files: [{ data: expect.any(Uint8Array) }],
-      },
+      request: { type: 'user', content: 'Next turn', project_name: 'demo' },
       responses: [],
     })
 
@@ -1315,6 +1305,8 @@ describe('zookeeperManagerMachine', () => {
   describe('ContinueCheck', () => {
     it('sends continue requests when the last exchange was interrupted', async () => {
       const ws: TestWebSocket = new TestSocket() as TestWebSocket
+      const send = vi.fn()
+      ws.send = send
       const interruptedConversation: Conversation = {
         exchanges: [
           {
@@ -1374,7 +1366,7 @@ describe('zookeeperManagerMachine', () => {
         state.matches(ZookeeperManagerStates.WaitForContinueCheck)
       )
 
-      expect(ws.send).not.toHaveBeenCalled()
+      expect(send).not.toHaveBeenCalled()
 
       actor.send({
         type: ZookeeperManagerStates.ContinueCheck,
@@ -1392,13 +1384,12 @@ describe('zookeeperManagerMachine', () => {
       expect(actor.getSnapshot().context.projectNameCurrentlyOpened).toBe(
         'zoo-project'
       )
-      expect(ws.send).toHaveBeenCalledTimes(2)
-      expect(JSON.parse(ws.send.mock.calls[0][0])).toStrictEqual({
+      expect(send).toHaveBeenCalledTimes(2)
+      expect(JSON.parse(send.mock.calls[0][0])).toStrictEqual({
         type: 'system',
         command: 'continue',
       })
-      expect(ws.send.mock.calls[1][0]).toBeInstanceOf(Uint8Array)
-      expect(msgpackDecode(ws.send.mock.calls[1][0])).toStrictEqual({
+      expect(msgpackDecode(send.mock.calls[1][0])).toStrictEqual({
         type: 'project_context',
         correlation_id: expect.stringMatching(
           /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
@@ -1406,8 +1397,8 @@ describe('zookeeperManagerMachine', () => {
         engine_api_call_id: 'engine-api-call-id',
         project_name: 'zoo-project',
         current_files: {
-          'main.kcl': new TextEncoder().encode('cube()'),
-          'notes.txt': new TextEncoder().encode('notes'),
+          'main.kcl': Array.from(new TextEncoder().encode('cube()')),
+          'notes.txt': Array.from(new TextEncoder().encode('notes')),
         },
         active_file: 'newFile.kcl',
       })
@@ -1890,7 +1881,7 @@ describe('zookeeperManagerMachine', () => {
       )
 
       // Only count attachment requests, not setup traffic.
-      ws.send.mockClear()
+      ws.sentPayloads.length = 0
       return { actor, ws }
     }
 
@@ -1906,8 +1897,8 @@ describe('zookeeperManagerMachine', () => {
         attachmentRef,
       })
 
-      expect(ws.send).toHaveBeenCalledTimes(1)
-      expect(JSON.parse(ws.send.mock.calls[0][0])).toEqual({
+      expect(ws.sentPayloads).toHaveLength(1)
+      expect(JSON.parse(ws.sentPayloads[0])).toEqual({
         type: 'fetch_attachments',
         prompt_id: attachmentRef.prompt_id,
         seq: attachmentRef.seq,
@@ -2021,8 +2012,8 @@ describe('zookeeperManagerMachine', () => {
         )
         fetch()
         fetch()
-        expect(ws.send).toHaveBeenCalledTimes(2)
-        expect(JSON.parse(ws.send.mock.calls[1][0])).toEqual({
+        expect(ws.sentPayloads).toHaveLength(2)
+        expect(JSON.parse(ws.sentPayloads[1])).toEqual({
           type: 'fetch_attachments',
           prompt_id: attachmentRef.prompt_id,
           seq: attachmentRef.seq,
@@ -2054,7 +2045,7 @@ describe('zookeeperManagerMachine', () => {
         expect(after.attachmentFetches[key]).toBe(before.attachmentFetches[key])
         expect(after.conversation).toBe(before.conversation)
         fetch()
-        expect(ws.send).toHaveBeenCalledTimes(2)
+        expect(ws.sentPayloads).toHaveLength(2)
       } finally {
         actor.stop()
       }

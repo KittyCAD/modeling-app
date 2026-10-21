@@ -89,13 +89,9 @@ function isMlCopilotAccessDeniedMessage(
 type MlCopilotListModesRequest = { type: 'list_modes' }
 export type MlCopilotModeId = string
 
-type MlCopilotBinaryFile = Omit<MlCopilotFile, 'data'> & {
-  data: Uint8Array
-}
-
 type MlCopilotUserRequest = Omit<
   Extract<MlCopilotClientMessage, { type: 'user' }>,
-  'mode' | 'current_files' | 'additional_files'
+  'mode'
 > & {
   // The generated client still narrows this to the initially-known mode ids,
   // but mode discovery intentionally treats the backend-provided id as opaque.
@@ -103,9 +99,6 @@ type MlCopilotUserRequest = Omit<
   active_file?: string
   correlation_id?: string
   engine_api_call_id?: string
-  // Replayed JSON requests use number arrays; new requests retain typed bytes.
-  current_files?: Record<string, number[] | Uint8Array>
-  additional_files?: (MlCopilotFile | MlCopilotBinaryFile)[]
 }
 
 export const createZookeeperCorrelation = (
@@ -115,14 +108,13 @@ export const createZookeeperCorrelation = (
   ...(engineApiCallId ? { engine_api_call_id: engineApiCallId } : {}),
 })
 
-type MlCopilotProjectContextRequest = Omit<
-  Extract<MlCopilotClientMessage, { type: 'project_context' }>,
-  'current_files'
+type MlCopilotProjectContextRequest = Extract<
+  MlCopilotClientMessage,
+  { type: 'project_context' }
 > & {
   active_file?: string
   correlation_id?: string
   engine_api_call_id?: string
-  current_files?: Record<string, Uint8Array>
 }
 
 type MlCopilotClientMessageWithDiscoveredMode =
@@ -698,7 +690,7 @@ class ZookeeperAttachmentReadError extends Error {
 
 export async function toMlCopilotFile(
   file: File
-): Promise<MlCopilotBinaryFile | Error> {
+): Promise<MlCopilotFile | Error> {
   let data: ArrayBuffer
   try {
     data = await file.arrayBuffer()
@@ -714,7 +706,7 @@ export async function toMlCopilotFile(
   return {
     name: file.name,
     mimetype: file.type || 'application/octet-stream',
-    data: new Uint8Array(data),
+    data: Array.from(new Uint8Array(data)),
   }
 }
 
@@ -1594,15 +1586,15 @@ export const zookeeperManagerMachine = setup({
       })
       if (isErr(requestData)) return Promise.reject(requestData)
 
-      const filesAsByteArrays: Record<string, Uint8Array> = {}
+      const filesAsByteArrays: Record<string, number[]> = {}
 
       for (let file of requestData.files) {
-        filesAsByteArrays[file.name] = new Uint8Array(
-          await file.data.arrayBuffer()
+        filesAsByteArrays[file.name] = Array.from(
+          new Uint8Array(await file.data.arrayBuffer())
         )
       }
 
-      let additionalFiles: MlCopilotBinaryFile[] | undefined
+      let additionalFiles: MlCopilotFile[] | undefined
       if (event.additionalFiles && event.additionalFiles.length > 0) {
         const [, convertedFiles, conversionErrors] = cleanErrs(
           await Promise.all(event.additionalFiles.map(toMlCopilotFile))
@@ -1661,7 +1653,7 @@ export const zookeeperManagerMachine = setup({
         }
       }
 
-      const filesAsByteArrays: Record<string, Uint8Array> = {}
+      const filesAsByteArrays: Record<string, number[]> = {}
       const files: KittyCadLibFile[] = []
 
       event.projectFiles.forEach((file) => {
@@ -1679,8 +1671,8 @@ export const zookeeperManagerMachine = setup({
       })
 
       for (let file of files) {
-        filesAsByteArrays[file.name] = new Uint8Array(
-          await file.data.arrayBuffer()
+        filesAsByteArrays[file.name] = Array.from(
+          new Uint8Array(await file.data.arrayBuffer())
         )
       }
 
