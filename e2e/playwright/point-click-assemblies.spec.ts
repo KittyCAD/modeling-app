@@ -238,6 +238,11 @@ test.describe(
     ) {
       const selectedObjects =
         selectionType === 'scene' ? /^1 (path|other)$/ : '1 other'
+      // Picking the scaled geometry appends Rotate to that operation's pipe.
+      const rotateCall = (angle: string) =>
+        selectionType === 'scene'
+          ? `|> rotate(axis = Z, angle = ${angle})`
+          : `rotate(bracket, axis = Z, angle = ${angle})`
       async function selectBracket() {
         if (selectionType === 'scene') {
           // The bracket is only visible in the lower-right of the default view
@@ -397,7 +402,7 @@ test.describe(
           `
           translate(bracket, x = 1, y = 2)
           scale(bracket, factor = 1.2)
-          rotate(bracket, axis = Z, angle = 0.1)
+          ${rotateCall('0.1')}
           `,
           { shouldNormalise: true }
         )
@@ -414,12 +419,9 @@ test.describe(
         await expect(modelingDialog.submitButton).toBeEnabled()
         await modelingDialog.submit()
         await scene.settled()
-        await editor.expectEditor.toContain(
-          `rotate(bracket, axis = Z, angle = 0.2)`,
-          {
-            shouldNormalise: true,
-          }
-        )
+        await editor.expectEditor.toContain(rotateCall('0.2'), {
+          shouldNormalise: true,
+        })
       })
 
       await test.step('Delete the part using the feature tree', async () => {
@@ -427,9 +429,12 @@ test.describe(
         await toolbar.openFeatureTreeOperationContextMenu('Rotate', 0)
         await page.getByTestId('context-menu-delete').click()
         await scene.settled()
-        await toolbar.openFeatureTreeOperationContextMenu('Scale', 0)
-        await page.getByTestId('context-menu-delete').click()
-        await scene.settled()
+        // Deleting the piped Rotate also removes its enclosing Scale call.
+        if (selectionType === 'feature-tree') {
+          await toolbar.openFeatureTreeOperationContextMenu('Scale', 0)
+          await page.getByTestId('context-menu-delete').click()
+          await scene.settled()
+        }
         await toolbar.openFeatureTreeOperationContextMenu('Translate', 0)
         await page.getByTestId('context-menu-delete').click()
         await scene.settled()

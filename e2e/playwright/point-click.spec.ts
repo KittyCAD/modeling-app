@@ -1794,6 +1794,7 @@ extrude001 = extrude(profile001, length = 500)`
         { format: secondaryShellClickPoint.format ?? undefined }
       )
       await editor.closePane()
+      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
       await toolbar.shellButton.click()
       await modelingDialog.selection('Faces').click()
 
