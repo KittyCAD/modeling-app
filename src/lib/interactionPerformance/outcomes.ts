@@ -63,8 +63,16 @@ function matchesTransformMenu(target: Element, expanded: boolean) {
   )
 }
 
+const extrudeDialogSelector =
+  '[data-testid="modeling-dialog"][aria-label="Extrude"]'
+
+function extrudeDialog(document: Document) {
+  return document.querySelector(extrudeDialogSelector)
+}
+
 function extrudeIsOpen(document: Document) {
   return (
+    isVisible(extrudeDialog(document)) ||
     document
       .querySelector('[data-testid="command-name"]')
       ?.textContent?.trim() === 'Extrude'
@@ -270,27 +278,52 @@ export const interactionOutcomes = {
     matchesTarget: (target) =>
       matchesControl(target, interactions.extrudeOpen.testId),
     isReady(document) {
-      const panel = document.querySelector(
+      const panel = extrudeDialog(document)
+      if (isVisible(panel)) {
+        return (
+          isVisible(
+            panel?.querySelector('button[aria-label="Select Profiles"]:enabled')
+          ) &&
+          isVisible(
+            panel?.querySelector('button[aria-label="Cancel"]:enabled')
+          ) &&
+          transitionsEnded(panel) &&
+          animationsEnded(panel)
+        )
+      }
+      const palette = document.querySelector(
         '[data-testid="command-bar-wrapper"]'
       )
-      const input = panel?.querySelector('#arg-form input[name="selection"]')
-      // Selection inputs are intentionally transparent overlays on a visible prompt.
+      const input = palette?.querySelector('#arg-form input[name="selection"]')
+      // The shipped modeling_dialogs feature selects one of these real UIs.
+      // The palette's transparent input overlays its visible selection prompt.
       return (
         extrudeIsOpen(document) &&
+        isVisible(palette) &&
         input instanceof HTMLInputElement &&
         !input.disabled &&
         isVisible(input.closest('label')) &&
-        transitionsEnded(panel)
+        isVisible(
+          palette?.querySelector(
+            '[data-testid="command-bar-close-button"]:enabled'
+          )
+        ) &&
+        transitionsEnded(palette) &&
+        animationsEnded(palette)
       )
     },
   },
   extrudeCancel: {
     ...interactions.extrudeCancel,
     matchesTarget: (target) =>
-      matchesControl(target, interactions.extrudeCancel.testId) &&
-      extrudeIsOpen(target.ownerDocument),
+      Boolean(
+        target.closest(`${extrudeDialogSelector} button[aria-label="Cancel"]`)
+      ) ||
+      (matchesControl(target, interactions.commandPaletteClose.testId) &&
+        extrudeIsOpen(target.ownerDocument)),
     isReady(document) {
       return (
+        extrudeDialog(document) === null &&
         document.querySelector('[data-testid="command-bar-wrapper"]') === null
       )
     },

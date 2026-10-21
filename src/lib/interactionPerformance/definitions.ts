@@ -84,12 +84,13 @@ export const interactions = {
     testId: 'extrude',
     budgetMs: 150,
     outcome:
-      'Extrude has a visible selection prompt and enabled selection input',
+      'The active Extrude UI has a visible, enabled Profiles control or selection prompt, and a usable Cancel control',
   },
   extrudeCancel: {
     id: 'zds.toolbar.extrude.cancel',
-    testId: 'command-bar-close-button',
+    testId: 'modeling-dialog',
     budgetMs: 150,
-    outcome: 'Extrude command palette is no longer rendered',
+    outcome:
+      'The active Extrude modeling dialog or command palette is no longer rendered',
   },
 } satisfies Record<string, InteractionDescription>

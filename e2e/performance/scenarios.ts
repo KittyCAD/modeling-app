@@ -10,6 +10,7 @@ import {
   isErrorProfile,
 } from '@e2e/performance/models'
 import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
+import { ModelingDialogFixture } from '@e2e/playwright/fixtures/modelingDialogFixture'
 import type { Locator, Page } from '@playwright/test'
 import { expect, test } from '@playwright/test'
 import { interactions } from '@src/lib/interactionPerformance/definitions'
@@ -136,6 +137,7 @@ export function scenarioActions(
   context: ComparisonContext,
   page: Page
 ): ScenarioAction[] {
+  const modelingDialog = new ModelingDialogFixture(page)
   const palette = [
     {
       definition: interactions.commandPaletteOpen,
@@ -240,19 +242,39 @@ export function scenarioActions(
         {
           definition: interactions.extrudeOpen,
           verify: async () => {
-            await expect(page.getByTestId('command-name')).toHaveText('Extrude')
-            await expect(page.locator('#arg-form label')).toContainText(
-              /Please select|regions? selected/
-            )
-            await expect(
-              page.locator('#arg-form input[name="selection"]')
-            ).toBeEnabled()
+            if (await modelingDialog.locator.isVisible()) {
+              await expect(modelingDialog.locator).toHaveAccessibleName(
+                'Extrude'
+              )
+              await expect(modelingDialog.selection('Profiles')).toBeVisible()
+              await expect(modelingDialog.selection('Profiles')).toBeEnabled()
+              await expect(modelingDialog.cancelButton).toBeVisible()
+              await expect(modelingDialog.cancelButton).toBeEnabled()
+            } else {
+              await expect(page.getByTestId('command-name')).toHaveText(
+                'Extrude'
+              )
+              await expect(page.locator('#arg-form label')).toContainText(
+                /Please select|regions? selected/
+              )
+              await expect(
+                page.locator('#arg-form input[name="selection"]')
+              ).toBeEnabled()
+              await expect(
+                page.getByTestId(interactions.commandPaletteClose.testId)
+              ).toBeEnabled()
+            }
           },
         },
         {
           definition: interactions.extrudeCancel,
-          verify: () =>
-            expect(page.getByTestId('command-bar-wrapper')).toHaveCount(0),
+          control: modelingDialog.cancelButton.or(
+            page.getByTestId(interactions.commandPaletteClose.testId)
+          ),
+          verify: async () => {
+            await expect(modelingDialog.locator).toHaveCount(0)
+            await expect(page.getByTestId('command-bar-wrapper')).toHaveCount(0)
+          },
         },
       ]
 }

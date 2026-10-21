@@ -77,7 +77,8 @@ for (const profile of MODEL_PROFILES) {
         },
         {
           definition: interactions.extrudeOpen,
-          selector: '#arg-form label',
+          selector:
+            '[data-testid="modeling-dialog"][aria-label="Extrude"] button[aria-label="Select Profiles"], #arg-form label',
           control: page.getByTestId(interactions.extrudeOpen.testId),
         },
       ]

@@ -1,5 +1,6 @@
 import type { Locator, Page } from '@playwright/test'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import { normalizeLineEndings } from '@src/lib/codeEditor'
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
@@ -52,13 +53,19 @@ test.describe(
         { length: 28 },
         (_, index) => `tooltipValue${index} = ${index}mm`
       ).join('\n')
-      const code = `@settings(kclVersion = 3.0)\n${sample}\n${scalarRows}\n`
+      // Exercise Windows file contents on every platform. Editors normalize to LF.
+      const fileCode =
+        `@settings(kclVersion = 3.0)\n${sample}\n${scalarRows}\n`.replace(
+          /\r?\n/g,
+          '\r\n'
+        )
+      const code = normalizeLineEndings(fileCode)
       await folderSetupFn(async (directory) => {
         const project = await fs.join(directory, 'tooltip-interactions')
         await fs.mkdir(project, { recursive: true })
         await fs.writeFile(
           await fs.join(project, 'main.kcl'),
-          new TextEncoder().encode(code)
+          new TextEncoder().encode(fileCode)
         )
       })
       await homePage.openProject('tooltip-interactions')
@@ -71,21 +78,29 @@ test.describe(
       })
       await expect
         .poll(() =>
-          page.evaluate((code) => {
+          page.evaluate(() => {
             const editor = window.app.project?.executingEditor.value
-            return Boolean(
-              editor &&
-                editor.code === code &&
-                editor.lastSuccessfulCode === code &&
-                !editor.isExecuting &&
-                !editor.hasErrors() &&
-                editor.variables.boxVisible?.type === 'Solid' &&
-                Object.keys(editor.engineCommandManager.pendingCommands)
-                  .length === 0
-            )
-          }, code)
+            if (!editor) return undefined
+            return {
+              code: editor.code,
+              lastSuccessfulCode: editor.lastSuccessfulCode,
+              isExecuting: editor.isExecuting,
+              hasErrors: editor.hasErrors(),
+              boxType: editor.variables.boxVisible?.type,
+              pendingCommands: Object.keys(
+                editor.engineCommandManager.pendingCommands
+              ).length,
+            }
+          })
         )
-        .toBe(true)
+        .toEqual({
+          code,
+          lastSuccessfulCode: code,
+          isExecuting: false,
+          hasErrors: false,
+          boxType: 'Solid',
+          pendingCommands: 0,
+        })
       await page.mouse.move(0, 0)
       await expect(openTooltips(page)).toHaveCount(0)
     })
