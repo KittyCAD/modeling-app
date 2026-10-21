@@ -1,4 +1,4 @@
-import type { Locator, Page } from '@playwright/test'
+import { expect, type Locator, type Page } from '@playwright/test'
 
 export class ModelingDialogFixture {
   readonly locator: Locator
@@ -17,6 +17,17 @@ export class ModelingDialogFixture {
       exact: true,
     })
     this.advanced = this.locator.getByText('Advanced', { exact: true })
+  }
+
+  async submit() {
+    await this.submitButton.click()
+    await expect(this.locator).not.toBeAttached()
+  }
+
+  variableCheckbox(argumentName: string) {
+    return this.locator.locator(
+      `#command-kcl-input-${argumentName}-variable-checkbox`
+    )
   }
 
   input(label: string | RegExp) {
