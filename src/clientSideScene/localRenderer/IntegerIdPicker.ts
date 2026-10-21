@@ -1,9 +1,7 @@
 import {
-  type BufferGeometry,
   type Camera,
   Color,
   DoubleSide,
-  InstancedBufferAttribute,
   type Material,
   Mesh,
   NearestFilter,
@@ -14,10 +12,21 @@ import {
   UnsignedIntType,
   Vector2,
 } from 'three'
-import type { EdgeSelectionTarget } from '@src/clientSideScene/localRenderer/EdgeRenderer'
-import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeometry.js'
+import {
+  type EdgeSelectionTarget,
+  SELECTION_INDEX_ATTRIBUTE,
+} from '@src/clientSideScene/localRenderer/EdgeRenderer'
 import { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
-import { attribute, float, outputStruct, uint, varying, vec4 } from 'three/tsl'
+import {
+  attribute,
+  float,
+  outputStruct,
+  select,
+  uint,
+  uniform,
+  varying,
+  vec4,
+} from 'three/tsl'
 import {
   Line2NodeMaterial,
   NodeMaterial,
@@ -42,7 +51,6 @@ export class IntegerIdPicker {
   private readonly renderer: WebGPURenderer
   private readonly scene = new Scene()
   private readonly drawingBufferSize = new Vector2()
-  private readonly geometries: BufferGeometry[] = []
   private readonly materials = new Set<Material>()
   private readonly sourceByProxy = new Map<Mesh, Mesh>()
   private targetById: Array<Mesh | null> = [null]
@@ -123,35 +131,21 @@ export class IntegerIdPicker {
     }
   }
 
-  // One batch of lines, each segment drawn with its target ID.
+  // One batch of lines, each segment drawn with its target ID. The lines are
+  // drawn from the source's geometry, which is not ours to dispose: disposing a
+  // geometry destroys the GPU buffers of all its attributes.
   private addLines({ source, targets }: LineTargets) {
+    // The source numbers its targets from 1, in this order.
+    const idBeforeFirstTarget = this.targetById.length - 1
+    for (const { object } of targets) {
+      this.targetById.push(object)
+    }
     const segmentCount =
       source.geometry.getAttribute('instanceStart')?.count ?? 0
-    const selectionIds = new Uint32Array(segmentCount)
-    for (const edge of targets) {
-      const id = this.targetById.push(edge.object) - 1
-      for (const { firstSegment, segmentCount: count } of edge.ranges) {
-        selectionIds.fill(id, firstSegment, firstSegment + count)
-      }
-    }
     if (segmentCount === 0) {
       return null
     }
 
-    const geometry = new LineSegmentsGeometry()
-    for (const name of ['instanceStart', 'instanceEnd']) {
-      const sourceAttribute = source.geometry.getAttribute(name)
-      if (sourceAttribute) {
-        geometry.setAttribute(name, sourceAttribute)
-      }
-    }
-    geometry.instanceCount = segmentCount
-    geometry.boundingBox = source.geometry.boundingBox
-    geometry.boundingSphere = source.geometry.boundingSphere
-    geometry.setAttribute(
-      'selectionId',
-      new InstancedBufferAttribute(selectionIds, 1)
-    )
     const material = new Line2NodeMaterial({
       linewidth: SELECTION_LINE_WIDTH_AT_REFERENCE_PX,
     })
@@ -165,15 +159,24 @@ export class IntegerIdPicker {
     material.polygonOffset = true
     material.polygonOffsetFactor = -1
     material.polygonOffsetUnits = -1
-    const selectionId = varying(
-      attribute('selectionId', 'uint') as unknown as Node<'uint'>
+    const selectionIndex = attribute(
+      SELECTION_INDEX_ATTRIBUTE,
+      'uint'
     ) as unknown as Node<'uint'>
-    material.outputNode = this.idOutput(selectionId)
-    const object = new LineSegments2(geometry, material)
+    // A uniform rather than a constant, so the shader stays the same when the
+    // number of targets before this batch changes.
+    const selectionId = select(
+      selectionIndex.equal(uint(0)),
+      uint(0),
+      uniform(idBeforeFirstTarget, 'uint').add(selectionIndex)
+    )
+    material.outputNode = this.idOutput(
+      varying(selectionId) as unknown as Node<'uint'>
+    )
+    const object = new LineSegments2(source.geometry, material)
     object.frustumCulled = false
     object.renderOrder = 2
     this.sourceByProxy.set(object, source)
-    this.geometries.push(geometry)
     this.materials.add(material)
     this.scene.add(object)
     return object
@@ -255,10 +258,6 @@ export class IntegerIdPicker {
     this.scene.clear()
     this.edgeObject = null
     this.targetById = [null]
-    this.geometries.forEach((geometry) => {
-      geometry.dispose()
-    })
-    this.geometries.length = 0
     this.materials.forEach((material) => {
       material.dispose()
     })

@@ -1,5 +1,5 @@
 import { LOCAL_WEBGPU_EDGE_LINE_WIDTH_PX } from '@src/clientSideScene/localRenderer/config'
-import { Color, Group, type Object3D } from 'three'
+import { Color, Group, InstancedBufferAttribute, type Object3D } from 'three'
 import { LineSegmentsGeometry } from 'three/examples/jsm/lines/LineSegmentsGeometry.js'
 import { LineSegments2 } from 'three/examples/jsm/lines/webgpu/LineSegments2.js'
 import { Line2NodeMaterial } from 'three/webgpu'
@@ -23,6 +23,10 @@ export type EdgeSelectionTarget = {
   object: LineSegments2
   ranges: Array<{ firstSegment: number; segmentCount: number }>
 }
+
+// Per segment: 1 + the index of its target in getSelectionTargets(), or 0 if it
+// has none. IntegerIdPicker draws EdgeRenderer.lines with it.
+export const SELECTION_INDEX_ATTRIBUTE = 'selectionIndex'
 
 // A B-rep edge to draw, and the ID it is picked and highlighted by.
 export type DrawnEdge = { index: number; uuid?: string }
@@ -68,7 +72,6 @@ export class EdgeRenderer {
   readonly lines: LineSegments2
 
   private readonly group = new Group()
-  private readonly geometry = new LineSegmentsGeometry()
   private readonly material: Line2NodeMaterial
   private readonly selectionMaterial = new Line2NodeMaterial()
   private selectionTargets: EdgeSelectionTarget[] = []
@@ -78,7 +81,6 @@ export class EdgeRenderer {
     color = EDGE_COLOR,
     linewidth = LOCAL_WEBGPU_EDGE_LINE_WIDTH_PX
   ) {
-    this.geometry.setPositions([])
     this.material = new Line2NodeMaterial({ color, linewidth })
     this.material.worldUnits = false
     this.material.transparent = false
@@ -87,7 +89,7 @@ export class EdgeRenderer {
     this.material.polygonOffsetFactor = -1
     this.material.polygonOffsetUnits = -1
 
-    this.lines = new LineSegments2(this.geometry, this.material)
+    this.lines = new LineSegments2(this.createGeometry([]), this.material)
     this.lines.name = 'edges'
     this.lines.renderOrder = 2
     this.group.name = 'edge_batch'
@@ -105,7 +107,7 @@ export class EdgeRenderer {
     if (!brep) {
       // assignFaceUuids has already warned. Leave no edges from an earlier model.
       this.clearSelectionTargets()
-      this.geometry.setPositions([])
+      this.setSegments([])
       return
     }
     const positions: number[] = []
@@ -145,7 +147,6 @@ export class EdgeRenderer {
         console.error(`Missing curve for edge ${index}`)
       }
     }
-    this.geometry.setPositions(positions)
     for (const [uuid, edgePositions] of positionsByUuid) {
       const geometry = new LineSegmentsGeometry()
       geometry.setPositions(edgePositions)
@@ -158,6 +159,36 @@ export class EdgeRenderer {
         ranges: rangesByUuid.get(uuid) ?? [],
       })
     }
+    this.setSegments(positions)
+  }
+
+  // A new geometry on every rebuild: when setPositions replaced the attributes
+  // of a geometry it had drawn, three's WebGPU renderer kept the old vertex
+  // buffer bound with the new instance count.
+  private setSegments(positions: number[]) {
+    const geometry = this.createGeometry(positions)
+    this.lines.geometry.dispose()
+    this.lines.geometry = geometry
+  }
+
+  // Call after selectionTargets is up to date.
+  private createGeometry(positions: number[]) {
+    const selectionIndices = new Uint32Array(positions.length / 6)
+    this.selectionTargets.forEach(({ ranges }, index) => {
+      for (const { firstSegment, segmentCount } of ranges) {
+        selectionIndices.fill(
+          index + 1,
+          firstSegment,
+          firstSegment + segmentCount
+        )
+      }
+    })
+    const geometry = new LineSegmentsGeometry().setPositions(positions)
+    geometry.setAttribute(
+      SELECTION_INDEX_ATTRIBUTE,
+      new InstancedBufferAttribute(selectionIndices, 1)
+    )
+    return geometry
   }
 
   addTo(parent: Object3D) {
@@ -189,7 +220,7 @@ export class EdgeRenderer {
   dispose() {
     this.removeFromParent()
     this.group.clear()
-    this.geometry.dispose()
+    this.lines.geometry.dispose()
     this.material.dispose()
     this.selectionMaterial.dispose()
   }

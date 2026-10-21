@@ -1089,7 +1089,7 @@ export class LocalRenderer {
       }
 
       this.clearModel()
-      
+
       assignFaceUuids(gltf)
       this.currentModel = gltf.scene
       const { gpu } = this
