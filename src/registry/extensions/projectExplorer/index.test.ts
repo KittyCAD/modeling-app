@@ -86,6 +86,7 @@ describe('project explorer extension', () => {
         provides: [provideWasmPromise(wasmPromise)],
         providesServices: [
           provideService(commandSystemService, {
+            dialogSession: signal(undefined),
             send,
             get actor(): never {
               throw new Error('Unexpected command actor access')
