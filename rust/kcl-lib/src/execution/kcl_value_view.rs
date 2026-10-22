@@ -398,6 +398,9 @@ impl From<KclValue> for KclValueView {
             KclValue::Solid { value } => Self::Solid {
                 value: Box::new(solid_view(*value)),
             },
+            KclValue::Path3d { value } => Self::Path3d {
+                value: json_view(&value),
+            },
             KclValue::Helix { value } => Self::Helix {
                 value: Box::new(HelixView {
                     value: value.value,
