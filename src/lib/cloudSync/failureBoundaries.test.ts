@@ -13,6 +13,7 @@ import {
 } from '@src/lib/cloudSync/failureContext'
 import {
   parseProjectArchive,
+  readProjectArchiveFile,
   projectManifestFromFiles,
 } from '@src/lib/cloudSync/projectArchive'
 import { getAllOutboxEntries } from '@src/lib/cloudSync/syncDb'
@@ -152,7 +153,7 @@ describe('cloud sync failure boundaries', () => {
     })
   })
 
-  it('bounds extracted reference files and skips unrelated archive assets', async () => {
+  it('extracts only the requested ZIP file and bounds its expansion', async () => {
     const zip = new JSZip()
     zip.file('project/main.kcl', 'shape = circle(10)')
     zip.file('project/render.png', 'x'.repeat(8 * 1024 * 1024))
@@ -160,73 +161,33 @@ describe('cloud sync failure boundaries', () => {
       type: 'arraybuffer',
       compression: 'DEFLATE',
     })
-    const limits = {
-      includePath: (path: string) => path.endsWith('.kcl'),
-      maxArchiveEntries: 4_000,
-      maxFileBytes: 256 * 1024,
-      maxFiles: 2_000,
-      maxTotalBytes: 32 * 1024 * 1024,
-    }
 
-    const files = await parseProjectArchive(archive, limits)
-    expect(files.map((file) => file.relativePath)).toEqual(['main.kcl'])
-    expect(new TextDecoder().decode(files[0].data)).toBe('shape = circle(10)')
-
-    const oversized = new JSZip()
-    oversized.file('project/main.kcl', 'x'.repeat(1024 * 1024))
-    const oversizedArchive = await oversized.generateAsync({
-      type: 'arraybuffer',
-      compression: 'DEFLATE',
-    })
-    await expect(parseProjectArchive(oversizedArchive, limits)).rejects.toThrow(
-      'Project archive is too large.'
+    const data = await readProjectArchiveFile(
+      archive,
+      'main.kcl',
+      4_000,
+      256 * 1024
     )
-  })
-
-  it('caps the count and combined size of selected archive files', async () => {
-    const zip = new JSZip()
-    zip.file('project/first.kcl', '12345678')
-    zip.file('project/second.kcl', '12345678')
-    const archive = await zip.generateAsync({
-      type: 'arraybuffer',
-      compression: 'DEFLATE',
-    })
-    const limits = {
-      includePath: (path: string) => path.endsWith('.kcl'),
-      maxArchiveEntries: 4_000,
-      maxFileBytes: 10,
-      maxFiles: 1,
-      maxTotalBytes: 10,
-    }
-
-    await expect(parseProjectArchive(archive, limits)).rejects.toThrow(
-      'Too many project files.'
-    )
+    expect(new TextDecoder().decode(data)).toBe('shape = circle(10)')
     await expect(
-      parseProjectArchive(archive, { ...limits, maxFiles: 2 })
+      readProjectArchiveFile(archive, 'missing.kcl', 4_000, 256 * 1024)
+    ).resolves.toBeUndefined()
+    await expect(
+      readProjectArchiveFile(archive, 'render.png', 4_000, 256 * 1024)
     ).rejects.toThrow('Project archive is too large.')
   })
 
-  it('rejects excessive unrelated ZIP entries before JSZip loads them', async () => {
+  it('rejects excessive ZIP entries before JSZip loads them', async () => {
     const zip = new JSZip()
     for (let index = 0; index < 20; index += 1) {
       zip.file(`project/asset-${index}.png`, '')
     }
     const archive = await zip.generateAsync({ type: 'arraybuffer' })
-    const directory = new DataView(archive)
-    directory.setUint16(archive.byteLength - 22 + 8, 1, true)
-    directory.setUint16(archive.byteLength - 22 + 10, 1, true)
     const load = vi.spyOn(JSZip, 'loadAsync')
 
     try {
       await expect(
-        parseProjectArchive(archive, {
-          includePath: (path) => path.endsWith('.kcl'),
-          maxArchiveEntries: 10,
-          maxFileBytes: 256 * 1024,
-          maxFiles: 2_000,
-          maxTotalBytes: 32 * 1024 * 1024,
-        })
+        readProjectArchiveFile(archive, 'main.kcl', 10, 256 * 1024)
       ).rejects.toThrow('archive entries')
       expect(load).not.toHaveBeenCalled()
     } finally {
@@ -234,129 +195,15 @@ describe('cloud sync failure boundaries', () => {
     }
   })
 
-  it('preserves JSON archive support for limited reference reads', async () => {
+  it('preserves JSON fallback for existing cloud sync callers', async () => {
     const archive = new TextEncoder().encode(
       JSON.stringify({
-        files: [
-          {
-            relativePath: 'main.kcl',
-            contents: 'cube = [1, 2] // "quoted"',
-            metadata: { labels: ['[', ',', ']'] },
-          },
-        ],
+        files: [{ relativePath: 'main.kcl', contents: 'cube = 1' }],
       })
     ).buffer
-
-    const files = await parseProjectArchive(archive, {
-      includePath: (path) => path.endsWith('.kcl'),
-      maxArchiveEntries: 10,
-      maxFileBytes: 256 * 1024,
-      maxFiles: 2_000,
-      maxTotalBytes: 32 * 1024 * 1024,
-    })
+    const files = await parseProjectArchive(archive)
     expect(files.map((file) => file.relativePath)).toEqual(['main.kcl'])
-    expect(new TextDecoder().decode(files[0].data)).toBe(
-      'cube = [1, 2] // "quoted"'
-    )
-  })
-
-  it('rejects excessive unrelated JSON entries', async () => {
-    const archive = new TextEncoder().encode(
-      JSON.stringify({
-        files: Array.from({ length: 20 }, (_, index) => ({
-          relativePath: `asset-${index}.png`,
-          contents: 'x',
-        })),
-      })
-    ).buffer
-
-    await expect(
-      parseProjectArchive(archive, {
-        includePath: (path) => path.endsWith('.kcl'),
-        maxArchiveEntries: 10,
-        maxFileBytes: 256 * 1024,
-        maxFiles: 2_000,
-        maxTotalBytes: 32 * 1024 * 1024,
-      })
-    ).rejects.toThrow('Too many archive entries.')
-  })
-
-  it('rejects a huge JSON files array before parsing it', async () => {
-    const archive = new TextEncoder().encode(
-      `{"files":[${'0,'.repeat(100_000).slice(0, -1)}]}`
-    ).buffer
-    const parse = vi.spyOn(JSON, 'parse')
-    try {
-      await expect(
-        parseProjectArchive(archive, {
-          includePath: (path) => path.endsWith('.kcl'),
-          maxArchiveEntries: 4_000,
-          maxFileBytes: 256 * 1024,
-          maxFiles: 2_000,
-          maxTotalBytes: 32 * 1024 * 1024,
-        })
-      ).rejects.toThrow('Too many archive entries.')
-      expect(parse).not.toHaveBeenCalled()
-    } finally {
-      parse.mockRestore()
-    }
-  })
-
-  it('bounds JSON metadata objects before parsing them', async () => {
-    const archive = new TextEncoder().encode(
-      JSON.stringify({
-        files: [],
-        metadata: Object.fromEntries(
-          Array.from({ length: 100 }, (_, index) => [`key${index}`, index])
-        ),
-      })
-    ).buffer
-    const parse = vi.spyOn(JSON, 'parse')
-    try {
-      await expect(
-        parseProjectArchive(archive, {
-          includePath: () => true,
-          maxArchiveEntries: 10,
-          maxFileBytes: 256 * 1024,
-          maxFiles: 2_000,
-          maxTotalBytes: 32 * 1024 * 1024,
-        })
-      ).rejects.toThrow('Archive JSON is too complex.')
-      expect(parse).not.toHaveBeenCalled()
-    } finally {
-      parse.mockRestore()
-    }
-  })
-
-  it('skips unrelated JSON contents before checking selected file sizes', async () => {
-    const archive = new TextEncoder().encode(
-      JSON.stringify({
-        files: [
-          { relativePath: 'render.png', contents: 'x'.repeat(100) },
-          { relativePath: 'main.kcl', contents: 'cube = 1' },
-        ],
-      })
-    ).buffer
-    const limits = {
-      includePath: (path: string) => path.endsWith('.kcl'),
-      maxArchiveEntries: 10,
-      maxFileBytes: 10,
-      maxFiles: 2,
-      maxTotalBytes: 10,
-    }
-
-    const files = await parseProjectArchive(archive, limits)
-    expect(files.map((file) => file.relativePath)).toEqual(['main.kcl'])
-    await expect(
-      parseProjectArchive(
-        new TextEncoder().encode(
-          JSON.stringify({
-            files: [{ relativePath: 'main.kcl', contents: 'x'.repeat(11) }],
-          })
-        ).buffer,
-        limits
-      )
-    ).rejects.toThrow('Project archive is too large.')
+    expect(new TextDecoder().decode(files[0].data)).toBe('cube = 1')
   })
 
   it('classifies project manifest hashing failures', async () => {

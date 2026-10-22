@@ -18,7 +18,7 @@ import {
   getProjectTitleFromProjectTomlContents,
   setProjectTitleInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
-import { isArray, isRecord } from '@src/lib/utils'
+import { isArray } from '@src/lib/utils'
 import JSZip from 'jszip'
 
 const localFs = opfs.impl
@@ -343,102 +343,6 @@ export function toArrayBuffer(data: Uint8Array): ArrayBuffer {
   return copy.buffer
 }
 
-export type ProjectArchiveReadLimits = {
-  includePath: (relativePath: string) => boolean
-  maxArchiveEntries: number
-  maxFileBytes: number
-  maxFiles: number
-  maxTotalBytes: number
-}
-
-class ProjectArchiveLimitError extends Error {}
-
-/** Reject large JSON arrays before JSON.parse allocates their entries. */
-function checkJsonEntryLimit(archive: ArrayBuffer, maxEntries: number): void {
-  const bytes = new Uint8Array(archive)
-  let offset =
-    bytes[0] === 0xef && bytes[1] === 0xbb && bytes[2] === 0xbf ? 3 : 0
-  while (
-    bytes[offset] === 0x20 ||
-    bytes[offset] === 0x09 ||
-    bytes[offset] === 0x0a ||
-    bytes[offset] === 0x0d
-  ) {
-    offset += 1
-  }
-  if (bytes[offset] !== 0x7b && bytes[offset] !== 0x5b) {
-    return
-  }
-
-  const containers: Array<{ kind: 'array' | 'object'; entries: number }> = []
-  let inString = false
-  let escaped = false
-  let structuralTokens = 0
-  // Bound metadata objects too, while allowing several fields per file.
-  const maxStructuralTokens = Math.max(8, maxEntries * 8)
-  const markStructure = () => {
-    structuralTokens += 1
-    if (structuralTokens > maxStructuralTokens) {
-      // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-      throw new ProjectArchiveLimitError('Archive JSON is too complex.')
-    }
-  }
-  const markArrayValue = () => {
-    const current = containers.at(-1)
-    if (current?.kind === 'array' && current.entries === 0) {
-      current.entries = 1
-      if (current.entries > maxEntries) {
-        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-        throw new ProjectArchiveLimitError('Too many archive entries.')
-      }
-    }
-  }
-  for (; offset < bytes.length; offset += 1) {
-    const byte = bytes[offset]
-    if (inString) {
-      if (escaped) {
-        escaped = false
-      } else if (byte === 0x5c) {
-        escaped = true
-      } else if (byte === 0x22) {
-        inString = false
-      }
-      continue
-    }
-    if (byte === 0x22) {
-      markArrayValue()
-      inString = true
-    } else if (byte === 0x5b || byte === 0x7b) {
-      markStructure()
-      markArrayValue()
-      containers.push({
-        kind: byte === 0x5b ? 'array' : 'object',
-        entries: 0,
-      })
-      if (containers.length > 128) {
-        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-        throw new ProjectArchiveLimitError('Archive JSON is too deeply nested.')
-      }
-    } else if (byte === 0x5d || byte === 0x7d) {
-      containers.pop()
-    } else if (byte === 0x2c) {
-      markStructure()
-      const current = containers.at(-1)
-      if (current?.kind === 'array' && ++current.entries > maxEntries) {
-        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-        throw new ProjectArchiveLimitError('Too many archive entries.')
-      }
-    } else if (
-      byte !== 0x20 &&
-      byte !== 0x09 &&
-      byte !== 0x0a &&
-      byte !== 0x0d
-    ) {
-      markArrayValue()
-    }
-  }
-}
-
 /** Count central-directory records before JSZip allocates an object per entry. */
 function checkZipEntryLimit(archive: ArrayBuffer, maxEntries: number): boolean {
   const view = new DataView(archive)
@@ -479,9 +383,7 @@ function checkZipEntryLimit(archive: ArrayBuffer, maxEntries: number): boolean {
   ) {
     // Limited reference reads accept ordinary single-volume ZIP files only.
     // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-    throw new ProjectArchiveLimitError(
-      'Too many or unsupported archive entries.'
-    )
+    throw new Error('Too many or unsupported archive entries.')
   }
 
   let cursor = directoryOffset
@@ -492,7 +394,7 @@ function checkZipEntryLimit(archive: ArrayBuffer, maxEntries: number): boolean {
       view.getUint32(cursor, true) !== 0x02014b50
     ) {
       // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-      throw new ProjectArchiveLimitError('Invalid archive directory.')
+      throw new Error('Invalid archive directory.')
     }
     cursor +=
       46 +
@@ -502,30 +404,24 @@ function checkZipEntryLimit(archive: ArrayBuffer, maxEntries: number): boolean {
     entries += 1
     if (cursor > directoryEnd || entries > maxEntries) {
       // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-      throw new ProjectArchiveLimitError('Too many or invalid archive entries.')
+      throw new Error('Too many or invalid archive entries.')
     }
   }
   if (entries !== declaredEntries) {
     // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-    throw new ProjectArchiveLimitError('Invalid archive directory.')
+    throw new Error('Invalid archive directory.')
   }
   return true
 }
 
-export async function parseProjectArchive(
-  archive: ArrayBuffer,
-  limits?: ProjectArchiveReadLimits
-) {
+export async function parseProjectArchive(archive: ArrayBuffer) {
   return withCloudSyncFailureContext(
     { stage: 'archive', point: 'parse-project-archive' },
     async () => {
       try {
-        return await parseZipProjectArchive(archive, limits)
+        return await parseZipProjectArchive(archive)
       } catch (zipError) {
-        if (zipError instanceof ProjectArchiveLimitError) {
-          return Promise.reject(zipError)
-        }
-        const jsonProject = parseJsonProjectArchive(archive, limits)
+        const jsonProject = parseJsonProjectArchive(archive)
         if (jsonProject) {
           return jsonProject
         }
@@ -534,6 +430,61 @@ export async function parseProjectArchive(
       }
     }
   )
+}
+
+async function parseZipProjectArchive(archive: ArrayBuffer) {
+  const zip = await JSZip.loadAsync(archive)
+  const zipEntries = Object.values(zip.files).filter(
+    (entry) => !entry.dir && !entry.name.startsWith('__MACOSX/')
+  )
+  const rootDirectory = getCommonArchiveRoot(
+    zipEntries.map((entry) => entry.name)
+  )
+
+  return Promise.all(
+    zipEntries.map(async (entry) => ({
+      relativePath: normalizeRelativePath(
+        stripArchiveRoot(entry.name, rootDirectory)
+      ),
+      data: Uint8Array.from(await entry.async('uint8array')),
+    }))
+  )
+}
+
+function parseJsonProjectArchive(archive: ArrayBuffer) {
+  try {
+    const decoded = new TextDecoder().decode(new Uint8Array(archive))
+    const parsed = JSON.parse(decoded)
+    if (!parsed || typeof parsed !== 'object' || !isArray(parsed.files)) {
+      return undefined
+    }
+
+    const files: ProjectArchiveFile[] = []
+    for (const file of parsed.files) {
+      if (!file || typeof file !== 'object') {
+        continue
+      }
+      const relativePath =
+        typeof file.relativePath === 'string'
+          ? file.relativePath
+          : typeof file.requestedFileName === 'string'
+            ? file.requestedFileName
+            : undefined
+      if (!relativePath) {
+        continue
+      }
+
+      if (typeof file.contents === 'string') {
+        files.push({
+          relativePath: normalizeRelativePath(relativePath),
+          data: new TextEncoder().encode(file.contents),
+        })
+      }
+    }
+    return files
+  } catch {
+    return undefined
+  }
 }
 
 function readZipEntryWithinLimit(entry: JSZip.JSZipObject, limit: number) {
@@ -556,7 +507,7 @@ function readZipEntryWithinLimit(entry: JSZip.JSZipObject, limit: number) {
         if (size + chunk.byteLength > limit) {
           exceeded = true
           stream.pause()
-          reject(new ProjectArchiveLimitError('Project archive is too large.'))
+          reject(new Error('Project archive is too large.'))
           return
         }
         chunks.push(chunk)
@@ -579,127 +530,32 @@ function readZipEntryWithinLimit(entry: JSZip.JSZipObject, limit: number) {
   })
 }
 
-async function parseZipProjectArchive(
+/** Extract only the requested file from a bounded cloud ZIP archive. */
+export async function readProjectArchiveFile(
   archive: ArrayBuffer,
-  limits?: ProjectArchiveReadLimits
-) {
-  if (limits && !checkZipEntryLimit(archive, limits.maxArchiveEntries)) {
+  relativePath: string,
+  maxArchiveEntries: number,
+  maxFileBytes: number
+): Promise<Uint8Array | undefined> {
+  if (!checkZipEntryLimit(archive, maxArchiveEntries)) {
     return Promise.reject(new Error('Archive has no ZIP central directory.'))
   }
   const zip = await JSZip.loadAsync(archive)
-  const zipEntries = Object.values(zip.files).filter(
+  const entries = Object.values(zip.files).filter(
     (entry) => !entry.dir && !entry.name.startsWith('__MACOSX/')
   )
-  const rootDirectory = getCommonArchiveRoot(
-    zipEntries.map((entry) => entry.name)
+  const rootDirectory = getCommonArchiveRoot(entries.map((entry) => entry.name))
+  const matches = entries.filter(
+    (entry) =>
+      normalizeRelativePath(stripArchiveRoot(entry.name, rootDirectory)) ===
+      relativePath
   )
-
-  const selected = zipEntries
-    .map((entry) => ({
-      entry,
-      relativePath: normalizeRelativePath(
-        stripArchiveRoot(entry.name, rootDirectory)
-      ),
-    }))
-    .filter(({ relativePath }) => !limits || limits.includePath(relativePath))
-
-  if (!limits) {
-    return Promise.all(
-      selected.map(async ({ entry, relativePath }) => ({
-        relativePath,
-        data: Uint8Array.from(await entry.async('uint8array')),
-      }))
-    )
+  if (matches.length > 1) {
+    return Promise.reject(new Error('Duplicate project file in archive.'))
   }
-  if (selected.length > limits.maxFiles) {
-    return Promise.reject(
-      new ProjectArchiveLimitError('Too many project files.')
-    )
-  }
-
-  const files: ProjectArchiveFile[] = []
-  let total = 0
-  for (const { entry, relativePath } of selected) {
-    const data = await readZipEntryWithinLimit(
-      entry,
-      Math.min(limits.maxFileBytes, limits.maxTotalBytes - total)
-    )
-    total += data.byteLength
-    files.push({ relativePath, data })
-  }
-  return files
-}
-
-function parseJsonProjectArchive(
-  archive: ArrayBuffer,
-  limits?: ProjectArchiveReadLimits
-) {
-  if (limits) {
-    checkJsonEntryLimit(archive, limits.maxArchiveEntries)
-  }
-  let parsed: unknown
-  try {
-    const decoded = new TextDecoder().decode(new Uint8Array(archive))
-    parsed = JSON.parse(decoded)
-  } catch {
-    return undefined
-  }
-  if (!isRecord(parsed)) {
-    return undefined
-  }
-  const entries = parsed.files
-  if (!isArray(entries)) {
-    return undefined
-  }
-  if (limits && entries.length > limits.maxArchiveEntries) {
-    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-    throw new ProjectArchiveLimitError('Too many archive entries.')
-  }
-
-  const files: ProjectArchiveFile[] = []
-  let total = 0
-  const encoder = new TextEncoder()
-  for (const file of entries) {
-    if (!isRecord(file)) {
-      continue
-    }
-    const relativePath =
-      typeof file.relativePath === 'string'
-        ? file.relativePath
-        : typeof file.requestedFileName === 'string'
-          ? file.requestedFileName
-          : undefined
-    if (!relativePath || typeof file.contents !== 'string') {
-      continue
-    }
-    const normalizedPath = normalizeRelativePath(relativePath)
-    if (limits && !limits.includePath(normalizedPath)) {
-      continue
-    }
-    if (limits && files.length >= limits.maxFiles) {
-      // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-      throw new ProjectArchiveLimitError('Too many project files.')
-    }
-    if (
-      limits &&
-      (file.contents.length > limits.maxFileBytes ||
-        file.contents.length > limits.maxTotalBytes - total)
-    ) {
-      // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-      throw new ProjectArchiveLimitError('Project archive is too large.')
-    }
-    const data = encoder.encode(file.contents)
-    total += data.byteLength
-    if (
-      limits &&
-      (data.byteLength > limits.maxFileBytes || total > limits.maxTotalBytes)
-    ) {
-      // eslint-disable-next-line suggest-no-throw/suggest-no-throw
-      throw new ProjectArchiveLimitError('Project archive is too large.')
-    }
-    files.push({ relativePath: normalizedPath, data })
-  }
-  return files
+  return matches[0]
+    ? readZipEntryWithinLimit(matches[0], maxFileBytes)
+    : undefined
 }
 
 function getCommonArchiveRoot(fileNames: string[]) {

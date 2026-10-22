@@ -3,7 +3,6 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { signal } from '@preact/signals-core'
 import { RemoteProjectArchiveLimitError } from '@src/lib/cloudSync/cloudApi'
-import type { ProjectArchiveFile } from '@src/lib/cloudSync/types'
 import { createFileOperationsRuntime } from '@src/lib/fileSystem/runtime'
 import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import nodeFileSystem from '@src/lib/fs-zds/nodefs'
@@ -31,7 +30,7 @@ vi.mock('@src/lib/cloudSync/cloudApi', () => ({
   },
 }))
 vi.mock('@src/lib/cloudSync/projectArchive', () => ({
-  parseProjectArchive: cloudMocks.parse,
+  readProjectArchiveFile: cloudMocks.parse,
 }))
 
 const localProject: HomeProjectEntry = {
@@ -172,6 +171,7 @@ describe('Zookeeper project reference commands', () => {
     cloudMocks.get.mockReset().mockResolvedValue({
       id: 'cloud-123',
       revision: 'revision-1',
+      files: [{ relative_path: 'main.kcl', byte_size: 20 }],
     })
     cloudMocks.parse.mockReset()
   })
@@ -259,14 +259,12 @@ describe('Zookeeper project reference commands', () => {
     cloudMocks.get.mockResolvedValue({
       id: 'cloud-456',
       revision: 'revision-1',
+      files: [{ relative_path: 'main.kcl', byte_size: 20 }],
     })
     cloudMocks.download.mockResolvedValue(new ArrayBuffer(1))
-    cloudMocks.parse.mockResolvedValue([
-      {
-        relativePath: 'main.kcl',
-        data: new TextEncoder().encode('blade = circle(12)'),
-      },
-    ] satisfies ProjectArchiveFile[])
+    cloudMocks.parse.mockResolvedValue(
+      new TextEncoder().encode('blade = circle(12)')
+    )
     let apiToken = 'token'
     const { request, readFile } = fixture({
       initialEntries: [localProject],
@@ -281,6 +279,7 @@ describe('Zookeeper project reference commands', () => {
       project_id: projectId,
     })
     expect(listing.result?.files).toEqual(['main.kcl'])
+    expect(cloudMocks.download).not.toHaveBeenCalled()
     const read = await request('projects.read_file', {
       project_id: projectId,
       path: 'main.kcl',
@@ -694,12 +693,9 @@ describe('Zookeeper project reference commands', () => {
     const { request, readFile } = fixture()
     const archive = new ArrayBuffer(1)
     cloudMocks.download.mockResolvedValue(archive)
-    cloudMocks.parse.mockResolvedValue([
-      {
-        relativePath: 'main.kcl',
-        data: new TextEncoder().encode('cloudWheel = circle(12)'),
-      },
-    ] satisfies ProjectArchiveFile[])
+    cloudMocks.parse.mockResolvedValue(
+      new TextEncoder().encode('cloudWheel = circle(12)')
+    )
     const found = await request('projects.search', { query: 'TRUCK cloud' })
     const projectId = (
       found.result?.projects as Array<{ project_id: string }>
@@ -716,17 +712,47 @@ describe('Zookeeper project reference commands', () => {
     )
     expect(readFile).not.toHaveBeenCalled()
     expect(cloudMocks.download).toHaveBeenCalledTimes(1)
+    expect(cloudMocks.parse).toHaveBeenCalledWith(
+      archive,
+      'main.kcl',
+      4_000,
+      256 * 1024
+    )
+  })
+
+  it('lists cloud files from metadata and rejects large files before download', async () => {
+    cloudMocks.get.mockResolvedValue({
+      id: 'cloud-123',
+      revision: 'revision-1',
+      files: [
+        { relative_path: 'main.kcl', byte_size: 300_000 },
+        { relative_path: 'parts/wheel.kcl', byte_size: 100 },
+        { relative_path: 'render.png', byte_size: 1_000_000 },
+      ],
+    })
+    const { request } = fixture()
+    const found = await request('projects.search', { query: 'TRUCK cloud' })
+    const projectId = (
+      found.result?.projects as Array<{ project_id: string }>
+    )[0].project_id
+    const listing = await request('projects.list_files', {
+      project_id: projectId,
+    })
+    expect(listing.result?.files).toEqual(['main.kcl', 'parts/wheel.kcl'])
+    const read = await request('projects.read_file', {
+      project_id: projectId,
+      path: 'main.kcl',
+    })
+    expect(read.error).toBe('File is too large to reference.')
+    expect(cloudMocks.download).not.toHaveBeenCalled()
   })
 
   it('reuses one cloud snapshot across file pages and refreshes a new read', async () => {
     const { request } = fixture()
     cloudMocks.download.mockResolvedValue(new ArrayBuffer(1))
-    cloudMocks.parse.mockResolvedValue([
-      {
-        relativePath: 'main.kcl',
-        data: new TextEncoder().encode('a'.repeat(8_001)),
-      },
-    ] satisfies ProjectArchiveFile[])
+    cloudMocks.parse.mockResolvedValue(
+      new TextEncoder().encode('a'.repeat(8_001))
+    )
     const found = await request('projects.search', { query: 'TRUCK cloud' })
     const projectId = (
       found.result?.projects as Array<{ project_id: string }>
@@ -749,12 +775,7 @@ describe('Zookeeper project reference commands', () => {
     expect(cloudMocks.parse).toHaveBeenCalledOnce()
     expect(cloudMocks.get).toHaveBeenCalledTimes(2)
 
-    cloudMocks.parse.mockResolvedValue([
-      {
-        relativePath: 'main.kcl',
-        data: new TextEncoder().encode('new contents'),
-      },
-    ] satisfies ProjectArchiveFile[])
+    cloudMocks.parse.mockResolvedValue(new TextEncoder().encode('new contents'))
     const fresh = await request('projects.read_file', {
       project_id: projectId,
       path: 'main.kcl',
@@ -766,22 +787,20 @@ describe('Zookeeper project reference commands', () => {
   it('rejects a cloud continuation when the remote revision changes', async () => {
     const { request } = fixture()
     cloudMocks.get
-      .mockResolvedValueOnce({ id: 'cloud-123', revision: 'revision-1' })
-      .mockResolvedValueOnce({ id: 'cloud-123', revision: 'revision-2' })
+      .mockResolvedValueOnce({
+        id: 'cloud-123',
+        revision: 'revision-1',
+        files: [{ relative_path: 'main.kcl' }],
+      })
+      .mockResolvedValueOnce({
+        id: 'cloud-123',
+        revision: 'revision-2',
+        files: [{ relative_path: 'main.kcl' }],
+      })
     cloudMocks.download.mockResolvedValue(new ArrayBuffer(1))
     cloudMocks.parse
-      .mockResolvedValueOnce([
-        {
-          relativePath: 'main.kcl',
-          data: new TextEncoder().encode('a'.repeat(8_001)),
-        },
-      ] satisfies ProjectArchiveFile[])
-      .mockResolvedValueOnce([
-        {
-          relativePath: 'main.kcl',
-          data: new TextEncoder().encode('b'.repeat(8_001)),
-        },
-      ] satisfies ProjectArchiveFile[])
+      .mockResolvedValueOnce(new TextEncoder().encode('a'.repeat(8_001)))
+      .mockResolvedValueOnce(new TextEncoder().encode('b'.repeat(8_001)))
     const found = await request('projects.search', { query: 'TRUCK cloud' })
     const projectId = (
       found.result?.projects as Array<{ project_id: string }>
@@ -808,21 +827,12 @@ describe('Zookeeper project reference commands', () => {
     cloudMocks.get.mockResolvedValue({
       id: 'cloud-123',
       updated_at: '2026-10-19T12:00:00Z',
+      files: [{ relative_path: 'main.kcl' }],
     })
     cloudMocks.download.mockResolvedValue(new ArrayBuffer(1))
     cloudMocks.parse
-      .mockResolvedValueOnce([
-        {
-          relativePath: 'main.kcl',
-          data: new TextEncoder().encode('a'.repeat(8_001)),
-        },
-      ] satisfies ProjectArchiveFile[])
-      .mockResolvedValueOnce([
-        {
-          relativePath: 'main.kcl',
-          data: new TextEncoder().encode('b'.repeat(8_001)),
-        },
-      ] satisfies ProjectArchiveFile[])
+      .mockResolvedValueOnce(new TextEncoder().encode('a'.repeat(8_001)))
+      .mockResolvedValueOnce(new TextEncoder().encode('b'.repeat(8_001)))
     const found = await request('projects.search', { query: 'TRUCK cloud' })
     const projectId = (
       found.result?.projects as Array<{ project_id: string }>
@@ -851,18 +861,8 @@ describe('Zookeeper project reference commands', () => {
     const { request } = fixture({ getApiToken: () => apiToken })
     cloudMocks.download.mockResolvedValue(new ArrayBuffer(1))
     cloudMocks.parse
-      .mockResolvedValueOnce([
-        {
-          relativePath: 'main.kcl',
-          data: new TextEncoder().encode('a'.repeat(8_001)),
-        },
-      ] satisfies ProjectArchiveFile[])
-      .mockResolvedValueOnce([
-        {
-          relativePath: 'main.kcl',
-          data: new TextEncoder().encode('b'.repeat(8_001)),
-        },
-      ] satisfies ProjectArchiveFile[])
+      .mockResolvedValueOnce(new TextEncoder().encode('a'.repeat(8_001)))
+      .mockResolvedValueOnce(new TextEncoder().encode('b'.repeat(8_001)))
     const found = await request('projects.search', { query: 'TRUCK cloud' })
     const projectId = (
       found.result?.projects as Array<{ project_id: string }>
@@ -898,23 +898,23 @@ describe('Zookeeper project reference commands', () => {
       found.result?.projects as Array<{ project_id: string }>
     )[0].project_id
 
-    const listing = await request('projects.list_files', {
+    const read = await request('projects.read_file', {
       project_id: projectId,
+      path: 'main.kcl',
     })
-    expect(listing.status).toBe('rejected')
-    expect(listing.error).toBe('Project archive is too large to reference.')
+    expect(read.status).toBe('rejected')
+    expect(read.error).toBe('Project archive is too large to reference.')
     expect(cloudMocks.parse).not.toHaveBeenCalled()
   })
 
   it('keeps long file listings within the broker response limit', async () => {
     const { request } = fixture()
-    cloudMocks.download.mockResolvedValue(new ArrayBuffer(1))
-    cloudMocks.parse.mockResolvedValue(
-      Array.from({ length: 150 }, (_, index) => ({
-        relativePath: `part-${String(index).padStart(3, '0')}-${'x'.repeat(500)}.kcl`,
-        data: new Uint8Array(),
-      })) satisfies ProjectArchiveFile[]
-    )
+    cloudMocks.get.mockResolvedValue({
+      id: 'cloud-123',
+      files: Array.from({ length: 150 }, (_, index) => ({
+        relative_path: `part-${String(index).padStart(3, '0')}-${'x'.repeat(500)}.kcl`,
+      })),
+    })
     const found = await request('projects.search', { query: 'TRUCK cloud' })
     const projectId = (
       found.result?.projects as Array<{ project_id: string }>
@@ -933,7 +933,22 @@ describe('Zookeeper project reference commands', () => {
     expect((second.result?.files as string[])[0]).not.toBe(
       (first.result?.files as string[])[0]
     )
-    expect(cloudMocks.download).toHaveBeenCalledOnce()
-    expect(cloudMocks.parse).toHaveBeenCalledOnce()
+    expect(cloudMocks.get).toHaveBeenCalledTimes(2)
+    expect(cloudMocks.download).not.toHaveBeenCalled()
+    expect(cloudMocks.parse).not.toHaveBeenCalled()
+  })
+
+  it('fails closed when cloud file metadata is unavailable', async () => {
+    cloudMocks.get.mockResolvedValue({ id: 'cloud-123' })
+    const { request } = fixture()
+    const found = await request('projects.search', { query: 'TRUCK cloud' })
+    const projectId = (
+      found.result?.projects as Array<{ project_id: string }>
+    )[0].project_id
+    const listing = await request('projects.list_files', {
+      project_id: projectId,
+    })
+    expect(listing.error).toBe('Project files are unavailable.')
+    expect(cloudMocks.download).not.toHaveBeenCalled()
   })
 })

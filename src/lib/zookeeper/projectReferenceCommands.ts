@@ -5,16 +5,13 @@ import {
   listRemoteProjects,
   RemoteProjectArchiveLimitError,
 } from '@src/lib/cloudSync/cloudApi'
-import { parseProjectArchive } from '@src/lib/cloudSync/projectArchive'
-import type {
-  CloudSyncConfig,
-  ProjectArchiveFile,
-} from '@src/lib/cloudSync/types'
+import { readProjectArchiveFile } from '@src/lib/cloudSync/projectArchive'
+import type { CloudSyncConfig, RemoteProject } from '@src/lib/cloudSync/types'
 import fsZds from '@src/lib/fs-zds'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { PERSONAL_CLOUD_PROJECT_LIBRARY_ID } from '@src/lib/projectLibraries'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/pathUtils'
-import { isRecord } from '@src/lib/utils'
+import { isArray, isRecord } from '@src/lib/utils'
 import type { FileOperationsRegistryService } from '@src/registry/contracts/fileOperations'
 import type { HomeProjectEntry } from '@src/registry/contracts/homeProjects'
 
@@ -181,7 +178,8 @@ export function createProjectReferenceCommands(deps: {
         remoteProjectId: string
         apiToken: string
         revision: string
-        files: ProjectArchiveFile[]
+        path: string
+        data: Uint8Array
       }
     | undefined
   let cloudSnapshotGeneration = 0
@@ -320,10 +318,7 @@ export function createProjectReferenceCommands(deps: {
     }
   }
 
-  async function cloudFiles(
-    entry: HomeProjectEntry,
-    useSnapshot: boolean
-  ): Promise<ProjectArchiveFile[]> {
+  async function cloudProjectMetadata(entry: HomeProjectEntry) {
     if (!entry.remoteProjectId) {
       return Promise.reject(
         new ProjectReferenceCommandError(
@@ -347,6 +342,64 @@ export function createProjectReferenceCommands(deps: {
         )
       )
     }
+    return { apiToken, config, project, remoteProjectId: entry.remoteProjectId }
+  }
+
+  async function cloudFileNames(project: RemoteProject): Promise<string[]> {
+    if (!isArray(project.files) || project.files.length > MAX_FILES * 2) {
+      return Promise.reject(
+        new ProjectReferenceCommandError('Project files are unavailable.')
+      )
+    }
+    const files: string[] = []
+    const seen = new Set<string>()
+    for (const file of project.files) {
+      if (!isRecord(file) || typeof file.relative_path !== 'string') {
+        return Promise.reject(
+          new ProjectReferenceCommandError('Project files are unavailable.')
+        )
+      }
+      const path = file.relative_path
+      if (!isReadableFile(path)) {
+        continue
+      }
+      if (seen.has(path) || files.length >= MAX_FILES) {
+        return Promise.reject(
+          new ProjectReferenceCommandError(
+            'Project has too many files to reference.'
+          )
+        )
+      }
+      seen.add(path)
+      files.push(path)
+    }
+    return files.sort((a, b) => a.localeCompare(b))
+  }
+
+  async function readCloudFile(
+    entry: HomeProjectEntry,
+    path: string,
+    useSnapshot: boolean
+  ): Promise<Uint8Array> {
+    const { apiToken, config, project, remoteProjectId } =
+      await cloudProjectMetadata(entry)
+    const files = await cloudFileNames(project)
+    if (!files.includes(path)) {
+      return Promise.reject(
+        new ProjectReferenceCommandError('File is no longer available.')
+      )
+    }
+    const metadata = (
+      project.files as Array<{ relative_path: string; byte_size?: unknown }>
+    ).find((file) => file.relative_path === path)
+    if (
+      typeof metadata?.byte_size === 'number' &&
+      metadata.byte_size > MAX_FILE_BYTES
+    ) {
+      return Promise.reject(
+        new ProjectReferenceCommandError('File is too large to reference.')
+      )
+    }
     // updated_at is not a content revision; revisionless servers need a fresh
     // archive on every page so the file hash can detect changes.
     const rawRevision = project.revision
@@ -357,12 +410,14 @@ export function createProjectReferenceCommands(deps: {
     if (
       useSnapshot &&
       remoteRevision !== undefined &&
-      cloudSnapshot?.remoteProjectId === entry.remoteProjectId &&
+      cloudSnapshot &&
+      cloudSnapshot.remoteProjectId === remoteProjectId &&
       cloudSnapshot.apiToken === apiToken &&
+      cloudSnapshot.path === path &&
       apiToken === deps.getApiToken() &&
       cloudSnapshot.revision === remoteRevision
     ) {
-      return cloudSnapshot.files
+      return cloudSnapshot.data
     }
     cloudSnapshot = undefined
     const generation = ++cloudSnapshotGeneration
@@ -370,7 +425,7 @@ export function createProjectReferenceCommands(deps: {
     try {
       archive = await downloadRemoteProjectArchive(
         config,
-        entry.remoteProjectId,
+        remoteProjectId,
         MAX_ARCHIVE_BYTES
       )
     } catch (error) {
@@ -379,32 +434,14 @@ export function createProjectReferenceCommands(deps: {
       }
       return Promise.reject(error)
     }
+    let data: Uint8Array | undefined
     try {
-      const files = await parseProjectArchive(archive, {
-        includePath: isReadableFile,
-        maxArchiveEntries: MAX_FILES * 2,
-        maxFileBytes: MAX_FILE_BYTES,
-        maxFiles: MAX_FILES,
-        maxTotalBytes: MAX_ARCHIVE_BYTES,
-      })
-      if (apiToken !== deps.getApiToken()) {
-        return Promise.reject(
-          new ProjectReferenceCommandError('The account changed. Search again.')
-        )
-      }
-      if (
-        remoteRevision !== undefined &&
-        generation === cloudSnapshotGeneration &&
-        apiToken === deps.getApiToken()
-      ) {
-        cloudSnapshot = {
-          remoteProjectId: entry.remoteProjectId,
-          apiToken,
-          revision: remoteRevision,
-          files,
-        }
-      }
-      return files
+      data = await readProjectArchiveFile(
+        archive,
+        path,
+        MAX_FILES * 2,
+        MAX_FILE_BYTES
+      )
     } catch {
       return Promise.reject(
         new ProjectReferenceCommandError(
@@ -412,6 +449,29 @@ export function createProjectReferenceCommands(deps: {
         )
       )
     }
+    if (apiToken !== deps.getApiToken()) {
+      return Promise.reject(
+        new ProjectReferenceCommandError('The account changed. Search again.')
+      )
+    }
+    if (!data) {
+      return Promise.reject(
+        new ProjectReferenceCommandError('File is no longer available.')
+      )
+    }
+    if (
+      remoteRevision !== undefined &&
+      generation === cloudSnapshotGeneration
+    ) {
+      cloudSnapshot = {
+        remoteProjectId,
+        apiToken,
+        revision: remoteRevision,
+        path,
+        data,
+      }
+    }
+    return data
   }
 
   async function resolvedProjectPath(root: string, path: string) {
@@ -478,17 +538,12 @@ export function createProjectReferenceCommands(deps: {
     return found.sort((a, b) => a.localeCompare(b))
   }
 
-  async function filesFor(
-    entry: HomeProjectEntry,
-    useSnapshot: boolean
-  ): Promise<string[]> {
+  async function filesFor(entry: HomeProjectEntry): Promise<string[]> {
     if (entry.localProjectPath) {
       return localFiles(entry.localProjectPath)
     }
-    return (await cloudFiles(entry, useSnapshot))
-      .map((file) => file.relativePath)
-      .filter(isReadableFile)
-      .sort((a, b) => a.localeCompare(b))
+    const { project } = await cloudProjectMetadata(entry)
+    return cloudFileNames(project)
   }
 
   async function listFiles(args: Record<string, unknown>) {
@@ -499,7 +554,7 @@ export function createProjectReferenceCommands(deps: {
         new ProjectReferenceCommandError('Invalid project_id or offset.')
       )
     }
-    const files = await filesFor(entry, offset > 0)
+    const files = await filesFor(entry)
     const page: string[] = []
     let next = offset
     let pageBytes = 0
@@ -568,15 +623,7 @@ export function createProjectReferenceCommands(deps: {
       }
       bytes = await deps.fileOperations.readFile(absolute)
     } else {
-      const file = (await cloudFiles(entry, offset > 0)).find(
-        (candidate) => candidate.relativePath === path
-      )
-      if (!file) {
-        return Promise.reject(
-          new ProjectReferenceCommandError('File is no longer available.')
-        )
-      }
-      bytes = file.data
+      bytes = await readCloudFile(entry, path, offset > 0)
     }
     if (bytes.byteLength > MAX_FILE_BYTES) {
       return Promise.reject(
