@@ -256,19 +256,27 @@ hide(flangeHoleProfile)
 // Solver reconstruction of the flange chamfers
 chamfer001 = chamfer(
   mountingFlangeBlank,
-  tags = getCommonEdge(faces = [
-    mountingFlangeRegion.tags.outerCircle,
-    capStart001
-  ]),
   length = lugSpacing / 30,
+  edges = [
+    {
+      sideFaces = [
+        mountingFlangeRegion.tags.outerCircle,
+        capStart001
+      ]
+    }
+  ],
 )
 chamfer002 = chamfer(
   chamfer001,
-  tags = getCommonEdge(faces = [
-    mountingFlangeRegion.tags.outerCircle,
-    capEnd001
-  ]),
   length = lugSpacing / 20,
+  edges = [
+    {
+      sideFaces = [
+        mountingFlangeRegion.tags.outerCircle,
+        capEnd001
+      ]
+    }
+  ],
 )
 mountingFlange = subtract([chamfer002], tools = [flangeHoleCutters])
 

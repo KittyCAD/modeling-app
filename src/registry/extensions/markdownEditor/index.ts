@@ -1,8 +1,4 @@
-import {
-  defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
-  provideService,
-} from '@kittycad/registry'
+import { defineRegistryItemFactory, provideService } from '@kittycad/registry'
 import type {
   MarkdownEditorActionName,
   MarkdownEditorActions,
@@ -228,20 +224,18 @@ const markdownEditorExtension = defineRegistryItemFactory(() => {
   })
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'markdown-editor-extension',
-      provides: [
-        ...commands.map(provideCommand),
-        ...markdownEditorKeymapItems.map(provideKeymapItem),
-        provideCommandScope({
-          id: MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE,
-          displayName: 'Markdown editor focused',
-          priority: 1200,
-          userEditable: false,
-        }),
-      ],
-      providesServices: [provideService(markdownEditorService, serviceImpl)],
-    }),
+    id: 'markdown-editor-extension',
+    provides: [
+      ...commands.map(provideCommand),
+      ...markdownEditorKeymapItems.map(provideKeymapItem),
+      provideCommandScope({
+        id: MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE,
+        displayName: 'Markdown editor focused',
+        priority: 1200,
+        userEditable: false,
+      }),
+    ],
+    providesServices: [provideService(markdownEditorService, serviceImpl)],
   }
 }, 'markdown-editor-extension')
 

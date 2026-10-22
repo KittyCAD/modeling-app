@@ -27,6 +27,7 @@ import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
 import type { CSSProperties } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: sign-in forwards browser query data to device authentication (useLocation).
 import { Link, useLocation } from 'react-router-dom'
 
 type SignInRouteState = {

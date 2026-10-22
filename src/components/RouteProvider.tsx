@@ -9,6 +9,7 @@ import { markOnce } from '@src/lib/performance'
 import { trap } from '@src/lib/trap'
 import type { ReactNode } from 'react'
 import { createContext, useEffect, useState } from 'react'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: route lifecycle and missing-project navigation (useLocation, useNavigate, useNavigation).
 import { useLocation, useNavigate, useNavigation } from 'react-router-dom'
 
 export const RouteProviderContext = createContext({})

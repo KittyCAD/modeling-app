@@ -30,7 +30,7 @@ This is part of model-based definition (MBD).
 |----------|------|-------------|----------|
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The tolerance zone size for parallel orientation. | Yes |
 | `faces` | [[`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace); 1+] | The faces to be annotated. | No |
-| `edges` | [[`Edge`](/docs/kcl-std/types/std-types-Edge) or [`any`](/docs/kcl-std/types/std-types-any); 1+] | The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet. | No |
+| `edges` | [[`Edge`](/docs/kcl-std/types/std-types-Edge) or [`any`](/docs/kcl-std/types/std-types-any); 1+] | The edges to be annotated. | No |
 | `datums` | [[`string`](/docs/kcl-std/types/std-types-string); 1+] | The datum references to display in the feature control frame. Supports up to primary, secondary, and tertiary datums. | No |
 | `precision` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`. | No |
 | `framePosition` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The position of the feature control frame relative to the leader arrow. The default is `[100mm, 100mm]`. | No |
@@ -92,7 +92,9 @@ blockProfile = sketch(on = XY) {
 }
 
 block = extrude(region(segments = [blockProfile.edge1, blockProfile.edge2]), length = 4mm, tagEnd = $top)
-sideEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+sideEdge = {
+  sideFaces = [block.sketch.tags.edge1, top]
+}
 gdt::parallelism(
   edges = [sideEdge],
   tolerance = 0.05mm,

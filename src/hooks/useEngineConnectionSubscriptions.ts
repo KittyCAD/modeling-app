@@ -3,8 +3,6 @@ import { useEffect, useRef } from 'react'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { SourceRange } from '@src/lang/wasm'
-import { useApp } from '@src/lib/boot'
-import { SEGMENTS_BASED_REGIONS_FEATURE_FLAG } from '@src/lib/constants'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { selectSketchPlane } from '@src/lib/selectSketchPlane'
 import {
@@ -21,11 +19,6 @@ const HOVER_ENTITY_REFERENCE_DEBOUNCE_MS = 250
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
-  const { userFeatures } = useApp()
-  const useSegmentsBasedRegions = userFeatures.useHas(
-    SEGMENTS_BASED_REGIONS_FEATURE_FLAG,
-    false
-  )
   const { engineCommandManager, kclManager, rustContext, wasmInstance } =
     context
   const stateRef = useRef(state)
@@ -201,7 +194,6 @@ export function useEngineConnectionSubscriptions() {
                 kclManager,
                 rustContext,
                 wasmInstance,
-                useSegmentsBasedRegions,
               }
             )
             if (!stateRef.current.matches('Sketch no face')) return
@@ -230,11 +222,7 @@ export function useEngineConnectionSubscriptions() {
                   : undefined
             if (!planeId) return
 
-            await selectSketchPlane(
-              planeId,
-              context.store.useSketchSolveMode?.current,
-              kclManager
-            )
+            selectSketchPlane(planeId, kclManager)
           })().catch(reportRejection)
           return
         }
@@ -245,7 +233,6 @@ export function useEngineConnectionSubscriptions() {
             kclManager,
             rustContext,
             wasmInstance,
-            useSegmentsBasedRegions,
           })
           // Check state again, in case it changed before
           // getEventForQueryEntityTypeWithPoint returned.
@@ -263,11 +250,7 @@ export function useEngineConnectionSubscriptions() {
               }
             ).entity_id
             if (entityId) {
-              await selectSketchPlane(
-                entityId,
-                context.store.useSketchSolveMode?.current,
-                kclManager
-              )
+              selectSketchPlane(entityId, kclManager)
             }
           }
         })().catch(reportRejection)
@@ -280,13 +263,11 @@ export function useEngineConnectionSubscriptions() {
     }
   }, [
     context?.sketchEnginePathId,
-    context.store.useSketchSolveMode,
     kclManager,
     send,
     engineCommandManager,
     rustContext,
     wasmInstance,
-    useSegmentsBasedRegions,
   ])
 
   // Re-apply plane visibility when planes are (re)created on the Rust side

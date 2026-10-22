@@ -1,32 +1,29 @@
-import nodeFsSync from 'fs'
-import path from 'path'
-import {
-  DEFAULT_PROJECT_KCL_FILE,
-  LEGACY_SKETCH_MODE_FEATURE_FLAG,
-  PROJECT_IMAGE_NAME,
-  REGEXP_UUIDV4,
-} from '@src/lib/constants'
-import nodeFs from 'fs/promises'
-import type { Page } from '@playwright/test'
-import { PNG } from 'pngjs'
-import { NIL as uuidNIL } from 'uuid'
-
+import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import {
   closeOnboardingModalIfPresent,
   createProject,
   executorInputPath,
+  expectRenderedDiagnosticText,
   expectKeybindingsSettingsVisible,
   getUtils,
   isOutOfViewInScrollContainer,
   runningOnWindows,
+  tomlToPerProjectSettings,
 } from '@e2e/playwright/test-utils'
-import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import { expect, test } from '@e2e/playwright/zoo-test'
+import type { Page } from '@playwright/test'
+import {
+  DEFAULT_PROJECT_KCL_FILE,
+  PROJECT_IMAGE_NAME,
+  REGEXP_UUIDV4,
+} from '@src/lib/constants'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
-
-// Some of these sketches are KCL 1.0, so editing them needs the legacy sketch flag.
-test.use({ userFeatures: [LEGACY_SKETCH_MODE_FEATURE_FLAG] })
+import nodeFsSync from 'fs'
+import nodeFs from 'fs/promises'
+import path from 'path'
+import { PNG } from 'pngjs'
+import { NIL as uuidNIL } from 'uuid'
 
 type ProjectCardContextMenuAction = 'rename' | 'delete'
 
@@ -214,9 +211,13 @@ test(
           })
           // error text on hover
           await page.hover('.cm-lint-marker-error')
-          const crypticErrorText =
-            'tag requires a value with type `TagDecl`, but found a value with type `string`.'
-          await expect(page.getByText(crypticErrorText).first()).toBeVisible()
+          const error = page
+            .locator('.cm-tooltip-lint .cm-diagnosticText')
+            .first()
+          await expectRenderedDiagnosticText(
+            error,
+            'tag requires a value with type TagDecl, but found a value with type string.'
+          )
         })
       },
       500,
@@ -382,9 +383,13 @@ test(
           })
           // error text on hover
           await page.hover('.cm-lint-marker-error')
-          const crypticErrorText =
-            'tag requires a value with type `TagDecl`, but found a value with type `string`.'
-          await expect(page.getByText(crypticErrorText).first()).toBeVisible()
+          const error = page
+            .locator('.cm-tooltip-lint .cm-diagnosticText')
+            .first()
+          await expectRenderedDiagnosticText(
+            error,
+            'tag requires a value with type TagDecl, but found a value with type string.'
+          )
         })
       },
       500,
@@ -431,11 +436,13 @@ test(
 
     // error text on hover
     await page.locator('.cm-lint-marker-error').hover()
-    const crypticErrorText =
-      'tag requires a value with type `TagDecl`, but found a value with type `string`.'
-    await expect(
-      page.locator('.cm-tooltip-lint').getByText(crypticErrorText)
-    ).toBeVisible({ timeout: 15_000 })
+    const error = page.locator('.cm-tooltip-lint .cm-diagnosticText').first()
+    await expectRenderedDiagnosticText(
+      error,
+      'tag requires a value with type TagDecl, but found a value with type string.',
+      { timeout: 15_000 }
+    )
+    await expect(error.locator('code')).toHaveText(['TagDecl', 'string'])
   }
 )
 
@@ -1912,79 +1919,6 @@ test(
   }
 )
 
-test(
-  'segment position changes persist after dragging and reopening project',
-  { tag: ['@desktop'] },
-  async ({
-    scene,
-    cmdBar,
-    context,
-    page,
-    editor,
-    toolbar,
-    fs,
-    folderSetupFn,
-  }) => {
-    const projectName = 'segment-drag-test'
-
-    await folderSetupFn(async (dir) => {
-      const projectDir = path.join(dir, projectName)
-      await fs.mkdir(projectDir, { recursive: true })
-      await fs.writeFile(
-        path.join(projectDir, 'main.kcl'),
-        new TextEncoder().encode(`sketch001 = startSketchOn(XZ)
-profile001 = startProfile(sketch001, at = [0, 0])
-  |> line(end = [0, 6])
-  |> line(end = [10, 0])
-  |> line(end = [-8, -5])
-`)
-      )
-    })
-    const u = await getUtils(page)
-
-    await test.step('Opening the project and entering sketch mode', async () => {
-      await expect(page.getByText(projectName)).toBeVisible()
-      await page.getByText(projectName).click()
-      await scene.settled()
-
-      // go to sketch mode
-      await (await toolbar.getFeatureTreeOperation('Sketch', 0)).dblclick()
-    })
-
-    const lineToChange = 'line(end = [-8, -5])'
-    const lineToStay = 'line(end = [10, 0])'
-
-    await test.step('Dragging the line endpoint to modify it', async () => {
-      // Get the last line's endpoint position
-      const lineEnd = await u.getBoundingBox('[data-overlay-index="3"]')
-
-      await page.mouse.move(lineEnd.x, lineEnd.y - 5)
-      await page.mouse.down()
-      await page.mouse.move(lineEnd.x + 80, lineEnd.y)
-      await page.mouse.up()
-
-      await editor.expectEditor.not.toContain(lineToChange)
-      await editor.expectEditor.toContain(lineToStay)
-
-      // Exit sketch mode
-      await page.keyboard.press('Shift+Escape')
-      await scene.settled()
-    })
-
-    await test.step('Going back to dashboard', async () => {
-      await page.getByTestId('app-logo').click()
-    })
-
-    await test.step('Reopening the project and verifying changes are saved', async () => {
-      await page.getByText(projectName).click()
-
-      // Check if new line coordinates were saved
-      await editor.expectEditor.not.toContain(lineToChange)
-      await editor.expectEditor.toContain(lineToStay)
-    })
-  }
-)
-
 test.describe('Project id', { tag: ['@desktop'] }, () => {
   // Should work on both web and desktop.
   test('is created on new project', async ({
@@ -1992,25 +1926,33 @@ test.describe('Project id', { tag: ['@desktop'] }, () => {
     toolbar,
     context,
     homePage,
+    folderSetupFn,
   }, testInfo) => {
     const u = await getUtils(page)
+    const { dir } = await folderSetupFn(async () => {})
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await createProject({ name: 'new-project', page, returnHome: true })
     await homePage.goToModelingScene()
     await u.waitForPageLoad()
 
-    const inputProjectId = page.getByTestId('project-id')
-
     await test.step('Open the project settings modal', async () => {
       await toolbar.projectSidebarToggle.click()
       await page.getByTestId('project-settings').click()
-      // Give time to system for writing to a persistent store
-      await page.waitForTimeout(1000)
+      await expect(page.getByRole('radio', { name: 'Project' })).toBeChecked()
+      await expect(page.getByTestId('project-id')).toHaveCount(0)
     })
 
     await test.step('Check project id is not the NIL UUID and not empty', async () => {
-      await expect(inputProjectId).not.toHaveValue(uuidNIL)
-      await expect(inputProjectId).toHaveValue(REGEXP_UUIDV4)
+      await expect(async () => {
+        const settings = tomlToPerProjectSettings(
+          await nodeFs.readFile(
+            path.join(dir, 'test-project', 'project.toml'),
+            'utf8'
+          )
+        )
+        expect(settings.settings?.meta?.id).not.toBe(uuidNIL)
+        expect(settings.settings?.meta?.id).toMatch(REGEXP_UUIDV4)
+      }).toPass()
     })
   })
   test('is created on existing project without one', async ({
@@ -2022,7 +1964,7 @@ test.describe('Project id', { tag: ['@desktop'] }, () => {
     folderSetupFn,
   }, testInfo) => {
     const u = await getUtils(page)
-
+    const { dir } = await folderSetupFn(async () => {})
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await createProject({ name: 'new-project', page, returnHome: true })
@@ -2030,18 +1972,24 @@ test.describe('Project id', { tag: ['@desktop'] }, () => {
 
     await u.waitForPageLoad()
 
-    const inputProjectId = page.getByTestId('project-id')
-
     await test.step('Open the project settings modal', async () => {
       await toolbar.projectSidebarToggle.click()
       await page.getByTestId('project-settings').click()
-      // Give time to system for writing to a persistent store
-      await page.waitForTimeout(1000)
+      await expect(page.getByRole('radio', { name: 'Project' })).toBeChecked()
+      await expect(page.getByTestId('project-id')).toHaveCount(0)
     })
 
     await test.step('Check project id is not the NIL UUID and not empty', async () => {
-      await expect(inputProjectId).not.toHaveValue(uuidNIL)
-      await expect(inputProjectId).toHaveValue(REGEXP_UUIDV4)
+      await expect(async () => {
+        const settings = tomlToPerProjectSettings(
+          await nodeFs.readFile(
+            path.join(dir, 'test-project', 'project.toml'),
+            'utf8'
+          )
+        )
+        expect(settings.settings?.meta?.id).not.toBe(uuidNIL)
+        expect(settings.settings?.meta?.id).toMatch(REGEXP_UUIDV4)
+      }).toPass()
     })
   })
 })

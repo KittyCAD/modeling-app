@@ -1,6 +1,7 @@
 use ahash::AHashMap;
 use ahash::AHashSet;
 use indexmap::IndexMap;
+use kcl_api::Constraint;
 use kcl_api::NodePath;
 use kcl_api::artifact::*;
 use kittycad_modeling_cmds::EnableSketchMode;
@@ -30,7 +31,6 @@ use crate::execution::Visibility;
 use crate::execution::cmd_id_ref_to_artifact_id;
 use crate::execution::geometry::PlaneInfo;
 use crate::execution::state::ModuleInfoMap;
-use crate::front::Constraint;
 use crate::modules::ModulePath;
 use crate::parsing::ast::types::BodyItem;
 use crate::parsing::ast::types::ImportPath;
@@ -39,6 +39,8 @@ use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Program;
 use crate::std::sketch::build_reverse_region_mapping;
 
+#[cfg(test)]
+mod engine_tests;
 #[cfg(test)]
 pub(crate) mod mermaid_tests;
 #[cfg(test)]
@@ -135,6 +137,7 @@ pub(crate) fn named_view_artifact(view: &NamedViewValue, code_ref: CodeRef) -> N
     NamedViewArtifact {
         id: view.artifact_id(),
         name: view.name().to_owned(),
+        declaring_module_id: code_ref.range.module_id(),
         camera: artifact_camera_view(view.camera()),
         baseline: artifact_visibility(view.baseline()),
         show_ids,
@@ -149,7 +152,7 @@ fn artifact_camera_view(camera: &CameraView) -> ArtifactCameraView {
         target: camera.target().copied().map(artifact_point3d),
         // The value already stores millimeters; this reads the number in the
         // unit the wire model documents rather than trusting the tag.
-        distance: camera.distance().map(|distance| distance.to_mm()),
+        distance: camera.distance().map(|distance| distance.unwrap_to_mm()),
         projection: artifact_projection(camera.projection()),
     }
 }
@@ -2624,9 +2627,19 @@ fn artifacts_to_update(
                 update_csg_input_artifacts(&mut return_arr, artifacts, &input_ids, None, &mut consumed_sweep_ids);
             }
 
-            // Create the new composite solids and update their linked artifacts
+            // A returned solid can reuse an input's artifact graph key.
+            // Apply all input updates first so they cannot overwrite a live output.
             for solid_id in &new_solid_ids {
-                // Create the composite solid
+                update_csg_input_artifacts(
+                    &mut return_arr,
+                    artifacts,
+                    &input_ids,
+                    Some(*solid_id),
+                    &mut consumed_sweep_ids,
+                );
+            }
+
+            for solid_id in &new_solid_ids {
                 return_arr.push(Artifact::CompositeSolid(CompositeSolid {
                     id: *solid_id,
                     consumed: false,
@@ -2638,14 +2651,6 @@ fn artifacts_to_update(
                     composite_solid_id: None,
                     pattern_ids: Vec::new(),
                 }));
-
-                update_csg_input_artifacts(
-                    &mut return_arr,
-                    artifacts,
-                    &input_ids,
-                    Some(*solid_id),
-                    &mut consumed_sweep_ids,
-                );
             }
 
             return Ok(return_arr);
@@ -2662,6 +2667,10 @@ fn artifacts_to_update(
                 .as_ref()
                 .map(|ids| ids.iter().copied().map(ArtifactId::new).collect::<Vec<_>>())
                 .unwrap_or_default();
+            let mut consumed_input_ids = solid_ids.clone();
+            if !imprint.keep_tools {
+                consumed_input_ids.extend_from_slice(&tool_ids);
+            }
 
             let mut new_solid_ids = vec![id];
             let not_cmd_id = move |solid_id: &ArtifactId| *solid_id != id;
@@ -2678,7 +2687,7 @@ fn artifacts_to_update(
             let mut return_arr = Vec::new();
             let mut consumed_sweep_ids = AHashSet::default();
 
-            for input_id in solid_ids.iter().chain(tool_ids.iter()) {
+            for input_id in &consumed_input_ids {
                 let sweep_id = match artifacts.get(input_id) {
                     Some(Artifact::Sweep(sweep)) => Some(sweep.id),
                     Some(Artifact::Path(path)) => path.sweep_id,
@@ -2708,7 +2717,7 @@ fn artifacts_to_update(
                     pattern_ids: Vec::new(),
                 }));
 
-                for input_id in solid_ids.iter().chain(tool_ids.iter()) {
+                for input_id in &consumed_input_ids {
                     if let Some(artifact) = artifacts.get(input_id) {
                         match artifact {
                             Artifact::CompositeSolid(comp) => {

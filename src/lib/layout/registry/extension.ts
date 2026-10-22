@@ -1,7 +1,6 @@
 import {
   defineRegistryItem,
   defineRegistryItemFactory,
-  defineRuntimeRegistryItem,
   provideService,
 } from '@kittycad/registry'
 import { computed, effect, signal } from '@preact/signals-core'
@@ -9,6 +8,7 @@ import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
 import type { Layout, LayoutService } from '@src/lib/layout/types'
 import {
   applyLayoutContribution,
+  applyPaneOpenBehavior,
   createLayoutWithMetadata,
   defaultLayout,
   loadLayout,
@@ -21,10 +21,12 @@ import {
   layoutService,
   layoutUserFeatureTransformationsValueSpec,
 } from '@src/lib/layout/registry/contract'
+import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
 import { runtimeService } from '@src/registry/contracts/runtime'
 import { settingsService } from '@src/registry/contracts/settings'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
+import type { SnapshotFrom } from 'xstate'
 
 const DEFAULT_LAYOUT_CONFIG_NAME = 'default'
 const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
@@ -41,6 +43,7 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
     const runtime = ctx.services.get(runtimeService)
     const settings = ctx.services.get(settingsService)
     const userFeatures = ctx.services.get(userFeaturesService)
+    const settingsActor = settings.actor
     const usePlaywrightLayout = runtime.get().isPlaywright
     const layoutConfigName = usePlaywrightLayout
       ? PLAYWRIGHT_LAYOUT_CONFIG_NAME
@@ -61,9 +64,7 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
         applyLayoutContribution({
           rootLayout,
           contribution,
-          config: {
-            paneOpenBehavior,
-          },
+          config: { paneOpenBehavior },
         })
       )
 
@@ -73,7 +74,6 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
 
       return results
     }
-
     const get = () => layoutSignal.value
     const set = (nextLayout: Layout) => {
       layoutSignal.value = structuredClone(nextLayout)
@@ -147,24 +147,35 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
       layoutSignal.value = nextLayout
       lastUserFeatureValues = featureValues
     }
-    const hydrateLayoutFromSettings = () => {
-      if (hasHydratedLayout || settings.actor.getSnapshot().value !== 'idle') {
+    const hydrateLayoutFromSettings = (
+      snapshot: SnapshotFrom<typeof settingsActor>
+    ) => {
+      if (hasHydratedLayout || snapshot.value !== 'idle') {
         return
       }
 
       setLayoutSaveHandler(({ layout, layoutName }) => {
-        const currentLayouts = settings.get().layout.configs.current
+        const currentLayouts = getOnlySettingsFromContext(
+          settingsActor.getSnapshot().context
+        ).layout.configs.current
 
-        settings.get().layout.configs.user = {
-          ...currentLayouts,
-          [layoutName ?? DEFAULT_LAYOUT_CONFIG_NAME]:
-            createLayoutWithMetadata(layout),
-        }
+        settingsActor.send({
+          type: 'set.layout.configs',
+          data: {
+            level: 'user',
+            value: {
+              ...currentLayouts,
+              [layoutName ?? DEFAULT_LAYOUT_CONFIG_NAME]:
+                createLayoutWithMetadata(layout),
+            },
+          },
+        })
       })
 
+      const settingsSnapshot = getOnlySettingsFromContext(snapshot.context)
       const settingsLayout =
-        settings.get().layout.configs.current[layoutConfigName] ??
-        settings.get().layout.configs.current.default
+        settingsSnapshot.layout.configs.current[layoutConfigName] ??
+        settingsSnapshot.layout.configs.current.default
       if (settingsLayout) {
         layoutSignal.value = structuredClone(settingsLayout.layout)
       } else {
@@ -184,7 +195,10 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
       syncUserFeatureLayout()
     }
 
-    hydrateLayoutFromSettings()
+    const settingsSubscription = settingsActor.subscribe(
+      hydrateLayoutFromSettings
+    )
+    hydrateLayoutFromSettings(settingsActor.getSnapshot())
     const stopUserFeatureLayoutEffect = effect(() => {
       syncUserFeatureLayout()
     })
@@ -196,12 +210,20 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
         coreLayoutService.applyContributions(contributions)
       }
     })
+    // Settings reactions belong to the layout service, which also owns their lifetime.
+    const stopPanePreferenceEffect = effect(() => {
+      const behavior =
+        settings.current.value.layout.paneOpenBehavior.currentSignal.value
+      layoutSignal.value = applyPaneOpenBehavior(layoutSignal.peek(), behavior)
+    })
     const saveEffectUnsubscribeFn = effect(() =>
       saveLayout({ layout: layoutSignal.value, layoutName: layoutConfigName })
     )
 
     layout = coreLayoutService
     disposeLayout = () => {
+      settingsSubscription.unsubscribe()
+      stopPanePreferenceEffect()
       stopUserFeatureLayoutEffect()
       stopLayoutContributionsEffect()
       saveEffectUnsubscribeFn()
@@ -221,13 +243,11 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
   }
 
   return {
-    item: defineRuntimeRegistryItem({
-      id: 'layout-extension',
-      providesServices: [provideService(layoutService, serviceImpl)],
-      dispose: () => {
-        disposeLayout?.()
-      },
-    }),
+    id: 'layout-extension',
+    providesServices: [provideService(layoutService, serviceImpl)],
+    dispose: () => {
+      disposeLayout?.()
+    },
   }
 }, 'layout-extension')
 

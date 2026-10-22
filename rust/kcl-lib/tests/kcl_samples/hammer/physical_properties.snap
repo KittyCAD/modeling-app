@@ -18,12 +18,12 @@ description: Physical properties hammer.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 45429.890502199254
+    "value": 44925.337246660034
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 257.9901420573804
+    "value": 256.84356915547824
   }
 }

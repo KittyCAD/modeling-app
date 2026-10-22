@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react'
+// eslint-disable-next-line zds/no-react-router-hooks -- URL-state migration: typed mocks for the legacy router boundary.
 import type * as ReactRouterDom from 'react-router-dom'
 import { beforeEach, expect, it, vi } from 'vitest'
 

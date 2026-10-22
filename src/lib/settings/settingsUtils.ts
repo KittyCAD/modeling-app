@@ -507,10 +507,6 @@ const USER_APP_ONLY_SETTINGS_SECTIONS = [
       'enable_touch_controls'
     ),
     defineBooleanAppOnlyField(
-      { category: 'modeling', field: 'useSketchSolveMode' },
-      'use_sketch_solve_mode'
-    ),
-    defineBooleanAppOnlyField(
       { category: 'modeling', field: 'showSketchGrid' },
       'show_sketch_grid'
     ),

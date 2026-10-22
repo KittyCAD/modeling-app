@@ -76,11 +76,13 @@ valveBodyRegion = region(segments = [valveBodySketch.circle1])
 valveBody = extrude(valveBodyRegion, length = 1.5, tagEnd = $capEnd001)
   |> fillet(
        radius = 0.1,
-       tags = [
-         getCommonEdge(faces = [
-           valveBodyRegion.tags.circle1,
-           capEnd001
-         ])
+       edges = [
+         {
+           sideFaces = [
+             valveBodyRegion.tags.circle1,
+             capEnd001
+           ]
+         }
        ],
      )
   |> appearance(color = "#9a4618")

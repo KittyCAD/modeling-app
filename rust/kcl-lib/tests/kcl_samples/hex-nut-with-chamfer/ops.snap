@@ -2404,6 +2404,54 @@ description: Operations executed hex-nut-with-chamfer.kcl
         "sourceRange": []
       },
       "labeledArgs": {
+        "edges": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Object",
+                "value": {
+                  "sideFaces": {
+                    "type": "Array",
+                    "value": [
+                      {
+                        "type": "TagIdentifier",
+                        "value": "circle1",
+                        "artifact_id": "[uuid]"
+                      },
+                      {
+                        "type": "TagIdentifier",
+                        "value": "chamferEndFace",
+                        "artifact_id": "[uuid]"
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "Object",
+                "value": {
+                  "sideFaces": {
+                    "type": "Array",
+                    "value": [
+                      {
+                        "type": "TagIdentifier",
+                        "value": "circle1",
+                        "artifact_id": "[uuid]"
+                      },
+                      {
+                        "type": "TagIdentifier",
+                        "value": "chamferStartFace",
+                        "artifact_id": "[uuid]"
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "sourceRange": []
+        },
         "length": {
           "value": {
             "type": "Number",
@@ -2415,22 +2463,6 @@ description: Operations executed hex-nut-with-chamfer.kcl
                 "angle": "degrees"
               }
             }
-          },
-          "sourceRange": []
-        },
-        "tags": {
-          "value": {
-            "type": "Array",
-            "value": [
-              {
-                "type": "Uuid",
-                "value": "[uuid]"
-              },
-              {
-                "type": "Uuid",
-                "value": "[uuid]"
-              }
-            ]
           },
           "sourceRange": []
         }

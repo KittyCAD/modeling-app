@@ -9,6 +9,7 @@ import {
 import { parse } from '@src/lang/wasm'
 import type { Program } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
+import { isKclVersionAvailable } from '@src/lib/kclVersionRange'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { beforeAll, describe, expect, it } from 'vitest'
@@ -71,11 +72,33 @@ describe('getKclLanguageVersion', () => {
     )
   })
 
+  it('returns parse diagnostics and no version when there is no root program', () => {
+    const result = parse('@settings(kclVersion = 3.0)\nx =', getInstance())
+    if (err(result)) throw result
+    expect(result.program).toBeNull()
+    expect(result.kclVersion).toBeNull()
+    expect(result.errors.length).toBeGreaterThan(0)
+  })
+
   it.each([
     '@settings(kclVersion = "abcd")',
     '@settings(kclVersion = 2.0)\nx =',
   ])('does not supply a fallback for invalid source: %s', (code) => {
     expect(getKclLanguageVersion(code, getInstance())).toBeInstanceOf(Error)
+  })
+})
+
+describe('isKclVersionAvailable Wasm bridge', () => {
+  it('passes a range to Rust and returns its boolean result', () => {
+    const range = { addedIn: '2.0', removedIn: '3.0' }
+    expect(isKclVersionAvailable('2.0', range, getInstance())).toBe(true)
+    expect(isKclVersionAvailable('3.0', range, getInstance())).toBe(false)
+  })
+
+  it('surfaces invalid-boundary errors from Rust', () => {
+    expect(() =>
+      isKclVersionAvailable('3.0', { addedIn: 'invalid' }, getInstance())
+    ).toThrow()
   })
 })
 

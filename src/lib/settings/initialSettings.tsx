@@ -340,22 +340,6 @@ function createCoreSettings() {
         },
       }),
       /**
-       * Determines if new sketches should use the solver-based sketch mode.
-       * This setting is hidden and defaults to true. It now exists only so
-       * Playwright can set it to false for regression testing.
-       */
-      useSketchSolveMode: new Setting<boolean>({
-        hideOnLevel: 'project',
-        hideOnPlatform: 'both',
-        defaultValue: true,
-        description:
-          'Default to the solver-based sketch mode for all new projects.',
-        validate: (v) => typeof v === 'boolean',
-        commandConfig: {
-          inputType: 'boolean',
-        },
-      }),
-      /**
        * Projection method applied to the 3D view, perspective or orthographic
        */
       cameraProjection: new Setting<CameraProjectionType>({
@@ -689,6 +673,7 @@ function createCoreSettings() {
     meta: {
       id: new Setting<string>({
         hideOnLevel: 'user',
+        hideOnPlatform: 'both',
         defaultValue: uuidNIL,
         description: 'The unique project identifier.',
         // Never allow the user to change the id, only view it.

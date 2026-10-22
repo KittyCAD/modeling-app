@@ -16,6 +16,7 @@ use crate::execution::ExecState;
 use crate::execution::GeometryWithImportedGeometry;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
+use crate::execution::NewBodyKind;
 use crate::execution::Sketch;
 use crate::execution::Solid;
 use crate::execution::types::PrimitiveType;
@@ -60,7 +61,7 @@ async fn inner_mirror_3d(
         for mirrored_body in &mut unmapped_mirrored_bodies {
             let id = exec_state.next_uuid();
             mirrored_body.set_id(id);
-            mirrored_body.become_new_body(id, id.into());
+            mirrored_body.become_new_body(id, id.into(), NewBodyKind::IndependentCopy);
         }
         return Ok(unmapped_mirrored_bodies);
     }
@@ -72,14 +73,14 @@ async fn inner_mirror_3d(
     let across = match across {
         MirrorAcross3d::Axis { direction, origin } => MirrorAcross::Axis {
             axis: Point3d {
-                x: direction[0].to_mm(),
-                y: direction[1].to_mm(),
-                z: direction[2].to_mm(),
+                x: direction[0].unwrap_to_mm(),
+                y: direction[1].unwrap_to_mm(),
+                z: direction[2].unwrap_to_mm(),
             },
             point: Point3d {
-                x: LengthUnit(origin[0].to_mm()),
-                y: LengthUnit(origin[1].to_mm()),
-                z: LengthUnit(origin[2].to_mm()),
+                x: LengthUnit(origin[0].unwrap_to_mm()),
+                y: LengthUnit(origin[1].unwrap_to_mm()),
+                z: LengthUnit(origin[2].unwrap_to_mm()),
             },
         },
         MirrorAcross3d::Edge(edge) => {
@@ -156,7 +157,7 @@ async fn inner_mirror_3d(
         let old_id = mirrored_body.id;
         let source_topology_id = mirrored_body.topology_id();
         mirrored_body.id = info.object_id;
-        mirrored_body.become_new_body(info.object_id, info.object_id.into());
+        mirrored_body.become_new_body(info.object_id, info.object_id.into(), NewBodyKind::IndependentCopy);
         let mut new_geometry = GeometryWithImportedGeometry::Solid(mirrored_body);
         fix_tags_and_references(&mut new_geometry, old_id, source_topology_id, exec_state, &args)
             .await
@@ -224,13 +225,13 @@ async fn inner_mirror_2d(
                         mcmd::EntityMirror::builder()
                             .ids(starting_sketches.iter().map(|sketch| sketch.id).collect())
                             .axis(Point3d {
-                                x: direction[0].to_mm(),
-                                y: direction[1].to_mm(),
+                                x: direction[0].unwrap_to_mm(),
+                                y: direction[1].unwrap_to_mm(),
                                 z: 0.0,
                             })
                             .point(Point3d {
-                                x: LengthUnit(origin[0].to_mm()),
-                                y: LengthUnit(origin[1].to_mm()),
+                                x: LengthUnit(origin[0].unwrap_to_mm()),
+                                y: LengthUnit(origin[1].unwrap_to_mm()),
                                 z: LengthUnit(0.0),
                             })
                             .build(),

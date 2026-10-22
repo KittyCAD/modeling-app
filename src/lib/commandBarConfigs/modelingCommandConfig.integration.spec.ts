@@ -15,9 +15,16 @@ import {
   modelingStdLibCommandStatus,
   modelingStdLibCommandUsesExperimentalFeatures,
   type StdLibCommandDriftConfig,
+  stdLibCommandArgs,
+  stdLibCommandSources,
   stdLibCommandStatus,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
-import { STD_LIB_COMMANDS } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
+import {
+  STD_LIB_COMMANDS,
+  STD_LIB_ENUMS,
+  stdLibEnumOptions,
+  type StdLibCommandArg,
+} from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
 import type {
   CommandArgumentConfig,
   KclCommandValue,
@@ -562,14 +569,64 @@ function pointAndClickStdLibArgs(config: StdLibCommandDriftConfig) {
   const omitted = new Set<string>(config.omittedStdLibArgs ?? [])
   const includedDeprecated = new Set<string>(config.deprecatedStdLibArgs ?? [])
 
-  return STD_LIB_COMMANDS[config.stdLibName].args
+  return stdLibCommandArgsForConfig(config)
     .filter(
       (arg) => !isDeprecatedStdLibArg(arg) || includedDeprecated.has(arg.name)
     )
     .filter((arg) => !omitted.has(arg.name))
 }
 
+function stdLibCommandArgsForConfig(config: StdLibCommandDriftConfig) {
+  return stdLibCommandSources(config).flatMap<StdLibCommandArg>(
+    (command) => command.args
+  )
+}
+
 describe('stdlib command arg derivation', () => {
+  it('derives enum options while keeping UI defaults and labels', () => {
+    const values = STD_LIB_ENUMS['view::Visibility']
+    const options = stdLibEnumOptions(values, 'Hide', { Hide: 'Hide all' })
+
+    expect(options.map(({ value }) => value)).toEqual(['Hide', 'Show'])
+    expect(options[0]).toEqual({
+      name: 'Hide all',
+      value: 'Hide',
+      isCurrent: true,
+    })
+    expect(options[1].name).toBe('Show')
+  })
+
+  it('derives nested camera arguments from their stdlib source', () => {
+    const args =
+      modelingStdLibCommandArgs<ModelingCommandSchema['Named View']>(
+        'Named View'
+      )
+    const cameraArgs =
+      stdLibCommandArgs<Record<string, unknown>>('view::oriented')
+
+    expect(args.target).toEqual(cameraArgs.target)
+    expect(args.target.documentation).toBeTruthy()
+    expect(args).not.toHaveProperty('camera')
+  })
+
+  it('only derives docs for fields backed by a single stdlib argument', () => {
+    const args = stdLibCommandArgs<Record<string, unknown>>('gdt::position', {
+      argAliases: { faces: 'objects', edges: 'objects', tolerance: 'value' },
+      overrides: { objects: { description: 'Pick the features to annotate.' } },
+    })
+    const docs = STD_LIB_COMMANDS['gdt::position'].args
+
+    expect(args.objects.documentation).toBeUndefined()
+    expect(args.objects.description).toBe('Pick the features to annotate.')
+    expect(args.value.documentation).toBe(
+      docs.find((arg) => arg.name === 'tolerance')?.docs?.trim()
+    )
+    expect(args.datums.documentation).toBe(
+      docs.find((arg) => arg.name === 'datums')?.docs?.trim()
+    )
+    expect(args.value.description).toBeUndefined()
+  })
+
   it('derives base command-bar arg config from KCL stdlib metadata', () => {
     const args = modelingStdLibCommandArgs<ModelingCommandSchema['Extrude']>(
       'Extrude',
@@ -676,7 +733,7 @@ describe('modeling command stdlib drift', () => {
         const omitted = new Set<string>(config.omittedStdLibArgs ?? [])
         const included = new Set<string>(config.deprecatedStdLibArgs ?? [])
 
-        return STD_LIB_COMMANDS[config.stdLibName].args
+        return stdLibCommandArgsForConfig(config)
           .filter((arg) => !arg.special && isDeprecatedStdLibArg(arg))
           .filter((arg) => !omitted.has(arg.name) && !included.has(arg.name))
           .map((arg) => `${commandName} (${config.stdLibName}).${arg.name}`)
@@ -693,7 +750,7 @@ describe('modeling command stdlib drift', () => {
     )) {
       const config = driftConfig as StdLibCommandDriftConfig
       const stdLibArgNames = new Set<string>(
-        STD_LIB_COMMANDS[config.stdLibName].args.map((arg) => arg.name)
+        stdLibCommandArgsForConfig(config).map((arg) => arg.name)
       )
       const includedDeprecated = new Set<string>(
         config.deprecatedStdLibArgs ?? []
@@ -723,7 +780,7 @@ describe('modeling command stdlib drift', () => {
 
       expect(
         (config.deprecatedStdLibArgs ?? []).filter((argName) => {
-          const arg = STD_LIB_COMMANDS[config.stdLibName].args.find(
+          const arg = stdLibCommandArgsForConfig(config).find(
             (candidate) => candidate.name === argName
           )
           return arg && !isDeprecatedStdLibArg(arg)

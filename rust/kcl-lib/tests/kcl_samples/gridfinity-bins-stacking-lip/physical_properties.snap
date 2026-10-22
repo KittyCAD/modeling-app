@@ -18,12 +18,12 @@ description: Physical properties gridfinity-bins-stacking-lip.kcl
   },
   "surface_area": {
     "unit": "mm2",
-    "value": 65922.62407143872
+    "value": 65923.59884700726
   },
   "weight": {
     "material_density": 1000.0,
     "material_density_unit": "kg:m3",
     "unit": "g",
-    "value": 59.80008107033466
+    "value": 59.80045002341224
   }
 }

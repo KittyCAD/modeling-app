@@ -27,6 +27,7 @@ interface CreateMachineCommandProps<
   send: Function
   actor: Actor<T>
   commandBarConfig?: StateMachineCommandSetConfig<T, S>
+  getDefaultDescription?: (type: EventFrom<T>['type']) => string | undefined
   defaultScopes: Command['scopes']
   onCancel?: () => void
   forceDisable?: boolean
@@ -45,6 +46,7 @@ export function createMachineCommand<
   send,
   actor,
   commandBarConfig,
+  getDefaultDescription,
   defaultScopes,
   onCancel,
   forceDisable = false,
@@ -75,6 +77,7 @@ export function createMachineCommand<
           send,
           actor,
           commandBarConfig: recursiveCommandBarConfig,
+          getDefaultDescription,
           defaultScopes,
           onCancel,
           forceDisable,
@@ -104,7 +107,7 @@ export function createMachineCommand<
     name: type,
     groupId,
     icon,
-    description: commandConfig.description,
+    description: commandConfig.description ?? getDefaultDescription?.(type),
     scopes: commandConfig.scopes ?? defaultScopes,
     needsReview: commandConfig.needsReview || false,
     machineActor: actor,
@@ -116,6 +119,7 @@ export function createMachineCommand<
       }
     },
     disabled: forceDisable,
+    forceCommandBar: commandConfig.forceCommandBar,
   }
 
   if (commandConfig.args) {
@@ -166,6 +170,7 @@ function buildCommandArguments<
 
   for (const arg in args) {
     const argConfig = args[arg] as CommandArgumentConfig<S[typeof arg], T>
+    if (argConfig.available?.(state.context) === false) continue
     const newArg = buildCommandArgument(
       argConfig,
       state.context,
@@ -200,6 +205,7 @@ export function buildCommandArgument<
   const baseCommandArgument = {
     displayName: arg.displayName,
     description: arg.description,
+    documentation: arg.documentation,
     status: arg.status,
     statusMessage: arg.statusMessage,
     required,
@@ -208,6 +214,7 @@ export function buildCommandArgument<
     skip: arg.skip,
     machineActor,
     valueSummary: arg.valueSummary,
+    dialog: arg.dialog,
   } satisfies Omit<CommandArgument<O, T>, 'inputType'>
 
   if (arg.inputType === 'options') {
@@ -227,22 +234,11 @@ export function buildCommandArgument<
       ...baseCommandArgument,
       multiple: arg.multiple,
       selectionTypes: arg.selectionTypes,
+      allowCodeReferences: arg.allowCodeReferences,
       validation: arg.validation,
       clearSelectionFirst: arg.clearSelectionFirst,
       selectionFilter: arg.selectionFilter,
     } satisfies CommandArgument<O, T> & { inputType: 'selection' }
-  } else if (arg.inputType === 'selectionMixed') {
-    return {
-      inputType: arg.inputType,
-      ...baseCommandArgument,
-      multiple: arg.multiple,
-      selectionTypes: arg.selectionTypes,
-      validation: arg.validation,
-      clearSelectionFirst: arg.clearSelectionFirst,
-      allowNoSelection: arg.allowNoSelection,
-      selectionSource: arg.selectionSource,
-      selectionFilter: arg.selectionFilter,
-    } satisfies CommandArgument<O, T> & { inputType: 'selectionMixed' }
   } else if (arg.inputType === 'kcl') {
     return {
       inputType: arg.inputType,

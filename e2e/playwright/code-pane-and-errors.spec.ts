@@ -2,7 +2,11 @@ import { join } from 'path'
 import fsp from 'fs/promises'
 
 import { TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW } from '@e2e/playwright/storageStates'
-import { executorInputPath, getUtils } from '@e2e/playwright/test-utils'
+import {
+  executorInputPath,
+  expectRenderedDiagnosticText,
+  getUtils,
+} from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
@@ -53,6 +57,7 @@ extrude001 = extrude(sketch001, length = 5)`
     page,
     homePage,
     context,
+    editor,
   }) => {
     // Load the app with the working starter code
     await context.addInitScript((code) => {
@@ -67,6 +72,7 @@ extrude001 = extrude(sketch001, length = 5)`
     await expect(codePaneButtonHolder).toContainText('notification', {
       timeout: 20_000,
     })
+    await expect(editor.codeContent).toBeVisible()
 
     // Ensure we have no errors in the gutter, since error out of view.
     await expect(page.locator('.cm-lint-marker-error')).not.toBeInViewport()
@@ -77,6 +83,19 @@ extrude001 = extrude(sketch001, length = 5)`
     await badge.click()
 
     // Ensure we have an error diagnostic.
+    await expect(editor.codeContent).toBeVisible()
+    await expect(page.locator('.cm-lint-marker-error').first()).toBeInViewport()
+
+    // Repeated navigation to an error must keep the code pane open.
+    await badge.click()
+    await expect(editor.codeContent).toBeVisible()
+    await expect(page.locator('.cm-lint-marker-error').first()).toBeInViewport()
+
+    // The same notification must also open a closed code pane.
+    await editor.closePane()
+    await expect(editor.codeContent).not.toBeVisible()
+    await badge.click()
+    await expect(editor.codeContent).toBeVisible()
     await expect(page.locator('.cm-lint-marker-error').first()).toBeInViewport()
 
     // Hover over the error to see the error message
@@ -123,14 +142,19 @@ middle(0)
         await page.getByText('fn check(').click()
         await page.keyboard.press('ControlOrMeta+Shift+M')
       })
-      await expect(
-        page.getByText(`assert failed: Expected 0 to be greater than 0 but it wasn't
+      const error = page
+        .getByLabel('Diagnostics')
+        .locator('.cm-diagnosticText')
+        .filter({ hasText: 'assert failed' })
+      await expectRenderedDiagnosticText(
+        error,
+        `assert failed: Expected 0 to be greater than 0 but it wasn't
 
 Backtrace:
 assert()
 check()
-middle()`)
-      ).toBeVisible()
+middle()`
+      )
       // There should be one hint inside middle() and one at the top level.
       await expect(page.getByText('Part of the error backtrace')).toHaveCount(2)
     }
@@ -185,13 +209,19 @@ middle()`)
 
     // The original error message is preserved, and import frames are
     // labeled as imports (no call parens), innermost first.
-    await expect(
-      page.getByLabel('Diagnostics').getByText(`\`missingName\` is not defined
+    const error = page
+      .getByLabel('Diagnostics')
+      .locator('.cm-diagnosticText')
+      .filter({ hasText: 'missingName' })
+    await expectRenderedDiagnosticText(
+      error,
+      `missingName is not defined
 
 Backtrace:
 import broken.kcl
-import assembly.kcl`)
-    ).toBeVisible()
+import assembly.kcl`
+    )
+    await expect(error.locator('code')).toHaveText('missingName')
     // The import frames are in other files and the top-level frame is the
     // error's own range, so there are no backtrace hint diagnostics.
     await expect(page.getByText('Part of the error backtrace')).toHaveCount(0)

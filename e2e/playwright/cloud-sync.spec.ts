@@ -709,8 +709,14 @@ test(
           'Remote only project',
         ])
       )
-    await expect.poll(() => apiCalls.creates.length).toBeGreaterThanOrEqual(1)
-    await expect.poll(() => staleUpdateCalls().length).toBeGreaterThanOrEqual(1)
+    await expect
+      .poll(() => apiCalls.creates.length, { timeout: CLOUD_SYNC_E2E_TIMEOUT })
+      .toBeGreaterThanOrEqual(1)
+    await expect
+      .poll(() => staleUpdateCalls().length, {
+        timeout: CLOUD_SYNC_E2E_TIMEOUT,
+      })
+      .toBeGreaterThanOrEqual(1)
     await expect
       .poll(
         () =>

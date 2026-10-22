@@ -1,5 +1,6 @@
 import {
   defineRegistryItem,
+  provide,
   provideService,
   Registry,
   Slot,
@@ -15,6 +16,7 @@ import {
   GLOBAL_COMMAND_SCOPES,
   HOME_COMMAND_SCOPE,
   MODE_MODELING_COMMAND_SCOPE,
+  MODELING_DIALOG_FOCUSED_COMMAND_SCOPE,
   SETTINGS_COMMAND_SCOPE,
 } from '@src/registry/contracts/commands'
 import {
@@ -29,6 +31,7 @@ import {
   keymapContract,
   keymapScopesValueSpec,
   keymapService,
+  keymapEventOwnersValueSpec,
   MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
   MODE_SKETCHING_KEYMAP_SCOPE,
   type PersistedKeymap,
@@ -49,6 +52,62 @@ const testFileOperations = {} as FileOperationsRegistryService
 vi.mock('@src/registry/extensions/keymap/persistence', () => persistenceMocks)
 
 describe('keymap extension', () => {
+  it('leaves widget keys local while allowing explicitly scoped editable bindings', () => {
+    const send = vi.fn()
+    const tree = document.createElement('zoo-feature-tree')
+    const row = document.createElement('zoo-feature-tree-row')
+    const registry = createRegistryWithKeymapItems(
+      [
+        {
+          id: 'global-x',
+          title: 'Global X',
+          source: 'test',
+          command: 'global-x',
+          keystrokes: ['x'],
+          when: [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE],
+        },
+        {
+          id: 'tree-y',
+          title: 'Tree Y',
+          source: 'test',
+          command: 'tree-y',
+          keystrokes: ['y'],
+          when: ['feature-tree.focused'],
+        },
+      ],
+      {
+        send,
+        extraItems: [
+          defineRegistryItem({
+            id: 'widget-owner',
+            provides: [
+              provide(keymapEventOwnersValueSpec, {
+                id: 'tree',
+                scope: 'feature-tree.focused',
+                owns: (event) => event.composedPath().includes(tree),
+              }),
+            ],
+          }),
+        ],
+      }
+    )
+    const keymap = registry.get(keymapService)
+    keymap.applyScope('feature-tree.focused')
+    const event = (key: string) => {
+      const event = createKeyboardEventWithTarget(key, row, {
+        cancelable: true,
+      })
+      vi.spyOn(event, 'composedPath').mockReturnValue([row, tree])
+      return event
+    }
+    const printable = event('x')
+    expect(keymap.handleKeyDown(printable, { source: 'global' })).toBe(false)
+    expect(printable.defaultPrevented).toBe(false)
+    expect(send).not.toHaveBeenCalled()
+    expect(keymap.handleKeyDown(event('y'), { source: 'global' })).toBe(true)
+    expect(send).toHaveBeenCalledOnce()
+    registry[Symbol.dispose]()
+  })
   beforeEach(() => {
     persistenceMocks.readUserKeymapFile.mockReset().mockResolvedValue({
       version: KEYMAP_SCHEMA_VERSION,
@@ -92,6 +151,48 @@ describe('keymap extension', () => {
   it('keeps the keymap scope ValueSpec as a command scope alias', () => {
     expect(keymapScopesValueSpec).toBe(commandScopesValueSpec)
     expect(keymapContract.keymapScopesValueSpec).toBe(commandScopesValueSpec)
+  })
+
+  it('submits modeling dialogs only from the active collector or scene focus', () => {
+    const registry = createRegistryWithKeymapItems([])
+    const keymap = registry.get(keymapService)
+    const form = document.createElement('form')
+    const selection = document.createElement('button')
+    selection.type = 'button'
+    selection.dataset.modelingDialogSelection = 'true'
+    const remove = document.createElement('button')
+    remove.type = 'button'
+    form.append(selection, remove)
+    document.body.append(form)
+    const requestSubmit = vi
+      .spyOn(form, 'requestSubmit')
+      .mockImplementation(() => {})
+
+    for (const target of [selection, document.body]) {
+      if (target === selection) selection.focus()
+      else selection.blur()
+      expect(
+        keymap.handleKeyDown(createKeyboardEventWithTarget('Enter', target), {
+          source: 'global',
+        })
+      ).toBe(true)
+      expect(keymap.getCurrentScopes()).toContain(
+        MODELING_DIALOG_FOCUSED_COMMAND_SCOPE
+      )
+    }
+    remove.focus()
+    expect(
+      keymap.handleKeyDown(createKeyboardEventWithTarget('Enter', remove), {
+        source: 'global',
+      })
+    ).toBe(false)
+    expect(keymap.getCurrentScopes()).not.toContain(
+      MODELING_DIALOG_FOCUSED_COMMAND_SCOPE
+    )
+    expect(requestSubmit).toHaveBeenCalledTimes(2)
+
+    form.remove()
+    registry[Symbol.dispose]()
   })
 
   it('keeps the Import command compatible with saved Insert shortcuts', () => {
