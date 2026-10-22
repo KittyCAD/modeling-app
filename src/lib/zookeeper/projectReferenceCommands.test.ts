@@ -160,6 +160,14 @@ function fixture(
   }
 }
 
+async function searchProjectId(
+  request: ReturnType<typeof fixture>['request'],
+  query: string
+) {
+  const found = await request('projects.search', { query })
+  return (found.result?.projects as Array<{ project_id: string }>)[0].project_id
+}
+
 describe('Zookeeper project reference commands', () => {
   beforeAll(async () => {
     await moduleFsViaModuleImport({ type: StorageName.NodeFS, options: {} })
@@ -271,10 +279,7 @@ describe('Zookeeper project reference commands', () => {
       getApiToken: () => apiToken,
       includePersonalCloud: () => true,
     })
-    const found = await request('projects.search', { query: 'propeller' })
-    const projectId = (
-      found.result?.projects as Array<{ project_id: string }>
-    )[0].project_id
+    const projectId = await searchProjectId(request, 'propeller')
     const listing = await request('projects.list_files', {
       project_id: projectId,
     })
@@ -305,10 +310,7 @@ describe('Zookeeper project reference commands', () => {
       initialEntries: [localProject],
       includePersonalCloud: () => true,
     })
-    const found = await request('projects.search', { query: 'propeller' })
-    const projectId = (
-      found.result?.projects as Array<{ project_id: string }>
-    )[0].project_id
+    const projectId = await searchProjectId(request, 'propeller')
     const listing = await request('projects.list_files', {
       project_id: projectId,
     })
@@ -344,10 +346,7 @@ describe('Zookeeper project reference commands', () => {
   it('rechecks library membership for a retried read after reconnect', async () => {
     const { commands, entries, request, ws } = fixture()
     commands.advertise(ws)
-    const found = await request('projects.search', { query: 'TRUCK' })
-    const projectId = (
-      found.result?.projects as Array<{ project_id: string }>
-    )[0].project_id
+    const projectId = await searchProjectId(request, 'TRUCK')
     const args = { project_id: projectId, path: 'main.kcl' }
     const first = await request('projects.read_file', args)
     expect(first.result?.content).toBe('wheel = circle(10)')
@@ -387,10 +386,7 @@ describe('Zookeeper project reference commands', () => {
       ws,
     } = fixture()
     commands.advertise(ws)
-    const found = await request('projects.search', { query: 'TRUCK' })
-    const projectId = (
-      found.result?.projects as Array<{ project_id: string }>
-    )[0].project_id
+    const projectId = await searchProjectId(request, 'TRUCK')
     let finishRead!: (names: readonly string[]) => void
     const pausedRead = new Promise<readonly string[]>((resolve) => {
       finishRead = resolve
@@ -460,10 +456,7 @@ describe('Zookeeper project reference commands', () => {
 
   it('lists and reads nested KCL without opening or writing the source', async () => {
     const { fileOperations, readFile, request } = fixture()
-    const found = await request('projects.search', { query: 'TRUCK' })
-    const projectId = (
-      found.result?.projects as Array<{ project_id: string }>
-    )[0].project_id
+    const projectId = await searchProjectId(request, 'TRUCK')
     const listing = await request('projects.list_files', {
       project_id: projectId,
     })
@@ -486,10 +479,7 @@ describe('Zookeeper project reference commands', () => {
   it('reads a known local KCL file without enumerating the project', async () => {
     const { readDirectory, request } = fixture()
     readDirectory.mockRejectedValue(new Error('Directory listing unavailable'))
-    const found = await request('projects.search', { query: 'TRUCK' })
-    const projectId = (
-      found.result?.projects as Array<{ project_id: string }>
-    )[0].project_id
+    const projectId = await searchProjectId(request, 'TRUCK')
 
     const read = await request('projects.read_file', {
       project_id: projectId,
@@ -502,10 +492,7 @@ describe('Zookeeper project reference commands', () => {
 
   it('rejects traversal, hidden files, and a project removed from the library', async () => {
     const { entries, readFile, request } = fixture()
-    const found = await request('projects.search', { query: 'TRUCK' })
-    const projectId = (
-      found.result?.projects as Array<{ project_id: string }>
-    )[0].project_id
+    const projectId = await searchProjectId(request, 'TRUCK')
     for (const path of ['../secret.kcl', '.env', 'parts/../../secret.kcl']) {
       const response = await request('projects.read_file', {
         project_id: projectId,
@@ -546,10 +533,7 @@ describe('Zookeeper project reference commands', () => {
       kind: path.endsWith('/linked') ? 'directory' : 'file',
       size: 20,
     }))
-    const found = await request('projects.search', { query: 'TRUCK' })
-    const projectId = (
-      found.result?.projects as Array<{ project_id: string }>
-    )[0].project_id
+    const projectId = await searchProjectId(request, 'TRUCK')
 
     const listing = await request('projects.list_files', {
       project_id: projectId,
@@ -584,10 +568,7 @@ describe('Zookeeper project reference commands', () => {
         initialEntries: [{ ...localProject, localProjectPath: root }],
         fileOperations: runtime.operations,
       })
-      const found = await request('projects.search', { query: 'TRUCK' })
-      const projectId = (
-        found.result?.projects as Array<{ project_id: string }>
-      )[0].project_id
+      const projectId = await searchProjectId(request, 'TRUCK')
 
       const listing = await request('projects.list_files', {
         project_id: projectId,
@@ -610,10 +591,7 @@ describe('Zookeeper project reference commands', () => {
     const { readFile, request } = fixture()
     const content = `${'a'.repeat(7_999)}🚗 more`
     readFile.mockResolvedValue(new TextEncoder().encode(content))
-    const found = await request('projects.search', { query: 'TRUCK' })
-    const projectId = (
-      found.result?.projects as Array<{ project_id: string }>
-    )[0].project_id
+    const projectId = await searchProjectId(request, 'TRUCK')
     const first = await request('projects.read_file', {
       project_id: projectId,
       path: 'main.kcl',
@@ -649,10 +627,7 @@ describe('Zookeeper project reference commands', () => {
     readFile
       .mockResolvedValueOnce(new TextEncoder().encode('a'.repeat(8_001)))
       .mockResolvedValueOnce(new TextEncoder().encode('b'.repeat(8_001)))
-    const found = await request('projects.search', { query: 'TRUCK' })
-    const projectId = (
-      found.result?.projects as Array<{ project_id: string }>
-    )[0].project_id
+    const projectId = await searchProjectId(request, 'TRUCK')
     const first = await request('projects.read_file', {
       project_id: projectId,
       path: 'main.kcl',
@@ -676,10 +651,7 @@ describe('Zookeeper project reference commands', () => {
     readDirectory.mockRejectedValueOnce(
       new Error('Unable to read-directory /private/library/TRUCK')
     )
-    const found = await request('projects.search', { query: 'TRUCK' })
-    const projectId = (
-      found.result?.projects as Array<{ project_id: string }>
-    )[0].project_id
+    const projectId = await searchProjectId(request, 'TRUCK')
     const response = await request('projects.list_files', {
       project_id: projectId,
     })
@@ -696,10 +668,7 @@ describe('Zookeeper project reference commands', () => {
     cloudMocks.parse.mockResolvedValue(
       new TextEncoder().encode('cloudWheel = circle(12)')
     )
-    const found = await request('projects.search', { query: 'TRUCK cloud' })
-    const projectId = (
-      found.result?.projects as Array<{ project_id: string }>
-    )[0].project_id
+    const projectId = await searchProjectId(request, 'TRUCK cloud')
     const read = await request('projects.read_file', {
       project_id: projectId,
       path: 'main.kcl',
@@ -720,30 +689,22 @@ describe('Zookeeper project reference commands', () => {
     )
   })
 
-  it('lists cloud files from metadata and rejects large files before download', async () => {
+  it('lists cloud files from metadata without downloading assets', async () => {
     cloudMocks.get.mockResolvedValue({
       id: 'cloud-123',
       revision: 'revision-1',
       files: [
-        { relative_path: 'main.kcl', byte_size: 300_000 },
-        { relative_path: 'parts/wheel.kcl', byte_size: 100 },
-        { relative_path: 'render.png', byte_size: 1_000_000 },
+        { relative_path: 'main.kcl' },
+        { relative_path: 'parts/wheel.kcl' },
+        { relative_path: 'render.png' },
       ],
     })
     const { request } = fixture()
-    const found = await request('projects.search', { query: 'TRUCK cloud' })
-    const projectId = (
-      found.result?.projects as Array<{ project_id: string }>
-    )[0].project_id
+    const projectId = await searchProjectId(request, 'TRUCK cloud')
     const listing = await request('projects.list_files', {
       project_id: projectId,
     })
     expect(listing.result?.files).toEqual(['main.kcl', 'parts/wheel.kcl'])
-    const read = await request('projects.read_file', {
-      project_id: projectId,
-      path: 'main.kcl',
-    })
-    expect(read.error).toBe('File is too large to reference.')
     expect(cloudMocks.download).not.toHaveBeenCalled()
   })
 
@@ -753,10 +714,7 @@ describe('Zookeeper project reference commands', () => {
     cloudMocks.parse.mockResolvedValue(
       new TextEncoder().encode('a'.repeat(8_001))
     )
-    const found = await request('projects.search', { query: 'TRUCK cloud' })
-    const projectId = (
-      found.result?.projects as Array<{ project_id: string }>
-    )[0].project_id
+    const projectId = await searchProjectId(request, 'TRUCK cloud')
     const first = await request('projects.read_file', {
       project_id: projectId,
       path: 'main.kcl',
@@ -801,10 +759,7 @@ describe('Zookeeper project reference commands', () => {
     cloudMocks.parse
       .mockResolvedValueOnce(new TextEncoder().encode('a'.repeat(8_001)))
       .mockResolvedValueOnce(new TextEncoder().encode('b'.repeat(8_001)))
-    const found = await request('projects.search', { query: 'TRUCK cloud' })
-    const projectId = (
-      found.result?.projects as Array<{ project_id: string }>
-    )[0].project_id
+    const projectId = await searchProjectId(request, 'TRUCK cloud')
     const first = await request('projects.read_file', {
       project_id: projectId,
       path: 'main.kcl',
@@ -833,10 +788,7 @@ describe('Zookeeper project reference commands', () => {
     cloudMocks.parse
       .mockResolvedValueOnce(new TextEncoder().encode('a'.repeat(8_001)))
       .mockResolvedValueOnce(new TextEncoder().encode('b'.repeat(8_001)))
-    const found = await request('projects.search', { query: 'TRUCK cloud' })
-    const projectId = (
-      found.result?.projects as Array<{ project_id: string }>
-    )[0].project_id
+    const projectId = await searchProjectId(request, 'TRUCK cloud')
     const first = await request('projects.read_file', {
       project_id: projectId,
       path: 'main.kcl',
@@ -863,10 +815,7 @@ describe('Zookeeper project reference commands', () => {
     cloudMocks.parse
       .mockResolvedValueOnce(new TextEncoder().encode('a'.repeat(8_001)))
       .mockResolvedValueOnce(new TextEncoder().encode('b'.repeat(8_001)))
-    const found = await request('projects.search', { query: 'TRUCK cloud' })
-    const projectId = (
-      found.result?.projects as Array<{ project_id: string }>
-    )[0].project_id
+    const projectId = await searchProjectId(request, 'TRUCK cloud')
     const first = await request('projects.read_file', {
       project_id: projectId,
       path: 'main.kcl',
@@ -893,10 +842,7 @@ describe('Zookeeper project reference commands', () => {
   it('reports an oversized cloud archive without exposing request details', async () => {
     const { request } = fixture()
     cloudMocks.download.mockRejectedValue(new RemoteProjectArchiveLimitError())
-    const found = await request('projects.search', { query: 'TRUCK cloud' })
-    const projectId = (
-      found.result?.projects as Array<{ project_id: string }>
-    )[0].project_id
+    const projectId = await searchProjectId(request, 'TRUCK cloud')
 
     const read = await request('projects.read_file', {
       project_id: projectId,
@@ -915,10 +861,7 @@ describe('Zookeeper project reference commands', () => {
         relative_path: `part-${String(index).padStart(3, '0')}-${'x'.repeat(500)}.kcl`,
       })),
     })
-    const found = await request('projects.search', { query: 'TRUCK cloud' })
-    const projectId = (
-      found.result?.projects as Array<{ project_id: string }>
-    )[0].project_id
+    const projectId = await searchProjectId(request, 'TRUCK cloud')
     const first = await request('projects.list_files', {
       project_id: projectId,
     })
@@ -941,10 +884,7 @@ describe('Zookeeper project reference commands', () => {
   it('fails closed when cloud file metadata is unavailable', async () => {
     cloudMocks.get.mockResolvedValue({ id: 'cloud-123' })
     const { request } = fixture()
-    const found = await request('projects.search', { query: 'TRUCK cloud' })
-    const projectId = (
-      found.result?.projects as Array<{ project_id: string }>
-    )[0].project_id
+    const projectId = await searchProjectId(request, 'TRUCK cloud')
     const listing = await request('projects.list_files', {
       project_id: projectId,
     })

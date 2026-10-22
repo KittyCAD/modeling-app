@@ -6,7 +6,7 @@ import {
   RemoteProjectArchiveLimitError,
 } from '@src/lib/cloudSync/cloudApi'
 import { readProjectArchiveFile } from '@src/lib/cloudSync/projectArchive'
-import type { CloudSyncConfig, RemoteProject } from '@src/lib/cloudSync/types'
+import type { CloudSyncConfig } from '@src/lib/cloudSync/types'
 import fsZds from '@src/lib/fs-zds'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { PERSONAL_CLOUD_PROJECT_LIBRARY_ID } from '@src/lib/projectLibraries'
@@ -342,10 +342,6 @@ export function createProjectReferenceCommands(deps: {
         )
       )
     }
-    return { apiToken, config, project, remoteProjectId: entry.remoteProjectId }
-  }
-
-  async function cloudFileNames(project: RemoteProject): Promise<string[]> {
     if (!isArray(project.files) || project.files.length > MAX_FILES * 2) {
       return Promise.reject(
         new ProjectReferenceCommandError('Project files are unavailable.')
@@ -373,7 +369,14 @@ export function createProjectReferenceCommands(deps: {
       seen.add(path)
       files.push(path)
     }
-    return files.sort((a, b) => a.localeCompare(b))
+    files.sort((a, b) => a.localeCompare(b))
+    return {
+      apiToken,
+      config,
+      project,
+      remoteProjectId: entry.remoteProjectId,
+      files,
+    }
   }
 
   async function readCloudFile(
@@ -381,23 +384,11 @@ export function createProjectReferenceCommands(deps: {
     path: string,
     useSnapshot: boolean
   ): Promise<Uint8Array> {
-    const { apiToken, config, project, remoteProjectId } =
+    const { apiToken, config, project, remoteProjectId, files } =
       await cloudProjectMetadata(entry)
-    const files = await cloudFileNames(project)
     if (!files.includes(path)) {
       return Promise.reject(
         new ProjectReferenceCommandError('File is no longer available.')
-      )
-    }
-    const metadata = (
-      project.files as Array<{ relative_path: string; byte_size?: unknown }>
-    ).find((file) => file.relative_path === path)
-    if (
-      typeof metadata?.byte_size === 'number' &&
-      metadata.byte_size > MAX_FILE_BYTES
-    ) {
-      return Promise.reject(
-        new ProjectReferenceCommandError('File is too large to reference.')
       )
     }
     // updated_at is not a content revision; revisionless servers need a fresh
@@ -542,8 +533,8 @@ export function createProjectReferenceCommands(deps: {
     if (entry.localProjectPath) {
       return localFiles(entry.localProjectPath)
     }
-    const { project } = await cloudProjectMetadata(entry)
-    return cloudFileNames(project)
+    const { files } = await cloudProjectMetadata(entry)
+    return files
   }
 
   async function listFiles(args: Record<string, unknown>) {
