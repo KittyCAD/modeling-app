@@ -1,7 +1,7 @@
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
-import type { KclManager } from '@src/lang/KclManager'
 import { sourceRangeToUtf16 } from '@src/lang/errors'
+import type { KclManager } from '@src/lang/KclManager'
 import {
   deleteSelectionPromise,
   deletionErrorMessage,
@@ -16,9 +16,9 @@ import {
 import type { Artifact, ArtifactGraph, SourceRange } from '@src/lang/wasm'
 import {
   type EnterEditFlowProps,
-  type HideOperation,
   enterEditFlow,
   getHideOpByArtifactId,
+  type HideOperation,
 } from '@src/lib/operations'
 import type RustContext from '@src/lib/rustContext'
 import { err } from '@src/lib/trap'

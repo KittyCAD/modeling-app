@@ -389,6 +389,10 @@ pub struct ExecOutcome {
     pub issues: Vec<CompilationIssue>,
     /// File Names in module Id array index order
     pub filenames: IndexMap<ModuleId, ModulePath>,
+    /// The engine scene generation when this outcome was produced: the number of
+    /// runs so far that changed the engine scene. Runs answered from the cache
+    /// and mock runs leave it unchanged.
+    pub engine_scene_generation: usize,
     /// Source code of each module, for rendering issues against the module
     /// their source range points into. Not serialized to keep the WASM
     /// payload small; native callers (e.g. the Python bindings) read it
@@ -1698,20 +1702,30 @@ impl ExecutorContext {
             exec_fut.await
         };
 
-        if result.is_err() {
-            self.cache.bust_cache().await;
+        match result {
+            Ok(outcome) => Ok(outcome),
+            Err(mut err) => {
+                self.cache.bust_cache().await;
+                err.engine_scene_generation = Some(self.cache.engine_scene_generation().await);
+                Err(err)
+            }
         }
-        result
     }
 
     async fn run_with_caching_inner(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
         let original_program = program.clone();
+        let prepared = self.prepare_cached_execution(program).await;
+        if !matches!(prepared, Ok(PreparedCachedExecution::Cached(_))) {
+            // Anything but a cache hit may have changed the engine scene, even
+            // if it went on to fail.
+            self.cache.bump_engine_scene_generation().await;
+        }
         let CachedExecution {
             program,
             mut exec_state,
             universe_info,
             preserve_mem,
-        } = *match self.prepare_cached_execution(program).await? {
+        } = *match prepared? {
             PreparedCachedExecution::Cached(outcome) => return Ok(*outcome),
             PreparedCachedExecution::Execute(execution) => execution,
         };
@@ -5424,6 +5438,25 @@ solid7 = extrude(r7, length = width)
         assert_number_variable(&outcome.variables, "y", 3.0);
         ctx.close().await;
         mock.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn engine_scene_generation_skips_cache_hits_and_counts_failures() {
+        let ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
+        let program = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = 2").unwrap();
+        let first = ctx.run_with_caching(program.clone()).await.unwrap();
+        assert_eq!(first.engine_scene_generation, 1);
+        let cached = ctx.run_with_caching(program).await.unwrap();
+        assert_eq!(cached.engine_scene_generation, 1, "a cache hit leaves the scene alone");
+
+        let invalid = crate::Program::parse_no_errs("@settings(kclVersion = 3.0)\nx = missing").unwrap();
+        let err = ctx.run_with_caching(invalid).await.unwrap_err();
+        assert_eq!(
+            err.engine_scene_generation,
+            Some(2),
+            "a failed run may still change the scene"
+        );
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]

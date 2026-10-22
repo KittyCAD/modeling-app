@@ -9,7 +9,7 @@ import type { KclManager } from '@src/lang/KclManager'
 import { MachineManager } from '@src/lib/MachineManager'
 import type { Command } from '@src/lib/commandTypes'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { CommandBarContext } from '@src/machines/commandBarMachine'
+import type { UserFeaturesService } from '@src/machines/userFeaturesMachine'
 import {
   COMMAND_PALETTE_OPEN_COMMAND_SCOPE,
   FILE_AND_CODE_EDITOR_COMMAND_SCOPES,
@@ -29,33 +29,18 @@ import {
 import { getKeymapItemWhen } from '@src/registry/contracts/keymap'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
+import { commandsValueSpec } from '@src/registry/contracts/commands'
+import { projectSession } from '@src/registry/contracts/projectSession'
+import projectSessionRegistryItem from '@src/registry/extensions/projectSession'
+import type { ZDSProject } from '@src/lib/projectSession'
 import { defaultKeymap } from '@src/registry/extensions/keymap/defaultKeymap'
 import { describe, expect, it, vi } from 'vitest'
-import { commandsExtension } from '.'
-import { APP_COMMAND_IDS, appCommands } from './appCommands'
-import { TOOLBAR_COMMAND_IDS, toolbarCommands } from './toolbarCommands'
+import { commandsExtension, toolbarCommandsItem } from '.'
+import { APP_COMMAND_IDS, createAppCommands } from './appCommands'
+import { TOOLBAR_COMMAND_IDS, createToolbarCommands } from './toolbarCommands'
 
-function createCommandBarContext({
-  kclManager,
-  userFeatures,
-}: {
-  kclManager: KclManager
-  userFeatures?: NonNullable<CommandBarContext['userFeatures']>
-}): CommandBarContext {
-  const context: CommandBarContext = {
-    commands: [],
-    wasmInstancePromise: Promise.resolve({} as ModuleType),
-    machineManager: new MachineManager(),
-    argumentsToSubmit: {},
-    kclManager,
-  }
-
-  if (userFeatures) {
-    context.userFeatures = userFeatures
-  }
-
-  return context
-}
+const appCommands = createAppCommands(() => undefined)
+const toolbarCommands = createToolbarCommands(() => undefined)
 
 function commandIds(
   groups: Readonly<Record<string, Readonly<Record<string, string>>>>
@@ -64,6 +49,37 @@ function commandIds(
 }
 
 describe('commands extension', () => {
+  it('resolves the executing editor at invocation and releases it when the project closes', () => {
+    const registry = new Registry()
+    registry.configure([projectSessionRegistryItem, toolbarCommandsItem])
+    const undoFirst = vi.fn()
+    const undoSecond = vi.fn()
+    const first = { undo: undoFirst } as unknown as KclManager
+    const second = { undo: undoSecond } as unknown as KclManager
+    const executingEditor = signal<KclManager | null>(first)
+    const project = { executingEditor } as unknown as ZDSProject
+    try {
+      const undo = registry
+        .get(commandsValueSpec)
+        .find((command) => command.id === APP_COMMAND_IDS.editor.undo)
+      expect(undo).toBeDefined()
+      undo?.onSubmit({})
+      expect(undoFirst).not.toHaveBeenCalled()
+      registry.get(projectSession).setProject(project)
+      undo?.onSubmit({})
+      expect(undoFirst).toHaveBeenCalledTimes(1)
+      executingEditor.value = second
+      undo?.onSubmit({})
+      expect(undoSecond).toHaveBeenCalledTimes(1)
+      registry.get(projectSession).clearProject()
+      undo?.onSubmit({})
+      expect(undoFirst).toHaveBeenCalledTimes(1)
+      expect(undoSecond).toHaveBeenCalledTimes(1)
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
   it('syncs registry command contributions into the command system service', () => {
     const commandsSlot = new Slot()
     const command: Command = {
@@ -354,7 +370,7 @@ describe('commands extension', () => {
     )
   })
 
-  it('runs toolbar commands against the KclManager from command input', () => {
+  it('runs toolbar commands against the resolved executing editor', () => {
     const sentEvents: unknown[] = []
     const kclManager = {
       modelingState: {
@@ -367,15 +383,11 @@ describe('commands extension', () => {
       },
     } as unknown as KclManager
 
-    const command = toolbarCommands.find(
+    const command = createToolbarCommands(() => kclManager).find(
       (candidate) => candidate.id === TOOLBAR_COMMAND_IDS.sketchSolve.line
     )
 
-    expect(
-      command?.onSubmit({
-        context: { kclManager } as CommandBarContext,
-      })
-    ).toBe(true)
+    expect(command?.onSubmit({})).toBe(true)
     expect(sentEvents).toEqual([
       { type: 'equip tool', data: { tool: 'lineTool' } },
     ])
@@ -394,15 +406,11 @@ describe('commands extension', () => {
       },
     } as unknown as KclManager
 
-    const command = toolbarCommands.find(
+    const command = createToolbarCommands(() => kclManager).find(
       (candidate) => candidate.id === TOOLBAR_COMMAND_IDS.sketchSolve.toolPicker
     )
 
-    expect(
-      command?.onSubmit({
-        context: { kclManager } as CommandBarContext,
-      })
-    ).toBe(true)
+    expect(command?.onSubmit({})).toBe(true)
     expect(sentEvents).toEqual([{ type: 'pick hovered tool' }])
   })
 
@@ -419,16 +427,12 @@ describe('commands extension', () => {
       },
     } as unknown as KclManager
 
-    const command = toolbarCommands.find(
+    const command = createToolbarCommands(() => kclManager).find(
       (candidate) => candidate.id === TOOLBAR_COMMAND_IDS.sketchSolve.spline
     )
 
     expect(command).toBeDefined()
-    expect(
-      command?.onSubmit({
-        context: createCommandBarContext({ kclManager }),
-      })
-    ).toBeUndefined()
+    expect(command?.onSubmit({})).toBeUndefined()
     expect(sentEvents).toEqual([])
   })
 
@@ -446,18 +450,17 @@ describe('commands extension', () => {
     } as unknown as KclManager
     const userFeatures = {
       has: vi.fn(() => true),
-    } satisfies NonNullable<CommandBarContext['userFeatures']>
+    } satisfies UserFeaturesService
 
-    const command = toolbarCommands.find(
+    const command = createToolbarCommands(
+      () => kclManager,
+      () => userFeatures
+    ).find(
       (candidate) => candidate.id === TOOLBAR_COMMAND_IDS.sketchSolve.spline
     )
 
     expect(command).toBeDefined()
-    expect(
-      command?.onSubmit({
-        context: createCommandBarContext({ kclManager, userFeatures }),
-      })
-    ).toBe(true)
+    expect(command?.onSubmit({})).toBe(true)
     expect(sentEvents).toEqual([
       { type: 'equip tool', data: { tool: 'splineTool' } },
     ])
@@ -476,19 +479,15 @@ describe('commands extension', () => {
       },
     } as unknown as KclManager
 
-    const command = toolbarCommands.find(
+    const command = createToolbarCommands(() => kclManager).find(
       (candidate) => candidate.id === TOOLBAR_COMMAND_IDS.sketchSolve.exit
     )
 
-    expect(
-      command?.onSubmit({
-        context: { kclManager } as CommandBarContext,
-      })
-    ).toBe(true)
+    expect(command?.onSubmit({})).toBe(true)
     expect(sentEvents).toEqual([{ type: 'Exit sketch' }])
   })
 
-  it('runs toolbar commands selected by keymaps against the command bar KclManager', () => {
+  it('runs toolbar commands selected by keymaps against the resolved editor', () => {
     const sentEvents: unknown[] = []
     const kclManager = {
       modelingState: {
@@ -500,7 +499,7 @@ describe('commands extension', () => {
         return true
       },
     } as unknown as KclManager
-    const command = toolbarCommands.find(
+    const command = createToolbarCommands(() => kclManager).find(
       (candidate) => candidate.id === TOOLBAR_COMMAND_IDS.sketchSolve.line
     )
     if (!command) {
@@ -529,10 +528,6 @@ describe('commands extension', () => {
     ])
 
     const commandSystem = registry.get(commandSystemService)
-    commandSystem.actor.send({ type: 'Set kclManager', data: kclManager })
-    expect(commandSystem.actor.getSnapshot().context.kclManager).toBe(
-      kclManager
-    )
     commandSystem.send({
       type: 'Find and select command',
       data: {
@@ -563,15 +558,13 @@ describe('commands extension', () => {
         return true
       },
     } as unknown as KclManager
-    const command = appCommands.find(
+    const command = createAppCommands(() => kclManager).find(
       (candidate) =>
         candidate.id === APP_COMMAND_IDS.modeling.selectAllInCurrentSketch
     )
 
     expect(command).toBeDefined()
-    command?.onSubmit({
-      context: { kclManager } as CommandBarContext,
-    })
+    command?.onSubmit({})
 
     expect(sentEvents).toEqual([
       {
@@ -594,15 +587,56 @@ describe('commands extension', () => {
       format,
       editorView: { focus },
     } as unknown as KclManager
-    const command = appCommands.find(
+    const command = createAppCommands(() => kclManager).find(
       (candidate) => candidate.id === APP_COMMAND_IDS.editor.format
     )
 
-    await command?.onSubmit({
-      context: { kclManager } as CommandBarContext,
-    })
+    await command?.onSubmit({})
 
     expect(format).toHaveBeenCalledOnce()
     expect(focus).toHaveBeenCalledOnce()
+  })
+
+  it('does not refocus an old editor when formatting finishes after a switch', async () => {
+    let finish = () => {}
+    const formatted = new Promise<void>((resolve) => {
+      finish = resolve
+    })
+    const focus = vi.fn()
+    const first = {
+      format: () => formatted,
+      editorView: { focus },
+    } as unknown as KclManager
+    let current: KclManager | undefined = first
+    const command = createAppCommands(() => current).find(
+      (command) => command.id === APP_COMMAND_IDS.editor.format
+    )
+    const pending = command?.onSubmit({})
+    current = undefined
+    finish()
+    await pending
+    expect(focus).not.toHaveBeenCalled()
+  })
+
+  it('does not enter sketch after the executing editor changes files during startup', async () => {
+    let finish = (_wasm: ModuleType) => {}
+    const wasm = new Promise<ModuleType>((resolve) => {
+      finish = resolve
+    })
+    const sendModelingEvent = vi.fn()
+    const editor = {
+      path: '/project/first.kcl',
+      modelingState: {},
+      wasmInstancePromise: wasm,
+      sendModelingEvent,
+    } as unknown as KclManager
+    const command = createToolbarCommands(() => editor).find(
+      (command) => command.id === TOOLBAR_COMMAND_IDS.modeling.sketch
+    )
+    const pending = command?.onSubmit({})
+    editor.path = '/project/second.kcl'
+    finish({} as ModuleType)
+    await pending
+    expect(sendModelingEvent).not.toHaveBeenCalled()
   })
 })

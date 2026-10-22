@@ -581,7 +581,12 @@ impl FrontendState {
                 new_graph: self.scene_graph_for_ui(),
                 new_objects: Vec::new(),
                 invalidates_ids: true,
-                exec_outcome: checkpoint.exec_outcome,
+                // Restoring leaves the engine as it is, so report its current
+                // generation rather than the one stored with the checkpoint.
+                exec_outcome: ExecOutcome {
+                    engine_scene_generation: cache.engine_scene_generation().await,
+                    ..checkpoint.exec_outcome
+                },
             },
         })
     }
@@ -2067,6 +2072,7 @@ impl FrontendState {
             filenames,
             source_files,
             default_planes,
+            engine_scene_generation,
             ..
         } = err;
 
@@ -2077,6 +2083,10 @@ impl FrontendState {
             #[cfg(test)]
             test_program_memory: Default::default(),
             filenames,
+            // Errors from run_with_caching always carry the generation, and
+            // update_state_after_exec doesn't read it anyway. TODO: return a
+            // narrower type than ExecOutcome so this doesn't need to be filled in?
+            engine_scene_generation: engine_scene_generation.unwrap_or_default(),
             operations,
             artifact_graph,
             scene_objects,
@@ -9325,6 +9335,7 @@ cylinder = startSketchOn(XY)
             refactor_metadata: Default::default(),
             issues: Default::default(),
             filenames: Default::default(),
+            engine_scene_generation: 0,
             source_files: Default::default(),
             default_planes: Default::default(),
         };
@@ -9481,6 +9492,7 @@ sketch(on = XY) {
             refactor_metadata: Default::default(),
             issues: Default::default(),
             filenames: Default::default(),
+            engine_scene_generation: 0,
             source_files: Default::default(),
             default_planes: Default::default(),
         }

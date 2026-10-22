@@ -208,7 +208,7 @@ const toolbarViewExtension = defineEngineSceneViewExtension({
 
 const sketchBackgroundOpacityViewExtension = defineEngineSceneViewExtension({
   id: 'engine-scene.sketch-background-opacity',
-  zone: 'bottom-left',
+  zone: 'bottom',
   order: 0,
   Component: SketchBackgroundOpacityViewExtension,
   shouldRegister: isSketchSolveMode,
@@ -216,7 +216,7 @@ const sketchBackgroundOpacityViewExtension = defineEngineSceneViewExtension({
 
 const sketchConstraintsToggleViewExtension = defineEngineSceneViewExtension({
   id: 'engine-scene.sketch-constraints-toggle',
-  zone: 'bottom-left',
+  zone: 'bottom',
   order: 10,
   Component: SketchConstraintsToggleViewExtension,
   shouldRegister: isSketchSolveMode,
@@ -232,9 +232,10 @@ const modelingDialogViewExtension = defineEngineSceneViewExtension({
 
 const gizmoViewExtension = defineEngineSceneViewExtension({
   id: 'engine-scene.gizmo',
-  zone: 'bottom-right',
-  order: 0,
+  zone: 'bottom',
+  order: 20,
   Component: EngineSceneGizmoViewExtension,
+  wrapperClassName: 'ml-auto',
 })
 
 const EngineSceneMeasurementStatusBarItem = () =>
