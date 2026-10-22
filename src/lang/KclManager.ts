@@ -1880,12 +1880,6 @@ export class KclManager extends File {
       return editor
     }
 
-    // The legacy singleton can be reopened after its previous project disposed it.
-    // Actor ownership still ends at close; reopening creates a fresh actor on demand.
-    if (providedEditor.closed) {
-      providedEditor._modelingActorPromise = undefined
-      providedEditor.closed = false
-    }
     // TODO: remove all this once the app can handle an undefined currently-executing editor
     await providedEditor.flushWriteToFile({ suppressConflictToast: true })
     providedEditor.flushRecoverySnapshot()
@@ -1895,6 +1889,15 @@ export class KclManager extends File {
     )
     if (systemDeps.editorHistory)
       providedEditor.useProjectHistory(systemDeps.editorHistory)
+    // The legacy singleton changes files without closing its retained project.
+    // Until each file owns an editor, end modeling interactions at this boundary.
+    const changingFile = providedEditor.path !== file.path
+    if (changingFile && !providedEditor.closed)
+      providedEditor.stopModelingActor()
+    if (changingFile || providedEditor.closed) {
+      providedEditor._modelingActorPromise = undefined
+      providedEditor.closed = false
+    }
     providedEditor.path = file.path
     providedEditor.id = file.id
     providedEditor.codeSignal.value = initialCode
@@ -2026,10 +2029,8 @@ export class KclManager extends File {
     this.updateHistoryDepth()
   }
 
-  /** Clean up listeners, watchers, etc */
-  public close() {
-    if (this.closed) return
-    this.closed = true
+  /** End file-specific interactions while leaving the outgoing view readable. */
+  private stopModelingActor() {
     this.modelingGeneration += 1
     this.modelingSubscription?.unsubscribe()
     this.modelingSubscription = undefined
@@ -2037,6 +2038,13 @@ export class KclManager extends File {
     // The outgoing route can still render while its replacement is loading.
     // Keep its stopped actor readable until reopening installs the next one.
     this._modelingState.value = null
+  }
+
+  /** Clean up listeners, watchers, etc */
+  public close() {
+    if (this.closed) return
+    this.closed = true
+    this.stopModelingActor()
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
     this.sceneSettingsActive.value = false

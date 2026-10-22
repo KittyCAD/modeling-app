@@ -84,11 +84,12 @@ it('renders project opens and file switches without showing the full-app loading
   try {
     const project = await app.openProject(projectInfo)
     await project.openEditor('/test/main.kcl', kclManager, '')
+    const firstActor = await kclManager.modelingActorPromise
     render(<ModelingView />)
     expect(screen.getByText('Editing main.kcl')).toBeVisible()
     expect(mocks.loading).not.toHaveBeenCalled()
 
-    // File routes currently replace the project session even within one project.
+    // Retain the project and its history while replacing file-specific modeling.
     // Hold actor initialization open to exercise rendering during that gap.
     let release!: () => void
     const gate = new Promise<void>((resolve) => {
@@ -115,6 +116,7 @@ it('renders project opens and file switches without showing the full-app loading
     let opened = false
     const switching = (async () => {
       const nextProject = await app.openProject(projectInfo)
+      expect(nextProject).toBe(project)
       await nextProject.openEditor('/test/other.kcl', kclManager, '')
       opened = true
     })()
@@ -122,12 +124,14 @@ it('renders project opens and file switches without showing the full-app loading
       await started
     })
     expect(opened).toBe(false)
+    expect(firstActor.getSnapshot().status).toBe('stopped')
     expect(screen.getByText('Editing main.kcl')).toBeVisible()
     expect(mocks.loading).not.toHaveBeenCalled()
     await act(async () => {
       release()
       await switching
     })
+    expect(readyActor).not.toBe(firstActor)
     expect(readyActor?.getSnapshot().status).toBe('active')
     expect(screen.getByText('Editing other.kcl')).toBeVisible()
     const exportCommand = app.commands.actor

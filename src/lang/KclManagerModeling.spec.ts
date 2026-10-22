@@ -132,6 +132,66 @@ describe('editor-owned modeling actor', () => {
     }
   })
 
+  it('replaces file-specific modeling state when the legacy editor changes files', async () => {
+    const { app, kclManager } = createKclManagerTestHarness()
+    try {
+      const first = await kclManager.modelingActorPromise
+      first.send({
+        type: 'Set mouse state',
+        data: { type: 'isDragging', on: null },
+      })
+      const next = new File('next.kcl', kclManager.systemDeps.textFileIO)
+      await KclManager.fromFile(next, kclManager.systemDeps, kclManager, '', {
+        shouldSyncRustOnOpen: false,
+      })
+      expect(first.getSnapshot().status).toBe('stopped')
+      // Keep the outgoing actor readable until the replacement is ready.
+      expect(kclManager.modelingActor).toBe(first)
+      expect(kclManager.modelingStateSignal.value).toBeNull()
+      const second = await kclManager.modelingActorPromise
+      expect(second).not.toBe(first)
+      expect(second.getSnapshot().context.fileName).toBe('next.kcl')
+      expect(second.getSnapshot().context.mouseState.type).toBe('idle')
+      expect(kclManager.modelingStateSignal.value).toBe(second.getSnapshot())
+
+      await KclManager.fromFile(next, kclManager.systemDeps, kclManager, '', {
+        shouldSyncRustOnOpen: false,
+      })
+      expect(await kclManager.modelingActorPromise).toBe(second)
+      expect(second.getSnapshot().status).toBe('active')
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('invalidates pending initialization when the legacy editor changes files without closing', async () => {
+    const { app, kclManager } = createKclManagerTestHarness()
+    try {
+      const instance = await app.wasmPromise
+      let resolveWasm!: (instance: ModuleType) => void
+      kclManager.wasmInstancePromise = new Promise((resolve) => {
+        resolveWasm = resolve
+      })
+      const pending = kclManager.modelingActorPromise
+      const rejected = expect(pending).rejects.toThrow('closed editor')
+      await KclManager.fromFile(
+        new File('next.kcl', kclManager.systemDeps.textFileIO),
+        kclManager.systemDeps,
+        kclManager,
+        '',
+        { shouldSyncRustOnOpen: false }
+      )
+      resolveWasm(instance)
+      await rejected
+      expect(kclManager.modelingActor).toBeUndefined()
+      const actor = await kclManager.modelingActorPromise
+      expect(actor.getSnapshot().status).toBe('active')
+      expect(actor.getSnapshot().context.fileName).toBe('next.kcl')
+    } finally {
+      app.dispose()
+    }
+  })
+
   it('resolves updated project metadata without a React ref or effect', async () => {
     const { app, kclManager } = createKclManagerTestHarness()
     const project = {
