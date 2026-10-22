@@ -569,8 +569,8 @@ export class ConnectionManager extends EventTarget {
 
   generateWebsocketURL(kclVersion: KclVersion | undefined) {
     let additionalSettings = this.settings.enableSSAO ? '&post_effect=ssao' : ''
-    // ZDS renders the infinite scale grid locally instead of baking it into video.
-    additionalSettings += '&show_grid=false'
+    additionalSettings +=
+      '&show_grid=' + (this.settings.showScaleGrid ? 'true' : 'false')
     if (kclVersion !== undefined) {
       additionalSettings += `&kcl_version=${encodeURIComponent(kclVersion)}`
     }

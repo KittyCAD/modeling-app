@@ -1,6 +1,5 @@
 import { useAppState } from '@src/AppState'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
-import { InfiniteScaleGrid } from '@src/clientSideScene/InfiniteScaleGrid'
 import Loading from '@src/components/Loading'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
 import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToExitSketchMode'
@@ -637,25 +636,6 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       >
         No canvas support
       </canvas>
-      {isSceneReady &&
-        isNetworkOkay &&
-        !showManualConnect &&
-        settingsValues.modeling.showScaleGrid.current &&
-        !modelingMachineState.matches('Sketch') &&
-        !modelingMachineState.matches('sketchSolveMode') && (
-          <InfiniteScaleGrid
-            sceneInfra={sceneInfra}
-            majorGridSpacing={settingsValues.modeling.majorGridSpacing.current}
-            minorGridsPerMajor={
-              settingsValues.modeling.minorGridsPerMajor.current
-            }
-            fixedSizeGrid={settingsValues.modeling.fixedSizeGrid.current}
-            isLightTheme={
-              getResolvedTheme(settingsValues.app.theme.current) ===
-              Themes.Light
-            }
-          />
-        )}
       <ClientSideScene
         cameraControls={settingsValues.modeling.mouseControls.current}
         enableTouchControls={

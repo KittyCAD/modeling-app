@@ -32,7 +32,6 @@ import {
   getAllCurrentSettings,
   getChangedSettingsAtLevel,
   hiddenOnPlatform,
-  jsAppSettings,
   mergeProjectConfiguration,
   projectConfigurationToSettingsPayload,
   replaceProjectSettingsPreservingMetadata,
@@ -63,20 +62,6 @@ const createSettingsWithProjectLibraries = () =>
   createSettings(projectLibrariesExtensionSettings)
 
 describe('testing settings initialization', () => {
-  it('keeps the local grid preference while suppressing the streamed grid', () => {
-    const settings = createSettings()
-    settings.modeling.showScaleGrid.user = true
-
-    expect(jsAppSettings(settings).settings?.modeling?.show_scale_grid).toBe(
-      false
-    )
-    expect(settings.modeling.showScaleGrid.current).toBe(true)
-    const persisted = settingsPayloadToConfiguration(
-      getChangedSettingsAtLevel(settings, 'user')
-    )
-    expect(persisted.settings?.modeling?.show_scale_grid).toBe(true)
-  })
-
   it(`sets settings at the 'user' level`, () => {
     const settings = createSettings()
     const appConfiguration: DeepPartial<Configuration> = {
